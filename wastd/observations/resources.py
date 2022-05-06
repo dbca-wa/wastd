@@ -3,7 +3,7 @@ from wastd.observations.models import (
     Encounter,
     AnimalEncounter,
     TurtleNestEncounter,
-    LoggerEncounter,
+    # LoggerEncounter,
     LineTransectEncounter,
     Survey
 )
@@ -141,31 +141,31 @@ class TurtleNestEncounterResource(ModelResource):
         ]
 
 
-class LoggerEncounterResource(ModelResource):
-    class Meta:
-        model = LoggerEncounter
-        fields = [
-            'source',
-            'source_id',
-            'where',
-            'wkt'
-            'longitude',
-            'latitude',
-            'location_accuracy_m',
-            'when',
-            'area',
-            'area__name',
-            'site',
-            'site__name',
-            'observer',
-            'observer__name',
-            'reporter',
-            'reporter__name',
-            'encounter_type',
-            'logger_type',
-            'deployment_status',
-            'logger_id',
-        ]
+# class LoggerEncounterResource(ModelResource):
+#     class Meta:
+#         model = LoggerEncounter
+#         fields = [
+#             'source',
+#             'source_id',
+#             'where',
+#             'wkt'
+#             'longitude',
+#             'latitude',
+#             'location_accuracy_m',
+#             'when',
+#             'area',
+#             'area__name',
+#             'site',
+#             'site__name',
+#             'observer',
+#             'observer__name',
+#             'reporter',
+#             'reporter__name',
+#             'encounter_type',
+#             'logger_type',
+#             'deployment_status',
+#             'logger_id',
+#         ]
 
 
 class LineTransectEncounterResource(ModelResource):

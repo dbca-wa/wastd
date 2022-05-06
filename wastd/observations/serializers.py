@@ -395,39 +395,39 @@ class TurtleNestEncounterSerializer(EncounterSerializer):
         id_field = "pk"
 
 
-class LoggerEncounterSerializer(EncounterSerializer):
+# class LoggerEncounterSerializer(EncounterSerializer):
 
-    class Meta:
-        model = models.LoggerEncounter
-        fields = (
-            "pk",
-            "source",
-            "source_id",
-            "encounter_type",
-            "status",
-            "when",
-            "latitude",
-            "longitude",
-            "crs",
-            "location_accuracy",
-            "location_accuracy_m",
-            "name",
-            "leaflet_title",
-            "observer",
-            "reporter",
-            "comments",
-            "area",
-            "site",
-            "survey",
+#     class Meta:
+#         model = models.LoggerEncounter
+#         fields = (
+#             "pk",
+#             "source",
+#             "source_id",
+#             "encounter_type",
+#             "status",
+#             "when",
+#             "latitude",
+#             "longitude",
+#             "crs",
+#             "location_accuracy",
+#             "location_accuracy_m",
+#             "name",
+#             "leaflet_title",
+#             "observer",
+#             "reporter",
+#             "comments",
+#             "area",
+#             "site",
+#             "survey",
 
-            "logger_type",
-            "logger_id",
-            "deployment_status",
-            "absolute_admin_url",
-            # "observation_set",
-        )
-        geo_field = "where"
-        id_field = "pk"
+#             "logger_type",
+#             "logger_id",
+#             "deployment_status",
+#             "absolute_admin_url",
+#             # "observation_set",
+#         )
+#         geo_field = "where"
+#         id_field = "pk"
 
 
 class LineTransectEncounterSerializer(EncounterSerializer):

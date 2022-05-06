@@ -31,9 +31,9 @@ router.register(
 router.register(
     "turtle-nest-encounters",
     observations_api.TurtleNestEncounterViewSet)
-router.register(
-    "logger-encounters",
-    observations_api.LoggerEncounterViewSet)
+# router.register(
+#     "logger-encounters",
+#     observations_api.LoggerEncounterViewSet)
 router.register(
     "line-transect-encounters",
     observations_api.LineTransectEncounterViewSet)

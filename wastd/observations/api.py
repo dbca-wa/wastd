@@ -577,23 +577,23 @@ class LineTransectEncounterViewSet(BatchUpsertViewSet):
         symlink_resources(t_dir, data)
 
 
-class LoggerEncounterViewSet(BatchUpsertViewSet):
-    latex_name = "latex/loggerencounter.tex"
-    queryset = models.LoggerEncounter.objects.all().prefetch_related(
-        "observer", "reporter", "survey", "site", "area", "survey__reporter"
-    )
-    serializer_class = serializers.LoggerEncounterSerializer
-    filter_fields = ["encounter_type",
-                     "status", "area", "site", "survey", "source", "source_id",
-                     "location_accuracy", "when", "name", "observer", "reporter",
-                     "deployment_status", "comments"]
-    search_fields = ("name", "source_id", )
-    pagination_class = MyGeoJsonPagination
-    model = models.LoggerEncounter
+# class LoggerEncounterViewSet(BatchUpsertViewSet):
+#     latex_name = "latex/loggerencounter.tex"
+#     queryset = models.LoggerEncounter.objects.all().prefetch_related(
+#         "observer", "reporter", "survey", "site", "area", "survey__reporter"
+#     )
+#     serializer_class = serializers.LoggerEncounterSerializer
+#     filter_fields = ["encounter_type",
+#                      "status", "area", "site", "survey", "source", "source_id",
+#                      "location_accuracy", "when", "name", "observer", "reporter",
+#                      "deployment_status", "comments"]
+#     search_fields = ("name", "source_id", )
+#     pagination_class = MyGeoJsonPagination
+#     model = models.LoggerEncounter
 
-    def pre_latex(self, t_dir, data):
-        """Symlink photographs to temp dir for use by latex template."""
-        symlink_resources(t_dir, data)
+#     def pre_latex(self, t_dir, data):
+#         """Symlink photographs to temp dir for use by latex template."""
+#         symlink_resources(t_dir, data)
 
 
 class ObservationViewSet(ObservationBatchUpsertViewSet):
