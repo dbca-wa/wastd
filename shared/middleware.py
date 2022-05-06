@@ -4,11 +4,13 @@ import logging
 from django import http, VERSION
 from django.conf import settings
 from django.contrib.auth import login, logout, get_user_model
+
 from django.core.exceptions import PermissionDenied
 from django.db.models import signals
 from django.utils.deprecation import MiddlewareMixin
 from django.utils.functional import SimpleLazyObject
 from django.contrib.auth.middleware import AuthenticationMiddleware, get_user
+
 
 from config.settings.common import (ENABLE_AUTH2_GROUPS, LOCAL_USERGROUPS)
 
@@ -136,6 +138,7 @@ class SSOLoginMiddleware(MiddlewareMixin):
                 ):
                     raise PermissionDenied
 
+           
             if (
                 attributemap["email"]
                 and User.objects.filter(email__iexact=attributemap["email"]).exists()
@@ -150,6 +153,25 @@ class SSOLoginMiddleware(MiddlewareMixin):
             user.__dict__.update(attributemap)
             user.save()
             user.backend = "django.contrib.auth.backends.ModelBackend"
+
+            # Give internal Users default access
+            # https://github.com/dbca-wa/wastd/issues/433
+            if (hasattr(settings, "INTERNAL_EMAIL_SUFFIXES") and settings.INTERNAL_EMAIL_SUFFIXES):
+                internal = settings.INTERNAL_EMAIL_SUFFIXES
+                if isinstance(settings.INTERNAL_EMAIL_SUFFIXES, str):
+                    internal = [settings.INTERNAL_EMAIL_SUFFIXES]
+                if any([attributemap["email"].lower().endswith(x) for x in internal]):
+
+                    # Give user access to Org DBCA
+                    from wastd.users.models import Organisation
+                    dbca, _ = Organisation.objects.get_or_create(code="dbca")
+                    user.organisations.add(dbca)
+                    
+                    # Give user access to Group "data viewer"
+                    from django.contrib.auth.models import Group
+                    dv, _ = Group.objects.get_or_create(name="data viewer")
+                    user.groups.add(dv)
+
             # If the user is not in Group "data viewer", forbid any further access
             # https://github.com/dbca-wa/wastd/issues/384
             if 'data viewer' not in [g.name for g in user.groups.all()]:
@@ -158,6 +180,7 @@ class SSOLoginMiddleware(MiddlewareMixin):
                 raise PermissionDenied
 
             login(request, user)
+
             # synchronize the user groups
             if ENABLE_AUTH2_GROUPS and "HTTP_X_GROUPS" in request.META:
                 groups = request.META["HTTP_X_GROUPS"] or None
