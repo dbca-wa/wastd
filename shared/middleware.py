@@ -162,6 +162,8 @@ class SSOLoginMiddleware(MiddlewareMixin):
                     internal = [settings.INTERNAL_EMAIL_SUFFIXES]
                 if any([attributemap["email"].lower().endswith(x) for x in internal]):
 
+                    logger.info(f"[SSOLoginMiddleware.process_request] default permissions assigned to user {user.email}")
+
                     # Give user access to Org DBCA
                     from wastd.users.models import Organisation
                     dbca, _ = Organisation.objects.get_or_create(code="dbca")
