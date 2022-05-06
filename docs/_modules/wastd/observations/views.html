@@ -104,13 +104,13 @@
     <span class="n">AnimalEncounterFilter</span><span class="p">,</span>
     <span class="n">TurtleNestEncounterFilter</span><span class="p">,</span>
     <span class="n">LineTransectEncounterFilter</span><span class="p">,</span>
-    <span class="n">LoggerEncounterFilter</span>
+    <span class="c1"># LoggerEncounterFilter</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">wastd.observations.forms</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">EncounterListFormHelper</span><span class="p">,</span>
     <span class="n">AnimalEncounterForm</span><span class="p">,</span>
     <span class="n">AnimalEncounterListFormHelper</span><span class="p">,</span>
-    <span class="n">FlipperTagObservationFormSet</span>
+    <span class="c1"># FlipperTagObservationFormSet</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">wastd.observations.models</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">Survey</span><span class="p">,</span>
@@ -127,7 +127,7 @@
     <span class="n">AnimalEncounterResource</span><span class="p">,</span>
     <span class="n">TurtleNestEncounterResource</span><span class="p">,</span>
     <span class="n">LineTransectEncounterResource</span><span class="p">,</span>
-    <span class="n">LoggerEncounterResource</span>
+    <span class="c1"># LoggerEncounterResource</span>
 <span class="p">)</span>
 
 <span class="kn">from</span> <span class="nn">wastd.observations</span> <span class="kn">import</span> <span class="n">admin</span>
@@ -520,34 +520,34 @@
 
 <span class="c1"># -----------------------------------------------------------------------------#</span>
 <span class="c1"># LoggerEncounter</span>
-<div class="viewcode-block" id="LoggerEncounterList"><a class="viewcode-back" href="../../../developers.html#wastd.observations.views.LoggerEncounterList">[docs]</a><span class="k">class</span> <span class="nc">LoggerEncounterList</span><span class="p">(</span><span class="n">ListViewBreadcrumbMixin</span><span class="p">,</span> <span class="n">ResourceDownloadMixin</span><span class="p">,</span> <span class="n">ListView</span><span class="p">):</span>
-    <span class="n">model</span> <span class="o">=</span> <span class="n">LoggerEncounter</span>
-    <span class="n">template_name</span> <span class="o">=</span> <span class="s1">&#39;pages/default_list.html&#39;</span>
-    <span class="n">paginate_by</span> <span class="o">=</span> <span class="mi">20</span>
-    <span class="n">filter_class</span> <span class="o">=</span> <span class="n">LoggerEncounterFilter</span>
-    <span class="n">resource_class</span> <span class="o">=</span> <span class="n">LoggerEncounterResource</span>
+<span class="c1"># class LoggerEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):</span>
+<span class="c1">#     model = LoggerEncounter</span>
+<span class="c1">#     template_name = &#39;pages/default_list.html&#39;</span>
+<span class="c1">#     paginate_by = 20</span>
+<span class="c1">#     filter_class = LoggerEncounterFilter</span>
+<span class="c1">#     resource_class = LoggerEncounterResource</span>
 
-<div class="viewcode-block" id="LoggerEncounterList.get_context_data"><a class="viewcode-back" href="../../../developers.html#wastd.observations.views.LoggerEncounterList.get_context_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">context</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">LoggerEncounterList</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_context_data</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="n">context</span><span class="p">[</span><span class="s1">&#39;list_filter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">LoggerEncounterFilter</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="p">,</span> <span class="n">queryset</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_queryset</span><span class="p">()</span>
-        <span class="p">)</span>
-        <span class="n">context</span><span class="p">[</span><span class="s1">&#39;model_admin&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">admin</span><span class="o">.</span><span class="n">LoggerEncounterAdmin</span>
-        <span class="k">return</span> <span class="n">context</span></div>
+<span class="c1">#     def get_context_data(self, **kwargs):</span>
+<span class="c1">#         context = super(LoggerEncounterList, self).get_context_data(**kwargs)</span>
+<span class="c1">#         context[&#39;list_filter&#39;] = LoggerEncounterFilter(</span>
+<span class="c1">#             self.request.GET, queryset=self.get_queryset()</span>
+<span class="c1">#         )</span>
+<span class="c1">#         context[&#39;model_admin&#39;] = admin.LoggerEncounterAdmin</span>
+<span class="c1">#         return context</span>
 
-<div class="viewcode-block" id="LoggerEncounterList.get_queryset"><a class="viewcode-back" href="../../../developers.html#wastd.observations.views.LoggerEncounterList.get_queryset">[docs]</a>    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">qs</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">LoggerEncounterList</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_queryset</span><span class="p">()</span><span class="o">.</span><span class="n">prefetch_related</span><span class="p">(</span>
-            <span class="s2">&quot;observer&quot;</span><span class="p">,</span> <span class="s2">&quot;reporter&quot;</span><span class="p">,</span> <span class="s2">&quot;area&quot;</span><span class="p">,</span> <span class="s2">&quot;site&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s1">&#39;-when&#39;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">LoggerEncounterFilter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="p">,</span> <span class="n">queryset</span><span class="o">=</span><span class="n">qs</span><span class="p">)</span><span class="o">.</span><span class="n">qs</span></div></div>
+<span class="c1">#     def get_queryset(self):</span>
+<span class="c1">#         qs = super(LoggerEncounterList, self).get_queryset().prefetch_related(</span>
+<span class="c1">#             &quot;observer&quot;, &quot;reporter&quot;, &quot;area&quot;, &quot;site&quot;).order_by(&#39;-when&#39;)</span>
+<span class="c1">#         return LoggerEncounterFilter(self.request.GET, queryset=qs).qs</span>
 
 
-<div class="viewcode-block" id="LoggerEncounterDetail"><a class="viewcode-back" href="../../../developers.html#wastd.observations.views.LoggerEncounterDetail">[docs]</a><span class="k">class</span> <span class="nc">LoggerEncounterDetail</span><span class="p">(</span><span class="n">DetailViewBreadcrumbMixin</span><span class="p">,</span> <span class="n">DetailView</span><span class="p">):</span>
-    <span class="n">model</span> <span class="o">=</span> <span class="n">LoggerEncounter</span>
+<span class="c1"># class LoggerEncounterDetail(DetailViewBreadcrumbMixin, DetailView):</span>
+<span class="c1">#     model = LoggerEncounter</span>
 
-<div class="viewcode-block" id="LoggerEncounterDetail.get_context_data"><a class="viewcode-back" href="../../../developers.html#wastd.observations.views.LoggerEncounterDetail.get_context_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">LoggerEncounterDetail</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_context_data</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="c1"># data[&#39;tags&#39;] = TagObservation.objects.filter(encounter__in=[self.get_object()])</span>
-        <span class="k">return</span> <span class="n">data</span></div></div>
+<span class="c1">#     def get_context_data(self, **kwargs):</span>
+<span class="c1">#         data = super(LoggerEncounterDetail, self).get_context_data(**kwargs)</span>
+<span class="c1">#         # data[&#39;tags&#39;] = TagObservation.objects.filter(encounter__in=[self.get_object()])</span>
+<span class="c1">#         return data</span>
 
 
 <span class="c1"># Django-Rest-Swagger View ---------------------------------------------------#</span>
