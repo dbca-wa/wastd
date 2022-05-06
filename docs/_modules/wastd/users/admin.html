@@ -89,9 +89,21 @@
 <span class="kn">from</span> <span class="nn">django.contrib.auth.forms</span> <span class="kn">import</span> <span class="n">UserChangeForm</span><span class="p">,</span> <span class="n">UserCreationForm</span>
 <span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">render</span>
 
-<span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">User</span>
+<span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">User</span><span class="p">,</span> <span class="n">Organisation</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="OrganisationAdmin"><a class="viewcode-back" href="../../../developers.html#wastd.users.admin.OrganisationAdmin">[docs]</a><span class="nd">@admin</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Organisation</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">OrganisationAdmin</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Organisation admin.&quot;&quot;&quot;</span>
+
+    <span class="n">list_display</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;code&quot;</span><span class="p">,</span> <span class="s2">&quot;label&quot;</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span> <span class="p">)</span>
+    <span class="c1"># list_filter = (&quot;owner&quot;, &quot;viewers&quot;)</span>
+    <span class="n">search_fields</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;label__icontains&quot;</span><span class="p">,</span> <span class="s2">&quot;description__icontains&quot;</span><span class="p">,</span> <span class="p">)</span></div>
+    <span class="c1"># form = s2form(Organisation, attrs=S2ATTRS)</span>
+    <span class="c1"># formfield_overrides = FORMFIELD_OVERRIDES</span>
+
 
 <div class="viewcode-block" id="MyUserChangeForm"><a class="viewcode-back" href="../../../developers.html#wastd.users.admin.MyUserChangeForm">[docs]</a><span class="k">class</span> <span class="nc">MyUserChangeForm</span><span class="p">(</span><span class="n">UserChangeForm</span><span class="p">):</span>
 
@@ -123,17 +135,26 @@
     <span class="n">add_form</span> <span class="o">=</span> <span class="n">MyUserCreationForm</span>
     <span class="n">fieldsets</span> <span class="o">=</span> <span class="p">(</span>
         <span class="p">(</span><span class="s2">&quot;User Profile&quot;</span><span class="p">,</span>
-            <span class="p">{</span><span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;nickname&quot;</span><span class="p">,</span> <span class="s2">&quot;aliases&quot;</span><span class="p">,</span> <span class="s2">&quot;role&quot;</span><span class="p">,</span> <span class="s2">&quot;affiliation&quot;</span><span class="p">,</span> <span class="s2">&quot;phone&quot;</span><span class="p">,</span> <span class="s2">&quot;alive&quot;</span><span class="p">)}),</span>
+            <span class="p">{</span><span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">,</span> 
+                <span class="s2">&quot;nickname&quot;</span><span class="p">,</span> 
+                <span class="s2">&quot;aliases&quot;</span><span class="p">,</span> 
+                <span class="s2">&quot;role&quot;</span><span class="p">,</span> 
+                <span class="s2">&quot;affiliation&quot;</span><span class="p">,</span> 
+                <span class="s2">&quot;organisations&quot;</span><span class="p">,</span> 
+                <span class="s2">&quot;phone&quot;</span><span class="p">,</span> 
+                <span class="s2">&quot;alive&quot;</span><span class="p">)}),</span>
     <span class="p">)</span> <span class="o">+</span> <span class="n">AuthUserAdmin</span><span class="o">.</span><span class="n">fieldsets</span>
-    <span class="n">list_filter</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;is_superuser&quot;</span><span class="p">,</span> <span class="s2">&quot;is_staff&quot;</span><span class="p">,</span> <span class="s2">&quot;is_active&quot;</span><span class="p">,</span> <span class="s2">&quot;alive&quot;</span><span class="p">)</span>
+    <span class="n">list_filter</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;is_superuser&quot;</span><span class="p">,</span> <span class="s2">&quot;is_staff&quot;</span><span class="p">,</span> <span class="s2">&quot;is_active&quot;</span><span class="p">,</span> <span class="s2">&quot;alive&quot;</span><span class="p">,)</span>
     <span class="n">list_display</span> <span class="o">=</span> <span class="p">(</span>
         <span class="s2">&quot;username&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;email&quot;</span><span class="p">,</span>
         <span class="s2">&quot;name&quot;</span><span class="p">,</span>
         <span class="s2">&quot;nickname&quot;</span><span class="p">,</span>
         <span class="s2">&quot;aliases&quot;</span><span class="p">,</span>
+        <span class="c1"># &quot;organisations&quot;,</span>
         <span class="s2">&quot;role&quot;</span><span class="p">,</span>
         <span class="s2">&quot;phone&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;email&quot;</span><span class="p">,</span>
         <span class="s2">&quot;is_superuser&quot;</span><span class="p">,</span>
         <span class="s2">&quot;is_staff&quot;</span><span class="p">,</span>
         <span class="s2">&quot;is_active&quot;</span><span class="p">,</span>
@@ -148,7 +169,20 @@
         <span class="s2">&quot;affiliation__icontains&quot;</span><span class="p">,</span>
         <span class="s2">&quot;email__icontains&quot;</span><span class="p">,</span>
         <span class="s2">&quot;phone__icontains&quot;</span>
-    <span class="p">]</span></div>
+    <span class="p">]</span>
+    <span class="n">readonly_fields</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;organisations&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;is_superuser&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;is_staff&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+
+
+<div class="viewcode-block" id="MyUserAdmin.get_readonly_fields"><a class="viewcode-back" href="../../../developers.html#wastd.users.admin.MyUserAdmin.get_readonly_fields">[docs]</a>    <span class="k">def</span> <span class="nf">get_readonly_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">is_staff</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">is_superuser</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">fields</span><span class="p">]</span></div></div>
 </pre></div>
 
            </div>

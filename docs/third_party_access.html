@@ -41,7 +41,10 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Third party access</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Third party access</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#managing-access">Managing access</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="data_collection/data_collection_admin.html">Data collection administrators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_collection/data_collection_training.html">Data collection protocols and training</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_collection/data_collection_development.html">Data collection development</a></li>
@@ -93,6 +96,23 @@ Once permissions have been assigned, you can login again and will get to the WAS
 <p>Data curators will be able to access the data curation and QA portal.</p>
 <p>Data analysts can find instructions how to access and authenticate against the API on their profile page.</p>
 <p>More fine-grained permission management will be added as the need arises.</p>
+<section id="managing-access">
+<h2>Managing access<a class="headerlink" href="#managing-access" title="Permalink to this headline"></a></h2>
+<p>Add a User to Group “data viewers” to give them initial access to WAStD,
+and add the User to their Organisation to give them visibility to all data owned by this or shared with this Organisation.
+Users can be part of several Organisations, although most will belong to exactly one.</p>
+<dl>
+<dt>Bulk updates run by an admin on the <code class="docutils literal notranslate"><span class="pre">./manage.py</span> <span class="pre">shell_plus</span></code> on the server::</dt><dd><p># Add active users with a DBCA email who have logged into WAStD in the past to Group “DBCA”
+# This gives them access to DBCA data
+dbca = Organisation.objects.get(code=”dbca”)
+dv = Group.objects.get(name=”data viewer”)
+[[u.organisations.add(dbca), u.groups.add(dv)] for u in User.objects.filter(email__icontains=”&#64;dbca.wa.gov.au”, is_active=True).exclude(last_login=None)]</p>
+<p># Add active users who have logged into WAStD in the past to Group “data viewers”
+# This gives them access to WAStD
+[u.groups.add(dv) for u in User.objects.exclude(last_login=None).filter(is_active=True)]</p>
+</dd>
+</dl>
+</section>
 </section>
 
 

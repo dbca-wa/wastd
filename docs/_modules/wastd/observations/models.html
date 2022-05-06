@@ -103,6 +103,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">itertools</span>
 <span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">tabnanny</span> <span class="kn">import</span> <span class="n">verbose</span>
 <span class="kn">import</span> <span class="nn">urllib</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">timedelta</span>
 <span class="kn">from</span> <span class="nn">dateutil</span> <span class="kn">import</span> <span class="n">parser</span> <span class="k">as</span> <span class="n">dateparser</span>
@@ -136,7 +137,7 @@
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">shared.utils</span> <span class="kn">import</span> <span class="n">sanitize_tag_label</span>
 
-<span class="kn">from</span> <span class="nn">wastd.users.models</span> <span class="kn">import</span> <span class="n">User</span>
+<span class="kn">from</span> <span class="nn">wastd.users.models</span> <span class="kn">import</span> <span class="n">User</span><span class="p">,</span> <span class="n">Organisation</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -964,122 +965,93 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">isoformat</span><span class="p">())</span></div>
 
 
-<div class="viewcode-block" id="Expedition"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.Expedition">[docs]</a><span class="k">class</span> <span class="nc">Expedition</span><span class="p">(</span><span class="n">PolymorphicModel</span><span class="p">,</span> <span class="n">geo_models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;An endeavour of a team to a location within a defined time range.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Expedition"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.Expedition">[docs]</a><span class="k">class</span> <span class="nc">Expedition</span><span class="p">(</span><span class="n">geo_models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;An endeavour of a team to a Locality within a defined time range.</span>
+<span class="sd">    </span>
+<span class="sd">    * Expeditions are owned by an Organisation.</span>
+<span class="sd">    * Expeditions own all Surveys and Encounters within its area and time range.</span>
+<span class="sd">    * Expeditions can nominate other Organisations as viewers of their data.</span>
 
-    <span class="n">site</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span>
+<span class="sd">    High level specs: https://github.com/dbca-wa/biosys-turtles/issues/81</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">area</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span>
         <span class="n">Area</span><span class="p">,</span>
         <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">SET_NULL</span><span class="p">,</span>
         <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Surveyed area&quot;</span><span class="p">),</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Destination&quot;</span><span class="p">),</span>
         <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The entire surveyed area.&quot;</span><span class="p">),</span> <span class="p">)</span>
 
-    <span class="n">started_on</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span>
-        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Site entered on&quot;</span><span class="p">),</span>
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Expedition start&quot;</span><span class="p">),</span>
         <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The datetime of entering the site, shown as local time &quot;</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The Expedition start, shown as local time &quot;</span>
                     <span class="s2">&quot;(no daylight savings), stored as UTC.&quot;</span><span class="p">))</span>
 
-    <span class="n">finished_on</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span>
-        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Site left on&quot;</span><span class="p">),</span>
+    <span class="n">end_time</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Expedition end&quot;</span><span class="p">),</span>
         <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The datetime of leaving the site, shown as local time &quot;</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The Expedition end, shown as local time &quot;</span>
                     <span class="s2">&quot;(no daylight savings), stored as UTC.&quot;</span><span class="p">))</span>
 
     <span class="n">comments</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">(</span>
         <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Comments&quot;</span><span class="p">),</span>
         <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Describe any circumstances affecting data collection, &quot;</span>
-                    <span class="s2">&quot;e.g. days without surveys.&quot;</span><span class="p">),</span> <span class="p">)</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Comments about the Expedition.&quot;</span><span class="p">),</span> <span class="p">)</span>
 
     <span class="n">team</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span>
         <span class="n">User</span><span class="p">,</span>
+        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;expedition_team&quot;</span><span class="p">)</span>
 
+    <span class="n">owner</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span>
+        <span class="n">Organisation</span><span class="p">,</span>
+        <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">SET_NULL</span><span class="p">,</span>
+        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Owner&quot;</span><span class="p">),</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The organisation that ran this Expedition owns all records (Surveys and Encounters).&quot;</span><span class="p">))</span>
+
+    <span class="n">viewers</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span>
+        <span class="n">Organisation</span><span class="p">,</span>
+        <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;shared_expeditions&quot;</span><span class="p">,</span>
+        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The nominated organisations are able to view the Expedition&#39;s records.&quot;</span><span class="p">))</span>
+
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;The unicode representation.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="s2">&quot;Expedition </span><span class="si">{0}</span><span class="s2"> to </span><span class="si">{1}</span><span class="s2"> from </span><span class="si">{2}</span><span class="s2"> to </span><span class="si">{3}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span>
-            <span class="s2">&quot;unknown site&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">site</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-            <span class="s2">&quot;na&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">started_on</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">started_on</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
-            <span class="s2">&quot;na&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">finished_on</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">finished_on</span><span class="o">.</span><span class="n">isoformat</span><span class="p">())</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{0}</span><span class="s2"> </span><span class="si">{1}</span><span class="s2"> </span><span class="si">{2}</span><span class="s2"> to </span><span class="si">{3}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="s2">&quot;-&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">label</span><span class="p">,</span>
+            <span class="s2">&quot;-&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">area</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">area</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="s2">&quot;na&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">tz</span><span class="o">.</span><span class="n">tzlocal</span><span class="p">())</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;na&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">tz</span><span class="o">.</span><span class="n">tzlocal</span><span class="p">())</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">site_visits</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return a QuerySet of site visits.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">SiteVisit</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
-            <span class="n">site__geom__contained</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">geom</span><span class="p">,</span>
-            <span class="n">started_on__gte</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">started_on</span><span class="p">,</span>
-            <span class="n">finished_on__lte</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">finished_on</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="SiteVisit"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.SiteVisit">[docs]</a><span class="k">class</span> <span class="nc">SiteVisit</span><span class="p">(</span><span class="n">Expedition</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A visit to one site by a team of field workers collecting data.&quot;&quot;&quot;</span>
-
-    <span class="n">source</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
-        <span class="n">max_length</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
-        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Data Source&quot;</span><span class="p">),</span>
-        <span class="n">default</span><span class="o">=</span><span class="n">SOURCE_DEFAULT</span><span class="p">,</span>
-        <span class="n">choices</span><span class="o">=</span><span class="n">SOURCE_CHOICES</span><span class="p">,</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Where was this record captured initially?&quot;</span><span class="p">),</span> <span class="p">)</span>
-
-    <span class="n">source_id</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
-        <span class="n">max_length</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
-        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Source ID&quot;</span><span class="p">),</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The ID of the start point in the original source, or &quot;</span>
-                    <span class="s2">&quot;a newly allocated ID if left blank. Delete and save &quot;</span>
-                    <span class="s2">&quot;to regenerate this ID.&quot;</span><span class="p">),</span> <span class="p">)</span>
-
-    <span class="n">end_source_id</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
-        <span class="n">max_length</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
-        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Source ID of end point&quot;</span><span class="p">),</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The ID of the record in the original source, or &quot;</span>
-                    <span class="s2">&quot;a newly allocated ID if left blank. Delete and save &quot;</span>
-                    <span class="s2">&quot;to regenerate this ID.&quot;</span><span class="p">),</span> <span class="p">)</span>
-
-    <span class="n">start_location</span> <span class="o">=</span> <span class="n">geo_models</span><span class="o">.</span><span class="n">PointField</span><span class="p">(</span>
-        <span class="n">srid</span><span class="o">=</span><span class="mi">4326</span><span class="p">,</span>
-        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Start location&quot;</span><span class="p">),</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The start location as point in WGS84&quot;</span><span class="p">))</span>
-
-    <span class="n">end_location</span> <span class="o">=</span> <span class="n">geo_models</span><span class="o">.</span><span class="n">PointField</span><span class="p">(</span>
-        <span class="n">srid</span><span class="o">=</span><span class="mi">4326</span><span class="p">,</span>
-        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;End location&quot;</span><span class="p">),</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The end location as point in WGS84&quot;</span><span class="p">))</span>
-
-    <span class="n">transect</span> <span class="o">=</span> <span class="n">geo_models</span><span class="o">.</span><span class="n">LineStringField</span><span class="p">(</span>
-        <span class="n">srid</span><span class="o">=</span><span class="mi">4326</span><span class="p">,</span>
-        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Transect line&quot;</span><span class="p">),</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The surveyed path as LineString in WGS84, optional.&quot;</span><span class="p">))</span>
-
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;The unicode representation.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="s2">&quot;Site Visit </span><span class="si">{0}</span><span class="s2"> of </span><span class="si">{1}</span><span class="s2"> from </span><span class="si">{2}</span><span class="s2"> to </span><span class="si">{3}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span>
-            <span class="s2">&quot;unknown site&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">site</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-            <span class="s2">&quot;na&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">started_on</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">started_on</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
-            <span class="s2">&quot;na&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">finished_on</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">finished_on</span><span class="o">.</span><span class="n">isoformat</span><span class="p">())</span>
+    <span class="k">def</span> <span class="nf">surveys</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a QuerySet of Surveys.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">Survey</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+            <span class="n">site__geom__contained</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">area</span><span class="o">.</span><span class="n">geom</span><span class="p">,</span>
+            <span class="n">start_time__gte</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="p">,</span>
+            <span class="n">end_time__lte</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">encounters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return the QuerySet of all Encounters within this SiteVisit.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Return the QuerySet of all Encounters within this Expedition.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">Encounter</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
-            <span class="n">where__contained</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">geom</span><span class="p">,</span>
-            <span class="n">when__gte</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">started_on</span><span class="p">,</span>
-            <span class="n">when__lte</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">finished_on</span><span class="p">)</span>
+            <span class="n">where__coveredby</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">geom</span><span class="p">,</span>
+            <span class="n">when__gte</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="p">,</span>
+            <span class="n">when__lte</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SiteVisit.claim_encounters"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.SiteVisit.claim_encounters">[docs]</a>    <span class="k">def</span> <span class="nf">claim_encounters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Update Encounters within this SiteVisit with reference to self.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">encounters</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">site_visit</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SiteVisit.claim_end_points"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.SiteVisit.claim_end_points">[docs]</a>    <span class="k">def</span> <span class="nf">claim_end_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;TODO Claim SiteVisitEnd.&quot;&quot;&quot;</span>
-        <span class="k">pass</span></div></div>
+<div class="viewcode-block" id="expedition_post_save"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.expedition_post_save">[docs]</a><span class="nd">@receiver</span><span class="p">(</span><span class="n">post_save</span><span class="p">,</span> <span class="n">sender</span><span class="o">=</span><span class="n">Expedition</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">expedition_post_save</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Expedition: Claim Surveys and Encounters.&quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">instance</span><span class="o">.</span><span class="n">surveys</span><span class="p">:</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">expedition</span> <span class="o">=</span> <span class="n">instance</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">encounters</span><span class="p">:</span>
+            <span class="n">e</span><span class="o">.</span><span class="n">expedition</span> <span class="o">=</span> <span class="n">instance</span>
+            <span class="n">e</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="FieldMediaAttachment"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.FieldMediaAttachment">[docs]</a><span class="k">class</span> <span class="nc">FieldMediaAttachment</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
@@ -1094,9 +1066,10 @@
 
     <span class="n">expedition</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span>
         <span class="n">Expedition</span><span class="p">,</span>
-        <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">,</span>
+        <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">SET_NULL</span><span class="p">,</span>
         <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Expedition&quot;</span><span class="p">),</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Surveys can be conducted during an expedition.&quot;</span><span class="p">),</span> <span class="p">)</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The linked Expedition.&quot;</span><span class="p">),</span> <span class="p">)</span>
 
     <span class="n">media_type</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
         <span class="n">max_length</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
@@ -1131,6 +1104,13 @@
 <div class="viewcode-block" id="Survey"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.Survey">[docs]</a><span class="k">class</span> <span class="nc">Survey</span><span class="p">(</span><span class="n">QualityControlMixin</span><span class="p">,</span> <span class="n">UrlsMixin</span><span class="p">,</span> <span class="n">geo_models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A visit to one site by a team of field workers collecting data.&quot;&quot;&quot;</span>
 
+    <span class="n">expedition</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span>
+        <span class="n">Expedition</span><span class="p">,</span>
+        <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">,</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Expedition&quot;</span><span class="p">),</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The linked Expedition.&quot;</span><span class="p">),</span> <span class="p">)</span>
+
     <span class="n">source</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
         <span class="n">max_length</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
         <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Data Source&quot;</span><span class="p">),</span>
@@ -1162,7 +1142,7 @@
         <span class="n">Area</span><span class="p">,</span>
         <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">SET_NULL</span><span class="p">,</span>
         <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Surveyed site&quot;</span><span class="p">),</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Surveyed Site&quot;</span><span class="p">),</span>
         <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The surveyed site, if known.&quot;</span><span class="p">),</span> <span class="p">)</span>
 
     <span class="n">transect</span> <span class="o">=</span> <span class="n">geo_models</span><span class="o">.</span><span class="n">LineStringField</span><span class="p">(</span>
@@ -1293,7 +1273,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">make_label</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s2">&quot;Survey </span><span class="si">{0}</span><span class="s2"> of </span><span class="si">{1}</span><span class="s2"> from </span><span class="si">{2}</span><span class="s2"> </span><span class="si">{3}</span><span class="s2">-</span><span class="si">{4}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="k">return</span> <span class="s2">&quot;Survey </span><span class="si">{0}</span><span class="s2"> of </span><span class="si">{1}</span><span class="s2"> from </span><span class="si">{2}</span><span class="s2"> </span><span class="si">{3}</span><span class="s2"> to </span><span class="si">{4}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span>
             <span class="s2">&quot;unknown site&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">site</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
             <span class="s2">&quot;na&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">tz</span><span class="o">.</span><span class="n">tzlocal</span><span class="p">())</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> &quot;</span><span class="p">),</span>
@@ -1448,6 +1428,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">msg</span></div></div>
+
 
 <div class="viewcode-block" id="guess_area"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.guess_area">[docs]</a><span class="k">def</span> <span class="nf">guess_area</span><span class="p">(</span><span class="n">survey_instance</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Return the first Area containing the start_location or None.&quot;&quot;&quot;</span>
@@ -1834,6 +1815,12 @@
         <span class="n">ENCOUNTER_LOGGER</span><span class="p">:</span> <span class="s1">&#39;orange&#39;</span><span class="p">,</span>
         <span class="n">ENCOUNTER_OTHER</span><span class="p">:</span> <span class="s1">&#39;purple&#39;</span>
     <span class="p">}</span>
+    <span class="n">expedition</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span>
+        <span class="n">Expedition</span><span class="p">,</span>
+        <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">SET_NULL</span><span class="p">,</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Expedition&quot;</span><span class="p">),</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The Expedition during which this encounter happened, if known.&quot;</span><span class="p">),</span> <span class="p">)</span>
 
     <span class="n">survey</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span>
         <span class="n">Survey</span><span class="p">,</span>
