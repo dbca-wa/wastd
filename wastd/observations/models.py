@@ -53,6 +53,7 @@ from shared.models import (
     LegacySourceMixin,
     # ObservationAuditMixin,
     QualityControlMixin,
+    QualityControlMixinDEBUG,
     UrlsMixin
 )
 from shared.utils import sanitize_tag_label
@@ -1922,13 +1923,10 @@ class Encounter(PolymorphicModel, QualityControlMixin, UrlsMixin, geo_models.Mod
         return rest_reverse(self._meta.model_name + '-detail',
                             kwargs={'pk': self.pk, 'format': format})
 
-
-
     # -------------------------------------------------------------------------
     # Derived properties
     def card_template(self):
         return 'observations/encounter_card.html'
-
 
     @property
     def leaflet_title(self):
@@ -1953,7 +1951,7 @@ class Encounter(PolymorphicModel, QualityControlMixin, UrlsMixin, geo_models.Mod
         """A list of dicts of QA timestamp, status and operator."""
         return [dict(timestamp=log.timestamp.isoformat(),
                      status=log.state,
-                     operator=log.by.name)
+                     operator=log.by.name if log.by else None)
                 for log in StateLog.objects.for_(self)]
 
     @property
