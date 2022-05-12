@@ -133,6 +133,7 @@
     <span class="n">LegacySourceMixin</span><span class="p">,</span>
     <span class="c1"># ObservationAuditMixin,</span>
     <span class="n">QualityControlMixin</span><span class="p">,</span>
+    <span class="n">QualityControlMixinDEBUG</span><span class="p">,</span>
     <span class="n">UrlsMixin</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">shared.utils</span> <span class="kn">import</span> <span class="n">sanitize_tag_label</span>
@@ -2002,13 +2003,10 @@
         <span class="k">return</span> <span class="n">rest_reverse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">model_name</span> <span class="o">+</span> <span class="s1">&#39;-detail&#39;</span><span class="p">,</span>
                             <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;pk&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="s1">&#39;format&#39;</span><span class="p">:</span> <span class="nb">format</span><span class="p">})</span></div>
 
-
-
     <span class="c1"># -------------------------------------------------------------------------</span>
     <span class="c1"># Derived properties</span>
 <div class="viewcode-block" id="Encounter.card_template"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.Encounter.card_template">[docs]</a>    <span class="k">def</span> <span class="nf">card_template</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;observations/encounter_card.html&#39;</span></div>
-
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">leaflet_title</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -2033,7 +2031,7 @@
         <span class="sd">&quot;&quot;&quot;A list of dicts of QA timestamp, status and operator.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="nb">dict</span><span class="p">(</span><span class="n">timestamp</span><span class="o">=</span><span class="n">log</span><span class="o">.</span><span class="n">timestamp</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
                      <span class="n">status</span><span class="o">=</span><span class="n">log</span><span class="o">.</span><span class="n">state</span><span class="p">,</span>
-                     <span class="n">operator</span><span class="o">=</span><span class="n">log</span><span class="o">.</span><span class="n">by</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                     <span class="n">operator</span><span class="o">=</span><span class="n">log</span><span class="o">.</span><span class="n">by</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="n">log</span><span class="o">.</span><span class="n">by</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">log</span> <span class="ow">in</span> <span class="n">StateLog</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">for_</span><span class="p">(</span><span class="bp">self</span><span class="p">)]</span>
 
     <span class="nd">@property</span>
