@@ -42,8 +42,8 @@ from django.urls import reverse
 from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
-# from django_fsm import FSMField, transition
-# from django_fsm_log.decorators import fsm_log_by
+from django_fsm import FSMField, transition
+from django_fsm_log.decorators import fsm_log_by
 from django_fsm_log.models import StateLog
 from polymorphic.models import PolymorphicModel
 from rest_framework.reverse import reverse as rest_reverse
@@ -1660,7 +1660,7 @@ def delete_observations(sender, instance, **kwargs):
 
 
 # Encounter models -----------------------------------------------------------#
-class Encounter(PolymorphicModel, QualityControlMixin, UrlsMixin, geo_models.Model):
+class Encounter(PolymorphicModel, UrlsMixin, geo_models.Model):
     """The base Encounter class.
 
     * When: Datetime of encounter, stored in UTC, entered and displayed in local
@@ -1736,6 +1736,37 @@ class Encounter(PolymorphicModel, QualityControlMixin, UrlsMixin, geo_models.Mod
         ENCOUNTER_LOGGER: 'orange',
         ENCOUNTER_OTHER: 'purple'
     }
+
+    STATUS_NEW = 'new'
+    STATUS_PROOFREAD = 'proofread'
+    STATUS_CURATED = 'curated'
+    STATUS_PUBLISHED = 'published'
+    STATUS_FLAGGED = 'flagged'
+    STATUS_REJECTED = 'rejected'
+
+    STATUS_CHOICES = (
+        (STATUS_NEW, _("New")),
+        (STATUS_PROOFREAD, _("Proofread")),
+        (STATUS_CURATED, _("Curated")),
+        (STATUS_PUBLISHED, _("Published")),
+        (STATUS_FLAGGED, _("Flagged")),
+        (STATUS_REJECTED, _("Rejected")),
+    )
+
+    STATUS_LABELS = {
+        STATUS_NEW: "secondary",
+        STATUS_PROOFREAD: "warning",
+        STATUS_CURATED: "success",
+        STATUS_PUBLISHED: "info",
+        STATUS_FLAGGED: "warning",
+        STATUS_REJECTED: "danger",
+    }
+
+    status = FSMField(
+        default=STATUS_NEW,
+        choices=STATUS_CHOICES,
+        verbose_name=_("QA Status"))
+
     expedition = models.ForeignKey(
         Expedition,
         null=True, blank=True,
@@ -1885,7 +1916,207 @@ class Encounter(PolymorphicModel, QualityControlMixin, UrlsMixin, geo_models.Mod
         """The unicode representation."""
         return "Encounter {0} on {1} by {2}".format(self.pk, self.when, self.observer)
 
-    # -------------------------------------------------------------------------
+    @property
+    def status_colour(self):
+        """Return a Bootstrap4 CSS colour class for each status."""
+        return self.STATUS_LABELS[self.status]
+
+# FSM transitions --------------------------------------------------------#
+    def can_proofread(self):
+        """Return true if this document can be proofread."""
+        return True
+
+    @fsm_log_by
+    @transition(
+        field=status,
+        source=STATUS_NEW,
+        target=STATUS_PROOFREAD,
+        conditions=[can_proofread],
+        # permission=lambda instance, user: user in instance.all_permitted,
+        custom=dict(
+            verbose="Submit for QA",
+            explanation=("Submit this record as a faithful representation of the "
+                         "data source for QA to become an accepted record."),
+            notify=True,)
+    )
+    def proofread(self, by=None):
+        """Mark encounter as proof-read.
+
+        Proofreading compares the attached data sheet with entered values.
+        Proofread data is deemed a faithful representation of original data
+        captured on a paper field data collection form, or stored in a legacy
+        system.
+        """
+        return
+
+    def can_require_proofreading(self):
+        """Return true if this document can be proofread."""
+        return True
+
+    @fsm_log_by
+    @transition(
+        field=status,
+        source=STATUS_PROOFREAD,
+        target=STATUS_NEW,
+        conditions=[can_require_proofreading],
+        # permission=lambda instance, user: user in instance.all_permitted,
+        custom=dict(
+            verbose="Require proofreading",
+            explanation=("This record deviates from the data source and "
+                         "requires proofreading."),
+            notify=True,)
+    )
+    def require_proofreading(self, by=None):
+        """Mark encounter as having typos, requiring more proofreading.
+
+        Proofreading compares the attached data sheet with entered values.
+        If a discrepancy to the data sheet is found, proofreading is required.
+        """
+        return
+
+    def can_curate(self):
+        """Return true if this record can be accepted."""
+        return True
+
+    @fsm_log_by
+    @transition(
+        field=status,
+        source=[STATUS_NEW, STATUS_PROOFREAD, STATUS_FLAGGED],
+        target=STATUS_CURATED,
+        conditions=[can_curate],
+        # permission=lambda instance, user: user in instance.all_permitted,
+
+        custom=dict(
+            verbose="Accept as trustworthy",
+            explanation=("This record is deemed trustworthy."),
+            notify=True,)
+    )
+    def curate(self, by=None):
+        """Accept record as trustworthy.
+
+        Curated data is deemed trustworthy by a subject matter expert.
+        Records can be marked as curated from new, proofread, or flagged.
+        """
+        return
+
+    def can_flag(self):
+        """Return true if curated status can be revoked."""
+        return True
+
+    @fsm_log_by
+    @transition(
+        field=status,
+        source=STATUS_CURATED,
+        target=STATUS_FLAGGED,
+        conditions=[can_flag],
+        # permission=lambda instance, user: user in instance.all_permitted,
+        custom=dict(
+            verbose="Flag as not trustworthy",
+            explanation=("This record cannot be true. This record requires"
+                         " review by a subject matter expert."),
+            notify=True,)
+    )
+    def flag(self, by=None):
+        """Flag as requiring changes to data.
+
+        Curated data is deemed trustworthy by a subject matter expert.
+        Revoking curation flags data for requiring changes by an expert.
+        """
+        import ipdb; ipdb.set_trace()
+        return
+
+    def can_reject(self):
+        """Return true if the record can be rejected as entirely wrong."""
+        return True
+
+    @fsm_log_by
+    @transition(
+        field=status,
+        source=[STATUS_PROOFREAD, STATUS_CURATED, STATUS_FLAGGED],
+        target=STATUS_REJECTED,
+        conditions=[can_flag],
+        # permission=lambda instance, user: user in instance.all_permitted,
+        custom=dict(
+            verbose="Confirm as not trustworthy",
+            explanation=("This record is confirmed wrong and not trustworthy."),
+            notify=True,)
+    )
+    def reject(self, by=None):
+        """Confirm that a record is not trustworthy and beyond repair."""
+        return
+
+
+    def can_reset(self):
+        """Return true if the record QA status can be reset."""
+        return True
+
+    @fsm_log_by
+    @transition(
+        field=status,
+        source=STATUS_REJECTED,
+        target=STATUS_NEW,
+        conditions=[can_reset],
+        # permission=lambda instance, user: user in instance.all_permitted,
+        custom=dict(
+            verbose="Reset QA status",
+            explanation=("The QA status of this record needs to be reset."),
+            notify=True,)
+    )
+    def reset(self, by=None):
+        """Reset the QA status of a record to NEW.
+
+        This allows a record to be brought into the desired QA status.
+        """
+        return
+
+    def can_publish(self):
+        """Return true if this document can be published."""
+        return True
+
+    @fsm_log_by
+    @transition(
+        field=status,
+        source=STATUS_CURATED,
+        target=STATUS_PUBLISHED,
+        conditions=[can_publish],
+        # permission=lambda instance, user: user in instance.all_permitted,
+        custom=dict(
+            verbose="Publish",
+            explanation=("This record is fit for release."),
+            notify=True,)
+    )
+    def publish(self, by=None):
+        """Mark encounter as ready to be published.
+
+        Published data has been deemed fit for release by the data owner.
+        """
+        return
+
+    def can_embargo(self):
+        """Return true if encounter can be embargoed."""
+        return True
+
+    @fsm_log_by
+    @transition(
+        field=status,
+        source=STATUS_PUBLISHED,
+        target=STATUS_CURATED,
+        conditions=[can_embargo],
+        # permission=lambda instance, user: user in instance.all_permitted,
+        custom=dict(
+            verbose="Embargo",
+            explanation=("This record is not fit for release."),
+            notify=True,)
+    )
+    def embargo(self, by=None):
+        """Mark encounter as NOT ready to be published.
+
+        Published data has been deemed fit for release by the data owner.
+        Embargoed data is marked as curated, but not ready for release.
+        """
+        return
+
+    # ------------------------------------------------------------------------#
     # URLs
     # Override create and update until we have front end forms
     @classmethod
