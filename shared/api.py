@@ -138,7 +138,9 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
             source__in=list(set([x[source_field] for x in new_records])),
             source_id__in=list(set([x[source_id_field] for x in new_records]))
         )
-        if issubclass(model, QualityControlMixin):
+        has_status = "status" in [f.name for f in model._meta.fields]
+        
+        if has_status: # issubclass(model, QualityControlMixin):
             return qs.values("pk", "source", "source_id", "status")
         else:
             return qs.values("pk", "source", "source_id")
