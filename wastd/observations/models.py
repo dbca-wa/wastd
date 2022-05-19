@@ -53,7 +53,6 @@ from shared.models import (
     LegacySourceMixin,
     # ObservationAuditMixin,
     QualityControlMixin,
-    QualityControlMixinDEBUG,
     UrlsMixin
 )
 from shared.utils import sanitize_tag_label
