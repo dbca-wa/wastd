@@ -913,10 +913,29 @@ class ExpeditionAdmin(admin.ModelAdmin):
     """Expedition admin."""
 
     list_display = ("area", "start_time", "end_time", "owner", )
-    list_filter = ("owner", "viewers")
+    list_filter = ("owner", "viewers", ('area', AreaFilter),)
     search_fields = ("owner__name__icontains", )
-    form = s2form(Expedition, attrs=S2ATTRS)
-    formfield_overrides = FORMFIELD_OVERRIDES
+    # form = s2form(Expedition, attrs=S2ATTRS)
+    # formfield_overrides = FORMFIELD_OVERRIDES
+    # autocomplete_fields = ['area', 'owner', ]
+    # owner = forms.ChoiceField(widget=UserWidget())
+    
+    # fieldsets = (
+    #     ('Expedition',
+    #         {
+    #             'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
+    #             'fields': (
+    #                 # 'area',
+    #                 'start_time',
+    #                 'end_time', 
+    #                 'owner',
+    #                 'viewers',
+    #                 'team',
+                    
+    #             )
+    #         }
+    #      ),
+    # )
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "area":
