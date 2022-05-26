@@ -47,6 +47,11 @@
 <li class="toctree-l1"><a class="reference internal" href="data_collection/data_collection_development.html">Data collection development</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_collection/thevenard.html">Data Collection Management Thevenard and Delambre</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Data entry</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#campaigns">Campaigns</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#find-campaign-corner-dates">Find Campaign corner dates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#create-a-campaign">Create a Campaign</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#turtle-tracks-or-nests">Turtle Tracks or Nests</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#section-encounter">Section “Encounter”</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#section-nest">Section “Nest”</a></li>
@@ -138,6 +143,50 @@ The encounter can incur any range of additional observations of the species or c
 the location, or the surroundings.</p>
 <p>The following sections will instruct data curators how to enter data from
 supported data sources into WAStD.</p>
+<section id="campaigns">
+<h2>Campaigns<a class="headerlink" href="#campaigns" title="Permalink to this headline"></a></h2>
+<p>The bulk of data is captured in electronic forms using ODK and imported into WAStD on an automated schedule.</p>
+<p>To allocate data ownership and visibility to users of participating organisations,
+Surveys and Encounters are associated with an overarching Campaign.</p>
+<p>A Campaign represents a contiguous set of Surveys instigated by one Organisation (DBCA or external partners).</p>
+<p>Campaigns have to be created manually in WAStD as follows:</p>
+<section id="find-campaign-corner-dates">
+<h3>Find Campaign corner dates<a class="headerlink" href="#find-campaign-corner-dates" title="Permalink to this headline"></a></h3>
+<ul>
+<li><p>In the Turtle Data Dashboard, find the “Surveys” tab.</p></li>
+<li><p>Select a Locality. This is the Campaign destination.</p></li>
+<li><p>In the “Surveys” tab, review the calendar heatmap and the season overview.</p></li>
+<li><p>Find the first and last dates of each contiguous set of Surveys.
+* E.g., for summer nesters (most of NWS shelf), the Campaigns will run in Oct - Dec and return Jan - Feb.</p>
+<blockquote>
+<div><p>If no other Organisation has conducted Surveys in the Christmas break, you can use something like 1 Oct to 1 Mar as corner dates.</p>
+</div></blockquote>
+<ul class="simple">
+<li><p>Any targeted trips, e.g. winter nesters in Aug, become their own Campaign.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="create-a-campaign">
+<h3>Create a Campaign<a class="headerlink" href="#create-a-campaign" title="Permalink to this headline"></a></h3>
+<ul class="simple">
+<li><p>In the WAStD Data Curation Portal, under “Places, Campaigns, Surveys”, find Campaigns.</p></li>
+<li><p>Create a new Campaign by either of:
+* From the “Site Administration” overview, click on the &lt;kbd&gt;+&lt;/kbd&gt; button, or
+* From the Campaign list view, click “Add Campaign”, or
+* From a Campaign detail view, click “Save and add another” (warning this will take a few minutes).</p></li>
+<li><p>Enter mandatory details:
+* Destination: Locality.
+* Campaign start and end: Corner dates, can be buffered by a day to ensure complete overlap. Set time to 00:00.
+* Owner: The Organisation that created the Campaign.
+* Viewers: The list of organisations that are allowed to see the Campaign.</p></li>
+<li><p>Enter optional details:
+* Team: If available, you can add the list of volunteers to the Campaign. This can help matching observer names to WAStD Users.
+* Media attachments: If available, the scanned PDFs of datasheets, any available documentation relevant to data, volunteer lists, etc.</p></li>
+<li><p>Save the Campaign. This will take a few minutes while the Campaign adopts all Surveys and Encounters within.</p></li>
+</ul>
+</section>
+</section>
 <section id="turtle-tracks-or-nests">
 <h2>Turtle Tracks or Nests<a class="headerlink" href="#turtle-tracks-or-nests" title="Permalink to this headline"></a></h2>
 <p>If data is not captured via the digital forms, it is still possible to enter data manually.</p>
