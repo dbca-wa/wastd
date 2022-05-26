@@ -46,23 +46,27 @@ Find Campaign corner dates
 * Select a Locality. This is the Campaign destination.
 * In the "Surveys" tab, review the calendar heatmap and the season overview.
 * Find the first and last dates of each contiguous set of Surveys.
+  
   * E.g., for summer nesters (most of NWS shelf), the Campaigns will run in Oct - Dec and return Jan - Feb.
-    If no other Organisation has conducted Surveys in the Christmas break, you can use something like 1 Oct to 1 Mar as corner dates.
+  * If no other Organisation has conducted Surveys in the Christmas break, you can use something like 1 Oct to 1 Mar as corner dates.
   * Any targeted trips, e.g. winter nesters in Aug, become their own Campaign.
 
 Create a Campaign
 -----------------
 * In the WAStD Data Curation Portal, under "Places, Campaigns, Surveys", find Campaigns.
 * Create a new Campaign by either of:
+
   * From the "Site Administration" overview, click on the <kbd>+</kbd> button, or
   * From the Campaign list view, click "Add Campaign", or
   * From a Campaign detail view, click "Save and add another" (warning this will take a few minutes).
 * Enter mandatory details:
+
   * Destination: Locality.
   * Campaign start and end: Corner dates, can be buffered by a day to ensure complete overlap. Set time to 00:00.
   * Owner: The Organisation that created the Campaign.
   * Viewers: The list of organisations that are allowed to see the Campaign.
 * Enter optional details:
+
   * Team: If available, you can add the list of volunteers to the Campaign. This can help matching observer names to WAStD Users.
   * Media attachments: If available, the scanned PDFs of datasheets, any available documentation relevant to data, volunteer lists, etc.
 * Save the Campaign. This will take a few minutes while the Campaign adopts all Surveys and Encounters within.
