@@ -20,16 +20,15 @@ from rest_framework.authtoken.admin import TokenAdmin
 from reversion.admin import VersionAdmin
 
 from wastd.observations.models import (
-    Expedition,
+    Campaign,
+    CampaignMediaAttachment,
     AnimalEncounter,
     Area,
     DispatchRecord,
     DugongMorphometricObservation,
     Encounter,
-    FieldMediaAttachment,
     HatchlingMorphometricObservation,
     LineTransectEncounter,
-    # LoggerEncounter,
     ManagementAction,
     MediaAttachment,
     NestTagObservation,
@@ -68,6 +67,7 @@ class SiteFilter(RelatedFieldListFilter):
     def field_choices(self, field, request, model_admin):
         return field.get_choices(include_blank=False, limit_choices_to={'area_type': Area.AREATYPE_SITE})
 
+
 class MediaAttachmentInline(admin.TabularInline):
     """TabularInlineAdmin for MediaAttachment."""
 
@@ -79,10 +79,11 @@ class MediaAttachmentInline(admin.TabularInline):
 
 class TagObservationInline(admin.TabularInline):
     """TabularInlineAdmin for TagObservation."""
-
     extra = 0
     model = TagObservation
     classes = ('grp-collapse grp-open',)
+    # DO NOT ENABLE s2form or else EncounterAdmin will time out
+    # form = s2form(TagObservation, attrs=S2ATTRS)
 
 
 class NestTagObservationInline(admin.StackedInline):
@@ -444,9 +445,10 @@ class TagObservationAdmin(ObservationAdminMixin):
     list_filter = ObservationAdminMixin.LIST_FILTER + \
         ('tag_type', 'tag_location',)
     search_fields = ('name', 'comments')
+    form = s2form(TagObservation, attrs=S2ATTRS)
     # autocomplete_lookup_fields = {'fk': ['handler', 'recorder', ], }
-    handler = forms.ChoiceField(widget=UserWidget())
-    recorder = forms.ChoiceField(widget=UserWidget())
+    # handler = forms.ChoiceField(widget=UserWidget())
+    # recorder = forms.ChoiceField(widget=UserWidget())
 
     def type_display(self, obj):
         """Make tag type human readable."""
@@ -800,11 +802,11 @@ class LoggerObservationAdmin(ObservationAdminMixin):
         )
 
 
-class FieldMediaAttachmentInline(admin.TabularInline):
-    """TabularInlineAdmin for FieldMediaAttachment."""
+class CampaignMediaAttachmentInline(admin.TabularInline):
+    """TabularInlineAdmin for CampaignMediaAttachment."""
 
     extra = 0
-    model = FieldMediaAttachment
+    model = CampaignMediaAttachment
     classes = ('grp-collapse grp-open',)
     formfield_overrides = FORMFIELD_OVERRIDES
 
@@ -834,10 +836,10 @@ class SurveyAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
         'owner',
     )
     list_filter = (
-        'expedition__owner',
+        'campaign__owner',
         ('area', AreaFilter),
         ('site', SiteFilter),
-        # ('owner', ExpeditionFilter),
+        # ('owner', CampaignFilter),
         'reporter',
         'status',
         'production',
@@ -868,9 +870,9 @@ class SurveyAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
         (_('Time'),
             {'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
              'fields': ('start_time', 'end_time',)}),
-        (_('Expedition'),
+        (_('Campaign'),
             {'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
-             'fields': ('expedition', )}),     
+             'fields': ('campaign', )}),
         (_('Team'),
             {'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
              'fields': ('start_comments', 'end_comments', 'reporter', 'team',
@@ -890,8 +892,8 @@ class SurveyAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
 
     def owner(self, obj):
         """Resolve owner."""
-        if obj.expedition:
-            return obj.expedition.owner
+        if obj.campaign:
+            return obj.campaign.owner
         else:
             return "-"
     owner.short_description = 'Data Owner'
@@ -908,38 +910,37 @@ class AreaAdmin(admin.ModelAdmin):
     formfield_overrides = FORMFIELD_OVERRIDES
 
 
-@admin.register(Expedition)
-class ExpeditionAdmin(admin.ModelAdmin):
-    """Expedition admin."""
+@admin.register(Campaign)
+class CampaignAdmin(admin.ModelAdmin):
+    """Campaign admin."""
 
-    list_display = ("area", "start_time", "end_time", "owner", )
-    list_filter = ("owner", "viewers", ('area', AreaFilter),)
-    search_fields = ("owner__name__icontains", )
-    # form = s2form(Expedition, attrs=S2ATTRS)
-    # formfield_overrides = FORMFIELD_OVERRIDES
-    # autocomplete_fields = ['area', 'owner', ]
-    # owner = forms.ChoiceField(widget=UserWidget())
+    list_display = ("destination", "start_time", "end_time", "owner", )
+    list_filter = ("owner", "viewers", ('destination', AreaFilter),)
+    search_fields = (
+        "owner__code__icontains", 
+        "owner__label__icontains", 
+        "owner__description__icontains", 
+        "comments__icontains"
+    )
+    form = s2form(Campaign, attrs=S2ATTRS)
+    inlines = [CampaignMediaAttachmentInline, ]
     
-    # fieldsets = (
-    #     ('Expedition',
-    #         {
-    #             'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
-    #             'fields': (
-    #                 # 'area',
-    #                 'start_time',
-    #                 'end_time', 
-    #                 'owner',
-    #                 'viewers',
-    #                 'team',
-                    
-    #             )
-    #         }
-    #      ),
-    # )
-
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == "area":
+        """Restrict destination to Localities.
+
+        Plug in customisations for other FK fields here as needed.
+
+        Args:
+            db_field (str): The name of the FK field as defined in the Model.
+            request (request): The request
+
+        Returns:
+            _type_: The modified method ``formfield_for_foreignkey``.
+        """
+        if db_field.name == "destination":
             kwargs["queryset"] = Area.objects.filter(area_type=Area.AREATYPE_LOCALITY)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
 
 @admin.register(Encounter)
 class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
@@ -955,7 +956,7 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
     date_hierarchy = 'when'
     # Filters for change_list
     list_filter = (
-        'expedition__owner',
+        'campaign__owner',
         ('area', AreaFilter),
         ('site', SiteFilter),
         'status',
@@ -983,14 +984,14 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
     # Performance
     # https://docs.djangoproject.com/en/1.11/ref/contrib/admin/
     # #django.contrib.admin.ModelAdmin.list_select_related
-    list_select_related = ('area', 'site', 'survey', 'observer', 'reporter', 'expedition')
+    list_select_related = ('area', 'site', 'survey', 'observer', 'reporter', 'campaign')
 
     # -------------------------------------------------------------------------
     # Change form
     # select2 widgets for searchable dropdowns
     form = s2form(Encounter, attrs=S2ATTRS)
     formfield_overrides = FORMFIELD_OVERRIDES
-    autocomplete_fields = ['area', 'site', 'survey', 'expedition']
+    autocomplete_fields = ['area', 'site', 'survey', 'campaign']
     # UserWidget excludes inactive users
     observer = forms.ChoiceField(widget=UserWidget())
     reporter = forms.ChoiceField(widget=UserWidget())
@@ -1007,7 +1008,7 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
                 'fields': (
                     'area',
                     'site',
-                    'expedition', 
+                    'campaign',
                     'survey',
                     'where',
                     'location_accuracy',
@@ -1049,7 +1050,7 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
         ).get_queryset(
             request
         ).prefetch_related(
-            'observer', 'reporter', 'area', 'site', 'survey', 'expedition'
+            'observer', 'reporter', 'area', 'site', 'survey', 'campaign'
         )
 
     def name_link(self, obj):
@@ -1084,8 +1085,8 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
 
     def owner(self, obj):
         """Resolve owner."""
-        if obj.expedition:
-            return obj.expedition.owner
+        if obj.campaign:
+            return obj.campaign.owner
         else:
             return "-"
     owner.short_description = 'Data Owner'
@@ -1115,7 +1116,7 @@ class AnimalEncounterAdmin(EncounterAdmin):
         'maturity_display', 'sex_display', 'behaviour',
         'habitat_display',
         'sighting_status',
-        "site_of_first_sighting", 
+        "site_of_first_sighting",
         "datetime_of_last_sighting",
         "site_of_last_sighting",
         'nesting_event', 'nesting_disturbed',
@@ -1124,8 +1125,8 @@ class AnimalEncounterAdmin(EncounterAdmin):
         'checked_for_flipper_tags',
     ) + EncounterAdmin.LAST_COLS
     list_select_related = (
-        'area', 'site', 'survey', 
-        'observer', 'reporter', 
+        'area', 'site', 'survey',
+        'observer', 'reporter',
         "site_of_first_sighting",
         "site_of_last_sighting",)
     list_filter = EncounterAdmin.list_filter + (
@@ -1138,7 +1139,7 @@ class AnimalEncounterAdmin(EncounterAdmin):
         'sex',
         'habitat',
         'sighting_status',
-        "datetime_of_last_sighting", 
+        "datetime_of_last_sighting",
         "site_of_first_sighting", "site_of_last_sighting",
         'nesting_event',
         'nesting_disturbed',
@@ -1149,7 +1150,7 @@ class AnimalEncounterAdmin(EncounterAdmin):
     )
     readonly_fields = (
         "name",
-        "sighting_status", 
+        "sighting_status",
         "datetime_of_last_sighting",
         "site_of_first_sighting",
         "site_of_last_sighting",
@@ -1165,27 +1166,27 @@ class AnimalEncounterAdmin(EncounterAdmin):
              'activity',
              'behaviour',
              'habitat',
-             'health', 'cause_of_death', 
+             'health', 'cause_of_death',
              'cause_of_death_confidence',
-             'nesting_event', 
+             'nesting_event',
              'nesting_disturbed',
              'checked_for_injuries',
              'scanned_for_pit_tags',
              'checked_for_flipper_tags',
              'laparoscopy',
-         )}), 
+         )}),
         ('Recapture Status',
          {'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
           'fields': (
 
-        'sighting_status', 
-        "datetime_of_last_sighting",
-        "site_of_first_sighting",
-        "site_of_last_sighting",
-         )}), 
-         
-         
-        )
+             'sighting_status',
+             "datetime_of_last_sighting",
+             "site_of_first_sighting",
+             "site_of_last_sighting",
+         )}),
+
+
+    )
     inlines = [
         MediaAttachmentInline,
         TagObservationInline,
@@ -1204,7 +1205,7 @@ class AnimalEncounterAdmin(EncounterAdmin):
         ).get_queryset(
             request
         ).prefetch_related(
-            'observer', 'reporter', 'area', 'site', 'survey', 'expedition',
+            'observer', 'reporter', 'area', 'site', 'survey', 'campaign',
             "site_of_first_sighting", "site_of_last_sighting",
         )
 

@@ -649,13 +649,11 @@ def encounter_media(instance, filename):
         instance.encounter.save()
     return 'encounter/{0}/{1}'.format(instance.encounter.source_id, filename)
 
-
-def expedition_media(instance, filename):
-    """Return an upload file path for an expedition media attachment."""
-    if not instance.expedition.id:
-        instance.expedition.save()
-    return 'expedition/{0}/{1}'.format(instance.expedition.id, filename)
-
+def campaign_media(instance, filename):
+    """Return an upload file path for a campaign media attachment."""
+    if not instance.campaign.id:
+        instance.campaign.save()
+    return 'campaign/{0}/{1}'.format(instance.campaign.id, filename)
 
 def survey_media(instance, filename):
     """Return an upload path for survey media."""
@@ -885,63 +883,69 @@ class SiteVisitStartEnd(geo_models.Model):
             self.datetime.isoformat())
 
 
-class Expedition(geo_models.Model):
+#-----------------------------------------------------------------------------#
+# Campaign
+#
+class Campaign(geo_models.Model):
     """An endeavour of a team to a Locality within a defined time range.
     
-    * Expeditions are owned by an Organisation.
-    * Expeditions own all Surveys and Encounters within its area and time range.
-    * Expeditions can nominate other Organisations as viewers of their data.
+    * Campaign are owned by an Organisation.
+    * Campaign own all Surveys and Encounters within its area and time range.
+    * Campaign can nominate other Organisations as viewers of their data.
 
     High level specs: https://github.com/dbca-wa/biosys-turtles/issues/81
     """
 
-    area = models.ForeignKey(
+    destination = models.ForeignKey(
         Area,
         on_delete=models.SET_NULL,
         blank=True, null=True,
+        related_name='campaigns',
         verbose_name=_("Destination"),
-        help_text=_("The entire surveyed area."), )
+        help_text=_("The surveyed Locality."), )
 
     start_time = models.DateTimeField(
-        verbose_name=_("Expedition start"),
+        verbose_name=_("Campaign start"),
         blank=True, null=True,
-        help_text=_("The Expedition start, shown as local time "
+        help_text=_("The Campaign start, shown as local time "
                     "(no daylight savings), stored as UTC."))
 
     end_time = models.DateTimeField(
-        verbose_name=_("Expedition end"),
+        verbose_name=_("Campaign end"),
         blank=True, null=True,
-        help_text=_("The Expedition end, shown as local time "
+        help_text=_("The Campaign end, shown as local time "
                     "(no daylight savings), stored as UTC."))
 
     comments = models.TextField(
         verbose_name=_("Comments"),
         blank=True, null=True,
-        help_text=_("Comments about the Expedition."), )
+        help_text=_("Comments about the Campaign."), )
 
     team = models.ManyToManyField(
         User,
         blank=True,
-        related_name="expedition_team")
+        related_name="campaign_team")
 
     owner = models.ForeignKey(
         Organisation,
         on_delete=models.SET_NULL,
+        editable=True,
         blank=True, null=True,
+        related_name="campaigns",
         verbose_name=_("Owner"),
-        help_text=_("The organisation that ran this Expedition owns all records (Surveys and Encounters)."))
+        help_text=_("The organisation that ran this Campaign owns all records (Surveys and Encounters)."))
 
     viewers = models.ManyToManyField(
         Organisation,
-        related_name="shared_expeditions",
+        related_name="shared_campaigns",
         blank=True,
-        help_text=_("The nominated organisations are able to view the Expedition's records."))
+        help_text=_("The nominated organisations are able to view the Campaign's records."))
 
     def __str__(self):
         """The unicode representation."""
         return "{0} {1} {2} to {3}".format(
             "-" if not self.owner else self.owner.label,
-            "-" if not self.area else self.area.name,
+            "-" if not self.destination else self.destination.name,
             "na" if not self.start_time else self.start_time.astimezone(tz.tzlocal()).strftime("%Y-%m-%d"),
             "na" if not self.end_time else self.end_time.astimezone(tz.tzlocal()).strftime("%Y-%m-%d")
         )
@@ -950,52 +954,51 @@ class Expedition(geo_models.Model):
     def surveys(self):
         """Return a QuerySet of Surveys."""
         return Survey.objects.filter(
-            site__geom__contained=self.area.geom,
+            site__geom__contained=self.destination.geom,
             start_time__gte=self.start_time,
             end_time__lte=self.end_time)
 
     @property
     def encounters(self):
-        """Return the QuerySet of all Encounters within this Expedition."""
+        """Return the QuerySet of all Encounters within this Campaign."""
         return Encounter.objects.filter(
-            where__coveredby=self.site.geom,
+            where__coveredby=self.destination.geom,
             when__gte=self.start_time,
             when__lte=self.end_time)
 
 
-@receiver(post_save, sender=Expedition)
-def expedition_post_save(sender, instance, *args, **kwargs):
-    """Expedition: Claim Surveys and Encounters."""
+@receiver(post_save, sender=Campaign)
+def campaign_post_save(sender, instance, *args, **kwargs):
+    """Campaign: Claim Surveys and Encounters."""
     for s in instance.surveys:
-        s.expedition = instance
+        s.campaign = instance
         s.save()
         for e in s.encounters:
-            e.expedition = instance
+            e.campaign = instance
             e.save()
 
-
-class FieldMediaAttachment(models.Model):
-    """A media attachment to an Expedition or Survey."""
+class CampaignMediaAttachment(models.Model):
+    """A media attachment to a Campaign."""
 
     MEDIA_TYPE_CHOICES = (
-        ('data_sheet', _('Data sheet')),
+        ('datasheet', _('Data sheet')),
         ('journal', _('Field journal')),
         ('communication', _('Communication record')),
         ('photograph', _('Photograph')),
         ('other', _('Other')), )
 
-    expedition = models.ForeignKey(
-        Expedition,
+    campaign = models.ForeignKey(
+        Campaign,
         null=True, blank=True,
         on_delete=models.SET_NULL,
-        verbose_name=_("Expedition"),
-        help_text=_("The linked Expedition."), )
+        verbose_name=_("Campaign"),
+        help_text=_("The linked Campaign."), )
 
     media_type = models.CharField(
         max_length=300,
         verbose_name=_("Attachment type"),
         choices=MEDIA_TYPE_CHOICES,
-        default="photograph",
+        default="datasheet",
         help_text=_("What is the attached file about?"),)
 
     title = models.CharField(
@@ -1005,7 +1008,7 @@ class FieldMediaAttachment(models.Model):
         help_text=_("Give the attachment a representative name"),)
 
     attachment = models.FileField(
-        upload_to=expedition_media,
+        upload_to=campaign_media,
         max_length=500,
         verbose_name=_("File attachment"),
         help_text=_("Upload the file"),)
@@ -1013,23 +1016,27 @@ class FieldMediaAttachment(models.Model):
     def __str__(self):
         """The unicode representation."""
         return "Attachment {0} {1} for {2}".format(
-            self.pk, self.title, self.expedition.__str__())
+            self.pk, self.title, self.campaign.__str__())
 
     @property
     def filepath(self):
         """Path to file."""
         return force_text(self.attachment.file)
 
-
+#-----------------------------------------------------------------------------#
+# Survey
+#
 class Survey(QualityControlMixin, UrlsMixin, geo_models.Model):
     """A visit to one site by a team of field workers collecting data."""
 
-    expedition = models.ForeignKey(
-        Expedition,
+    campaign = models.ForeignKey(
+        Campaign,
         null=True, blank=True,
         on_delete=models.CASCADE,
-        verbose_name=_("Expedition"),
-        help_text=_("The linked Expedition."), )
+        verbose_name=_("Campaign"),
+        help_text=_(
+            "The overarching Campaign instigating this Survey "
+            "is automatically linked when a Campaign is saved."), )
 
     source = models.CharField(
         max_length=300,
@@ -1148,7 +1155,7 @@ class Survey(QualityControlMixin, UrlsMixin, geo_models.Model):
                     " The time of 'feet in the sand, done recording encounters.'"))
 
     end_photo = models.FileField(
-        upload_to=expedition_media,
+        upload_to=campaign_media,
         blank=True, null=True,
         max_length=500,
         verbose_name=_("Site photo end"),
@@ -1766,12 +1773,14 @@ class Encounter(PolymorphicModel, UrlsMixin, geo_models.Model):
         choices=STATUS_CHOICES,
         verbose_name=_("QA Status"))
 
-    expedition = models.ForeignKey(
-        Expedition,
+    campaign = models.ForeignKey(
+        Campaign,
         null=True, blank=True,
-        on_delete=models.SET_NULL,
-        verbose_name=_("Expedition"),
-        help_text=_("The Expedition during which this encounter happened, if known."), )
+        on_delete=models.CASCADE,
+        verbose_name=_("Campaign"),
+        help_text=_(
+            "The overarching Campaign instigating this Encounter "
+            "is automatically linked when a Campaign saved."), )
 
     survey = models.ForeignKey(
         Survey,

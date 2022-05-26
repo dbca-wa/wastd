@@ -34,12 +34,12 @@ class AdminDashboard(Dashboard):
             collapsible=True,
             children=[
                 modules.AppList(
-                    _('Places, Expeditions, Surveys'),
+                    _('Places, Campaigns, Surveys'),
                     column=2,
                     collapsible=True,
                     models=(
                         'wastd.observations.models.Area',
-                        'wastd.observations.models.Expedition',
+                        'wastd.observations.models.Campaign',
                         'wastd.observations.models.Survey',
                     ),
                 ),

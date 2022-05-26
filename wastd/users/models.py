@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 class Organisation(models.Model):
     """An Organisation owns records and has Users.
 
-    * Organisations run Expeditions, which create Encounters and Surveys, which are owned by the Organisation.
+    * Organisations run Campaigns, which create Encounters and Surveys, which are owned by the Organisation.
     * Users belong to a set of Organisations.
     * The relationship of Users and Records (Enc, Surv) to Organsations can be used to manage data visibility and access.
     * Equal to CodeLabelDescriptionMixin but cannot be imported here to avoid cyclic dependency.

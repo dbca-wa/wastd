@@ -78,7 +78,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('media_type', models.CharField(choices=[('data_sheet', 'Data sheet'), ('journal', 'Field journal'), ('communication', 'Communication record'), ('photograph', 'Photograph'), ('other', 'Other')], default='photograph', help_text='What is the attached file about?', max_length=300, verbose_name='Attachment type')),
                 ('title', models.CharField(blank=True, help_text='Give the attachment a representative name', max_length=300, null=True, verbose_name='Attachment name')),
-                ('attachment', models.FileField(help_text='Upload the file', max_length=500, upload_to=wastd.observations.models.expedition_media, verbose_name='File attachment')),
+                ('attachment', models.FileField(help_text='Upload the file', max_length=500, upload_to=wastd.observations.models.campaign_media, verbose_name='File attachment')),
             ],
         ),
         migrations.CreateModel(
@@ -115,7 +115,7 @@ class Migration(migrations.Migration):
                 ('end_device_id', models.CharField(blank=True, help_text='The ID of the recording device which captured the end point, if available.', max_length=1000, null=True, verbose_name='End Device ID')),
                 ('end_location', django.contrib.gis.db.models.fields.PointField(blank=True, help_text='The end location as point in WGS84.', null=True, srid=4326, verbose_name='Survey end point')),
                 ('end_time', models.DateTimeField(blank=True, help_text="The datetime of leaving the site, shown as local time (no daylight savings), stored as UTC. The time of 'feet in the sand, done recording encounters.'", null=True, verbose_name='Survey end time')),
-                ('end_photo', models.FileField(blank=True, help_text='Site conditions at end of survey.', max_length=500, null=True, upload_to=wastd.observations.models.expedition_media, verbose_name='Site photo end')),
+                ('end_photo', models.FileField(blank=True, help_text='Site conditions at end of survey.', max_length=500, null=True, upload_to=wastd.observations.models.campaign_media, verbose_name='Site photo end')),
                 ('end_comments', models.TextField(blank=True, help_text='Describe any circumstances affecting data collection, e.g. days without surveys.', null=True, verbose_name='Comments at finish')),
                 ('production', models.BooleanField(default=True, help_text='Whether the survey is a real (production) survey, or a training survey.', verbose_name='Production run')),
                 ('reporter', models.ForeignKey(blank=True, help_text='The person who captured the start point, ideally this person also recoreded the encounters and end point.', null=True, on_delete=django.db.models.deletion.PROTECT, to=settings.AUTH_USER_MODEL, verbose_name='Recorded by')),

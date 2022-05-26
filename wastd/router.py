@@ -6,7 +6,7 @@ router = DefaultRouter()
 # meta: users, area, surveys
 router.register("users", users_api.UserViewSet)
 router.register("area", observations_api.AreaViewSet)
-router.register("expeditions", observations_api.ExpeditionViewSet)
+router.register("campaigns", observations_api.CampaignViewSet)
 router.register("surveys", observations_api.SurveyViewSet)
 router.register(
     "survey-media-attachments",

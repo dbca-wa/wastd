@@ -40,17 +40,17 @@ class FastAreaSerializer(ModelSerializer):
         fields = ("pk", "area_type", "name")
 
 
-class ExpeditionSerializer(ModelSerializer):
-    """Expedition serializer."""
+class CampaignSerializer(ModelSerializer):
+    """Campaign serializer."""
 
     class Meta:
-        model = models.Expedition
+        model = models.Campaign
         geo_fields = ("area")
         fields = "__all__"
 
 
 class SurveySerializer(GeoFeatureModelSerializer):
-    expedition = ExpeditionSerializer(many=False, read_only=True)
+    campaign = CampaignSerializer(many=False, read_only=True)
     reporter = FastUserSerializer(many=False)
     area = FastAreaSerializer(many=False)
     site = FastAreaSerializer(many=False)
@@ -180,7 +180,7 @@ class EncounterSerializer(GeoFeatureModelSerializer):
     """
     area = FastAreaSerializer(required=False)
     site = FastAreaSerializer(required=False)
-    expedition = ExpeditionSerializer(many=False, read_only=True)
+    campaign = CampaignSerializer(many=False, read_only=True)
     survey = FastSurveySerializer(required=False)
     observer_id = IntegerField(write_only=True)
     observer = FastUserSerializer(read_only=True)
@@ -196,7 +196,7 @@ class EncounterSerializer(GeoFeatureModelSerializer):
             "pk",
             "area",
             "site",
-            "expedition",
+            "campaign",
             "survey",
             "where",
             "name",
