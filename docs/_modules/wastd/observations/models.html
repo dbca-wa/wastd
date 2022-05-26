@@ -122,8 +122,8 @@
 <span class="kn">from</span> <span class="nn">django.utils.encoding</span> <span class="kn">import</span> <span class="n">force_text</span>
 <span class="kn">from</span> <span class="nn">django.utils.safestring</span> <span class="kn">import</span> <span class="n">mark_safe</span>
 <span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">ugettext_lazy</span> <span class="k">as</span> <span class="n">_</span>
-<span class="c1"># from django_fsm import FSMField, transition</span>
-<span class="c1"># from django_fsm_log.decorators import fsm_log_by</span>
+<span class="kn">from</span> <span class="nn">django_fsm</span> <span class="kn">import</span> <span class="n">FSMField</span><span class="p">,</span> <span class="n">transition</span>
+<span class="kn">from</span> <span class="nn">django_fsm_log.decorators</span> <span class="kn">import</span> <span class="n">fsm_log_by</span>
 <span class="kn">from</span> <span class="nn">django_fsm_log.models</span> <span class="kn">import</span> <span class="n">StateLog</span>
 <span class="kn">from</span> <span class="nn">polymorphic.models</span> <span class="kn">import</span> <span class="n">PolymorphicModel</span>
 <span class="kn">from</span> <span class="nn">rest_framework.reverse</span> <span class="kn">import</span> <span class="n">reverse</span> <span class="k">as</span> <span class="n">rest_reverse</span>
@@ -133,7 +133,6 @@
     <span class="n">LegacySourceMixin</span><span class="p">,</span>
     <span class="c1"># ObservationAuditMixin,</span>
     <span class="n">QualityControlMixin</span><span class="p">,</span>
-    <span class="n">QualityControlMixinDEBUG</span><span class="p">,</span>
     <span class="n">UrlsMixin</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">shared.utils</span> <span class="kn">import</span> <span class="n">sanitize_tag_label</span>
@@ -730,13 +729,11 @@
         <span class="n">instance</span><span class="o">.</span><span class="n">encounter</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
     <span class="k">return</span> <span class="s1">&#39;encounter/</span><span class="si">{0}</span><span class="s1">/</span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">instance</span><span class="o">.</span><span class="n">encounter</span><span class="o">.</span><span class="n">source_id</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span></div>
 
-
-<div class="viewcode-block" id="expedition_media"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.expedition_media">[docs]</a><span class="k">def</span> <span class="nf">expedition_media</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Return an upload file path for an expedition media attachment.&quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">instance</span><span class="o">.</span><span class="n">expedition</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
-        <span class="n">instance</span><span class="o">.</span><span class="n">expedition</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
-    <span class="k">return</span> <span class="s1">&#39;expedition/</span><span class="si">{0}</span><span class="s1">/</span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">instance</span><span class="o">.</span><span class="n">expedition</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span></div>
-
+<div class="viewcode-block" id="campaign_media"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.campaign_media">[docs]</a><span class="k">def</span> <span class="nf">campaign_media</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return an upload file path for a campaign media attachment.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">instance</span><span class="o">.</span><span class="n">campaign</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">campaign</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+    <span class="k">return</span> <span class="s1">&#39;campaign/</span><span class="si">{0}</span><span class="s1">/</span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">instance</span><span class="o">.</span><span class="n">campaign</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="survey_media"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.survey_media">[docs]</a><span class="k">def</span> <span class="nf">survey_media</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Return an upload path for survey media.&quot;&quot;&quot;</span>
@@ -966,63 +963,69 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">isoformat</span><span class="p">())</span></div>
 
 
-<div class="viewcode-block" id="Expedition"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.Expedition">[docs]</a><span class="k">class</span> <span class="nc">Expedition</span><span class="p">(</span><span class="n">geo_models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+<span class="c1">#-----------------------------------------------------------------------------#</span>
+<span class="c1"># Campaign</span>
+<span class="c1">#</span>
+<div class="viewcode-block" id="Campaign"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.Campaign">[docs]</a><span class="k">class</span> <span class="nc">Campaign</span><span class="p">(</span><span class="n">geo_models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;An endeavour of a team to a Locality within a defined time range.</span>
 <span class="sd">    </span>
-<span class="sd">    * Expeditions are owned by an Organisation.</span>
-<span class="sd">    * Expeditions own all Surveys and Encounters within its area and time range.</span>
-<span class="sd">    * Expeditions can nominate other Organisations as viewers of their data.</span>
+<span class="sd">    * Campaign are owned by an Organisation.</span>
+<span class="sd">    * Campaign own all Surveys and Encounters within its area and time range.</span>
+<span class="sd">    * Campaign can nominate other Organisations as viewers of their data.</span>
 
 <span class="sd">    High level specs: https://github.com/dbca-wa/biosys-turtles/issues/81</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">area</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span>
+    <span class="n">destination</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span>
         <span class="n">Area</span><span class="p">,</span>
         <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">SET_NULL</span><span class="p">,</span>
         <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;campaigns&#39;</span><span class="p">,</span>
         <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Destination&quot;</span><span class="p">),</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The entire surveyed area.&quot;</span><span class="p">),</span> <span class="p">)</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The surveyed Locality.&quot;</span><span class="p">),</span> <span class="p">)</span>
 
     <span class="n">start_time</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span>
-        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Expedition start&quot;</span><span class="p">),</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Campaign start&quot;</span><span class="p">),</span>
         <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The Expedition start, shown as local time &quot;</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The Campaign start, shown as local time &quot;</span>
                     <span class="s2">&quot;(no daylight savings), stored as UTC.&quot;</span><span class="p">))</span>
 
     <span class="n">end_time</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span>
-        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Expedition end&quot;</span><span class="p">),</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Campaign end&quot;</span><span class="p">),</span>
         <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The Expedition end, shown as local time &quot;</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The Campaign end, shown as local time &quot;</span>
                     <span class="s2">&quot;(no daylight savings), stored as UTC.&quot;</span><span class="p">))</span>
 
     <span class="n">comments</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">(</span>
         <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Comments&quot;</span><span class="p">),</span>
         <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Comments about the Expedition.&quot;</span><span class="p">),</span> <span class="p">)</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Comments about the Campaign.&quot;</span><span class="p">),</span> <span class="p">)</span>
 
     <span class="n">team</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span>
         <span class="n">User</span><span class="p">,</span>
         <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;expedition_team&quot;</span><span class="p">)</span>
+        <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;campaign_team&quot;</span><span class="p">)</span>
 
     <span class="n">owner</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span>
         <span class="n">Organisation</span><span class="p">,</span>
         <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">SET_NULL</span><span class="p">,</span>
+        <span class="n">editable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;campaigns&quot;</span><span class="p">,</span>
         <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Owner&quot;</span><span class="p">),</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The organisation that ran this Expedition owns all records (Surveys and Encounters).&quot;</span><span class="p">))</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The organisation that ran this Campaign owns all records (Surveys and Encounters).&quot;</span><span class="p">))</span>
 
     <span class="n">viewers</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span>
         <span class="n">Organisation</span><span class="p">,</span>
-        <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;shared_expeditions&quot;</span><span class="p">,</span>
+        <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;shared_campaigns&quot;</span><span class="p">,</span>
         <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The nominated organisations are able to view the Expedition&#39;s records.&quot;</span><span class="p">))</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The nominated organisations are able to view the Campaign&#39;s records.&quot;</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;The unicode representation.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{0}</span><span class="s2"> </span><span class="si">{1}</span><span class="s2"> </span><span class="si">{2}</span><span class="s2"> to </span><span class="si">{3}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
             <span class="s2">&quot;-&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">label</span><span class="p">,</span>
-            <span class="s2">&quot;-&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">area</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">area</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="s2">&quot;-&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">destination</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">destination</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
             <span class="s2">&quot;na&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">tz</span><span class="o">.</span><span class="n">tzlocal</span><span class="p">())</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">),</span>
             <span class="s2">&quot;na&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">tz</span><span class="o">.</span><span class="n">tzlocal</span><span class="p">())</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="p">)</span>
@@ -1031,52 +1034,51 @@
     <span class="k">def</span> <span class="nf">surveys</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return a QuerySet of Surveys.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">Survey</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
-            <span class="n">site__geom__contained</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">area</span><span class="o">.</span><span class="n">geom</span><span class="p">,</span>
+            <span class="n">site__geom__contained</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">destination</span><span class="o">.</span><span class="n">geom</span><span class="p">,</span>
             <span class="n">start_time__gte</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="p">,</span>
             <span class="n">end_time__lte</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">encounters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return the QuerySet of all Encounters within this Expedition.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Return the QuerySet of all Encounters within this Campaign.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">Encounter</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
-            <span class="n">where__coveredby</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">geom</span><span class="p">,</span>
+            <span class="n">where__coveredby</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">destination</span><span class="o">.</span><span class="n">geom</span><span class="p">,</span>
             <span class="n">when__gte</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="p">,</span>
             <span class="n">when__lte</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="expedition_post_save"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.expedition_post_save">[docs]</a><span class="nd">@receiver</span><span class="p">(</span><span class="n">post_save</span><span class="p">,</span> <span class="n">sender</span><span class="o">=</span><span class="n">Expedition</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">expedition_post_save</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Expedition: Claim Surveys and Encounters.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="campaign_post_save"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.campaign_post_save">[docs]</a><span class="nd">@receiver</span><span class="p">(</span><span class="n">post_save</span><span class="p">,</span> <span class="n">sender</span><span class="o">=</span><span class="n">Campaign</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">campaign_post_save</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Campaign: Claim Surveys and Encounters.&quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">instance</span><span class="o">.</span><span class="n">surveys</span><span class="p">:</span>
-        <span class="n">s</span><span class="o">.</span><span class="n">expedition</span> <span class="o">=</span> <span class="n">instance</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">campaign</span> <span class="o">=</span> <span class="n">instance</span>
         <span class="n">s</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">encounters</span><span class="p">:</span>
-            <span class="n">e</span><span class="o">.</span><span class="n">expedition</span> <span class="o">=</span> <span class="n">instance</span>
+            <span class="n">e</span><span class="o">.</span><span class="n">campaign</span> <span class="o">=</span> <span class="n">instance</span>
             <span class="n">e</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div>
 
-
-<div class="viewcode-block" id="FieldMediaAttachment"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.FieldMediaAttachment">[docs]</a><span class="k">class</span> <span class="nc">FieldMediaAttachment</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A media attachment to an Expedition or Survey.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="CampaignMediaAttachment"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.CampaignMediaAttachment">[docs]</a><span class="k">class</span> <span class="nc">CampaignMediaAttachment</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A media attachment to a Campaign.&quot;&quot;&quot;</span>
 
     <span class="n">MEDIA_TYPE_CHOICES</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="p">(</span><span class="s1">&#39;data_sheet&#39;</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s1">&#39;Data sheet&#39;</span><span class="p">)),</span>
+        <span class="p">(</span><span class="s1">&#39;datasheet&#39;</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s1">&#39;Data sheet&#39;</span><span class="p">)),</span>
         <span class="p">(</span><span class="s1">&#39;journal&#39;</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s1">&#39;Field journal&#39;</span><span class="p">)),</span>
         <span class="p">(</span><span class="s1">&#39;communication&#39;</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s1">&#39;Communication record&#39;</span><span class="p">)),</span>
         <span class="p">(</span><span class="s1">&#39;photograph&#39;</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s1">&#39;Photograph&#39;</span><span class="p">)),</span>
         <span class="p">(</span><span class="s1">&#39;other&#39;</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s1">&#39;Other&#39;</span><span class="p">)),</span> <span class="p">)</span>
 
-    <span class="n">expedition</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span>
-        <span class="n">Expedition</span><span class="p">,</span>
+    <span class="n">campaign</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span>
+        <span class="n">Campaign</span><span class="p">,</span>
         <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">SET_NULL</span><span class="p">,</span>
-        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Expedition&quot;</span><span class="p">),</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The linked Expedition.&quot;</span><span class="p">),</span> <span class="p">)</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Campaign&quot;</span><span class="p">),</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The linked Campaign.&quot;</span><span class="p">),</span> <span class="p">)</span>
 
     <span class="n">media_type</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
         <span class="n">max_length</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
         <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Attachment type&quot;</span><span class="p">),</span>
         <span class="n">choices</span><span class="o">=</span><span class="n">MEDIA_TYPE_CHOICES</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;photograph&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;datasheet&quot;</span><span class="p">,</span>
         <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;What is the attached file about?&quot;</span><span class="p">),)</span>
 
     <span class="n">title</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
@@ -1086,7 +1088,7 @@
         <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Give the attachment a representative name&quot;</span><span class="p">),)</span>
 
     <span class="n">attachment</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">FileField</span><span class="p">(</span>
-        <span class="n">upload_to</span><span class="o">=</span><span class="n">expedition_media</span><span class="p">,</span>
+        <span class="n">upload_to</span><span class="o">=</span><span class="n">campaign_media</span><span class="p">,</span>
         <span class="n">max_length</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
         <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;File attachment&quot;</span><span class="p">),</span>
         <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Upload the file&quot;</span><span class="p">),)</span>
@@ -1094,23 +1096,27 @@
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;The unicode representation.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;Attachment </span><span class="si">{0}</span><span class="s2"> </span><span class="si">{1}</span><span class="s2"> for </span><span class="si">{2}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">expedition</span><span class="o">.</span><span class="fm">__str__</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">campaign</span><span class="o">.</span><span class="fm">__str__</span><span class="p">())</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">filepath</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Path to file.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">force_text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attachment</span><span class="o">.</span><span class="n">file</span><span class="p">)</span></div>
 
-
+<span class="c1">#-----------------------------------------------------------------------------#</span>
+<span class="c1"># Survey</span>
+<span class="c1">#</span>
 <div class="viewcode-block" id="Survey"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.Survey">[docs]</a><span class="k">class</span> <span class="nc">Survey</span><span class="p">(</span><span class="n">QualityControlMixin</span><span class="p">,</span> <span class="n">UrlsMixin</span><span class="p">,</span> <span class="n">geo_models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A visit to one site by a team of field workers collecting data.&quot;&quot;&quot;</span>
 
-    <span class="n">expedition</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span>
-        <span class="n">Expedition</span><span class="p">,</span>
+    <span class="n">campaign</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span>
+        <span class="n">Campaign</span><span class="p">,</span>
         <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">,</span>
-        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Expedition&quot;</span><span class="p">),</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The linked Expedition.&quot;</span><span class="p">),</span> <span class="p">)</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Campaign&quot;</span><span class="p">),</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span>
+            <span class="s2">&quot;The overarching Campaign instigating this Survey &quot;</span>
+            <span class="s2">&quot;is automatically linked when a Campaign is saved.&quot;</span><span class="p">),</span> <span class="p">)</span>
 
     <span class="n">source</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
         <span class="n">max_length</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
@@ -1229,7 +1235,7 @@
                     <span class="s2">&quot; The time of &#39;feet in the sand, done recording encounters.&#39;&quot;</span><span class="p">))</span>
 
     <span class="n">end_photo</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">FileField</span><span class="p">(</span>
-        <span class="n">upload_to</span><span class="o">=</span><span class="n">expedition_media</span><span class="p">,</span>
+        <span class="n">upload_to</span><span class="o">=</span><span class="n">campaign_media</span><span class="p">,</span>
         <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">max_length</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
         <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Site photo end&quot;</span><span class="p">),</span>
@@ -1740,7 +1746,7 @@
 
 
 <span class="c1"># Encounter models -----------------------------------------------------------#</span>
-<div class="viewcode-block" id="Encounter"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.Encounter">[docs]</a><span class="k">class</span> <span class="nc">Encounter</span><span class="p">(</span><span class="n">PolymorphicModel</span><span class="p">,</span> <span class="n">QualityControlMixin</span><span class="p">,</span> <span class="n">UrlsMixin</span><span class="p">,</span> <span class="n">geo_models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+<div class="viewcode-block" id="Encounter"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.Encounter">[docs]</a><span class="k">class</span> <span class="nc">Encounter</span><span class="p">(</span><span class="n">PolymorphicModel</span><span class="p">,</span> <span class="n">UrlsMixin</span><span class="p">,</span> <span class="n">geo_models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;The base Encounter class.</span>
 
 <span class="sd">    * When: Datetime of encounter, stored in UTC, entered and displayed in local</span>
@@ -1816,12 +1822,45 @@
         <span class="n">ENCOUNTER_LOGGER</span><span class="p">:</span> <span class="s1">&#39;orange&#39;</span><span class="p">,</span>
         <span class="n">ENCOUNTER_OTHER</span><span class="p">:</span> <span class="s1">&#39;purple&#39;</span>
     <span class="p">}</span>
-    <span class="n">expedition</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span>
-        <span class="n">Expedition</span><span class="p">,</span>
+
+    <span class="n">STATUS_NEW</span> <span class="o">=</span> <span class="s1">&#39;new&#39;</span>
+    <span class="n">STATUS_PROOFREAD</span> <span class="o">=</span> <span class="s1">&#39;proofread&#39;</span>
+    <span class="n">STATUS_CURATED</span> <span class="o">=</span> <span class="s1">&#39;curated&#39;</span>
+    <span class="n">STATUS_PUBLISHED</span> <span class="o">=</span> <span class="s1">&#39;published&#39;</span>
+    <span class="n">STATUS_FLAGGED</span> <span class="o">=</span> <span class="s1">&#39;flagged&#39;</span>
+    <span class="n">STATUS_REJECTED</span> <span class="o">=</span> <span class="s1">&#39;rejected&#39;</span>
+
+    <span class="n">STATUS_CHOICES</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span><span class="n">STATUS_NEW</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;New&quot;</span><span class="p">)),</span>
+        <span class="p">(</span><span class="n">STATUS_PROOFREAD</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Proofread&quot;</span><span class="p">)),</span>
+        <span class="p">(</span><span class="n">STATUS_CURATED</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Curated&quot;</span><span class="p">)),</span>
+        <span class="p">(</span><span class="n">STATUS_PUBLISHED</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Published&quot;</span><span class="p">)),</span>
+        <span class="p">(</span><span class="n">STATUS_FLAGGED</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Flagged&quot;</span><span class="p">)),</span>
+        <span class="p">(</span><span class="n">STATUS_REJECTED</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Rejected&quot;</span><span class="p">)),</span>
+    <span class="p">)</span>
+
+    <span class="n">STATUS_LABELS</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">STATUS_NEW</span><span class="p">:</span> <span class="s2">&quot;secondary&quot;</span><span class="p">,</span>
+        <span class="n">STATUS_PROOFREAD</span><span class="p">:</span> <span class="s2">&quot;warning&quot;</span><span class="p">,</span>
+        <span class="n">STATUS_CURATED</span><span class="p">:</span> <span class="s2">&quot;success&quot;</span><span class="p">,</span>
+        <span class="n">STATUS_PUBLISHED</span><span class="p">:</span> <span class="s2">&quot;info&quot;</span><span class="p">,</span>
+        <span class="n">STATUS_FLAGGED</span><span class="p">:</span> <span class="s2">&quot;warning&quot;</span><span class="p">,</span>
+        <span class="n">STATUS_REJECTED</span><span class="p">:</span> <span class="s2">&quot;danger&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">status</span> <span class="o">=</span> <span class="n">FSMField</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">STATUS_NEW</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="n">STATUS_CHOICES</span><span class="p">,</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;QA Status&quot;</span><span class="p">))</span>
+
+    <span class="n">campaign</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span>
+        <span class="n">Campaign</span><span class="p">,</span>
         <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">SET_NULL</span><span class="p">,</span>
-        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Expedition&quot;</span><span class="p">),</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The Expedition during which this encounter happened, if known.&quot;</span><span class="p">),</span> <span class="p">)</span>
+        <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">,</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Campaign&quot;</span><span class="p">),</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span>
+            <span class="s2">&quot;The overarching Campaign instigating this Encounter &quot;</span>
+            <span class="s2">&quot;is automatically linked when a Campaign saved.&quot;</span><span class="p">),</span> <span class="p">)</span>
 
     <span class="n">survey</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span>
         <span class="n">Survey</span><span class="p">,</span>
@@ -1965,7 +2004,207 @@
         <span class="sd">&quot;&quot;&quot;The unicode representation.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;Encounter </span><span class="si">{0}</span><span class="s2"> on </span><span class="si">{1}</span><span class="s2"> by </span><span class="si">{2}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">when</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">observer</span><span class="p">)</span>
 
-    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">status_colour</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a Bootstrap4 CSS colour class for each status.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">STATUS_LABELS</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="p">]</span>
+
+<span class="c1"># FSM transitions --------------------------------------------------------#</span>
+<div class="viewcode-block" id="Encounter.can_proofread"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.Encounter.can_proofread">[docs]</a>    <span class="k">def</span> <span class="nf">can_proofread</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return true if this document can be proofread.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="Encounter.proofread"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.Encounter.proofread">[docs]</a>    <span class="nd">@fsm_log_by</span>
+    <span class="nd">@transition</span><span class="p">(</span>
+        <span class="n">field</span><span class="o">=</span><span class="n">status</span><span class="p">,</span>
+        <span class="n">source</span><span class="o">=</span><span class="n">STATUS_NEW</span><span class="p">,</span>
+        <span class="n">target</span><span class="o">=</span><span class="n">STATUS_PROOFREAD</span><span class="p">,</span>
+        <span class="n">conditions</span><span class="o">=</span><span class="p">[</span><span class="n">can_proofread</span><span class="p">],</span>
+        <span class="c1"># permission=lambda instance, user: user in instance.all_permitted,</span>
+        <span class="n">custom</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="s2">&quot;Submit for QA&quot;</span><span class="p">,</span>
+            <span class="n">explanation</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Submit this record as a faithful representation of the &quot;</span>
+                         <span class="s2">&quot;data source for QA to become an accepted record.&quot;</span><span class="p">),</span>
+            <span class="n">notify</span><span class="o">=</span><span class="kc">True</span><span class="p">,)</span>
+    <span class="p">)</span>
+    <span class="k">def</span> <span class="nf">proofread</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">by</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Mark encounter as proof-read.</span>
+
+<span class="sd">        Proofreading compares the attached data sheet with entered values.</span>
+<span class="sd">        Proofread data is deemed a faithful representation of original data</span>
+<span class="sd">        captured on a paper field data collection form, or stored in a legacy</span>
+<span class="sd">        system.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span></div>
+
+<div class="viewcode-block" id="Encounter.can_require_proofreading"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.Encounter.can_require_proofreading">[docs]</a>    <span class="k">def</span> <span class="nf">can_require_proofreading</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return true if this document can be proofread.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="Encounter.require_proofreading"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.Encounter.require_proofreading">[docs]</a>    <span class="nd">@fsm_log_by</span>
+    <span class="nd">@transition</span><span class="p">(</span>
+        <span class="n">field</span><span class="o">=</span><span class="n">status</span><span class="p">,</span>
+        <span class="n">source</span><span class="o">=</span><span class="n">STATUS_PROOFREAD</span><span class="p">,</span>
+        <span class="n">target</span><span class="o">=</span><span class="n">STATUS_NEW</span><span class="p">,</span>
+        <span class="n">conditions</span><span class="o">=</span><span class="p">[</span><span class="n">can_require_proofreading</span><span class="p">],</span>
+        <span class="c1"># permission=lambda instance, user: user in instance.all_permitted,</span>
+        <span class="n">custom</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="s2">&quot;Require proofreading&quot;</span><span class="p">,</span>
+            <span class="n">explanation</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;This record deviates from the data source and &quot;</span>
+                         <span class="s2">&quot;requires proofreading.&quot;</span><span class="p">),</span>
+            <span class="n">notify</span><span class="o">=</span><span class="kc">True</span><span class="p">,)</span>
+    <span class="p">)</span>
+    <span class="k">def</span> <span class="nf">require_proofreading</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">by</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Mark encounter as having typos, requiring more proofreading.</span>
+
+<span class="sd">        Proofreading compares the attached data sheet with entered values.</span>
+<span class="sd">        If a discrepancy to the data sheet is found, proofreading is required.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span></div>
+
+<div class="viewcode-block" id="Encounter.can_curate"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.Encounter.can_curate">[docs]</a>    <span class="k">def</span> <span class="nf">can_curate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return true if this record can be accepted.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="Encounter.curate"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.Encounter.curate">[docs]</a>    <span class="nd">@fsm_log_by</span>
+    <span class="nd">@transition</span><span class="p">(</span>
+        <span class="n">field</span><span class="o">=</span><span class="n">status</span><span class="p">,</span>
+        <span class="n">source</span><span class="o">=</span><span class="p">[</span><span class="n">STATUS_NEW</span><span class="p">,</span> <span class="n">STATUS_PROOFREAD</span><span class="p">,</span> <span class="n">STATUS_FLAGGED</span><span class="p">],</span>
+        <span class="n">target</span><span class="o">=</span><span class="n">STATUS_CURATED</span><span class="p">,</span>
+        <span class="n">conditions</span><span class="o">=</span><span class="p">[</span><span class="n">can_curate</span><span class="p">],</span>
+        <span class="c1"># permission=lambda instance, user: user in instance.all_permitted,</span>
+
+        <span class="n">custom</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="s2">&quot;Accept as trustworthy&quot;</span><span class="p">,</span>
+            <span class="n">explanation</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;This record is deemed trustworthy.&quot;</span><span class="p">),</span>
+            <span class="n">notify</span><span class="o">=</span><span class="kc">True</span><span class="p">,)</span>
+    <span class="p">)</span>
+    <span class="k">def</span> <span class="nf">curate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">by</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Accept record as trustworthy.</span>
+
+<span class="sd">        Curated data is deemed trustworthy by a subject matter expert.</span>
+<span class="sd">        Records can be marked as curated from new, proofread, or flagged.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span></div>
+
+<div class="viewcode-block" id="Encounter.can_flag"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.Encounter.can_flag">[docs]</a>    <span class="k">def</span> <span class="nf">can_flag</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return true if curated status can be revoked.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="Encounter.flag"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.Encounter.flag">[docs]</a>    <span class="nd">@fsm_log_by</span>
+    <span class="nd">@transition</span><span class="p">(</span>
+        <span class="n">field</span><span class="o">=</span><span class="n">status</span><span class="p">,</span>
+        <span class="n">source</span><span class="o">=</span><span class="n">STATUS_CURATED</span><span class="p">,</span>
+        <span class="n">target</span><span class="o">=</span><span class="n">STATUS_FLAGGED</span><span class="p">,</span>
+        <span class="n">conditions</span><span class="o">=</span><span class="p">[</span><span class="n">can_flag</span><span class="p">],</span>
+        <span class="c1"># permission=lambda instance, user: user in instance.all_permitted,</span>
+        <span class="n">custom</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="s2">&quot;Flag as not trustworthy&quot;</span><span class="p">,</span>
+            <span class="n">explanation</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;This record cannot be true. This record requires&quot;</span>
+                         <span class="s2">&quot; review by a subject matter expert.&quot;</span><span class="p">),</span>
+            <span class="n">notify</span><span class="o">=</span><span class="kc">True</span><span class="p">,)</span>
+    <span class="p">)</span>
+    <span class="k">def</span> <span class="nf">flag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">by</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Flag as requiring changes to data.</span>
+
+<span class="sd">        Curated data is deemed trustworthy by a subject matter expert.</span>
+<span class="sd">        Revoking curation flags data for requiring changes by an expert.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">import</span> <span class="nn">ipdb</span><span class="p">;</span> <span class="n">ipdb</span><span class="o">.</span><span class="n">set_trace</span><span class="p">()</span>
+        <span class="k">return</span></div>
+
+<div class="viewcode-block" id="Encounter.can_reject"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.Encounter.can_reject">[docs]</a>    <span class="k">def</span> <span class="nf">can_reject</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return true if the record can be rejected as entirely wrong.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="Encounter.reject"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.Encounter.reject">[docs]</a>    <span class="nd">@fsm_log_by</span>
+    <span class="nd">@transition</span><span class="p">(</span>
+        <span class="n">field</span><span class="o">=</span><span class="n">status</span><span class="p">,</span>
+        <span class="n">source</span><span class="o">=</span><span class="p">[</span><span class="n">STATUS_PROOFREAD</span><span class="p">,</span> <span class="n">STATUS_CURATED</span><span class="p">,</span> <span class="n">STATUS_FLAGGED</span><span class="p">],</span>
+        <span class="n">target</span><span class="o">=</span><span class="n">STATUS_REJECTED</span><span class="p">,</span>
+        <span class="n">conditions</span><span class="o">=</span><span class="p">[</span><span class="n">can_flag</span><span class="p">],</span>
+        <span class="c1"># permission=lambda instance, user: user in instance.all_permitted,</span>
+        <span class="n">custom</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="s2">&quot;Confirm as not trustworthy&quot;</span><span class="p">,</span>
+            <span class="n">explanation</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;This record is confirmed wrong and not trustworthy.&quot;</span><span class="p">),</span>
+            <span class="n">notify</span><span class="o">=</span><span class="kc">True</span><span class="p">,)</span>
+    <span class="p">)</span>
+    <span class="k">def</span> <span class="nf">reject</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">by</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Confirm that a record is not trustworthy and beyond repair.&quot;&quot;&quot;</span>
+        <span class="k">return</span></div>
+
+
+<div class="viewcode-block" id="Encounter.can_reset"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.Encounter.can_reset">[docs]</a>    <span class="k">def</span> <span class="nf">can_reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return true if the record QA status can be reset.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="Encounter.reset"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.Encounter.reset">[docs]</a>    <span class="nd">@fsm_log_by</span>
+    <span class="nd">@transition</span><span class="p">(</span>
+        <span class="n">field</span><span class="o">=</span><span class="n">status</span><span class="p">,</span>
+        <span class="n">source</span><span class="o">=</span><span class="n">STATUS_REJECTED</span><span class="p">,</span>
+        <span class="n">target</span><span class="o">=</span><span class="n">STATUS_NEW</span><span class="p">,</span>
+        <span class="n">conditions</span><span class="o">=</span><span class="p">[</span><span class="n">can_reset</span><span class="p">],</span>
+        <span class="c1"># permission=lambda instance, user: user in instance.all_permitted,</span>
+        <span class="n">custom</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="s2">&quot;Reset QA status&quot;</span><span class="p">,</span>
+            <span class="n">explanation</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;The QA status of this record needs to be reset.&quot;</span><span class="p">),</span>
+            <span class="n">notify</span><span class="o">=</span><span class="kc">True</span><span class="p">,)</span>
+    <span class="p">)</span>
+    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">by</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Reset the QA status of a record to NEW.</span>
+
+<span class="sd">        This allows a record to be brought into the desired QA status.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span></div>
+
+<div class="viewcode-block" id="Encounter.can_publish"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.Encounter.can_publish">[docs]</a>    <span class="k">def</span> <span class="nf">can_publish</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return true if this document can be published.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="Encounter.publish"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.Encounter.publish">[docs]</a>    <span class="nd">@fsm_log_by</span>
+    <span class="nd">@transition</span><span class="p">(</span>
+        <span class="n">field</span><span class="o">=</span><span class="n">status</span><span class="p">,</span>
+        <span class="n">source</span><span class="o">=</span><span class="n">STATUS_CURATED</span><span class="p">,</span>
+        <span class="n">target</span><span class="o">=</span><span class="n">STATUS_PUBLISHED</span><span class="p">,</span>
+        <span class="n">conditions</span><span class="o">=</span><span class="p">[</span><span class="n">can_publish</span><span class="p">],</span>
+        <span class="c1"># permission=lambda instance, user: user in instance.all_permitted,</span>
+        <span class="n">custom</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="s2">&quot;Publish&quot;</span><span class="p">,</span>
+            <span class="n">explanation</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;This record is fit for release.&quot;</span><span class="p">),</span>
+            <span class="n">notify</span><span class="o">=</span><span class="kc">True</span><span class="p">,)</span>
+    <span class="p">)</span>
+    <span class="k">def</span> <span class="nf">publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">by</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Mark encounter as ready to be published.</span>
+
+<span class="sd">        Published data has been deemed fit for release by the data owner.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span></div>
+
+<div class="viewcode-block" id="Encounter.can_embargo"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.Encounter.can_embargo">[docs]</a>    <span class="k">def</span> <span class="nf">can_embargo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return true if encounter can be embargoed.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="Encounter.embargo"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.Encounter.embargo">[docs]</a>    <span class="nd">@fsm_log_by</span>
+    <span class="nd">@transition</span><span class="p">(</span>
+        <span class="n">field</span><span class="o">=</span><span class="n">status</span><span class="p">,</span>
+        <span class="n">source</span><span class="o">=</span><span class="n">STATUS_PUBLISHED</span><span class="p">,</span>
+        <span class="n">target</span><span class="o">=</span><span class="n">STATUS_CURATED</span><span class="p">,</span>
+        <span class="n">conditions</span><span class="o">=</span><span class="p">[</span><span class="n">can_embargo</span><span class="p">],</span>
+        <span class="c1"># permission=lambda instance, user: user in instance.all_permitted,</span>
+        <span class="n">custom</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="s2">&quot;Embargo&quot;</span><span class="p">,</span>
+            <span class="n">explanation</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;This record is not fit for release.&quot;</span><span class="p">),</span>
+            <span class="n">notify</span><span class="o">=</span><span class="kc">True</span><span class="p">,)</span>
+    <span class="p">)</span>
+    <span class="k">def</span> <span class="nf">embargo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">by</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Mark encounter as NOT ready to be published.</span>
+
+<span class="sd">        Published data has been deemed fit for release by the data owner.</span>
+<span class="sd">        Embargoed data is marked as curated, but not ready for release.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span></div>
+
+    <span class="c1"># ------------------------------------------------------------------------#</span>
     <span class="c1"># URLs</span>
     <span class="c1"># Override create and update until we have front end forms</span>
 <div class="viewcode-block" id="Encounter.create_url"><a class="viewcode-back" href="../../../developers.html#wastd.observations.models.Encounter.create_url">[docs]</a>    <span class="nd">@classmethod</span>
