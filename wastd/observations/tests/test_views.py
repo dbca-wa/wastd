@@ -19,8 +19,6 @@ from wastd.observations.models import (  # noqa
     DispatchRecord,
     DugongMorphometricObservation,
     Encounter,
-    Expedition,
-    FieldMediaAttachment,
     HatchlingMorphometricObservation,
     LineTransectEncounter,
     LoggerEncounter,

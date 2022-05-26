@@ -9,7 +9,7 @@
             {% if o.site.w2_location_code %} {{o.site.w2_location_code }}{% endif %}
             {% if o.site.w2_place_code and o.site.w2_location_code %} / {% endif %}
             {% if o.site.w2_place_code %}{{o.site.w2_place_code}}{% endif %}
-            {% if o.expedition.owner %} {{o.expedition.owner }}{% endif %}
+            {% if o.campaign.owner %} {{o.campaign.owner }}{% endif %}
         </small>
         {% endblock %}
     <span class="pull-xs-right">

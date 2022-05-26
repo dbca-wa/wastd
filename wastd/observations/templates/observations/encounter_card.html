@@ -19,7 +19,7 @@
       <a href="{% url 'users:user-detail' pk=object.reporter.pk %}">{{ object.reporter }}</a>
 
       <span class="oi oi-shield" title="Owned by" aria-hidden="true"></span>
-      {% if object.expedition %} {{ object.expedition.owner }}{% else %}-{% endif %}
+      {% if object.campaign %} {{ object.campaign.owner }}{% else %}-{% endif %}
 
       <span class="float-right">
         {% include "observations/toggle_details.html" with object=object %}

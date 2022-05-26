@@ -751,7 +751,7 @@ def handle_photo(p, e, title="Track", enc=True):
     e The related encounter (must exist)
     title The attachment's title (default: "Track")
     enc Whether to use Encounter / MediaAttachment (true, default) or
-        Expedition / FieldMediaAttachment
+        Campaign / CampaignMediaAttachment
     """
     # Does the file exist locally?
     logger.debug(
@@ -779,13 +779,13 @@ def handle_photo(p, e, title="Track", enc=True):
                         action = "Created"
                 else:
                     # Does the MediaAttachment exist already?
-                    if FieldMediaAttachment.objects.filter(
-                            expedition=e, title=title).exists():
-                        m = FieldMediaAttachment.objects.filter(
-                            expedition=e, title=title)[0]
+                    if CampaignMediaAttachment.objects.filter(
+                            campaign=e, title=title).exists():
+                        m = CampaignMediaAttachment.objects.filter(
+                            campaign=e, title=title)[0]
                         action = "updated"
                     else:
-                        m = FieldMediaAttachment(expedition=e, title=title)
+                        m = CampaignMediaAttachment(campaign=e, title=title)
                         action = "Created"
 
                 # Update the file
