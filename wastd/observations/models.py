@@ -952,30 +952,93 @@ class Campaign(geo_models.Model):
 
     @property
     def surveys(self):
-        """Return a QuerySet of Surveys."""
-        return Survey.objects.filter(
-            site__geom__contained=self.destination.geom,
-            start_time__gte=self.start_time,
-            end_time__lte=self.end_time)
+        """Return a QuerySet of Surveys or None.
+        
+        If any of destination, start_time or end_time are empty, return None,
+        else return Surveys within the Campaign's area and time range.
+        """
+        if self.destination and self.start_time and self.end_time:
+            return Survey.objects.filter(
+                site__geom__coveredby=self.destination.geom,
+                start_time__gte=self.start_time,
+                end_time__lte=self.end_time)
+        return None
+
+    @property
+    def orphaned_surveys(self):
+        """Return Surveys that should be, but are not linked to this Campaign.
+        
+        This includes Surveys without a Campaign, 
+        and Surveys linked to another Campaign.
+        We assume that Campaigns do not overlap.
+        """
+        if self.surveys:
+            return self.surveys.exclude(campaign=self)
+        return None
 
     @property
     def encounters(self):
         """Return the QuerySet of all Encounters within this Campaign."""
-        return Encounter.objects.filter(
-            where__coveredby=self.destination.geom,
-            when__gte=self.start_time,
-            when__lte=self.end_time)
+        if self.destination and self.start_time and self.end_time:
+            return Encounter.objects.filter(
+                where__coveredby=self.destination.geom,
+                when__gte=self.start_time,
+                when__lte=self.end_time)
+        return None
+
+    @property
+    def orphaned_encounters(self):
+        """Return Encounters  that should be, but are not linked to this Campaign.
+        
+        This includes Encounters without a Campaign, 
+        and Encounters linked to another Campaign.
+        We assume that Campaigns do not overlap.
+        """
+        if self.encounters:
+            return self.encounters.exclude(campaign=self)
+        return None
+
+    def adopt_all_surveys_and_encounters(self):
+        """Adopt all surveys and encounters in this Campaign."""
+        no_svy = 0
+        no_enc = 0
+        if self.surveys:
+            no_svy = self.surveys.update(campaign=self)
+        if self.encounters:
+            no_enc = self.encounters.update(campaign=self)
+        logger.info("Adopted {0} surveys and {1} encounters.".format(no_svy, no_enc))
+            
+
+    def adopt_all_orphaned_surveys_and_encounters(self):
+        """Adopt all orphaned surveys and encounters in this Campaign."""
+        no_svy = 0
+        no_enc = 0
+        if self.orphaned_surveys:
+            no_svy = self.orphaned_surveys.update(campaign=self)
+        if self.orphaned_encounters:
+             no_enc = self.orphaned_encounters.update(campaign=self)
+        logger.info("Adopted {0} surveys and {1} encounters.".format(no_svy, no_enc))
 
 
 @receiver(post_save, sender=Campaign)
 def campaign_post_save(sender, instance, *args, **kwargs):
     """Campaign: Claim Surveys and Encounters."""
-    for s in instance.surveys:
-        s.campaign = instance
-        s.save()
-        for e in s.encounters:
-            e.campaign = instance
-            e.save()
+    # Version 1
+    instance.adopt_all_surveys_and_encounters()
+    msg = "Campaign {0} has adopted {1} surveys and {2} encounters.".format(instance, instance.surveys.count(), instance.encounters.count())
+    logger.info(msg)
+
+    # Version 2
+    # if instance.orphaned_surveys:
+    #     for s in instance.orphaned_surveys:
+    #         s.campaign = instance
+    #         s.save()
+    
+    # if instance.orphaned_encounters:
+    #     for e in instance.orphaned_encounters:
+    #         e.campaign = instance
+    #         e.save()
+
 
 class CampaignMediaAttachment(models.Model):
     """A media attachment to a Campaign."""
@@ -1241,7 +1304,7 @@ class Survey(QualityControlMixin, UrlsMixin, geo_models.Model):
                 where__coveredby=self.site.geom,
                 when__gte=self.start_time,
                 when__lte=self.end_time)
-            logger.info("[Survey.encounters] {0} found {1} Encounters".format(self, len(e)))
+            logger.debug("[Survey.encounters] {0} found {1} Encounters".format(self, e.count()))
             return e
 
     @property
@@ -1415,10 +1478,8 @@ def claim_end_points(survey_instance):
 
 def claim_encounters(survey_instance):
     """Update Encounters within this Survey to reference survey=self."""
-    enc = survey_instance.encounters
-    if enc:
-        enc.update(survey=survey_instance)
-        enc.update(site=survey_instance.site)
+    if survey_instance.encounters:
+        enc = survey_instance.encounters.update(survey=survey_instance, site=survey_instance.site)
         logger.info("[wastd.observations.models.claim_encounters] "
                     "Survey {0} claimed {1} Encounters".format(survey_instance, len(enc)))
 
