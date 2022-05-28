@@ -915,16 +915,30 @@ class CampaignAdmin(admin.ModelAdmin):
     """Campaign admin."""
 
     list_display = ("destination", "start_time", "end_time", "owner", )
-    list_filter = ("owner", "viewers", ('destination', AreaFilter),)
+    list_filter = (('destination', AreaFilter), "owner", "viewers", )
     search_fields = (
         "owner__code__icontains", 
         "owner__label__icontains", 
         "owner__description__icontains", 
         "comments__icontains"
     )
+    date_hierarchy = "start_time"
     form = s2form(Campaign, attrs=S2ATTRS)
     inlines = [CampaignMediaAttachmentInline, ]
     
+    def get_queryset(self, request):
+        """Speed up Admin change_list through prefetch_related."""
+        return super(
+            CampaignAdmin, self
+        ).get_queryset(
+            request
+        ).prefetch_related(
+            'destination', 
+            'owner', 
+            #'campaignmediaattachment_set', 
+            #'viewers'
+        )
+
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         """Restrict destination to Localities.
 

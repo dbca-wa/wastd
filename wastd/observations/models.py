@@ -941,6 +941,12 @@ class Campaign(geo_models.Model):
         blank=True,
         help_text=_("The nominated organisations are able to view the Campaign's records."))
 
+    class Meta:
+        """Class options."""
+
+        ordering = ["-start_time", "destination", "owner"]
+        
+    
     def __str__(self):
         """The unicode representation."""
         return "{0} {1} {2} to {3}".format(
