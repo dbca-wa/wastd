@@ -1487,7 +1487,7 @@ def claim_encounters(survey_instance):
     if survey_instance.encounters:
         enc = survey_instance.encounters.update(survey=survey_instance, site=survey_instance.site)
         logger.info("[wastd.observations.models.claim_encounters] "
-                    "Survey {0} claimed {1} Encounters".format(survey_instance, len(enc)))
+                    "Survey {0} claimed {1} Encounters".format(survey_instance, enc))
 
 
 @receiver(pre_save, sender=Survey)
