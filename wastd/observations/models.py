@@ -2615,6 +2615,21 @@ class AnimalEncounter(Encounter):
             "The status is inferred automatically based on whether"
             " and where this animal was processed and identified last."),)
 
+    sighting_status_reason = models.CharField(
+        max_length=1000,
+        verbose_name=_("Sighting status reason"),
+        blank=True, null=True,
+        help_text=_("The rationale for the inferred sighting status."),)
+
+    identifiers = models.TextField(
+        verbose_name=_("Identifiers"),
+        blank=True, null=True,
+        help_text=_(
+            "A space-separated list of all identifers ever recorded "
+            "as associated with this animal. This list includes identifiers "
+            "recorded only in earlier or later encounters."),
+    )
+
     datetime_of_last_sighting = models.DateTimeField(
         verbose_name=_("Last seen on"),
         blank=True, null=True,

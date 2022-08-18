@@ -331,6 +331,8 @@ class AnimalEncounterSerializer(EncounterSerializer):
             "habitat",
             "activity",
             "sighting_status",
+            "sighting_status_reason", 
+            "identifiers",
             "datetime_of_last_sighting",
             "site_of_first_sighting",
             "site_of_last_sighting",

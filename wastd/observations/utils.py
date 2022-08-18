@@ -257,8 +257,9 @@ def get_encounter_history(tags, encs):
         show_must_go_on = len(extra_tags) > 0
 
     # From known_tags, get tag with the earliest "encounter__animalencounter__when"
-    # TODO is this determinstic for encounters with multiple tags?
+    # TODO prefer flipper tag left if present
     earliest_tag = min(known_tags, key=lambda t: t['encounter__animalencounter__when'])
+    all_tag_names = " ".join(list(set([t["name"] for t in known_tags])))
     
     # Remove known_tags from tags
     tags = [t for t in tags if t['id'] not in known_tag_ids]
@@ -266,6 +267,7 @@ def get_encounter_history(tags, encs):
     # set name_new in encs for all list(set(known_enc)) as tag['name'] of tag with earliest_tag["name"]
     for enc in known_enc:
         known_enc[enc]["name_new"] = earliest_tag["name"]
+        known_enc[enc]["identifiers_new"] = all_tag_names
     encs.update(known_enc)
 
     # Iterate over known_encs sorted by "when" and infer sighting_status_new from "area__name" and season.
@@ -278,6 +280,7 @@ def get_encounter_history(tags, encs):
         logger.debug(msg)
 
         # Classification criteria
+        # TODO has tag scars == not new
         only_new_tags = enc_tags_status_list == ["applied-new"]
 
         if idx == 0:
@@ -292,7 +295,12 @@ def get_encounter_history(tags, encs):
             enc['site_of_first_sighting'] = sorted_encs[0]["site__pk"]
             enc['site_of_last_sighting'] = sorted_encs[0]["site__pk"]
         else:
+
             # Classification criteria pt II
+            # If not first sighting by date, but no tag scars, and only new tags:
+            # enc['sighting_status_new'] = "new"
+            # reason = "only new tags, no existing tags or tag scars, BUT not first sighting of this animal so some encounter dates could be wrong"
+
             same_area = enc["area__name"] == sorted_encs[idx-1]["area__name"]
             same_season = enc["season"] == sorted_encs[idx-1]["season"]
 
@@ -317,8 +325,10 @@ def get_encounter_history(tags, encs):
                 enc["sighting_status_new"] = "resighting"
                 reason="no rule applicable"
 
-        msg = "  Sighting status for encounter {} inferred as {} with reason {}".format(
-            enc["id"], enc["sighting_status_new"], reason
+
+        enc["sighting_status_reason_new"] = reason
+        msg = "  Sighting status for encounter {} inferred as {} with reason {}, IDs {}".format(
+            enc["id"], enc["sighting_status_new"], reason, enc["identifiers_new"]
         )
         logger.debug(msg)
     
@@ -356,8 +366,17 @@ def reconstruct_animal_names():
             "encounter_id",
             "encounter__animalencounter__when",
             "encounter__animalencounter__sighting_status",
-            "encounter__animalencounter__name"
+            "encounter__animalencounter__sighting_status_reason",
+            "encounter__animalencounter__name",
+            "encounter__animalencounter__identifiers"
         )
+    ]
+
+    tag_scars = [dict(scar)
+    for scar in TurtleDamageObservation.objects.filter(
+        
+    )
+
     ]
 
     # Unique encounter ids from tags, deduped because one encounter can have multiple tags.
@@ -380,7 +399,9 @@ def reconstruct_animal_names():
         ).values(
             "id", 
             "sighting_status", 
+            "sighting_status_reason",
             "name", 
+            "identifiers",
             "when", 
             "site__pk", 
             "site__name", 
@@ -408,23 +429,30 @@ def reconstruct_animal_names():
         logger.debug(msg)
         tags, encs = get_encounter_history(tags, encs)
 
-    # We only have to update encounters with a different sighting_status or name.
+    # We only have to update encounters with a different sighting_status,
+    # sighting_status_reason, name or identifiers.
     encs_to_update = {
         k:v for (k,v) in encs.items() 
         if v["name_new"] is not None and (
             v["name_new"] != v["name"] or 
-            v["sighting_status_new"] != v["sighting_status"]
+            v["sighting_status_new"] != v["sighting_status"] or
+            v["sighting_status_reason_new"] != v["sighting_status_reason"] or
+            v["identifiers_new"] != v["identifiers"]
         )
     }
 
     msg = "Encounters to update: {}.".format(len(encs_to_update))
     logger.info(msg)
 
+    # TODO add sighting_status_reason and all_names to AnimalEncounter
+
     # Bulk update AnimalEncounters with encs_to_update
     for enc in encs_to_update:                
         AnimalEncounter.objects.filter(id=encs_to_update[enc]["id"]).update(
             name=encs_to_update[enc]["name_new"],
             sighting_status=encs_to_update[enc]["sighting_status_new"],
+            sighting_status_reason=encs_to_update[enc]["sighting_status_reason_new"],
+            identifiers=encs_to_update[enc]["identifiers_new"],
             datetime_of_last_sighting=encs_to_update[enc]["datetime_of_last_sighting"],
             site_of_last_sighting_id=encs_to_update[enc]["site_of_last_sighting"],
             site_of_first_sighting_id=encs_to_update[enc]["site_of_first_sighting"]
