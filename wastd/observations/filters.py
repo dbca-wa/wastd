@@ -165,6 +165,7 @@ class AnimalEncounterFilter(EncounterFilter):
 
         model = AnimalEncounter
         fields = EncounterFilter._meta.fields + [
+            "identifiers",
             'taxon',
             'species',
             'sex',
@@ -173,6 +174,7 @@ class AnimalEncounterFilter(EncounterFilter):
             'activity',
             'habitat',
             'sighting_status',
+            "sighting_status_reason",
             "datetime_of_last_sighting",
             "site_of_first_sighting",
             "site_of_last_sighting",

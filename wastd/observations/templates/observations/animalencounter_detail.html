@@ -14,6 +14,8 @@
 {% endblock %}
 
   {% block obsdetails %}
+    <strong>Identifiers:</strong> {{ object.identifiers }}<br/>
+    <strong>Sighting status reason:</strong> {{ object.sighting_status_reason }}<br/>        
     <strong>First seen at:</strong> {{ object.site_of_first_sighting }}<br>
     <strong>Last seen at:</strong> {{ object.site_of_last_sighting }}<br>
     <strong>Last seen on:</strong> {{ object.datetime_of_last_sighting|date:'d M Y H:i'  }}<br>

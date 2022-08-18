@@ -371,6 +371,9 @@ class AnimalEncounterFilter(FilterSet):
             "sex": ["iexact", "icontains"],
             "maturity": ["iexact", "icontains"],
             "habitat": ["iexact", "icontains"],
+            "sighting_status":["iexact", "icontains"],
+            "sighting_status_reason":["iexact", "icontains"],
+            "identifiers":["iexact", "icontains"],
             "checked_for_injuries": ["iexact", "icontains"],
             "scanned_for_pit_tags": ["iexact", "icontains"],
             "checked_for_flipper_tags": ["iexact", "icontains"],
@@ -419,13 +422,14 @@ class AnimalEncounterViewSet(BatchUpsertViewSet):
     Other enabled filters (typically these categories will be used later during analysis):
 
     "health", "sex", "maturity", "checked_for_injuries", "scanned_for_pit_tags",
-    "checked_for_flipper_tags", "cause_of_death", "cause_of_death_confidence"
+    "checked_for_flipper_tags", "cause_of_death", "cause_of_death_confidence",
+    "sighting_status", "sighting_status_reason", "identifiers"
     """
 
     latex_name = "latex/animalencounter.tex"
     queryset = models.AnimalEncounter.objects.all().prefetch_related(
         "observer", "reporter", "survey", "site", "area", "survey__reporter",
-        "site_of_first_sighting", "site_of_last_sighting",
+        "site_of_first_sighting", "site_of_last_sighting", 
     )
     serializer_class = serializers.AnimalEncounterSerializer
     filter_class = AnimalEncounterFilter
