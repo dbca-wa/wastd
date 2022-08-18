@@ -194,7 +194,7 @@ def get_linked_encs(tags, tag_dict, encs):
     return {enc_id: encs[enc_id] for enc_id in linked_enc_ids}
 
     
-def get_encounter_history(tags, encs):
+def get_encounter_history(tags, encs, tag_scars):
     """Manipulate two dicts of tags and encounters and return them.
 
     Args:
@@ -284,23 +284,24 @@ def get_encounter_history(tags, encs):
         only_new_tags = enc_tags_status_list == ["applied-new"]
 
         if idx == 0:
-            if only_new_tags:
-                # First recorded encounter, no other tags than "applied-new": new
+            if enc["has_tag_scars"] == False and only_new_tags == True:
                 enc['sighting_status_new'] = "new"
-                reason = "first recorded encounter, only new tags, no existing tags"
+                reason = "first recorded encounter, only new tags, no existing tags, no tag scars"
+            elif enc["has_tag_scars"] == False and only_new_tags == False:
+                enc['sighting_status_new'] = "resighting"
+                reason = "first recorded encounter, has existing tags, no tag scars - conflict: date vs existing tags"
+            elif enc["has_tag_scars"] == True and only_new_tags == True:
+                enc['sighting_status_new'] = "resighting"
+                reason = "first recorded encounter, no existing tags, has tag scars - re-entered tagged population"
             else:
                 enc['sighting_status_new'] = "resighting"
-                reason = "first recorded encounter, existing tags"
+                reason = "first recorded encounter, no rule applicable - conflict: fix classifiation logic"
+            
             enc['datetime_of_last_sighting'] = sorted_encs[0]["when"]
             enc['site_of_first_sighting'] = sorted_encs[0]["site__pk"]
             enc['site_of_last_sighting'] = sorted_encs[0]["site__pk"]
+        
         else:
-
-            # Classification criteria pt II
-            # If not first sighting by date, but no tag scars, and only new tags:
-            # enc['sighting_status_new'] = "new"
-            # reason = "only new tags, no existing tags or tag scars, BUT not first sighting of this animal so some encounter dates could be wrong"
-
             same_area = enc["area__name"] == sorted_encs[idx-1]["area__name"]
             same_season = enc["season"] == sorted_encs[idx-1]["season"]
 
@@ -309,7 +310,10 @@ def get_encounter_history(tags, encs):
             enc['site_of_first_sighting'] = sorted_encs[0]["site__pk"]
             enc['site_of_last_sighting'] = sorted_encs[idx-1]["site__pk"]
 
-            if same_area and same_season:
+            if enc["has_tag_scars"] == False and only_new_tags == True:
+                enc['sighting_status_new'] = "new"
+                reason = "not first recorded encounter, only new tags, no existing tags, no tag scars - conflict: date vs existing tags"
+            elif same_area and same_season:
                 enc["sighting_status_new"] = "resighting"
                 reason="resighting, same area, same season"
             elif same_area and (not same_season):
@@ -323,7 +327,7 @@ def get_encounter_history(tags, encs):
                 reason="remigrant, different area, different season"
             else:
                 enc["sighting_status_new"] = "resighting"
-                reason="no rule applicable"
+                reason="no rule applicable - conflict: fix classifiation logic"
 
 
         enc["sighting_status_reason_new"] = reason
@@ -373,10 +377,14 @@ def reconstruct_animal_names():
     ]
 
     tag_scars = [dict(scar)
-    for scar in TurtleDamageObservation.objects.filter(
-        
-    )
-
+        for scar in TurtleDamageObservation.objects.filter(
+            damage_type="tag-scar",
+            encounter__encounter_type="tagging"
+        ).values(
+            "id",
+            "encounter_id",
+            "body_part"
+        )
     ]
 
     # Unique encounter ids from tags, deduped because one encounter can have multiple tags.
@@ -391,7 +399,8 @@ def reconstruct_animal_names():
             e, **{
                 'sighting_status_new': 'na', 
                 'name_new': None, 
-                'datetime_of_last_sighting': None
+                'datetime_of_last_sighting': None,
+                'has_tag_scars': False
             })
         for e in AnimalEncounter.objects.filter(
             id__in=enc_ids
@@ -412,6 +421,10 @@ def reconstruct_animal_names():
     for enc in encs:
         encs[enc]["season"] = turtle_season(encs[enc]["when"])
 
+    for scar in tag_scars:
+        if scar["encounter_id"] in encs:
+            encs[scar["encounter_id"]]["has_tag_scars"] = True
+
     # Ignore tags with links to non-existing encs - TODO speed up
     # removed_tags = [t for t in tags if t['encounter_id'] not in enc_ids]
     # msg = "Ignoring tags pointing to non-existing encs: {}".format(removed_tags)
@@ -427,7 +440,7 @@ def reconstruct_animal_names():
     while len(tags) > 0:
         msg = "Iterating with {} remaining unallocated tags.".format(len(tags))
         logger.debug(msg)
-        tags, encs = get_encounter_history(tags, encs)
+        tags, encs = get_encounter_history(tags, encs, tag_scars)
 
     # We only have to update encounters with a different sighting_status,
     # sighting_status_reason, name or identifiers.
