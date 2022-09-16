@@ -95,7 +95,7 @@ MarkupSafe==2.1.1
 model-mommy==2.0.0
 mommy-spatial-generators==0.1.2
 numpy==1.22.3
-oauthlib==3.2.0
+oauthlib==3.2.1
 odfpy==1.4.1
 openapi-codec==1.3.2
 openpyxl==3.0.9
