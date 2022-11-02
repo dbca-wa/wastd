@@ -95,3 +95,5 @@ dbperf
 
 # temp test fixtures
 taxonomy/fixtures/test_tax_*
+
+.python-version
