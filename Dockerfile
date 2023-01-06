@@ -1,30 +1,32 @@
-FROM python:3.10.4-buster as builder_base
-LABEL maintainer=Florian.Mayer@dbca.wa.gov.au
-LABEL description="Python 3.10.4-buster plus Latex, GDAL, Pandoc."
+# Prepare the base environment.
+FROM python:3.10.9-slim-bullseye as builder_base
+MAINTAINER asi@dbca.wa.gov.au
+LABEL org.opencontainers.image.source https://github.com/dbca-wa/wastd
 
-RUN DEBIAN_FRONTEND=noninteractive apt-get update \
-  && DEBIAN_FRONTEND=noninteractive apt-get install --yes \
-  -o Acquire::Retries=10 --no-install-recommends \
-    texlive lmodern libmagic-dev libproj-dev gdal-bin \
-    python-dev libsasl2-dev libldap2-dev python-enchant \
-    memcached libmemcached-tools \
-    postgresql postgresql-client openssh-client rsync \
-  && apt-get clean \
+RUN apt-get update -y \
+  && apt-get upgrade -y \
+  && apt-get install -y libmagic-dev gcc binutils gdal-bin proj-bin python3-dev libpq-dev gzip curl \
   && rm -rf /var/lib/apt/lists/* \
-  && wget https://github.com/jgm/pandoc/releases/download/2.18/pandoc-2.18-1-amd64.deb \
-  && dpkg -i pandoc-2.18-1-amd64.deb \
-  && rm pandoc-2.18-1-amd64.deb
+  && pip install --upgrade pip
 
-FROM builder_base as python_libs_wastd
-WORKDIR /usr/src/app
-COPY requirements/ ./requirements/
-RUN pip install --no-cache-dir -r requirements/base.txt
+# Install Python libs using Poetry.
+FROM builder_base as python_libs
+WORKDIR /app
+ENV POETRY_VERSION=1.2.2
+RUN pip install "poetry==$POETRY_VERSION"
+COPY poetry.lock pyproject.toml /app/
+RUN poetry config virtualenvs.create false \
+  && poetry install --no-interaction --no-ansi --only main
 
-FROM python_libs_wastd
-COPY . .
-RUN python manage.py collectstatic -v 0 --clear --noinput -l
-# USER www-data
+# Install the project.
+FROM python_libs
+COPY gunicorn.py manage.py ./
+COPY observations ./observations
+COPY shared ./shared
+COPY users ./users
+COPY wastd ./wastd
+RUN python manage.py collectstatic --noinput
+# Run the application as the www-data user.
+USER www-data
 EXPOSE 8080
-HEALTHCHECK --interval=1m --timeout=20s --start-period=10s --retries=3 \
-  CMD ["wget", "-q", "-O", "-", "http://localhost:8220/healthcheck/"]
-CMD ["gunicorn", "config.wsgi", "--config", "config/gunicorn.ini", "--access-logfile", "-"]
+CMD ["gunicorn", "wastd.wsgi", "--config", "gunicorn.py"]

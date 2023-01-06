@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Shared API utilities."""
 import logging
 from collections import OrderedDict
@@ -10,8 +9,8 @@ from rest_framework.response import Response as RestResponse
 from rest_framework_csv.renderers import CSVRenderer
 from rest_framework.settings import api_settings
 
-from shared.models import QualityControlMixin
-from wastd.observations.models import Observation, Encounter
+from .models import QualityControlMixin
+from observations.models import Observation, Encounter
 
 logger = logging.getLogger(__name__)
 
@@ -139,8 +138,8 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
             source_id__in=list(set([x[source_id_field] for x in new_records]))
         )
         has_status = "status" in [f.name for f in model._meta.fields]
-        
-        if has_status: # issubclass(model, QualityControlMixin):
+
+        if has_status:  # issubclass(model, QualityControlMixin):
             return qs.values("pk", "source", "source_id", "status")
         else:
             return qs.values("pk", "source", "source_id")
@@ -394,12 +393,11 @@ class ObservationBatchUpsertViewSet(BatchUpsertViewSet):
             enc = Encounter.objects.filter(
                 source__exact=update_data["encounter_source"],
                 source_id__exact=update_data["encounter_source_id"]
-                ).first()
+            ).first()
             if enc:
                 update_data["encounter_id"] = enc.pk
             update_data.pop("encounter_source")
             update_data.pop("encounter_source_id")
-
 
         logger.debug('[API][create_one] Creating '
                      '{0} with unique fields {1} and update_data {2}'.format(
@@ -450,7 +448,6 @@ class ObservationBatchUpsertViewSet(BatchUpsertViewSet):
         if self.uid_fields[0] in request.data:
             logger.info('[API][create] found one record, creating/updating...')
             return self.create_one(request.data)
-
 
         # Create many --------------------------------------------------------#
         elif (
@@ -563,7 +560,6 @@ class ObservationBatchUpsertViewSet(BatchUpsertViewSet):
                     len(to_refuse),
                     len(to_retain),
                     len(records_to_update),
-                    len(records_to_create)
                 )
             )
 

@@ -1,37 +1,14 @@
-# -*- coding: utf-8 -*-
 """Shared models."""
-from __future__ import absolute_import, unicode_literals
-
-# import itertools
-import logging
-import uuid
-
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models import options
-# from django.template import loader, TemplateDoesNotExist
 from django.urls import reverse
 from django.utils.safestring import mark_safe  # noqa
-from django.utils.translation import ugettext_lazy as _
-# from durationfield.db.models.fields.duration import DurationField
-# from django.db.models.fields import DurationField
+from django.utils.translation import gettext_lazy as _
 from django_fsm import FSMField, transition
 from django_fsm_log.decorators import fsm_log_by
+import uuid
 
-# from wastd.users.models import User
-
-# import urllib
-# import slugify
-# from datetime import timedelta
-# from dateutil import tz
-
-# from django.utils.safestring import mark_safe
-
-# from django_fsm_log.models import StateLog
-# from polymorphic.models import PolymorphicModel
-
-
-logger = logging.getLogger(__name__)
 
 # Instantiated models --------------------------------------------------------#
 
@@ -109,33 +86,6 @@ class RenderMixin(models.Model):
     def opts(self):
         """Return model options."""
         return self._meta
-
-    # def do_render(self, template_type="cards", path=None):
-    #     """Render a template to a safe string."""
-    #     if path is None:
-    #         if getattr(self.opts, "card_template", None):
-    #             path = self.opts.card_template
-    #         else:
-    #             path = "{0}/{1}/{2}.html".format(
-    #                 self.opts.app_label,
-    #                 template_type,
-    #                 self.opts.model_name)
-    #     try:
-    #         template = loader.get_template(path)
-    #     except TemplateDoesNotExist:
-    #         msg = "Missing template {0} for {1}".format(path, self.__str__())
-    #         return mark_safe(msg)
-    #     return mark_safe(template.render({"object": self}))
-
-    # @property
-    # def as_card(self, path=None):
-    #     """Return as rendered HTML card."""
-    #     return self.do_render(template_type="cards", path=path)
-
-    # @property
-    # def as_latex(self, path=None):
-    #     """Return as Latex source."""
-    #     return self.do_render(template_type="latex", path=path)
 
     @property
     def card_template(self):

@@ -1,6 +1,6 @@
 from rest_framework.routers import DefaultRouter
-from wastd.users import api as users_api
-from wastd.observations import api as observations_api
+from users import api as users_api
+from observations import api as observations_api
 
 router = DefaultRouter()
 # meta: users, area, surveys

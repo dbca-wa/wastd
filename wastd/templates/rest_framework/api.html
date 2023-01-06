@@ -6,10 +6,10 @@
       integrity="sha256-BJ/G+e+y7bQdrYkS2RBTyNfBHpA9IuGaPmf9htub5MQ=" crossorigin="anonymous" />
 <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
 {% endblock %}
-{% block title %}{{ settings.SITE_TITLE }} API{% endblock %}
+{% block title %}{{ SITE_TITLE }} API{% endblock %}
 
 {% block branding %}
-<a class="navbar-brand" rel="nofollow" href="/api/1/">{{ settings.SITE_TITLE }} API</a>
+<a class="navbar-brand" rel="nofollow" href="/api/1/">{{ SITE_TITLE }} API</a>
 {% endblock %}
 
 {% block userlinks %}
@@ -43,18 +43,6 @@
       <a class="nav-link" href="{% url 'users:user-detail' request.user.pk  %}">
           <i class="fa fa-user"></i>&nbsp;{% trans "My Profile" %}
       </a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" href="{% url 'account_logout' %}">
-          <i class="fa fa-sign-out"></i>&nbsp;{% trans "Sign out" %}
-      </a>
-    </li>
-  {% else %}
-    <li class="nav-item">
-      <a id="sign-up-link" class="nav-link" href="{% url 'account_signup' %}">{% trans "Sign Up" %}</a>
-    </li>
-    <li class="nav-item">
-      <a id="log-in-link" class="nav-link" href="{% url 'account_login' %}">{% trans "Sign In" %}</a>
     </li>
   {% endif %}
 </ul>

@@ -1,12 +1,9 @@
-# -*- coding: utf-8 -*-
 """Shared admin."""
-from __future__ import unicode_literals
-
 from django.contrib.admin.widgets import AdminFileWidget
 from django.contrib.gis.db import models as geo_models
 from django.db import models
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from django_fsm_log.admin import StateLogInline
 from leaflet.forms.widgets import LeafletWidget
