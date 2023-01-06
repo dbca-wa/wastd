@@ -59,7 +59,6 @@
       -->
              {% if object == request.user %}
             <a class="btn btn-primary btn-sm" href="{{ object.absolute_admin_url }}">Update my Profile</a>
-            <a class="btn btn-primary btn-sm" href="{% url 'account_email' %}">Manage my E-Mails</a>
             {% endif %}
       </div>
 

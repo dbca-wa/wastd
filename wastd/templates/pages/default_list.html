@@ -1,0 +1,51 @@
+<!-- Generic list template: Breadcrumbs, pagination, resource download, cards, filters. -->
+{% extends "pages/base.html" %}
+{% load static leaflet_tags geojson_tags crispy_forms_tags bootstrap4 export_download %}
+
+{% block content %}
+<span class="float-right">{% resource_download_menu %}</span>
+{% include 'shared/breadcrumbs.html' %}
+{% include 'shared/pagination_row.html' %}
+<div class="row" id="data-row">
+  <!-- Data -->
+  <div id="cards-row" class="col-lg-9 col-md-8 col-sm-6 col-12">
+    <div class="row">
+      {% for object in object_list %}
+        {% include object.card_template %}
+      {% endfor %}
+      </div><!-- /.row -->
+  </div><!-- /#cards-row -->
+
+  <!-- Search -->
+  <div id="filters-row" class="col-lg-3 col-md-4 col-sm-6 col-12">
+    <form method="get">
+      <div class="row-fluid">
+      <button
+        class="btn btn-primary my-2 my-sm-0 btn-block"
+        title="Filter fesults by below criteria." type="submit">
+        Filter results
+      </button>
+        {% bootstrap_form list_filter.form %}
+      </div>
+      <button
+        class="btn btn-primary my-2 my-sm-0 btn-block"
+        title="Filter results by above criteria." type="submit">
+        Filter results
+      </button>
+    </form>
+  </div><!-- /#filters-row -->
+</div><!-- /#data-row-->
+{% endblock %}
+
+{% block css%}
+{{ block.super }}
+{{ list_filter.form.media.css }}
+{% endblock %}
+
+{% block javascript %}
+{{ block.super }}
+{{ list_filter.form.media.js }}
+    <!-- Some widgets need JQuery to be loaded early -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"
+      integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+{% endblock %}

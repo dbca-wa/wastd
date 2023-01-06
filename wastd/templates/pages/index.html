@@ -1,0 +1,161 @@
+{% extends "pages/base.html" %}
+{% load static crispy_forms_tags bootstrap4 %}
+
+{% block content %}
+<div class="container-fluid" id="wrap">
+
+  <!-- Breadcrumbs -->
+  <div class="row">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item active">
+          <a href="/">
+            {{ SITE_NAME }} Home
+          </a>
+        </li>
+      </ol>
+    </nav>
+  </div>
+
+
+<div class="container centering">
+
+  <div class="row">
+
+    <div class="col-lg-3 col-md-6 col-12">
+      <img class="rounded-circle"
+        src="{% static 'images/gh.png' %}"
+        alt="Green turtle hatchling at Thevenard Island. Photo: Florian Mayer, DBCA."
+        width="140" height="140">
+      <h2>Data Dashboard</h2>
+      <p>
+        A live dashboard of Turtle Monitoring data.
+        Browse the data in interactive maps, figures, and tables,
+        or download the data ready to go.
+      </p>
+      <p>
+        <a class="btn btn-danger btn-block"
+           href="https://turtledata.dbca.wa.gov.au/"
+           target="_" rel="nofollow"
+           title="Turtle Data Dashboard">
+          Dive in »
+        </a>
+      </p>
+
+    </div>
+
+    <div class="col-lg-3 col-md-6 col-12">
+      <img class="rounded-circle"
+        src="{% static 'images/flatback_red.jpg' %}"
+        alt="Flatback turtle at Thevenard Island. Photo: Florian Mayer, DBCA."
+        width="140" height="140">
+      <h2>Turtle Tagging</h2>
+      <p>
+        Browse and filter Animal Encounters involving tagged turtles.
+      </p>
+      <p>
+        <a class="btn btn-primary btn-block"
+           href="{% url 'observations:animalencounter-list' %}?encounter_type=tagging"
+           title="Browse, filter and search animal encounters">
+          Browse »
+        </a>
+
+        {% if request.user.is_staff %}
+        <a class="btn btn-success btn-block"
+           href="{% url 'admin:observations_animalencounter_changelist' %}?encounter_type=tagging"
+           title="Curate and QA animal encounters">
+          Curate »
+        </a>
+        {% endif %}
+      </p>
+
+    </div>
+
+    <div class="col-lg-3 col-md-6 col-12">
+      <img class="rounded-circle"
+        src="{% static 'images/turtle_track.jpg' %}"
+        alt="Green turtle track at Thevenard Island. Photo: Florian Mayer, DBCA."
+        width="140" height="140">
+      <h2>Turtle Nesting Census</h2>
+      <p>
+        Browse and search Turtle Nest Encounters,
+        including turtle tracks and nests, disturbance, predation, nest excavations,
+        hatchling morphometrics, fan angles, and light disturbance.
+      </p>
+      <p>
+        Find shortcuts to more options under "Nests and Tracks".
+      </p>
+      <p>
+        <a class="btn btn-primary btn-block" href="{% url 'observations:turtlenestencounter-list' %}"
+            title="Browse, filter and search Turtle Nest Encounters">
+          Browse »
+        </a>
+      </p>
+
+      {% if request.user.is_staff %}
+      <p>
+        <a class="btn btn-success btn-block"
+           href="{% url 'admin:observations_turtlenestencounter_changelist' %}"
+           title="Curate and QA animal encounters">
+          Curate »
+        </a>
+      </p>
+      {% endif %}
+
+    </div>
+
+
+     <div class="col-lg-3 col-md-6 col-12">
+      <img class="rounded-circle"
+        src="{% static 'images/map_wa_square.png' %}"
+        alt="Map of Western Australia showing TSC data on ESRI imagery. Copyright background layers: ESRI."
+        width="140" height="140">
+      <h2>Marine Wildlife Incidents</h2>
+      <p>
+        View, report, list incidents (mortalities, entanglements, injuries) involving
+        threatened marine megafauna: Turtles, Dugong, Sea snakes, excluding Pinnipeds and Cetaceans.
+        We recommend to report Marine Wildlife Incidents using our app - get started <a href="" title="TODO">here</a>.
+      </p>
+
+      <p>
+        <a class="btn btn-primary btn-block" href="{% url 'map' %}"
+            title="Map Marine Wildlife Incidents">
+          Map »
+        </a>
+      </p>
+      <p>
+        <a class="btn btn-primary btn-block" href="{% url 'observations:animalencounter-list' %}?encounter_type=stranding"
+            title="List, filter, export Marine Wildlife Incidents">
+          Browse »
+        </a>
+      </p>
+      {% if request.user.is_staff %}
+      <p>
+        <a class="btn btn-success btn-block"
+           href="{% url 'admin:observations_animalencounter_changelist' %}?encounter_type=stranding"
+           title="Curate and QA marine wildlife incidents">
+          Curate »
+        </a>
+      </p>
+      {% endif %}
+      <p>
+        <a class="btn btn-primary btn-block" href=""
+            title="Get our app to report Marine Wildlife Incidents">
+          Report (via app) »
+        </a>
+      </p>
+      <p>
+        <a class="btn btn-secondary btn-block" href="https://odkc.dbca.wa.gov.au/-/single/iz382G6wGcCrWcbmNae6odIgYiU7cns?st=eHL5vK$CtNzbOj9P7KQ5uDhDLWvVakNqwfbs9zSKIwOBVdIHEKW6eQ7dnDc52WNk"
+            title="Report a new Marine Wildlife Incident captured on paper.
+Please upgrade to use the app!">
+          Report (via web form) »
+        </a>
+      </p>
+    </div>
+
+
+  </div><!-- .row -->
+</div><!-- .container -->
+
+</div><!-- #wrap -->
+{% endblock %}

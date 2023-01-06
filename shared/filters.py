@@ -1,12 +1,10 @@
-# -*- coding: utf-8 -*-
 """Shared filter utilities."""
 from collections import OrderedDict  # noqa
 from dateutil.relativedelta import relativedelta
-
 from django.contrib.gis.db import models as geo_models
 from django.db import models
 from django.utils.timezone import now
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 import django_filters
 from leaflet.forms.widgets import LeafletWidget

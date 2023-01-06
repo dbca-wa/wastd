@@ -1,10 +1,7 @@
-# -*- coding: utf-8 -*-
 """View mixins."""
-from __future__ import unicode_literals
 from django.views.generic.base import ContextMixin, View
-# from django.shortcuts import render
 from django.urls import reverse
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from shared.utils import Breadcrumb
 
