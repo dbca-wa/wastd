@@ -173,6 +173,7 @@ STATIC_URL = "/static/"
 STATICFILES_DIRS = (os.path.join(BASE_DIR, "wastd", "static"),)
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 WHITENOISE_ROOT = STATIC_ROOT
+WHITENOISE_MANIFEST_STRICT = False
 
 # Media (user-uploaded files)
 # Ensure that the media directory exists:

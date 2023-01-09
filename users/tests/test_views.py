@@ -1,7 +1,7 @@
 from django.test import RequestFactory
 from test_plus.test import TestCase
 from .factories import UserFactory, AreaFactory
-from ..views import (
+from users.views import (
     UserRedirectView,
     UserUpdateView,
     transfer_user,
