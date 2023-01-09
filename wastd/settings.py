@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     "export_download",
     "django_tables2",
     "django_select2",
+    "easy_select2",
     "djgeojson",
     "adminactions",
     # Local apps
