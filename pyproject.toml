@@ -49,6 +49,8 @@ ipython = "^8.7.0"
 ipdb = "^0.13.9"
 black = "^22.10.0"
 ruff = "^0.0.212"
+django-test-plus = "2.2.1"
+factory-boy = "3.2.1"
 
 [build-system]
 requires = ["poetry>=1.2.2"]

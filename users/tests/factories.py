@@ -1,5 +1,5 @@
 import factory
-from wastd.observations.models import Area
+from observations.models import Area
 
 
 class UserFactory(factory.django.DjangoModelFactory):
