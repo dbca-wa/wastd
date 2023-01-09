@@ -25,14 +25,16 @@ class CodeLabelDescriptionMixin(models.Model):
     )
 
     label = models.CharField(
-        blank=True, null=True,
+        blank=True,
+        null=True,
         max_length=500,
         verbose_name=_("Label"),
         help_text=_("A human-readable, self-explanatory label."),
     )
 
     description = models.TextField(
-        blank=True, null=True,
+        blank=True,
+        null=True,
         verbose_name=_("Description"),
         help_text=_("A comprehensive description."),
     )
@@ -41,7 +43,9 @@ class CodeLabelDescriptionMixin(models.Model):
         """Class opts."""
 
         abstract = True
-        ordering = ["code", ]
+        ordering = [
+            "code",
+        ]
 
     def __str__(self):
         """The full name."""
@@ -52,12 +56,14 @@ class CodeLabelDescriptionMixin(models.Model):
     @property
     def absolute_admin_url(self):
         """Return the absolute admin change URL."""
-        return reverse('admin:{0}_{1}_change'.format(
-            self._meta.app_label, self._meta.model_name), args=[self.pk])
+        return reverse(
+            "admin:{0}_{1}_change".format(self._meta.app_label, self._meta.model_name),
+            args=[self.pk],
+        )
 
 
 # For RenderMixin: add Meta fields
-options.DEFAULT_NAMES = options.DEFAULT_NAMES + ('card_template', 'latex_template')
+options.DEFAULT_NAMES = options.DEFAULT_NAMES + ("card_template", "latex_template")
 
 
 class RenderMixin(models.Model):
@@ -90,16 +96,12 @@ class RenderMixin(models.Model):
     @property
     def card_template(self):
         """The standard card template path is app_label/cards/model_name.html."""
-        return "{0}/cards/{1}.html".format(
-            self.opts.app_label,
-            self.opts.model_name)
+        return "{0}/cards/{1}.html".format(self.opts.app_label, self.opts.model_name)
 
     @property
     def latex_template(self):
         """The standard latex template path is app_label/latex/model_name.html."""
-        return "{0}/latex/{1}.html".format(
-            self.opts.app_label,
-            self.opts.model_name)
+        return "{0}/latex/{1}.html".format(self.opts.app_label, self.opts.model_name)
 
 
 class UrlsMixin(models.Model):
@@ -131,36 +133,40 @@ class UrlsMixin(models.Model):
 
         Default: admin:app_model_change(**pk)
         """
-        return reverse('admin:{0}_{1}_change'.format(
-            self._meta.app_label, self._meta.model_name), args=[self.pk])
+        return reverse(
+            "admin:{0}_{1}_change".format(self._meta.app_label, self._meta.model_name),
+            args=[self.pk],
+        )
 
     def get_absolute_url(self):
         """Detail url, used by Django to link admin to site.
 
         Default: app:model-detail(**pk).
         """
-        return reverse('{0}:{1}-detail'.format(
-            self._meta.app_label, self._meta.model_name),
-            kwargs={'pk': self.pk})
+        return reverse(
+            "{0}:{1}-detail".format(self._meta.app_label, self._meta.model_name),
+            kwargs={"pk": self.pk},
+        )
 
     @classmethod
     def list_url(cls):
         """List url property. Default: app:model-list."""
-        return reverse('{0}:{1}-list'.format(
-            cls._meta.app_label, cls._meta.model_name))
+        return reverse("{0}:{1}-list".format(cls._meta.app_label, cls._meta.model_name))
 
     @classmethod
     def create_url(cls):
         """Create url. Default: app:model-create."""
-        return reverse('{0}:{1}-create'.format(
-            cls._meta.app_label, cls._meta.model_name))
+        return reverse(
+            "{0}:{1}-create".format(cls._meta.app_label, cls._meta.model_name)
+        )
 
     @property
     def update_url(self):
         """Update url. Default: app:model-update(**pk)."""
-        return reverse('{0}:{1}-update'.format(
-            self._meta.app_label, self._meta.model_name),
-            kwargs={'pk': self.pk})
+        return reverse(
+            "{0}:{1}-update".format(self._meta.app_label, self._meta.model_name),
+            kwargs={"pk": self.pk},
+        )
 
 
 class ObservationAuditMixin(models.Model):
@@ -168,19 +174,27 @@ class ObservationAuditMixin(models.Model):
 
     encountered_on = models.DateTimeField(
         verbose_name=_("Encountered on"),
-        blank=True, null=True,
+        blank=True,
+        null=True,
         db_index=True,
-        help_text=_("The datetime of the original encounter, "
-                    "entered in the local time zone GMT+08 (Perth/Australia)."))
+        help_text=_(
+            "The datetime of the original encounter, "
+            "entered in the local time zone GMT+08 (Perth/Australia)."
+        ),
+    )
 
     encountered_by = models.ForeignKey(
         get_user_model(),
         on_delete=models.PROTECT,
         verbose_name=_("Encountered by"),
-        blank=True, null=True,
-        help_text=_("The person who experienced the original encounter. "
-                    "DBCA staff have to visit this site to create a new profile. "
-                    "Add User profiles for external people through the data curation portal."))
+        blank=True,
+        null=True,
+        help_text=_(
+            "The person who experienced the original encounter. "
+            "DBCA staff have to visit this site to create a new profile. "
+            "Add User profiles for external people through the data curation portal."
+        ),
+    )
 
     class Meta:
         """Class opts."""
@@ -216,16 +230,16 @@ class LegacySourceMixin(models.Model):
     SOURCE_PINNIPED_STRANDINGS = 31
 
     SOURCES = (
-        (SOURCE_MANUAL_ENTRY, 'Direct entry'),
-        (SOURCE_PAPER_DATASHEET, 'Manual entry from paper datasheet'),
-        (SOURCE_DIGITAL_CAPTURE_ODK, 'Digital data capture (ODK)'),
-        (SOURCE_PARTIAL_SURVEY, 'Partial survey'),
-        (SOURCE_THREATENED_FAUNA, 'Threatened Fauna'),
-        (SOURCE_THREATENED_FLORA, 'Threatened Flora'),
-        (SOURCE_THREATENED_COMMUNITIES, 'Threatened Communities'),
-        (SOURCE_THREATENED_COMMUNITIES_BOUNDARIES, 'Threatened Communities Boundaries'),
-        (SOURCE_THREATENED_COMMUNITIES_BUFFERS, 'Threatened Communities Buffers'),
-        (SOURCE_THREATENED_COMMUNITIES_SITES, 'Threatened Communities Sites'),
+        (SOURCE_MANUAL_ENTRY, "Direct entry"),
+        (SOURCE_PAPER_DATASHEET, "Manual entry from paper datasheet"),
+        (SOURCE_DIGITAL_CAPTURE_ODK, "Digital data capture (ODK)"),
+        (SOURCE_PARTIAL_SURVEY, "Partial survey"),
+        (SOURCE_THREATENED_FAUNA, "Threatened Fauna"),
+        (SOURCE_THREATENED_FLORA, "Threatened Flora"),
+        (SOURCE_THREATENED_COMMUNITIES, "Threatened Communities"),
+        (SOURCE_THREATENED_COMMUNITIES_BOUNDARIES, "Threatened Communities Boundaries"),
+        (SOURCE_THREATENED_COMMUNITIES_BUFFERS, "Threatened Communities Buffers"),
+        (SOURCE_THREATENED_COMMUNITIES_SITES, "Threatened Communities Sites"),
         (SOURCE_WAMTRAM2, "Turtle Tagging Database WAMTRAM2"),
         (SOURCE_NINGALOO_TURTLE_PROGRAM, "Ningaloo Turtle Program"),
         (SOURCE_BROOME_TURTLE_PROGRAM, "Broome Turtle Program"),
@@ -240,14 +254,18 @@ class LegacySourceMixin(models.Model):
         verbose_name=_("Data Source"),
         default=SOURCE_MANUAL_ENTRY,
         choices=SOURCES,
-        help_text=_("Where was this record captured initially?"), )
+        help_text=_("Where was this record captured initially?"),
+    )
 
     source_id = models.CharField(
         max_length=1000,
         default=uuid.uuid4,
         verbose_name=_("Source ID"),
-        help_text=_("The ID of the record in the original source, "
-                    "if available, or a randomly generated UUID4."), )
+        help_text=_(
+            "The ID of the record in the original source, "
+            "if available, or a randomly generated UUID4."
+        ),
+    )
 
     class Meta:
         """Class opts."""
@@ -263,12 +281,12 @@ class QualityControlMixin(models.Model):
     Related: https://github.com/dbca-wa/wastd/issues/299
     """
 
-    STATUS_NEW = 'new'
-    STATUS_PROOFREAD = 'proofread'
-    STATUS_CURATED = 'curated'
-    STATUS_PUBLISHED = 'published'
-    STATUS_FLAGGED = 'flagged'
-    STATUS_REJECTED = 'rejected'
+    STATUS_NEW = "new"
+    STATUS_PROOFREAD = "proofread"
+    STATUS_CURATED = "curated"
+    STATUS_PUBLISHED = "published"
+    STATUS_FLAGGED = "flagged"
+    STATUS_REJECTED = "rejected"
 
     STATUS_CHOICES = (
         (STATUS_NEW, _("New")),
@@ -289,9 +307,8 @@ class QualityControlMixin(models.Model):
     }
 
     status = FSMField(
-        default=STATUS_NEW,
-        choices=STATUS_CHOICES,
-        verbose_name=_("QA Status"))
+        default=STATUS_NEW, choices=STATUS_CHOICES, verbose_name=_("QA Status")
+    )
 
     class Meta:
         """Class opts."""
@@ -303,8 +320,7 @@ class QualityControlMixin(models.Model):
         """Return a Bootstrap4 CSS colour class for each status."""
         return self.STATUS_LABELS[self.status]
 
-
-# FSM transitions --------------------------------------------------------#
+    # FSM transitions --------------------------------------------------------#
     def can_proofread(self):
         """Return true if this document can be proofread."""
         return True
@@ -318,9 +334,12 @@ class QualityControlMixin(models.Model):
         # permission=lambda instance, user: user in instance.all_permitted,
         custom=dict(
             verbose="Submit for QA",
-            explanation=("Submit this record as a faithful representation of the "
-                         "data source for QA to become an accepted record."),
-            notify=True,)
+            explanation=(
+                "Submit this record as a faithful representation of the "
+                "data source for QA to become an accepted record."
+            ),
+            notify=True,
+        ),
     )
     def proofread(self, by=None):
         """Mark encounter as proof-read.
@@ -345,9 +364,12 @@ class QualityControlMixin(models.Model):
         # permission=lambda instance, user: user in instance.all_permitted,
         custom=dict(
             verbose="Require proofreading",
-            explanation=("This record deviates from the data source and "
-                         "requires proofreading."),
-            notify=True,)
+            explanation=(
+                "This record deviates from the data source and "
+                "requires proofreading."
+            ),
+            notify=True,
+        ),
     )
     def require_proofreading(self, by=None):
         """Mark encounter as having typos, requiring more proofreading.
@@ -368,11 +390,11 @@ class QualityControlMixin(models.Model):
         target=STATUS_CURATED,
         conditions=[can_curate],
         # permission=lambda instance, user: user in instance.all_permitted,
-
         custom=dict(
             verbose="Accept as trustworthy",
             explanation=("This record is deemed trustworthy."),
-            notify=True,)
+            notify=True,
+        ),
     )
     def curate(self, by=None):
         """Accept record as trustworthy.
@@ -395,9 +417,12 @@ class QualityControlMixin(models.Model):
         # permission=lambda instance, user: user in instance.all_permitted,
         custom=dict(
             verbose="Flag as not trustworthy",
-            explanation=("This record cannot be true. This record requires"
-                         " review by a subject matter expert."),
-            notify=True,)
+            explanation=(
+                "This record cannot be true. This record requires"
+                " review by a subject matter expert."
+            ),
+            notify=True,
+        ),
     )
     def flag(self, by=None):
         """Flag as requiring changes to data.
@@ -405,7 +430,9 @@ class QualityControlMixin(models.Model):
         Curated data is deemed trustworthy by a subject matter expert.
         Revoking curation flags data for requiring changes by an expert.
         """
-        import ipdb; ipdb.set_trace()
+        import ipdb
+
+        ipdb.set_trace()
         return
 
     def can_reject(self):
@@ -422,12 +449,12 @@ class QualityControlMixin(models.Model):
         custom=dict(
             verbose="Confirm as not trustworthy",
             explanation=("This record is confirmed wrong and not trustworthy."),
-            notify=True,)
+            notify=True,
+        ),
     )
     def reject(self, by=None):
         """Confirm that a record is not trustworthy and beyond repair."""
         return
-
 
     def can_reset(self):
         """Return true if the record QA status can be reset."""
@@ -443,7 +470,8 @@ class QualityControlMixin(models.Model):
         custom=dict(
             verbose="Reset QA status",
             explanation=("The QA status of this record needs to be reset."),
-            notify=True,)
+            notify=True,
+        ),
     )
     def reset(self, by=None):
         """Reset the QA status of a record to NEW.
@@ -466,7 +494,8 @@ class QualityControlMixin(models.Model):
         custom=dict(
             verbose="Publish",
             explanation=("This record is fit for release."),
-            notify=True,)
+            notify=True,
+        ),
     )
     def publish(self, by=None):
         """Mark encounter as ready to be published.
@@ -489,7 +518,8 @@ class QualityControlMixin(models.Model):
         custom=dict(
             verbose="Embargo",
             explanation=("This record is not fit for release."),
-            notify=True,)
+            notify=True,
+        ),
     )
     def embargo(self, by=None):
         """Mark encounter as NOT ready to be published.

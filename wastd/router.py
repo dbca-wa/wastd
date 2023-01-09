@@ -9,88 +9,75 @@ router.register("area", observations_api.AreaViewSet)
 router.register("campaigns", observations_api.CampaignViewSet)
 router.register("surveys", observations_api.SurveyViewSet)
 router.register(
-    "survey-media-attachments",
-    observations_api.SurveyMediaAttachmentViewSet)
+    "survey-media-attachments", observations_api.SurveyMediaAttachmentViewSet
+)
 
 # Encounters
 router.register(
-    "encounters",
-    observations_api.EncounterViewSet,
-    basename="encounters_full")
+    "encounters", observations_api.EncounterViewSet, basename="encounters_full"
+)
 router.register(
-    "encounters-fast",
-    observations_api.FastEncounterViewSet,
-    basename="encounters_fast")
+    "encounters-fast", observations_api.FastEncounterViewSet, basename="encounters_fast"
+)
 router.register(
     "encounters-src",
     observations_api.SourceIdEncounterViewSet,
-    basename="encounters_src")
-router.register(
-    "animal-encounters",
-    observations_api.AnimalEncounterViewSet)
-router.register(
-    "turtle-nest-encounters",
-    observations_api.TurtleNestEncounterViewSet)
+    basename="encounters_src",
+)
+router.register("animal-encounters", observations_api.AnimalEncounterViewSet)
+router.register("turtle-nest-encounters", observations_api.TurtleNestEncounterViewSet)
 # router.register(
 #     "logger-encounters",
 #     observations_api.LoggerEncounterViewSet)
 router.register(
-    "line-transect-encounters",
-    observations_api.LineTransectEncounterViewSet)
+    "line-transect-encounters", observations_api.LineTransectEncounterViewSet
+)
 
 # General Observations
-router.register(
-    "observations",
-    observations_api.ObservationViewSet)
-router.register(
-    "media-attachments",
-    observations_api.MediaAttachmentViewSet)
+router.register("observations", observations_api.ObservationViewSet)
+router.register("media-attachments", observations_api.MediaAttachmentViewSet)
 
 # Animal Observations
+router.register("management-actions", observations_api.ManagementActionViewSet)
+router.register("tag-observations", observations_api.TagObservationViewSet)
 router.register(
-    "management-actions",
-    observations_api.ManagementActionViewSet)
+    "turtle-morphometrics", observations_api.TurtleMorphometricObservationViewSet
+)
 router.register(
-    "tag-observations",
-    observations_api.TagObservationViewSet)
-router.register(
-    "turtle-morphometrics",
-    observations_api.TurtleMorphometricObservationViewSet)
-router.register(
-    "turtle-damage-observations",
-    observations_api.TurtleDamageObservationViewSet)
+    "turtle-damage-observations", observations_api.TurtleDamageObservationViewSet
+)
 
 # Turtle Nest Observations
 router.register(
     "turtle-nest-disturbance-observations",
-    observations_api.TurtleNestDisturbanceObservationViewSet)
+    observations_api.TurtleNestDisturbanceObservationViewSet,
+)
+router.register("nest-tag-observations", observations_api.NestTagObservationViewSet)
 router.register(
-    "nest-tag-observations",
-    observations_api.NestTagObservationViewSet)
-router.register(
-    "turtle-nest-excavations",
-    observations_api.TurtleNestObservationViewSet)
+    "turtle-nest-excavations", observations_api.TurtleNestObservationViewSet
+)
 router.register(
     "turtle-hatchling-morphometrics",
-    observations_api.HatchlingMorphometricObservationViewSet)
+    observations_api.HatchlingMorphometricObservationViewSet,
+)
 router.register(
     "turtle-nest-hatchling-emergences",
-    observations_api.TurtleHatchlingEmergenceObservationViewSet)
+    observations_api.TurtleHatchlingEmergenceObservationViewSet,
+)
 router.register(
     "turtle-nest-hatchling-emergence-outliers",
-    observations_api.TurtleHatchlingEmergenceOutlierObservationViewSet)
+    observations_api.TurtleHatchlingEmergenceOutlierObservationViewSet,
+)
 router.register(
     "turtle-nest-hatchling-emergence-light-sources",
-    observations_api.LightSourceObservationViewSet)
+    observations_api.LightSourceObservationViewSet,
+)
 
-router.register(
-    "logger-observations",
-    observations_api.LoggerObservationViewSet)
+router.register("logger-observations", observations_api.LoggerObservationViewSet)
 
 # Track Tally Obs
-router.register(
-    "track-tally",
-    observations_api.TrackTallyObservationViewSet)
+router.register("track-tally", observations_api.TrackTallyObservationViewSet)
 router.register(
     "turtle-nest-disturbance-tally",
-    observations_api.TurtleNestDisturbanceTallyObservationViewSet)
+    observations_api.TurtleNestDisturbanceTallyObservationViewSet,
+)

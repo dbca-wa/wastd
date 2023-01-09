@@ -11,9 +11,10 @@ from django.utils.functional import SimpleLazyObject
 from django.contrib.auth.middleware import AuthenticationMiddleware, get_user
 
 
-from config.settings.common import (ENABLE_AUTH2_GROUPS, LOCAL_USERGROUPS)
+from config.settings.common import ENABLE_AUTH2_GROUPS, LOCAL_USERGROUPS
 
 logger = logging.getLogger(__name__)
+
 
 def sync_usergroups(user, groups):
     from django.contrib.auth.models import Group
@@ -24,7 +25,9 @@ def sync_usergroups(user, groups):
         else []
     )
     usergroups.sort(key=lambda o: o.id)
-    existing_usergroups = list(user.groups.exclude(name__in=LOCAL_USERGROUPS).order_by("id"))
+    existing_usergroups = list(
+        user.groups.exclude(name__in=LOCAL_USERGROUPS).order_by("id")
+    )
     index1 = 0
     index2 = 0
     len1 = len(usergroups)
@@ -109,9 +112,10 @@ class SSOLoginMiddleware(MiddlewareMixin):
             return
 
         if (
-            not request.user.is_authenticated 
-            and 'HTTP_REMOTE_USER' in request.META 
-            and request.META['HTTP_REMOTE_USER']):
+            not request.user.is_authenticated
+            and "HTTP_REMOTE_USER" in request.META
+            and request.META["HTTP_REMOTE_USER"]
+        ):
 
             # Not authenticated before
             attributemap = {
@@ -137,7 +141,6 @@ class SSOLoginMiddleware(MiddlewareMixin):
                 ):
                     raise PermissionDenied
 
-           
             if (
                 attributemap["email"]
                 and User.objects.filter(email__iexact=attributemap["email"]).exists()
@@ -155,29 +158,38 @@ class SSOLoginMiddleware(MiddlewareMixin):
 
             # Give internal Users default access
             # https://github.com/dbca-wa/wastd/issues/433
-            if (hasattr(settings, "INTERNAL_EMAIL_SUFFIXES") and settings.INTERNAL_EMAIL_SUFFIXES):
+            if (
+                hasattr(settings, "INTERNAL_EMAIL_SUFFIXES")
+                and settings.INTERNAL_EMAIL_SUFFIXES
+            ):
                 internal = settings.INTERNAL_EMAIL_SUFFIXES
                 if isinstance(settings.INTERNAL_EMAIL_SUFFIXES, str):
                     internal = [settings.INTERNAL_EMAIL_SUFFIXES]
                 if any([attributemap["email"].lower().endswith(x) for x in internal]):
 
-                    logger.info(f"[SSOLoginMiddleware.process_request] default permissions assigned to user {user.email}")
+                    logger.info(
+                        f"[SSOLoginMiddleware.process_request] default permissions assigned to user {user.email}"
+                    )
 
                     # Give user access to Org DBCA
                     from wastd.users.models import Organisation
+
                     dbca, _ = Organisation.objects.get_or_create(code="dbca")
                     user.organisations.add(dbca)
-                    
+
                     # Give user access to Group "data viewer"
                     from django.contrib.auth.models import Group
+
                     dv, _ = Group.objects.get_or_create(name="data viewer")
                     user.groups.add(dv)
 
             # If the user is not in Group "data viewer", forbid any further access
             # https://github.com/dbca-wa/wastd/issues/384
-            if 'data viewer' not in [g.name for g in user.groups.all()]:
-                logger.warning(f"[SSOLoginMiddleware.process_request] rejected user without data viewer permission: {user.email}")
-                
+            if "data viewer" not in [g.name for g in user.groups.all()]:
+                logger.warning(
+                    f"[SSOLoginMiddleware.process_request] rejected user without data viewer permission: {user.email}"
+                )
+
                 raise PermissionDenied
 
             login(request, user)
@@ -187,7 +199,6 @@ class SSOLoginMiddleware(MiddlewareMixin):
                 groups = request.META["HTTP_X_GROUPS"] or None
                 sync_usergroups(user, groups)
                 request.session["usergroups"] = groups
-            
 
 
 def curry(_curried_func, *args, **kwargs):

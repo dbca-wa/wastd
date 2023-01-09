@@ -13,8 +13,9 @@ def update_names():
     msg = "[observations.tasks.update_names] Start updating names..."
     logger.info(msg)
     encs = utils.reconstruct_animal_names()
-    msg = ("[observations.tasks.update_names] "
-           "{} animal names reconstructed. ".format(len(encs)))
+    msg = "[observations.tasks.update_names] " "{} animal names reconstructed. ".format(
+        len(encs)
+    )
     logger.info(msg)
 
 
@@ -23,7 +24,9 @@ def resave_surveys():
     msg = "[observations.tasks.resave_surveys] Start re-saving Surveys..."
     logger.info(msg)
     surveys = [s.save() for s in models.Survey.objects.all()]
-    msg = "[observations.tasks.resave_surveys] {0} surveys reconstructed".format(len(surveys))
+    msg = "[observations.tasks.resave_surveys] {0} surveys reconstructed".format(
+        len(surveys)
+    )
     logger.info(msg)
 
 

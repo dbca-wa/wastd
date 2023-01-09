@@ -1,5 +1,5 @@
 # Test Campaigns
-# Given: three surveys, three Enc. 
+# Given: three surveys, three Enc.
 # Create Campaign. One svy and enc are outside camp.
 # Expect the svys and encs inside cmapaign to be linked to camp.
 # Expect the svy and enc outside camp not to be linked to camp.

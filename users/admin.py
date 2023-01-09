@@ -15,24 +15,26 @@ logger = logging.getLogger(__name__)
 class OrganisationAdmin(admin.ModelAdmin):
     """Organisation admin."""
 
-    list_display = ("code", "label", "description" )
+    list_display = ("code", "label", "description")
     # list_filter = ("owner", "viewers")
-    search_fields = ("label__icontains", "description__icontains", )
+    search_fields = (
+        "label__icontains",
+        "description__icontains",
+    )
     # form = s2form(Organisation, attrs=S2ATTRS)
     # formfield_overrides = FORMFIELD_OVERRIDES
 
 
 class MyUserChangeForm(UserChangeForm):
-
     class Meta(UserChangeForm.Meta):
         model = User
 
 
 class MyUserCreationForm(UserCreationForm):
 
-    error_message = UserCreationForm.error_messages.update({
-        "duplicate_username": "This username has already been taken."
-    })
+    error_message = UserCreationForm.error_messages.update(
+        {"duplicate_username": "This username has already been taken."}
+    )
 
     class Meta(UserCreationForm.Meta):
         model = User
@@ -51,18 +53,28 @@ class MyUserAdmin(AuthUserAdmin):
     form = MyUserChangeForm
     add_form = MyUserCreationForm
     fieldsets = (
-        ("User Profile",
-            {"fields": (
-                "name",
-                "nickname",
-                "aliases",
-                "role",
-                "affiliation",
-                "organisations",
-                "phone",
-                "alive")}),
+        (
+            "User Profile",
+            {
+                "fields": (
+                    "name",
+                    "nickname",
+                    "aliases",
+                    "role",
+                    "affiliation",
+                    "organisations",
+                    "phone",
+                    "alive",
+                )
+            },
+        ),
     ) + AuthUserAdmin.fieldsets
-    list_filter = ("is_superuser", "is_staff", "is_active", "alive",)
+    list_filter = (
+        "is_superuser",
+        "is_staff",
+        "is_active",
+        "alive",
+    )
     list_display = (
         "username",
         "email",
@@ -75,7 +87,7 @@ class MyUserAdmin(AuthUserAdmin):
         "is_superuser",
         "is_staff",
         "is_active",
-        "alive"
+        "alive",
     )
     search_fields = [
         "username__icontains",
@@ -85,14 +97,13 @@ class MyUserAdmin(AuthUserAdmin):
         "role__icontains",
         "affiliation__icontains",
         "email__icontains",
-        "phone__icontains"
+        "phone__icontains",
     ]
     readonly_fields = [
         "organisations",
         "is_superuser",
         "is_staff",
-        ]
-
+    ]
 
     def get_readonly_fields(self, request, obj=None):
         if request.user.is_staff:

@@ -82,7 +82,7 @@ def float_or_none(string):
 
 
 def str_or_na(string):
-    """Return the string or "na". """
+    """Return the string or "na"."""
     try:
         return string
     except:
@@ -106,7 +106,11 @@ def set_sites():
     """Set the site where missing for all NEW Encounters."""
     sites = Area.objects.filter(area_type=Area.AREATYPE_SITE)
     enc = Encounter.objects.filter(status=Encounter.STATUS_NEW, site=None)
-    logger.info("[wastd.observations.utils.set_sites] Found {0} encounters without site".format(enc.count()))
+    logger.info(
+        "[wastd.observations.utils.set_sites] Found {0} encounters without site".format(
+            enc.count()
+        )
+    )
     return [set_site(sites, e) for e in enc]
 
 
@@ -122,54 +126,66 @@ def reconstruct_missing_surveys(buffer_mins=30):
     """
     logger.info("[QA][reconstruct_missing_surveys] Rounding up the orphans...")
     tne = Encounter.objects.exclude(site=None).filter(survey=None)
-    logger.info("[QA][reconstruct_missing_surveys] Done. "
-                "Found {0} orphans witout survey.".format(tne.count()))
+    logger.info(
+        "[QA][reconstruct_missing_surveys] Done. "
+        "Found {0} orphans witout survey.".format(tne.count())
+    )
     logger.info("[QA][reconstruct_missing_surveys] Inferring missing survey data...")
     tne_all = [[t.site.id, t.when.date(), t.when, t.reporter] for t in tne]
     tne_idx = [[t[0], t[1]] for t in tne_all]
     tne_data = [[t[2], t[3]] for t in tne_all]
-    idx = pandas.MultiIndex.from_tuples(tne_idx, names=['site', 'date'])
-    df = pandas.DataFrame(tne_data, index=idx, columns=['datetime', 'reporter'])
+    idx = pandas.MultiIndex.from_tuples(tne_idx, names=["site", "date"])
+    df = pandas.DataFrame(tne_data, index=idx, columns=["datetime", "reporter"])
     missing_surveys = pandas.pivot_table(
         df,
-        index=['date', 'site'],
-        values=['datetime', 'reporter'],
-        aggfunc={'datetime': [min, max], 'reporter': 'first'}
+        index=["date", "site"],
+        values=["datetime", "reporter"],
+        aggfunc={"datetime": [min, max], "reporter": "first"},
     )
-    logger.info("[QA][reconstruct_missing_surveys] Done. "
-                "Creating {0} missing surveys...".format(len(missing_surveys)))
+    logger.info(
+        "[QA][reconstruct_missing_surveys] Done. "
+        "Creating {0} missing surveys...".format(len(missing_surveys))
+    )
 
     bfr = timedelta(minutes=buffer_mins)
     for idx, row in missing_surveys.iterrows():
-        logger.debug("Missing Survey on {0} at {1} by {2} from {3}-{4}".format(
-            idx[0],
-            idx[1],
-            row['reporter']['first'],
-            row['datetime']['min'] - bfr,
-            row['datetime']['max'] + bfr
-        ))
+        logger.debug(
+            "Missing Survey on {0} at {1} by {2} from {3}-{4}".format(
+                idx[0],
+                idx[1],
+                row["reporter"]["first"],
+                row["datetime"]["min"] - bfr,
+                row["datetime"]["max"] + bfr,
+            )
+        )
         ste = Area.objects.get(id=idx[1])
         s = Survey.objects.create(
             source="reconstructed",
             site=ste,
             start_location=ste.centroid,
-            start_time=row['datetime']['min'] - bfr,
-            end_time=row['datetime']['max'] + bfr,
+            start_time=row["datetime"]["min"] - bfr,
+            end_time=row["datetime"]["max"] + bfr,
             end_location=ste.centroid,
-            reporter=row['reporter']['first'],
-            start_comments="[QA][AUTO] Reconstructed by WAStD from Encounters without surveys."
+            reporter=row["reporter"]["first"],
+            start_comments="[QA][AUTO] Reconstructed by WAStD from Encounters without surveys.",
         )
         s.save()
-    logger.info("[QA][reconstruct_missing_surveys] Done. Created {0} surveys to "
-                "adopt {1} orphaned Encounters.".format(len(missing_surveys), tne.count()))
+    logger.info(
+        "[QA][reconstruct_missing_surveys] Done. Created {0} surveys to "
+        "adopt {1} orphaned Encounters.".format(len(missing_surveys), tne.count())
+    )
 
     tne = Encounter.objects.exclude(site=None).filter(survey=None)
-    logger.info("[QA][reconstruct_missing_surveys] Remaining orphans without survey: {0}".format(tne.count()))
+    logger.info(
+        "[QA][reconstruct_missing_surveys] Remaining orphans without survey: {0}".format(
+            tne.count()
+        )
+    )
 
     return None
 
 
-#-----------------------------------------------------------------------------#
+# -----------------------------------------------------------------------------#
 # Helpers for reconstruct_animal_names
 #
 def filter_tags_not_taken(tags):
@@ -179,7 +195,7 @@ def filter_tags_not_taken(tags):
 
 def filter_encounters_without_name_new(encs):
     """From a dict of Encounters, filter Encounters where name_new is None."""
-    return [enc for enc in encs if enc['name_new'] is None]
+    return [enc for enc in encs if enc["name_new"] is None]
 
 
 def get_linked_tags(tags, enc_id):
@@ -193,7 +209,7 @@ def get_linked_tags(tags, enc_id):
         list: List of tag dicts linked to encounter enc_id.
     """
 
-    return [t for t in tags if t['encounter_id'] == enc_id]
+    return [t for t in tags if t["encounter_id"] == enc_id]
 
 
 def get_linked_encs(tags, tag_dict, encs):
@@ -214,10 +230,10 @@ def get_linked_encs(tags, tag_dict, encs):
     """
     # The list if known_tags is a subset of the list of tags.
     # Each refers to a tag name (e.g. WA12345), which could be encountered in other tag observations.
-    tag_names = set([t['name'] for t in tag_dict])
+    tag_names = set([t["name"] for t in tag_dict])
 
     # Find all encounter ids from the master set of (not yet allocated) tag observations.
-    linked_enc_ids = set([t['encounter_id'] for t in tags if t['name'] in tag_names])
+    linked_enc_ids = set([t["encounter_id"] for t in tags if t["name"] in tag_names])
 
     # Get the full encounter dict from enc for each encounter id in linked_enc_ids.
     return {enc_id: encs[enc_id] for enc_id in linked_enc_ids}
@@ -246,7 +262,7 @@ def get_encounter_history(tags, encs, tag_scars):
     # Gatecheck: if the tag's encounter ID is missing from encs, return.
     # Some tags are allocated to Encounters other than AnimalEncounters.
     try:
-        enc = encs[tag['encounter_id']]
+        enc = encs[tag["encounter_id"]]
     except:
         msg = "  Tag not found in encs, skipping tag."
         logger.info(msg)
@@ -275,10 +291,12 @@ def get_encounter_history(tags, encs, tag_scars):
         # Find new encounters linked to the list of known tags
         new_enc = get_linked_encs(tags, known_tags, encs)
         known_enc = {**known_enc, **new_enc}
-        new_tags_list_of_dicts = [get_linked_tags(tags, enc_id) for enc_id in list(new_enc.keys())]
+        new_tags_list_of_dicts = [
+            get_linked_tags(tags, enc_id) for enc_id in list(new_enc.keys())
+        ]
         new_tags = [item for sublist in new_tags_list_of_dicts for item in sublist]
-        new_tag_ids = set([t['id'] for t in new_tags])
-        known_tag_ids = set([t['id'] for t in known_tags])
+        new_tag_ids = set([t["id"] for t in new_tags])
+        known_tag_ids = set([t["id"] for t in known_tags])
         extra_tags = set([t for t in new_tag_ids if t not in known_tag_ids])
         known_tags.extend(new_tags)
         # Continue if we have found new tags
@@ -286,11 +304,11 @@ def get_encounter_history(tags, encs, tag_scars):
 
     # From known_tags, get tag with the earliest "encounter__animalencounter__when"
     # TODO prefer flipper tag left if present
-    earliest_tag = min(known_tags, key=lambda t: t['encounter__animalencounter__when'])
+    earliest_tag = min(known_tags, key=lambda t: t["encounter__animalencounter__when"])
     all_tag_names = " ".join(list(set([t["name"] for t in known_tags])))
 
     # Remove known_tags from tags
-    tags = [t for t in tags if t['id'] not in known_tag_ids]
+    tags = [t for t in tags if t["id"] not in known_tag_ids]
 
     # set name_new in encs for all list(set(known_enc)) as tag['name'] of tag with earliest_tag["name"]
     for enc in known_enc:
@@ -303,8 +321,12 @@ def get_encounter_history(tags, encs, tag_scars):
     for idx, enc in enumerate(sorted_encs):
         # List known_tags for this encounter_id
         reason = "default value"
-        enc_tags_status_list = list(set([t["status"] for t in known_tags if t["encounter_id"] == enc["id"]]))
-        msg = "  Inferring sighting status for {} position {} with tag statuses {}".format(enc["id"], idx, enc_tags_status_list)
+        enc_tags_status_list = list(
+            set([t["status"] for t in known_tags if t["encounter_id"] == enc["id"]])
+        )
+        msg = "  Inferring sighting status for {} position {} with tag statuses {}".format(
+            enc["id"], idx, enc_tags_status_list
+        )
         logger.debug(msg)
 
         # Classification criteria
@@ -313,33 +335,33 @@ def get_encounter_history(tags, encs, tag_scars):
 
         if idx == 0:
             if enc["has_tag_scars"] is False and only_new_tags is True:
-                enc['sighting_status_new'] = "new"
+                enc["sighting_status_new"] = "new"
                 reason = "first recorded encounter, only new tags, no existing tags, no tag scars"
             elif enc["has_tag_scars"] is False and only_new_tags is False:
-                enc['sighting_status_new'] = "resighting"
+                enc["sighting_status_new"] = "resighting"
                 reason = "first recorded encounter, has existing tags, no tag scars - conflict: date vs existing tags"
             elif enc["has_tag_scars"] is True and only_new_tags is True:
-                enc['sighting_status_new'] = "resighting"
+                enc["sighting_status_new"] = "resighting"
                 reason = "first recorded encounter, no existing tags, has tag scars - re-entered tagged population"
             else:
-                enc['sighting_status_new'] = "resighting"
+                enc["sighting_status_new"] = "resighting"
                 reason = "first recorded encounter, no rule applicable - conflict: fix classifiation logic"
 
-            enc['datetime_of_last_sighting'] = sorted_encs[0]["when"]
-            enc['site_of_first_sighting'] = sorted_encs[0]["site__pk"]
-            enc['site_of_last_sighting'] = sorted_encs[0]["site__pk"]
+            enc["datetime_of_last_sighting"] = sorted_encs[0]["when"]
+            enc["site_of_first_sighting"] = sorted_encs[0]["site__pk"]
+            enc["site_of_last_sighting"] = sorted_encs[0]["site__pk"]
 
         else:
             same_area = enc["area__name"] == sorted_encs[idx - 1]["area__name"]
             same_season = enc["season"] == sorted_encs[idx - 1]["season"]
 
             # Set from previous encounter
-            enc['datetime_of_last_sighting'] = sorted_encs[idx - 1]["when"]
-            enc['site_of_first_sighting'] = sorted_encs[0]["site__pk"]
-            enc['site_of_last_sighting'] = sorted_encs[idx - 1]["site__pk"]
+            enc["datetime_of_last_sighting"] = sorted_encs[idx - 1]["when"]
+            enc["site_of_first_sighting"] = sorted_encs[0]["site__pk"]
+            enc["site_of_last_sighting"] = sorted_encs[idx - 1]["site__pk"]
 
             if enc["has_tag_scars"] is False and only_new_tags is True:
-                enc['sighting_status_new'] = "new"
+                enc["sighting_status_new"] = "new"
                 reason = "not first recorded encounter, only new tags, no existing tags, no tag scars - conflict: date vs existing tags"
             elif same_area and same_season:
                 enc["sighting_status_new"] = "resighting"
@@ -389,7 +411,8 @@ def reconstruct_animal_names():
 
     # A list of dicts of tags.
     tags = [
-        dict(tag) for tag in TagObservation.objects.values(
+        dict(tag)
+        for tag in TagObservation.objects.values(
             "id",
             "name",
             "status",
@@ -399,39 +422,35 @@ def reconstruct_animal_names():
             "encounter__animalencounter__sighting_status",
             "encounter__animalencounter__sighting_status_reason",
             "encounter__animalencounter__name",
-            "encounter__animalencounter__identifiers"
+            "encounter__animalencounter__identifiers",
         )
     ]
 
     tag_scars = [
-        dict(scar) for scar in TurtleDamageObservation.objects.filter(
-            damage_type="tag-scar",
-            encounter__encounter_type="tagging"
-        ).values(
-            "id",
-            "encounter_id",
-            "body_part"
-        )
+        dict(scar)
+        for scar in TurtleDamageObservation.objects.filter(
+            damage_type="tag-scar", encounter__encounter_type="tagging"
+        ).values("id", "encounter_id", "body_part")
     ]
 
     # Unique encounter ids from tags, deduped because one encounter can have multiple tags.
     # DEBUG: list(...)
-    enc_ids = set([tag['encounter_id'] for tag in tags])
+    enc_ids = set([tag["encounter_id"] for tag in tags])
 
     # A dict of dicts of encounters, keyed by encounter id,
     # with additional fields for newly reconstructed sighting_status and name.
     # The additional field are initially 'na' and None, respectively.
     encs = {
         e["id"]: dict(
-            e, **{
-                'sighting_status_new': 'na',
-                'name_new': None,
-                'datetime_of_last_sighting': None,
-                'has_tag_scars': False
-            })
-        for e in AnimalEncounter.objects.filter(
-            id__in=enc_ids
-        ).values(
+            e,
+            **{
+                "sighting_status_new": "na",
+                "name_new": None,
+                "datetime_of_last_sighting": None,
+                "has_tag_scars": False,
+            }
+        )
+        for e in AnimalEncounter.objects.filter(id__in=enc_ids).values(
             "id",
             "sighting_status",
             "sighting_status_reason",
@@ -440,7 +459,7 @@ def reconstruct_animal_names():
             "when",
             "site__pk",
             "site__name",
-            "area__name"
+            "area__name",
         )
     }
 
@@ -471,12 +490,14 @@ def reconstruct_animal_names():
     # We only have to update encounters with a different sighting_status,
     # sighting_status_reason, name or identifiers.
     encs_to_update = {
-        k:v for (k,v) in encs.items()
-        if v["name_new"] is not None and (
-            v["name_new"] != v["name"] or
-            v["sighting_status_new"] != v["sighting_status"] or
-            v["sighting_status_reason_new"] != v["sighting_status_reason"] or
-            v["identifiers_new"] != v["identifiers"]
+        k: v
+        for (k, v) in encs.items()
+        if v["name_new"] is not None
+        and (
+            v["name_new"] != v["name"]
+            or v["sighting_status_new"] != v["sighting_status"]
+            or v["sighting_status_reason_new"] != v["sighting_status_reason"]
+            or v["identifiers_new"] != v["identifiers"]
         )
     }
 
@@ -494,7 +515,7 @@ def reconstruct_animal_names():
             identifiers=encs_to_update[enc]["identifiers_new"],
             datetime_of_last_sighting=encs_to_update[enc]["datetime_of_last_sighting"],
             site_of_last_sighting_id=encs_to_update[enc]["site_of_last_sighting"],
-            site_of_first_sighting_id=encs_to_update[enc]["site_of_first_sighting"]
+            site_of_first_sighting_id=encs_to_update[enc]["site_of_first_sighting"],
         )
 
     msg = "Encounters updated."
@@ -524,8 +545,11 @@ def allocate_animal_names():
     by PIT tags, so a PIT tag could be the initial tag, too.
     """
     ss = [s.save() for s in Survey.objects.all()]
-    ae = [a.set_name_and_propagate(a.primary_flipper_tag.name)
-          for a in AnimalEncounter.objects.all() if a.is_new_capture]
+    ae = [
+        a.set_name_and_propagate(a.primary_flipper_tag.name)
+        for a in AnimalEncounter.objects.all()
+        if a.is_new_capture
+    ]
     # le = [a.save() for a in LoggerEncounter.objects.all()]
     return [ss, ae]
 
@@ -679,13 +703,17 @@ def guess_user(un, default_username="FlorianM"):
 
         except MultipleObjectsReturned:
             usr = usermodel.objects.filter(name=name).first()
-            msg = "[guess_user][PROBLEM] Duplicate match for name {name}, picking {user}."
+            msg = (
+                "[guess_user][PROBLEM] Duplicate match for name {name}, picking {user}."
+            )
 
         except ObjectDoesNotExist:
-            usrs = usermodel.objects.filter(username__trigram_similar=username,
-                                            name__trigram_similar=name,
-                                            nickname__trigram_similar=name,
-                                            aliases__trigram_similar=name)
+            usrs = usermodel.objects.filter(
+                username__trigram_similar=username,
+                name__trigram_similar=name,
+                nickname__trigram_similar=name,
+                aliases__trigram_similar=name,
+            )
             if usrs.count() == 0:
                 usr = usermodel.objects.create(username=username, name=name)
                 msg = "[guess_user][CREATED] username {username} and name {name} not found. Created {user}."
@@ -699,7 +727,7 @@ def guess_user(un, default_username="FlorianM"):
     msgdict = {"username": username, "name": name, "user": usr}
     message = msg.format(**msgdict)
     logger.info(message)
-    return {'user': usr, 'message': message}
+    return {"user": usr, "message": message}
 
 
 def map_values(d):
@@ -757,11 +785,10 @@ def read_odk_linestring(odk_str):
     # in: "-31.99656982 115.88441855 0.0 0.0;-31.9965685 115.88441522 0.0 0.0;"
     # out: Line(Point(115.88441855 -31.99656982) Point(115.88441522 -31.9965685))
     return LineString(
-        [Point(float(c[1]), float(c[0])) for c in
-         [p.strip().split(" ")
-          for p in odk_str.split(";")
-          if len(p) > 0]
-         ]
+        [
+            Point(float(c[1]), float(c[0]))
+            for c in [p.strip().split(" ") for p in odk_str.split(";") if len(p) > 0]
+        ]
     )
 
 
@@ -802,7 +829,7 @@ def dl_photo(photo_id, photo_url, photo_filename):
     if not os.path.exists(pname):
         logger.debug("  Downloading file {0}...".format(pname))
         response = requests.get(photo_url, stream=True)
-        with open(pname, 'wb') as out_file:
+        with open(pname, "wb") as out_file:
             shutil.copyfileobj(response.raw, out_file)
         del response
     else:
@@ -823,11 +850,12 @@ def handle_photo(p, e, title="Track", enc=True):
     # Does the file exist locally?
     logger.debug(
         "  Creating photo attachment at filepath"
-        " {0} for encounter {1} with title {2}...".format(p, e.id, title))
+        " {0} for encounter {1} with title {2}...".format(p, e.id, title)
+    )
 
     if os.path.exists(p):
         logger.debug("  File {0} exists".format(p))
-        with open(p, 'rb') as photo:
+        with open(p, "rb") as photo:
             f = File(photo)
             # Is the file a dud?
             if f.size > 0:
@@ -837,9 +865,9 @@ def handle_photo(p, e, title="Track", enc=True):
 
                     # Does the MediaAttachment exist already?
                     if MediaAttachment.objects.filter(
-                            encounter=e, title=title).exists():
-                        m = MediaAttachment.objects.filter(
-                            encounter=e, title=title)[0]
+                        encounter=e, title=title
+                    ).exists():
+                        m = MediaAttachment.objects.filter(encounter=e, title=title)[0]
                         action = "updated"
                     else:
                         m = MediaAttachment(encounter=e, title=title)
@@ -847,9 +875,11 @@ def handle_photo(p, e, title="Track", enc=True):
                 else:
                     # Does the MediaAttachment exist already?
                     if CampaignMediaAttachment.objects.filter(
-                            campaign=e, title=title).exists():
+                        campaign=e, title=title
+                    ).exists():
                         m = CampaignMediaAttachment.objects.filter(
-                            campaign=e, title=title)[0]
+                            campaign=e, title=title
+                        )[0]
                         action = "updated"
                     else:
                         m = CampaignMediaAttachment(campaign=e, title=title)
@@ -886,10 +916,7 @@ def handle_media_attachment(e, photo_dict, title="Photo"):
     logger.debug("  Photo dir is {0}".format(pdir))
     logger.debug("  Photo filepath is {0}".format(pname))
 
-    dl_photo(
-        e.source_id,
-        photo_dict["url"],
-        photo_dict["filename"])
+    dl_photo(e.source_id, photo_dict["url"], photo_dict["filename"])
 
     handle_photo(pname, e, title=title, enc=True)
 
@@ -916,10 +943,7 @@ def handle_fieldmedia_attachment(e, photo_dict, title="Photo"):
     logger.debug("  Photo dir is {0}".format(pdir))
     logger.debug("  Photo filepath is {0}".format(pname))
 
-    dl_photo(
-        e.source_id,
-        photo_dict["url"],
-        photo_dict["filename"])
+    dl_photo(e.source_id, photo_dict["url"], photo_dict["filename"])
 
     handle_photo(pname, e, title=title, enc=False)
 
@@ -950,14 +974,15 @@ def handle_turtlenestdistobs(d, e, m):
         disturbance_cause=d["disturbance_cause"],
         disturbance_cause_confidence=m["confidence"][d["disturbance_cause_confidence"]],
         disturbance_severity=d["disturbance_severity"],
-        comments=d["comments"]
+        comments=d["comments"],
     )
     dd.save()
     action = "created" if created else "updated"
     logger.debug("  TurtleNestDisturbanceObservation {0}: {1}".format(action, dd))
 
     handle_media_attachment(
-        e, d["photo_disturbance"], title="Disturbance {0}".format(dd.disturbance_cause))
+        e, d["photo_disturbance"], title="Disturbance {0}".format(dd.disturbance_cause)
+    )
 
 
 def handle_turtlenestdistobs31(d, e):
@@ -996,7 +1021,7 @@ def handle_turtlenestdistobs31(d, e):
         encounter=e,
         disturbance_cause=d["disturbance_cause"],
         disturbance_cause_confidence=d["disturbance_cause_confidence"],
-        comments=d["comments"]
+        comments=d["comments"],
     )
     if "disturbance_severity" in d:
         dd.disturbance_severity = d["disturbance_severity"]
@@ -1005,7 +1030,8 @@ def handle_turtlenestdistobs31(d, e):
     logger.info("  TurtleNestDisturbanceObservation {0}: {1}".format(action, dd))
 
     handle_media_attachment(
-        e, d["photo_disturbance"], title="Disturbance {0}".format(dd.disturbance_cause))
+        e, d["photo_disturbance"], title="Disturbance {0}".format(dd.disturbance_cause)
+    )
 
 
 def handle_turtlenestobs(d, e, m):
@@ -1050,8 +1076,9 @@ def handle_turtlenestobs(d, e, m):
         encounter=e,
         # nest_position=m["habitat"][d["habitat"]],
         no_egg_shells=d["no_egg_shells"],
-        no_live_hatchlings_neck_of_nest=d[
-            "no_live_hatchlings_neck_of_nest"] if "no_live_hatchlings_neck_of_nest" in d else None,
+        no_live_hatchlings_neck_of_nest=d["no_live_hatchlings_neck_of_nest"]
+        if "no_live_hatchlings_neck_of_nest" in d
+        else None,
         no_live_hatchlings=d["no_live_hatchlings"],
         no_dead_hatchlings=d["no_dead_hatchlings"],
         no_undeveloped_eggs=d["no_undeveloped_eggs"],
@@ -1060,7 +1087,7 @@ def handle_turtlenestobs(d, e, m):
         no_depredated_eggs=d["no_depredated_eggs"],
         nest_depth_top=d["nest_depth_top"],
         nest_depth_bottom=d["nest_depth_bottom"],
-        comments=d["comments"] if "comments" in d else ""
+        comments=d["comments"] if "comments" in d else "",
     )
     dd.save()
     action = "created" if created else "updated"
@@ -1111,8 +1138,11 @@ def handle_turtlenestobs31(d, e):
         encounter=e,
         # nest_position=d["habitat"],
         no_egg_shells=int_or_none(d["no_egg_shells"]),
-        no_live_hatchlings_neck_of_nest=int_or_none(d[
-            "no_live_hatchlings_neck_of_nest"] if "no_live_hatchlings_neck_of_nest" in d else None),
+        no_live_hatchlings_neck_of_nest=int_or_none(
+            d["no_live_hatchlings_neck_of_nest"]
+            if "no_live_hatchlings_neck_of_nest" in d
+            else None
+        ),
         no_live_hatchlings=int_or_none(d["no_live_hatchlings"]),
         no_dead_hatchlings=int_or_none(d["no_dead_hatchlings"]),
         no_undeveloped_eggs=int_or_none(d["no_undeveloped_eggs"]),
@@ -1121,16 +1151,19 @@ def handle_turtlenestobs31(d, e):
         no_depredated_eggs=int_or_none(d["no_depredated_eggs"]),
         nest_depth_top=int_or_none(d["nest_depth_top"]),
         nest_depth_bottom=int_or_none(d["nest_depth_bottom"]),
-        comments=d["comments"] if "comments" in d else ""
+        comments=d["comments"] if "comments" in d else "",
     )
     dd.save()
     action = "created" if created else "updated"
     logger.info("  TurtleNestObservation {0}: {1}".format(action, dd))
 
     if "egg_photos" in d:
-        [handle_media_attachment(
-            e, ep["photo_eggs"], title="Egg photo {0}".format(idx + 1))
-            for idx, ep in enumerate(d["egg_photos"])]
+        [
+            handle_media_attachment(
+                e, ep["photo_eggs"], title="Egg photo {0}".format(idx + 1)
+            )
+            for idx, ep in enumerate(d["egg_photos"])
+        ]
 
 
 def handle_turtlenesttagobs(d, e, m=None):
@@ -1154,9 +1187,11 @@ def handle_turtlenesttagobs(d, e, m=None):
     e The related TurtleNestEncounter (must exist)
     m The ODK_MAPPING
     """
-    if (d["flipper_tag_id"] is None and
-            d["date_nest_laid"] is None and
-            d["tag_label"] is None):
+    if (
+        d["flipper_tag_id"] is None
+        and d["date_nest_laid"] is None
+        and d["tag_label"] is None
+    ):
         return None
 
     else:
@@ -1165,8 +1200,11 @@ def handle_turtlenesttagobs(d, e, m=None):
             encounter=e,
             status=m["tag_status"][d["status"]] if m else d["status"],
             flipper_tag_id=sanitize_tag_label(d["flipper_tag_id"]),
-            date_nest_laid=datetime.strptime(d["date_nest_laid"], '%Y-%m-%d') if d["date_nest_laid"] else None,
-            tag_label=sanitize_tag_label(d["tag_label"]))
+            date_nest_laid=datetime.strptime(d["date_nest_laid"], "%Y-%m-%d")
+            if d["date_nest_laid"]
+            else None,
+            tag_label=sanitize_tag_label(d["tag_label"]),
+        )
         logger.debug("[handle_turtlenesttagobs] created new NTO")
         dd.save()
         logger.debug("[handle_turtlenesttagobs] saved NTO")
@@ -1193,15 +1231,23 @@ def handle_hatchlingmorphometricobs(d, e):
     e The related TurtleNestEncounter (must exist)
     """
     logger.debug("  Creating Hatchling Obs...")
-    scl = int(d["straight_carapace_length_mm"]) if d["straight_carapace_length_mm"] else None
-    scw = int(d["straight_carapace_width_mm"]) if d["straight_carapace_width_mm"] else None
+    scl = (
+        int(d["straight_carapace_length_mm"])
+        if d["straight_carapace_length_mm"]
+        else None
+    )
+    scw = (
+        int(d["straight_carapace_width_mm"])
+        if d["straight_carapace_width_mm"]
+        else None
+    )
     bwg = int(d["body_weight_g"]) if d["body_weight_g"] else None
 
     dd, created = HatchlingMorphometricObservation.objects.get_or_create(
         encounter=e,
         straight_carapace_length_mm=scl,
         straight_carapace_width_mm=scw,
-        body_weight_g=bwg
+        body_weight_g=bwg,
     )
     dd.save()
     action = "created" if created else "updated"
@@ -1290,7 +1336,7 @@ def handle_turtlenestdisttallyobs(d, e, m=None):
         disturbance_cause=d["disturbance_cause"],
         no_nests_disturbed=d["no_nests_disturbed"] or 0,
         no_tracks_encountered=d["no_tracks_encountered"] or 0,
-        comments=d["disturbance_comments"]
+        comments=d["disturbance_comments"],
     )
     dd.save()
     action = "created" if created else "updated"
@@ -1354,9 +1400,11 @@ def import_one_record_tt034(r, m):
     handle_media_attachment(e, r["photo_nest"], title="Nest")
 
     # TurtleNestDisturbanceObservation, MediaAttachment "Photo of disturbance"
-    [handle_turtlenestdistobs31(distobs, e)
-     for distobs in r["disturbanceobservation"]
-     if r["disturbance"] and len(r["disturbanceobservation"]) > 0]
+    [
+        handle_turtlenestdistobs31(distobs, e)
+        for distobs in r["disturbanceobservation"]
+        if r["disturbance"] and len(r["disturbanceobservation"]) > 0
+    ]
 
     # TurtleNestObservation
     if r["eggs_counted"] == "yes":
@@ -1367,12 +1415,14 @@ def import_one_record_tt034(r, m):
         handle_turtlenesttagobs(r, e, m)
 
     # HatchlingMorphometricObservation
-    [handle_hatchlingmorphometricobs(ho, e)
-     for ho in r["hatchling_measurements"]
-     if len(r["hatchling_measurements"]) > 0]
+    [
+        handle_hatchlingmorphometricobs(ho, e)
+        for ho in r["hatchling_measurements"]
+        if len(r["hatchling_measurements"]) > 0
+    ]
 
     # LoggerEncounter retrieved HOBO logger
-    #[handle_loggerenc(lg, e, m)
+    # [handle_loggerenc(lg, e, m)
     # for lg in r["logger_details"]
     # if len(r["logger_details"]) > 0]
 
@@ -1441,9 +1491,11 @@ def import_one_record_tt036(r, m):
     handle_media_attachment(e, r["photo_nest_3"], title="Nest 3")
 
     # TurtleNestDisturbanceObservation, MediaAttachment "Photo of disturbance"
-    [handle_turtlenestdistobs31(distobs, e)
-     for distobs in r["disturbanceobservation"]
-     if r["disturbance"] and len(r["disturbanceobservation"]) > 0]
+    [
+        handle_turtlenestdistobs31(distobs, e)
+        for distobs in r["disturbanceobservation"]
+        if r["disturbance"] and len(r["disturbanceobservation"]) > 0
+    ]
 
     # TurtleNestObservation
     if r["eggs_counted"] == "yes":
@@ -1454,12 +1506,14 @@ def import_one_record_tt036(r, m):
         handle_turtlenesttagobs(r, e, m)
 
     # HatchlingMorphometricObservation
-    [handle_hatchlingmorphometricobs(ho, e)
-     for ho in r["hatchling_measurements"]
-     if len(r["hatchling_measurements"]) > 0]
+    [
+        handle_hatchlingmorphometricobs(ho, e)
+        for ho in r["hatchling_measurements"]
+        if len(r["hatchling_measurements"]) > 0
+    ]
 
     # LoggerEncounter retrieved HOBO logger
-    #[handle_loggerenc(lg, e, m)
+    # [handle_loggerenc(lg, e, m)
     # for lg in r["logger_details"]
     # if len(r["logger_details"]) > 0]
 
@@ -1495,7 +1549,7 @@ def import_one_record_fs03(r, m):
         when=parse_datetime(r["observation_start_time"]),
         location_accuracy="10",
         observer=m["users"][r["reporter"]],
-        reporter=m["users"][r["reporter"]]
+        reporter=m["users"][r["reporter"]],
     )
 
     if src_id in m["overwrite"]:
@@ -1800,7 +1854,7 @@ def import_one_record_sv01(r, m):
         started_on=parse_datetime(r["observation_start_time"]),
         finished_on=parse_datetime(r["observation_end_time"]),
         # m["users"][r["reporter"]],
-        comments=r["comments"]
+        comments=r["comments"],
     )
 
     if Survey.objects.filter(source_id=src_id).exists():
@@ -1814,8 +1868,12 @@ def import_one_record_sv01(r, m):
     e.save()
 
     # MediaAttachments
-    handle_media_attachment(e, r["photo_start"], title="Site conditions at start of suvey")
-    handle_media_attachment(e, r["photo_finish"], title="Site conditions at end of suvey")
+    handle_media_attachment(
+        e, r["photo_start"], title="Site conditions at start of suvey"
+    )
+    handle_media_attachment(
+        e, r["photo_finish"], title="Site conditions at end of suvey"
+    )
 
     logger.info(" Saved {0}\n".format(e))
     e.save()
@@ -1829,9 +1887,9 @@ def make_tallyobs(encounter, species, nest_age, nest_type, tally_number):
         species=species,
         nest_age=nest_age,
         nest_type=nest_type,
-        tally=tally_number
+        tally=tally_number,
     )
-    logger.info('  Tally (created: {0}) {1}'.format(created, t))
+    logger.info("  Tally (created: {0}) {1}".format(created, t))
 
 
 def import_one_record_tt05(r, m):
@@ -1930,8 +1988,11 @@ def import_one_record_tt05(r, m):
     e.save()
 
     # TurtleNestDisturbanceTallyObservation
-    [handle_turtlenestdisttallyobs(distobs, e, m)
-     for distobs in r["disturbance"] if len(r["disturbance"]) > 0]
+    [
+        handle_turtlenestdisttallyobs(distobs, e, m)
+        for distobs in r["disturbance"]
+        if len(r["disturbance"]) > 0
+    ]
 
     #  TrackTallyObservations
     FB = "natator-depressus"
@@ -1948,35 +2009,30 @@ def import_one_record_tt05(r, m):
         [FB, "fresh", "track-unsure", r["fb_no_fresh_tracks_unsure"] or 0],
         [FB, "fresh", "track-not-assessed", r["fb_no_fresh_tracks_not_assessed"] or 0],
         [FB, "fresh", "hatched-nest", r["fb_no_hatched_nests"] or 0],
-
         [GN, "old", "track-not-assessed", r["gn_no_old_tracks"] or 0],
         [GN, "fresh", "successful-crawl", r["gn_no_fresh_successful_crawls"] or 0],
         [GN, "fresh", "false-crawl", r["gn_no_fresh_false_crawls"] or 0],
         [GN, "fresh", "track-unsure", r["gn_no_fresh_tracks_unsure"] or 0],
         [GN, "fresh", "track-not-assessed", r["gn_no_fresh_tracks_not_assessed"] or 0],
         [GN, "fresh", "hatched-nest", r["gn_no_hatched_nests"] or 0],
-
         [HB, "old", "track-not-assessed", r["hb_no_old_tracks"] or 0],
         [HB, "fresh", "successful-crawl", r["hb_no_fresh_successful_crawls"] or 0],
         [HB, "fresh", "false-crawl", r["hb_no_fresh_false_crawls"] or 0],
         [HB, "fresh", "track-unsure", r["hb_no_fresh_tracks_unsure"] or 0],
         [HB, "fresh", "track-not-assessed", r["hb_no_fresh_tracks_not_assessed"] or 0],
         [HB, "fresh", "hatched-nest", r["hb_no_hatched_nests"] or 0],
-
         [LH, "old", "track-not-assessed", r["lh_no_old_tracks"] or 0],
         [LH, "fresh", "successful-crawl", r["lh_no_fresh_successful_crawls"] or 0],
         [LH, "fresh", "false-crawl", r["lh_no_fresh_false_crawls"] or 0],
         [LH, "fresh", "track-unsure", r["lh_no_fresh_tracks_unsure"] or 0],
         [LH, "fresh", "track-not-assessed", r["lh_no_fresh_tracks_not_assessed"] or 0],
         [LH, "fresh", "hatched-nest", r["lh_no_hatched_nests"] or 0],
-
         [OR, "old", "track-not-assessed", r["or_no_old_tracks"] or 0],
         [OR, "fresh", "successful-crawl", r["or_no_fresh_successful_crawls"] or 0],
         [OR, "fresh", "false-crawl", r["or_no_fresh_false_crawls"] or 0],
         [OR, "fresh", "track-unsure", r["or_no_fresh_tracks_unsure"] or 0],
         [OR, "fresh", "track-not-assessed", r["or_no_fresh_tracks_not_assessed"] or 0],
         [OR, "fresh", "hatched-nest", r["or_no_hatched_nests"] or 0],
-
         [UN, "old", "track-not-assessed", r["unk_no_old_tracks"] or 0],
         [UN, "fresh", "successful-crawl", r["unk_no_fresh_successful_crawls"] or 0],
         [UN, "fresh", "false-crawl", r["unk_no_fresh_false_crawls"] or 0],
@@ -2163,8 +2219,7 @@ def import_one_encounter_wamtram(r, m, u):
     'ENTRY_BATCH_ID': '301',
     """
     unique_data = dict(
-        source="wamtram",
-        source_id=make_wamtram_source_id(r["OBSERVATION_ID"])
+        source="wamtram", source_id=make_wamtram_source_id(r["OBSERVATION_ID"])
     )
 
     extra_data = dict(
@@ -2184,10 +2239,8 @@ def import_one_encounter_wamtram(r, m, u):
     )
 
     enc, action = create_update_skip(
-        unique_data,
-        extra_data,
-        cls=AnimalEncounter,
-        base_cls=Encounter)
+        unique_data, extra_data, cls=AnimalEncounter, base_cls=Encounter
+    )
 
     enc.save()
 
@@ -2208,17 +2261,8 @@ def make_tag_side(side, position):
     Return
     The WAStD tag_position, e.g. flipper-front-left-1 or flipper-front-right-3
     """
-    side_dict = {
-        "NA": "left",
-        "L": "left",
-        "R": "right"
-    }
-    pos_dict = {
-        "NA": "1",
-        "1": "1",
-        "2": "2",
-        "3": "3"
-    }
+    side_dict = {"NA": "left", "L": "left", "R": "right"}
+    pos_dict = {"NA": "1", "1": "1", "2": "2", "3": "3"}
     return "flipper-front-{0}-{1}".format(side_dict[side], pos_dict[position])
 
 
@@ -2275,24 +2319,27 @@ def import_one_tag(t, m):
 
     tag_name = sanitize_tag_label(t["tag_name"])
     enc = AnimalEncounter.objects.get(
-        source_id=make_wamtram_source_id(t["observation_id"]))
+        source_id=make_wamtram_source_id(t["observation_id"])
+    )
 
     new_data = dict(
         encounter_id=enc.id,
-        tag_type='flipper-tag',
+        tag_type="flipper-tag",
         handler_id=enc.observer_id,
         recorder_id=enc.reporter_id,
         name=tag_name,
         tag_location=make_tag_side(t["attached_on_side"], t["tag_position"]),
         status=m["tag_status"][t["tag_state"]],
-        comments='{0}\nLTag label: {1}\nOriginal status: {2}'.format(
-            t["comments"], t["tag_label"], t["tag_state"]),
+        comments="{0}\nLTag label: {1}\nOriginal status: {2}".format(
+            t["comments"], t["tag_label"], t["tag_state"]
+        ),
     )
 
     if TagObservation.objects.filter(encounter_id=enc.id, name=tag_name).exists():
         logger.info("Updating existing tag obs {0}...".format(tag_name))
-        e = TagObservation.objects.filter(
-            encounter_id=enc.id, name=tag_name).update(**new_data)
+        e = TagObservation.objects.filter(encounter_id=enc.id, name=tag_name).update(
+            **new_data
+        )
         e = TagObservation.objects.get(encounter_id=enc.id, name=tag_name)
 
     else:
@@ -2327,8 +2374,15 @@ def infer_cetacean_sex(f, m):
 
 def fix_species_name(spname):
     """Return one species name lowercase-dashseparated."""
-    return spname.replace(".", "").replace("? ", "").replace(
-        "(?)", "").replace("?", "").strip().replace(" ", "-").lower()
+    return (
+        spname.replace(".", "")
+        .replace("? ", "")
+        .replace("(?)", "")
+        .replace("?", "")
+        .strip()
+        .replace(" ", "-")
+        .lower()
+    )
 
 
 def make_comment(dictobj, fieldname):
@@ -2337,8 +2391,11 @@ def make_comment(dictobj, fieldname):
     Return
         '<fieldname>: <dictobj["fieldname"]>' or ''
     """
-    return "{0}: {1}\n\n".format(fieldname, dictobj[fieldname]) if \
-        fieldname in dictobj and dictobj[fieldname] != "" else ""
+    return (
+        "{0}: {1}\n\n".format(fieldname, dictobj[fieldname])
+        if fieldname in dictobj and dictobj[fieldname] != ""
+        else ""
+    )
 
 
 def import_one_record_cet(r, m):
@@ -2457,52 +2514,52 @@ def import_one_record_cet(r, m):
     species = map_and_keep(CETACEAN_SPECIES_CHOICES)
     # TODO this mapping needs QA (add species to CETACEAN_SPECIES_CHOICES)
     happy_little_mistakes = {
-        '': 'cetacea',
-        'balaenopter-musculus-brevicauda': "balaenoptera-musculus-brevicauda",
-        'balaenopters-cf-b-omurai': "balaenoptera-omurai",
-        'kogia-simus': "kogia-sima",
-        'sousa-chinensis': 'sousa-sahulensis',
-        'orcaella-heinsohni-x': "orcaella-heinsohni",
-        'stenella--sp-(coeruleoalba)': "stenella-sp",
+        "": "cetacea",
+        "balaenopter-musculus-brevicauda": "balaenoptera-musculus-brevicauda",
+        "balaenopters-cf-b-omurai": "balaenoptera-omurai",
+        "kogia-simus": "kogia-sima",
+        "sousa-chinensis": "sousa-sahulensis",
+        "orcaella-heinsohni-x": "orcaella-heinsohni",
+        "stenella--sp-(coeruleoalba)": "stenella-sp",
     }
     species.update(happy_little_mistakes)
 
     cod = {
-        'Birthing': "birthing",
-        'Boat/ship strike': "boat-strike",
-        'Complications from stranding': "stranded",
-        'Disease/health': "natural",
-        'Drowning/misadventure': "drowned-other",
-        'Entanglement': "drowned-entangled",
-        'Euthanasia': "euthanasia",
-        'Euthanasia - firearm': "euthanasia-firearm",
-        'Euthanasia - firearm - SOP 17(1)': "euthanasia-firearm",
-        'Euthanasia - implosion': "euthanasia-implosion",
-        'Euthanasia - injection': "euthanasia-injection",
-        'Failure to thrive/dependant calf': "calf-failure-to-thrive",
-        'Failure to thrive/dependent calf': "calf-failure-to-thrive",
-        'Live stranding': "na",  # not a cause of death then
-        'Misadventure': "natural",
-        'Misadventure 13 died during event': "natural",
-        'Mixed fate group': "na",  # split into individual strandings
-        'Old age': "natural",
-        'Predatory attack': "predation",
-        'PM report pending': "na",  # set COD once necropsy done
-        'Predatory attack - Orca': "predation",
-        'Predatory attack - shark': "predation",
-        'Remote stranding - died': "stranded",  # remoteness is not COD
-        'SEE Necropsy Report': "na",  # and transcribe here
-        'Spear/gunshot': "trauma-human-induced",
-        'Starvation': "starved",
-        'Still born': "still-born",
-        'Stingray barb': "trauma-animal-induced",
-        'Stranding': "stranded",
-        'Trauma': "trauma",
-        'Under nourished': "starved",  # if COD, else physical condition
-        'Unknown': "na",
-        'Unkown': "na",
-        '': "na",
-        'Weapon (gun, spear etc)': "trauma-human-induced",
+        "Birthing": "birthing",
+        "Boat/ship strike": "boat-strike",
+        "Complications from stranding": "stranded",
+        "Disease/health": "natural",
+        "Drowning/misadventure": "drowned-other",
+        "Entanglement": "drowned-entangled",
+        "Euthanasia": "euthanasia",
+        "Euthanasia - firearm": "euthanasia-firearm",
+        "Euthanasia - firearm - SOP 17(1)": "euthanasia-firearm",
+        "Euthanasia - implosion": "euthanasia-implosion",
+        "Euthanasia - injection": "euthanasia-injection",
+        "Failure to thrive/dependant calf": "calf-failure-to-thrive",
+        "Failure to thrive/dependent calf": "calf-failure-to-thrive",
+        "Live stranding": "na",  # not a cause of death then
+        "Misadventure": "natural",
+        "Misadventure 13 died during event": "natural",
+        "Mixed fate group": "na",  # split into individual strandings
+        "Old age": "natural",
+        "Predatory attack": "predation",
+        "PM report pending": "na",  # set COD once necropsy done
+        "Predatory attack - Orca": "predation",
+        "Predatory attack - shark": "predation",
+        "Remote stranding - died": "stranded",  # remoteness is not COD
+        "SEE Necropsy Report": "na",  # and transcribe here
+        "Spear/gunshot": "trauma-human-induced",
+        "Starvation": "starved",
+        "Still born": "still-born",
+        "Stingray barb": "trauma-animal-induced",
+        "Stranding": "stranded",
+        "Trauma": "trauma",
+        "Under nourished": "starved",  # if COD, else physical condition
+        "Unknown": "na",
+        "Unkown": "na",
+        "": "na",
+        "Weapon (gun, spear etc)": "trauma-human-induced",
     }
 
     src_id = "cet-{0}".format(r["Record No."])
@@ -2518,73 +2575,71 @@ def import_one_record_cet(r, m):
     """
 
     new_data = {
-        'when': parser.parse('{0} 12:00:00 +0800'.format(r["Date"])),
-        'where': Point(float(r["Long"] or 120), float(r["Lat"] or -35)),
-        'taxon': 'Cetacea',
-        'species': species[fix_species_name(r["Scientific Name"] or '')],
-        'activity': 'na',  # TODO
-        'behaviour': "".join([make_comment(r, x) for x in [
-            "File Number",
-            "Name",
-            "Age",
-
-            "Comments",
-            "Admin comment",
-
-            "Event",
-
-            'Boat_Ship Strike',
-            "Entanglement",
-            "Entanglement gear",
-            "Entanglement gear details",
-            "Floating carcass",
-            "Single Stranding",
-            "Cow_calf pair Stranding",
-            "Mass Stranding",
-            "Number of animals",
-            "Demographic comment",
-            'Live Stranding',
-            'Dead Stranding',
-
-            "DPaW Attended",
-            'Rescue info',
-            "Outcome",
-            "Fate",
-            "Carcass Location_Fate",
-
-            "El Nino",
-            "Heavy Metals",
-            'PCB',
-            "Moon Phase",
-            "Near River",
-
-            'Condition when found',
-            "Condition comments",
-            "Ailment_injury comment",
-            "PM Report location",
-            "Post mortem report summary",
-            'Sampling comments',
-            "Length _m_",
-            'Weight _kg_',
-
-            'Site',
-            'Location',
-        ]]),
-        'cause_of_death': cod[r["Cause of Death _drop down_"]],
-        'cause_of_death_confidence': 'na',  # TODO
-        'checked_for_flipper_tags': 'na',  # TODO
-        'checked_for_injuries': 'na',  # TODO
-        'habitat': 'na',  # TODO
-        'health': 'dead-edible',  # TODO
-        'location_accuracy': '10',
-        'maturity': 'adult',  # TODO
+        "when": parser.parse("{0} 12:00:00 +0800".format(r["Date"])),
+        "where": Point(float(r["Long"] or 120), float(r["Lat"] or -35)),
+        "taxon": "Cetacea",
+        "species": species[fix_species_name(r["Scientific Name"] or "")],
+        "activity": "na",  # TODO
+        "behaviour": "".join(
+            [
+                make_comment(r, x)
+                for x in [
+                    "File Number",
+                    "Name",
+                    "Age",
+                    "Comments",
+                    "Admin comment",
+                    "Event",
+                    "Boat_Ship Strike",
+                    "Entanglement",
+                    "Entanglement gear",
+                    "Entanglement gear details",
+                    "Floating carcass",
+                    "Single Stranding",
+                    "Cow_calf pair Stranding",
+                    "Mass Stranding",
+                    "Number of animals",
+                    "Demographic comment",
+                    "Live Stranding",
+                    "Dead Stranding",
+                    "DPaW Attended",
+                    "Rescue info",
+                    "Outcome",
+                    "Fate",
+                    "Carcass Location_Fate",
+                    "El Nino",
+                    "Heavy Metals",
+                    "PCB",
+                    "Moon Phase",
+                    "Near River",
+                    "Condition when found",
+                    "Condition comments",
+                    "Ailment_injury comment",
+                    "PM Report location",
+                    "Post mortem report summary",
+                    "Sampling comments",
+                    "Length _m_",
+                    "Weight _kg_",
+                    "Site",
+                    "Location",
+                ]
+            ]
+        ),
+        "cause_of_death": cod[r["Cause of Death _drop down_"]],
+        "cause_of_death_confidence": "na",  # TODO
+        "checked_for_flipper_tags": "na",  # TODO
+        "checked_for_injuries": "na",  # TODO
+        "habitat": "na",  # TODO
+        "health": "dead-edible",  # TODO
+        "location_accuracy": "10",
+        "maturity": "adult",  # TODO
         # 'name': r["ID"] or None,
-        'observer_id': 1,
-        'reporter_id': 1,
-        'scanned_for_pit_tags': 'na',  # TODO
-        'sex': infer_cetacean_sex(r["F"], r["M"]),
-        'source': 'cet',
-        'source_id': src_id,
+        "observer_id": 1,
+        "reporter_id": 1,
+        "scanned_for_pit_tags": "na",  # TODO
+        "sex": infer_cetacean_sex(r["F"], r["M"]),
+        "source": "cet",
+        "source_id": src_id,
     }
     # check if src_id exists
     if src_id in m["overwrite"]:
@@ -2720,12 +2775,16 @@ def update_wastd_user(u):
         logger.debug("  User email updated from EMAIL: {0}".format(usr.role))
 
     # If role is not set, or doesn't already contain SPECIALTY, add SPECIALTY
-    if ((usr.role is None or usr.role == "" or u["SPECIALTY"] not in usr.role) and u["SPECIALTY"] != "NA"):
-        usr.role = "{0} Specialty: {1}".format(usr.role or '', u["SPECIALTY"]).strip()
+    if (usr.role is None or usr.role == "" or u["SPECIALTY"] not in usr.role) and u[
+        "SPECIALTY"
+    ] != "NA":
+        usr.role = "{0} Specialty: {1}".format(usr.role or "", u["SPECIALTY"]).strip()
         logger.debug("  User role updated from SPECIALTY: {0}".format(usr.role))
 
-    if ((usr.role is None or usr.role == "" or u["COMMENTS"] not in usr.role) and u["COMMENTS"] != "NA"):
-        usr.role = "{0} Comments: {1}".format(usr.role or '', u["COMMENTS"]).strip()
+    if (usr.role is None or usr.role == "" or u["COMMENTS"] not in usr.role) and u[
+        "COMMENTS"
+    ] != "NA":
+        usr.role = "{0} Comments: {1}".format(usr.role or "", u["COMMENTS"]).strip()
         logger.debug("  User role updated from COMMENTS: {0}".format(usr.role))
 
     usr.save()
@@ -2739,136 +2798,144 @@ def update_wastd_user(u):
 def make_mapping():
     """Generate a mapping of ODK to WAStD keys."""
     species = map_and_keep(SPECIES_CHOICES)
-    species.update({
-        # MWI < 0.4
-        'flatback': 'natator-depressus',
-        'green': 'chelonia-mydas',
-        'hawksbill': 'eretmochelys-imbricata',
-        'loggerhead': 'caretta-caretta',
-        'oliveridley': 'lepidochelys-olivacea',
-        'leatherback': 'dermochelys-coriacea',
-        'turtle': 'cheloniidae-fam',
-
-        # WAMTRAM
-        'FB': 'natator-depressus',
-        'GN': 'chelonia-mydas',
-        'HK': 'eretmochelys-imbricata',
-        'LO': 'caretta-caretta',
-        'OR': 'lepidochelys-olivacea',
-        'LB': 'dermochelys-coriacea',
-        '?': 'cheloniidae-fam',
-        '0': 'cheloniidae-fam',
-    })
+    species.update(
+        {
+            # MWI < 0.4
+            "flatback": "natator-depressus",
+            "green": "chelonia-mydas",
+            "hawksbill": "eretmochelys-imbricata",
+            "loggerhead": "caretta-caretta",
+            "oliveridley": "lepidochelys-olivacea",
+            "leatherback": "dermochelys-coriacea",
+            "turtle": "cheloniidae-fam",
+            # WAMTRAM
+            "FB": "natator-depressus",
+            "GN": "chelonia-mydas",
+            "HK": "eretmochelys-imbricata",
+            "LO": "caretta-caretta",
+            "OR": "lepidochelys-olivacea",
+            "LB": "dermochelys-coriacea",
+            "?": "cheloniidae-fam",
+            "0": "cheloniidae-fam",
+        }
+    )
 
     habitat = map_and_keep(HABITAT_CHOICES)
-    habitat.update({
-        'abovehwm': 'beach-above-high-water',
-        'belowhwm': 'beach-below-high-water',
-        'edgeofvegetation': 'beach-edge-of-vegetation',
-        'vegetation': 'in-dune-vegetation',
-        'na': 'na',
-
-        # WAMTRAM BEACH_POSITION_CODE
-        'NA': 'na',
-        "?": "na",
-        "A": "beach-above-high-water",
-        "B": "beach-above-high-water",
-        "C": "beach-below-high-water",
-        "D": "beach-edge-of-vegetation",
-        "E": "in-dune-vegetation",
-    })
+    habitat.update(
+        {
+            "abovehwm": "beach-above-high-water",
+            "belowhwm": "beach-below-high-water",
+            "edgeofvegetation": "beach-edge-of-vegetation",
+            "vegetation": "in-dune-vegetation",
+            "na": "na",
+            # WAMTRAM BEACH_POSITION_CODE
+            "NA": "na",
+            "?": "na",
+            "A": "beach-above-high-water",
+            "B": "beach-above-high-water",
+            "C": "beach-below-high-water",
+            "D": "beach-edge-of-vegetation",
+            "E": "in-dune-vegetation",
+        }
+    )
 
     health = map_and_keep(HEALTH_CHOICES)
-    health.update({
-        "F": "dead-edible",     # Carcase - fresh
-        "G": "alive",           # Good - fat
-        "H": "alive",           # Live & fit
-        "I": "alive",           # Injured but OK
-        "M": "alive",           # Moribund
-        "P": "alive",           # Poor - thin
-        "NA": "na",
-    })
+    health.update(
+        {
+            "F": "dead-edible",  # Carcase - fresh
+            "G": "alive",  # Good - fat
+            "H": "alive",  # Live & fit
+            "I": "alive",  # Injured but OK
+            "M": "alive",  # Moribund
+            "P": "alive",  # Poor - thin
+            "NA": "na",
+        }
+    )
 
     activity = map_and_keep(ACTIVITY_CHOICES)
-    activity.update({
-        "&": "captivity",       # Captive animal
-        "A": "arriving",        # Resting at waters edge - Nesting
-        "B": "arriving",        # Leaving water - Nesting
-        "C": "approaching",     # Climbing beach slope - Nesting
-        "D": "approaching",     # Moving over bare sand (=beach) - Nesting
-        "E": "digging-body-pit",  # Digging body hole - Nesting
-        "F": "excavating-egg-chamber",  # Excavating egg chamber - Nesting
-        "G": "laying-eggs",     # Laying eggs - confirmed observation - Nesting
-        "H": "filling-in-egg-chamber",  # Covering nest (filling in) - Nesting
-        "I": "returning-to-water",  # Returning to water - Nesting
-        # "J": "",              # Check/?edit these: only on VA records
-        "K": "non-breeding",    # Basking - on beach above waterline
-        "L": "arriving",        # Arriving - Nesting
-        "M": "other",           # Mating
-        "N": "other",           # Courting
-        "O": "non-breeding",    # Free at sea
-        "Q": "na",              # Not recorded in field
-        "R": "non-breeding",    # Released to wild
-        "S": "non-breeding",    # Rescued from stranding
-        "V": "non-breeding",    # Caught in fishing gear - Decd
-        "W": "non-breeding",    # Captured in water (reef or sea)
-        "X": "floating",        # Turtle dead
-        "Y": "floating",        # Caught in fishing gear - Relsd
-        "Z": "other",           # Hunted for food by Ab & others
-        "NA": "na",
-    })
+    activity.update(
+        {
+            "&": "captivity",  # Captive animal
+            "A": "arriving",  # Resting at waters edge - Nesting
+            "B": "arriving",  # Leaving water - Nesting
+            "C": "approaching",  # Climbing beach slope - Nesting
+            "D": "approaching",  # Moving over bare sand (=beach) - Nesting
+            "E": "digging-body-pit",  # Digging body hole - Nesting
+            "F": "excavating-egg-chamber",  # Excavating egg chamber - Nesting
+            "G": "laying-eggs",  # Laying eggs - confirmed observation - Nesting
+            "H": "filling-in-egg-chamber",  # Covering nest (filling in) - Nesting
+            "I": "returning-to-water",  # Returning to water - Nesting
+            # "J": "",              # Check/?edit these: only on VA records
+            "K": "non-breeding",  # Basking - on beach above waterline
+            "L": "arriving",  # Arriving - Nesting
+            "M": "other",  # Mating
+            "N": "other",  # Courting
+            "O": "non-breeding",  # Free at sea
+            "Q": "na",  # Not recorded in field
+            "R": "non-breeding",  # Released to wild
+            "S": "non-breeding",  # Rescued from stranding
+            "V": "non-breeding",  # Caught in fishing gear - Decd
+            "W": "non-breeding",  # Captured in water (reef or sea)
+            "X": "floating",  # Turtle dead
+            "Y": "floating",  # Caught in fishing gear - Relsd
+            "Z": "other",  # Hunted for food by Ab & others
+            "NA": "na",
+        }
+    )
 
     yes_no = map_and_keep(OBSERVATION_CHOICES)
-    yes_no.update({
-        'Y': 'present',
-        'N': 'absent',
-        'U': 'na',
-        'NA': 'na',
-        'yes': 'present',
-        'no': 'absent',
-    })
+    yes_no.update(
+        {
+            "Y": "present",
+            "N": "absent",
+            "U": "na",
+            "NA": "na",
+            "yes": "present",
+            "no": "absent",
+        }
+    )
 
     confidence = map_and_keep(CONFIDENCE_CHOICES)
-    confidence.update({
-        "validate": "validated",
-    })
+    confidence.update(
+        {
+            "validate": "validated",
+        }
+    )
 
     tag_status = map_and_keep(TAG_STATUS_CHOICES)
     # 0L A1 A2 ae AE M M1 N OO OX p P P_ED P_OK PX Q R RC RQ
     # Compare tag scar positions to previously tagged positions:
     # could a tag have been applied in same position as tag scar?
-    tag_status.update({
-
-        # resighted
-        "P": 'resighted',
-        "p": 'resighted',  # typo duplicate of P
-        "P_OK": 'resighted',  # tag seen, good fix observed
-        "P_ED": 'resighted',  # resighted, but tag about to fall off
-        "RQ": 'resighted',  # observed but insecure, action taken unknown
-        "RC": 'reclinched',  # observed insecure, reclinched
-        "OX": 'reclinched',
-
-        # applied-new
-        "A1": 'applied-new',  # applied new, fix seems ok
-        "AE": 'applied-new',  # applied new, end clinch noted
-        "ae": 'applied-new',  # typo duplicate of AE
-
-        # removed
-        "R": 'removed',  # removed by obs
-        "OO": 'removed',  # fell off during observation
-
-        # not tagged, no tags seen, no number recorded:
-        # "A2": '',  # TODO no tag applied
-        "PX": 'resighted',  # TODO tag present, not read
-        # "0": '',  # TODO false ID as lost
-        "#": 'applied-new',  # tag was applied, but tag number unknown
-        "Q": 'applied-new',  # tag number incompletely recorded
-        # M tag scar seen
-        # M1 missing
-        # N not recorded
-        # 0L falsely assumed to be tag scar, not a tag scar
-        'resighted': 'resighted'
-    })
+    tag_status.update(
+        {
+            # resighted
+            "P": "resighted",
+            "p": "resighted",  # typo duplicate of P
+            "P_OK": "resighted",  # tag seen, good fix observed
+            "P_ED": "resighted",  # resighted, but tag about to fall off
+            "RQ": "resighted",  # observed but insecure, action taken unknown
+            "RC": "reclinched",  # observed insecure, reclinched
+            "OX": "reclinched",
+            # applied-new
+            "A1": "applied-new",  # applied new, fix seems ok
+            "AE": "applied-new",  # applied new, end clinch noted
+            "ae": "applied-new",  # typo duplicate of AE
+            # removed
+            "R": "removed",  # removed by obs
+            "OO": "removed",  # fell off during observation
+            # not tagged, no tags seen, no number recorded:
+            # "A2": '',  # TODO no tag applied
+            "PX": "resighted",  # TODO tag present, not read
+            # "0": '',  # TODO false ID as lost
+            "#": "applied-new",  # tag was applied, but tag number unknown
+            "Q": "applied-new",  # tag number incompletely recorded
+            # M tag scar seen
+            # M1 missing
+            # N not recorded
+            # 0L falsely assumed to be tag scar, not a tag scar
+            "resighted": "resighted",
+        }
+    )
 
     return {
         "nest_type": map_and_keep(NEST_TYPE_CHOICES),
@@ -2883,22 +2950,21 @@ def make_mapping():
         "health": health,
         "disturbance": yes_no,
         "nesting": yes_no,
-        "overwrite": [t["source_id"] for t in
-                      Encounter.objects.filter(
-            source="odk",
-            status=Encounter.STATUS_NEW
-        ).values('source_id')]
+        "overwrite": [
+            t["source_id"]
+            for t in Encounter.objects.filter(
+                source="odk", status=Encounter.STATUS_NEW
+            ).values("source_id")
+        ],
     }
 
 
 # -----------------------------------------------------------------------------#
 # Main import call
 #
-def import_odk(datafile,
-               flavour="odk-tt036",
-               extradata=None,
-               usercsv=None,
-               mapping=make_mapping()):
+def import_odk(
+    datafile, flavour="odk-tt036", extradata=None, usercsv=None, mapping=make_mapping()
+):
     """Import ODK data.
 
     Arguments
@@ -2948,12 +3014,21 @@ def import_odk(datafile,
         with open(datafile) as df:
             d = json.load(df)
             logger.info("Loaded {0} records from {1}".format(len(d), datafile))
-        mapping["users"] = {u: guess_user(u)["user"] for u in set([r["reporter"] for r in d])}
-        mapping["keep"] = [t.source_id for t in Encounter.objects.exclude(
-            status=Encounter.STATUS_NEW).filter(source="odk")]
+        mapping["users"] = {
+            u: guess_user(u)["user"] for u in set([r["reporter"] for r in d])
+        }
+        mapping["keep"] = [
+            t.source_id
+            for t in Encounter.objects.exclude(status=Encounter.STATUS_NEW).filter(
+                source="odk"
+            )
+        ]
 
-        [import_one_record_tt034(r, mapping) for r in d
-         if r["instanceID"] not in mapping["keep"]]     # retain local edits
+        [
+            import_one_record_tt034(r, mapping)
+            for r in d
+            if r["instanceID"] not in mapping["keep"]
+        ]  # retain local edits
         logger.info("Done!")
 
     elif flavour == "odk-tt036":
@@ -2961,12 +3036,21 @@ def import_odk(datafile,
         with open(datafile) as df:
             d = json.load(df)
             logger.info("Loaded {0} records from {1}".format(len(d), datafile))
-        mapping["users"] = {u: guess_user(u)["user"] for u in set([r["reporter"] for r in d])}
-        mapping["keep"] = [t.source_id for t in Encounter.objects.exclude(
-            status=Encounter.STATUS_NEW).filter(source="odk")]
+        mapping["users"] = {
+            u: guess_user(u)["user"] for u in set([r["reporter"] for r in d])
+        }
+        mapping["keep"] = [
+            t.source_id
+            for t in Encounter.objects.exclude(status=Encounter.STATUS_NEW).filter(
+                source="odk"
+            )
+        ]
 
-        [import_one_record_tt036(r, mapping) for r in d
-         if r["instanceID"] not in mapping["keep"]]     # retain local edits
+        [
+            import_one_record_tt036(r, mapping)
+            for r in d
+            if r["instanceID"] not in mapping["keep"]
+        ]  # retain local edits
         logger.info("Done!")
 
     elif flavour == "odk-fs03":
@@ -2974,12 +3058,21 @@ def import_odk(datafile,
         with open(datafile) as df:
             d = json.load(df)
             logger.info("Loaded {0} records from {1}".format(len(d), datafile))
-        mapping["users"] = {u: guess_user(u)["user"] for u in set([r["reporter"] for r in d])}
-        mapping["keep"] = [t.source_id for t in Encounter.objects.exclude(
-            status=Encounter.STATUS_NEW).filter(source="odk")]
+        mapping["users"] = {
+            u: guess_user(u)["user"] for u in set([r["reporter"] for r in d])
+        }
+        mapping["keep"] = [
+            t.source_id
+            for t in Encounter.objects.exclude(status=Encounter.STATUS_NEW).filter(
+                source="odk"
+            )
+        ]
 
-        [import_one_record_fs03(r, mapping) for r in d
-         if r["instanceID"] not in mapping["keep"]]     # retain local edits
+        [
+            import_one_record_fs03(r, mapping)
+            for r in d
+            if r["instanceID"] not in mapping["keep"]
+        ]  # retain local edits
         logger.info("Done!")
 
     elif flavour == "odk-mwi01":
@@ -2987,12 +3080,21 @@ def import_odk(datafile,
         with open(datafile) as df:
             d = json.load(df)
             logger.info("Loaded {0} records from {1}".format(len(d), datafile))
-        mapping["users"] = {u: guess_user(u)["user"] for u in set([r["reporter"] for r in d])}
-        mapping["keep"] = [t.source_id for t in Encounter.objects.exclude(
-            status=Encounter.STATUS_NEW).filter(source="odk")]
+        mapping["users"] = {
+            u: guess_user(u)["user"] for u in set([r["reporter"] for r in d])
+        }
+        mapping["keep"] = [
+            t.source_id
+            for t in Encounter.objects.exclude(status=Encounter.STATUS_NEW).filter(
+                source="odk"
+            )
+        ]
 
-        [import_one_record_mwi01(r, mapping) for r in d
-         if r["instanceID"] not in mapping["keep"]]     # retain local edits
+        [
+            import_one_record_mwi01(r, mapping)
+            for r in d
+            if r["instanceID"] not in mapping["keep"]
+        ]  # retain local edits
         logger.info("Done!")
 
     elif flavour == "odk-tally05":
@@ -3000,32 +3102,54 @@ def import_odk(datafile,
         with open(datafile) as df:
             d = json.load(df)
             logger.info("Loaded {0} records from {1}".format(len(d), datafile))
-        mapping["users"] = {u: guess_user(u)["user"] for u in set([r["reporter"] for r in d])}
-        mapping["keep"] = [t.source_id for t in Encounter.objects.exclude(
-            status=Encounter.STATUS_NEW).filter(source="odk")]
+        mapping["users"] = {
+            u: guess_user(u)["user"] for u in set([r["reporter"] for r in d])
+        }
+        mapping["keep"] = [
+            t.source_id
+            for t in Encounter.objects.exclude(status=Encounter.STATUS_NEW).filter(
+                source="odk"
+            )
+        ]
 
-        [import_one_record_tt05(r, mapping) for r in d
-         if r["instanceID"] not in mapping["keep"]]     # retain local edits
+        [
+            import_one_record_tt05(r, mapping)
+            for r in d
+            if r["instanceID"] not in mapping["keep"]
+        ]  # retain local edits
         logger.info("Done!")
 
     elif flavour == "cet":
         logger.info("Using flavour Cetacean strandings...")
         # ODK_MAPPING["users"] = {u: guess_user(u)["user"] for u in set([r["reporter"] for r in d])}
-        mapping["keep"] = [t.source_id for t in Encounter.objects.exclude(
-            status=Encounter.STATUS_NEW).filter(source="cet")]
-        mapping["overwrite"] = [t.source_id for t in Encounter.objects.filter(
-            source="cet", status=Encounter.STATUS_NEW)]
+        mapping["keep"] = [
+            t.source_id
+            for t in Encounter.objects.exclude(status=Encounter.STATUS_NEW).filter(
+                source="cet"
+            )
+        ]
+        mapping["overwrite"] = [
+            t.source_id
+            for t in Encounter.objects.filter(source="cet", status=Encounter.STATUS_NEW)
+        ]
 
         enc = csv.DictReader(open(datafile))
 
-        [import_one_record_cet(e, mapping) for e in enc
-         if e["Record No."] not in mapping["keep"]]
+        [
+            import_one_record_cet(e, mapping)
+            for e in enc
+            if e["Record No."] not in mapping["keep"]
+        ]
 
     elif flavour == "pin":
         logger.info("Using flavour Pinniped strandings...")
         # mapping["users"] = {u: guess_user(u)["user"] for u in set([r["reporter"] for r in d])}
-        mapping["keep"] = [t.source_id for t in Encounter.objects.exclude(
-            status=Encounter.STATUS_NEW).filter(source="pin")]
+        mapping["keep"] = [
+            t.source_id
+            for t in Encounter.objects.exclude(status=Encounter.STATUS_NEW).filter(
+                source="pin"
+            )
+        ]
         enc = csv.DictReader(open(datafile))
         logger.info("not impemented yet")
 
@@ -3037,8 +3161,11 @@ def import_odk(datafile,
 
         # List of [WAStD User object (.id), WAMTRAM user dict (["PERSON_ID"])]
         logger.info("Reconstructing users...")
-        users = {user["PERSON_ID"]: update_wastd_user(user)
-                 for user in wamtram_users if user["name"] != ""}
+        users = {
+            user["PERSON_ID"]: update_wastd_user(user)
+            for user in wamtram_users
+            if user["name"] != ""
+        }
 
         logger.info("Importing data...")
         imported = [import_one_encounter_wamtram(e, mapping, users) for e in enc]
@@ -3051,13 +3178,17 @@ def import_odk(datafile,
         logger.info("Caching tagging encounters...")
         enc = [
             x["source_id"]
-            for x
-            in AnimalEncounter.objects.filter(source="wamtram").values("source_id")
+            for x in AnimalEncounter.objects.filter(source="wamtram").values(
+                "source_id"
+            )
         ]
 
         logger.info("Loading tagging observations...")
-        tags = [import_one_tag(x, mapping) for x in tags
-                if make_wamtram_source_id(x["observation_id"]) in enc]
+        tags = [
+            import_one_tag(x, mapping)
+            for x in tags
+            if make_wamtram_source_id(x["observation_id"]) in enc
+        ]
         logger.info("Done loading {0} tagging observations.".format(len(tags)))
 
     elif flavour == "sitevisit":
@@ -3065,10 +3196,11 @@ def import_odk(datafile,
         with open(datafile) as df:
             d = json.load(df)
             logger.info("Loaded {0} records from {1}".format(len(d), datafile))
-        mapping["users"] = {u: guess_user(u)["user"] for u in set(
-            [r["reporter"] for r in d])}
+        mapping["users"] = {
+            u: guess_user(u)["user"] for u in set([r["reporter"] for r in d])
+        }
 
-        [import_one_record_sv01(r, mapping) for r in d]     # retain local edits
+        [import_one_record_sv01(r, mapping) for r in d]  # retain local edits
         logger.info("Done!")
 
     else:
@@ -3144,7 +3276,14 @@ def odka_forms(url=settings.ODKA_URL, un=settings.ODKA_UN, pw=settings.ODKA_PW):
     return forms
 
 
-def odka_submission_ids(form_id, limit=10000, url=settings.ODKA_URL, un=settings.ODKA_UN, pw=settings.ODKA_PW, verbose=False):
+def odka_submission_ids(
+    form_id,
+    limit=10000,
+    url=settings.ODKA_URL,
+    un=settings.ODKA_UN,
+    pw=settings.ODKA_PW,
+    verbose=False,
+):
     """Return a list of submission IDs for a given ODKA formID.
 
     See http://docs.opendatakit.org/aggregate-use/#briefcase-aggregate-api
@@ -3181,14 +3320,20 @@ def odka_submission_ids(form_id, limit=10000, url=settings.ODKA_URL, un=settings
      ...
     ]
     """
-    pars = {'formId': form_id, 'numEntries': limit}
+    pars = {"formId": form_id, "numEntries": limit}
     api = "{0}/view/submissionList".format(url)
     au = HTTPDigestAuth(un, pw)
 
-    logger.info("[odka_submission_ids] Retrieving submission IDs for formID '{0}'...".format(form_id))
-    logger.debug("[odka_submission_ids] Retrieving submission IDs from '{0}'...".format(api))
+    logger.info(
+        "[odka_submission_ids] Retrieving submission IDs for formID '{0}'...".format(
+            form_id
+        )
+    )
+    logger.debug(
+        "[odka_submission_ids] Retrieving submission IDs from '{0}'...".format(api)
+    )
 
-    resumption_cursor = ''
+    resumption_cursor = ""
     resume = True
     id_list = []
     counter = 1
@@ -3204,23 +3349,38 @@ def odka_submission_ids(form_id, limit=10000, url=settings.ODKA_URL, un=settings
             ids = []
         elif type(parsed["idChunk"]["idList"]["id"]) == str:
             # One submission.
-            ids = [parsed["idChunk"]["idList"]["id"], ]
+            ids = [
+                parsed["idChunk"]["idList"]["id"],
+            ]
         else:
             # More than one submission.
             ids = parsed["idChunk"]["idList"]["id"]
 
         id_list += ids
-        logger.info("[odka_submission_ids] Got {0} new IDs, total {1}".format(len(ids), len(id_list)))
-        resume = (resumption_cursor != parsed["idChunk"]["resumptionCursor"])
+        logger.info(
+            "[odka_submission_ids] Got {0} new IDs, total {1}".format(
+                len(ids), len(id_list)
+            )
+        )
+        resume = resumption_cursor != parsed["idChunk"]["resumptionCursor"]
         resumption_cursor = parsed["idChunk"]["resumptionCursor"]
         pars["cursor"] = resumption_cursor
         counter += 1
 
-    logger.info("[odka_submission_ids] Done, retrieved {0} submission IDs.".format(len(id_list)))
+    logger.info(
+        "[odka_submission_ids] Done, retrieved {0} submission IDs.".format(len(id_list))
+    )
     return id_list
 
 
-def odka_submission(form_id, submission_id, url=settings.ODKA_URL, un=settings.ODKA_UN, pw=settings.ODKA_PW, verbose=False):
+def odka_submission(
+    form_id,
+    submission_id,
+    url=settings.ODKA_URL,
+    un=settings.ODKA_UN,
+    pw=settings.ODKA_PW,
+    verbose=False,
+):
     """Download one ODKA submission and return as dict.
 
     See http://docs.opendatakit.org/aggregate-use/#briefcase-aggregate-api
@@ -3281,9 +3441,10 @@ def odka_submission(form_id, submission_id, url=settings.ODKA_URL, un=settings.O
     d["submission"]["data"]["data"]["@id"]
     'build_Site-Visit-Start-0-1_1490753483'
     """
-    api = ("{0}/view/downloadSubmission?formId={1}"
-           "[@version=null%20and%20@uiVersion=null]/data[@key={2}]").format(
-        url, form_id, submission_id)
+    api = (
+        "{0}/view/downloadSubmission?formId={1}"
+        "[@version=null%20and%20@uiVersion=null]/data[@key={2}]"
+    ).format(url, form_id, submission_id)
     au = HTTPDigestAuth(un, pw)
     logger.info("[odka_submission] Retrieving {0}".format(submission_id))
     if verbose:
@@ -3305,15 +3466,29 @@ def downloaded_data_exists(form_id, path):
 def downloaded_data(form_id, path):
     """Return downloaded data for form_id stored at path as parsed JSON or an empty list."""
     if downloaded_data_exists(form_id, path):
-        logger.info("[downloaded_data] Parsing {0}".format(downloaded_data_filename(form_id, path)))
-        with io.open(downloaded_data_filename(form_id, path), mode="r", encoding="utf-8") as df:
+        logger.info(
+            "[downloaded_data] Parsing {0}".format(
+                downloaded_data_filename(form_id, path)
+            )
+        )
+        with io.open(
+            downloaded_data_filename(form_id, path), mode="r", encoding="utf-8"
+        ) as df:
             data = json.load(df)
     else:
         data = []
     return data
 
 
-def odka_submissions(form_id, path=".", url=settings.ODKA_URL, un=settings.ODKA_UN, pw=settings.ODKA_PW, verbose=False, append=True):
+def odka_submissions(
+    form_id,
+    path=".",
+    url=settings.ODKA_URL,
+    un=settings.ODKA_UN,
+    pw=settings.ODKA_PW,
+    verbose=False,
+    append=True,
+):
     """Retrieve a list of all submissions for a given formID.
 
     Arguments:
@@ -3334,10 +3509,16 @@ def odka_submissions(form_id, path=".", url=settings.ODKA_URL, un=settings.ODKA_
     forms = odka_forms()
     data = odka_submissions(forms[6]["formID"])
     """
-    logger.info("[odka_submissions] Retrieving submissions for formID {0}...".format(form_id))
+    logger.info(
+        "[odka_submissions] Retrieving submissions for formID {0}...".format(form_id)
+    )
 
     old_data = downloaded_data(form_id, path)
-    logger.info("[odka_submissions] Found {0} already downloaded submissions.".format(len(old_data)))
+    logger.info(
+        "[odka_submissions] Found {0} already downloaded submissions.".format(
+            len(old_data)
+        )
+    )
     if append:
         old_ids = [make_data(x)["@instanceID"] for x in old_data]
         action = "retained"
@@ -3345,16 +3526,29 @@ def odka_submissions(form_id, path=".", url=settings.ODKA_URL, un=settings.ODKA_
         old_ids = []
         action = "overwrote"
 
-    new_data = [odka_submission(form_id, x, url=url, un=un, pw=pw, verbose=verbose)
-                for x in odka_submission_ids(form_id, url=url, un=un, pw=pw, verbose=verbose)
-                if x not in old_ids]
-    logger.info("[odka_submissions] Done, retrieved {0} new submissions, "
-                "{1} {2} already downloaded submissions.".format(
-                    len(new_data), action, len(old_data)))
+    new_data = [
+        odka_submission(form_id, x, url=url, un=un, pw=pw, verbose=verbose)
+        for x in odka_submission_ids(form_id, url=url, un=un, pw=pw, verbose=verbose)
+        if x not in old_ids
+    ]
+    logger.info(
+        "[odka_submissions] Done, retrieved {0} new submissions, "
+        "{1} {2} already downloaded submissions.".format(
+            len(new_data), action, len(old_data)
+        )
+    )
     return old_data + new_data
 
 
-def save_odka(form_id, path=".", url=settings.ODKA_URL, un=settings.ODKA_UN, pw=settings.ODKA_PW, verbose=False, append=True):
+def save_odka(
+    form_id,
+    path=".",
+    url=settings.ODKA_URL,
+    un=settings.ODKA_UN,
+    pw=settings.ODKA_PW,
+    verbose=False,
+    append=True,
+):
     """Save all submissions for a given form_id as JSON to a given path.
 
     Arguments:
@@ -3372,19 +3566,23 @@ def save_odka(form_id, path=".", url=settings.ODKA_URL, un=settings.ODKA_UN, pw=
         to overwrite all already downloaded data and download all data again.
     """
     data = odka_submissions(
-        form_id,
-        path=path,
-        url=url,
-        un=un,
-        pw=pw,
-        verbose=verbose,
-        append=append)
-    with io.open(downloaded_data_filename(form_id, path), mode="w", encoding="utf-8") as outfile:
+        form_id, path=path, url=url, un=un, pw=pw, verbose=verbose, append=append
+    )
+    with io.open(
+        downloaded_data_filename(form_id, path), mode="w", encoding="utf-8"
+    ) as outfile:
         data = json.dumps(data, indent=2, ensure_ascii=False)
         outfile.write(data)
 
 
-def save_all_odka(path=".", url=settings.ODKA_URL, un=settings.ODKA_UN, pw=settings.ODKA_PW, verbose=False, append=True):
+def save_all_odka(
+    path=".",
+    url=settings.ODKA_URL,
+    un=settings.ODKA_UN,
+    pw=settings.ODKA_PW,
+    verbose=False,
+    append=True,
+):
     """Save all submissions for all forms of an odka instance.
 
     Arguments:
@@ -3404,18 +3602,30 @@ def save_all_odka(path=".", url=settings.ODKA_URL, un=settings.ODKA_UN, pw=setti
     At the specified location (path) for each form, a file will be written
     which contains all submissions (records) for that respective form.
     """
-    [save_odka(
-        xform['formID'],
-        path=path,
-        url=url,
-        un=un,
-        pw=pw,
-        verbose=verbose,
-        append=append)
-     for xform in odka_forms()]
+    [
+        save_odka(
+            xform["formID"],
+            path=path,
+            url=url,
+            un=un,
+            pw=pw,
+            verbose=verbose,
+            append=append,
+        )
+        for xform in odka_forms()
+    ]
 
 
-def make_datapackage_json(xform, path=".", url=settings.ODKA_URL, un=settings.ODKA_UN, pw=settings.ODKA_PW, verbose=False, download_submissions=False, download_config=False):
+def make_datapackage_json(
+    xform,
+    path=".",
+    url=settings.ODKA_URL,
+    un=settings.ODKA_UN,
+    pw=settings.ODKA_PW,
+    verbose=False,
+    download_submissions=False,
+    download_config=False,
+):
     """Generate a datapacke.json config for a given xform dict.
 
     Arguments:
@@ -3448,33 +3658,40 @@ def make_datapackage_json(xform, path=".", url=settings.ODKA_URL, un=settings.OD
             url=url,
             un=un,
             pw=pw,
-            verbose=verbose)
+            verbose=verbose,
+        )
 
     datapackage_config = {
         "name": fid,
         "title": xform["name"],
         "description": "Hash: {0}\nversion: {1}\nmajorMinorVersion: {2}\ndownload URL: {3}".format(
-            xform["hash"], xform["version"], xform["majorMinorVersion"], xform["downloadUrl"]),
+            xform["hash"],
+            xform["version"],
+            xform["majorMinorVersion"],
+            xform["downloadUrl"],
+        ),
         "licenses": [
             {
                 "id": "odc-pddl",
                 "name": "Public Domain Dedication and License",
                 "version": "1.0",
-                "url": "http://opendatacommons.org/licenses/pddl/1.0/"
+                "url": "http://opendatacommons.org/licenses/pddl/1.0/",
             }
         ],
         "resources": [
-            {'encoding': 'utf-8',
-             'format': 'json',
-             'mediatype': 'text/json',
-             'name': fid,
-             'path': "{0}/{1}.json".format(datapackage_path, fid),
-             'profile': 'data-resource'}
-        ]
+            {
+                "encoding": "utf-8",
+                "format": "json",
+                "mediatype": "text/json",
+                "name": fid,
+                "path": "{0}/{1}.json".format(datapackage_path, fid),
+                "profile": "data-resource",
+            }
+        ],
     }
 
     if download_config:
-        with open('{0}/datapackage.json'.format(datapackage_path), 'w') as outfile:
+        with open("{0}/datapackage.json".format(datapackage_path), "w") as outfile:
             json.dump(datapackage_config, outfile)
 
     return datapackage_config
@@ -3515,8 +3732,11 @@ def make_media(odka_dict):
             logger.debug("[make_media] found multiple mediaFiles")
             return {x["filename"]: x["downloadUrl"] for x in mf}
         else:
-            logger.debug("[make_media] WARNING unknown data: {0}".format(
-                json.dumps(mf, indent=2)))
+            logger.debug(
+                "[make_media] WARNING unknown data: {0}".format(
+                    json.dumps(mf, indent=2)
+                )
+            )
             return dict()
     else:
         logger.debug("[make_media] no mediaFile found")
@@ -3547,7 +3767,9 @@ def listify(x):
         if type(x) == list:
             return x
         else:
-            return [x, ]
+            return [
+                x,
+            ]
     else:
         return None
 
@@ -3556,11 +3778,8 @@ def listify(x):
 # Update logic for WAStD's custom QA django-fsm status
 #
 def create_update_skip(
-        unique_data,
-        extra_data=dict(),
-        cls=Encounter,
-        base_cls=Encounter,
-        retain_qa=True):
+    unique_data, extra_data=dict(), cls=Encounter, base_cls=Encounter, retain_qa=True
+):
     """Create, update or skip Encounter.
 
     From minimal required data, create (if not existing),
@@ -3602,12 +3821,18 @@ def create_update_skip(
             instantiated = cls.objects.filter(pk=enc.first().pk)
             instantiated.update(**extra_data)
             e = enc.first()
-            msg = "[create_update_skip] Updating unchanged existing record {0}...".format(e.__str__())
+            msg = (
+                "[create_update_skip] Updating unchanged existing record {0}...".format(
+                    e.__str__()
+                )
+            )
             e.save()
         else:
             action = "skip"
             e = enc.first()
-            msg = "[create_update_skip] Skipping existing curated record {0}...".format(e.__str__())
+            msg = "[create_update_skip] Skipping existing curated record {0}...".format(
+                e.__str__()
+            )
     else:
         action = "create"
         data = unique_data
@@ -3627,20 +3852,28 @@ def create_update_skip(
 def handle_media_attachment_odka(enc, media, photo_filename, title="Photo"):
     """Handle MediaAttachment for ODKA data."""
     if not photo_filename:
-        logger.debug("  [handle_media_attachment_odka] skipping empty photo {0}".format(title))
+        logger.debug(
+            "  [handle_media_attachment_odka] skipping empty photo {0}".format(title)
+        )
     else:
         handle_media_attachment(
-            enc, dict(filename=photo_filename, url=media[photo_filename]), title=title)
+            enc, dict(filename=photo_filename, url=media[photo_filename]), title=title
+        )
     return None
 
 
 def handle_fieldmedia_attachment_odka(exp, media, photo_filename, title="Photo"):
     """Handle MediaAttachment for ODKA data."""
     if not photo_filename:
-        logger.debug("  [handle_fieldmedia_attachment_odka] skipping empty photo {0}".format(title))
+        logger.debug(
+            "  [handle_fieldmedia_attachment_odka] skipping empty photo {0}".format(
+                title
+            )
+        )
     else:
         handle_fieldmedia_attachment(
-            exp, dict(filename=photo_filename, url=media[photo_filename]), title=title)
+            exp, dict(filename=photo_filename, url=media[photo_filename]), title=title
+        )
     return None
 
 
@@ -3661,26 +3894,37 @@ def handle_odka_disturbanceobservation(enc, media, data):
     elif "disturbance" in data:
         distobs = listify(data["disturbance"])
     else:
-        logger.debug("  [handle_odka_disturbanceobservation] found no TurtleNestDisturbanceObservation")
+        logger.debug(
+            "  [handle_odka_disturbanceobservation] found no TurtleNestDisturbanceObservation"
+        )
         return None
 
     if distobs:
         logger.debug(
             "  [handle_odka_disturbanceobservation] found "
-            "{0} TurtleNestDisturbanceObservation(s)".format(len(distobs)))
-        [handle_turtlenestdistobs31(
-            dict(
-                disturbance_cause=x["disturbance_cause"],
-                disturbance_cause_confidence=x["disturbance_cause_confidence"],
-                disturbance_severity="na"
-                if "disturbance_severity" not in x else x["disturbance_severity"],
-                photo_disturbance=make_photo_dict(x["photo_disturbance"], media),
-                comments=x["comments"]
-            ),
-            enc) for x in distobs]
+            "{0} TurtleNestDisturbanceObservation(s)".format(len(distobs))
+        )
+        [
+            handle_turtlenestdistobs31(
+                dict(
+                    disturbance_cause=x["disturbance_cause"],
+                    disturbance_cause_confidence=x["disturbance_cause_confidence"],
+                    disturbance_severity="na"
+                    if "disturbance_severity" not in x
+                    else x["disturbance_severity"],
+                    photo_disturbance=make_photo_dict(x["photo_disturbance"], media),
+                    comments=x["comments"],
+                ),
+                enc,
+            )
+            for x in distobs
+        ]
     else:
-        logger.debug("  [handle_odka_disturbanceobservation] found invalid data: {0}".format(
-            json.dumps(distobs, indent=2)))
+        logger.debug(
+            "  [handle_odka_disturbanceobservation] found invalid data: {0}".format(
+                json.dumps(distobs, indent=2)
+            )
+        )
     return None
 
 
@@ -3707,26 +3951,41 @@ def handle_odka_nesttagobservation(enc, media, data):
     }
     """
     if "nest_tag" not in data:
-        logger.debug("[handle_odka_nesttagobservation] found no TurtleNestTagObservation")
+        logger.debug(
+            "[handle_odka_nesttagobservation] found no TurtleNestTagObservation"
+        )
         return None
 
     obs = listify(data["nest_tag"])
 
     if obs:
-        logger.debug("[handle_odka_nesttagobservation] found {0} TurtleNestTagObservation(s)".format(len(obs)))
-        [handle_turtlenesttagobs(
-            dict(
-                encounter=enc,
-                status=x["status"],
-                flipper_tag_id=x["flipper_tag_id"],
-                date_nest_laid=None if not x["date_nest_laid"] else x["date_nest_laid"],
-                tag_label=x["tag_label"],
-                photo_tag=make_photo_dict(x["photo_tag"], media)
-            ),
-            enc) for x in obs]
+        logger.debug(
+            "[handle_odka_nesttagobservation] found {0} TurtleNestTagObservation(s)".format(
+                len(obs)
+            )
+        )
+        [
+            handle_turtlenesttagobs(
+                dict(
+                    encounter=enc,
+                    status=x["status"],
+                    flipper_tag_id=x["flipper_tag_id"],
+                    date_nest_laid=None
+                    if not x["date_nest_laid"]
+                    else x["date_nest_laid"],
+                    tag_label=x["tag_label"],
+                    photo_tag=make_photo_dict(x["photo_tag"], media),
+                ),
+                enc,
+            )
+            for x in obs
+        ]
     else:
-        logger.debug("[handle_odka_nesttagobservation] found invalid data:\n{0}".format(
-            json.dumps(obs, indent=2)))
+        logger.debug(
+            "[handle_odka_nesttagobservation] found invalid data:\n{0}".format(
+                json.dumps(obs, indent=2)
+            )
+        )
 
     return None
 
@@ -3759,7 +4018,7 @@ def handle_odka_loggerobservation(enc, media, data):
                 source=2,
                 source_id="{0}-{1}".format(enc.source_id, obs["logger_id"]),
                 logger_id=obs["logger_id"],
-                comments=obs["comments"] if "comments" in obs else ""
+                comments=obs["comments"] if "comments" in obs else "",
             )
 
             criteria = new_data
@@ -3767,16 +4026,28 @@ def handle_odka_loggerobservation(enc, media, data):
             if target.exists():
                 e = target.update(**new_data)
                 e = LoggerObservation.objects.get(**criteria)
-                logger.info("  [handle_odka_loggerobservation] Updated existing {0}...".format(e.__str__()))
+                logger.info(
+                    "  [handle_odka_loggerobservation] Updated existing {0}...".format(
+                        e.__str__()
+                    )
+                )
 
             else:
                 e = LoggerObservation.objects.create(**new_data)
-                logger.info("  [handle_odka_loggerobservation] Created new {0}...".format(e.__str__()))
+                logger.info(
+                    "  [handle_odka_loggerobservation] Created new {0}...".format(
+                        e.__str__()
+                    )
+                )
 
             # Handle photos
             if obs["photo_logger"]:
                 handle_media_attachment_odka(
-                    enc, media, obs["photo_logger"], title="Photo Logger {0}".format(obs["logger_id"]))
+                    enc,
+                    media,
+                    obs["photo_logger"],
+                    title="Photo Logger {0}".format(obs["logger_id"]),
+                )
 
     else:
         logger.info("  [handle_odka_loggerobservation] found no LoggerObservation")
@@ -3857,24 +4128,33 @@ def handle_odka_tagsobs(enc, media, data):
                 name=tag_name,
                 tag_location=tag_location_dict[obs["tag_location"]],
                 status=tag_status_dict[obs["tag_status"]],
-                comments=obs["tag_comments"]
+                comments=obs["tag_comments"],
             )
 
             criteria = dict(encounter=enc, tag_type=tag_type, name=tag_name)
             target = TagObservation.objects.filter(**criteria)
             if target.exists():
-                logger.debug("  [handle_odka_tagsobs] Updating existing tag obs {0}...".format(tag_name))
+                logger.debug(
+                    "  [handle_odka_tagsobs] Updating existing tag obs {0}...".format(
+                        tag_name
+                    )
+                )
                 e = target.update(**new_data)
                 e = TagObservation.objects.get(**criteria)
 
             else:
-                logger.debug("  [handle_odka_tagsobs] Creating new tag obs {0}...".format(tag_name))
+                logger.debug(
+                    "  [handle_odka_tagsobs] Creating new tag obs {0}...".format(
+                        tag_name
+                    )
+                )
                 e = TagObservation.objects.create(**new_data)
 
             # 2. Photo of tag
             if obs["photo_tag"]:
                 handle_media_attachment_odka(
-                    enc, media, obs["photo_tag"], title="Photo {0}".format(e.__str__()))
+                    enc, media, obs["photo_tag"], title="Photo {0}".format(e.__str__())
+                )
 
     else:
         logger.info("  [handle_odka_tagsobs] found no TagObservation")
@@ -3920,7 +4200,9 @@ def handle_odka_turtlenestobservation(enc, media, data):
         None
     """
     if "egg_count" not in data:
-        logger.info("  [handle_odka_turtlenestobservation] found no TurtleNestObservation")
+        logger.info(
+            "  [handle_odka_turtlenestobservation] found no TurtleNestObservation"
+        )
         return None
 
     if data["nest"]["eggs_counted"] == "yes":
@@ -3930,9 +4212,12 @@ def handle_odka_turtlenestobservation(enc, media, data):
 
         # Photos of excavated eggs
         if "egg_photos" in data and data["egg_photos"]:
-            [handle_media_attachment_odka(
-                enc, media, ep["photo_eggs"], title="Egg photo {0}".format(idx + 1))
-                for idx, ep in enumerate(listify(data["egg_photos"]))]
+            [
+                handle_media_attachment_odka(
+                    enc, media, ep["photo_eggs"], title="Egg photo {0}".format(idx + 1)
+                )
+                for idx, ep in enumerate(listify(data["egg_photos"]))
+            ]
     return None
 
 
@@ -3956,10 +4241,12 @@ def handle_odka_managementaction(enc, media, data):
     else:
         new_data = dict(
             encounter_id=enc.id,
-            management_actions=data["animal_fate"]["animal_fate_comment"]
+            management_actions=data["animal_fate"]["animal_fate_comment"],
         )
 
-        criteria = dict(encounter=enc, management_actions=data["animal_fate"]["animal_fate_comment"])
+        criteria = dict(
+            encounter=enc, management_actions=data["animal_fate"]["animal_fate_comment"]
+        )
         target = ManagementAction.objects.filter(**criteria)
         if target.exists():
             e = target.update(**new_data)
@@ -4009,9 +4296,14 @@ def handle_odka_hatchlingmorphometricobservation(enc, media, data):
 
         None
     """
-    if data["nest"]["hatchlings_measured"] == "yes" and "hatchling_measurements" in data:
-        [handle_hatchlingmorphometricobs(x, enc)
-         for x in listify(data["hatchling_measurements"])]
+    if (
+        data["nest"]["hatchlings_measured"] == "yes"
+        and "hatchling_measurements" in data
+    ):
+        [
+            handle_hatchlingmorphometricobs(x, enc)
+            for x in listify(data["hatchling_measurements"])
+        ]
     return None
 
 
@@ -4049,12 +4341,24 @@ def handle_odka_turtlemorph(enc, media, data):
         obs = data["morphometrics"]
         new_data = dict(
             encounter_id=enc.id,
-            curved_carapace_length_mm=int_or_none(obs.get("curved_carapace_length_mm", None)),
-            curved_carapace_length_accuracy=obs.get("curved_carapace_length_accuracy", None),
-            curved_carapace_width_mm=int_or_none(obs.get("curved_carapace_width_mm", None)),
-            curved_carapace_width_accuracy=obs.get("curved_carapace_width_accuracy", None),
-            tail_length_carapace_mm=int_or_none(obs.get("tail_length_carapace_mm", None)),
-            tail_length_carapace_accuracy=obs.get("tail_length_carapace_accuracy", None),
+            curved_carapace_length_mm=int_or_none(
+                obs.get("curved_carapace_length_mm", None)
+            ),
+            curved_carapace_length_accuracy=obs.get(
+                "curved_carapace_length_accuracy", None
+            ),
+            curved_carapace_width_mm=int_or_none(
+                obs.get("curved_carapace_width_mm", None)
+            ),
+            curved_carapace_width_accuracy=obs.get(
+                "curved_carapace_width_accuracy", None
+            ),
+            tail_length_carapace_mm=int_or_none(
+                obs.get("tail_length_carapace_mm", None)
+            ),
+            tail_length_carapace_accuracy=obs.get(
+                "tail_length_carapace_accuracy", None
+            ),
             maximum_head_width_mm=int_or_none(obs.get("maximum_head_width_mm", None)),
             maximum_head_width_accuracy=obs.get("maximum_head_width_accuracy", None),
             handler_id=enc.observer_id,
@@ -4134,7 +4438,7 @@ def handle_odka_turtledamageobs(enc, media, data):
                 body_part=body_part_dict[obs["body_part"]],
                 damage_type=damage_type_dict[obs["damage_type"]],
                 damage_age=damage_age_dict[obs["damage_age"]],
-                description=obs["description"]
+                description=obs["description"],
             )
 
             criteria = new_data
@@ -4142,16 +4446,28 @@ def handle_odka_turtledamageobs(enc, media, data):
             if target.exists():
                 e = target.update(**new_data)
                 e = TurtleDamageObservation.objects.get(**criteria)
-                logger.debug("  [handle_odka_turtledamageobs] Updated existing {0}...".format(e.__str__()))
+                logger.debug(
+                    "  [handle_odka_turtledamageobs] Updated existing {0}...".format(
+                        e.__str__()
+                    )
+                )
 
             else:
                 e = TurtleDamageObservation.objects.create(**new_data)
-                logger.debug("  [handle_odka_turtledamageobs] Created new {0}...".format(e.__str__()))
+                logger.debug(
+                    "  [handle_odka_turtledamageobs] Created new {0}...".format(
+                        e.__str__()
+                    )
+                )
 
             # 2. Photo
             if obs["photo_damage"]:
                 handle_media_attachment_odka(
-                    enc, media, obs["photo_damage"], title="Photo {0}".format(e.__str__()))
+                    enc,
+                    media,
+                    obs["photo_damage"],
+                    title="Photo {0}".format(e.__str__()),
+                )
 
     else:
         logger.info("  [handle_odka_turtledamageobs] found no TurtleDamageObservation")
@@ -4460,7 +4776,10 @@ def handle_odka_fanangles(enc, media, data):
     tt53=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-53_1535702040", path)]  # 695 fans
     tt54=[import_odka_tt044(x) for x in downloaded_data("build_Turtle-Track-or-Nest-0-54_1539933206", path)] # 336 fans
     """
-    if "fan_angles_measured" in data["nest"] and data["nest"]["fan_angles_measured"] == "yes":
+    if (
+        "fan_angles_measured" in data["nest"]
+        and data["nest"]["fan_angles_measured"] == "yes"
+    ):
 
         for obs in listify(data["fan_angles"]):
 
@@ -4468,36 +4787,41 @@ def handle_odka_fanangles(enc, media, data):
             new_data = dict(
                 encounter_id=enc.id,
                 bearing_to_water_degrees=float_or_none(
-                    obs.get("bearing_to_water_manual", None) or
-                    obs.get("bearing_to_water_auto", None)
+                    obs.get("bearing_to_water_manual", None)
+                    or obs.get("bearing_to_water_auto", None)
                 ),
                 bearing_leftmost_track_degrees=float_or_none(
-                    obs.get("leftmost_track_manual", None) or
-                    obs.get("leftmost_track_auto", None)
+                    obs.get("leftmost_track_manual", None)
+                    or obs.get("leftmost_track_auto", None)
                 ),
                 bearing_rightmost_track_degrees=float_or_none(
-                    obs.get("rightmost_track_manual", None) or
-                    obs.get("rightmost_track_auto", None)
+                    obs.get("rightmost_track_manual", None)
+                    or obs.get("rightmost_track_auto", None)
                 ),
-                no_tracks_main_group=int_or_none(
-                    obs["no_tracks_main_group"]),
-                no_tracks_main_group_min=int_or_none(
-                    obs["no_tracks_main_group_min"]),
-                no_tracks_main_group_max=int_or_none(
-                    obs["no_tracks_main_group_max"]),
+                no_tracks_main_group=int_or_none(obs["no_tracks_main_group"]),
+                no_tracks_main_group_min=int_or_none(obs["no_tracks_main_group_min"]),
+                no_tracks_main_group_max=int_or_none(obs["no_tracks_main_group_max"]),
                 outlier_tracks_present=str_or_na(
-                    obs.get("outlier_tracks_present", "na")),
+                    obs.get("outlier_tracks_present", "na")
+                ),
                 path_to_sea_comments="{0} {1}".format(
-                    obs["hatchling_path_to_sea"], obs["path_to_sea_comments"]),
+                    obs["hatchling_path_to_sea"], obs["path_to_sea_comments"]
+                ),
                 hatchling_emergence_time_known=str_or_na(
-                    obs["hatchling_emergence_time_known"]),
-                light_sources_present=str_or_na(
-                    obs["light_sources_present"]),
+                    obs["hatchling_emergence_time_known"]
+                ),
+                light_sources_present=str_or_na(obs["light_sources_present"]),
                 hatchling_emergence_time=int_or_none(
-                    data["hatchling_emergence_time_group"]["hatchling_emergence_time"]),
+                    data["hatchling_emergence_time_group"]["hatchling_emergence_time"]
+                ),
                 hatchling_emergence_time_accuracy=str_or_na(
-                    data["hatchling_emergence_time_group"]["hatchling_emergence_time_source"]),
-                cloud_cover_at_emergence=int_or_none(data["emergence_climate"]["cloud_cover_at_emergence"]),
+                    data["hatchling_emergence_time_group"][
+                        "hatchling_emergence_time_source"
+                    ]
+                ),
+                cloud_cover_at_emergence=int_or_none(
+                    data["emergence_climate"]["cloud_cover_at_emergence"]
+                ),
             )
 
             criteria = new_data
@@ -4505,26 +4829,46 @@ def handle_odka_fanangles(enc, media, data):
             if target.exists():
                 e = target.update(**new_data)
                 e = TurtleHatchlingEmergenceObservation.objects.get(**criteria)
-                logger.info("  [handle_odka_fanangle] Updated existing {0}...".format(e.__str__()))
+                logger.info(
+                    "  [handle_odka_fanangle] Updated existing {0}...".format(
+                        e.__str__()
+                    )
+                )
 
             else:
                 e = TurtleHatchlingEmergenceObservation.objects.create(**new_data)
-                logger.info("  [handle_odka_fanangle] Created new {0}...".format(e.__str__()))
+                logger.info(
+                    "  [handle_odka_fanangle] Created new {0}...".format(e.__str__())
+                )
 
             # Handle photos
             if obs["photo_hatchling_tracks_seawards"]:
                 handle_media_attachment_odka(
-                    enc, media, obs["photo_hatchling_tracks_seawards"], title="Photo {0}".format(e.__str__()))
+                    enc,
+                    media,
+                    obs["photo_hatchling_tracks_seawards"],
+                    title="Photo {0}".format(e.__str__()),
+                )
 
             if obs["photo_hatchling_tracks_relief"]:
                 handle_media_attachment_odka(
-                    enc, media, obs["photo_hatchling_tracks_relief"], title="Photo {0}".format(e.__str__()))
+                    enc,
+                    media,
+                    obs["photo_hatchling_tracks_relief"],
+                    title="Photo {0}".format(e.__str__()),
+                )
     else:
-        logger.info("  [handle_odka_fanangle] found no TurtleHatchlingEmergenceObservation")
+        logger.info(
+            "  [handle_odka_fanangle] found no TurtleHatchlingEmergenceObservation"
+        )
         logger.info(str(data))
 
     # outliers
-    if "outlier_track" in data and data["outlier_track"] and data["nest"]["fan_angles_measured"] == "yes":
+    if (
+        "outlier_track" in data
+        and data["outlier_track"]
+        and data["nest"]["fan_angles_measured"] == "yes"
+    ):
         for obs in listify(data["outlier_track"]):
             # "outlier_track": {
             #     "outlier_track_photo": "1546837474680.jpg",
@@ -4535,30 +4879,50 @@ def handle_odka_fanangles(enc, media, data):
             new_data = dict(
                 encounter_id=enc.id,
                 bearing_outlier_track_degrees=float_or_none(
-                    obs.get("outlier_track_bearing_manual", None) or
-                    obs.get("track_bearing_manual", None) or
-                    obs.get("track_bearing_auto", None)
+                    obs.get("outlier_track_bearing_manual", None)
+                    or obs.get("track_bearing_manual", None)
+                    or obs.get("track_bearing_auto", None)
                 ),
                 outlier_group_size=int_or_none(obs["outlier_group_size"]),
                 outlier_track_comment=obs["outlier_track_comment"],
             )
             criteria = new_data
-            target = TurtleHatchlingEmergenceOutlierObservation.objects.filter(**criteria)
+            target = TurtleHatchlingEmergenceOutlierObservation.objects.filter(
+                **criteria
+            )
             if target.exists():
                 e = target.update(**new_data)
                 e = TurtleHatchlingEmergenceOutlierObservation.objects.get(**criteria)
-                logger.info("  [handle_odka_fanangle_outlier] Updated existing {0}...".format(e.__str__()))
+                logger.info(
+                    "  [handle_odka_fanangle_outlier] Updated existing {0}...".format(
+                        e.__str__()
+                    )
+                )
 
             else:
-                e = TurtleHatchlingEmergenceOutlierObservation.objects.create(**new_data)
-                logger.info("  [handle_odka_fanangle_outlier] Created new {0}...".format(e.__str__()))
+                e = TurtleHatchlingEmergenceOutlierObservation.objects.create(
+                    **new_data
+                )
+                logger.info(
+                    "  [handle_odka_fanangle_outlier] Created new {0}...".format(
+                        e.__str__()
+                    )
+                )
 
             if obs["outlier_track_photo"]:
                 handle_media_attachment_odka(
-                    enc, media, obs["outlier_track_photo"], title="Photo {0}".format(e.__str__()))
+                    enc,
+                    media,
+                    obs["outlier_track_photo"],
+                    title="Photo {0}".format(e.__str__()),
+                )
 
     # light sources
-    if "light_source" in data and data["light_source"] and data["nest"]["fan_angles_measured"] == "yes":
+    if (
+        "light_source" in data
+        and data["light_source"]
+        and data["nest"]["fan_angles_measured"] == "yes"
+    ):
         for obs in listify(data["light_source"]):
             # "light_source": [
             #     {
@@ -4577,8 +4941,8 @@ def handle_odka_fanangles(enc, media, data):
             new_data = dict(
                 encounter_id=enc.id,
                 bearing_light_degrees=float_or_none(
-                    obs.get("light_bearing_manual", None) or
-                    obs.get("light_bearing_auto", None)
+                    obs.get("light_bearing_manual", None)
+                    or obs.get("light_bearing_auto", None)
                 ),
                 light_source_type=obs["light_source_type"],
                 light_source_description=obs["light_source_description"],
@@ -4588,11 +4952,19 @@ def handle_odka_fanangles(enc, media, data):
             if target.exists():
                 e = target.update(**new_data)
                 e = LightSourceObservation.objects.get(**criteria)
-                logger.info("  [handle_odka_fanangle_lightsource] Updated existing {0}...".format(e.__str__()))
+                logger.info(
+                    "  [handle_odka_fanangle_lightsource] Updated existing {0}...".format(
+                        e.__str__()
+                    )
+                )
 
             else:
                 e = LightSourceObservation.objects.create(**new_data)
-                logger.info("  [handle_odka_fanangle_lightsource] Created new {0}...".format(e.__str__()))
+                logger.info(
+                    "  [handle_odka_fanangle_lightsource] Created new {0}...".format(
+                        e.__str__()
+                    )
+                )
 
     return None
 
@@ -4698,24 +5070,21 @@ def import_odka_svs02(r):
     media = make_media(r)
     reporter_match = guess_user(data["reporter"])
 
-    unique_data = dict(
-        source="odk",
-        source_id=data["@instanceID"])
+    unique_data = dict(source="odk", source_id=data["@instanceID"])
     extra_data = dict(
         start_location=odk_point_as_point(data["site_visit"]["location"]),
         start_time=parse_datetime(data["survey_start_time"]),
-        start_comments="{0}\n\n\n{1}".format(reporter_match["message"], data["site_visit"]["comments"]),
+        start_comments="{0}\n\n\n{1}".format(
+            reporter_match["message"], data["site_visit"]["comments"]
+        ),
         reporter=reporter_match["user"],
         device_id=None if "device_id" not in data else data["device_id"],
         # TODO team if present
     )
 
     enc, action = create_update_skip(
-        unique_data,
-        extra_data,
-        cls=Survey,
-        base_cls=Survey,
-        retain_qa=True)
+        unique_data, extra_data, cls=Survey, base_cls=Survey, retain_qa=True
+    )
 
     if action in ["update", "create"]:
         enc.save()
@@ -4733,7 +5102,7 @@ def import_odka_svs02(r):
 
             if os.path.exists(pname):
                 logger.debug("  File {0} exists".format(pname))
-                with open(pname, 'rb') as photo:
+                with open(pname, "rb") as photo:
                     f = File(photo)
                     if f.size > 0:
                         enc.start_photo.save(pname, f, save=True)
@@ -4878,23 +5247,20 @@ def import_odka_sve02(r):
     media = make_media(r)
     reporter_match = guess_user(data["reporter"])
 
-    unique_data = dict(
-        source="odk",
-        source_id=data["@instanceID"])
+    unique_data = dict(source="odk", source_id=data["@instanceID"])
     extra_data = dict(
         end_location=odk_point_as_point(data["site_visit"]["location"]),
         end_time=parse_datetime(data["survey_end_time"]),
-        end_comments="{0}\n\n\n{1}".format(reporter_match["message"], data["site_visit"]["comments"]),
+        end_comments="{0}\n\n\n{1}".format(
+            reporter_match["message"], data["site_visit"]["comments"]
+        ),
         reporter=reporter_match["user"],
         device_id=None if "device_id" not in data else data["device_id"],
     )
 
     enc, action = create_update_skip(
-        unique_data,
-        extra_data,
-        cls=SurveyEnd,
-        base_cls=SurveyEnd,
-        retain_qa=False)
+        unique_data, extra_data, cls=SurveyEnd, base_cls=SurveyEnd, retain_qa=False
+    )
 
     if action in ["update", "create"]:
         enc.save()
@@ -4912,7 +5278,7 @@ def import_odka_sve02(r):
 
             if os.path.exists(pname):
                 logger.debug("  File {0} exists".format(pname))
-                with open(pname, 'rb') as photo:
+                with open(pname, "rb") as photo:
                     f = File(photo)
                     if f.size > 0:
                         enc.end_photo.save(pname, f, save=True)
@@ -4996,9 +5362,7 @@ def import_odka_fs03(r):
     media = make_media(r)
     reporter_match = guess_user(data["reporter"])
 
-    unique_data = dict(
-        source="odk",
-        source_id=data["@instanceID"])
+    unique_data = dict(source="odk", source_id=data["@instanceID"])
     extra_data = dict(
         where=odk_point_as_point(data["disturbanceobservation"]["location"]),
         when=parse_datetime(data["observation_start_time"]),
@@ -5012,10 +5376,8 @@ def import_odka_fs03(r):
     #     extra_data["transect"] = read_odk_linestring(where)
 
     enc, action = create_update_skip(
-        unique_data,
-        extra_data,
-        cls=Encounter,
-        base_cls=Encounter)
+        unique_data, extra_data, cls=Encounter, base_cls=Encounter
+    )
 
     if action in ["update", "create"]:
         handle_odka_disturbanceobservation(enc, media, data)
@@ -5083,9 +5445,7 @@ def import_odka_tsi01(r):
     media = make_media(r)
     reporter_match = guess_user(data["reporter"])
 
-    unique_data = dict(
-        source="odk",
-        source_id=data["@instanceID"])
+    unique_data = dict(source="odk", source_id=data["@instanceID"])
     extra_data = dict(
         where=odk_point_as_point(data["encounter"]["observed_at"]),
         when=parse_datetime(data["observation_start_time"]),
@@ -5093,21 +5453,21 @@ def import_odka_tsi01(r):
         observer=reporter_match["user"],
         reporter=reporter_match["user"],
         comments="{0}\n{1}".format(
-            reporter_match["message"],
-            data["encounter"]["observer_acticity"]),
+            reporter_match["message"], data["encounter"]["observer_acticity"]
+        ),
         species=data["encounter"]["species"],
         sex=data["encounter"]["sex"],
         maturity=data["encounter"]["maturity"],
-        activity=data["encounter"]["activity"]
+        activity=data["encounter"]["activity"],
     )
 
     enc, action = create_update_skip(
-        unique_data,
-        extra_data,
-        cls=AnimalEncounter,
-        base_cls=Encounter)
+        unique_data, extra_data, cls=AnimalEncounter, base_cls=Encounter
+    )
 
-    handle_media_attachment_odka(enc, media, data["encounter"]["photo_habitat"], title="Habitat")
+    handle_media_attachment_odka(
+        enc, media, data["encounter"]["photo_habitat"], title="Habitat"
+    )
 
     logger.info("Done: {0}\n".format(enc))
     return enc
@@ -5316,9 +5676,7 @@ def import_odka_tt044(r):
     media = make_media(r)
     usr = guess_user(data["reporter"])
 
-    unique_data = dict(
-        source="odk",
-        source_id=data["@instanceID"])
+    unique_data = dict(source="odk", source_id=data["@instanceID"])
     extra_data = dict(
         where=odk_point_as_point(data["details"]["observed_at"]),
         when=parse_datetime(data["observation_start_time"]),
@@ -5329,10 +5687,8 @@ def import_odka_tt044(r):
     )
 
     enc, action = create_update_skip(
-        unique_data,
-        extra_data,
-        cls=TurtleNestEncounter,
-        base_cls=Encounter)
+        unique_data, extra_data, cls=TurtleNestEncounter, base_cls=Encounter
+    )
 
     if action in ["update", "create"]:
         enc.nest_age = data["details"]["nest_age"]
@@ -5341,11 +5697,21 @@ def import_odka_tt044(r):
         enc.habitat = data["nest"]["habitat"] or "na"
         enc.disturbance = data["nest"]["disturbance"] or "na"
         enc.save()
-        handle_media_attachment_odka(enc, media, data["track_photos"]["photo_track_1"], title="Uptrack")
-        handle_media_attachment_odka(enc, media, data["track_photos"]["photo_track_2"], title="Downtrack")
-        handle_media_attachment_odka(enc, media, data["nest_photos"]["photo_nest_1"], title="Nest 1")
-        handle_media_attachment_odka(enc, media, data["nest_photos"]["photo_nest_2"], title="Nest 2")
-        handle_media_attachment_odka(enc, media, data["nest_photos"]["photo_nest_3"], title="Nest 3")
+        handle_media_attachment_odka(
+            enc, media, data["track_photos"]["photo_track_1"], title="Uptrack"
+        )
+        handle_media_attachment_odka(
+            enc, media, data["track_photos"]["photo_track_2"], title="Downtrack"
+        )
+        handle_media_attachment_odka(
+            enc, media, data["nest_photos"]["photo_nest_1"], title="Nest 1"
+        )
+        handle_media_attachment_odka(
+            enc, media, data["nest_photos"]["photo_nest_2"], title="Nest 2"
+        )
+        handle_media_attachment_odka(
+            enc, media, data["nest_photos"]["photo_nest_3"], title="Nest 3"
+        )
         handle_odka_disturbanceobservation(enc, media, data)
         handle_odka_nesttagobservation(enc, media, data)
         handle_odka_turtlenestobservation(enc, media, data)
@@ -5494,9 +5860,7 @@ def import_odka_tal05(r):
     # media = make_media(r)
     usr = guess_user(data["reporter"])
 
-    unique_data = dict(
-        source="odk",
-        source_id=data["@instanceID"])
+    unique_data = dict(source="odk", source_id=data["@instanceID"])
     extra_data = dict(
         where=odk_point_as_point(data["overview"]["location"]),
         transect=read_odk_linestring(data["overview"]["location"]),
@@ -5508,17 +5872,17 @@ def import_odka_tal05(r):
     )
 
     enc, action = create_update_skip(
-        unique_data,
-        extra_data,
-        cls=LineTransectEncounter,
-        base_cls=Encounter)
+        unique_data, extra_data, cls=LineTransectEncounter, base_cls=Encounter
+    )
 
     if action in ["update", "create"]:
 
         # TurtleNestDisturbanceTallyObservation
-        [handle_turtlenestdisttallyobs(distobs, enc)
-         for distobs in listify(data["disturbance"])
-         if len(listify(data["disturbance"])) > 0]
+        [
+            handle_turtlenestdisttallyobs(distobs, enc)
+            for distobs in listify(data["disturbance"])
+            if len(listify(data["disturbance"])) > 0
+        ]
 
         #  TrackTallyObservations
         FB = "natator-depressus"
@@ -5530,45 +5894,105 @@ def import_odka_tal05(r):
 
         tally_mapping = [
             [FB, "old", "track-not-assessed", data["fb"]["fb_no_old_tracks"] or 0],
-            [FB, "fresh", "successful-crawl", data["fb"]["fb_no_fresh_successful_crawls"] or 0],
+            [
+                FB,
+                "fresh",
+                "successful-crawl",
+                data["fb"]["fb_no_fresh_successful_crawls"] or 0,
+            ],
             [FB, "fresh", "false-crawl", data["fb"]["fb_no_fresh_false_crawls"] or 0],
             [FB, "fresh", "track-unsure", data["fb"]["fb_no_fresh_tracks_unsure"] or 0],
-            [FB, "fresh", "track-not-assessed", data["fb"]["fb_no_fresh_tracks_not_assessed"] or 0],
+            [
+                FB,
+                "fresh",
+                "track-not-assessed",
+                data["fb"]["fb_no_fresh_tracks_not_assessed"] or 0,
+            ],
             [FB, "fresh", "hatched-nest", data["fb"]["fb_no_hatched_nests"] or 0],
-
             [GN, "old", "track-not-assessed", data["gn"]["gn_no_old_tracks"] or 0],
-            [GN, "fresh", "successful-crawl", data["gn"]["gn_no_fresh_successful_crawls"] or 0],
+            [
+                GN,
+                "fresh",
+                "successful-crawl",
+                data["gn"]["gn_no_fresh_successful_crawls"] or 0,
+            ],
             [GN, "fresh", "false-crawl", data["gn"]["gn_no_fresh_false_crawls"] or 0],
             [GN, "fresh", "track-unsure", data["gn"]["gn_no_fresh_tracks_unsure"] or 0],
-            [GN, "fresh", "track-not-assessed", data["gn"]["gn_no_fresh_tracks_not_assessed"] or 0],
+            [
+                GN,
+                "fresh",
+                "track-not-assessed",
+                data["gn"]["gn_no_fresh_tracks_not_assessed"] or 0,
+            ],
             [GN, "fresh", "hatched-nest", data["gn"]["gn_no_hatched_nests"] or 0],
-
             [HB, "old", "track-not-assessed", data["hb"]["hb_no_old_tracks"] or 0],
-            [HB, "fresh", "successful-crawl", data["hb"]["hb_no_fresh_successful_crawls"] or 0],
+            [
+                HB,
+                "fresh",
+                "successful-crawl",
+                data["hb"]["hb_no_fresh_successful_crawls"] or 0,
+            ],
             [HB, "fresh", "false-crawl", data["hb"]["hb_no_fresh_false_crawls"] or 0],
             [HB, "fresh", "track-unsure", data["hb"]["hb_no_fresh_tracks_unsure"] or 0],
-            [HB, "fresh", "track-not-assessed", data["hb"]["hb_no_fresh_tracks_not_assessed"] or 0],
+            [
+                HB,
+                "fresh",
+                "track-not-assessed",
+                data["hb"]["hb_no_fresh_tracks_not_assessed"] or 0,
+            ],
             [HB, "fresh", "hatched-nest", data["hb"]["hb_no_hatched_nests"] or 0],
-
             [LH, "old", "track-not-assessed", data["lh"]["lh_no_old_tracks"] or 0],
-            [LH, "fresh", "successful-crawl", data["lh"]["lh_no_fresh_successful_crawls"] or 0],
+            [
+                LH,
+                "fresh",
+                "successful-crawl",
+                data["lh"]["lh_no_fresh_successful_crawls"] or 0,
+            ],
             [LH, "fresh", "false-crawl", data["lh"]["lh_no_fresh_false_crawls"] or 0],
             [LH, "fresh", "track-unsure", data["lh"]["lh_no_fresh_tracks_unsure"] or 0],
-            [LH, "fresh", "track-not-assessed", data["lh"]["lh_no_fresh_tracks_not_assessed"] or 0],
+            [
+                LH,
+                "fresh",
+                "track-not-assessed",
+                data["lh"]["lh_no_fresh_tracks_not_assessed"] or 0,
+            ],
             [LH, "fresh", "hatched-nest", data["lh"]["lh_no_hatched_nests"] or 0],
-
             [OR, "old", "track-not-assessed", data["or"]["or_no_old_tracks"] or 0],
-            [OR, "fresh", "successful-crawl", data["or"]["or_no_fresh_successful_crawls"] or 0],
+            [
+                OR,
+                "fresh",
+                "successful-crawl",
+                data["or"]["or_no_fresh_successful_crawls"] or 0,
+            ],
             [OR, "fresh", "false-crawl", data["or"]["or_no_fresh_false_crawls"] or 0],
             [OR, "fresh", "track-unsure", data["or"]["or_no_fresh_tracks_unsure"] or 0],
-            [OR, "fresh", "track-not-assessed", data["or"]["or_no_fresh_tracks_not_assessed"] or 0],
+            [
+                OR,
+                "fresh",
+                "track-not-assessed",
+                data["or"]["or_no_fresh_tracks_not_assessed"] or 0,
+            ],
             [OR, "fresh", "hatched-nest", data["or"]["or_no_hatched_nests"] or 0],
-
             [UN, "old", "track-not-assessed", data["unk"]["unk_no_old_tracks"] or 0],
-            [UN, "fresh", "successful-crawl", data["unk"]["unk_no_fresh_successful_crawls"] or 0],
+            [
+                UN,
+                "fresh",
+                "successful-crawl",
+                data["unk"]["unk_no_fresh_successful_crawls"] or 0,
+            ],
             [UN, "fresh", "false-crawl", data["unk"]["unk_no_fresh_false_crawls"] or 0],
-            [UN, "fresh", "track-unsure", data["unk"]["unk_no_fresh_tracks_unsure"] or 0],
-            [UN, "fresh", "track-not-assessed", data["unk"]["unk_no_fresh_tracks_not_assessed"] or 0],
+            [
+                UN,
+                "fresh",
+                "track-unsure",
+                data["unk"]["unk_no_fresh_tracks_unsure"] or 0,
+            ],
+            [
+                UN,
+                "fresh",
+                "track-not-assessed",
+                data["unk"]["unk_no_fresh_tracks_not_assessed"] or 0,
+            ],
             [UN, "fresh", "hatched-nest", data["unk"]["unk_no_hatched_nests"] or 0],
         ]
 
@@ -5708,33 +6132,31 @@ def import_odka_mwi05(r):
     activity_dict = map_and_keep(ACTIVITY_CHOICES)
     maturity_dict = map_and_keep(MATURITY_CHOICES)
     species_dict = map_and_keep(SPECIES_CHOICES)
-    species_dict.update({
-        'turtle': 'cheloniidae-fam',
-        'flatback': 'natator-depressus',
-        'green': 'chelonia-mydas',
-        'hawksbill': 'eretmochelys-imbricata',
-        'loggerhead': 'caretta-caretta',
-        'oliveridley': 'lepidochelys-olivacea',
-        'leatherback': 'dermochelys-coriacea'
-    })
+    species_dict.update(
+        {
+            "turtle": "cheloniidae-fam",
+            "flatback": "natator-depressus",
+            "green": "chelonia-mydas",
+            "hawksbill": "eretmochelys-imbricata",
+            "loggerhead": "caretta-caretta",
+            "oliveridley": "lepidochelys-olivacea",
+            "leatherback": "dermochelys-coriacea",
+        }
+    )
 
-    unique_data = dict(
-        source="odk",
-        source_id=data["@instanceID"])
+    unique_data = dict(source="odk", source_id=data["@instanceID"])
     extra_data = dict(
         where=odk_point_as_point(data["incident"]["observed_at"]),
         when=parse_datetime(data["incident"]["incident_time"]),
         location_accuracy="10",
         observer=usr["user"],
         reporter=usr["user"],
-        comments=usr["message"]
+        comments=usr["message"],
     )
 
     enc, action = create_update_skip(
-        unique_data,
-        extra_data,
-        cls=AnimalEncounter,
-        base_cls=Encounter)
+        unique_data, extra_data, cls=AnimalEncounter, base_cls=Encounter
+    )
 
     if action in ["update", "create"]:
 
@@ -5746,14 +6168,17 @@ def import_odka_mwi05(r):
         enc.activity = activity_dict[data["status"]["activity"]]
         enc.behaviour = "Behaviour: {0}\nLocation: {1}".format(
             data["status"]["behaviour"] or "",
-            data["incident"]["location_comment"] or "")
+            data["incident"]["location_comment"] or "",
+        )
         enc.habitat = habitat_dict[data["incident"]["habitat"]]
         enc.nesting_event = "absent"
         enc.checked_for_injuries = data["checks"]["checked_for_injuries"]
         enc.scanned_for_pit_tags = data["checks"]["scanned_for_pit_tags"]
         enc.checked_for_flipper_tags = data["checks"]["checked_for_flipper_tags"]
-        enc.cause_of_death = data["death"]["cause_of_death"] or 'na'
-        enc.cause_of_death_confidence = data["death"]["cause_of_death_confidence"] or 'na'
+        enc.cause_of_death = data["death"]["cause_of_death"] or "na"
+        enc.cause_of_death_confidence = (
+            data["death"]["cause_of_death_confidence"] or "na"
+        )
 
         #  "checks": {
         #   "samples_taken": "present",
@@ -5761,15 +6186,42 @@ def import_odka_mwi05(r):
         enc.save()
 
         # Photos
-        handle_media_attachment_odka(enc, media, data["incident"]["photo_habitat"], title="Initial photo of habitat")
-        handle_media_attachment_odka(enc, media, data["habitat_photos"]["photo_habitat_2"], title="Habitat 2")
-        handle_media_attachment_odka(enc, media, data["habitat_photos"]["photo_habitat_3"], title="Habitat 3")
-        handle_media_attachment_odka(enc, media, data["habitat_photos"]["photo_habitat_4"], title="Habitat 4")
-        handle_media_attachment_odka(enc, media, data["photos_turtle"]["photo_head_top"], title="Turtle head top")
-        handle_media_attachment_odka(enc, media, data["photos_turtle"]["photo_head_front"], title="Turtle head front")
-        handle_media_attachment_odka(enc, media, data["photos_turtle"]["photo_head_side"], title="Turtle head side")
-        handle_media_attachment_odka(enc, media, data["photos_turtle"]
-                                     ["photo_carapace_top"], title="Turtle carapace top")
+        handle_media_attachment_odka(
+            enc,
+            media,
+            data["incident"]["photo_habitat"],
+            title="Initial photo of habitat",
+        )
+        handle_media_attachment_odka(
+            enc, media, data["habitat_photos"]["photo_habitat_2"], title="Habitat 2"
+        )
+        handle_media_attachment_odka(
+            enc, media, data["habitat_photos"]["photo_habitat_3"], title="Habitat 3"
+        )
+        handle_media_attachment_odka(
+            enc, media, data["habitat_photos"]["photo_habitat_4"], title="Habitat 4"
+        )
+        handle_media_attachment_odka(
+            enc, media, data["photos_turtle"]["photo_head_top"], title="Turtle head top"
+        )
+        handle_media_attachment_odka(
+            enc,
+            media,
+            data["photos_turtle"]["photo_head_front"],
+            title="Turtle head front",
+        )
+        handle_media_attachment_odka(
+            enc,
+            media,
+            data["photos_turtle"]["photo_head_side"],
+            title="Turtle head side",
+        )
+        handle_media_attachment_odka(
+            enc,
+            media,
+            data["photos_turtle"]["photo_carapace_top"],
+            title="Turtle carapace top",
+        )
 
         handle_odka_tagsobs(enc, media, data)
         handle_odka_managementaction(enc, media, data)
@@ -5787,6 +6239,7 @@ def import_odka_mwi05(r):
 # Turtle Encounter
 # TODO
 
+
 def import_all_odka(path="."):
     """Import all known ODKA data.
 
@@ -5802,39 +6255,130 @@ def import_all_odka(path="."):
     """
     logger.info("[import_all_odka] Starting import of all downloaded ODKA data...")
     results = dict(
-        mwi01=[import_odka_mwi05(x) for x in downloaded_data("build_Marine-Wildlife-Incident-0-1_1502342347", path)],
-        mwi04=[import_odka_mwi05(x) for x in downloaded_data("build_Marine-Wildlife-Incident-0-4_1509605702", path)],
-        mwi05=[import_odka_mwi05(x) for x in downloaded_data("build_Marine-Wildlife-Incident-0-5_1510547403", path)],
-        mwi06=[import_odka_mwi05(x) for x in downloaded_data("build_Marine-Wildlife-Incident-0-6_1535597111", path)],
-
-        tsi01=[import_odka_tsi01(x) for x in downloaded_data("build_Turtle-Sighting-0-1_1535090015", path)],
-        tal05=[import_odka_tal05(x) for x in downloaded_data("build_Track-Tally-0-5_1502342159", path)],
-        fs03=[import_odka_fs03(x) for x in downloaded_data("build_Fox-Sake-0-3_1490757423", path)],
-        fs04=[import_odka_fs03(x) for x in downloaded_data("build_Fox-Sake-0-4_1534140913", path)],
-        fs04a=[import_odka_fs03(x) for x in downloaded_data("build_Predator-or-Disturbance-1-0_1539932798", path)],
-
-        tt35=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-35_1507882361", path)],
-        tt36=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-36_1508561995", path)],
-        tt44=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-44_1509422138", path)],
-        tt45=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-45_1511079712", path)],
-        tt46=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-46_1512095567", path)],
-        tt47=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-47_1512461621", path)],
-        tt50=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-50_1516929392", path)],
-        tt51=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-51_1517196378", path)],
-        tt52=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-52_1518683842", path)],
-        tt53=[import_odka_tt044(x) for x in downloaded_data("build_Track-or-Treat-0-53_1535702040", path)],
-        tt54=[import_odka_tt044(x) for x in downloaded_data("build_Turtle-Track-or-Nest-0-54_1539933206", path)],
-        tt55=[import_odka_tt044(x) for x in downloaded_data("build_Turtle-Track-or-Nest-0-55_1548318718", path)],
-
-        sve01=[import_odka_sve02(x) for x in downloaded_data("build_Site-Visit-End-0-1_1490756971", path)],
-        sve02=[import_odka_sve02(x) for x in downloaded_data("build_Site-Visit-End-0-2_1510716716", path)],
-        svs01=[import_odka_svs02(x) for x in downloaded_data("build_Site-Visit-Start-0-1_1490753483", path)],
-        svs02=[import_odka_svs02(x) for x in downloaded_data("build_Site-Visit-Start-0-2_1510716686", path)],
-        svs03=[import_odka_svs02(x) for x in downloaded_data("build_Site-Visit-Start-0-3_1535694081", path)],
-
+        mwi01=[
+            import_odka_mwi05(x)
+            for x in downloaded_data(
+                "build_Marine-Wildlife-Incident-0-1_1502342347", path
+            )
+        ],
+        mwi04=[
+            import_odka_mwi05(x)
+            for x in downloaded_data(
+                "build_Marine-Wildlife-Incident-0-4_1509605702", path
+            )
+        ],
+        mwi05=[
+            import_odka_mwi05(x)
+            for x in downloaded_data(
+                "build_Marine-Wildlife-Incident-0-5_1510547403", path
+            )
+        ],
+        mwi06=[
+            import_odka_mwi05(x)
+            for x in downloaded_data(
+                "build_Marine-Wildlife-Incident-0-6_1535597111", path
+            )
+        ],
+        tsi01=[
+            import_odka_tsi01(x)
+            for x in downloaded_data("build_Turtle-Sighting-0-1_1535090015", path)
+        ],
+        tal05=[
+            import_odka_tal05(x)
+            for x in downloaded_data("build_Track-Tally-0-5_1502342159", path)
+        ],
+        fs03=[
+            import_odka_fs03(x)
+            for x in downloaded_data("build_Fox-Sake-0-3_1490757423", path)
+        ],
+        fs04=[
+            import_odka_fs03(x)
+            for x in downloaded_data("build_Fox-Sake-0-4_1534140913", path)
+        ],
+        fs04a=[
+            import_odka_fs03(x)
+            for x in downloaded_data(
+                "build_Predator-or-Disturbance-1-0_1539932798", path
+            )
+        ],
+        tt35=[
+            import_odka_tt044(x)
+            for x in downloaded_data("build_Track-or-Treat-0-35_1507882361", path)
+        ],
+        tt36=[
+            import_odka_tt044(x)
+            for x in downloaded_data("build_Track-or-Treat-0-36_1508561995", path)
+        ],
+        tt44=[
+            import_odka_tt044(x)
+            for x in downloaded_data("build_Track-or-Treat-0-44_1509422138", path)
+        ],
+        tt45=[
+            import_odka_tt044(x)
+            for x in downloaded_data("build_Track-or-Treat-0-45_1511079712", path)
+        ],
+        tt46=[
+            import_odka_tt044(x)
+            for x in downloaded_data("build_Track-or-Treat-0-46_1512095567", path)
+        ],
+        tt47=[
+            import_odka_tt044(x)
+            for x in downloaded_data("build_Track-or-Treat-0-47_1512461621", path)
+        ],
+        tt50=[
+            import_odka_tt044(x)
+            for x in downloaded_data("build_Track-or-Treat-0-50_1516929392", path)
+        ],
+        tt51=[
+            import_odka_tt044(x)
+            for x in downloaded_data("build_Track-or-Treat-0-51_1517196378", path)
+        ],
+        tt52=[
+            import_odka_tt044(x)
+            for x in downloaded_data("build_Track-or-Treat-0-52_1518683842", path)
+        ],
+        tt53=[
+            import_odka_tt044(x)
+            for x in downloaded_data("build_Track-or-Treat-0-53_1535702040", path)
+        ],
+        tt54=[
+            import_odka_tt044(x)
+            for x in downloaded_data("build_Turtle-Track-or-Nest-0-54_1539933206", path)
+        ],
+        tt55=[
+            import_odka_tt044(x)
+            for x in downloaded_data("build_Turtle-Track-or-Nest-0-55_1548318718", path)
+        ],
+        sve01=[
+            import_odka_sve02(x)
+            for x in downloaded_data("build_Site-Visit-End-0-1_1490756971", path)
+        ],
+        sve02=[
+            import_odka_sve02(x)
+            for x in downloaded_data("build_Site-Visit-End-0-2_1510716716", path)
+        ],
+        svs01=[
+            import_odka_svs02(x)
+            for x in downloaded_data("build_Site-Visit-Start-0-1_1490753483", path)
+        ],
+        svs02=[
+            import_odka_svs02(x)
+            for x in downloaded_data("build_Site-Visit-Start-0-2_1510716686", path)
+        ],
+        svs03=[
+            import_odka_svs02(x)
+            for x in downloaded_data("build_Site-Visit-Start-0-3_1535694081", path)
+        ],
         # turtle tagging 0.3
         # turtle encounter 0.4
     )
     logger.info("[import_all_odka] Finished import. Stats:")
-    logger.info("\n".join(["[import_all_odka]  Imported {0} {1}".format(len(results[x]), x.upper()) for x in results]))
+    logger.info(
+        "\n".join(
+            [
+                "[import_all_odka]  Imported {0} {1}".format(len(results[x]), x.upper())
+                for x in results
+            ]
+        )
+    )
     return results

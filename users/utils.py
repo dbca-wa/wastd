@@ -26,8 +26,10 @@ def transfer_user(old, new):
     """
     # Gate checks ------------------------------------------------------------#
     if old == new:
-        msg = ("Same user, nothing to do. "
-               "Only two different user profiles can be merged.")
+        msg = (
+            "Same user, nothing to do. "
+            "Only two different user profiles can be merged."
+        )
         logger.info(msg)
         return msg
 
@@ -40,7 +42,6 @@ def transfer_user(old, new):
         "{} morph recorded, {} morph handled, "
         "{} tags recorded, {} tags handled, "
         "{} revisions, {} statelogs. "
-
         "User profile retained: {} with "
         "{} Encounters observed, {} Encounters reported, "
         "{} Surveys started, {} Survey Ends recorded, {} Surveys teamed, "
@@ -59,7 +60,6 @@ def transfer_user(old, new):
             old.tag_handler.count(),
             old.revision_set.count(),
             old.statelog_set.count(),
-
             new,
             new.encounters_reported.count(),
             new.encounters_observed.count(),
@@ -126,12 +126,16 @@ def transfer_user(old, new):
     # ------------------------------------------------------------------------#
     # Transfer old user details to new user
     # Old username, name, aliases merged with new aliases and deduplicated
-    new_aliases = list(map(str.strip, new.aliases.split(","))) if new.aliases != "" else list()
-    old_aliases = list(map(str.strip, old.aliases.split(","))) if old.aliases != "" else list()
+    new_aliases = (
+        list(map(str.strip, new.aliases.split(","))) if new.aliases != "" else list()
+    )
+    old_aliases = (
+        list(map(str.strip, old.aliases.split(","))) if old.aliases != "" else list()
+    )
     old_details = [old.username, old.name]
     combined_aliases = list(set(new_aliases + old_aliases + old_details))
     new.aliases = ", ".join([x for x in combined_aliases if x != ""])
-    new.is_active = True # So we can revert an incorrect User merge
+    new.is_active = True  # So we can revert an incorrect User merge
 
     # Role is too messy to deduplicate
     if old.role and old.role != "":
@@ -158,7 +162,7 @@ def transfer_user(old, new):
 
     # ------------------------------------------------------------------------#
     # Stocktake after merge
-    new = User.objects.get(pk = new.pk) # Load fresh state from DB
+    new = User.objects.get(pk=new.pk)  # Load fresh state from DB
     msg += (
         "After merge: {} now has "
         "{} Encounters observed, {} Encounters reported, "
@@ -166,18 +170,18 @@ def transfer_user(old, new):
         "{} morph recorded, {} morph handled, "
         "{} tags recorded, {} tags handled, "
         "{} revisions, {} statelogs. ".format(
-        new,
-        new.encounters_reported.count(),
-        new.encounters_observed.count(),
-        new.reported_surveys.count(),
-        new.surveyend_set.count(),
-        new.survey_team.count(),
-        new.morphometric_recorder.count(),
-        new.morphometric_handler.count(),
-        new.tag_recorder.count(),
-        new.tag_handler.count(),
-        new.revision_set.count(),
-        new.statelog_set.count(),
+            new,
+            new.encounters_reported.count(),
+            new.encounters_observed.count(),
+            new.reported_surveys.count(),
+            new.surveyend_set.count(),
+            new.survey_team.count(),
+            new.morphometric_recorder.count(),
+            new.morphometric_handler.count(),
+            new.tag_recorder.count(),
+            new.tag_handler.count(),
+            new.revision_set.count(),
+            new.statelog_set.count(),
         )
     )
 
@@ -207,15 +211,16 @@ def change_user_for_area(old, new, area):
 
     # Gate checks ------------------------------------------------------------#
     if old == new:
-        msg = ("Same user, nothing to do. "
-              "If you wanted to transfer data from one to another user, "
-              "choose two different users.")
+        msg = (
+            "Same user, nothing to do. "
+            "If you wanted to transfer data from one to another user, "
+            "choose two different users."
+        )
         logger.info(msg)
         return msg
 
     if not area:
-        msg = ("No area selected, nothing to do. "
-              "A locality is required.")
+        msg = "No area selected, nothing to do. " "A locality is required."
         logger.info(msg)
         return msg
 
@@ -227,7 +232,9 @@ def change_user_for_area(old, new, area):
         "{} Surveys started, {} Surveys teamed, "
         "{} morph recorded, {} morph handled, "
         "{} tags recorded, {} tags handled.".format(
-            old, new, area,
+            old,
+            new,
+            area,
             old.encounters_reported.filter(area=area).count(),
             old.encounters_observed.filter(area=area).count(),
             old.reported_surveys.filter(area=area).count(),

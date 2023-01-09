@@ -22,7 +22,7 @@ from .forms import (
     EncounterListFormHelper,
     AnimalEncounterForm,
     AnimalEncounterListFormHelper,
-    FlipperTagObservationFormSet
+    FlipperTagObservationFormSet,
 )
 from .models import (
     Survey,
@@ -30,7 +30,7 @@ from .models import (
     AnimalEncounter,
     TurtleNestEncounter,
     LineTransectEncounter,
-    TagObservation
+    TagObservation,
 )
 from .resources import (
     SurveyResource,
@@ -84,7 +84,7 @@ class HomeView(ListView):
     def get_context_data(self, **kwargs):
         """Context data."""
         context = super(HomeView, self).get_context_data(**kwargs)
-        context['now'] = timezone.now()
+        context["now"] = timezone.now()
         return context
 
     def get_queryset(self, **kwargs):
@@ -92,26 +92,29 @@ class HomeView(ListView):
         return AnimalEncounter.objects.filter(encounter_type="stranding")
 
 
-#-----------------------------------------------------------------------------#
+# -----------------------------------------------------------------------------#
 # Survey
 class SurveyList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
     model = Survey
-    template_name = 'pages/default_list.html'
+    template_name = "pages/default_list.html"
     paginate_by = 20
     filter_class = SurveyFilter
     resource_class = SurveyResource
 
     def get_context_data(self, **kwargs):
         context = super(SurveyList, self).get_context_data(**kwargs)
-        context['list_filter'] = SurveyFilter(
+        context["list_filter"] = SurveyFilter(
             self.request.GET, queryset=self.get_queryset()
         )
         return context
 
     def get_queryset(self):
-        qs = super(SurveyList, self).get_queryset().prefetch_related(
-            "reporter", "site", "encounter_set", "campaign"
-        ).order_by('-start_time')
+        qs = (
+            super(SurveyList, self)
+            .get_queryset()
+            .prefetch_related("reporter", "site", "encounter_set", "campaign")
+            .order_by("-start_time")
+        )
         return SurveyFilter(self.request.GET, queryset=qs).qs
 
 
@@ -153,7 +156,7 @@ class EncounterTable(tables.Table):
 
         model = Encounter
         exclude = ["as_html", "as_latex", "polymorphic_ctype", "encounter_ptr"]
-        attrs = {'class': 'table table-hover table-inverse table-sm'}
+        attrs = {"class": "table table-hover table-inverse table-sm"}
 
 
 class AnimalEncounterTable(tables.Table):
@@ -164,7 +167,7 @@ class AnimalEncounterTable(tables.Table):
 
         model = AnimalEncounter
         exclude = ["as_html", "as_latex", "polymorphic_ctype", "encounter_ptr"]
-        attrs = {'class': 'table table-hover table-inverse table-sm'}
+        attrs = {"class": "table table-hover table-inverse table-sm"}
 
 
 class PagedFilteredTableView(SingleTableView):
@@ -182,7 +185,7 @@ class PagedFilteredTableView(SingleTableView):
     paginate_by = 10
     filter_class = None
     formhelper_class = None
-    context_filter_name = 'filter'
+    context_filter_name = "filter"
 
     def get_queryset(self, **kwargs):
         """Run the queryset through the specified filter class."""
@@ -196,8 +199,11 @@ class PagedFilteredTableView(SingleTableView):
         table = super(PagedFilteredTableView, self).get_table()
         RequestConfig(
             self.request,
-            paginate={'page': self.kwargs['page'] if 'page' in self.kwargs else 1,
-                      "per_page": self.paginate_by}).configure(table)
+            paginate={
+                "page": self.kwargs["page"] if "page" in self.kwargs else 1,
+                "per_page": self.paginate_by,
+            },
+        ).configure(table)
         return table
 
     def get_context_data(self, **kwargs):
@@ -217,26 +223,30 @@ class EncounterTableView(PagedFilteredTableView):
     formhelper_class = EncounterListFormHelper
 
 
-#-----------------------------------------------------------------------------#
+# -----------------------------------------------------------------------------#
 # Encounter
 class EncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
     model = Encounter
-    template_name = 'pages/default_list.html'
+    template_name = "pages/default_list.html"
     paginate_by = 20
     filter_class = EncounterFilter
     resource_class = EncounterResource
 
     def get_context_data(self, **kwargs):
         context = super(EncounterList, self).get_context_data(**kwargs)
-        context['list_filter'] = EncounterFilter(
+        context["list_filter"] = EncounterFilter(
             self.request.GET, queryset=self.get_queryset()
         )
-        context['model_admin'] = admin.EncounterAdmin
+        context["model_admin"] = admin.EncounterAdmin
         return context
 
     def get_queryset(self):
-        qs = super(EncounterList, self).get_queryset().prefetch_related(
-            "observer", "reporter", "area", "site").order_by('-when')
+        qs = (
+            super(EncounterList, self)
+            .get_queryset()
+            .prefetch_related("observer", "reporter", "area", "site")
+            .order_by("-when")
+        )
         return EncounterFilter(self.request.GET, queryset=qs).qs
 
 
@@ -249,7 +259,7 @@ class EncounterDetail(DetailViewBreadcrumbMixin, DetailView):
         return data
 
 
-#-----------------------------------------------------------------------------#
+# -----------------------------------------------------------------------------#
 # AnimalEncounter
 class AnimalEncounterTableView(EncounterTableView):
     """Filtered paginated TableView for AninmalEncounter."""
@@ -264,22 +274,33 @@ class AnimalEncounterTableView(EncounterTableView):
 
 class AnimalEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
     model = AnimalEncounter
-    template_name = 'pages/default_list.html'
+    template_name = "pages/default_list.html"
     paginate_by = 20
     filter_class = AnimalEncounterFilter
     resource_class = AnimalEncounterResource
 
     def get_context_data(self, **kwargs):
         context = super(AnimalEncounterList, self).get_context_data(**kwargs)
-        context['list_filter'] = AnimalEncounterFilter(
-            self.request.GET, queryset=self.get_queryset())
-        context['model_admin'] = admin.AnimalEncounterAdmin
+        context["list_filter"] = AnimalEncounterFilter(
+            self.request.GET, queryset=self.get_queryset()
+        )
+        context["model_admin"] = admin.AnimalEncounterAdmin
         return context
 
     def get_queryset(self):
-        qs = super(AnimalEncounterList, self).get_queryset().prefetch_related(
-            "observer", "reporter", "area", "site",
-            "site_of_first_sighting", "site_of_last_sighting",).order_by('-when')
+        qs = (
+            super(AnimalEncounterList, self)
+            .get_queryset()
+            .prefetch_related(
+                "observer",
+                "reporter",
+                "area",
+                "site",
+                "site_of_first_sighting",
+                "site_of_last_sighting",
+            )
+            .order_by("-when")
+        )
         return AnimalEncounterFilter(self.request.GET, queryset=qs).qs
 
 
@@ -290,21 +311,23 @@ class AnimalEncounterCreate(CreateView):
     def get_context_data(self, **kwargs):
         data = super(AnimalEncounterCreate, self).get_context_data(**kwargs)
         if self.request.POST:
-            data['flipper_tags'] = FlipperTagObservationFormSet(self.request.POST)
+            data["flipper_tags"] = FlipperTagObservationFormSet(self.request.POST)
         else:
-            data['flipper_tags'] = FlipperTagObservationFormSet()
-        data['formset_prefix'] = 'encounter'  # We set this in order to give the JavaScript something to match.
+            data["flipper_tags"] = FlipperTagObservationFormSet()
+        data[
+            "formset_prefix"
+        ] = "encounter"  # We set this in order to give the JavaScript something to match.
         return data
 
     def post(self, request, *args, **kwargs):
         # If the user clicked Cancel, redirect back to the list view.
-        if request.POST.get('cancel'):
-            return redirect('observations:animalencounter-list')
+        if request.POST.get("cancel"):
+            return redirect("observations:animalencounter-list")
         return super(AnimalEncounterCreate, self).post(request, *args, **kwargs)
 
     def form_valid(self, form):
         context = self.get_context_data()
-        flipper_tags = context['flipper_tags']
+        flipper_tags = context["flipper_tags"]
         with transaction.atomic():
             # Set observer and reporter to the request user.
             form.instance.observer = self.request.user
@@ -312,7 +335,7 @@ class AnimalEncounterCreate(CreateView):
             self.object = form.save()
             if flipper_tags.is_valid():
                 flipper_tags.instance = self.object
-                flipper_tags.tag_type = 'flipper-tag'
+                flipper_tags.tag_type = "flipper-tag"
                 flipper_tags.save()
         return super(AnimalEncounterCreate, self).form_valid(form)
 
@@ -322,7 +345,7 @@ class AnimalEncounterDetail(DetailViewBreadcrumbMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         data = super(AnimalEncounterDetail, self).get_context_data(**kwargs)
-        data['tags'] = TagObservation.objects.filter(encounter__in=[self.get_object()])
+        data["tags"] = TagObservation.objects.filter(encounter__in=[self.get_object()])
         return data
 
 
@@ -333,21 +356,25 @@ class AnimalEncounterUpdate(UpdateView):
     def get_context_data(self, **kwargs):
         data = super(AnimalEncounterUpdate, self).get_context_data(**kwargs)
         if self.request.POST:
-            data['flipper_tags'] = FlipperTagObservationFormSet(self.request.POST, instance=self.object)
+            data["flipper_tags"] = FlipperTagObservationFormSet(
+                self.request.POST, instance=self.object
+            )
         else:
-            data['flipper_tags'] = FlipperTagObservationFormSet(instance=self.object)
-        data['formset_prefix'] = 'encounter'  # We set this in order to give the JavaScript something to match.
+            data["flipper_tags"] = FlipperTagObservationFormSet(instance=self.object)
+        data[
+            "formset_prefix"
+        ] = "encounter"  # We set this in order to give the JavaScript something to match.
         return data
 
     def post(self, request, *args, **kwargs):
         # If the user clicked Cancel, redirect back to the detail view.
-        if request.POST.get('cancel'):
+        if request.POST.get("cancel"):
             return redirect(self.get_object().get_absolute_url())
         return super(AnimalEncounterUpdate, self).post(request, *args, **kwargs)
 
     def form_valid(self, form):
         context = self.get_context_data()
-        flipper_tags = context['flipper_tags']
+        flipper_tags = context["flipper_tags"]
         with transaction.atomic():
             self.object = form.save()
             if flipper_tags.is_valid():
@@ -360,22 +387,26 @@ class AnimalEncounterUpdate(UpdateView):
 # TNE
 class TurtleNestEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
     model = TurtleNestEncounter
-    template_name = 'pages/default_list.html'
+    template_name = "pages/default_list.html"
     paginate_by = 20
     filter_class = TurtleNestEncounterFilter
     resource_class = TurtleNestEncounterResource
 
     def get_context_data(self, **kwargs):
         context = super(TurtleNestEncounterList, self).get_context_data(**kwargs)
-        context['list_filter'] = TurtleNestEncounterFilter(
+        context["list_filter"] = TurtleNestEncounterFilter(
             self.request.GET, queryset=self.get_queryset()
         )
-        context['model_admin'] = admin.TurtleNestEncounterAdmin
+        context["model_admin"] = admin.TurtleNestEncounterAdmin
         return context
 
     def get_queryset(self):
-        qs = super(TurtleNestEncounterList, self).get_queryset().prefetch_related(
-            "observer", "reporter", "area", "site").order_by('-when')
+        qs = (
+            super(TurtleNestEncounterList, self)
+            .get_queryset()
+            .prefetch_related("observer", "reporter", "area", "site")
+            .order_by("-when")
+        )
         return TurtleNestEncounterFilter(self.request.GET, queryset=qs).qs
 
 
@@ -390,24 +421,30 @@ class TurtleNestEncounterDetail(DetailViewBreadcrumbMixin, DetailView):
 
 # -----------------------------------------------------------------------------#
 # LineTransectEncounter
-class LineTransectEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
+class LineTransectEncounterList(
+    ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView
+):
     model = LineTransectEncounter
-    template_name = 'pages/default_list.html'
+    template_name = "pages/default_list.html"
     paginate_by = 20
     filter_class = LineTransectEncounterFilter
     resource_class = LineTransectEncounterResource
 
     def get_context_data(self, **kwargs):
         context = super(LineTransectEncounterList, self).get_context_data(**kwargs)
-        context['list_filter'] = LineTransectEncounterFilter(
+        context["list_filter"] = LineTransectEncounterFilter(
             self.request.GET, queryset=self.get_queryset()
         )
-        context['model_admin'] = admin.LineTransectEncounterAdmin
+        context["model_admin"] = admin.LineTransectEncounterAdmin
         return context
 
     def get_queryset(self):
-        qs = super(LineTransectEncounterList, self).get_queryset().prefetch_related(
-            "observer", "reporter", "area", "site").order_by('-when')
+        qs = (
+            super(LineTransectEncounterList, self)
+            .get_queryset()
+            .prefetch_related("observer", "reporter", "area", "site")
+            .order_by("-when")
+        )
         return LineTransectEncounterFilter(self.request.GET, queryset=qs).qs
 
 

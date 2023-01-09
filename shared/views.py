@@ -20,7 +20,7 @@ class BreadcrumbContextMixin(ContextMixin):
     def get_context_data(self, **kwargs):
         """Custom context."""
         context = super(BreadcrumbContextMixin, self).get_context_data(**kwargs)
-        context['breadcrumbs'] = self.get_breadcrumbs(self.request)
+        context["breadcrumbs"] = self.get_breadcrumbs(self.request)
         return context
 
 
@@ -34,8 +34,8 @@ class ListViewBreadcrumbMixin(BreadcrumbContextMixin, View):
     def get_breadcrumbs(self, request, obj=None, add=False):
         """Create a list of breadcrumbs as named tuples of ('name', 'url')."""
         return (
-            Breadcrumb(_('Home'), reverse('home')),
-            Breadcrumb(self.model._meta.verbose_name_plural, None)
+            Breadcrumb(_("Home"), reverse("home")),
+            Breadcrumb(self.model._meta.verbose_name_plural, None),
         )
 
 
@@ -50,9 +50,9 @@ class DetailViewBreadcrumbMixin(BreadcrumbContextMixin, View):
     def get_breadcrumbs(self, request, obj=None, add=False):
         """Create a list of breadcrumbs as named tuples of ('name', 'url')."""
         return (
-            Breadcrumb(_('Home'), reverse('home')),
+            Breadcrumb(_("Home"), reverse("home")),
             Breadcrumb(self.model._meta.verbose_name_plural, self.model.list_url()),
-            Breadcrumb(self.object.__str__(), self.object.get_absolute_url())
+            Breadcrumb(self.object.__str__(), self.object.get_absolute_url()),
         )
 
 
@@ -68,10 +68,10 @@ class UpdateViewBreadcrumbMixin(BreadcrumbContextMixin, View):
     def get_breadcrumbs(self, request, obj=None, add=False):
         """Create a list of breadcrumbs as named tuples of ('name', 'url')."""
         return (
-            Breadcrumb(_('Home'), reverse('home')),
+            Breadcrumb(_("Home"), reverse("home")),
             Breadcrumb(self.model._meta.verbose_name_plural, self.object.list_url()),
             Breadcrumb(self.object.__str__(), self.object.get_absolute_url()),
-            Breadcrumb("Update", None)
+            Breadcrumb("Update", None),
         )
 
 
@@ -86,7 +86,7 @@ class CreateViewBreadcrumbMixin(BreadcrumbContextMixin, View):
     def get_breadcrumbs(self, request, obj=None, add=False):
         """Create a list of breadcrumbs as named tuples of ('name', 'url')."""
         return (
-            Breadcrumb(_('Home'), reverse('home')),
+            Breadcrumb(_("Home"), reverse("home")),
             # Breadcrumb(self.model._meta.verbose_name_plural, self.model.list_url()),
-            Breadcrumb("Create a new {0}".format(self.model._meta.verbose_name), None)
+            Breadcrumb("Create a new {0}".format(self.model._meta.verbose_name), None),
         )
