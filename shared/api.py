@@ -1,18 +1,16 @@
 """Shared API utilities."""
-import logging
 from collections import OrderedDict
-
 from django.db import transaction
-
+import logging
 from rest_framework import pagination, status, viewsets  # , serializers, routers
 from rest_framework.response import Response as RestResponse
 from rest_framework_csv.renderers import CSVRenderer
 from rest_framework.settings import api_settings
 
-from .models import QualityControlMixin
 from observations.models import Observation, Encounter
+from .models import QualityControlMixin
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger("wastd")
 
 
 class CustomCSVRenderer(CSVRenderer):
@@ -58,7 +56,6 @@ class MyGeoJsonPagination(CustomLimitOffsetPagination):
 
     def get_paginated_response(self, data):
         """Return a GeoJSON FeatureCollection with pagination links."""
-        # if "format" in self.request.query_params and self.request.query_params["format"] == "json":
         if "features" in data:
             results = data["features"]
         elif "results" in data:
@@ -76,8 +73,6 @@ class MyGeoJsonPagination(CustomLimitOffsetPagination):
                 ]
             )
         )
-
-        # return super().get_paginated_response(self, data)
 
 
 class FastLimitOffsetPagination(pagination.LimitOffsetPagination):
@@ -117,9 +112,9 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
 
         Unique fields and CSRF middleware token are removed from data.
         """
-        logger.info(data)
+        LOGGER.info(data)
         data = self.resolve_fks(data)
-        logger.info(data)
+        LOGGER.info(data)
         unique_fields = {x: data[x] for x in self.uid_fields}
         [data.pop(x) for x in self.uid_fields if x in data]
         if "csrfmiddlewaretoken" in data:
@@ -168,11 +163,11 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
             msg = "[API][create_one] Skipping invalid data missing unique values: {0} {1}".format(
                 str(update_data), str(unique_data)
             )
-            logger.warning(msg)
+            LOGGER.warning(msg)
             content = {"msg": msg}
             return RestResponse(content, status=status.HTTP_406_NOT_ACCEPTABLE)
 
-        logger.debug(
+        LOGGER.info(
             "[API][create_one] Received "
             "{0} with unique fields {1}".format(
                 self.model._meta.verbose_name, str(unique_data)
@@ -190,7 +185,7 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
                 "[API][create_one] Not overwriting locally changed data "
                 "with QA status: {0}".format(obj.get_status_display())
             )
-            logger.info(msg)
+            LOGGER.info(msg)
             content = {"msg": msg}
             return RestResponse(content, status=status.HTTP_200_OK)
 
@@ -207,7 +202,7 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
         st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
         msg = "[API][create_one] {0} {1}".format(verb, obj.__str__())
         content = {"id": obj.id, "msg": msg}
-        logger.info(msg)
+        LOGGER.info(msg)
         return RestResponse(content, status=st)
 
     def create(self, request):
@@ -226,12 +221,12 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
 
         # Create one ---------------------------------------------------------#
         if self.uid_fields[0] in request.data:
-            logger.info("[API][create] found one record, creating/updating...")
+            LOGGER.info("[API][create] found one record, creating/updating...")
             return self.create_one(request.data)
 
         # Create many --------------------------------------------------------#
         elif type(request.data) == list and self.uid_fields[0] in request.data[0]:
-            logger.info(
+            LOGGER.info(
                 "[API][create] found batch of {0} records,"
                 " creating/updating...".format(len(request.data))
             )
@@ -245,13 +240,13 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
             # Existing vs new
 
             new_records = request.data
-            logger.info("[API][create] Fetching existing records...")
+            LOGGER.info("[API][create] Fetching existing records...")
             m = Encounter if issubclass(self.model, Observation) else self.model
             existing_records = self.fetch_existing_records(new_records, m)
-            logger.info("[API][create] Done fetching existing records.")
+            LOGGER.info("[API][create] Done fetching existing records.")
 
             # Having QA status or not decides what to update or retain
-            logger.info("[API][create] Sorting records into retain/update/create...")
+            LOGGER.info("[API][create] Sorting records into retain/update/create...")
             if issubclass(self.model, QualityControlMixin):
                 # Bucket "retain": existing_objects with status > STATUS_NEW
                 to_retain = [
@@ -260,30 +255,18 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
                     if t["status"] > QualityControlMixin.STATUS_NEW
                 ]
                 # TODO Log PKs (debug) or total number (info) of skipped records
-                logger.info(
+                LOGGER.info(
                     "[API][create] Skipping {0} locally changed records".format(
                         len(to_retain)
                     )
                 )
-                logger.debug(
+                LOGGER.info(
                     "[API][create] Skipping locally changed records: {0}".format(
                         str(to_retain)
                     )
                 )
-
-                # With QA: update if existing but unchanged (QA status "NEW")
-                to_update = [
-                    t
-                    for t in existing_records
-                    if t["status"] == QualityControlMixin.STATUS_NEW
-                ]
             else:
-                # Without QA: update if existing
-                to_update = existing_records
                 to_retain = []
-
-            # Only UID fields of new records (request.data)
-            # new_records_uid_only = [{rec[uid_field] for uid_field in self.uid_fields} for rec in new_records]
 
             existing_records_uid_only = [
                 {rec[uid_field] for uid_field in self.uid_fields}
@@ -305,7 +288,7 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
                 if {new_record[uid_field] for uid_field in self.uid_fields}
                 not in existing_records_uid_only
             ]
-            logger.info(
+            LOGGER.info(
                 "[API][create] Done sorting records: {0} to retain, {1} to update, {2} to create.".format(
                     len(to_retain), len(records_to_update), len(records_to_create)
                 )
@@ -314,27 +297,13 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
             # Hammertime
             with transaction.atomic():
                 if records_to_update:
-                    logger.info("[API][create] Updating records...")
-                    # logger.debug("[API][create] Updating records: {0}".format(str(records_to_update)))
-                    # updated = self.model.objects.bulk_update(
-                    #     [self.model(**x) for x in records_to_update], records_to_update[0].keys())
-                    # updated = [self.create_one(x) for x in records_to_update]
+                    LOGGER.info("[API][create] Updating records...")
                     for data in records_to_update:
                         unique_data, update_data = self.split_data(data)
                         self.model.objects.filter(**unique_data).update(**update_data)
 
-                        # to update cached fields
-                        # self.model.objects.filter(**unique_data).refresh_from_db()
-                        # self.model.objects.filter(**unique_data).save()
-
                 if records_to_create:
-                    logger.info("[API][create] Creating records...")
-                    # logger.debug("[API][create] Creating records: {0}".format(str(records_to_create)))
-                    # Nice but doesn't work with multi table inherited models (TAE, CAE):
-                    # created = self.model.objects.bulk_create([self.model(**self.resolve_fks(x)) for x in records_to_create])
-
-                    # Slow:
-                    # created = [self.create_one(x) for x in records_to_create]
+                    LOGGER.info("[API][create] Creating records...")
 
                     # Mildly less slow but still not batch:
                     for data in records_to_create:
@@ -342,8 +311,7 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
                         obj, created = self.model.objects.get_or_create(
                             defaults=update_data, **unique_data
                         )
-                        # obj = self.model.objects.create(**data)
-                        logger.info(
+                        LOGGER.info(
                             "[API][create] Creating record with unique fields "
                             "{0}, update fields {1}, created: {2}".format(
                                 str(unique_data), str(update_data), created
@@ -354,11 +322,11 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
                         obj.refresh_from_db()
                         obj.save()
 
-            logger.info("[API][create] Finished.")
+            LOGGER.info("[API][create] Finished.")
             msg = "Retained {0}, updated {1}, created {2} records.".format(
                 len(to_retain), len(records_to_update), len(records_to_create)
             )
-            logger.info(msg)
+            LOGGER.info(msg)
 
             return RestResponse(msg, status=status.HTTP_200_OK)
 
@@ -367,7 +335,7 @@ class BatchUpsertViewSet(viewsets.ModelViewSet):
             msg = "[API][BatchUpsertViewSet] unknown data format:" "{0}".format(
                 str(request.data)
             )
-            logger.warning(msg)
+            LOGGER.warning(msg)
             return RestResponse({"msg": msg}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
 
@@ -434,11 +402,11 @@ class ObservationBatchUpsertViewSet(BatchUpsertViewSet):
             msg = "[API][create_one] Skipping invalid data: {0} {1}".format(
                 str(update_data), str(unique_data)
             )
-            logger.warning(msg)
+            LOGGER.warning(msg)
             content = {"msg": msg}
             return RestResponse(content, status=status.HTTP_406_NOT_ACCEPTABLE)
 
-        logger.debug(
+        LOGGER.info(
             "[API][create_one] Received "
             "{0} with unique fields {1} and update_data {2}".format(
                 self.model._meta.verbose_name, str(unique_data), str(update_data)
@@ -456,7 +424,7 @@ class ObservationBatchUpsertViewSet(BatchUpsertViewSet):
             update_data.pop("encounter_source")
             update_data.pop("encounter_source_id")
 
-        logger.debug(
+        LOGGER.info(
             "[API][create_one] Creating "
             "{0} with unique fields {1} and update_data {2}".format(
                 self.model._meta.verbose_name, str(unique_data), str(update_data)
@@ -473,7 +441,7 @@ class ObservationBatchUpsertViewSet(BatchUpsertViewSet):
                 "[API][create_one] Not overwriting locally changed data "
                 "with QA status: {0}".format(obj.encounter.get_status_display())
             )
-            logger.info(msg)
+            LOGGER.info(msg)
             content = {"msg": msg}
             return RestResponse(content, status=status.HTTP_200_OK)
 
@@ -490,7 +458,7 @@ class ObservationBatchUpsertViewSet(BatchUpsertViewSet):
         st = status.HTTP_201_CREATED if created else status.HTTP_200_OK
         msg = "[API][create_one] {0} {1}".format(verb, obj.__str__())
         content = {"id": obj.id, "msg": msg}
-        logger.info(msg)
+        LOGGER.info(msg)
         return RestResponse(content, status=st)
 
     def create(self, request):
@@ -506,16 +474,14 @@ class ObservationBatchUpsertViewSet(BatchUpsertViewSet):
         * Dict of object_id and message if one record
         * List of one-record dicts if several records
         """
-        # import ipdb; ipdb.set_trace()
-
         # Create one ---------------------------------------------------------#
         if self.uid_fields[0] in request.data:
-            logger.info("[API][create] found one record, creating/updating...")
+            LOGGER.info("[API][create] found one record, creating/updating...")
             return self.create_one(request.data)
 
         # Create many --------------------------------------------------------#
         elif type(request.data) == list and self.uid_fields[0] in request.data[0]:
-            logger.info(
+            LOGGER.info(
                 "[API][create] found batch of {0} records,"
                 " creating/updating...".format(len(request.data))
             )
@@ -524,7 +490,7 @@ class ObservationBatchUpsertViewSet(BatchUpsertViewSet):
 
             # ----------------------------------------------------------------#
             # Fetch existing Encounter valuess based on encounter_source_id
-            logger.info("[API][create] Fetching existing Encounter records...")
+            LOGGER.info("[API][create] Fetching existing Encounter records...")
             existing_records = self.fetch_existing_records(
                 new_records,
                 Observation,
@@ -567,7 +533,7 @@ class ObservationBatchUpsertViewSet(BatchUpsertViewSet):
                 for e in existing_encounters
             }
 
-            logger.info(
+            LOGGER.info(
                 "[API][create] Found {0} existing Encounter records: "
                 "{1} to retain, {2} to update".format(
                     len(existing_encounters),
@@ -584,7 +550,7 @@ class ObservationBatchUpsertViewSet(BatchUpsertViewSet):
                 for x in new_records
                 if x["encounter_source_id"] not in encounter_source_ids
             ]
-            logger.info(
+            LOGGER.info(
                 "[API][create] Found {0} records without matching Encounter. ".format(
                     len(to_refuse)
                 )
@@ -599,10 +565,10 @@ class ObservationBatchUpsertViewSet(BatchUpsertViewSet):
             ]
 
             # TODO Log PKs (debug) or total number (info) of skipped records
-            logger.info(
+            LOGGER.info(
                 "[API][create] Skipping {0} QA'd records".format(len(to_retain))
             )
-            logger.debug(
+            LOGGER.info(
                 "[API][create] Skipping QA'd records: {0}".format(str(to_retain))
             )
 
@@ -626,7 +592,7 @@ class ObservationBatchUpsertViewSet(BatchUpsertViewSet):
                 and new_record["encounter_source_id"] in encounter_source_ids  # noqa
             ]
 
-            logger.info(
+            LOGGER.info(
                 "[API][create] Done sorting records: "
                 "{0} refused (create Encounter first), {1} to retain, "
                 "{2} to update, {1} to create.".format(
@@ -636,12 +602,12 @@ class ObservationBatchUpsertViewSet(BatchUpsertViewSet):
                 )
             )
 
-            logger.debug("Refused: {0}".format(str(to_refuse)))
+            LOGGER.info("Refused: {0}".format(str(to_refuse)))
 
             # Hammertime
             with transaction.atomic():
                 if records_to_update:
-                    logger.info("[API][create] Updating records...")
+                    LOGGER.info("[API][create] Updating records...")
 
                     # TODO debug cache miss in encounter_dict
                     for data in records_to_update:
@@ -653,16 +619,12 @@ class ObservationBatchUpsertViewSet(BatchUpsertViewSet):
                         data.pop("encounter_source")
                         data.pop("encounter_source_id")
                         unique_data, update_data = self.split_data(data)
-                        # logger.debug(str(unique_data))
                         obj, created = self.model.objects.update_or_create(
                             **unique_data, defaults=update_data
                         )
 
-                        # self.model.objects.filter(**unique_data).update(**update_data)
-                        # logger.debug(obj)
-
                 if records_to_create:
-                    logger.info("[API][create] Creating records...")
+                    LOGGER.info("[API][create] Creating records...")
                     for data in records_to_create:
                         data["encounter_id"] = encounter_dict[
                             "{}|{}".format(
@@ -676,7 +638,7 @@ class ObservationBatchUpsertViewSet(BatchUpsertViewSet):
                             defaults=update_data, **unique_data
                         )
                         # obj = self.model.objects.create(**data)
-                        logger.info(
+                        LOGGER.info(
                             "[API][create] Creating record with unique fields "
                             "{0}, update fields {1}, created: {2}".format(
                                 str(unique_data), str(update_data), created
@@ -687,14 +649,14 @@ class ObservationBatchUpsertViewSet(BatchUpsertViewSet):
                         obj.refresh_from_db()
                         obj.save()
 
-            logger.info("[API][create] Finished.")
+            LOGGER.info("[API][create] Finished.")
             msg = "Refused {0}, retained {1}, updated {2}, created {3} records.".format(
                 len(to_refuse),
                 len(to_retain),
                 len(records_to_update),
                 len(records_to_create),
             )
-            logger.info(msg)
+            LOGGER.info(msg)
 
             return RestResponse(msg, status=status.HTTP_200_OK)
 
@@ -703,5 +665,5 @@ class ObservationBatchUpsertViewSet(BatchUpsertViewSet):
             msg = "[API][BatchUpsertViewSet] unknown data format:" "{0}".format(
                 str(request.data)
             )
-            logger.warning(msg)
+            LOGGER.warning(msg)
             return RestResponse({"msg": msg}, status=status.HTTP_406_NOT_ACCEPTABLE)
