@@ -108,7 +108,7 @@ AUTH_USER_MODEL = "users.User"
 BIOSYS_TSC_URL = os.environ.get("BIOSYS_TSC_URL", "")
 BIOSYS_UN = os.environ.get("BIOSYS_UN", "")
 BIOSYS_PW = os.environ.get("BIOSYS_PW", "")
-TSC_ADMIN_USER = os.environ.get("ADMIN_USER_ID", 1)  # FIXME
+ADMIN_USER = os.environ.get("ADMIN_USER_ID", 1)
 ENABLE_AUTH2_GROUPS = os.environ.get("ENABLE_AUTH2_GROUPS", False)
 LOCAL_USERGROUPS = [
     "data viewer",

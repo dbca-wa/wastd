@@ -1289,7 +1289,7 @@ class Survey(QualityControlMixin, UrlsMixin, geo_models.Model):
     reporter = models.ForeignKey(
         User,
         on_delete=models.SET_DEFAULT,
-        default=settings.TSC_ADMIN_USER,
+        default=settings.ADMIN_USER,
         related_name="reported_surveys",
         verbose_name=_("Recorded by"),
         blank=True,
@@ -1815,7 +1815,7 @@ class SurveyEnd(geo_models.Model):
     reporter = models.ForeignKey(
         User,
         on_delete=models.SET_DEFAULT,
-        default=settings.TSC_ADMIN_USER,
+        default=settings.ADMIN_USER,
         verbose_name=_("Recorded by"),
         blank=True,
         null=True,
@@ -2208,7 +2208,7 @@ class Encounter(PolymorphicModel, UrlsMixin, geo_models.Model):
     observer = models.ForeignKey(
         User,
         on_delete=models.SET_DEFAULT,
-        default=settings.TSC_ADMIN_USER,
+        default=settings.ADMIN_USER,
         verbose_name=_("Observed by"),
         related_name="encounters_observed",
         help_text=_(
@@ -2220,7 +2220,7 @@ class Encounter(PolymorphicModel, UrlsMixin, geo_models.Model):
     reporter = models.ForeignKey(
         User,
         on_delete=models.SET_DEFAULT,
-        default=settings.TSC_ADMIN_USER,
+        default=settings.ADMIN_USER,
         verbose_name=_("Recorded by"),
         related_name="encounters_reported",
         help_text=_(
@@ -3841,7 +3841,7 @@ class TagObservation(Observation):
     handler = models.ForeignKey(
         User,
         on_delete=models.SET_DEFAULT,
-        default=settings.TSC_ADMIN_USER,
+        default=settings.ADMIN_USER,
         blank=True,
         null=True,
         verbose_name=_("Handled by"),
@@ -3852,7 +3852,7 @@ class TagObservation(Observation):
     recorder = models.ForeignKey(
         User,
         on_delete=models.SET_DEFAULT,
-        default=settings.TSC_ADMIN_USER,
+        default=settings.ADMIN_USER,
         blank=True,
         null=True,
         verbose_name=_("Recorded by"),
@@ -4547,18 +4547,9 @@ class TurtleNestObservation(Observation):
     IUCN Marine Turtle Specialist Group, 1999.
     """
 
-    # This is duplicated in TNE.habitat, removing here.
-    # nest_position = models.CharField(
-    #     max_length=300,
-    #     default="unknown",
-    #     verbose_name=_("Beach position"),
-    #     choices=BEACH_POSITION_CHOICES,
-    #     help_text=_("The position of the nest on the beach."), )
-
     eggs_laid = models.BooleanField(
         verbose_name=_("Did the turtle lay eggs?"),
         default=False,
-        # help_text=_("Did round, white objects leave the turtle's butt?"),
     )
 
     egg_count = models.PositiveIntegerField(
@@ -5240,18 +5231,13 @@ class DispatchRecord(Observation):
     sent_to = models.ForeignKey(
         User,
         on_delete=models.SET_DEFAULT,
-        default=settings.TSC_ADMIN_USER,
+        default=settings.ADMIN_USER,
         verbose_name=_("Sent to"),
         related_name="receiver",
         blank=True,
         null=True,
         help_text=_("The receiver of the dispatch."),
     )
-
-    # sent_on = models.DateField(
-    #     verbose_name=_("Sent on"),
-    #     blank=True, null=True,
-    #     help_text=_("The date of dispatch."))
 
     class Meta:
         """Class opts."""
