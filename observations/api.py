@@ -53,10 +53,8 @@ class AreaViewSet(ModelViewSet):
     pagination_class = MyGeoJsonPagination
 
 
-class CampaignViewSet(BatchUpsertViewSet):
+class CampaignViewSet(ModelViewSet):
     """Campaign ModelViewSet.
-
-    alt: BatchUpsertViewSet
 
     All filters are available on all fields except location and team.
     """
@@ -98,10 +96,8 @@ class SurveyFilter(FilterSet):
         }
 
 
-class SurveyViewSet(BatchUpsertViewSet):
+class SurveyViewSet(ModelViewSet):
     """Survey ModelViewSet.
-
-    alt: BatchUpsertViewSet
 
     All filters are available on all fields except location and team.
     """
@@ -164,7 +160,7 @@ class FastEncounterFilter(FilterSet):
         }
 
 
-class EncounterViewSet(BatchUpsertViewSet):
+class EncounterViewSet(ModelViewSet):
     """Encounters are a common, minimal, shared set of data about:
 
     * Strandings (turtles, dugong, ceataceans (pre-QA raw import), pinnipeds (coming soon), sea snakes)
@@ -405,7 +401,7 @@ class AnimalEncounterFilter(FilterSet):
         }
 
 
-class AnimalEncounterViewSet(BatchUpsertViewSet):
+class AnimalEncounterViewSet(ModelViewSet):
     """AnimalEncounter view set.
 
     AnimalEncounters come from marine wildlife incidents (strandings and rescues),
@@ -507,7 +503,7 @@ class TurtleNestEncounterFilter(FilterSet):
         }
 
 
-class TurtleNestEncounterViewSet(BatchUpsertViewSet):
+class TurtleNestEncounterViewSet(ModelViewSet):
     """TurtleNestEncounter view set.
 
     TNE are turtle tracks with or without nests.
@@ -596,8 +592,7 @@ class TurtleNestEncounterViewSet(BatchUpsertViewSet):
         symlink_resources(t_dir, data)
 
 
-class LineTransectEncounterViewSet(BatchUpsertViewSet):
-    # latex_name = "latex/loggerencounter.tex"
+class LineTransectEncounterViewSet(ModelViewSet):
     queryset = models.LineTransectEncounter.objects.all().prefetch_related(
         "observer", "reporter", "survey", "site", "area", "survey__reporter"
     )
@@ -629,26 +624,7 @@ class LineTransectEncounterViewSet(BatchUpsertViewSet):
         symlink_resources(t_dir, data)
 
 
-# class LoggerEncounterViewSet(BatchUpsertViewSet):
-#     latex_name = "latex/loggerencounter.tex"
-#     queryset = models.LoggerEncounter.objects.all().prefetch_related(
-#         "observer", "reporter", "survey", "site", "area", "survey__reporter"
-#     )
-#     serializer_class = serializers.LoggerEncounterSerializer
-#     filter_fields = ["encounter_type",
-#                      "status", "area", "site", "survey", "source", "source_id",
-#                      "location_accuracy", "when", "name", "observer", "reporter",
-#                      "deployment_status", "comments"]
-#     search_fields = ("name", "source_id", )
-#     pagination_class = MyGeoJsonPagination
-#     model = models.LoggerEncounter
-
-#     def pre_latex(self, t_dir, data):
-#         """Symlink photographs to temp dir for use by latex template."""
-#         symlink_resources(t_dir, data)
-
-
-class ObservationViewSet(ObservationBatchUpsertViewSet):
+class ObservationViewSet(ModelViewSet):
     """Generic list of Observations.
 
     [Admin](/admin/observations/)
@@ -680,7 +656,7 @@ class MediaAttachmentViewSet(ModelViewSet):
     model = models.MediaAttachment
 
 
-class TagObservationViewSet(ObservationBatchUpsertViewSet):
+class TagObservationViewSet(ModelViewSet):
     """An Observation of an identifying tag on an observed entity including Encounter details.
 
     The identifying tag can be a flipper tag on a turtle, a PIT tag,
@@ -766,7 +742,7 @@ class TagObservationViewSet(ObservationBatchUpsertViewSet):
     model = models.TagObservation
 
 
-class NestTagObservationViewSet(ObservationBatchUpsertViewSet):
+class NestTagObservationViewSet(ModelViewSet):
     """NestTagObservations are sightings of tags on a turtle nest.
 
     Nest tags allow to connect multiple sightings of a nest with the same tag
@@ -801,7 +777,7 @@ class NestTagObservationViewSet(ObservationBatchUpsertViewSet):
     model = models.NestTagObservation
 
 
-class ManagementActionViewSet(ObservationBatchUpsertViewSet):
+class ManagementActionViewSet(ModelViewSet):
     """ManagementActions following Encounters.
 
     E.g.: animal rescue, rehab, disposal, euthanasia.
@@ -822,7 +798,7 @@ class ManagementActionViewSet(ObservationBatchUpsertViewSet):
     model = models.ManagementAction
 
 
-class TurtleDamageObservationViewSet(ObservationBatchUpsertViewSet):
+class TurtleDamageObservationViewSet(ModelViewSet):
     """Observation of turtle damages or injuries including Encounter details.
 
     Can be many per Encounter.
@@ -848,7 +824,7 @@ class TurtleDamageObservationViewSet(ObservationBatchUpsertViewSet):
     model = models.TurtleDamageObservation
 
 
-class TurtleMorphometricObservationViewSet(ObservationBatchUpsertViewSet):
+class TurtleMorphometricObservationViewSet(ModelViewSet):
     """Morphometric measurements of a turtle including Encounter details.
 
     [Admin](/admin/observations/turtlemorphometricobservation/)
@@ -876,7 +852,7 @@ class TurtleMorphometricObservationViewSet(ObservationBatchUpsertViewSet):
     model = models.TurtleMorphometricObservation
 
 
-class HatchlingMorphometricObservationViewSet(ObservationBatchUpsertViewSet):
+class HatchlingMorphometricObservationViewSet(ModelViewSet):
     """Morphometric measurements of a hatchling including Encounter details.
 
     Can be many per Encounter.
@@ -902,7 +878,7 @@ class HatchlingMorphometricObservationViewSet(ObservationBatchUpsertViewSet):
     model = models.HatchlingMorphometricObservation
 
 
-class TurtleNestObservationViewSet(ObservationBatchUpsertViewSet):
+class TurtleNestObservationViewSet(ModelViewSet):
     """Nest excavations during tagging or after hatching including Encounter details.
 
     Egg count is done as total, plus categories of nest contents following
@@ -936,7 +912,7 @@ class TurtleNestObservationViewSet(ObservationBatchUpsertViewSet):
     model = models.TurtleNestObservation
 
 
-class TurtleNestDisturbanceObservationViewSet(ObservationBatchUpsertViewSet):
+class TurtleNestDisturbanceObservationViewSet(ModelViewSet):
     """Turtle nest disturbance observations including Encounter details.
 
     * General disturbances are of Encounter type
@@ -971,7 +947,7 @@ class TurtleNestDisturbanceObservationViewSet(ObservationBatchUpsertViewSet):
     model = models.TurtleNestDisturbanceObservation
 
 
-class TurtleHatchlingEmergenceObservationViewSet(ObservationBatchUpsertViewSet):
+class TurtleHatchlingEmergenceObservationViewSet(ModelViewSet):
     """Turtle hatchling emergence observation (fan angles) including Encounter details.
 
     Typically one per Encounter.
@@ -999,7 +975,7 @@ class TurtleHatchlingEmergenceObservationViewSet(ObservationBatchUpsertViewSet):
     model = models.TurtleHatchlingEmergenceObservation
 
 
-class TurtleHatchlingEmergenceOutlierObservationViewSet(ObservationBatchUpsertViewSet):
+class TurtleHatchlingEmergenceOutlierObservationViewSet(ModelViewSet):
     """Fan angle outliers including Encounter details.
 
     Can be many per Encounter.
@@ -1025,7 +1001,7 @@ class TurtleHatchlingEmergenceOutlierObservationViewSet(ObservationBatchUpsertVi
     model = models.TurtleHatchlingEmergenceOutlierObservation
 
 
-class LightSourceObservationViewSet(ObservationBatchUpsertViewSet):
+class LightSourceObservationViewSet(ModelViewSet):
     """Known light sources during turtle hatching including Encounter details.
 
     Can be many per Encounter.
@@ -1051,7 +1027,7 @@ class LightSourceObservationViewSet(ObservationBatchUpsertViewSet):
     model = models.LightSourceObservation
 
 
-class LoggerObservationViewSet(ObservationBatchUpsertViewSet):
+class LoggerObservationViewSet(ModelViewSet):
     """Logger observations.
 
     Can be many per Encounter.
@@ -1077,7 +1053,7 @@ class LoggerObservationViewSet(ObservationBatchUpsertViewSet):
     model = models.LoggerObservation
 
 
-class TrackTallyObservationViewSet(ObservationBatchUpsertViewSet):
+class TrackTallyObservationViewSet(ModelViewSet):
     """A turtle track tally from a LineTransectEncounter.
 
     Can be many per Encounter.
@@ -1103,7 +1079,7 @@ class TrackTallyObservationViewSet(ObservationBatchUpsertViewSet):
     model = models.TrackTallyObservation
 
 
-class TurtleNestDisturbanceTallyObservationViewSet(ObservationBatchUpsertViewSet):
+class TurtleNestDisturbanceTallyObservationViewSet(ModelViewSet):
     """A turtle nest disturbance tally from a LineTransectEncounter.
 
     Can be many per Encounter.
