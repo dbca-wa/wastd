@@ -5,41 +5,46 @@ from export_download.views import ResourceDownloadMixin
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse
-from django.views.generic import DetailView, ListView, RedirectView, UpdateView, FormView
+from django.views.generic import (
+    DetailView,
+    ListView,
+    RedirectView,
+    UpdateView,
+    FormView,
+)
 from django.http import HttpResponseRedirect, Http404
 from .models import User
-from .forms import (MergeForm, TransferForm)
+from .forms import MergeForm, TransferForm
 from .filters import UserFilter
 from .utils import transfer_user, change_user_for_area
 from observations.models import Area
 
-from shared.views import (
-    ListViewBreadcrumbMixin,
-    DetailViewBreadcrumbMixin
-)
+from shared.views import ListViewBreadcrumbMixin, DetailViewBreadcrumbMixin
 
 logger = logging.getLogger(__name__)
 
 
-class UserListView(ListViewBreadcrumbMixin, ResourceDownloadMixin, LoginRequiredMixin, ListView):
+class UserListView(
+    ListViewBreadcrumbMixin, ResourceDownloadMixin, LoginRequiredMixin, ListView
+):
     """User list view."""
 
     model = User
-    template_name = 'pages/default_list.html'
+    template_name = "pages/default_list.html"
     paginate_by = 20
     filter_class = UserFilter
     # resource_class = SurveyResource
 
     def get_context_data(self, **kwargs):
         context = super(UserListView, self).get_context_data(**kwargs)
-        context['collapse_details'] = True
-        context['list_filter'] = UserFilter(
+        context["collapse_details"] = True
+        context["list_filter"] = UserFilter(
             self.request.GET, queryset=self.get_queryset()
         )
         return context
 
     def get_queryset(self):
-        qs = super(UserListView, self).get_queryset().order_by('username')
+        qs = super(UserListView, self).get_queryset().order_by("username")
         return UserFilter(self.request.GET, queryset=qs).qs
 
 
@@ -53,44 +58,40 @@ class UserDetailView(DetailViewBreadcrumbMixin, LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         from observations.models import Survey, Encounter
+
         context = super(UserDetailView, self).get_context_data(**kwargs)
-        context['collapse_details'] = False
-        context['surveys'] = Survey.objects.filter(
+        context["collapse_details"] = False
+        context["surveys"] = Survey.objects.filter(
             reporter_id=self.kwargs["pk"]
         ).prefetch_related(
-            "encounter_set",
-            "reporter",
-            "area",
-            "site",
-            "encounter_set__observations"
-        )[0:100]
-        context['encounters'] = Encounter.objects.filter(
+            "encounter_set", "reporter", "area", "site", "encounter_set__observations"
+        )[
+            0:100
+        ]
+        context["encounters"] = Encounter.objects.filter(
             reporter_id=self.kwargs["pk"]
-        ).prefetch_related(
-            "observer",
-            "reporter",
-            "area",
-            "site",
-            "observations"
-        )[0:100]
+        ).prefetch_related("observer", "reporter", "area", "site", "observations")[
+            0:100
+        ]
         return context
 
     def get_object(self):
         """Get Object by pk."""
-        obj = User.objects.filter(
-            pk=self.kwargs.get("pk")
-        ).prefetch_related(
-            # "reported_surveys",
-            # "encounters_observed",
-            # "encounters_observed__reporter",
-            # "encounters_observed__observer",
-            # "encounters_reported",
-            # "encounters_reported__reporter",
-            # "encounters_reported__observer",
-            # "encounters_reported__area",
-            # "encounters_reported__site",
-
-        ).first()
+        obj = (
+            User.objects.filter(pk=self.kwargs.get("pk"))
+            .prefetch_related(
+                # "reported_surveys",
+                # "encounters_observed",
+                # "encounters_observed__reporter",
+                # "encounters_observed__observer",
+                # "encounters_reported",
+                # "encounters_reported__reporter",
+                # "encounters_reported__observer",
+                # "encounters_reported__area",
+                # "encounters_reported__site",
+            )
+            .first()
+        )
         if not obj:
             raise Http404  # pragma: no cover
         return obj
@@ -117,9 +118,7 @@ class UserUpdateView(LoginRequiredMixin, UpdateView):
     # send the user back to their own page after a successful update
     def get_success_url(self):
         """Success url: user detail."""
-        return reverse("users:user-detail",
-                       kwargs={"pk": self.request.user.pk}
-                       )
+        return reverse("users:user-detail", kwargs={"pk": self.request.user.pk})
 
     def get_object(self):
         """Only get the User record for the user making the request."""
@@ -128,7 +127,8 @@ class UserUpdateView(LoginRequiredMixin, UpdateView):
 
 class MergeView(FormView):
     """Merge any two User profiles."""
-    template_name = 'pages/default_form.html'
+
+    template_name = "pages/default_form.html"
     form_class = MergeForm
 
     def get_initial(self):
@@ -140,9 +140,9 @@ class MergeView(FormView):
         """
         initial = super().get_initial()
         if "old_pk" in self.kwargs:
-            initial['old'] = User.objects.get(pk=self.kwargs["old_pk"])
+            initial["old"] = User.objects.get(pk=self.kwargs["old_pk"])
         if "new_pk" in self.kwargs:
-            initial['new'] = User.objects.get(pk=self.kwargs["new_pk"])
+            initial["new"] = User.objects.get(pk=self.kwargs["new_pk"])
         return initial
 
     def form_valid(self, form):
@@ -176,7 +176,8 @@ def merge_users(request, old_pk, new_pk):
 
 class TransferView(FormView):
     """Transfer data between two User profiles for a given Area."""
-    template_name = 'pages/default_form.html'
+
+    template_name = "pages/default_form.html"
     form_class = TransferForm
 
     def get_initial(self):
@@ -188,11 +189,11 @@ class TransferView(FormView):
         """
         initial = super().get_initial()
         if "old_pk" in self.kwargs:
-            initial['old'] = User.objects.get(pk=self.kwargs["old_pk"])
+            initial["old"] = User.objects.get(pk=self.kwargs["old_pk"])
         if "new_pk" in self.kwargs:
-            initial['new'] = User.objects.get(pk=self.kwargs["new_pk"])
+            initial["new"] = User.objects.get(pk=self.kwargs["new_pk"])
         if "area_pk" in self.kwargs:
-            initial['area'] = Area.objects.get(pk=self.kwargs["area_pk"])
+            initial["area"] = Area.objects.get(pk=self.kwargs["area_pk"])
         return initial
 
     def form_valid(self, form):
@@ -224,7 +225,7 @@ def transfer_user_view(request, old_pk, new_pk, area_pk):
         messages.error(request, "Area with PK {0} not found.".format(area_pk))
         return HttpResponseRedirect("/")
 
-    msg = change_user_for_area(  old, new, area)
+    msg = change_user_for_area(old, new, area)
     messages.success(request, msg)
 
     return HttpResponseRedirect(reverse("users:user-detail", kwargs={"pk": new.pk}))

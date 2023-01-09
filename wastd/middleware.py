@@ -2,7 +2,6 @@ from django.http import HttpResponse, HttpResponseServerError
 
 
 class HealthCheckMiddleware(object):
-
     def __init__(self, get_response):
         self.get_response = get_response
 
@@ -15,8 +14,7 @@ class HealthCheckMiddleware(object):
         return self.get_response(request)
 
     def liveness(self, request):
-        """Returns that the server is alive.
-        """
+        """Returns that the server is alive."""
         return HttpResponse("OK")
 
     def readiness(self, request):
@@ -26,6 +24,7 @@ class HealthCheckMiddleware(object):
         """
         try:
             from django.db import connections
+
             for name in connections:
                 cursor = connections[name].cursor()
                 cursor.execute("SELECT 1;")

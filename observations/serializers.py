@@ -1,5 +1,11 @@
 import logging
-from rest_framework.serializers import ModelSerializer, ReadOnlyField, ValidationError, IntegerField, FileField
+from rest_framework.serializers import (
+    ModelSerializer,
+    ReadOnlyField,
+    ValidationError,
+    IntegerField,
+    FileField,
+)
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
 from users.api import FastUserSerializer
 from observations import models
@@ -13,7 +19,6 @@ logger = logging.getLogger(__name__)
 
 
 class AreaSerializer(GeoFeatureModelSerializer):
-
     class Meta:
         model = models.Area
         geo_field = "geom"
@@ -27,13 +32,13 @@ class AreaSerializer(GeoFeatureModelSerializer):
             "northern_extent",
             "centroid",
             "length_surveyed_m",
-            "length_survey_roundtrip_m"
+            "length_survey_roundtrip_m",
         )
 
 
 class FastAreaSerializer(ModelSerializer):
-    """Minimal Area serializer.
-    """
+    """Minimal Area serializer."""
+
     class Meta:
         model = models.Area
         geo_field = "geom"
@@ -45,7 +50,7 @@ class CampaignSerializer(ModelSerializer):
 
     class Meta:
         model = models.Campaign
-        geo_fields = ("area")
+        geo_fields = "area"
         fields = "__all__"
 
 
@@ -82,7 +87,7 @@ class FastSurveySerializer(ModelSerializer):
             "end_comments",
             "reporter",
             "absolute_admin_url",
-            "production"
+            "production",
         ]
 
 
@@ -99,45 +104,59 @@ class SurveyMediaAttachmentSerializer(ModelSerializer):
             "source",
             "source_id",
             "survey",
-            'media_type',
-            'title',
-            'attachment'
+            "media_type",
+            "title",
+            "attachment",
         )
 
     def validate(self, data):
         """Raise ValidateError on missing Survey.
 
-           Fields sent:
-           "source", "source_id", "survey_source_id", "survey_end_source_id",
-           "media_type", "title", "attachment"
+        Fields sent:
+        "source", "source_id", "survey_source_id", "survey_end_source_id",
+        "media_type", "title", "attachment"
         """
 
-        has_source = 'survey_source' in self.initial_data and self.initial_data["survey_source"] != 'NA'
-        has_source_id = 'survey_source_id' in self.initial_data and self.initial_data["survey_source_id"] != 'NA'
-        has_end_source_id = 'survey_end_source_id' in self.initial_data and self.initial_data[
-            "survey_end_source_id"] != 'NA'
-        if (has_source and has_source_id and
-                models.Survey.objects.filter(
-                    source=self.initial_data['survey_source'],
-                    source_id=self.initial_data['survey_source_id']
-                ).exists()):
-            data['survey'] = models.Survey.objects.filter(
-                source=self.initial_data['survey_source'],
-                source_id=self.initial_data['survey_source_id']
+        has_source = (
+            "survey_source" in self.initial_data
+            and self.initial_data["survey_source"] != "NA"
+        )
+        has_source_id = (
+            "survey_source_id" in self.initial_data
+            and self.initial_data["survey_source_id"] != "NA"
+        )
+        has_end_source_id = (
+            "survey_end_source_id" in self.initial_data
+            and self.initial_data["survey_end_source_id"] != "NA"
+        )
+        if (
+            has_source
+            and has_source_id
+            and models.Survey.objects.filter(
+                source=self.initial_data["survey_source"],
+                source_id=self.initial_data["survey_source_id"],
+            ).exists()
+        ):
+            data["survey"] = models.Survey.objects.filter(
+                source=self.initial_data["survey_source"],
+                source_id=self.initial_data["survey_source_id"],
             ).first()
 
-        elif (has_source and has_end_source_id and
-                models.Survey.objects.filter(
-                    source=self.initial_data['survey_source'],
-                    end_source_id=self.initial_data['survey_end_source_id']
-                ).exists()):
-            data['survey'] = models.Survey.objects.filter(
-                source=self.initial_data['survey_source'],
-                end_source_id=self.initial_data['survey_end_source_id']
+        elif (
+            has_source
+            and has_end_source_id
+            and models.Survey.objects.filter(
+                source=self.initial_data["survey_source"],
+                end_source_id=self.initial_data["survey_end_source_id"],
+            ).exists()
+        ):
+            data["survey"] = models.Survey.objects.filter(
+                source=self.initial_data["survey_source"],
+                end_source_id=self.initial_data["survey_end_source_id"],
             ).first()
 
         else:
-            msg = 'Survey does not exist: \nInitial data: {}'.format(self.initial_data)
+            msg = "Survey does not exist: \nInitial data: {}".format(self.initial_data)
             logger.info(msg)
             raise ValidationError(msg)
 
@@ -145,17 +164,16 @@ class SurveyMediaAttachmentSerializer(ModelSerializer):
 
     def create(self, validated_data):
         """Create one new object, resolve Survey from survey_source and
-           either survey_source_id or survey_end_source_id.
+        either survey_source_id or survey_end_source_id.
         """
         return self.Meta.model.objects.create(**validated_data)
 
     def save(self):
         """Override the save method in order to prevent 'duplicate' instances being created by
-           the API endpoints. We override save in order to avoid duplicate by either create or update.
+        the API endpoints. We override save in order to avoid duplicate by either create or update.
         """
         duplicates = self.Meta.model.objects.filter(
-            source=self.initial_data["source"],
-            source_id=self.initial_data["source_id"]
+            source=self.initial_data["source"], source_id=self.initial_data["source_id"]
         )
         if duplicates.exists():
             if duplicates.count() == 1:
@@ -163,12 +181,15 @@ class SurveyMediaAttachmentSerializer(ModelSerializer):
             else:
                 # Passed-in data matches >1 existing instance, so raise a validation error.
                 return duplicates.first()
-                logger.warning("{}: existing duplicate(s) with {} ".format(
-                    self.Meta.model._meta.label, str(**self.validated_data)
-                ))
+                logger.warning(
+                    "{}: existing duplicate(s) with {} ".format(
+                        self.Meta.model._meta.label, str(**self.validated_data)
+                    )
+                )
         else:
             # Create the new, unique instance.
             return self.Meta.model.objects.create(**self.validated_data)
+
 
 # ----------------------------------------------------------------------------#
 # Encounter
@@ -176,8 +197,8 @@ class SurveyMediaAttachmentSerializer(ModelSerializer):
 
 
 class EncounterSerializer(GeoFeatureModelSerializer):
-    """Encounter serializer.
-    """
+    """Encounter serializer."""
+
     area = FastAreaSerializer(required=False)
     site = FastAreaSerializer(required=False)
     campaign = CampaignSerializer(many=False, read_only=True)
@@ -191,6 +212,7 @@ class EncounterSerializer(GeoFeatureModelSerializer):
         """The non-standard name `where` is declared as the geo field for the
         GeoJSON serializer's benefit.
         """
+
         model = models.Encounter
         fields = (
             "pk",
@@ -237,6 +259,7 @@ class SourceIdEncounterSerializer(GeoFeatureModelSerializer):
         """The non-standard name `where` is declared as the geo field for the
         GeoJSON serializer's benefit.
         """
+
         model = models.Encounter
         name = "encounter"
         fields = (
@@ -248,15 +271,15 @@ class SourceIdEncounterSerializer(GeoFeatureModelSerializer):
             "source",
             "source_id",
             "observer",
-            "reporter"
+            "reporter",
         )
         geo_field = "where"
         id_field = "pk"
 
 
 class FastEncounterSerializer(EncounterSerializer):
-    """Faster encounter serializer.
-    """
+    """Faster encounter serializer."""
+
     # area = FastAreaSerializer(required=False)
     # site = FastAreaSerializer(required=False)
     # survey = FastSurveySerializer(required=False)
@@ -294,6 +317,7 @@ class AnimalEncounterSerializer(EncounterSerializer):
     * photographs = MediaAttachments
     * Observations = specific observation seralizers
     """
+
     # photographs = MediaAttachmentSerializer(many=True, read_only=False)
     # tx_logs = ReadOnlyField()
     site_of_first_sighting = FastAreaSerializer(required=False)
@@ -321,7 +345,6 @@ class AnimalEncounterSerializer(EncounterSerializer):
             "area",
             "site",
             "survey",
-
             "taxon",
             "species",
             "health",
@@ -377,17 +400,16 @@ class TurtleNestEncounterSerializer(EncounterSerializer):
             "area",
             "site",
             "survey",
-
             "nest_age",
             "nest_type",
             "species",
             "habitat",
             "disturbance",
-            'nest_tagged',
-            'logger_found',
-            'eggs_counted',
-            'hatchlings_measured',
-            'fan_angles_measured',
+            "nest_tagged",
+            "logger_found",
+            "eggs_counted",
+            "hatchlings_measured",
+            "fan_angles_measured",
             "comments",
             "absolute_admin_url",
             # "photographs", "tx_logs",
@@ -457,7 +479,6 @@ class LineTransectEncounterSerializer(EncounterSerializer):
             "area",
             "site",
             "survey",
-
             "transect",
             "absolute_admin_url",
         )
@@ -474,71 +495,79 @@ class ObservationSerializer(ModelSerializer):
 
     Re-usable for serializing other model classes that inherit from Observation.
     """
+
     encounter = EncounterSerializer(read_only=True)
 
     class Meta:
         model = models.Observation
-        fields = ['pk', 'encounter', 'source', 'source_id']
+        fields = ["pk", "encounter", "source", "source_id"]
 
     def validate(self, data):
-        """Raise ValidateError on missing Encounter (encounter PK or source & source_id value).
-        """
-        if 'encounter_id' not in self.initial_data and (
-            'encounter_source' not in self.initial_data and
-            'encounter_source_id' not in self.initial_data
+        """Raise ValidateError on missing Encounter (encounter PK or source & source_id value)."""
+        if "encounter_id" not in self.initial_data and (
+            "encounter_source" not in self.initial_data
+            and "encounter_source_id" not in self.initial_data
         ):
             raise ValidationError(
-                'Encounter reference is required, either as encounter_id or as '
-                'encounter_source and encounter_source_id.'
+                "Encounter reference is required, either as encounter_id or as "
+                "encounter_source and encounter_source_id."
             )
-        if 'encounter_id' in self.initial_data:
-            if not models.Encounter.objects.filter(pk=self.initial_data['encounter_id']).exists():
-                raise ValidationError(
-                    'Encounter {} does not exist.'.format(self.initial_data['encounter_id'])
-                )
-        if 'encounter_source' in self.initial_data and 'encounter_source_id' in self.initial_data:
+        if "encounter_id" in self.initial_data:
             if not models.Encounter.objects.filter(
-                source=self.initial_data['encounter_source'],
-                source_id=self.initial_data['encounter_source_id']
+                pk=self.initial_data["encounter_id"]
             ).exists():
                 raise ValidationError(
-                    'Encounter with source {} and source_id {} does not exist.'.format(
-                        self.initial_data['encounter_source'],
-                        self.initial_data['encounter_source_id'])
+                    "Encounter {} does not exist.".format(
+                        self.initial_data["encounter_id"]
+                    )
+                )
+        if (
+            "encounter_source" in self.initial_data
+            and "encounter_source_id" in self.initial_data
+        ):
+            if not models.Encounter.objects.filter(
+                source=self.initial_data["encounter_source"],
+                source_id=self.initial_data["encounter_source_id"],
+            ).exists():
+                raise ValidationError(
+                    "Encounter with source {} and source_id {} does not exist.".format(
+                        self.initial_data["encounter_source"],
+                        self.initial_data["encounter_source_id"],
+                    )
                 )
         return data
 
     def create(self, validated_data):
-        """Create one new object, resolve Encounter from either PK or source & source_id.
-        """
+        """Create one new object, resolve Encounter from either PK or source & source_id."""
 
-        if 'encounter_id' in self.initial_data:
-            validated_data['encounter'] = models.Encounter.objects.get(
-                pk=self.initial_data['encounter_id'])
+        if "encounter_id" in self.initial_data:
+            validated_data["encounter"] = models.Encounter.objects.get(
+                pk=self.initial_data["encounter_id"]
+            )
         else:
-            validated_data['encounter'] = models.Encounter.objects.get(
-                source=self.initial_data['encounter_source'],
-                source_id=self.initial_data['encounter_source_id'])
+            validated_data["encounter"] = models.Encounter.objects.get(
+                source=self.initial_data["encounter_source"],
+                source_id=self.initial_data["encounter_source_id"],
+            )
         return self.Meta.model.objects.create(**validated_data)
 
     def save(self):
         """Override the save method in order to prevent 'duplicate' instances being created by
         the API endpoints. We override save in order to avoid duplicate by either create or update.
         """
-        if 'encounter' in self.initial_data:
-            self.validated_data['encounter'] = models.Encounter.objects.get(
-                pk=self.initial_data['encounter']
+        if "encounter" in self.initial_data:
+            self.validated_data["encounter"] = models.Encounter.objects.get(
+                pk=self.initial_data["encounter"]
             )
         else:
-            self.validated_data['encounter'] = models.Encounter.objects.get(
+            self.validated_data["encounter"] = models.Encounter.objects.get(
                 source=self.initial_data["encounter_source"],
-                source_id=self.initial_data["encounter_source_id"]
+                source_id=self.initial_data["encounter_source_id"],
             )
         # import ipdb; ipdb.set_trace()
         # Gate check: we want to ensure that duplicate objects are not created.
         duplicates = self.Meta.model.objects.filter(
-            source=self.initial_data["source"],
-            source_id=self.initial_data["source_id"]
+            source=self.initial_data["source"], source_id=self.initial_data["source_id"]
         )
         if duplicates.exists():
             if duplicates.count() == 1:
@@ -555,9 +584,11 @@ class ObservationSerializer(ModelSerializer):
                 return duplicates.first()
             else:
                 # Passed-in data matches >1 existing instance, so raise a validation error.
-                raise ValidationError("{}: existing duplicate(s) with {} ".format(
-                    self.Meta.model._meta.label, str(**self.validated_data)
-                ))
+                raise ValidationError(
+                    "{}: existing duplicate(s) with {} ".format(
+                        self.Meta.model._meta.label, str(**self.validated_data)
+                    )
+                )
         else:
             # Create the new, unique instance.
             return self.Meta.model.objects.create(**self.validated_data)
@@ -575,9 +606,9 @@ class MediaAttachmentSerializer(ObservationSerializer):
             "source",
             "source_id",
             "encounter",
-            'media_type',
-            'title',
-            'attachment'
+            "media_type",
+            "title",
+            "attachment",
         )
 
 
@@ -600,15 +631,15 @@ class TagObservationSerializer(ObservationSerializer):
             "source",
             "source_id",
             "encounter",
-            'handler',
-            'handler_id',
-            'recorder',
-            'recorder_id',
-            'tag_type',
-            'name',
-            'tag_location',
-            'status',
-            'comments'
+            "handler",
+            "handler_id",
+            "recorder",
+            "recorder_id",
+            "tag_type",
+            "name",
+            "tag_location",
+            "status",
+            "comments",
         )
 
 
@@ -632,7 +663,6 @@ class NestTagObservationSerializer(ObservationSerializer):
 
 
 class ManagementActionSerializer(ObservationSerializer):
-
     class Meta:
         model = models.ManagementAction
         fields = (
@@ -640,8 +670,8 @@ class ManagementActionSerializer(ObservationSerializer):
             "source",
             "source_id",
             "encounter",
-            'management_actions',
-            'comments'
+            "management_actions",
+            "comments",
         )
 
 
@@ -685,10 +715,10 @@ class TurtleMorphometricObservationSerializer(ObservationSerializer):
             "body_depth_accuracy",
             "body_weight_g",
             "body_weight_accuracy",
-            'handler',
-            'handler_id',
-            'recorder',
-            'recorder_id',
+            "handler",
+            "handler_id",
+            "recorder",
+            "recorder_id",
         )
 
 
@@ -703,14 +733,13 @@ class HatchlingMorphometricObservationSerializer(ObservationSerializer):
             "source",
             "source_id",
             "encounter",
-            'straight_carapace_length_mm',
-            'straight_carapace_width_mm',
-            'body_weight_g',
+            "straight_carapace_length_mm",
+            "straight_carapace_width_mm",
+            "body_weight_g",
         )
 
 
 class TurtleNestDisturbanceObservationSerializer(ObservationSerializer):
-
     class Meta:
         model = models.TurtleNestDisturbanceObservation
         fields = (
@@ -718,10 +747,10 @@ class TurtleNestDisturbanceObservationSerializer(ObservationSerializer):
             "source",
             "source_id",
             "encounter",
-            'disturbance_cause',
-            'disturbance_cause_confidence',
-            'disturbance_severity',
-            'comments',
+            "disturbance_cause",
+            "disturbance_cause_confidence",
+            "disturbance_severity",
+            "comments",
         )
 
 
@@ -737,26 +766,26 @@ class TurtleNestObservationSerializer(ObservationSerializer):
             "source_id",
             "encounter",
             # 'nest_position',
-            'eggs_laid',
-            'egg_count',
-            'egg_count_calculated',
-            'hatching_success',
-            'emergence_success',
-            'no_egg_shells',
-            'no_live_hatchlings_neck_of_nest',
-            'no_live_hatchlings',
-            'no_dead_hatchlings',
-            'no_undeveloped_eggs',
-            'no_unhatched_eggs',
-            'no_unhatched_term',
-            'no_depredated_eggs',
-            'nest_depth_top',
-            'nest_depth_bottom',
-            'sand_temp',
-            'air_temp',
-            'water_temp',
-            'egg_temp',
-            'comments',
+            "eggs_laid",
+            "egg_count",
+            "egg_count_calculated",
+            "hatching_success",
+            "emergence_success",
+            "no_egg_shells",
+            "no_live_hatchlings_neck_of_nest",
+            "no_live_hatchlings",
+            "no_dead_hatchlings",
+            "no_undeveloped_eggs",
+            "no_unhatched_eggs",
+            "no_unhatched_term",
+            "no_depredated_eggs",
+            "nest_depth_top",
+            "nest_depth_bottom",
+            "sand_temp",
+            "air_temp",
+            "water_temp",
+            "egg_temp",
+            "comments",
         )
 
 
@@ -771,19 +800,19 @@ class TurtleHatchlingEmergenceObservationSerializer(ObservationSerializer):
             "source",
             "source_id",
             "encounter",
-            'bearing_to_water_degrees',
-            'bearing_leftmost_track_degrees',
-            'bearing_rightmost_track_degrees',
-            'no_tracks_main_group',
-            'no_tracks_main_group_min',
-            'no_tracks_main_group_max',
-            'outlier_tracks_present',
-            'path_to_sea_comments',
-            'hatchling_emergence_time_known',
-            'light_sources_present',
-            'hatchling_emergence_time',
-            'hatchling_emergence_time_accuracy',
-            'cloud_cover_at_emergence',
+            "bearing_to_water_degrees",
+            "bearing_leftmost_track_degrees",
+            "bearing_rightmost_track_degrees",
+            "no_tracks_main_group",
+            "no_tracks_main_group_min",
+            "no_tracks_main_group_max",
+            "outlier_tracks_present",
+            "path_to_sea_comments",
+            "hatchling_emergence_time_known",
+            "light_sources_present",
+            "hatchling_emergence_time",
+            "hatchling_emergence_time_accuracy",
+            "cloud_cover_at_emergence",
         )
 
 
@@ -835,7 +864,7 @@ class TurtleDamageObservationSerializer(ObservationSerializer):
             "body_part",
             "damage_type",
             "damage_age",
-            "description"
+            "description",
         )
 
 
@@ -853,7 +882,7 @@ class TrackTallyObservationSerializer(ObservationSerializer):
             "species",
             "nest_age",
             "nest_type",
-            "tally"
+            "tally",
         )
 
 
@@ -872,12 +901,11 @@ class TurtleNestDisturbanceTallyObservationSerializer(ObservationSerializer):
             "disturbance_cause",
             "no_nests_disturbed",
             "no_tracks_encountered",
-            "comments"
+            "comments",
         )
 
 
 class TemperatureLoggerSettingsSerializer(ObservationSerializer):
-
     class Meta:
         model = models.TemperatureLoggerSettings
         fields = (
@@ -887,25 +915,17 @@ class TemperatureLoggerSettingsSerializer(ObservationSerializer):
             "encounter",
             "logging_interval",
             "recording_start",
-            "tested"
+            "tested",
         )
 
 
 class DispatchRecordSerializer(ObservationSerializer):
-
     class Meta:
         model = models.DispatchRecord
-        fields = (
-            "pk",
-            "source",
-            "source_id",
-            "encounter",
-            "sent_to"
-        )
+        fields = ("pk", "source", "source_id", "encounter", "sent_to")
 
 
 class TemperatureLoggerDeploymentSerializer(ObservationSerializer):
-
     class Meta:
         model = models.TemperatureLoggerDeployment
         fields = (
@@ -924,7 +944,6 @@ class TemperatureLoggerDeploymentSerializer(ObservationSerializer):
 
 
 class LoggerObservationSerializer(ObservationSerializer):
-
     class Meta:
         model = models.LoggerObservation
         fields = (
@@ -935,7 +954,7 @@ class LoggerObservationSerializer(ObservationSerializer):
             "logger_type",
             "deployment_status",
             "logger_id",
-            "comments"
+            "comments",
         )
 
 

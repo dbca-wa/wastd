@@ -35,8 +35,9 @@ from observations.models import (  # noqa
     TurtleHatchlingEmergenceObservation,
     TurtleHatchlingEmergenceOutlierObservation,
     LightSourceObservation,
-    LoggerObservation
+    LoggerObservation,
 )
+
 
 class HomeViewTestsSuperuser(TestCase):
     """Home view tests for superusers."""
@@ -44,18 +45,16 @@ class HomeViewTestsSuperuser(TestCase):
     def setUp(self):
         """Setup: create a new list."""
         self.superuser = get_user_model().objects.create_superuser(
-            username="superuser",
-            email="super@gmail.com",
-            password="test")
+            username="superuser", email="super@gmail.com", password="test"
+        )
 
         self.superuser.save()
 
         self.client.force_login(self.superuser)
 
-
     def test_superuser_can_view_home(self):
         """A superuser should see the Home view."""
-        response = self.client.get(reverse('home'))
+        response = self.client.get(reverse("home"))
         self.assertEqual(response.status_code, 200)
 
 
@@ -65,9 +64,8 @@ class HomeViewTestsInternal(TestCase):
     def setUp(self):
         """Setup: create a new user."""
         self.internal_user = get_user_model().objects.create_user(
-            username="internaluser",
-            email="internal@gmail.com",
-            password="test")
+            username="internaluser", email="internal@gmail.com", password="test"
+        )
 
         self.internal_user.save()
 
@@ -79,7 +77,6 @@ class HomeViewTestsInternal(TestCase):
 
         self.client.force_login(self.internal_user)
 
-
     def test_internaluser_is_data_viewer(self):
         """The internal user should belong to Group self.viewers."""
         self.assertTrue(self.viewers in self.internal_user.groups.all())
@@ -90,7 +87,7 @@ class HomeViewTestsInternal(TestCase):
         Internal users belong to the Group "viewers".
         They should be able to see all data read-only.
         """
-        response = self.client.get(reverse('home'))
+        response = self.client.get(reverse("home"))
         self.assertEqual(response.status_code, 200)
 
 
@@ -100,9 +97,8 @@ class HomeViewTestsExternal(TestCase):
     def setUp(self):
         """Setup: create a new user."""
         self.external_user = get_user_model().objects.create_user(
-            username="externaluser",
-            email="external@gmail.com",
-            password="test")
+            username="externaluser", email="external@gmail.com", password="test"
+        )
 
         self.external_user.save()
 
@@ -110,7 +106,6 @@ class HomeViewTestsExternal(TestCase):
         self.viewers, _ = Group.objects.get_or_create(name="data viewer")
 
         self.client.force_login(self.external_user)
-
 
     def test_externaluser_is_not_data_viewer(self):
         """The external user should not belong to Group self.viewers."""
@@ -122,7 +117,7 @@ class HomeViewTestsExternal(TestCase):
         External users do not belong to the Group "viewers".
         They should not be able to see all data read-only.
         """
-        response = self.client.get(reverse('home'))
+        response = self.client.get(reverse("home"))
 
         # TODO user should see a "forbidden" message
         self.assertEqual(response.status_code, 200)
@@ -134,15 +129,14 @@ class EncounterViewTests(TestCase):
     def setUp(self):
         """Setup: create a new list."""
         self.user = get_user_model().objects.create_superuser(
-            username="superuser",
-            email="super@gmail.com",
-            password="test")
+            username="superuser", email="super@gmail.com", password="test"
+        )
         self.cl = Encounter.objects.create(
-            where=GEOSGeometry('POINT (115 -32)', srid=4326),
+            where=GEOSGeometry("POINT (115 -32)", srid=4326),
             when=timezone.now(),
-            source_id='12345',
+            source_id="12345",
             observer=self.user,
-            reporter=self.user
+            reporter=self.user,
         )
         self.user.save()
         self.client.force_login(self.user)
@@ -169,9 +163,10 @@ class EncounterViewTests(TestCase):
 
     def encounter_detail_loads(self):
         """Test "observations:animalencounter-detail" view."""
-        response = self.client.get(reverse("observations:encounter-detail", pk=self.cl.pk))
+        response = self.client.get(
+            reverse("observations:encounter-detail", pk=self.cl.pk)
+        )
         self.assertEqual(response.status_code, 200)
-
 
 
 class AnimalEncounterViewTests(TestCase):
@@ -180,17 +175,16 @@ class AnimalEncounterViewTests(TestCase):
     def setUp(self):
         """Setup: create a new list."""
         self.user = get_user_model().objects.create_superuser(
-            username="superuser",
-            email="super@gmail.com",
-            password="test")
+            username="superuser", email="super@gmail.com", password="test"
+        )
         self.cl = AnimalEncounter.objects.create(
-            where=GEOSGeometry('POINT (115 -32)', srid=4326),
+            where=GEOSGeometry("POINT (115 -32)", srid=4326),
             when=timezone.now(),
             taxon=TAXON_CHOICES_DEFAULT,
             species=NA,
-            source_id='12345',
+            source_id="12345",
             observer=self.user,
-            reporter=self.user
+            reporter=self.user,
         )
         self.user.save()
         self.client.force_login(self.user)
@@ -217,7 +211,9 @@ class AnimalEncounterViewTests(TestCase):
 
     def animalencounter_detail_loads(self):
         """Test "observations:animalencounter-detail" view."""
-        response = self.client.get(reverse("observations:animalencounter-detail", pk=self.cl.pk))
+        response = self.client.get(
+            reverse("observations:animalencounter-detail", pk=self.cl.pk)
+        )
         self.assertEqual(response.status_code, 200)
 
 
@@ -227,16 +223,15 @@ class TurtleNestEncounterViewTests(TestCase):
     def setUp(self):
         """Setup: create a new list."""
         self.user = get_user_model().objects.create_superuser(
-            username="superuser",
-            email="super@gmail.com",
-            password="test")
+            username="superuser", email="super@gmail.com", password="test"
+        )
         self.cl = TurtleNestEncounter.objects.create(
-            where=GEOSGeometry('POINT (115 -32)', srid=4326),
+            where=GEOSGeometry("POINT (115 -32)", srid=4326),
             when=timezone.now(),
             species="natator-depressus",
-            source_id='12345',
+            source_id="12345",
             observer=self.user,
-            reporter=self.user
+            reporter=self.user,
         )
         self.user.save()
         self.client.force_login(self.user)
@@ -263,5 +258,7 @@ class TurtleNestEncounterViewTests(TestCase):
 
     def turtlenestencounter_detail_loads(self):
         """Test "observations:turtlenestencounterdetail" view."""
-        response = self.client.get(reverse("observations:turtlenestencounter-detail", pk=self.cl.pk))
+        response = self.client.get(
+            reverse("observations:turtlenestencounter-detail", pk=self.cl.pk)
+        )
         self.assertEqual(response.status_code, 200)

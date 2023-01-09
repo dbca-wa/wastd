@@ -5,9 +5,10 @@ from rest_framework_filters import FilterSet
 from shared.api import (
     MyGeoJsonPagination,
     BatchUpsertViewSet,
-    ObservationBatchUpsertViewSet
+    ObservationBatchUpsertViewSet,
 )
 from observations import models, serializers
+
 try:
     from .utils import symlink_resources
 except BaseException:
@@ -16,7 +17,6 @@ except BaseException:
 
 
 class AreaFilter(FilterSet):
-
     class Meta:
         model = models.Area
         fields = {
@@ -45,6 +45,7 @@ class AreaViewSet(ModelViewSet):
       Localities (typically containing multiple surveyed sites)
     * [/api/1/areas/?area_type=Site](/api/1/areas/?area_type=Site) Sites (where Surveys are conducted)
     """
+
     queryset = models.Area.objects.all()
     serializer_class = serializers.AreaSerializer
     filter_class = AreaFilter
@@ -59,6 +60,7 @@ class CampaignViewSet(BatchUpsertViewSet):
 
     All filters are available on all fields except location and team.
     """
+
     queryset = models.Campaign.objects.all().prefetch_related("owner", "viewers")
     serializer_class = serializers.CampaignSerializer
     # filter_class = CampaignFilter
@@ -72,6 +74,7 @@ class SurveyFilter(FilterSet):
     # Dates
     * [/api/1/surveys/?start_time__year__in=2017,2018](/api/1/surveys/?start_time__year__in=2017,2018) Years 2017, 2018
     """
+
     start_time = DateFilter()
     end_time = DateFilter()
 
@@ -102,7 +105,10 @@ class SurveyViewSet(BatchUpsertViewSet):
 
     All filters are available on all fields except location and team.
     """
-    queryset = models.Survey.objects.all().prefetch_related("reporter", "area", "site", "team")
+
+    queryset = models.Survey.objects.all().prefetch_related(
+        "reporter", "area", "site", "team"
+    )
     serializer_class = serializers.SurveySerializer
     filter_class = SurveyFilter
     pagination_class = MyGeoJsonPagination  # provides top level features
@@ -116,8 +122,10 @@ class SurveyMediaAttachmentViewSet(ModelViewSet):
 
     [Admin](/admin/observations/survey-media-attachments/)
     """
+
     queryset = models.SurveyMediaAttachment.objects.all().prefetch_related(
-        "survey__reporter", "survey__site", "survey__area")
+        "survey__reporter", "survey__site", "survey__area"
+    )
     serializer_class = serializers.SurveyMediaAttachmentSerializer
     pagination_class = MyGeoJsonPagination
     parser_classes = [FormParser, MultiPartParser]
@@ -282,11 +290,20 @@ class EncounterViewSet(BatchUpsertViewSet):
 
     latex_name = "latex/encounter.tex"
     queryset = models.Encounter.objects.all().prefetch_related(
-        "reporter", "observer", "area", "site",
-        "survey", "survey__reporter", "survey__site", "survey__team"
+        "reporter",
+        "observer",
+        "area",
+        "site",
+        "survey",
+        "survey__reporter",
+        "survey__site",
+        "survey__team",
     )
     serializer_class = serializers.EncounterSerializer
-    search_fields = ("name", "source_id", )
+    search_fields = (
+        "name",
+        "source_id",
+    )
 
     bbox_filter_field = "where"
     # bbox_filter_include_overlapping = True
@@ -305,12 +322,16 @@ class FastEncounterViewSet(ModelViewSet):
     Use this viewset to download a minimal useable set of Encounter records.
     This viewset is used in Observation viewsets to form a standalone dataset.
     """
+
     latex_name = "latex/encounter_fast.tex"
     queryset = models.Encounter.objects.all().prefetch_related(
         "observer", "reporter", "survey", "site", "area", "survey__reporter"
     )
     serializer_class = serializers.FastEncounterSerializer
-    search_fields = ("name", "source_id", )
+    search_fields = (
+        "name",
+        "source_id",
+    )
 
     bbox_filter_field = "where"
     # bbox_filter_include_overlapping = True
@@ -330,10 +351,14 @@ class SourceIdEncounterViewSet(ModelViewSet):
     existing records can be updated (if new) or skipped (if QA'd),
     non-existing records can be created.
     """
+
     latex_name = "latex/encounter_fast.tex"
     queryset = models.Encounter.objects.all()
     serializer_class = serializers.SourceIdEncounterSerializer
-    search_fields = ("name", "source_id", )
+    search_fields = (
+        "name",
+        "source_id",
+    )
 
     bbox_filter_field = "where"
     # bbox_filter_include_overlapping = True
@@ -369,9 +394,9 @@ class AnimalEncounterFilter(FilterSet):
             "sex": ["iexact", "icontains"],
             "maturity": ["iexact", "icontains"],
             "habitat": ["iexact", "icontains"],
-            "sighting_status":["iexact", "icontains"],
-            "sighting_status_reason":["iexact", "icontains"],
-            "identifiers":["iexact", "icontains"],
+            "sighting_status": ["iexact", "icontains"],
+            "sighting_status_reason": ["iexact", "icontains"],
+            "identifiers": ["iexact", "icontains"],
             "checked_for_injuries": ["iexact", "icontains"],
             "scanned_for_pit_tags": ["iexact", "icontains"],
             "checked_for_flipper_tags": ["iexact", "icontains"],
@@ -426,12 +451,22 @@ class AnimalEncounterViewSet(BatchUpsertViewSet):
 
     latex_name = "latex/animalencounter.tex"
     queryset = models.AnimalEncounter.objects.all().prefetch_related(
-        "observer", "reporter", "survey", "site", "area", "survey__reporter",
-        "site_of_first_sighting", "site_of_last_sighting",
+        "observer",
+        "reporter",
+        "survey",
+        "site",
+        "area",
+        "survey__reporter",
+        "site_of_first_sighting",
+        "site_of_last_sighting",
     )
     serializer_class = serializers.AnimalEncounterSerializer
     filter_class = AnimalEncounterFilter
-    search_fields = ("name", "source_id", "behaviour", )
+    search_fields = (
+        "name",
+        "source_id",
+        "behaviour",
+    )
     pagination_class = MyGeoJsonPagination
     model = models.AnimalEncounter
 
@@ -463,11 +498,11 @@ class TurtleNestEncounterFilter(FilterSet):
             "species": ["iexact", "icontains"],
             "habitat": ["iexact", "icontains"],
             "disturbance": ["iexact", "icontains"],
-            'nest_tagged': ["iexact", "icontains"],
-            'logger_found': ["iexact", "icontains"],
-            'eggs_counted': ["iexact", "icontains"],
-            'hatchlings_measured': ["iexact", "icontains"],
-            'fan_angles_measured': ["iexact", "icontains"],
+            "nest_tagged": ["iexact", "icontains"],
+            "logger_found": ["iexact", "icontains"],
+            "eggs_counted": ["iexact", "icontains"],
+            "hatchlings_measured": ["iexact", "icontains"],
+            "fan_angles_measured": ["iexact", "icontains"],
             "comments": ["icontains"],
         }
 
@@ -546,6 +581,7 @@ class TurtleNestEncounterViewSet(BatchUpsertViewSet):
 
     [Admin](/admin/observations/turtlenestencounter/)
     """
+
     latex_name = "latex/turtlenestencounter.tex"
     queryset = models.TurtleNestEncounter.objects.all().prefetch_related(
         "observer", "reporter", "survey", "site", "area", "survey__reporter"
@@ -566,11 +602,25 @@ class LineTransectEncounterViewSet(BatchUpsertViewSet):
         "observer", "reporter", "survey", "site", "area", "survey__reporter"
     )
     serializer_class = serializers.LineTransectEncounterSerializer
-    filter_fields = ["encounter_type",
-                     "status", "area", "site", "survey", "source", "source_id",
-                     "location_accuracy", "when", "name", "observer", "reporter",
-                     "comments"]
-    search_fields = ("name", "source_id", )
+    filter_fields = [
+        "encounter_type",
+        "status",
+        "area",
+        "site",
+        "survey",
+        "source",
+        "source_id",
+        "location_accuracy",
+        "when",
+        "name",
+        "observer",
+        "reporter",
+        "comments",
+    ]
+    search_fields = (
+        "name",
+        "source_id",
+    )
     pagination_class = MyGeoJsonPagination
     model = models.LineTransectEncounter
 
@@ -603,6 +653,7 @@ class ObservationViewSet(ObservationBatchUpsertViewSet):
 
     [Admin](/admin/observations/)
     """
+
     queryset = models.Observation.objects.all()
     serializer_class = serializers.ObservationSerializer
     model = models.Observation
@@ -614,10 +665,14 @@ class MediaAttachmentViewSet(ModelViewSet):
     Can be many per Encounter.
     [Admin](/admin/observations/media-attachments/)
     """
+
     queryset = models.MediaAttachment.objects.all().prefetch_related(
-        "encounter__observer", "encounter__reporter",
-        "encounter__survey", "encounter__survey__reporter",
-        "encounter__site", "encounter__area",
+        "encounter__observer",
+        "encounter__reporter",
+        "encounter__survey",
+        "encounter__survey__reporter",
+        "encounter__site",
+        "encounter__area",
     )
     serializer_class = serializers.MediaAttachmentSerializer
     pagination_class = MyGeoJsonPagination
@@ -679,11 +734,17 @@ class TagObservationViewSet(ObservationBatchUpsertViewSet):
     Can be many per Encounter.
     [Admin](/admin/observations/tagobservation/)
     """
+
     queryset = models.TagObservation.objects.all().prefetch_related(
-        "encounter__observer", "encounter__reporter",
-        "encounter__survey", "encounter__survey__reporter",
-        "encounter__site", "encounter__area",
-        "handler", "recorder")
+        "encounter__observer",
+        "encounter__reporter",
+        "encounter__survey",
+        "encounter__survey__reporter",
+        "encounter__site",
+        "encounter__area",
+        "handler",
+        "recorder",
+    )
     serializer_class = serializers.TagObservationSerializer
     filter_fields = [
         "encounter__area",
@@ -695,8 +756,12 @@ class TagObservationViewSet(ObservationBatchUpsertViewSet):
         "tag_location",
         "name",
         "status",
-        "comments"]
-    search_fields = ("name", "comments", )
+        "comments",
+    ]
+    search_fields = (
+        "name",
+        "comments",
+    )
     pagination_class = MyGeoJsonPagination
     model = models.TagObservation
 
@@ -712,14 +777,26 @@ class NestTagObservationViewSet(ObservationBatchUpsertViewSet):
     Typically one, but can be many per Encounter.
     [Admin](/admin/observations/nesttagobservation/)
     """
+
     queryset = models.NestTagObservation.objects.all().prefetch_related(
-        "encounter__observer", "encounter__reporter",
-        "encounter__survey", "encounter__survey__reporter",
-        "encounter__site", "encounter__area",
+        "encounter__observer",
+        "encounter__reporter",
+        "encounter__survey",
+        "encounter__survey__reporter",
+        "encounter__site",
+        "encounter__area",
     )
     serializer_class = serializers.NestTagObservationSerializer
-    filter_fields = ["encounter__area", "encounter__site", "encounter__encounter_type",
-                     "status", "flipper_tag_id", "date_nest_laid", "tag_label", "comments"]
+    filter_fields = [
+        "encounter__area",
+        "encounter__site",
+        "encounter__encounter_type",
+        "status",
+        "flipper_tag_id",
+        "date_nest_laid",
+        "tag_label",
+        "comments",
+    ]
     pagination_class = MyGeoJsonPagination
     model = models.NestTagObservation
 
@@ -734,9 +811,12 @@ class ManagementActionViewSet(ObservationBatchUpsertViewSet):
     """
 
     queryset = models.ManagementAction.objects.all().prefetch_related(
-        "encounter__observer", "encounter__reporter",
-        "encounter__survey", "encounter__survey__reporter",
-        "encounter__site", "encounter__area",
+        "encounter__observer",
+        "encounter__reporter",
+        "encounter__survey",
+        "encounter__survey__reporter",
+        "encounter__site",
+        "encounter__area",
     )
     serializer_class = serializers.ManagementActionSerializer
     model = models.ManagementAction
@@ -748,17 +828,21 @@ class TurtleDamageObservationViewSet(ObservationBatchUpsertViewSet):
     Can be many per Encounter.
     [Admin](/admin/observations/turtledamageobservation/)
     """
+
     queryset = models.TurtleDamageObservation.objects.all().prefetch_related(
-        "encounter__observer", "encounter__reporter",
-        "encounter__survey", "encounter__survey__reporter",
-        "encounter__site", "encounter__area",
+        "encounter__observer",
+        "encounter__reporter",
+        "encounter__survey",
+        "encounter__survey__reporter",
+        "encounter__site",
+        "encounter__area",
     )
     serializer_class = serializers.TurtleDamageObservationSerializer
     filter_fields = [
         "encounter__area",
         "encounter__site",
         "encounter__encounter_type",
-        "encounter__status"
+        "encounter__status",
     ]
     pagination_class = MyGeoJsonPagination
     model = models.TurtleDamageObservation
@@ -769,20 +853,25 @@ class TurtleMorphometricObservationViewSet(ObservationBatchUpsertViewSet):
 
     [Admin](/admin/observations/turtlemorphometricobservation/)
     """
+
     queryset = models.TurtleMorphometricObservation.objects.all().prefetch_related(
-        "encounter__observer", "encounter__reporter",
-        "encounter__survey", "encounter__survey__reporter",
-        "encounter__site", "encounter__area",
-        "handler", "recorder"
+        "encounter__observer",
+        "encounter__reporter",
+        "encounter__survey",
+        "encounter__survey__reporter",
+        "encounter__site",
+        "encounter__area",
+        "handler",
+        "recorder",
     )
     serializer_class = serializers.TurtleMorphometricObservationSerializer
     filter_fields = [
         "encounter__area",
         "encounter__site",
         "encounter__encounter_type",
-        "encounter__status"
+        "encounter__status",
     ]
-    search_fields = ("comments", )
+    search_fields = ("comments",)
     pagination_class = MyGeoJsonPagination
     model = models.TurtleMorphometricObservation
 
@@ -793,11 +882,22 @@ class HatchlingMorphometricObservationViewSet(ObservationBatchUpsertViewSet):
     Can be many per Encounter.
     [Admin](/admin/observations/hatchlingmorphometricobservation/)
     """
+
     queryset = models.HatchlingMorphometricObservation.objects.all().prefetch_related(
-        "encounter", "encounter__observer", "encounter__reporter",
-        "encounter__survey", "encounter__survey__reporter", "encounter__site", "encounter__area")
+        "encounter",
+        "encounter__observer",
+        "encounter__reporter",
+        "encounter__survey",
+        "encounter__survey__reporter",
+        "encounter__site",
+        "encounter__area",
+    )
     serializer_class = serializers.HatchlingMorphometricObservationSerializer
-    filter_fields = ["encounter__area", "encounter__site", "encounter__encounter_type", ]
+    filter_fields = [
+        "encounter__area",
+        "encounter__site",
+        "encounter__encounter_type",
+    ]
     pagination_class = MyGeoJsonPagination
     model = models.HatchlingMorphometricObservation
 
@@ -815,9 +915,14 @@ class TurtleNestObservationViewSet(ObservationBatchUpsertViewSet):
     """
 
     queryset = models.TurtleNestObservation.objects.all().prefetch_related(
-        "encounter", "encounter__observer", "encounter__reporter",
-        "encounter__survey", "encounter__survey__reporter",
-        "encounter__site", "encounter__area")
+        "encounter",
+        "encounter__observer",
+        "encounter__reporter",
+        "encounter__survey",
+        "encounter__survey__reporter",
+        "encounter__site",
+        "encounter__area",
+    )
     serializer_class = serializers.TurtleNestObservationSerializer
     filter_fields = [
         "encounter__area",
@@ -826,7 +931,7 @@ class TurtleNestObservationViewSet(ObservationBatchUpsertViewSet):
         "encounter__status",
         "eggs_laid",
     ]
-    search_fields = ("comments", )
+    search_fields = ("comments",)
     pagination_class = MyGeoJsonPagination
     model = models.TurtleNestObservation
 
@@ -842,10 +947,16 @@ class TurtleNestDisturbanceObservationViewSet(ObservationBatchUpsertViewSet):
     Can be many per Encounter.
     [Admin](/admin/observations/turtlenestdisturbanceobservation/)
     """
+
     queryset = models.TurtleNestDisturbanceObservation.objects.all().prefetch_related(
-        "encounter", "encounter__observer", "encounter__reporter",
-        "encounter__survey", "encounter__survey__reporter",
-        "encounter__site", "encounter__area")
+        "encounter",
+        "encounter__observer",
+        "encounter__reporter",
+        "encounter__survey",
+        "encounter__survey__reporter",
+        "encounter__site",
+        "encounter__area",
+    )
     serializer_class = serializers.TurtleNestDisturbanceObservationSerializer
     filter_fields = [
         "encounter__area",
@@ -866,12 +977,24 @@ class TurtleHatchlingEmergenceObservationViewSet(ObservationBatchUpsertViewSet):
     Typically one per Encounter.
     [Admin](/admin/observations/turtlehatchlingemergenceobservation/)
     """
-    queryset = models.TurtleHatchlingEmergenceObservation.objects.all().prefetch_related(
-        "encounter", "encounter__observer", "encounter__reporter",
-        "encounter__survey", "encounter__survey__reporter",
-        "encounter__site", "encounter__area")
+
+    queryset = (
+        models.TurtleHatchlingEmergenceObservation.objects.all().prefetch_related(
+            "encounter",
+            "encounter__observer",
+            "encounter__reporter",
+            "encounter__survey",
+            "encounter__survey__reporter",
+            "encounter__site",
+            "encounter__area",
+        )
+    )
     serializer_class = serializers.TurtleHatchlingEmergenceObservationSerializer
-    filter_fields = ["encounter__area", "encounter__site", "encounter__encounter_type", ]
+    filter_fields = [
+        "encounter__area",
+        "encounter__site",
+        "encounter__encounter_type",
+    ]
     pagination_class = MyGeoJsonPagination
     model = models.TurtleHatchlingEmergenceObservation
 
@@ -882,12 +1005,22 @@ class TurtleHatchlingEmergenceOutlierObservationViewSet(ObservationBatchUpsertVi
     Can be many per Encounter.
     [Admin](/admin/observations/turtlehatchlingemergenceoutlierobservation/)
     """
+
     queryset = models.TurtleHatchlingEmergenceOutlierObservation.objects.all().prefetch_related(
-        "encounter", "encounter__observer", "encounter__reporter",
-        "encounter__survey", "encounter__survey__reporter",
-        "encounter__site", "encounter__area")
+        "encounter",
+        "encounter__observer",
+        "encounter__reporter",
+        "encounter__survey",
+        "encounter__survey__reporter",
+        "encounter__site",
+        "encounter__area",
+    )
     serializer_class = serializers.TurtleHatchlingEmergenceOutlierObservationSerializer
-    filter_fields = ["encounter__area", "encounter__site", "encounter__encounter_type", ]
+    filter_fields = [
+        "encounter__area",
+        "encounter__site",
+        "encounter__encounter_type",
+    ]
     pagination_class = MyGeoJsonPagination
     model = models.TurtleHatchlingEmergenceOutlierObservation
 
@@ -898,12 +1031,22 @@ class LightSourceObservationViewSet(ObservationBatchUpsertViewSet):
     Can be many per Encounter.
     [Admin](/admin/observations/lightsourceobservation/)
     """
+
     queryset = models.LightSourceObservation.objects.all().prefetch_related(
-        "encounter", "encounter__observer", "encounter__reporter",
-        "encounter__survey", "encounter__survey__reporter",
-        "encounter__site", "encounter__area")
+        "encounter",
+        "encounter__observer",
+        "encounter__reporter",
+        "encounter__survey",
+        "encounter__survey__reporter",
+        "encounter__site",
+        "encounter__area",
+    )
     serializer_class = serializers.LightSourceObservationSerializer
-    filter_fields = ["encounter__area", "encounter__site", "encounter__encounter_type", ]
+    filter_fields = [
+        "encounter__area",
+        "encounter__site",
+        "encounter__encounter_type",
+    ]
     pagination_class = MyGeoJsonPagination
     model = models.LightSourceObservation
 
@@ -914,12 +1057,22 @@ class LoggerObservationViewSet(ObservationBatchUpsertViewSet):
     Can be many per Encounter.
     [Admin](/admin/observations/loggerobservation/)
     """
+
     queryset = models.LoggerObservation.objects.all().prefetch_related(
-        "encounter", "encounter__observer", "encounter__reporter",
-        "encounter__survey", "encounter__survey__reporter",
-        "encounter__site", "encounter__area")
+        "encounter",
+        "encounter__observer",
+        "encounter__reporter",
+        "encounter__survey",
+        "encounter__survey__reporter",
+        "encounter__site",
+        "encounter__area",
+    )
     serializer_class = serializers.LoggerObservationSerializer
-    filter_fields = ["encounter__area", "encounter__site", "encounter__encounter_type", ]
+    filter_fields = [
+        "encounter__area",
+        "encounter__site",
+        "encounter__encounter_type",
+    ]
     pagination_class = MyGeoJsonPagination
     model = models.LoggerObservation
 
@@ -930,12 +1083,22 @@ class TrackTallyObservationViewSet(ObservationBatchUpsertViewSet):
     Can be many per Encounter.
     Admin: see Encounter inlines.
     """
+
     queryset = models.TrackTallyObservation.objects.all().prefetch_related(
-        "encounter", "encounter__observer", "encounter__reporter",
-        "encounter__survey", "encounter__survey__reporter",
-        "encounter__site", "encounter__area")
+        "encounter",
+        "encounter__observer",
+        "encounter__reporter",
+        "encounter__survey",
+        "encounter__survey__reporter",
+        "encounter__site",
+        "encounter__area",
+    )
     serializer_class = serializers.TrackTallyObservationSerializer
-    filter_fields = ["encounter__area", "encounter__site", "encounter__encounter_type", ]
+    filter_fields = [
+        "encounter__area",
+        "encounter__site",
+        "encounter__encounter_type",
+    ]
     pagination_class = MyGeoJsonPagination
     model = models.TrackTallyObservation
 
@@ -946,11 +1109,23 @@ class TurtleNestDisturbanceTallyObservationViewSet(ObservationBatchUpsertViewSet
     Can be many per Encounter.
     Admin: see Encounter inlines.
     """
-    queryset = models.TurtleNestDisturbanceTallyObservation.objects.all().prefetch_related(
-        "encounter", "encounter__observer", "encounter__reporter",
-        "encounter__survey", "encounter__survey__reporter",
-        "encounter__site", "encounter__area")
+
+    queryset = (
+        models.TurtleNestDisturbanceTallyObservation.objects.all().prefetch_related(
+            "encounter",
+            "encounter__observer",
+            "encounter__reporter",
+            "encounter__survey",
+            "encounter__survey__reporter",
+            "encounter__site",
+            "encounter__area",
+        )
+    )
     serializer_class = serializers.TurtleNestDisturbanceTallyObservationSerializer
-    filter_fields = ["encounter__area", "encounter__site", "encounter__encounter_type", ]
+    filter_fields = [
+        "encounter__area",
+        "encounter__site",
+        "encounter__encounter_type",
+    ]
     pagination_class = MyGeoJsonPagination
     model = models.TurtleNestDisturbanceTallyObservation

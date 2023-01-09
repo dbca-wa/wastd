@@ -22,9 +22,9 @@ class UtilsTests(TestCase):
 
     def test_bigintconverter(self):
         con = BigIntConverter()
-        self.assertTrue(isinstance(con.to_python('101'), int))
-        self.assertTrue(isinstance(con.to_python('-101'), int))
-        self.assertTrue(isinstance(con.to_url('101'), str))
-        self.assertTrue(isinstance(con.to_url('-101'), str))
-        self.assertRaises(ValueError, con.to_python, 'abc')
-        self.assertRaises(ValueError, con.to_python, '-abc')
+        self.assertTrue(isinstance(con.to_python("101"), int))
+        self.assertTrue(isinstance(con.to_python("-101"), int))
+        self.assertTrue(isinstance(con.to_url("101"), str))
+        self.assertTrue(isinstance(con.to_url("-101"), str))
+        self.assertRaises(ValueError, con.to_python, "abc")
+        self.assertRaises(ValueError, con.to_python, "-abc")

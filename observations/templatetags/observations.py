@@ -1,7 +1,8 @@
 import os
 
 import logging
-#import pypandoc
+
+# import pypandoc
 from django import template
 from django.conf import settings
 from django.template.defaultfilters import stringfilter
@@ -25,17 +26,17 @@ def apitoken(user, **kwargs):
     return Token.objects.get_or_create(user=user)[0].key
 
 
-@register.inclusion_tag('tx_logs.html', takes_context=False)
+@register.inclusion_tag("tx_logs.html", takes_context=False)
 def tx_logs(obj):
     """Render the FSM transition logs for an object to HTML."""
-    return {'logs': [log for log in StateLog.objects.for_(obj)]}
+    return {"logs": [log for log in StateLog.objects.for_(obj)]}
 
 
 @register.filter
 @stringfilter
 def mm_as_cm(mm_value):
     """Turn a given mm value into a cm value."""
-    if mm_value == 'None':
+    if mm_value == "None":
         return None
     return float(mm_value) / 10
 
@@ -44,7 +45,7 @@ def mm_as_cm(mm_value):
 @stringfilter
 def mm_as_m(mm_value):
     """Turn a given mm value into a m value."""
-    if mm_value == 'None':
+    if mm_value == "None":
         return None
     return float(mm_value) / 1000
 
@@ -97,7 +98,9 @@ def obs_colour(observation_value):
     try:
         col = OBSERVATION_COLOURS[observation_value]
     except:
-        logger.warning("Not found: OBSERVATION_COLOURS key {0}".format(observation_value))
+        logger.warning(
+            "Not found: OBSERVATION_COLOURS key {0}".format(observation_value)
+        )
         col = "secondary"
     return col
 
@@ -107,8 +110,8 @@ def filename(value):
     return os.path.basename(value)
 
 
-#@register.filter
-#@stringfilter
-#def tex(string_value):
+# @register.filter
+# @stringfilter
+# def tex(string_value):
 #    """Convert a text or HTML string to tex."""
 #    return pypandoc.convert_text(string_value, 'tex', format='html')

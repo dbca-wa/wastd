@@ -19,6 +19,7 @@ class Organisation(models.Model):
     * The relationship of Users and Records (Enc, Surv) to Organsations can be used to manage data visibility and access.
     * Equal to CodeLabelDescriptionMixin but cannot be imported here to avoid cyclic dependency.
     """
+
     code = models.SlugField(
         max_length=500,
         unique=True,
@@ -27,14 +28,16 @@ class Organisation(models.Model):
     )
 
     label = models.CharField(
-        blank=True, null=True,
+        blank=True,
+        null=True,
         max_length=500,
         verbose_name=_("Label"),
         help_text=_("A human-readable, self-explanatory label."),
     )
 
     description = models.TextField(
-        blank=True, null=True,
+        blank=True,
+        null=True,
         verbose_name=_("Description"),
         help_text=_("A comprehensive description."),
     )
@@ -42,7 +45,9 @@ class Organisation(models.Model):
     class Meta:
         """Class opts."""
 
-        ordering = ["code", ]
+        ordering = [
+            "code",
+        ]
 
     def __str__(self):
         """The full name."""
@@ -56,36 +61,28 @@ class User(AbstractUser):
     """
 
     # First Name and Last Name do not cover name patterns around the globe.
-    name = models.CharField(
-        _("Name of User"),
-        blank=True,
-        max_length=255
-    )
+    name = models.CharField(_("Name of User"), blank=True, max_length=255)
 
-    nickname = models.CharField(
-        _("Preferred name"),
-        blank=True,
-        max_length=255
-    )
+    nickname = models.CharField(_("Preferred name"), blank=True, max_length=255)
 
     aliases = models.TextField(
         _("Aliases of User"),
         blank=True,
-        help_text=_("Any names this user is known as in other "
-                    "databases and data collection forms. "
-                    "Separate names by comma.")
+        help_text=_(
+            "Any names this user is known as in other "
+            "databases and data collection forms. "
+            "Separate names by comma."
+        ),
     )
 
     role = models.TextField(
-        _("Role of User"),
-        blank=True, null=True,
-        help_text=_("The role of the user.")
+        _("Role of User"), blank=True, null=True, help_text=_("The role of the user.")
     )
 
     affiliation = models.TextField(
         _("Affiliation"),
         blank=True,
-        help_text=_("The organisational affiliation of the user as free text.")
+        help_text=_("The organisational affiliation of the user as free text."),
     )
 
     organisations = models.ManyToManyField(
@@ -95,29 +92,32 @@ class User(AbstractUser):
         help_text=_(
             "The organisational affiliation is used to control data visibility and access. "
             "A user can be a member of several Organisations."
-        )
+        ),
     )
 
     phone = PhoneNumberField(
         verbose_name=_("Phone Number"),
-        blank=True, null=True,
-        help_text=_("The primary contact number including national prefix, "
-                    "e.g. +61 412 345 678. "
-                    "Spaces are accepted but will be removed on saving."),
+        blank=True,
+        null=True,
+        help_text=_(
+            "The primary contact number including national prefix, "
+            "e.g. +61 412 345 678. "
+            "Spaces are accepted but will be removed on saving."
+        ),
     )
 
     alive = models.BooleanField(
-        verbose_name=_('Alive'),
+        verbose_name=_("Alive"),
         default=True,
-        help_text=_("Deceased users should not be attempted to be contacted.")
+        help_text=_("Deceased users should not be attempted to be contacted."),
     )
 
     class Meta:
         """Class opts."""
 
         ordering = ["name", "username"]
-        verbose_name = 'User'
-        verbose_name_plural = 'Users'
+        verbose_name = "User"
+        verbose_name_plural = "Users"
 
     # -------------------------------------------------------------------------
     # Representation
@@ -127,7 +127,7 @@ class User(AbstractUser):
             self.name,
             self.pk,
             self.username,
-            "[INACTIVE]" if not self.is_active else ""
+            "[INACTIVE]" if not self.is_active else "",
         )
 
     def save(self, *args, **kwargs):
@@ -141,7 +141,7 @@ class User(AbstractUser):
     # -------------------------------------------------------------------------
     # Templates
     def card_template(self):
-        return 'users/cards/user.html'
+        return "users/cards/user.html"
 
     # -------------------------------------------------------------------------
     # Properties
@@ -162,7 +162,7 @@ class User(AbstractUser):
             "name__icontains",
             "role__icontains",
             "aliases__icontains",
-            "affiliation__icontains"
+            "affiliation__icontains",
         )
 
     # -------------------------------------------------------------------------
@@ -171,8 +171,9 @@ class User(AbstractUser):
     @classmethod
     def create_url(cls):
         """Create url. Default: app:model-create."""
-        return reverse('admin:{0}_{1}_add'.format(
-            cls._meta.app_label, cls._meta.model_name))
+        return reverse(
+            "admin:{0}_{1}_add".format(cls._meta.app_label, cls._meta.model_name)
+        )
 
     @property
     def update_url(self):
@@ -185,23 +186,25 @@ class User(AbstractUser):
 
         Default: admin:app_model_change(**pk)
         """
-        return reverse('admin:{0}_{1}_change'.format(
-            self._meta.app_label, self._meta.model_name), args=[self.pk])
+        return reverse(
+            "admin:{0}_{1}_change".format(self._meta.app_label, self._meta.model_name),
+            args=[self.pk],
+        )
 
     def get_absolute_url(self):
         """Detail url, used by Django to link admin to site.
 
         Default: app:model-detail(**pk).
         """
-        return reverse('{0}:{1}-detail'.format(
-            self._meta.app_label, self._meta.model_name),
-            kwargs={'pk': self.pk})
+        return reverse(
+            "{0}:{1}-detail".format(self._meta.app_label, self._meta.model_name),
+            kwargs={"pk": self.pk},
+        )
 
     @classmethod
     def list_url(cls):
         """List url property. Default: app:model-list."""
-        return reverse('{0}:{1}-list'.format(
-            cls._meta.app_label, cls._meta.model_name))
+        return reverse("{0}:{1}-list".format(cls._meta.app_label, cls._meta.model_name))
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
@@ -210,6 +213,6 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
     if created:
         Token.objects.create(user=instance)
         # try:
-            # Token.objects.create(user=instance)
+        # Token.objects.create(user=instance)
         # except:
-            # logger.warning("Failed to create Token for User {0}".format(instance))
+        # logger.warning("Failed to create Token for User {0}".format(instance))

@@ -14,14 +14,14 @@ class MergeForm(forms.Form):
     old = forms.ModelChoiceField(
         label="User profile to be transferred and closed",
         queryset=User.objects.all(),
-        widget=UserWidget()
+        widget=UserWidget(),
     )
     new = forms.ModelChoiceField(
         label="User profile to be retained and to receive all records linked against the duplicate profile",
         queryset=User.objects.all(),
-        widget=UserWidget()
+        widget=UserWidget(),
     )
-    save_button = Submit('save', 'Merge User Profiles', css_class='btn-lg')
+    save_button = Submit("save", "Merge User Profiles", css_class="btn-lg")
     cancel_button = HTML('<a class="btn btn-secondary" href="/">Cancel</a>')
 
     def __init__(self, *args, **kwargs):
@@ -31,9 +31,9 @@ class MergeForm(forms.Form):
         self.helper.layout = Layout(
             Div(
                 Fieldset(
-                    'Merge Duplicate User Profiles',
-                    Field('old'),
-                    Field('new'),
+                    "Merge Duplicate User Profiles",
+                    Field("old"),
+                    Field("new"),
                 ),
                 Div(
                     self.save_button,
@@ -47,18 +47,16 @@ class TransferForm(forms.Form):
     old = forms.ModelChoiceField(
         label="Transfer data incorrectly linked to User",
         queryset=User.objects.all(),
-        widget=UserWidget()
+        widget=UserWidget(),
     )
     area = forms.ModelChoiceField(
         label="Restrict data transfer to Area",
-        queryset=Area.objects.filter(area_type=Area.AREATYPE_LOCALITY)
+        queryset=Area.objects.filter(area_type=Area.AREATYPE_LOCALITY),
     )
     new = forms.ModelChoiceField(
-        label="Transfer data to User",
-        queryset=User.objects.all(),
-        widget=UserWidget()
+        label="Transfer data to User", queryset=User.objects.all(), widget=UserWidget()
     )
-    save_button = Submit('save', 'Transfer data', css_class='btn-lg')
+    save_button = Submit("save", "Transfer data", css_class="btn-lg")
     cancel_button = HTML('<a class="btn btn-secondary" href="/">Cancel</a>')
 
     def __init__(self, *args, **kwargs):
@@ -69,10 +67,10 @@ class TransferForm(forms.Form):
         self.helper.layout = Layout(
             Div(
                 Fieldset(
-                    'Transfer data to another user',
-                    Field('old'),
-                    Field('area'),
-                    Field('new'),
+                    "Transfer data to another user",
+                    Field("old"),
+                    Field("area"),
+                    Field("new"),
                 ),
                 Div(
                     self.save_button,
