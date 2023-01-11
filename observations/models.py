@@ -2913,10 +2913,7 @@ class AnimalEncounter(Encounter):
         verbose_name=_("Health status"),
         choices=HEALTH_CHOICES,
         default=NA_VALUE,
-        help_text=_(
-            "On a scale from the Fresh Prince of Bel Air to 80s Hair "
-            "Metal: how dead and decomposed is the animal?"
-        ),
+        help_text=_("The animal's physical health"),
     )
 
     activity = models.CharField(
