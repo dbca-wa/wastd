@@ -4,6 +4,7 @@ version = "0.61.0"
 description = "WA Sea Turtles and Strandings Database"
 authors = ["Florian Mayer <Florian.Mayer@dbca.wa.gov.au>", "Ashley Felton <ashley.felton@dbca.wa.gov.au>"]
 license = "MIT"
+readme = "README.rst"
 
 [tool.poetry.dependencies]
 python = "^3.10"
