@@ -3,6 +3,7 @@ import dj_database_url
 import os
 from pathlib import Path
 import sys
+from zoneinfo import ZoneInfo
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, 'subdir')
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -63,6 +64,7 @@ INSTALLED_APPS = [
     # Local apps
     "users",
     "observations",
+    "wamtram",  # WAMTRAM database
 ]
 
 MIDDLEWARE = [
@@ -130,7 +132,20 @@ WASTD_RELEASE = "0.61.0"
 DATABASES = {
     # Defined in DATABASE_URL env variable.
     "default": dj_database_url.config(),
+    "wamtram": {
+        'ENGINE': os.environ.get('DB_ENGINE', 'mssql'),
+        'HOST': os.environ.get('DB_HOST', 'host'),
+        'NAME': os.environ.get('DB_NAME', 'database'),
+        'PORT': os.environ.get('DB_PORT', 1234),
+        'USER': os.environ.get('DB_USERNAME', 'user'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', 'pass'),
+        'OPTIONS': {
+            'driver': os.environ.get('DB_DRIVER', 'ODBC Driver 17 for SQL Server'),
+            'extra_params': os.environ.get('DB_EXTRA_PARAMS', ''),
+        },
+    }
 }
+DATABASE_ROUTERS = ['wastd.wamtram_router.WamtramRouter']
 
 
 # Internationalisation.
@@ -156,6 +171,8 @@ DATETIME_INPUT_FORMATS = (
 )
 # DATE_FORMAT = 'Y-m-d'
 # DATETIME_FORMAT = 'Y-m-d G:i:s T'
+AWST = ZoneInfo(TIME_ZONE)
+UTC = ZoneInfo("UTC")
 
 
 # Email settings.
