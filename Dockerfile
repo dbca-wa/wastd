@@ -14,6 +14,7 @@ RUN curl -s https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
   && apt-get update -y \
   && ACCEPT_EULA=Y apt-get install -y msodbcsql18 \
   # Change the OpenSSL config to allow old TLS versions, because our host is outdated.
+  # Reference: https://askubuntu.com/questions/1284658/how-to-fix-microsoft-odbc-driver-17-for-sql-server-ssl-provider-ssl-choose-cli
   && head -n -7 /etc/ssl/openssl.cnf > openssl.tmp && mv openssl.tmp /etc/ssl/openssl.cnf \
   && rm -rf /var/lib/apt/lists/* \
   && pip install --upgrade pip
