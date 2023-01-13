@@ -25,6 +25,7 @@ COPY observations ./observations
 COPY shared ./shared
 COPY users ./users
 COPY wastd ./wastd
+COPY wamtram ./wamtram
 RUN python manage.py collectstatic --noinput
 # Run the application as the www-data user.
 USER www-data
