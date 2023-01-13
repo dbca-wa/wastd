@@ -125,7 +125,7 @@ LOCAL_USERGROUPS = [
 SITE_NAME = os.environ.get("SITE_NAME", "WA Sea Turtle and Strandings Database")
 SITE_TITLE = os.environ.get("SITE_TITLE", "WAStD")
 SITE_CODE = os.environ.get("SITE_CODE", "WAStD")
-WASTD_RELEASE = "0.61.0"
+WASTD_RELEASE = "0.70.0"
 
 
 # Database configuration
@@ -145,7 +145,7 @@ DATABASES = {
         },
     }
 }
-DATABASE_ROUTERS = ['wastd.wamtram_router.WamtramRouter']
+DATABASE_ROUTERS = ['wamtram.routers.WamtramRouter']
 
 
 # Internationalisation.
