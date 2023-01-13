@@ -5,7 +5,16 @@ LABEL org.opencontainers.image.source https://github.com/dbca-wa/wastd
 
 RUN apt-get update -y \
   && apt-get upgrade -y \
-  && apt-get install -y libmagic-dev gcc binutils gdal-bin proj-bin python3-dev libpq-dev gzip curl \
+  && apt-get install -y libmagic-dev gcc binutils gdal-bin proj-bin python3-dev libpq-dev gzip curl gnupg2
+
+# Install the Microsoft ODBC driver for SQL Server.
+# Reference: https://learn.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server?view=sql-server-ver16#debian18
+RUN curl -s https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
+  && curl -s https://packages.microsoft.com/config/debian/11/prod.list > /etc/apt/sources.list.d/mssql-release.list\
+  && apt-get update -y \
+  && ACCEPT_EULA=Y apt-get install -y msodbcsql18 \
+  # Change the OpenSSL config to allow old TLS versions, because our host is outdated.
+  && head -n -7 /etc/ssl/openssl.cnf > openssl.tmp && mv openssl.tmp /etc/ssl/openssl.cnf \
   && rm -rf /var/lib/apt/lists/* \
   && pip install --upgrade pip
 
