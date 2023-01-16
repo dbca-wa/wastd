@@ -1,13 +1,13 @@
-name: "Build Docker image and run Trivy vulnerability scan"
+name: "Build Docker image and run vulnerability scan"
 
 on:
   push:
     # Publish `master` as `latest` image.
-    branches: [ master ]
+    branches: [master]
     # Publish `v0.*` tags as releases.
-    tags: [ 'v0.*' ]
+    tags: ['v0.*']
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 env:
   REGISTRY: ghcr.io
@@ -15,7 +15,7 @@ env:
 
 jobs:
   build:
-    name: Build Docker image
+    name: Build Docker image and run vulnerability scan
     runs-on: ubuntu-latest
     permissions:
       contents: read
