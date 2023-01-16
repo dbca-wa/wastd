@@ -13,7 +13,8 @@ RUN curl -s https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
   && curl -s https://packages.microsoft.com/config/debian/11/prod.list > /etc/apt/sources.list.d/mssql-release.list\
   && apt-get update -y \
   && ACCEPT_EULA=Y apt-get install -y msodbcsql18 \
-  # Change the OpenSSL config to allow old TLS versions, because our host is outdated.
+  # Change the OpenSSL config to allow old TLS versions, because our database host is outdated.
+  # Do this by removing the last n lines of /etc/ssl/openssl.cnf, containing the [ssl_sect] and [system_default_sect] config sections.
   # Reference: https://askubuntu.com/questions/1284658/how-to-fix-microsoft-odbc-driver-17-for-sql-server-ssl-provider-ssl-choose-cli
   && head -n -7 /etc/ssl/openssl.cnf > openssl.tmp && mv openssl.tmp /etc/ssl/openssl.cnf \
   && rm -rf /var/lib/apt/lists/* \
