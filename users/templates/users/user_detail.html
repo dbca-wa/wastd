@@ -1,9 +1,23 @@
 {% extends "pages/base.html" %}
 {% load leaflet_tags geojson_tags static %}
-{% block title %}User: {{ object.username }}{% endblock %}
-{% block content %}
- <!-- breadcrumbs.html-->
-<div class="row">
+
+{% block extra_style %}
+{{ block.super }}
+<style>
+.leaflet-popup, .leaflet-popup-content-wrapper, .leaflet-popup-content {
+  width: 350px;    /* narrower popup */
+  padding: -10px;  /* fix close button position */
+}
+.leaflet-tooltip.leaflet-tooltip-wide {
+  width: 400px;
+  overflow-wrap: break-word; /* work wrap not working yet */
+  word-wrap: break-word;
+  hyphens: auto;
+}
+</style>
+{% endblock %}
+
+{% block breadcrumbs %}
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
       <li class="breadcrumb-item">
@@ -17,8 +31,11 @@
       </li>
     </ol>
   </nav>
-</div>
-<!-- /breadcrumbs.html -->
+{% endblock breadcrumbs %}
+
+{% block title %}User: {{ object.username }}{% endblock %}
+
+{% block page_content_inner %}
   <div class="row" id="obj-detail-main">
     <div class="col-12 col-sm-12 col-md-6 col-lg-8">
       {% include object.card_template %}
@@ -61,30 +78,12 @@
       </div><!-- /.row-enc -->
     </div>
   </div>
-{% endblock content %}
+{% endblock page_content_inner %}
 
-{% block extrastyle %}
-<style>
-.leaflet-popup, .leaflet-popup-content-wrapper, .leaflet-popup-content {
-  width: 350px;    /* narrower popup */
-  padding: -10px;  /* fix close button position */
-}
-.leaflet-tooltip.leaflet-tooltip-wide {
-  width: 400px;
-  overflow-wrap: break-word; /* work wrap not working yet */
-  word-wrap: break-word;
-  hyphens: auto;
-}
-</style>
-{% endblock %}
-
-{% block extrajs %}
-  <!-- Some widgets need JQuery to be loaded early -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"
-    integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg=="
-    crossorigin="anonymous"></script>
-  <script type="text/javascript">
-  function map_init(map, options) {
+{% block extra_js %}
+{{ block.super }}
+<script type="text/javascript">
+function map_init(map, options) {
     {% include 'shared/styles.js' %}
     $.getJSON("{% url 'sites-geojson' %}", function (data) {
         L.geoJson(data, {style: polystyle, onEachFeature: oef}).addTo(map);
@@ -110,6 +109,6 @@
     $(".zoom-map").click(function() {
       map.flyTo([this.dataset.lat, this.dataset.lon], 18, {animate: true});
     });
-  };
-  </script>
-  {% endblock %}
+};
+</script>
+{% endblock extra_js %}

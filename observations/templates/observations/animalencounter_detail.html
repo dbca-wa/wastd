@@ -13,38 +13,33 @@
 {% endif %}
 {% endblock %}
 
-  {% block obsdetails %}
-    <strong>Identifiers:</strong> {{ object.identifiers }}<br/>
-    <strong>Sighting status reason:</strong> {{ object.sighting_status_reason }}<br/>        
-    <strong>First seen at:</strong> {{ object.site_of_first_sighting }}<br>
-    <strong>Last seen at:</strong> {{ object.site_of_last_sighting }}<br>
-    <strong>Last seen on:</strong> {{ object.datetime_of_last_sighting|date:'d M Y H:i'  }}<br>
-    <strong>Data source:</strong> {{ object.get_source_display }}<br>
-    <strong>Health status:</strong> {{ object.get_health_display }}<br>
-    <strong>Sex:</strong> {{ object.get_sex_display }}<br>
-    <strong>Maturity:</strong> {{ object.get_maturity_display }}<br>
-    <strong>Nesting success:</strong> {{ object.get_nesting_event_display }}, disturbance during nesting: {{ object.get_nesting_disturbed_display }}<br>
-    <strong>Behaviour:</strong> {{ object.behaviour|safe|default:"-" }}<br>
-  {% endblock %}
-
+{% block obsdetails %}
+<strong>Identifiers:</strong> {{ object.identifiers }}<br/>
+<strong>Sighting status reason:</strong> {{ object.sighting_status_reason }}<br/>
+<strong>First seen at:</strong> {{ object.site_of_first_sighting }}<br>
+<strong>Last seen at:</strong> {{ object.site_of_last_sighting }}<br>
+<strong>Last seen on:</strong> {{ object.datetime_of_last_sighting|date:'d M Y H:i'  }}<br>
+<strong>Data source:</strong> {{ object.get_source_display }}<br>
+<strong>Health status:</strong> {{ object.get_health_display }}<br>
+<strong>Sex:</strong> {{ object.get_sex_display }}<br>
+<strong>Maturity:</strong> {{ object.get_maturity_display }}<br>
+<strong>Nesting success:</strong> {{ object.get_nesting_event_display }}, disturbance during nesting: {{ object.get_nesting_disturbed_display }}<br>
+<strong>Behaviour:</strong> {{ object.behaviour|safe|default:"-" }}<br>
+{% endblock %}
 
 {% block obscards %}
 <div class="card-group">
-
   {% for tag in tags %}
   <div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12 m-1 shadow-lg">
-
     <div class="card-header">
     <h5 class="card-title">
       Tag ID {{ tag.name }}
     </h5>
     </div><!-- /.card-header -->
-
     <div class="card-body">
       Type: {{ tag.get_tag_type_display }}<br>
       Location: {{ tag.get_tag_location_display }}
     </div><!-- /.card-body -->
-
   </div><!-- /.card -->
   {% endfor %}
 </div><!-- /.card-group -->

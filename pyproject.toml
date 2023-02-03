@@ -45,6 +45,7 @@ django-adminactions = "2.0.0"
 phonenumbers = "8.13.3"
 django-phonenumber-field = "7.0.1"
 mssql-django = "1.2"
+webtemplate-dbca = "1.5.1"
 
 [tool.poetry.group.dev.dependencies]
 ipython = "^8.7.0"

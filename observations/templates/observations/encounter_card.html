@@ -1,5 +1,5 @@
 {% load observations bootstrap4 fsm_admin %}
-<div class="card col-12 shadow-lg mb-1">
+<div class="card bg-light mb-1">
   <div class="card-header">
     <span class="float-right">{% block title_labels %}{% endblock title_labels %}</span>
     <h5 class="card-title">
@@ -34,7 +34,6 @@
   <div class="collapse" id="details{{ object.id }}">
   <div class="card-body">
 
-
     <div class="card-text">
       <span class="oi oi-comment-square" title="Description" aria-hidden="true"></span>
       {{ object.comments|safe|default:"-" }}
@@ -64,7 +63,6 @@
     <div class="row">
       <div class="col-12">
          <span class="float-right">
-        {# {% include "observations/toggle_details.html" with object=object %} #}
         {% include "shared/admin_qa.html" with label=True %}
         </span>
 

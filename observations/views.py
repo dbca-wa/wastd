@@ -415,7 +415,6 @@ class TurtleNestEncounterDetail(DetailViewBreadcrumbMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         data = super(TurtleNestEncounterDetail, self).get_context_data(**kwargs)
-        # data['tags'] = TagObservation.objects.filter(encounter__in=[self.get_object()])
         return data
 
 
