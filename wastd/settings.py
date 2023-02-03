@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     "phonenumber_field",
     "crispy_forms",
     "bootstrap4",
+    "webtemplate_dbca",
     "django_filters",
     "export_download",
     "django_tables2",

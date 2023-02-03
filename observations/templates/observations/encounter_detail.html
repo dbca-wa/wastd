@@ -1,18 +1,22 @@
 {% extends "pages/base.html" %}
 {% load leaflet_tags geojson_tags static observations %}
 
-{% block extrastyle %}
+{% block extra_style %}
+{{ block.super }}
 <style>
 .leaflet-popup, .leaflet-popup-content-wrapper, .leaflet-popup-content {
-  width: 350px; /* narrower popup */
-  padding: -10px;  /* fix close button position */
+    width: 350px; /* narrower popup */
+    padding: -10px;  /* fix close button position */
 }
 .leaflet-tooltip { width: 300px; word-wrap: break-word; }
 </style>
 {% endblock %}
 
-{% block content %}
+{% block breadcrumbs %}
 {% include 'shared/breadcrumbs.html' %}
+{% endblock breadcrumbs %}
+
+{% block page_content_inner %}
 <div class="row" id="row-occ-detail">
   <!-- Subject details -->
   <div class="col-12 col-sm-12 col-md-6 col-lg-8" id="occ-detail-main">
@@ -25,8 +29,8 @@
         </small>
         <h3>
         {% block heading %}
-        {{ object  }}
-        {% endblock %}
+        {{ object }}
+        {% endblock heading %}
         </h3>
       </div>
 
@@ -65,8 +69,7 @@
             <a href="{% url 'users:user-detail' pk=object.reporter.pk %}">{{ object.reporter }}</a>
         </div>
 
-            {% block obsdetails %}
-            {% endblock %}
+        {% block obsdetails %}{% endblock %}
 
         {% for obs in object.observation_set.all %}
         <div class="col col-12">
@@ -107,40 +110,27 @@
 
 <div id="row-occ-extra">
   <div class="col col-12 mb-2 mt-2">
-
-    {% block obscards %}
-    {% endblock %}
-
+    {% block obscards %}{% endblock %}
   </div>
 </div><!-- .row#row-occ-extra -->
 
-{% endblock %}
+{% endblock page_content_inner %}
 
-{% block extrajs %}
-    <!-- Some widgets need JQuery to be loaded early -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"
-      integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg=="
-      crossorigin="anonymous"></script>
-    <script type="text/javascript">
+{% block extra_js %}
+{{ block.super }}
+<script type="text/javascript">
     function map_init(map, options) {
-
       {% include 'shared/styles.js' %}
-
       $.getJSON("{% url 'sites-geojson' %}", function (data) {
           L.geoJson(data, {style: polystyle, onEachFeature: oef}).addTo(map);
       });
-
       /* Data loading */
-
       var enc_layer = L.geoJson(
         {{ object|geojsonfeature:"as_html,leaflet_title,leaflet_icon,leaflet_colour:where"|safe }},
         { style: pointstyle, pointToLayer: ptl, onEachFeature: oef_ll }
       );
       enc_layer.addTo(map);
-
       map.fitBounds(enc_layer.getBounds());
-
     };
-
-    </script>
-    {% endblock %}
+</script>
+{% endblock extra_js %}

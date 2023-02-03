@@ -141,7 +141,7 @@ class User(AbstractUser):
     # -------------------------------------------------------------------------
     # Templates
     def card_template(self):
-        return "users/cards/user.html"
+        return "users/user_card.html"
 
     # -------------------------------------------------------------------------
     # Properties

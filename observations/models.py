@@ -1538,7 +1538,6 @@ class Survey(QualityControlMixin, UrlsMixin, geo_models.Model):
     def close_duplicates(self, actor=None):
         """Mark this Survey as the only production survey, others as training and adopt all Encounters.
 
-
         Data import of Surveys reconstructed from SVS and SVE, adjusting site bondaries,
         and previous import algorithms, can cause duplicate Surveys to be created.
 

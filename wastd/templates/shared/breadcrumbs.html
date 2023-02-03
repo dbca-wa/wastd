@@ -1,19 +1,15 @@
- <!-- breadcrumbs.html-->
-<div class="row">
-  <nav aria-label="breadcrumb">
+<nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-      {% for breadcrumb in breadcrumbs %}
-      <li class="breadcrumb-item {% if forloop.last %}active{% endif %}">
+        {% for breadcrumb in breadcrumbs %}
+        <li class="breadcrumb-item {% if forloop.last %}active{% endif %}">
         {% if breadcrumb.url %}
         <a href="{{ breadcrumb.url }}">{{ breadcrumb.name }}</a>
         {% else %}
         {{ breadcrumb.name }}
         {% endif %}
-      </li>
-      {% endfor %}
-      <!-- Result count -->
-      &nbsp;<div><span class="badge badge-primary">{{ count }}</span></div>
+        </li>
+        {% endfor %}
+        <!-- Result count -->
+        &nbsp;<div><span class="badge badge-primary">{{ count }}</span></div>
     </ol>
-  </nav>
-</div>
-<!-- /breadcrumbs.html -->
+</nav>

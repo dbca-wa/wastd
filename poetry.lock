@@ -1066,6 +1066,17 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "webtemplate-dbca"
+version = "1.5.1"
+description = "Base HTML templates for DBCA Django projects"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+Django = ">=2.2"
+
+[[package]]
 name = "whitenoise"
 version = "6.3.0"
 description = "Radically simplified static file serving for WSGI applications"
@@ -1111,7 +1122,7 @@ python-versions = ">=3.4"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "e09361793c2aee20f086e77876dd24bee24310dc04cec6adc7a395bb9d28d312"
+content-hash = "9d1bf701db90beeca2277e83a5d0d4d0416de4dc5bad6e2cba546b223f714c2a"
 
 [metadata.files]
 appnope = [
@@ -1762,6 +1773,9 @@ urllib3 = [
 wcwidth = [
     {file = "wcwidth-0.2.5-py2.py3-none-any.whl", hash = "sha256:beb4802a9cebb9144e99086eff703a642a13d6a0052920003a230f3294bbe784"},
     {file = "wcwidth-0.2.5.tar.gz", hash = "sha256:c4d647b99872929fdb7bdcaa4fbe7f01413ed3d98077df798530e5b04f116c83"},
+]
+webtemplate-dbca = [
+    {file = "webtemplate-dbca-1.5.1.tar.gz", hash = "sha256:e67a303090f71314ac4194c7ec38e5b3db8cf019940fa1e373cca4a2a0521fa7"},
 ]
 whitenoise = [
     {file = "whitenoise-6.3.0-py3-none-any.whl", hash = "sha256:cf8ecf56d86ba1c734fdb5ef6127312e39e92ad5947fef9033dc9e43ba2777d9"},
