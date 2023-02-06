@@ -123,9 +123,6 @@ class SurveyDetail(DetailViewBreadcrumbMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         data = super(SurveyDetail, self).get_context_data(**kwargs)
-        # obj = self.get_object()
-        # survey_ids = [survey.pk for survey in obj.duplicate_surveys.all()] + [obj.pk]
-        # data['encounters'] = Encounter.objects.filter(survey_id__in=survey_ids)
         return data
 
 

@@ -1,23 +1,13 @@
 {% extends "pages/base.html" %}
 {% load django_tables2 crispy_forms_tags leaflet_tags %}
 
-{% block stylesheets %}
+{% block extra_style %}
 {{ block.super }}
-<link rel="stylesheet" href="{% static 'css/grappelli_change_form.css' %}">
 {% leaflet_css plugins="ALL" %}
 {% include 'shared/leaflet_css.html' %}
+{% endblock extra_style %}
 
-<!-- Fix missing favicon -->
-<link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
-{% endblock %}
-
-{% block extrahead %}
-{{ block.super }}
-{% include 'shared/leaflet_js.html' %}
-{% leaflet_js =plugins="ALL" %}
-{% endblock %}
-
-{% block content %}
+{% block page_content_inner %}
 <div class="popupimage">
 <div id="accordion" role="tablist" aria-multiselectable="true">
   <div class="panel panel-default">
@@ -43,3 +33,9 @@
 {% block fullwidthcontent %}
 {% render_table table %}
 {% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+{% include 'shared/leaflet_js.html' %}
+{% leaflet_js =plugins="ALL" %}
+{% endblock extra_js %}
