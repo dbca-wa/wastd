@@ -242,7 +242,7 @@ LOGGING = {
 # See: http://django-crispy-forms.readthedocs.io/en/latest/install.html#template-packs
 CRISPY_TEMPLATE_PACK = "bootstrap4"
 # Grappelli admin
-GRAPPELLI_ADMIN_TITLE = "Data Entry and Curation Portal"
+GRAPPELLI_ADMIN_TITLE = "WAStD Data Entry and Curation Portal"
 GRAPPELLI_INDEX_DASHBOARD = "wastd.dashboard.AdminDashboard"
 
 # CSV django-adminactions

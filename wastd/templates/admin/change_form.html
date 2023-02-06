@@ -1,13 +1,8 @@
 {% extends "admin/change_form.html" %}
-{% load i18n admin_urls static observations leaflet_tags %}
 
 {% block stylesheets %}
 {{ block.super }}
-<link rel="stylesheet" href="{% static 'css/grappelli_change_form.css' %}">
 {% include 'shared/leaflet_css.html' %}
-
-<!-- Fix missing favicon -->
-<link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
 {% endblock %}
 
 {% block extrahead %}

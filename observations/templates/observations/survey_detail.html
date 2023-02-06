@@ -1,6 +1,8 @@
 {% extends "pages/base.html" %}
 {% load leaflet_tags geojson_tags static observations %}
-{% block extrastyle %}
+
+{% block extra_style %}
+{{ block.super }}
 <style>
   .leaflet-popup, .leaflet-popup-content-wrapper, .leaflet-popup-content {
   width: 350px; /* narrower popup */
@@ -10,8 +12,11 @@
 </style>
 {% endblock %}
 
-{% block content %}
+{% block breadcrumbs %}
 {% include 'shared/breadcrumbs.html' %}
+{% endblock breadcrumbs %}
+
+{% block page_content_inner %}
 <div class="row" id="row-svy-detail">
 
   <!-- Subject details -->
@@ -106,15 +111,12 @@
   </div><!-- /.col-svy-enc -->
 </div><!-- /.row-svy-enc -->
 
-{% endblock %}
-{% block extrajs %}
-<!-- Some widgets need JQuery to be loaded early -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"
-  integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg=="
-  crossorigin="anonymous"></script>
+{% endblock page_content_inner %}
+
+{% block extra_js %}
+{{ block.super }}
 <script type="text/javascript">
 function map_init(map, options) {
-
   {% include 'shared/styles.js' %}
 
   $.getJSON("{% url 'sites-geojson' %}", function (data) {
@@ -139,11 +141,8 @@ function map_init(map, options) {
   );
   enc_layer.addTo(map);
 
-
   var group = new L.featureGroup([survey_start, survey_end, enc_layer]);
   map.fitBounds(group.getBounds());
-
-
 
   // var taxon_cluster_markers = L.markerClusterGroup();
   // taxon_cluster_markers.addLayer(taxon_points);

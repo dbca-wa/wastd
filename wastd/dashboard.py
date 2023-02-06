@@ -4,10 +4,6 @@ from grappelli.dashboard.utils import get_admin_site_name
 
 
 class AdminDashboard(Dashboard):
-    class Media:
-        css = {
-            "all": ("css/grappelli_dashboard.css",),
-        }
 
     def init_with_context(self, context):
         site_name = get_admin_site_name(context)
