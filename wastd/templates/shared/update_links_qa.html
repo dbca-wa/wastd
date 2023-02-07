@@ -3,7 +3,7 @@
 <a href="{{ object.get_absolute_url }}"
   class="mr-2 text-primary"
   title="View {{ object }}.">
-  <span class="oi oi-eye" aria-hidden="true"></span>
+  <i class="fa-solid fa-eye" aria-hidden="true"></i>
   {% if label %}View{% endif %}
 </a>
 {% endif %}
@@ -11,7 +11,7 @@
 <a href="{{ object.update_url }}"
   class="text-primary mr-2"
   title="Update details of this occurrence.">
-  <span class="oi oi-pencil" aria-hidden="true"></span>
+  <i class="fa-solid fa-pencil" aria-hidden="true"></i>
   {% if label %}Edit{% endif %}
 </a>
 <span class="badge badge-{{ object.status_colour|default:'secondary' }}">
@@ -20,7 +20,7 @@
   <a href="{{ object.absolute_admin_url }}"
   class="text-primary text-success"
   title="Edit in the data curation portal.">
-  <span class="oi oi-pencil" aria-hidden="true"></span>
+  <i class="fa-solid fa-pencil" aria-hidden="true"></i>
   {% if label %}Edit{% endif %}
   </a>
   {% endif %}

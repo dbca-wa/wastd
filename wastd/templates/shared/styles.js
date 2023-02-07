@@ -131,14 +131,14 @@ function ptlBioSys(feature, latlng) {
 function oefBioSys(feature, layer) {
     layer.bindPopup(
         '<div class="row"><div class="mr-auto p-2"><h5>' + feature.properties.species_name + '</h5></div></div>' +
-        '<p><i class="oi oi-calendar" aria-hidden="true"></i> ' + feature.properties.datetime + '</p>' +
+        '<p><i class="fa-solid fa-calendar" aria-hidden="true"></i> ' + feature.properties.datetime + '</p>' +
         '<p><a class="btn btn-secondary btn-sm" target="_" ' +
         'href="https://biosys-uat.dbca.wa.gov.au/#/data/projects/61/datasets/' +
         feature.properties.dataset + '/record/' + feature.id + '">' +
-        '<i class="oi oi-pencil"></i> Edit this record in BioSys</a></p>'
+        '<i class="fa-solid fa-pencil" aria-hidden="true"></i> Edit this record in BioSys</a></p>'
     );
     layer.bindTooltip(
-        'BioSys <br/><span class="oi oi-calendar" aria-hidden="true">' +
+        'BioSys <br/><i class="fa-solid fa-calendar" aria-hidden="true"></i>' +
         feature.properties.datetime
     );
 }

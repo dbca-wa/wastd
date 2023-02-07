@@ -32,15 +32,15 @@
           {{ object }}
         </h5>
         <h6 class="card-title text-muted">
-          <span class="oi oi-calendar" aria-hidden="true"></span>
+          <i class="fa-solid fa-calendar-days" aria-hidden="true"></i>
           {{ object.start_time|date:'d M Y' }} {{ object.start_time|time:'H:i' }} - {{ object.end_time|time:'H:i' }}
-          <span class="oi oi-person" title="Observed by" aria-hidden="true"></span>
+          <i class="fa-solid fa-eye" title="Observed by" aria-hidden="true"></i>
           <a href="{% url 'users:user-detail' pk=object.reporter.pk %}">{{ object.reporter }}</a>
-          <span class="oi oi-spreadsheet" title="Encounters linked: {{ object.encounter_set.count }}" aria-hidden="true"></span>
+          <i class="fa-solid fa-table" title="Encounters linked: {{ object.encounter_set.count }}" aria-hidden="true"></i>
           {{ object.encounter_set.count }}
-          <span class="oi oi-layers" title="Duplicate surveys: {{ object.no_duplicates }}" aria-hidden="true"></span>
+          <i class="fa-solid fa-layer-group"  title="Duplicate surveys: {{ object.no_duplicates }}" aria-hidden="true"></i>
           {{ object.no_duplicates }}
-          <span class="oi oi-shield" title="Owned by" aria-hidden="true"></span>
+          <i class="fa-solid fa-shield-halved" title="Owned by" aria-hidden="true"></i>
           {% if object.campaign %} {{ object.campaign.owner }}{% else %}-{% endif %}
           <span class="float-right">
             {% include "shared/admin_qa.html" with object=object label=True hide_details=True %}
@@ -51,11 +51,11 @@
 
       <div class="card-body">
         <div class="card-text">
-          <span class="oi oi-comment-square" title="Start comments" aria-hidden="true"></span>
+          <i class="fa-regular fa-message" title="Start comments" aria-hidden="true"></i>
           {{ object.start_comments | default:"-" }}
         </div>
         <div class="card-text">
-          <span class="oi oi-comment-square" title="End comments" aria-hidden="true"></span>
+          <i class="fa-regular fa-message" title="End comments" aria-hidden="true"></i>
           {{ object.end_comments | default:"-" }}
         </div>
         <div class="card-text ml-3">
@@ -65,9 +65,9 @@
         </div>
         {% for svy in object.duplicate_surveys.all %}
         <div class="card-text">
-          <span class="oi oi-layers" title="Duplicate survey" aria-hidden="true"></span>
+          <i class="fa-solid fa-layer-group" title="Duplicate survey" aria-hidden="true"></i>
           Duplicate Survey: {{ svy }}
-          <span class="oi oi-spreadsheet" title="Encounters linked: {{ svy.encounter_set.count }}" aria-hidden="true"></span>
+          <i class="fa-solid fa-table" title="Encounters linked: {{ svy.encounter_set.count }}" aria-hidden="true"></i>
           {{ svy.encounter_set.count }}
           {% include "observations/survey_is_production.html" with survey=svy %}
           {% include "shared/admin_qa.html" with object=svy label=True hide_details=False %}

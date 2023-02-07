@@ -2,7 +2,7 @@
 {% if not hide_details %}
 <a href="{{ object.get_absolute_url }}" title="View entire record: {{ object }}">
   <span class="badge badge-{{ object.status_colour|default:'secondary' }}">
-  <span class="oi oi-eye" aria-hidden="true"></span>
+  <i class="fa-solid fa-eye" aria-hidden="true"></i>
   {% if label %}View{% endif %}
   </span>
 </a>
@@ -12,7 +12,7 @@
 {% if request.user.is_staff %}
 <a href="{{ object.absolute_admin_url }}" title="Edit and QA this record in the data curation portal">
   <span class="badge badge-{{ object.status_colour|default:'secondary' }}">
-    <span class="oi oi-pencil text-success" aria-hidden="true"></span>
+    <i class="fa-solid fa-pencil text-success" aria-hidden="true"></i>
     {% if label %}Edit{% endif %}
     [QA: {{ object.get_status_display }}]
   </span>

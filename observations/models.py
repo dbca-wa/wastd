@@ -438,10 +438,7 @@ STRANDING_ACTIVITY_CHOICES = (
     ("carcass-tagged-released", "carcass tagged and released"),
     ("carcass-inland", "carcass or butchered remains found removed from coast"),
     ("captivity", "in captivity"),
-    (
-        "non-breeding",
-        "general non-breeding activity (swimming, sleeping, feeding, etc.)",
-    ),
+    ("non-breeding", "non-breeding activity (swimming, sleeping, feeding, etc.)"),
     ("other", "other activity"),
 )
 

@@ -2,38 +2,38 @@
 <ul class="navbar-nav mr-auto">
     <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="/" id="nav-li-species" title="Species" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+            <i class="fa-solid fa-table" aria-hidden="true"></i>
             Animals
         </a>
         <div class="dropdown-menu" aria-labelledby="nav-li-species">
             <a class="dropdown-item" href="{% url 'observations:animalencounter-list' %}" title="Browse, filter and search all Animal Encounters">
-                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+                <i class="fa-solid fa-table" aria-hidden="true"></i>
                 <span class="align-left">Browse all Animal Encounters</span>
             </a>
             <div class="dropdown-divider"></div>
             <h6 class="dropdown-header">Animal Encounter flavours</h6>
             <a class="dropdown-item" href="{% url 'observations:animalencounter-list' %}?health=alive" title="Browse, filter and search all encounters with healthy animals">
-                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+                <i class="fa-solid fa-table" aria-hidden="true"></i>
                 <span class="align-left">Healthy Animals</span>
             </a>
             <a class="dropdown-item" href="{% url 'observations:animalencounter-list' %}?health=alive&health=alive-injured" title="Browse, filter and search all encounters with both healthy and injured animals">
-                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+                <i class="fa-solid fa-table" aria-hidden="true"></i>
                 <span class="align-left">Alive Animals</span>
             </a>
             <a class="dropdown-item" href="{% url 'observations:animalencounter-list' %}?health=dead-edible&health=dead-organs-intact&health=dead-advanced&health=dead-mummified&health=dead-disarticulated" title="Browse, filter and search all encounters with dead animals">
-                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+                <i class="fa-solid fa-table" aria-hidden="true"></i>
                 <span class="align-left">Dead Animals</span>
             </a>
             <a class="dropdown-item" href="{% url 'observations:animalencounter-list' %}?encounter_type=tagging" title="Browse, filter and search all Turtle Tagging encounters">
-                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+                <i class="fa-solid fa-table" aria-hidden="true"></i>
                 <span class="align-left">Nesting turtles</span>
             </a>
             <a class="dropdown-item" href="{% url 'observations:animalencounter-list' %}?checked_for_flipper_tags=present" title="Browse, filter and search all encounters with injured turtles, including tagging and strandings">
-                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+                <i class="fa-solid fa-table" aria-hidden="true"></i>
                 <span class="align-left">Flipper tagged Turtles</span>
             </a>
             <a class="dropdown-item" href="{% url 'observations:animalencounter-list' %}?encounter_type=inwater" title="Browse, filter and search all in-water encounters">
-                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+                <i class="fa-solid fa-table" aria-hidden="true"></i>
                 <span class="align-left">In-water encounters</span>
             </a>
         </div>
@@ -41,54 +41,54 @@
 
     <li class="nav-item dropdown">
         <a  class="nav-link dropdown-toggle" href="/" id="nav-li-tracks" title="Turtle Nesting Census" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+            <i class="fa-solid fa-table" aria-hidden="true"></i>
             Nests and Tracks
         </a>
         <div class="dropdown-menu" aria-labelledby="nav-li-tracks">
             <a class="dropdown-item" href="{% url 'observations:turtlenestencounter-list' %}" title="Browse, filter and search all Turtle Nest Encounters">
-                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+                <i class="fa-solid fa-table" aria-hidden="true"></i>
                 Browse all Turtle Nest Encounters
             </a>
             <div class="dropdown-divider"></div>
             <h6 class="dropdown-header">Turtle Nest Encounter flavours</h6>
             <a class="dropdown-item" href="{% url 'observations:turtlenestencounter-list' %}?disturbance=present" title="Browse, filter and search disturbed or predated nests">
-                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+                <i class="fa-solid fa-table" aria-hidden="true"></i>
                 Disturbed nests
             </a>
             <a class="dropdown-item" href="{% url 'observations:encounter-list' %}" title="Browse, filter and search general disturbance or predator presence">
-                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+                <i class="fa-solid fa-table" aria-hidden="true"></i>
                 General dist/pred
             </a>
             <a class="dropdown-item" href="{% url 'observations:turtlenestencounter-list' %}?nest_tagged=present" title="Browse, filter and search tagged nests">
-                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+                <i class="fa-solid fa-table" aria-hidden="true"></i>
                 Tagged nests
             </a>
             <a class="dropdown-item" href="{% url 'observations:turtlenestencounter-list' %}?logger_found=present" title="Browse, filter and search Turtle Nest Encounters where loggers were deployed or found">
-                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+                <i class="fa-solid fa-table" aria-hidden="true"></i>
                 Nests with loggers
             </a>
             <a class="dropdown-item"
             href="{% url 'observations:turtlenestencounter-list' %}?eggs_counted=present"
             title="Browse, filter and search eggscavated nests">
-            <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+            <i class="fa-solid fa-table" aria-hidden="true"></i>
             Excavated nests
             </a>
             <a class="dropdown-item"
             href="{% url 'observations:turtlenestencounter-list' %}?hatchlings_measured=present"
             title="Browse, filter and search excavated nests with hatchling morphometric measurements">
-            <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+            <i class="fa-solid fa-table" aria-hidden="true"></i>
             Nests with live hatchlings
             </a>
             <a class="dropdown-item"
             href="{% url 'observations:turtlenestencounter-list' %}?fan_angles_measured=present"
             title="Browse, filter and search nests with fan angles">
-            <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+            <i class="fa-solid fa-table" aria-hidden="true"></i>
             Nests with fan angles
             </a>
             <a class="dropdown-item"
             href="{% url 'observations:linetransectencounter-list' %}"
             title="Browse, filter and search Track Tallies">
-            <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+            <i class="fa-solid fa-table" aria-hidden="true"></i>
             Track Tallies
             </a>
 
@@ -98,13 +98,13 @@
             <a class="dropdown-item"
             href="{% url 'observations:turtlenestencounter-list' %}?species=cheloniidae-fam"
             title="Review tracks with uncertain species ID">
-            <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+            <i class="fa-solid fa-table" aria-hidden="true"></i>
             Tracks with uncertain species ID
             </a>
             <a class="dropdown-item"
             href="{% url 'observations:turtlenestencounter-list' %}?nest_type=track-unsure"
             title="Review nests with uncertain nesting success">
-            <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+            <i class="fa-solid fa-table" aria-hidden="true"></i>
             Nests with uncertain nesting success
             </a>
 
@@ -118,26 +118,26 @@
         data-toggle="dropdown"
         aria-haspopup="true"
         aria-expanded="false">
-        <span class="oi oi-pulse" aria-hidden="true"></span>
+        <i class="fa-solid fa-heart-pulse" aria-hidden="true"></i>
         Strandings
         </a>
         <div class="dropdown-menu" aria-labelledby="nav-li-mwi">
         <a class="dropdown-item"
         href="{% url 'map' %}"
         title="View Marine Wildlife Incidents Map">
-        <span class="oi oi-globe" aria-hidden="true"></span>
+        <i class="fa-solid fa-earth-oceania" aria-hidden="true"></i>
         View Marine Wildlife Incidents map
         </a>
         <a class="dropdown-item"
         href="{% url 'observations:animalencounter-list' %}?health=alive-injured"
         title="Browse, filter and search all encounters with injured animals">
-        <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+        <i class="fa-solid fa-table" aria-hidden="true"></i>
         <span class="align-left">Injured Animals</span>
         </a>
         <a class="dropdown-item"
         href="{% url 'observations:animalencounter-list' %}?health=dead-edible&health=dead-organs-intact&health=dead-advanced&health=dead-mummified&health=dead-disarticulated"
         title="Browse, filter and search all encounters with dead animals">
-        <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+        <i class="fa-solid fa-table" aria-hidden="true"></i>
         <span class="align-left">Dead Animals</span>
         </a>
         </div>
@@ -145,14 +145,14 @@
 
     <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="/" id="nav-li-surveys" title="Surveys" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <span class="oi oi-signpost" aria-hidden="true"></span>
+            <i class="fa-solid fa-map-location" aria-hidden="true"></i>
             Surveys
         </a>
         <div class="dropdown-menu" aria-labelledby="nav-li-surveys">
             <a class="dropdown-item"
             href="{% url 'observations:survey-list' %}?production=true"
             title="Browse, filter and search all Surveys - production surveys pre-selected">
-                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+                <i class="fa-solid fa-table" aria-hidden="true"></i>
                 <span class="align-left">Browse production Surveys</span>
             </a>
             <div class="dropdown-divider"></div>
@@ -160,7 +160,7 @@
             <a class="dropdown-item"
             href="{% url 'observations:survey-list' %}?production=false"
             title="Browse, filter and search all Surveys - training surveys pre-selected">
-                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+                <i class="fa-solid fa-table" aria-hidden="true"></i>
                 <span class="align-left">Browse training Surveys</span>
             </a>
         </div>
@@ -168,14 +168,14 @@
 
     <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="/" id="nav-li-users" title="Users" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <span class="oi oi-person" aria-hidden="true"></span>
+            <i class="fa-solid fa-users" aria-hidden="true"></i>
             Users
         </a>
         <div class="dropdown-menu" aria-labelledby="nav-li-users">
             <a class="dropdown-item"
             href="{% url 'users:user-list' %}?is_active=true"
             title="Browse, filter and search all active Users">
-                <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+                <i class="fa-solid fa-table" aria-hidden="true"></i>
                 <span class="align-left">Browse active Users</span>
             </a>
             <div class="dropdown-divider"></div>
@@ -183,25 +183,25 @@
             <a class="dropdown-item"
             href="{% url 'users:user-list' %}?is_active=false"
             title="Browse, filter and search all Users marked as duplicates or deleted">
-            <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+            <i class="fa-solid fa-table" aria-hidden="true"></i>
             <span class="align-left">Inactive Users</span>
             </a>
             <a class="dropdown-item"
             href="{% url 'users:user-list' %}?name=%2C&is_active=true"
             title="Users with a comma in the name were made from team lists and need to be merged">
-            <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+            <i class="fa-solid fa-table" aria-hidden="true"></i>
             <span class="align-left">Users from teams (comma)</span>
             </a>
             <a class="dropdown-item"
             href="{% url 'users:user-list' %}?username=_and_&is_active=true"
             title="Users with an 'and' in the name were made from team lists and need to be merged">
-            <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+            <i class="fa-solid fa-table" aria-hidden="true"></i>
             <span class="align-left">Users from teams (and)</span>
             </a>
             <a class="dropdown-item"
             href="{% url 'users:user-list' %}?name=%26&is_active=true"
             title="Users with an ampersand in the name were made from team lists and need to be merged">
-            <span class="oi oi-grid-three-up" aria-hidden="true"></span>
+            <i class="fa-solid fa-table" aria-hidden="true"></i>
             <span class="align-left">Users from teams (ampersand)</span>
             </a>
             {% if request.user.is_staff %}
@@ -210,13 +210,13 @@
             <a class="dropdown-item"
             href="{% url 'users:user-merge' %}"
             title="Merge duplicate User Profiles">
-            <span class="oi oi-people" aria-hidden="true"></span>
+            <i class="fa-solid fa-users" aria-hidden="true"></i>
             <span class="align-left">Merge Profiles</span>
             </a>
             <a class="dropdown-item"
             href="{% url 'users:user-transfer' %}"
             title="Transfer data between User Profiles">
-            <span class="oi oi-people" aria-hidden="true"></span>
+            <i class="fa-solid fa-users" aria-hidden="true"></i>
             <span class="align-left">Transfer Data</span>
             </a>
             {% endif %}
@@ -230,25 +230,25 @@
     data-toggle="dropdown"
     aria-haspopup="true"
     aria-expanded="false">
-    <span class="oi oi-graph" aria-hidden="true"></span>
+    <i class="fa-solid fa-chart-line" aria-hidden="true"></i>
     Analysts
     </a>
     <div class="dropdown-menu" aria-labelledby="nav-li-analysts">
     <a class="dropdown-item"
     href="https://dbca-wa.github.io/wastd/index.html#document-data_consumers"
     title="Manual" target="_blank" rel="noreferrer">
-    <span class="oi oi-book" aria-hidden="true"></span>
+    <i class="fa-solid fa-book" aria-hidden="true"></i>
     <span class="align-left">Data Analysts' Manual</span>
     </a>
     <a class="dropdown-item" href="/api/1/" title="API" target="_blank" rel="noreferrer">
-    <span class="oi oi-terminal" aria-hidden="true"></span>
+    <i class="fa-solid fa-terminal" aria-hidden="true"></i>
     <span class="align-left">RESTful API</span>
     </a>
     {% if request.user.is_authenticated %}
     <a class="dropdown-item"
     title="My API Authentication"
     href="{% url 'users:user-detail' request.user.pk  %}">
-    <span class="oi oi-person align-left" aria-hidden="true"></span>
+    <i class="fa-solid fa-user" aria-hidden="true"></i>
     <span class="align-left">My API Authentication</span>
     </a>
     {% endif %}
@@ -264,21 +264,21 @@
     data-toggle="dropdown"
     aria-haspopup="true"
     aria-expanded="false">
-    <span class="oi oi-shield" aria-hidden="true"></span>
+    <i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
     Curators
     </a>
     <div class="dropdown-menu" aria-labelledby="nav-li-curators">
     <a class="dropdown-item"
     href="https://dbca-wa.github.io/wastd/index.html#document-data_curators"
     title="Manual" target="_blank">
-    <span class="oi oi-book" aria-hidden="true"></span>
+    <i class="fa-solid fa-book" aria-hidden="true"></i>
     Data Curators' Manual
     </a>
     <a class="dropdown-item"
     href="{% url 'admin:index' %}"
     target="_blank"
     title="Data entry and curation area">
-    <span class="oi oi-beaker" aria-hidden="true"></span>
+    <i class="fa-solid fa-flask" aria-hidden="true"></i>
     Data Curation Portal
     </a>
     {% if request.user.is_superuser %}
@@ -286,25 +286,25 @@
     <a class="dropdown-item"
     href="{% url 'import-odka' %}"
     title="Import all ODKA forms">
-    <span class="oi oi-loop-circular" aria-hidden="true"></span>
+    <i class="fa-solid fa-repeat" aria-hidden="true"></i>
     Import ODKA
     </a>
     <a class="dropdown-item"
     href="{% url 'reconstruct-surveys' %}"
     title="Reconstruct missing surveys">
-    <span class="oi oi-loop-circular" aria-hidden="true"></span>
+    <i class="fa-solid fa-repeat" aria-hidden="true"></i>
     Reconstruct missing Surveys
     </a>
     <a class="dropdown-item"
     href="{% url 'resave-surveys' %}"
     title="Rebuild names for surveys, tagged animals, and loggers.">
-    <span class="oi oi-loop-circular" aria-hidden="true"></span>
+    <i class="fa-solid fa-repeat" aria-hidden="true"></i>
     Re-save existing Surveys
     </a>
     <a class="dropdown-item"
     href="{% url 'update-names' %}"
     title="Reconstruct animal encounter case histories.">
-    <span class="oi oi-loop-circular" aria-hidden="true"></span>
+    <i class="fa-solid fa-repeat" aria-hidden="true"></i>
     Reconstruct Animal Case Histories
     </a>
 
@@ -315,7 +315,7 @@
 
     <li class="nav-item">
         <a class="nav-link" href="https://dbca-wa.github.io/wastd/index.html" title="Stuck? Here's all you want to know (and more)" target="_blank">
-            <span class="oi oi-book" aria-hidden="true"></span> Manual
+            <i class="fa-solid fa-book" aria-hidden="true"></i> Manual
         </a>
     </li>
 
@@ -328,8 +328,14 @@
     {% if request.user.is_authenticated %}
     <li class="nav-item">
         <a class="nav-link" href="{% url 'users:user-detail' request.user.pk  %}">
-            <span class="oi oi-person" title="Profile" aria-hidden="true"></span>
+            <i class="fa-solid fa-user" title="Profile" aria-hidden="true"></i>
             {% trans "My Profile" %}
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'logout' %}">
+            <i class="fa-solid fa-arrow-right-from-bracket" title="Sign out" aria-hidden="true"></i>
+            {% trans "Sign out" %}
         </a>
     </li>
     {% endif %}
