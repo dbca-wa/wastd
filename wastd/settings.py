@@ -121,6 +121,8 @@ LOCAL_USERGROUPS = [
     "data entry",
     "api",
 ]
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/'
 
 # Branding
 SITE_NAME = os.environ.get("SITE_NAME", "WA Sea Turtle and Strandings Database")

@@ -36,36 +36,36 @@
 
       <div class="card-body">
 
-        <span class="oi oi-shield" title="Owned by" aria-hidden="true"></span>
+        <i class="fa-solid fa-shield-halved" title="Owned by" aria-hidden="true"></i>
         {% if object.campaign %} {{ object.campaign.owner }}{% else %}-{% endif %}
 
         <div class="card-text">
-          <i class="oi oi-calendar" title="Campaign" aria-hidden="true"></i>&nbsp;
-          <a href="{{ object.campaign.get_absolute_url }}">{{ object.campaign }}</a>
+            <i class="fa-solid fa-calendar-days" title="Campaign" aria-hidden="true"></i>
+            <a href="{{ object.campaign.get_absolute_url }}">{{ object.campaign }}</a>
         </div>
 
         <div class="card-text">
-            <i class="oi oi-calendar" title="Survey" aria-hidden="true"></i>&nbsp;
+            <i class="fa-solid fa-calendar-days" title="Survey" aria-hidden="true"></i>
             <a href="{{ object.survey.get_absolute_url }}">{{ object.survey }}</a>
         </div>
 
         <div class="card-text">
-            <i class="oi oi-calendar" aria-hidden="true"></i>&nbsp;
+            <i class="fa-solid fa-calendar-days" title="When" aria-hidden="true"></i>
             {{ object.when|date:"r" }}
         </div>
 
         <div class="card-text">
-            <i class="oi oi-comment-square" aria-hidden="true"></i>&nbsp;
+            <i class="fa-solid fa-tags" aria-hidden="true"></i>
             {{ object.get_encounter_type_display }}
         </div>
 
         <div class="card-text">
-            <i class="oi oi-eye" aria-hidden="true"></i>&nbsp;
+            <i class="fa-solid fa-eye" title="Observed by" aria-hidden="true"></i>
             <a href="{% url 'users:user-detail' pk=object.observer.pk %}">{{ object.observer }}</a>
         </div>
 
         <div class="card-text">
-            <i class="oi oi-tablet" aria-hidden="true"></i>&nbsp;
+            <i class="fa-solid fa-tablet-screen-button" title="Reported by" aria-hidden="true"></i>
             <a href="{% url 'users:user-detail' pk=object.reporter.pk %}">{{ object.reporter }}</a>
         </div>
 

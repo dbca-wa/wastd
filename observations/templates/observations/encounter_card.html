@@ -5,29 +5,23 @@
     <h5 class="card-title">
       {% block title_row %}{{ object }}{% endblock title_row%}
     </h5>
-    <h6 class="card-title text-muted">
-      <span class="oi oi-calendar" aria-hidden="true"></span>
+    <h6 class="card-title text-muted" aria-hidden="true">
+      <i class="fa-solid fa-calendar-days" aria-hidden="true"></i>
       {{ object.when|date:'d M Y H:i' }}
-
-      <span class="oi oi-tags" aria-hidden="true"></span>
+      <i class="fa-solid fa-tags" aria-hidden="true"></i>
       {{ object.get_encounter_type_display }}
-
-      <span class="oi oi-eye" title="Observed by" aria-hidden="true"></span>
+      <br>
+      <i class="fa-solid fa-eye" title="Observed by" aria-hidden="true"></i>
       <a href="{% url 'users:user-detail' pk=object.observer.pk %}">{{ object.observer }}</a>
-
-      <span class="oi oi-tablet" title="Reported by" aria-hidden="true"></span>
+      <i class="fa-solid fa-tablet-screen-button" title="Reported by" aria-hidden="true"></i>
       <a href="{% url 'users:user-detail' pk=object.reporter.pk %}">{{ object.reporter }}</a>
-
-      <span class="oi oi-shield" title="Owned by" aria-hidden="true"></span>
+      <br>
+      <i class="fa-solid fa-shield-halved" title="Owned by" aria-hidden="true"></i>
       {% if object.campaign %} {{ object.campaign.owner }}{% else %}-{% endif %}
 
       <span class="float-right">
         {% include "observations/toggle_details.html" with object=object %}
         {% include "shared/admin_qa.html" with label=True %}
-        <!-- span class="oi oi-map-marker zoom-map text-warning"
-          data-lon="{{ object.longitude }}" data-lat="{{ object.latitude }}"
-          title="Show on map" aria-hidden="true"></span>
-        </span -->
     </h6>
   </div>
 
@@ -35,7 +29,7 @@
   <div class="card-body">
 
     <div class="card-text">
-      <span class="oi oi-comment-square" title="Description" aria-hidden="true"></span>
+      <i class="fa-regular fa-message" title="Description" aria-hidden="true"></i>
       {{ object.comments|safe|default:"-" }}
     </div>
     {% for obs in object.observation_set.all %}
@@ -61,26 +55,25 @@
 
   <div class="card-footer">
     <div class="row">
-      <div class="col-12">
-         <span class="float-right">
+      <div class="col">
+        <span class="float-right">
         {% include "shared/admin_qa.html" with label=True %}
         </span>
-
-     {% for t in object.get_available_status_transitions %}
-      <!--
-      {'method': <function shared.models.QualityControlMixin.curate(self, by=None)>,
-        'source': 'new',
-        'target': 'curated',
-        'on_error': None,
-        'conditions': [<function shared.models.QualityControlMixin.can_curate(self)>],
-        'permission': None,
-        'custom': {'verbose': 'Accept as trustworthy',
-         'explanation': 'This record is deemed trustworthy.',
-         'notify': True}
-      -->
-      <!-- TODO method must call transition-->
-      <a href="" title="{{ t.custom.verbose }}"><span class="badge badge-success">{{ t.custom.verbose }}</span></a>
-     {% endfor %}
+        {% for t in object.get_available_status_transitions %}
+        <!--
+          {'method': <function shared.models.QualityControlMixin.curate(self, by=None)>,
+            'source': 'new',
+            'target': 'curated',
+            'on_error': None,
+            'conditions': [<function shared.models.QualityControlMixin.can_curate(self)>],
+            'permission': None,
+            'custom': {'verbose': 'Accept as trustworthy',
+             'explanation': 'This record is deemed trustworthy.',
+             'notify': True}
+        -->
+        <!-- TODO method must call transition-->
+        <a href="" title="{{ t.custom.verbose }}"><span class="badge badge-success">{{ t.custom.verbose }}</span></a>
+        {% endfor %}
       </div>
     </div>
   </div>

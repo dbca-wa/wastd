@@ -1,7 +1,8 @@
 """Filters for WAStD Observations."""
 from django_filters import FilterSet
-from django_filters.filters import (  # noqa
-    DateFilter,  # DateTimeFilter,
+from django_filters.filters import (
+    DateFilter,
+    # DateTimeFilter,
     BooleanFilter,
     CharFilter,
     RangeFilter,
@@ -13,6 +14,9 @@ from django_filters.filters import (  # noqa
 from shared.filters import FILTER_OVERRIDES
 from .models import (
     HEALTH_CHOICES,
+    SOURCE_CHOICES,
+    ACTIVITY_CHOICES,
+    SPECIES_CHOICES,
     Area,
     Survey,
     Encounter,
@@ -45,7 +49,7 @@ class SurveyFilter(FilterSet):
             area_type__in=[
                 Area.AREATYPE_LOCALITY,
             ]
-        ).order_by("-northern_extent", "name"),
+        ).order_by("name"),
     )
 
     site = ModelChoiceFilter(
@@ -54,8 +58,7 @@ class SurveyFilter(FilterSet):
             area_type__in=[
                 Area.AREATYPE_SITE,
             ]
-        ).order_by("-northern_extent", "name"),
-        # method='taxa_occurring_in_area'
+        ).order_by("name"),
     )
 
     survey_date = DateFilter(
@@ -63,11 +66,6 @@ class SurveyFilter(FilterSet):
         lookup_expr="date",
         label="Exact survey date (YYYY-mm-dd)",
     )
-
-    # duplicates = BooleanFilter(
-    #     label="Duplicates",
-    #     field_name='has_duplicates',
-    # )
 
     class Meta:
         """Options for SurveyFilter."""
@@ -113,8 +111,7 @@ class EncounterFilter(FilterSet):
             area_type__in=[
                 Area.AREATYPE_LOCALITY,
             ]
-        ).order_by("-northern_extent", "name"),
-        # method='taxa_occurring_in_area'
+        ).order_by("name"),
     )
     site = ModelChoiceFilter(
         label="Site",
@@ -122,12 +119,17 @@ class EncounterFilter(FilterSet):
             area_type__in=[
                 Area.AREATYPE_SITE,
             ]
-        ).order_by("-northern_extent", "name"),
-        # method='taxa_occurring_in_area'
+        ).order_by("name"),
     )
 
     encounter_date = DateFilter(
         field_name="when", lookup_expr="date", label="Exact encounter date (YYYY-mm-dd)"
+    )
+
+    source = ChoiceFilter(
+        field_name="source",
+        choices=sorted(SOURCE_CHOICES),
+        label="Data Source",
     )
 
     class Meta:
@@ -150,7 +152,15 @@ class EncounterFilter(FilterSet):
 
 class AnimalEncounterFilter(EncounterFilter):
 
-    health = MultipleChoiceFilter(choices=HEALTH_CHOICES)
+    health = MultipleChoiceFilter(choices=sorted(HEALTH_CHOICES))
+    activity = ChoiceFilter(
+        field_name="activity",
+        choices=sorted(ACTIVITY_CHOICES),
+    )
+    species = ChoiceFilter(
+        field_name="species",
+        choices=sorted(SPECIES_CHOICES),
+    )
 
     class Meta(EncounterFilter.Meta):
 

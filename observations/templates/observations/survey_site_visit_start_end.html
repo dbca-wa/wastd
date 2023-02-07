@@ -1,16 +1,16 @@
 <!-- Site Visit Start -->
 <span class="badge badge-{% if survey.source_id %}primary{% else %}secondary{% endif %}" title="Start point {% if survey.source_id %}captured in field: {{ survey.source_id }}{% else %}reconstructed{% endif %}">
   {% if survey.source_id %}
-  <span class="oi oi-tablet" aria-hidden="true"></span> Site Visit Start
+  <i class="fa-solid fa-tablet-screen-button" aria-hidden="true"></i> Site Visit Start
   {% else %}
-  <span class="oi oi-x" aria-hidden="true"></span> Reconstructed
+  <i class="fa-solid fa-trowel-bricks" aria-hidden="true"></i> Reconstructed
   {% endif %}
 </span>
 <!-- Site Visit End -->
 <span class="badge badge-{% if survey.end_source_id %}primary{% else %}secondary{% endif %}" title="End point {% if survey.end_source_id %}captured in field: {{ survey.end_source_id }}{% else %}reconstructed{% endif %}">
   {% if survey.end_source_id %}
-  <span class="oi oi-tablet" aria-hidden="true"></span> Site Visit End
+  <i class="fa-solid fa-tablet-screen-button" aria-hidden="true"></i> Site Visit End
   {% else %}
-  <span class="oi oi-x" aria-hidden="true"></span> Reconstructed
+  <i class="fa-solid fa-trowel-bricks" aria-hidden="true"></i> Reconstructed
   {% endif %}
 </span>
