@@ -123,7 +123,7 @@ class UserUpdateView(LoginRequiredMixin, UpdateView):
 class MergeView(FormView):
     """Merge any two User profiles."""
 
-    template_name = "pages/default_form.html"
+    template_name = "default_form.html"
     form_class = MergeForm
 
     def get_initial(self):
@@ -172,7 +172,7 @@ def merge_users(request, old_pk, new_pk):
 class TransferView(FormView):
     """Transfer data between two User profiles for a given Area."""
 
-    template_name = "pages/default_form.html"
+    template_name = "default_form.html"
     form_class = TransferForm
 
     def get_initial(self):
