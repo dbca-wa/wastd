@@ -1,4 +1,4 @@
-{% extends "pages/base.html" %}
+{% extends "base_wastd.html" %}
 {% load leaflet_tags geojson_tags static observations %}
 
 {% block extra_style %}
@@ -13,7 +13,7 @@
 {% endblock %}
 
 {% block breadcrumbs %}
-{% include 'shared/breadcrumbs.html' %}
+{% include 'breadcrumbs.html' %}
 {% endblock breadcrumbs %}
 
 {% block page_content_inner %}
@@ -69,9 +69,6 @@
           Duplicate Survey: {{ svy }}
           <i class="fa-solid fa-table" title="Encounters linked: {{ svy.encounter_set.count }}" aria-hidden="true"></i>
           {{ svy.encounter_set.count }}
-          {% include "observations/survey_is_production.html" with survey=svy %}
-          {% include "shared/admin_qa.html" with object=svy label=True hide_details=False %}
-          {% include "observations/survey_make_production.html" with survey=svy %}
         </div>
         {% endfor %}
 

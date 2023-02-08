@@ -26,10 +26,9 @@ logger = logging.getLogger(__name__)
 
 class UserListView(ListViewBreadcrumbMixin, ResourceDownloadMixin, LoginRequiredMixin, ListView):
     model = User
-    template_name = "pages/default_list.html"
     paginate_by = 20
+    template_name = "default_list.html"
     filter_class = UserFilter
-    # resource_class = SurveyResource
 
     def get_context_data(self, **kwargs):
         context = super(UserListView, self).get_context_data(**kwargs)

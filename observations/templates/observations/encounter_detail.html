@@ -1,4 +1,4 @@
-{% extends "pages/base.html" %}
+{% extends "base_wastd.html" %}
 {% load leaflet_tags geojson_tags static observations %}
 
 {% block extra_style %}
@@ -13,7 +13,7 @@
 {% endblock %}
 
 {% block breadcrumbs %}
-{% include 'shared/breadcrumbs.html' %}
+{% include 'breadcrumbs.html' %}
 {% endblock breadcrumbs %}
 
 {% block page_content_inner %}
@@ -61,12 +61,12 @@
 
         <div class="card-text">
             <i class="fa-solid fa-eye" title="Observed by" aria-hidden="true"></i>
-            <a href="{% url 'users:user-detail' pk=object.observer.pk %}">{{ object.observer }}</a>
+            <a href="{% url 'users:user-detail' pk=object.observer.pk %}">{{ object.observer.name }}</a>
         </div>
 
         <div class="card-text">
             <i class="fa-solid fa-tablet-screen-button" title="Reported by" aria-hidden="true"></i>
-            <a href="{% url 'users:user-detail' pk=object.reporter.pk %}">{{ object.reporter }}</a>
+            <a href="{% url 'users:user-detail' pk=object.reporter.pk %}">{{ object.reporter.name }}</a>
         </div>
 
         {% block obsdetails %}{% endblock %}
