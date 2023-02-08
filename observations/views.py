@@ -96,7 +96,7 @@ class HomeView(ListView):
 # Survey
 class SurveyList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
     model = Survey
-    template_name = "pages/default_list.html"
+    template_name = "default_list.html"
     paginate_by = 20
     filter_class = SurveyFilter
     resource_class = SurveyResource
@@ -224,7 +224,7 @@ class EncounterTableView(PagedFilteredTableView):
 # Encounter
 class EncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
     model = Encounter
-    template_name = "pages/default_list.html"
+    template_name = "default_list.html"
     paginate_by = 20
     filter_class = EncounterFilter
     resource_class = EncounterResource
@@ -271,7 +271,7 @@ class AnimalEncounterTableView(EncounterTableView):
 
 class AnimalEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
     model = AnimalEncounter
-    template_name = "pages/default_list.html"
+    template_name = "default_list.html"
     paginate_by = 20
     filter_class = AnimalEncounterFilter
     resource_class = AnimalEncounterResource
@@ -380,11 +380,9 @@ class AnimalEncounterUpdate(UpdateView):
         return super(AnimalEncounterUpdate, self).form_valid(form)
 
 
-# -----------------------------------------------------------------------------#
-# TNE
 class TurtleNestEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
     model = TurtleNestEncounter
-    template_name = "pages/default_list.html"
+    template_name = "default_list.html"
     paginate_by = 20
     filter_class = TurtleNestEncounterFilter
     resource_class = TurtleNestEncounterResource
@@ -415,13 +413,11 @@ class TurtleNestEncounterDetail(DetailViewBreadcrumbMixin, DetailView):
         return data
 
 
-# -----------------------------------------------------------------------------#
-# LineTransectEncounter
 class LineTransectEncounterList(
     ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView
 ):
     model = LineTransectEncounter
-    template_name = "pages/default_list.html"
+    template_name = "default_list.html"
     paginate_by = 20
     filter_class = LineTransectEncounterFilter
     resource_class = LineTransectEncounterResource

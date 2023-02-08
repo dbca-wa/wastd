@@ -1,15 +1,12 @@
-{% extends "pages/base_nonav.html" %}
-{%load static bootstrap4 %}
-{% block content %}
+{% extends "base_wastd.html" %}
+
+{% block page_content %}
 <center>
-<h1>INFERNAL SERVER ERROR</h1>
-
-<p>Something just blew up! This incident has been reported and will be fixed soon.</p>
-
-<a class="btn btn-primary" href="/">Get me out of here!</a>
-
-  <video controls loop>
-    <source src="{% static 'images/500.mp4' %}" type="video/mp4">
-  </video> 
+<h1>Internal server error</h1>
+<p>There was an error on our side. It will be logged and investigated.</p>
 </center>
 {% endblock %}
+
+{% block page_footer %}{% endblock %}
+{% block jquery_version %}{% endblock %}
+{% block extra_js %}{% endblock %}

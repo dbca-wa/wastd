@@ -3,19 +3,17 @@
   <div class="card-header">
     <span class="float-right">{% block title_labels %}{% endblock title_labels %}</span>
     <h5 class="card-title">
-      {% block title_row %}{{ object }}{% endblock title_row%}
+      {% block title_row %}{{ object }}{% endblock title_row %}
     </h5>
     <h6 class="card-title text-muted" aria-hidden="true">
       <i class="fa-solid fa-calendar-days" aria-hidden="true"></i>
       {{ object.when|date:'d M Y H:i' }}
       <i class="fa-solid fa-tags" aria-hidden="true"></i>
       {{ object.get_encounter_type_display }}
-      <br>
       <i class="fa-solid fa-eye" title="Observed by" aria-hidden="true"></i>
-      <a href="{% url 'users:user-detail' pk=object.observer.pk %}">{{ object.observer }}</a>
+      <a href="{% url 'users:user-detail' pk=object.observer.pk %}">{{ object.observer.name }}</a>
       <i class="fa-solid fa-tablet-screen-button" title="Reported by" aria-hidden="true"></i>
-      <a href="{% url 'users:user-detail' pk=object.reporter.pk %}">{{ object.reporter }}</a>
-      <br>
+      <a href="{% url 'users:user-detail' pk=object.reporter.pk %}">{{ object.reporter.name }}</a>
       <i class="fa-solid fa-shield-halved" title="Owned by" aria-hidden="true"></i>
       {% if object.campaign %} {{ object.campaign.owner }}{% else %}-{% endif %}
 

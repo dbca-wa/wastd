@@ -20,11 +20,11 @@ from observations import views as wastd_views
 actions.add_to_site(site)
 
 urlpatterns = [
-    path("", TemplateView.as_view(template_name="pages/index.html"), name="home"),
+    path("", TemplateView.as_view(template_name="index.html"), name="home"),
     path("map/", wastd_views.HomeView.as_view(), name="map"),
     path("admin/", admin.site.urls),
-    path('login/', LoginView.as_view(template_name='pages/login.html'), name='login'),
-    path("logout/", LogoutView.as_view(template_name="pages/logged_out.html"), name="logout"),
+    path("login/", LoginView.as_view(template_name="login.html"), name="login"),
+    path("logout/", LogoutView.as_view(template_name="logged_out.html"), name="logout"),
     path("grappelli/", include("grappelli.urls")),
     path("ajax_select/", include(ajax_select_urls)),
     path("users/", include(("users.urls", "users"), namespace="users")),
