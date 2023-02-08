@@ -15,7 +15,7 @@ coreapi-cli==1.0.9
 coreschema==0.0.4
 coverage==6.3.2
 coveralls==3.3.1
-cryptography==37.0.2
+cryptography==39.0.1
 dbca-utils==1.1.6
 defusedxml==0.7.1
 Deprecated==1.2.13
