@@ -17,101 +17,133 @@
 {% endblock breadcrumbs %}
 
 {% block page_content_inner %}
-<div class="row" id="row-occ-detail">
-  <!-- Subject details -->
-  <div class="col-12 col-sm-12 col-md-6 col-lg-8" id="occ-detail-main">
-    <div class="card card-lg detailarea m-0">
-      <div class="card-header">
-        <small class="float-right">
-          {% block update_links %}
-          {% include "shared/update_links_qa.html" with label=False %}
-          {% endblock %}
-        </small>
-        <h3>
-        {% block heading %}
-        {{ object }}
-        {% endblock heading %}
-        </h3>
-      </div>
-
-      <div class="card-body">
-
-        <i class="fa-solid fa-shield-halved" title="Owned by" aria-hidden="true"></i>
-        {% if object.campaign %} {{ object.campaign.owner }}{% else %}-{% endif %}
-
-        <div class="card-text">
-            <i class="fa-solid fa-calendar-days" title="Campaign" aria-hidden="true"></i>
-            <a href="{{ object.campaign.get_absolute_url }}">{{ object.campaign }}</a>
+<!-- Subject details -->
+<div class="row" id="row-enc-detail">
+    <div class="col">
+        {% block subject_details %}
+        <span class="float-right">
+            <span class="badge badge-{{ object.status_colour|default:'secondary' }}">
+              QA status: {{ object.get_status_display }}
+            </span>
+        </span>
+        <h1>
+            {% block heading %}{{ object }}{% endblock heading %}
+        </h1>
+        {% if request.user.is_staff %}
+        <div>
+            <!-- Display edit & QA transitions (if authorised) -->
+            {% include "observations/edit_qa.html" %}
         </div>
+        <br>
+        {% endif %}
+        {% endblock subject_details %}
+    </div>
+</div><!-- /.row#row-enc-detail -->
 
-        <div class="card-text">
-            <i class="fa-solid fa-calendar-days" title="Survey" aria-hidden="true"></i>
-            <a href="{{ object.survey.get_absolute_url }}">{{ object.survey }}</a>
-        </div>
+<div class="row">
+    {% block observation_details %}
+    <div class="col-sm-12 col-md-8">
+        <table class="table table-striped table-bordered table-condensed">
+            <tbody>
+                <tr>
+                    <th>
+                        When
+                    </th>
+                    <td>
+                        {{ object.when|date:"r" }}
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Encounter type
+                    </th>
+                    <td>
+                        {{ object.get_encounter_type_display }}
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Observed by
+                    </th>
+                    <td>
+                        <a href="{% url 'users:user-detail' pk=object.observer.pk %}">{{ object.observer.name }}</a>
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Reported by
+                    </th>
+                    <td>
+                        <a href="{% url 'users:user-detail' pk=object.reporter.pk %}">{{ object.reporter.name }}</a>
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Campaign
+                    </th>
+                    <td>
+                        {% if object.campaign %}
+                        <a href="{{ object.campaign.get_absolute_url }}">{{ object.campaign }}</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Survey
+                    </th>
+                    <td>
+                        {% if object.survey %}
+                        <a href="{{ object.survey.get_absolute_url }}">{{ object.survey }}</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% block extra_observation_details %}{% endblock %}
+                {% if object.observation_set %}
+                <tr>
+                    <th>
+                        Observations
+                    </th>
+                    <td>
+                        {% for obs in object.observation_set.all %}
+                        <div>
+                            {{ obs.as_html|safe }}
+                        </div>
+                        {% endfor %}
+                    </td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+    {% endblock observation_details %}
 
-        <div class="card-text">
-            <i class="fa-solid fa-calendar-days" title="When" aria-hidden="true"></i>
-            {{ object.when|date:"r" }}
-        </div>
-
-        <div class="card-text">
-            <i class="fa-solid fa-tags" aria-hidden="true"></i>
-            {{ object.get_encounter_type_display }}
-        </div>
-
-        <div class="card-text">
-            <i class="fa-solid fa-eye" title="Observed by" aria-hidden="true"></i>
-            <a href="{% url 'users:user-detail' pk=object.observer.pk %}">{{ object.observer.name }}</a>
-        </div>
-
-        <div class="card-text">
-            <i class="fa-solid fa-tablet-screen-button" title="Reported by" aria-hidden="true"></i>
-            <a href="{% url 'users:user-detail' pk=object.reporter.pk %}">{{ object.reporter.name }}</a>
-        </div>
-
-        {% block obsdetails %}{% endblock %}
-
-        {% for obs in object.observation_set.all %}
-        <div class="col col-12">
-          <div class="card-text">
-            {{ obs.as_html|safe }}
-          </div>
-          </div>
-        {% endfor %}
-
-          <div class="row" id="row-enc-media">
-            <div class="col-12" id="col-enc-media">
-              <div class="card-columns mt-2">
-
-                {% for a in object.photographs %}
-                <div class="card shadow-lg">
-                  <img src="{{ a.attachment.url }}" class="card-img-top" alt="{{ a.title }}">
-                  <div class="card-body">
-                    <p class="card-text">{{ a.title }}</p>
-                  </div>
-                </div>
-                {% endfor %}
-
-              </div>
-            </div>
-          </div>
-
-      </div><!-- /.card-body -->
-
-    </div><!-- /.card -->
-  </div><!-- /.col#occ-detail-main -->
-
-  <div class="col-12 col-md-6 col-lg-4" id="occ-detail-map">
-      <div>
+    {% block observation_map %}
+    <div class="col-sm-12 col-md-4">
         {% leaflet_map "detailmap" callback="window.map_init" %}
-      </div>
-  </div><!-- /.col#occ-map -->
-</div><!-- .row#row-occ-detail -->
+    </div>
+    {% endblock observation_map %}
+</div>
+
+<!-- Photos -->
+<div class="row" id="row-enc-media">
+    <div class="col-12" id="col-enc-media">
+        <div class="card-columns mt-2">
+            {% for a in object.photographs %}
+            <div class="card shadow-lg">
+                <img src="{{ a.attachment.url }}" class="card-img-top" alt="{{ a.title }}">
+                <div class="card-body">
+                    <p class="card-text">{{ a.title }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div><!-- .row#row-enc-media -->
 
 <div id="row-occ-extra">
-  <div class="col col-12 mb-2 mt-2">
+    <div class="col col-12 mb-2 mt-2">
     {% block obscards %}{% endblock %}
-  </div>
+    </div>
 </div><!-- .row#row-occ-extra -->
 
 {% endblock page_content_inner %}

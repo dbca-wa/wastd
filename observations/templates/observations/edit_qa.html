@@ -1,0 +1,22 @@
+<a href="{{ object.absolute_admin_url }}" title="Edit and QA this record in the data curation portal">
+  <span class="badge badge-{{ object.status_colour|default:'secondary' }}">
+    <i class="fa-solid fa-pencil text-success" aria-hidden="true"></i> Edit
+  </span>
+</a>
+{% for t in object.get_available_status_transitions %}
+<!--
+  {'method': <function shared.models.QualityControlMixin.curate(self, by=None)>,
+    'source': 'new',
+    'target': 'curated',
+    'on_error': None,
+    'conditions': [<function shared.models.QualityControlMixin.can_curate(self)>],
+    'permission': None,
+    'custom': {'verbose': 'Accept as trustworthy',
+     'explanation': 'This record is deemed trustworthy.',
+     'notify': True}
+-->
+<!-- TODO method must call transition-->
+<a href="" title="{{ t.custom.verbose }}">
+    <span class="badge badge-success">{{ t.custom.verbose }}</span>
+</a>
+{% endfor %}

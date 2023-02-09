@@ -21,7 +21,6 @@ from .filters import (
 from .forms import (
     EncounterListFormHelper,
     AnimalEncounterForm,
-    AnimalEncounterListFormHelper,
     FlipperTagObservationFormSet,
 )
 from .models import (
@@ -256,19 +255,6 @@ class EncounterDetail(DetailViewBreadcrumbMixin, DetailView):
         return data
 
 
-# -----------------------------------------------------------------------------#
-# AnimalEncounter
-class AnimalEncounterTableView(EncounterTableView):
-    """Filtered paginated TableView for AninmalEncounter."""
-
-    model = AnimalEncounter
-    table_class = AnimalEncounterTable
-    paginate_by = 5
-    filter_class = AnimalEncounterFilter
-    formhelper_class = AnimalEncounterListFormHelper
-    template = "observations/encounter.html"
-
-
 class AnimalEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
     model = AnimalEncounter
     template_name = "default_list.html"
@@ -407,10 +393,6 @@ class TurtleNestEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, Li
 
 class TurtleNestEncounterDetail(DetailViewBreadcrumbMixin, DetailView):
     model = TurtleNestEncounter
-
-    def get_context_data(self, **kwargs):
-        data = super(TurtleNestEncounterDetail, self).get_context_data(**kwargs)
-        return data
 
 
 class LineTransectEncounterList(

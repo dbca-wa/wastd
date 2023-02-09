@@ -1,30 +1,35 @@
 {% load observations %}
 <div class="card bg-light mb-1">
-  <div class="card-header">
-    <span class="float-right">{% block title_labels %}{% endblock title_labels %}</span>
-    <h5 class="card-title{% if not object.is_active %} text-muted{% endif %}">
-      {{ object.name }}
-    </h5>
-    <h6 class="card-title text-muted">
-      {{ object.pk }} {{ object.username }} {% if not object.alive %}<sup>&#8224;</sup>{% endif %}
-      <span class="float-right">
-        {% include "observations/toggle_details.html" with object=object %}
-        {% include "shared/admin_qa.html" with object=object label=True hide_details=False %}
-        {% if object.is_active %}
-        <span class="badge badge-success" title="Active user profile">Active</span>
-        {% else %}
-        <span class="badge badge-danger" title="Inactive user profile marked as duplicate or deleted">Inactive</span>
-        {% endif %}
-        {% if request.user.is_staff %}
-        <a href="{% url 'users:user-merge-old' old_pk=object.pk %}" title="Merge this user profile into another one">
-          <span class="badge badge-warning">
-            <i class="fa-solid fa-user-plus" aria-hidden="true"></i>
-            Merge
-          </span>
-        </a>
-        {% endif %}
-      </span>
-    </h6>
+    <div class="card-header">
+        <span class="float-right">
+            {% block title_labels %}{% endblock title_labels %}
+            {% if object.is_active %}
+            <span class="badge badge-success" title="Active user profile">Active</span>
+            {% else %}
+            <span class="badge badge-danger" title="Inactive user profile marked as duplicate or deleted">Inactive</span>
+            {% endif %}
+        </span>
+
+        <h5 class="card-title{% if not object.is_active %} text-muted{% endif %}">
+            {{ object.name }}
+        </h5>
+
+        <div>
+            {% include "toggle_details.html" with object=object %}
+            {% if request.user.is_staff %}
+            <a href="{{ object.absolute_admin_url }}" title="Edit this user in the data curation portal">
+              <span class="badge badge-{{ object.status_colour|default:'secondary' }}">
+                <i class="fa-solid fa-pencil text-success" aria-hidden="true"></i> Edit
+              </span>
+            </a>
+            <a href="{% url 'users:user-merge-old' old_pk=object.pk %}" title="Merge this user profile into another one">
+              <span class="badge badge-warning">
+                <i class="fa-solid fa-user-plus" aria-hidden="true"></i>
+                Merge
+              </span>
+            </a>
+            {% endif %}
+        </div>
   </div>
 
   <div class="{% if collapse_details == True %}collapse{% else %}{% endif %}" id="details{{ object.id }}">
@@ -84,16 +89,6 @@ curl {{ request.scheme }}://{{ request.get_host }}/api/1/animal-encounters/?form
       {% endif %}
 
   </div><!-- /.card-body -->
-
-  <!--
-  <div class="card-footer">
-    <div class="row">
-      <div class="col-12">
-        Footer content
-      </div>
-    </div>
-  </div>
-  -->
 
   </div><!-- /#details{{ object.id }} -->
 </div><!-- /.card -->

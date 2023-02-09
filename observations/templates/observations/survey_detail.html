@@ -4,9 +4,9 @@
 {% block extra_style %}
 {{ block.super }}
 <style>
-  .leaflet-popup, .leaflet-popup-content-wrapper, .leaflet-popup-content {
-  width: 350px; /* narrower popup */
-  padding: -10px;  /* fix close button position */
+.leaflet-popup, .leaflet-popup-content-wrapper, .leaflet-popup-content {
+    width: 350px; /* narrower popup */
+    padding: -10px;  /* fix close button position */
 }
 .leaflet-tooltip { width: 200px; word-wrap: break-word; }
 </style>
@@ -17,88 +17,135 @@
 {% endblock breadcrumbs %}
 
 {% block page_content_inner %}
+<!-- Subject details -->
 <div class="row" id="row-svy-detail">
-
-  <!-- Subject details -->
-  <div class="col-12 col-sm-12 col-md-6 col-lg-8" id="col-svy-detail">
-    <div class="card card-lg detailarea mb-2">
-      <div class="card-header{% if not object.production%} text-muted{% endif %}">
+    <div class="col">
+        {% block subject_details %}
         <span class="float-right">
           {% block title_labels %}{% endblock title_labels %}
           {% include "observations/survey_is_production.html" with survey=object %}
           {% include "observations/survey_site_visit_start_end.html" with survey=object %}
         </span>
-        <h5 class="card-title">
-          {{ object }}
-        </h5>
-        <h6 class="card-title text-muted">
-          <i class="fa-solid fa-calendar-days" aria-hidden="true"></i>
-          {{ object.start_time|date:'d M Y' }} {{ object.start_time|time:'H:i' }} - {{ object.end_time|time:'H:i' }}
-          <i class="fa-solid fa-eye" title="Observed by" aria-hidden="true"></i>
-          <a href="{% url 'users:user-detail' pk=object.reporter.pk %}">{{ object.reporter }}</a>
-          <i class="fa-solid fa-table" title="Encounters linked: {{ object.encounter_set.count }}" aria-hidden="true"></i>
-          {{ object.encounter_set.count }}
-          <i class="fa-solid fa-layer-group"  title="Duplicate surveys: {{ object.no_duplicates }}" aria-hidden="true"></i>
-          {{ object.no_duplicates }}
-          <i class="fa-solid fa-shield-halved" title="Owned by" aria-hidden="true"></i>
-          {% if object.campaign %} {{ object.campaign.owner }}{% else %}-{% endif %}
-          <span class="float-right">
-            {% include "shared/admin_qa.html" with object=object label=True hide_details=True %}
+        <h1>
+            {% block heading %}{{ object }}{% endblock heading %}
+        </h1>
+        {% if request.user.is_staff %}
+            <a href="{{ object.absolute_admin_url }}" title="Edit this survey in the data curation portal">
+              <span class="badge badge-{{ object.status_colour|default:'secondary' }}">
+                <i class="fa-solid fa-pencil text-success" aria-hidden="true"></i> Edit
+              </span>
+            </a>
+            {% if not object.production %}
             {% include "observations/survey_make_production.html" with survey=object %}
-          </span>
-        </h6>
-      </div><!-- /.card-header -->
-
-      <div class="card-body">
-        <div class="card-text">
-          <i class="fa-regular fa-message" title="Start comments" aria-hidden="true"></i>
-          {{ object.start_comments | default:"-" }}
-        </div>
-        <div class="card-text">
-          <i class="fa-regular fa-message" title="End comments" aria-hidden="true"></i>
-          {{ object.end_comments | default:"-" }}
-        </div>
-        <div class="card-text ml-3">
-          {% for user in object.team_set.all %}
-          {{ user }}&nbsp;
-          {% endfor %}
-        </div>
-        {% for svy in object.duplicate_surveys.all %}
-        <div class="card-text">
-          <i class="fa-solid fa-layer-group" title="Duplicate survey" aria-hidden="true"></i>
-          Duplicate Survey: {{ svy }}
-          <i class="fa-solid fa-table" title="Encounters linked: {{ svy.encounter_set.count }}" aria-hidden="true"></i>
-          {{ svy.encounter_set.count }}
-        </div>
-        {% endfor %}
-
-          <div class="row" id="row-svy-media">
-            <div class="col-12" id="col-svy-media">
-              <div class="card-columns mt-2">
-
-                {% for a in object.attachments.all %}
-                <div class="card shadow-lg">
-                  <img src="{{ a.attachment.url }}" class="card-img-top" alt="{{ a.title }}">
-                  <div class="card-body">
-                    <p class="card-text">{{ a.title }}</p>
-                  </div>
-                </div>
-                  {% endfor %}
-
-              </div>
-            </div>
-          </div>
-      </div><!-- /.card-body -->
-    </div><!-- /.card -->
-  </div><!-- .col-12#col-svy-detail -->
-
-  <div class="col-sm-12 col-md-6 col-lg-4" id="svy-map">
-    <div>
-      {% leaflet_map "detailmap" callback="window.map_init" %}
+            {% endif %}
+        {% endif %}
+        <br>
+        <br>
+        {% endblock subject_details %}
     </div>
-  </div><!-- /.col#svy-map -->
+</div><!-- /.row#row-svy-detail -->
 
+<div class="row">
+    {% block survey_detail %}
+    <div class="col-sm-12 col-md-8">
+        <table class="table table-striped table-bordered table-condensed">
+            <tbody>
+                <tr>
+                    <th>
+                        When
+                    </th>
+                    <td>
+                        {{ object.start_time|date:'d M Y' }} {{ object.start_time|time:'H:i' }} - {{ object.end_time|time:'H:i' }}
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Observed by
+                    </th>
+                    <td>
+                        <a href="{% url 'users:user-detail' pk=object.reporter.pk %}">{{ object.reporter.name }}</a>
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Owned by
+                    </th>
+                    <td>
+                        {% if object.campaign %}{{ object.campaign.owner }}{% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Linked encounters
+                    </th>
+                    <td>
+                        {{ object.encounter_set.count }}
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Duplicate surveys
+                    </th>
+                    <td>
+                        {% for svy in object.duplicate_surveys.all %}
+                        <div><a href="{{ svy.get_absolute_url }}">{{ svy }}</a></div>
+                        {% endfor %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Start comments
+                    </th>
+                    <td>
+                        {{ object.start_comments | default:"" }}
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        End comments
+                    </th>
+                    <td>
+                        {{ object.end_comments | default:"" }}
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Team
+                    </th>
+                    <td>
+                        {% for user in object.team_set.all %}
+                        <div>{{ user }}</div>
+                        {% endfor %}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    {% endblock survey_detail %}
+
+    {% block survey_map %}
+    <div class="col-sm-12 col-md-6 col-lg-4" id="svy-map">
+        {% leaflet_map "detailmap" callback="window.map_init" %}
+    </div><!-- /.col#svy-map -->
+    {% endblock survey_map %}
 </div><!-- .row#row-svy-detail -->
+
+<!-- Photos -->
+<div class="row" id="row-svy-media">
+    <div class="col-12" id="col-svy-media">
+      <div class="card-columns mt-2">
+        {% for a in object.attachments.all %}
+        <div class="card shadow-lg">
+          <img src="{{ a.attachment.url }}" class="card-img-top" alt="{{ a.title }}">
+          <div class="card-body">
+            <p class="card-text">{{ a.title }}</p>
+          </div>
+        </div>
+          {% endfor %}
+      </div>
+    </div>
+</div>
+
 
 <div class="row" id="row-svy-enc">
   <div class="col-12" id="col-svy-enc">

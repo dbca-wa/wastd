@@ -223,6 +223,14 @@ python-versions = ">=3.6"
 django = "*"
 
 [[package]]
+name = "django-bootstrap-pagination"
+version = "1.7.1"
+description = "Render Django Page objects as Bootstrap 3.x/4.x Pagination compatible HTML"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "django-bootstrap4"
 version = "22.3"
 description = "Bootstrap 4 for Django"
@@ -1122,7 +1130,7 @@ python-versions = ">=3.4"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "a5492d7297ae050412b51fc5013dfa5ff56fe0f0bf5c58e241d0b7d0207053ff"
+content-hash = "3158472b7c22bb87b3e5850659ce815089e62e86fdc907a6e567a1f85bd3b0eb"
 
 [metadata.files]
 appnope = [
@@ -1291,6 +1299,10 @@ django-ajax-selects = [
 django-appconf = [
     {file = "django-appconf-1.0.5.tar.gz", hash = "sha256:be3db0be6c81fa84742000b89a81c016d70ae66a7ccb620cdef592b1f1a6aaa4"},
     {file = "django_appconf-1.0.5-py3-none-any.whl", hash = "sha256:ae9f864ee1958c815a965ed63b3fba4874eec13de10236ba063a788f9a17389d"},
+]
+django-bootstrap-pagination = [
+    {file = "django-bootstrap-pagination-1.7.1.tar.gz", hash = "sha256:69d826d92217325611cb86e49944d8261e3c92eaa4deafea5a605d79fd363883"},
+    {file = "django_bootstrap_pagination-1.7.1-py3-none-any.whl", hash = "sha256:47e742679cf109e12f10ae09d5263433f94440818cf7b023e90a3f5252849639"},
 ]
 django-bootstrap4 = [
     {file = "django-bootstrap4-22.3.tar.gz", hash = "sha256:751a7b4196e778286cc5eaa946d1e04741ea10d0b62d2762500f941ef9075dbf"},

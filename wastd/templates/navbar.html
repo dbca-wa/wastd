@@ -166,6 +166,8 @@
         </div>
     </li>
 
+    <!-- Users menu -->
+    {% if request.user.is_staff %}
     <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="/" id="nav-li-users" title="Users" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <i class="fa-solid fa-users" aria-hidden="true"></i>
@@ -222,6 +224,7 @@
             {% endif %}
         </div>
     </li>
+    {% endif %}
 
     <li class="nav-item dropdown">
     <a  class="nav-link dropdown-toggle" href="/"
@@ -255,6 +258,7 @@
     </div>
     </li>
 
+    <!-- Curators menu -->
     {% if request.user.is_staff %}
     <li class="nav-item dropdown">
     <a  class="nav-link dropdown-toggle"

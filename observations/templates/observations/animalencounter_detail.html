@@ -1,10 +1,5 @@
 {% extends "observations/encounter_detail.html" %}
-
 {% load leaflet_tags geojson_tags static observations %}
-
-{% block update_links %}
-{% include "shared/update_links_qa.html" with label=False %}
-{% endblock %}
 
 {% block heading %}
 {{ object.get_taxon_display }} - {{ object.get_species_display }}
@@ -13,19 +8,96 @@
 {% endif %}
 {% endblock %}
 
-{% block obsdetails %}
-<strong>Identifiers:</strong> {{ object.identifiers }}<br/>
-<strong>Sighting status reason:</strong> {{ object.sighting_status_reason }}<br/>
-<strong>First seen at:</strong> {{ object.site_of_first_sighting }}<br>
-<strong>Last seen at:</strong> {{ object.site_of_last_sighting }}<br>
-<strong>Last seen on:</strong> {{ object.datetime_of_last_sighting|date:'d M Y H:i'  }}<br>
-<strong>Data source:</strong> {{ object.get_source_display }}<br>
-<strong>Health status:</strong> {{ object.get_health_display }}<br>
-<strong>Sex:</strong> {{ object.get_sex_display }}<br>
-<strong>Maturity:</strong> {{ object.get_maturity_display }}<br>
-<strong>Nesting success:</strong> {{ object.get_nesting_event_display }}, disturbance during nesting: {{ object.get_nesting_disturbed_display }}<br>
-<strong>Behaviour:</strong> {{ object.behaviour|safe|default:"-" }}<br>
-{% endblock %}
+{% block extra_observation_details %}
+<tr>
+    <th>
+        Identifiers
+    </th>
+    <td>
+        {{ object.identifiers }}
+    </td>
+</tr>
+<tr>
+    <th>
+        Sighting status reason
+    </th>
+    <td>
+        {{ object.sighting_status_reason }}
+    </td>
+</tr>
+<tr>
+    <th>
+        First seen at
+    </th>
+    <td>
+        {{ object.site_of_first_sighting }}
+    </td>
+</tr>
+<tr>
+    <th>
+        Last seen at
+    </th>
+    <td>
+        {{ object.site_of_last_sighting }}
+    </td>
+</tr>
+<tr>
+    <th>
+        Last seen on
+    </th>
+    <td>
+        {{ object.datetime_of_last_sighting|date:'d M Y H:i'  }}
+    </td>
+</tr>
+<tr>
+    <th>
+        Data source
+    </th>
+    <td>
+        {{ object.get_source_display }}
+    </td>
+</tr>
+<tr>
+    <th>
+        Health status
+    </th>
+    <td>
+        {{ object.get_health_display }}
+    </td>
+</tr>
+<tr>
+    <th>
+        Sex
+    </th>
+    <td>
+        {{ object.get_sex_display }}
+    </td>
+</tr>
+<tr>
+    <th>
+        Maturity
+    </th>
+    <td>
+        {{ object.get_maturity_display }}
+    </td>
+</tr>
+<tr>
+    <th>
+        Nesting success
+    </th>
+    <td>
+        {{ object.get_nesting_event_display }}, disturbance during nesting: {{ object.get_nesting_disturbed_display }}
+    </td>
+</tr>
+<tr>
+    <th>
+        Behaviour
+    </th>
+    <td>
+        {{ object.behaviour|safe|default:"-" }}
+    </td>
+</tr>
+{% endblock extra_observation_details %}
 
 {% block obscards %}
 <div class="card-group">
