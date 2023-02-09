@@ -6,30 +6,47 @@
       {% block title_row %}{{ object }}{% endblock title_row %}
     </h5>
     <h6 class="card-title text-muted" aria-hidden="true">
-      <i class="fa-solid fa-calendar-days" aria-hidden="true"></i>
+      <i class="fa-solid fa-calendar-days" title="When" aria-hidden="true"></i>
       {{ object.when|date:'d M Y H:i' }}
-      <i class="fa-solid fa-tags" aria-hidden="true"></i>
+      <i class="fa-solid fa-mountain-sun" title="Encounter type" aria-hidden="true"></i>
       {{ object.get_encounter_type_display }}
       <i class="fa-solid fa-eye" title="Observed by" aria-hidden="true"></i>
       <a href="{% url 'users:user-detail' pk=object.observer.pk %}">{{ object.observer.name }}</a>
       <i class="fa-solid fa-tablet-screen-button" title="Reported by" aria-hidden="true"></i>
       <a href="{% url 'users:user-detail' pk=object.reporter.pk %}">{{ object.reporter.name }}</a>
+      {% if object.campaign %}
       <i class="fa-solid fa-shield-halved" title="Owned by" aria-hidden="true"></i>
-      {% if object.campaign %} {{ object.campaign.owner }}{% else %}-{% endif %}
+      {{ object.campaign.owner }}
+      {% endif %}
 
       <span class="float-right">
-        {% include "observations/toggle_details.html" with object=object %}
-        {% include "shared/admin_qa.html" with label=True %}
+        <span class="badge badge-{{ object.status_colour|default:'secondary' }}">
+          QA status: {{ object.get_status_display }}
+        </span>
+      </span>
     </h6>
-  </div>
+    <div>
+        {% include "toggle_details.html" with object=object %}
+        <a href="{{ object.get_absolute_url }}" title="Open record {{ object.pk }}">
+          <span class="badge badge-{{ object.status_colour|default:'secondary' }}">
+            <i class="fa-regular fa-folder-open" aria-hidden="true"></i> Open
+          </span>
+        </a>
+        <!-- Display edit & QA transitions (if authorised) -->
+        {% if request.user.is_staff %}
+        {% include "observations/edit_qa.html" %}
+        {% endif %}
+    </div>
+  </div><!-- /.card-header -->
 
   <div class="collapse" id="details{{ object.id }}">
   <div class="card-body">
-
+    {% if object.comments %}
     <div class="card-text">
       <i class="fa-regular fa-message" title="Description" aria-hidden="true"></i>
-      {{ object.comments|safe|default:"-" }}
+      {{ object.comments|safe }}
     </div>
+    {% endif %}
     {% for obs in object.observation_set.all %}
     <div class="card-text ml-3">
       {{ obs.as_html|safe }}
@@ -49,32 +66,7 @@
       {% endfor %}
     </div>
     {% endif %}
-  </div>
+  </div><!-- /.card-body -->
 
-  <div class="card-footer">
-    <div class="row">
-      <div class="col">
-        <span class="float-right">
-        {% include "shared/admin_qa.html" with label=True %}
-        </span>
-        {% for t in object.get_available_status_transitions %}
-        <!--
-          {'method': <function shared.models.QualityControlMixin.curate(self, by=None)>,
-            'source': 'new',
-            'target': 'curated',
-            'on_error': None,
-            'conditions': [<function shared.models.QualityControlMixin.can_curate(self)>],
-            'permission': None,
-            'custom': {'verbose': 'Accept as trustworthy',
-             'explanation': 'This record is deemed trustworthy.',
-             'notify': True}
-        -->
-        <!-- TODO method must call transition-->
-        <a href="" title="{{ t.custom.verbose }}"><span class="badge badge-success">{{ t.custom.verbose }}</span></a>
-        {% endfor %}
-      </div>
-    </div>
-  </div>
-
-  </div><!-- /#details{{ object.id }} -->
+  </div><!-- /.collapse -->
 </div><!-- /.card -->

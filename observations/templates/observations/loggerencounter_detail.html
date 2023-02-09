@@ -2,15 +2,8 @@
 
 {% load leaflet_tags geojson_tags static observations %}
 
-{% block update_links %}
-{% include "shared/admin_qa.html" with label=False %}
-{% endblock %}
-
 {% block heading %}
 {{ object.get_logger_type_display }}
 {{ object.get_deployment_status_display }}
 {{ object.logger_id }}
-{% endblock %}
-
-{% block obsdetails %}
 {% endblock %}

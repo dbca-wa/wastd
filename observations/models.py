@@ -1463,7 +1463,6 @@ class Survey(QualityControlMixin, UrlsMixin, geo_models.Model):
     def as_html(self):
         """An HTML representation."""
         t = loader.get_template("popup/{0}.html".format(self._meta.model_name))
-        # c = Context({"original": self})
         return mark_safe(t.render({"original": self}))
 
     @property
@@ -2849,7 +2848,6 @@ class Encounter(PolymorphicModel, UrlsMixin, geo_models.Model):
         try:
             return list(
                 self.observation_set.instance_of(MediaAttachment)
-                # .filter(mediaattachment__media_type="photograph") # only photos
             )
         except BaseException:
             return None
@@ -3643,7 +3641,6 @@ class Observation(PolymorphicModel, LegacySourceMixin, models.Model):
     def as_html(self):
         """An HTML representation."""
         t = loader.get_template("popup/{0}.html".format(self._meta.model_name))
-        # c = Context({"original": self})
         return mark_safe(t.render({"original": self}))
 
     @property

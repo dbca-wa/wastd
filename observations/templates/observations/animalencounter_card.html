@@ -1,15 +1,6 @@
 {% extends "observations/encounter_card.html" %}
 {% load observations %}
 
-{% block title_row %}
-{{ object.get_health_display|title }}
-{{ object.get_maturity_display }}
-{{ object.get_species_display }}
-{% if object.sighting_status != 'na' %}
-{{ object.get_sighting_status_display }}
-{% endif %}
-{% endblock %}
-
 {% block title_labels %}
 <span class="badge badge-{{ object.nesting_event|obs_colour }}"
   title="Nesting success: {{ object.get_nesting_event_display }}, disturbance during nesting: {{ object.get_nesting_disturbed_display }}">lay</span>
@@ -23,4 +14,13 @@
   title="Nesting: {{ object.get_nesting_event_display }}">nst</span>
 <span class="badge badge-{{ object.laparoscopy|obs_colour }}"
   title="Laparoscopy: {{ object.get_laparoscopy_display }}">lap</span>
+{% endblock %}
+
+{% block title_row %}
+{{ object.get_health_display|title }}
+{{ object.get_maturity_display }}
+{{ object.get_species_display }}
+{% if object.sighting_status != 'na' %}
+{{ object.get_sighting_status_display }}
+{% endif %}
 {% endblock %}
