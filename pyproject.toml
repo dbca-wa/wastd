@@ -41,7 +41,6 @@ django-export-download = "0.2.3"
 pillow = "9.4.0"
 django-grappelli = "3.0.4"
 whitenoise = {version = "6.3.0", extras = ["brotli"]}
-django-adminactions = "2.0.0"
 phonenumbers = "8.13.3"
 django-phonenumber-field = "7.0.1"
 mssql-django = "1.2"

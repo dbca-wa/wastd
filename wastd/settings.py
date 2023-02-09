@@ -62,7 +62,6 @@ INSTALLED_APPS = [
     "django_select2",
     "easy_select2",
     "djgeojson",
-    "adminactions",
     # Local apps
     "users",
     "observations",
@@ -247,18 +246,6 @@ CRISPY_TEMPLATE_PACK = "bootstrap4"
 # Grappelli admin
 GRAPPELLI_ADMIN_TITLE = "WAStD Data Entry and Curation Portal"
 GRAPPELLI_INDEX_DASHBOARD = "wastd.dashboard.AdminDashboard"
-
-# CSV django-adminactions
-ADMINACTIONS_CSV_OPTIONS_DEFAULT = {
-    "date_format": "Y-m-d",
-    "datetime_format": "Y-m-d G:i:s O",
-    "time_format": "G:i:s",
-    "header": True,
-    "quotechar": '"',
-    "quoting": QUOTE_ALL,
-    "delimiter": ",",
-    "escapechar": "\\",
-}
 
 # django-restframework
 REST_FRAMEWORK = {

@@ -186,24 +186,6 @@ argon2 = ["argon2-cffi (>=19.1.0)"]
 bcrypt = ["bcrypt"]
 
 [[package]]
-name = "django-adminactions"
-version = "2.0.0"
-description = "Collections of useful actions to use with django.contrib.admin.ModelAdmin"
-category = "main"
-optional = false
-python-versions = "*"
-
-[package.dependencies]
-pytz = "*"
-xlrd = ">=0.9.2"
-xlwt = "*"
-
-[package.extras]
-dev = ["celery", "check-manifest", "check-manifest", "django-admin-extra-urls", "django-dynamic-fixture", "django-environ", "django-webtest (>1.9.6)", "docutils", "flake8", "flake8-isort", "mock (>=1.0.1)", "modernize", "pdbpp", "pillow", "pytest", "pytest-cache", "pytest-cov", "pytest-django", "pytest-echo", "pytest-pythonpath", "readme", "redis", "selenium (>=2.42.0)", "setuptools (>=15.0)", "tox", "virtualenv", "wheel"]
-docs = ["check-manifest", "django", "docutils", "pdbpp", "sphinx", "sphinx_rtd_theme", "virtualenv", "wheel"]
-test = ["celery", "check-manifest", "django-admin-extra-urls", "django-dynamic-fixture", "django-environ", "django-webtest (>1.9.6)", "flake8", "flake8-isort", "mock (>=1.0.1)", "modernize", "pillow", "pytest", "pytest-cache", "pytest-cov", "pytest-django", "pytest-echo", "pytest-pythonpath", "pytz", "readme", "redis", "selenium (>=2.42.0)", "setuptools (>=15.0)", "tox", "xlrd (>=0.9.2)", "xlwt"]
-
-[[package]]
 name = "django-ajax-selects"
 version = "2.2.0"
 description = "Edit ForeignKey, ManyToManyField and CharField in Django Admin using jQuery UI AutoComplete."
@@ -1130,7 +1112,7 @@ python-versions = ">=3.4"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "3158472b7c22bb87b3e5850659ce815089e62e86fdc907a6e567a1f85bd3b0eb"
+content-hash = "b0316340a5d7429543919e1ab0128f2b44612e045a5ba884011b7993ca4c3b09"
 
 [metadata.files]
 appnope = [
@@ -1289,9 +1271,6 @@ dj-database-url = [
 django = [
     {file = "Django-3.2.17-py3-none-any.whl", hash = "sha256:59c39fc342b242fb42b6b040ad8b1b4c15df438706c1d970d416d63cdd73e7fd"},
     {file = "Django-3.2.17.tar.gz", hash = "sha256:644288341f06ebe4938eec6801b6bd59a6534a78e4aedde2a153075d11143894"},
-]
-django-adminactions = [
-    {file = "django-adminactions-2.0.0.tar.gz", hash = "sha256:f5753045572a99e211455858fa1c3780ea1b3cd657fe5a43047cc3d542b10fc3"},
 ]
 django-ajax-selects = [
     {file = "django-ajax-selects-2.2.0.tar.gz", hash = "sha256:539298874b2d26ce9e778a5173d312f55340c887a126c7e2d3460b9a5b4593a2"},
