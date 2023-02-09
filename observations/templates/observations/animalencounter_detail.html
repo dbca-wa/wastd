@@ -14,7 +14,9 @@
         Identifiers
     </th>
     <td>
+        {% if object.identifiers %}
         {{ object.identifiers }}
+        {% endif %}
     </td>
 </tr>
 <tr>
@@ -22,7 +24,9 @@
         Sighting status reason
     </th>
     <td>
+        {% if object.sighting_status_reason %}
         {{ object.sighting_status_reason }}
+        {% endif %}
     </td>
 </tr>
 <tr>
@@ -30,7 +34,9 @@
         First seen at
     </th>
     <td>
+        {% if object.site_of_first_sighting %}
         {{ object.site_of_first_sighting }}
+        {% endif %}
     </td>
 </tr>
 <tr>
@@ -38,7 +44,9 @@
         Last seen at
     </th>
     <td>
+        {% if object.site_of_last_sighting %}
         {{ object.site_of_last_sighting }}
+        {% endif %}
     </td>
 </tr>
 <tr>
@@ -62,7 +70,7 @@
         Health status
     </th>
     <td>
-        {{ object.get_health_display }}
+        {{ object.get_health_display|capfirst }}
     </td>
 </tr>
 <tr>
@@ -70,7 +78,7 @@
         Sex
     </th>
     <td>
-        {{ object.get_sex_display }}
+        {{ object.get_sex_display|capfirst }}
     </td>
 </tr>
 <tr>
@@ -78,7 +86,15 @@
         Maturity
     </th>
     <td>
-        {{ object.get_maturity_display }}
+        {{ object.get_maturity_display|capfirst }}
+    </td>
+</tr>
+<tr>
+    <th>
+        Habitat
+    </th>
+    <td>
+        {{ object.get_habitat_display|capfirst }}
     </td>
 </tr>
 <tr>
@@ -94,7 +110,7 @@
         Behaviour
     </th>
     <td>
-        {{ object.behaviour|safe|default:"-" }}
+        {{ object.behaviour|safe|default:"" }}
     </td>
 </tr>
 {% endblock extra_observation_details %}

@@ -27,7 +27,7 @@
           {% include "observations/survey_site_visit_start_end.html" with survey=object %}
         </span>
         <h1>
-            {% block heading %}{{ object }}{% endblock heading %}
+            {% block heading %}{{ object.label_short }}{% endblock heading %}
         </h1>
         {% if request.user.is_staff %}
             <a href="{{ object.absolute_admin_url }}" title="Edit this survey in the data curation portal">
@@ -52,10 +52,18 @@
             <tbody>
                 <tr>
                     <th>
+                        ID
+                    </th>
+                    <td>
+                        {{ object.pk }}
+                    </td>
+                </tr>
+                <tr>
+                    <th>
                         When
                     </th>
                     <td>
-                        {{ object.start_time|date:'d M Y' }} {{ object.start_time|time:'H:i' }} - {{ object.end_time|time:'H:i' }}
+                        {{ object.start_time|date:'d M Y' }} {{ object.start_time|time:'H:i' }} - {{ object.end_time|time:'H:i T' }}
                     </td>
                 </tr>
                 <tr>
