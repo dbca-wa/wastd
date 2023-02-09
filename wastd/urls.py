@@ -1,11 +1,6 @@
 from ajax_select import urls as ajax_select_urls
-from adminactions import actions
-from django.conf import settings
-from django.conf.urls.static import static
 from django.contrib import admin
-from django.contrib.admin import site
 from django.contrib.auth.views import LoginView, LogoutView
-from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import include, path
 from django.views.generic import TemplateView
 from django.views import defaults
@@ -16,8 +11,6 @@ from wastd.router import router
 from observations import models as wastd_models
 from observations import views as wastd_views
 
-# Register all adminactions
-actions.add_to_site(site)
 
 urlpatterns = [
     path("", TemplateView.as_view(template_name="index.html"), name="home"),
@@ -28,7 +21,6 @@ urlpatterns = [
     path("grappelli/", include("grappelli.urls")),
     path("ajax_select/", include(ajax_select_urls)),
     path("users/", include(("users.urls", "users"), namespace="users")),
-    path("adminactions/", include("adminactions.urls")),
     path("select2/", include("django_select2.urls")),
     # WAStD Encounters
     path("encounters/", wastd_views.EncounterTableView.as_view(), name="encounter_list"),
@@ -109,6 +101,3 @@ urlpatterns = [
     path("404/", defaults.page_not_found, kwargs={"exception": Exception("Page not found")}),
     path("500/", defaults.server_error),
 ]
-#    + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-#    + staticfiles_urlpatterns()
-#)
