@@ -8,7 +8,7 @@
     <h6 class="card-title text-muted" aria-hidden="true">
       <i class="fa-solid fa-calendar-days" title="When" aria-hidden="true"></i>
       {{ object.when|date:'d M Y H:i' }}
-      <i class="fa-solid fa-mountain-sun" title="Encounter type" aria-hidden="true"></i>
+      <i class="fa-solid fa-binoculars" title="Encounter type" aria-hidden="true"></i>
       {{ object.get_encounter_type_display }}
       <i class="fa-solid fa-eye" title="Observed by" aria-hidden="true"></i>
       <a href="{% url 'users:user-detail' pk=object.observer.pk %}">{{ object.observer.name }}</a>
