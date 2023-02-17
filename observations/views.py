@@ -1,4 +1,3 @@
-"""Views for WAStD."""
 from django.contrib import messages
 from django.db import transaction
 from django.http import HttpResponseRedirect
@@ -297,9 +296,7 @@ class AnimalEncounterCreate(CreateView):
             data["flipper_tags"] = FlipperTagObservationFormSet(self.request.POST)
         else:
             data["flipper_tags"] = FlipperTagObservationFormSet()
-        data[
-            "formset_prefix"
-        ] = "encounter"  # We set this in order to give the JavaScript something to match.
+        data["formset_prefix"] = "encounter"  # We set this in order to give the JavaScript something to match.
         return data
 
     def post(self, request, *args, **kwargs):
@@ -328,7 +325,8 @@ class AnimalEncounterDetail(DetailViewBreadcrumbMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         data = super(AnimalEncounterDetail, self).get_context_data(**kwargs)
-        data["tags"] = TagObservation.objects.filter(encounter__in=[self.get_object()])
+        obj = self.get_object()
+        data["tags"] = TagObservation.objects.filter(encounter__in=[obj])
         return data
 
 
@@ -344,9 +342,7 @@ class AnimalEncounterUpdate(UpdateView):
             )
         else:
             data["flipper_tags"] = FlipperTagObservationFormSet(instance=self.object)
-        data[
-            "formset_prefix"
-        ] = "encounter"  # We set this in order to give the JavaScript something to match.
+        data["formset_prefix"] = "encounter"  # We set this in order to give the JavaScript something to match.
         return data
 
     def post(self, request, *args, **kwargs):
