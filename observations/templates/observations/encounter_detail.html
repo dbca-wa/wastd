@@ -154,6 +154,33 @@
     </div>
 </div><!-- .row#row-occ-extra -->
 
+{% block state_logs %}
+{% if state_logs %}
+<div class="row">
+    <div class="col-sm-12 col-md-8">
+        <h1>QA/QC logs</h1>
+        <table class="table table-striped table-bordered table-condensed">
+            <thead>
+                <th>Timestamp</th>
+                <th>User</th>
+                <th>Status</th>
+                <th>Description</th>
+            </thead>
+            <tbody>
+                {% for log in state_logs %}
+                <tr>
+                    <td>{{ log.timestamp }}</td>
+                    <td>{{ log.by.name }}</td>
+                    <td>{{ log.state|capfirst }}</td>
+                    <td>{{ log.description }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+{% endblock state_logs %}
 {% endblock page_content_inner %}
 
 {% block extra_js %}
