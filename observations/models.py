@@ -2064,6 +2064,8 @@ class Encounter(PolymorphicModel, UrlsMixin, geo_models.Model):
     }
 
     STATUS_NEW = "new"
+    #STATUS_IMPORTED = "imported"
+    #STATUS_MANUAL_INPUT = "manual input"
     STATUS_PROOFREAD = "proofread"
     STATUS_CURATED = "curated"
     STATUS_PUBLISHED = "published"
@@ -2072,6 +2074,8 @@ class Encounter(PolymorphicModel, UrlsMixin, geo_models.Model):
 
     STATUS_CHOICES = (
         (STATUS_NEW, _("New")),
+        #(STATUS_IMPORTED, _("Imported")),
+        #(STATUS_MANUAL_INPUT, _("Manual input")),
         (STATUS_PROOFREAD, _("Proofread")),
         (STATUS_CURATED, _("Curated")),
         (STATUS_PUBLISHED, _("Published")),
@@ -2081,6 +2085,8 @@ class Encounter(PolymorphicModel, UrlsMixin, geo_models.Model):
 
     STATUS_LABELS = {
         STATUS_NEW: "secondary",
+        #STATUS_IMPORTED: "secondary",
+        #STATUS_MANUAL_INPUT: "secondary",
         STATUS_PROOFREAD: "warning",
         STATUS_CURATED: "success",
         STATUS_PUBLISHED: "info",
@@ -2290,6 +2296,7 @@ class Encounter(PolymorphicModel, UrlsMixin, geo_models.Model):
         """Return true if this document can be proofread."""
         return True
 
+    # New -> Proofread
     @fsm_log_by
     @transition(
         field=status,
@@ -2320,6 +2327,7 @@ class Encounter(PolymorphicModel, UrlsMixin, geo_models.Model):
         """Return true if this document can be proofread."""
         return True
 
+    # Proofread -> New
     @fsm_log_by
     @transition(
         field=status,
@@ -2348,6 +2356,7 @@ class Encounter(PolymorphicModel, UrlsMixin, geo_models.Model):
         """Return true if this record can be accepted."""
         return True
 
+    # New|Proofread|Flagged -> Curated
     @fsm_log_by
     @transition(
         field=status,
@@ -2373,6 +2382,7 @@ class Encounter(PolymorphicModel, UrlsMixin, geo_models.Model):
         """Return true if curated status can be revoked."""
         return True
 
+    # Curated -> Flagged
     @fsm_log_by
     @transition(
         field=status,
@@ -2404,6 +2414,7 @@ class Encounter(PolymorphicModel, UrlsMixin, geo_models.Model):
         """Return true if the record can be rejected as entirely wrong."""
         return True
 
+    # Proofread|Curated|Flagged -> Rejected
     @fsm_log_by
     @transition(
         field=status,
@@ -2425,6 +2436,7 @@ class Encounter(PolymorphicModel, UrlsMixin, geo_models.Model):
         """Return true if the record QA status can be reset."""
         return True
 
+    # Rejected -> New
     @fsm_log_by
     @transition(
         field=status,
@@ -2449,6 +2461,7 @@ class Encounter(PolymorphicModel, UrlsMixin, geo_models.Model):
         """Return true if this document can be published."""
         return True
 
+    # Curated -> Published
     @fsm_log_by
     @transition(
         field=status,
@@ -2473,6 +2486,7 @@ class Encounter(PolymorphicModel, UrlsMixin, geo_models.Model):
         """Return true if encounter can be embargoed."""
         return True
 
+    # Published -> Curated
     @fsm_log_by
     @transition(
         field=status,

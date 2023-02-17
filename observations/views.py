@@ -5,6 +5,7 @@ from django.shortcuts import redirect
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView, CreateView, DetailView, UpdateView
+from django_fsm_log.models import StateLog
 from export_download.views import ResourceDownloadMixin
 from django_tables2 import RequestConfig, SingleTableView, tables
 
@@ -327,6 +328,7 @@ class AnimalEncounterDetail(DetailViewBreadcrumbMixin, DetailView):
         data = super(AnimalEncounterDetail, self).get_context_data(**kwargs)
         obj = self.get_object()
         data["tags"] = TagObservation.objects.filter(encounter__in=[obj])
+        data["state_logs"] = StateLog.objects.for_(obj)
         return data
 
 
