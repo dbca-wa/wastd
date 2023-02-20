@@ -1459,6 +1459,9 @@ class Survey(QualityControlMixin, UrlsMixin, geo_models.Model):
             else self.end_time.astimezone(tz.tzlocal()).strftime("%H:%M %Z"),
         )
 
+    def label_short(self):
+        return "Survey {} of {}".format(self.pk, "unknown site" if not self.site else self.site.name)
+
     @property
     def as_html(self):
         """An HTML representation."""

@@ -22,13 +22,16 @@
     <div class="col">
         {% block subject_details %}
         <span class="float-right">
-            <span class="badge badge-{{ object.status_colour|default:'secondary' }}">
-              QA status: {{ object.get_status_display }}
-            </span>
+            {% block title_labels %}{% endblock %}
         </span>
         <h1>
             {% block heading %}{{ object }}{% endblock heading %}
         </h1>
+        <span class="float-right">
+            <span class="badge badge-{{ object.status_colour|default:'secondary' }}">
+              QA status: {{ object.get_status_display }}
+            </span>
+        </span>
         {% if request.user.is_staff %}
         <div>
             <!-- Display edit & QA transitions (if authorised) -->

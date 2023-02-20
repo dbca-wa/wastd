@@ -25,7 +25,7 @@ class BreadcrumbContextMixin(ContextMixin):
 
 
 class ListViewBreadcrumbMixin(BreadcrumbContextMixin, View):
-    """ListView mixin providing Breadbrumbs.
+    """ListView mixin providing Breadcrumbs.
 
     * Home (home)
     * Verbose name plural (list_url)
@@ -40,7 +40,7 @@ class ListViewBreadcrumbMixin(BreadcrumbContextMixin, View):
 
 
 class DetailViewBreadcrumbMixin(BreadcrumbContextMixin, View):
-    """DetailView mixin providing Breadbrumbs.
+    """DetailView mixin providing Breadcrumbs.
 
     * Home (home)
     * Verbose name plural (list_url)
@@ -52,12 +52,12 @@ class DetailViewBreadcrumbMixin(BreadcrumbContextMixin, View):
         return (
             Breadcrumb(_("Home"), reverse("home")),
             Breadcrumb(self.model._meta.verbose_name_plural.capitalize(), self.model.list_url()),
-            Breadcrumb(self.object.__str__(), None),
+            Breadcrumb(self.object.pk, None),
         )
 
 
 class UpdateViewBreadcrumbMixin(BreadcrumbContextMixin, View):
-    """UpdateView mixin providing Breadbrumbs.
+    """UpdateView mixin providing Breadcrumbs.
 
     * Home (home)
     * Verbose name plural (list_url)
@@ -70,13 +70,13 @@ class UpdateViewBreadcrumbMixin(BreadcrumbContextMixin, View):
         return (
             Breadcrumb(_("Home"), reverse("home")),
             Breadcrumb(self.model._meta.verbose_name_plural, self.object.list_url()),
-            Breadcrumb(self.object.__str__(), self.object.get_absolute_url()),
+            Breadcrumb(self.object.pk, self.object.get_absolute_url()),
             Breadcrumb("Update", None),
         )
 
 
 class CreateViewBreadcrumbMixin(BreadcrumbContextMixin, View):
-    """CreateView mixin providing Breadbrumbs.
+    """CreateView mixin providing Breadcrumbs.
 
     * Home (home)
     * Verbose name plural (list_url)
