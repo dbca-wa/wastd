@@ -4,7 +4,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import ListView, CreateView, DetailView, UpdateView
+from django.views.generic import TemplateView, ListView, CreateView, DetailView, UpdateView
 from django_fsm_log.models import StateLog
 from export_download.views import ResourceDownloadMixin
 from django_tables2 import RequestConfig, SingleTableView, tables
@@ -74,25 +74,12 @@ def reconstruct_surveys_view(request):
     return HttpResponseRedirect("/")
 
 
-class HomeView(ListView):
+class HomeView(TemplateView):
     """HomeView."""
 
-    model = AnimalEncounter
     template_name = "pages/map.html"
 
-    def get_context_data(self, **kwargs):
-        """Context data."""
-        context = super(HomeView, self).get_context_data(**kwargs)
-        context["now"] = timezone.now()
-        return context
 
-    def get_queryset(self, **kwargs):
-        """Queryset."""
-        return AnimalEncounter.objects.filter(encounter_type="stranding")
-
-
-# -----------------------------------------------------------------------------#
-# Survey
 class SurveyList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
     model = Survey
     template_name = "default_list.html"
@@ -105,6 +92,8 @@ class SurveyList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
         context["list_filter"] = SurveyFilter(
             self.request.GET, queryset=self.get_queryset()
         )
+        context["object_count"] = self.get_queryset().count()
+        context["page_title"] = "WAStD | Surveys"
         return context
 
     def get_queryset(self):
@@ -234,6 +223,7 @@ class EncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
             self.request.GET, queryset=self.get_queryset()
         )
         context["model_admin"] = admin.EncounterAdmin
+        context["page_title"] = "WAStD | Encounters"
         return context
 
     def get_queryset(self):
@@ -264,10 +254,11 @@ class AnimalEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListVi
 
     def get_context_data(self, **kwargs):
         context = super(AnimalEncounterList, self).get_context_data(**kwargs)
-        context["list_filter"] = AnimalEncounterFilter(
-            self.request.GET, queryset=self.get_queryset()
-        )
+        qs = self.get_queryset()
+        context["list_filter"] = AnimalEncounterFilter(self.request.GET, queryset=qs)
         context["model_admin"] = admin.AnimalEncounterAdmin
+        context["object_count"] = qs.count()
+        context["page_title"] = "WAStD | Animal encounters"
         return context
 
     def get_queryset(self):
@@ -327,7 +318,7 @@ class AnimalEncounterDetail(DetailViewBreadcrumbMixin, DetailView):
     def get_context_data(self, **kwargs):
         data = super(AnimalEncounterDetail, self).get_context_data(**kwargs)
         obj = self.get_object()
-        data["tags"] = TagObservation.objects.filter(encounter__in=[obj])
+        data["tag_observations"] = TagObservation.objects.filter(encounter__in=[obj])
         data["state_logs"] = StateLog.objects.for_(obj)
         return data
 
@@ -373,10 +364,11 @@ class TurtleNestEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, Li
 
     def get_context_data(self, **kwargs):
         context = super(TurtleNestEncounterList, self).get_context_data(**kwargs)
-        context["list_filter"] = TurtleNestEncounterFilter(
-            self.request.GET, queryset=self.get_queryset()
-        )
+        qs = self.get_queryset()
+        context["list_filter"] = TurtleNestEncounterFilter(self.request.GET, queryset=qs)
         context["model_admin"] = admin.TurtleNestEncounterAdmin
+        context["object_count"] = qs.count()
+        context["page_title"] = "WAStD | Turtle nest encounters"
         return context
 
     def get_queryset(self):

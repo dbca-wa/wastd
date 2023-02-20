@@ -33,9 +33,10 @@ class UserListView(ListViewBreadcrumbMixin, ResourceDownloadMixin, LoginRequired
     def get_context_data(self, **kwargs):
         context = super(UserListView, self).get_context_data(**kwargs)
         context["collapse_details"] = True
-        context["list_filter"] = UserFilter(
-            self.request.GET, queryset=self.get_queryset()
-        )
+        qs = self.get_queryset()
+        context["list_filter"] = UserFilter(self.request.GET, queryset=qs)
+        context["object_count"] = qs.count()
+        context["page_title"] = "WAStD | Users"
         return context
 
     def get_queryset(self):
