@@ -11,13 +11,14 @@
 {% endblock breadcrumbs %}
 
 {% block page_content_inner %}
-<span class="float-right">{% resource_download_menu %}</span>
 
 {% block pagination_row %}
 <div class="row" id="pagination-row">
-  <div class="col">
-    {% if page_obj.has_other_pages %}{% bootstrap_paginate page_obj range=10 show_prev_next="true" show_first_last="true" %}{% endif %}
-  </div>
+    <div class="col">
+        <span class="float-right">{% resource_download_menu %}</span>
+        {% if object_count %}<div>Found {{ object_count }} records</div>{% endif %}
+        {% if page_obj.has_other_pages %}<div>{% bootstrap_paginate page_obj range=10 show_prev_next="true" show_first_last="true" %}</div>{% endif %}
+    </div>
 </div>
 {% endblock pagination_row %}
 
@@ -50,6 +51,14 @@
   </div><!-- /#filters-column -->
 
 </div><!-- /#data-row-->
+
+{% block pagination_row_bottom %}
+<div class="row">
+    <div class="col">
+        {% if page_obj.has_other_pages %}<div>{% bootstrap_paginate page_obj range=10 show_prev_next="true" show_first_last="true" %}</div>{% endif %}
+    </div>
+</div>
+{% endblock pagination_row_bottom %}
 
 {% endblock page_content_inner %}
 

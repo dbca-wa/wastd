@@ -133,6 +133,7 @@
 </div>
 
 <!-- Photos -->
+{% if object.photographs %}
 <div class="row" id="row-enc-media">
     <div class="col-12" id="col-enc-media">
         <div class="card-columns mt-2">
@@ -147,12 +148,9 @@
         </div>
     </div>
 </div><!-- .row#row-enc-media -->
+{% endif %}
 
-<div class="row" id="row-occ-extra">
-    <div class="col col-12 mb-2 mt-2">
-    {% block obscards %}{% endblock %}
-    </div>
-</div><!-- .row#row-occ-extra -->
+{% block tag_observation_cards %}{% endblock %}
 
 {% block state_logs %}
 {% if state_logs %}

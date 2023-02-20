@@ -115,20 +115,27 @@
 </tr>
 {% endblock extra_observation_details %}
 
-{% block obscards %}
-<div class="card-group">
-  {% for tag in tags %}
-  <div class="card card-md col-lg-4 col-md-6 col-sm-6 col-12 m-1 shadow-lg">
-    <div class="card-header">
-    <h5 class="card-title">
-      Tag ID {{ tag.name }}
-    </h5>
-    </div><!-- /.card-header -->
-    <div class="card-body">
-      Type: {{ tag.get_tag_type_display }}<br>
-      Location: {{ tag.get_tag_location_display }}
-    </div><!-- /.card-body -->
-  </div><!-- /.card -->
-  {% endfor %}
-</div><!-- /.card-group -->
-{% endblock obscards %}
+<!-- Tags -->
+{% block tag_observation_cards %}
+{% if tag_observations %}
+<div class="row" id="row-occ-extra">
+    <div class="col-12">
+        <div class="card-columns mt-2">
+        {% for tag in tag_observations %}
+            <div class="card shadow-lg">
+                <div class="card-header">
+                    <h5 class="card-title">
+                      Tag ID {{ tag.name }}
+                    </h5>
+                </div><!-- /.card-header -->
+                    <div class="card-body">
+                        Type: {{ tag.get_tag_type_display }}<br>
+                        Location: {{ tag.get_tag_location_display }}
+                    </div><!-- /.card-body -->
+            </div><!-- /.card -->
+        {% endfor %}
+        </div>
+    </div>
+</div><!-- .row#row-occ-extra -->
+{% endif %}
+{% endblock tag_observation_cards %}
