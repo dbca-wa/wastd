@@ -17,14 +17,13 @@ RUN curl -s https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
   # Do this by removing the last n lines of /etc/ssl/openssl.cnf, containing the [ssl_sect] and [system_default_sect] config sections.
   # Reference: https://askubuntu.com/questions/1284658/how-to-fix-microsoft-odbc-driver-17-for-sql-server-ssl-provider-ssl-choose-cli
   && head -n -7 /etc/ssl/openssl.cnf > openssl.tmp && mv openssl.tmp /etc/ssl/openssl.cnf \
-  && rm -rf /var/lib/apt/lists/* \
-  && pip install --upgrade pip
+  && rm -rf /var/lib/apt/lists
 
 # Install Python libs using Poetry.
 FROM builder_base as python_libs
 WORKDIR /app
 ENV POETRY_VERSION=1.2.2
-RUN pip install "poetry==$POETRY_VERSION"
+RUN pip install --upgrade pip && pip install "poetry==$POETRY_VERSION"
 COPY poetry.lock pyproject.toml /app/
 RUN poetry config virtualenvs.create false \
   && poetry install --no-interaction --no-ansi --only main
