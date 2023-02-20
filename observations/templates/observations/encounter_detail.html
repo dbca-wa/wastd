@@ -193,8 +193,9 @@
       });
       /* Data loading */
       var enc_layer = L.geoJson(
-        {{ object|geojsonfeature:"as_html,leaflet_title,leaflet_icon,leaflet_colour:where"|safe }},
-        { style: pointstyle, pointToLayer: ptl, onEachFeature: oef_ll }
+        // On the detail view, don't show a popup for the map icon.
+        {{ object|geojsonfeature:"leaflet_icon,leaflet_colour:where"|safe }},
+        { style: pointstyle, pointToLayer: ptl }
       );
       enc_layer.addTo(map);
       map.fitBounds(enc_layer.getBounds());
