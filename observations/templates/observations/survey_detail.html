@@ -27,7 +27,7 @@
           {% include "observations/survey_site_visit_start_end.html" with survey=object %}
         </span>
         <h1>
-            {% block heading %}{{ object.label_short }}{% endblock heading %}
+            {% block heading %}{{ object.label_short }}{% endblock %}
         </h1>
         {% if request.user.is_staff %}
             <a href="{{ object.absolute_admin_url }}" title="Edit this survey in the data curation portal">

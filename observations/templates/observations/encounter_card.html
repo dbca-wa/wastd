@@ -1,10 +1,15 @@
 {% load observations bootstrap4 fsm_admin %}
 <div class="card bg-light mb-1">
   <div class="card-header">
-    <span class="float-right">{% block title_labels %}{% endblock title_labels %}</span>
+    <span class="float-right">{% block title_labels %}{% endblock %}</span>
     <h5 class="card-title">
-      {% block title_row %}{{ object }}{% endblock title_row %}
+      {% block title_row %}{{ object }}{% endblock %}
     </h5>
+    <span class="float-right">
+        <span class="badge badge-{{ object.status_colour|default:'secondary' }}">
+            QA status: {{ object.get_status_display }}
+        </span>
+    </span>
     <h6 class="card-title text-muted" aria-hidden="true">
       <i class="fa-solid fa-calendar-days" title="When" aria-hidden="true"></i>
       {{ object.when|date:'d M Y H:i' }}
@@ -18,12 +23,6 @@
       <i class="fa-solid fa-shield-halved" title="Owned by" aria-hidden="true"></i>
       {{ object.campaign.owner }}
       {% endif %}
-
-      <span class="float-right">
-        <span class="badge badge-{{ object.status_colour|default:'secondary' }}">
-          QA status: {{ object.get_status_display }}
-        </span>
-      </span>
     </h6>
     <div>
         {% include "toggle_details.html" with object=object %}

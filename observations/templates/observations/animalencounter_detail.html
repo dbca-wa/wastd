@@ -6,7 +6,35 @@
 {% if object.sighting_status != 'na' %}
 {{ object.get_sighting_status_display }}
 {% endif %}
-{% endblock %}
+{% endblock heading %}
+
+{% block title_labels %}
+{% if object.nesting_event != 'na' %}
+<span class="badge badge-{{ object.nesting_event|obs_colour }}"
+  title="Nesting success: {{ object.get_nesting_event_display }}, disturbance during nesting: {{ object.get_nesting_disturbed_display }}">lay</span>
+{% endif %}
+{% if object.checked_for_injuries != 'na' %}
+<span class="badge badge-{{ object.checked_for_injuries|obs_colour }}"
+  title="Injuries: {{ object.get_checked_for_injuries_display }}">inj</span>
+{% endif %}
+{% if object.scanned_for_pit_tags != 'na' %}
+<span class="badge badge-{{ object.scanned_for_pit_tags|obs_colour }}"
+  title="PIT Tags: {{ object.get_scanned_for_pit_tags_display }}">pit</span>
+{% endif %}
+{% if object.checked_for_flipper_tags != 'na' %}
+<span class="badge badge-{{ object.checked_for_flipper_tags|obs_colour }}"
+  title="Flipper tags: {{ object.get_checked_for_flipper_tags_display }}">tag</span>
+{% endif %}
+{% if object.nesting_event != 'na' %}
+<span class="badge badge-{{ object.nesting_event|obs_colour }}"
+  title="Nesting: {{ object.get_nesting_event_display }}">nst</span>
+{% endif %}
+{% if object.laparoscopy %}
+<span class="badge badge-{{ object.laparoscopy|obs_colour }}"
+  title="Laparoscopy: {{ object.get_laparoscopy_display }}">lap</span>
+{% endif %}
+{% endblock title_labels %}
+
 
 {% block extra_observation_details %}
 <tr>
