@@ -1303,33 +1303,33 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
-def curate_animal_encounter(modeladmin, request, queryset):
+def curate_encounter(modeladmin, request, queryset):
     """A custom action to allow records to be marked as curated.
     """
     for obj in queryset:
         obj.curate(by=request.user, description="Curated record as trustworthy")
         obj.save()
-    messages.success(request, f"Curated selected animal encounter(s) as trustworthy")
+    messages.success(request, f"Curated selected encounter(s) as trustworthy")
 
 
-curate_animal_encounter.short_description = 'Curate selected animal encounters as trustworthy'
+curate_encounter.short_description = 'Curate selected encounter records as trustworthy'
 
 
-def flag_animal_encounter(modeladmin, request, queryset):
+def flag_encounter(modeladmin, request, queryset):
     """A custom action to allow records to be marked as flagged.
     """
     for obj in queryset:
         obj.flag(by=request.user, description="Flagged record as untrustworthy")
         obj.save()
-    messages.warning(request, f"Flagged selected animal encounter(s) as untrustworthy")
+    messages.warning(request, f"Flagged selected encounter(s) as untrustworthy")
 
 
-flag_animal_encounter.short_description = 'Flag selected animal encounters as untrustworthy'
+flag_encounter.short_description = 'Flag selected encounter records as untrustworthy'
 
 
 @admin.register(AnimalEncounter)
 class AnimalEncounterAdmin(EncounterAdmin):
-    actions = [curate_animal_encounter, flag_animal_encounter]
+    actions = [curate_encounter, flag_encounter]
     form = s2form(AnimalEncounter, attrs=S2ATTRS)
     list_display = (
         EncounterAdmin.FIRST_COLS
@@ -1504,8 +1504,7 @@ class AnimalEncounterAdmin(EncounterAdmin):
 
 @admin.register(TurtleNestEncounter)
 class TurtleNestEncounterAdmin(EncounterAdmin):
-    """Admin for TurtleNestEncounter."""
-
+    actions = [curate_encounter, flag_encounter]
     form = s2form(TurtleNestEncounter, attrs=S2ATTRS)
     list_display = (
         EncounterAdmin.FIRST_COLS
