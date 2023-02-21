@@ -371,8 +371,9 @@ class AnimalEncounterCurate(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kargs):
         obj = AnimalEncounter.objects.get(pk=self.kwargs["pk"])
-        obj.curate(by=request.user, description="Record curated as trustworthy")
+        obj.curate(by=request.user, description="Curated record as trustworthy")
         obj.save()
+        messages.success(request, f"Curated animal encounter {obj.pk} as trustworthy")
         return HttpResponseRedirect(obj.get_absolute_url())
 
 
@@ -390,8 +391,9 @@ class AnimalEncounterFlag(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kargs):
         obj = AnimalEncounter.objects.get(pk=self.kwargs["pk"])
-        obj.flag(by=request.user, description="Record flagged as untrustworthy")
+        obj.flag(by=request.user, description="Flagged record as untrustworthy")
         obj.save()
+        messages.warning(request, f"Flagged animal encounter {obj.pk} as untrustworthy")
         return HttpResponseRedirect(obj.get_absolute_url())
 
 
