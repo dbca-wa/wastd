@@ -1,6 +1,5 @@
-"""Admin module for observations."""
 from django import forms
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.contrib.auth import get_user_model
 from django.contrib.admin.filters import RelatedFieldListFilter
 from django.utils.safestring import mark_safe
@@ -1304,10 +1303,33 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
+def curate_animal_encounter(modeladmin, request, queryset):
+    """A custom action to allow records to be marked as curated.
+    """
+    for obj in queryset:
+        obj.curate(by=request.user, description="Curated record as trustworthy")
+        obj.save()
+    messages.success(request, f"Curated selected animal encounter(s) as trustworthy")
+
+
+curate_animal_encounter.short_description = 'Curate selected animal encounters as trustworthy'
+
+
+def flag_animal_encounter(modeladmin, request, queryset):
+    """A custom action to allow records to be marked as flagged.
+    """
+    for obj in queryset:
+        obj.flag(by=request.user, description="Flagged record as untrustworthy")
+        obj.save()
+    messages.warning(request, f"Flagged selected animal encounter(s) as untrustworthy")
+
+
+flag_animal_encounter.short_description = 'Flag selected animal encounters as untrustworthy'
+
+
 @admin.register(AnimalEncounter)
 class AnimalEncounterAdmin(EncounterAdmin):
-    """Admin for AnimalEncounter."""
-
+    actions = [curate_animal_encounter, flag_animal_encounter]
     form = s2form(AnimalEncounter, attrs=S2ATTRS)
     list_display = (
         EncounterAdmin.FIRST_COLS
