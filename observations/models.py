@@ -3399,6 +3399,12 @@ class TurtleNestEncounter(Encounter):
             "observations:turtlenestencounter-detail", kwargs={"pk": self.pk}
         )
 
+    def get_curate_url(self):
+        return reverse("observations:turtlenestencounter-curate", kwargs={"pk": self.pk})
+
+    def get_flag_url(self):
+        return reverse("observations:turtlenestencounter-flag", kwargs={"pk": self.pk})
+
     def card_template(self):
         return "observations/turtlenestencounter_card.html"
 

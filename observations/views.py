@@ -6,6 +6,7 @@ from django.shortcuts import redirect
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View, TemplateView, ListView, CreateView, DetailView, UpdateView
+from django.views.generic.detail import SingleObjectMixin
 from django_fsm_log.models import StateLog
 from export_download.views import ResourceDownloadMixin
 from django_tables2 import RequestConfig, SingleTableView, tables
@@ -246,6 +247,44 @@ class EncounterDetail(DetailViewBreadcrumbMixin, DetailView):
         return data
 
 
+class EncounterCurate(LoginRequiredMixin, SingleObjectMixin, View):
+    """Minimal view to handle GET request to mark a record as curated.
+    """
+    model = Encounter
+
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        # FIXME: Permission check
+        if not request.user.is_staff:
+            return HttpResponseForbidden("You do not have permission to curate this record")
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request, *args, **kargs):
+        obj = self.get_object()
+        obj.curate(by=request.user, description="Curated record as trustworthy")
+        obj.save()
+        messages.success(request, f"Curated {obj} as trustworthy")
+        return HttpResponseRedirect(obj.get_absolute_url())
+
+
+class EncounterFlag(LoginRequiredMixin, SingleObjectMixin, View):
+    """Minimal view to handle POST request to mark a record as flagged.
+    """
+
+    def dispatch(self, request, *args, **kwargs):
+        # FIXME: Permission check
+        if not request.user.is_staff:
+            return HttpResponseForbidden("You do not have permission to flag this record")
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request, *args, **kargs):
+        obj = self.get_object()
+        obj.flag(by=request.user, description="Flagged record as untrustworthy")
+        obj.save()
+        messages.warning(request, f"Flagged {obj} as untrustworthy")
+        return HttpResponseRedirect(obj.get_absolute_url())
+
+
 class AnimalEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
     model = AnimalEncounter
     template_name = "default_list.html"
@@ -356,45 +395,16 @@ class AnimalEncounterUpdate(UpdateView):
         return super(AnimalEncounterUpdate, self).form_valid(form)
 
 
-class AnimalEncounterCurate(LoginRequiredMixin, View):
+class AnimalEncounterCurate(EncounterCurate):
     """Minimal view to handle GET request to mark a record as curated.
     """
-
-    http_method_names = ["get"]
-
-    @method_decorator(csrf_exempt)
-    def dispatch(self, request, *args, **kwargs):
-        # FIXME: Permission check
-        if not request.user.is_staff:
-            return HttpResponseForbidden("You do not have permission to curate this record")
-        return super().dispatch(request, *args, **kwargs)
-
-    def get(self, request, *args, **kargs):
-        obj = AnimalEncounter.objects.get(pk=self.kwargs["pk"])
-        obj.curate(by=request.user, description="Curated record as trustworthy")
-        obj.save()
-        messages.success(request, f"Curated animal encounter {obj.pk} as trustworthy")
-        return HttpResponseRedirect(obj.get_absolute_url())
+    model = AnimalEncounter
 
 
-class AnimalEncounterFlag(LoginRequiredMixin, View):
+class AnimalEncounterFlag(EncounterFlag):
     """Minimal view to handle POST request to mark a record as flagged.
     """
-
-    http_method_names = ["get"]
-
-    def dispatch(self, request, *args, **kwargs):
-        # FIXME: Permission check
-        if not request.user.is_staff:
-            return HttpResponseForbidden("You do not have permission to curate this record")
-        return super().dispatch(request, *args, **kwargs)
-
-    def get(self, request, *args, **kargs):
-        obj = AnimalEncounter.objects.get(pk=self.kwargs["pk"])
-        obj.flag(by=request.user, description="Flagged record as untrustworthy")
-        obj.save()
-        messages.warning(request, f"Flagged animal encounter {obj.pk} as untrustworthy")
-        return HttpResponseRedirect(obj.get_absolute_url())
+    model = AnimalEncounter
 
 
 class TurtleNestEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
@@ -424,6 +434,18 @@ class TurtleNestEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, Li
 
 
 class TurtleNestEncounterDetail(DetailViewBreadcrumbMixin, DetailView):
+    model = TurtleNestEncounter
+
+
+class TurtleNestEncounterCurate(EncounterCurate):
+    """Minimal view to handle GET request to mark a record as curated.
+    """
+    model = TurtleNestEncounter
+
+
+class TurtleNestEncounterFlag(EncounterFlag):
+    """Minimal view to handle POST request to mark a record as flagged.
+    """
     model = TurtleNestEncounter
 
 
