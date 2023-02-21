@@ -27,11 +27,12 @@
     <div>
         {% include "toggle_details.html" with object=object %}
         <a href="{{ object.get_absolute_url }}" title="Open record {{ object.pk }}">
-          <span class="badge badge-{{ object.status_colour|default:'secondary' }}">
+          <span class="badge badge-secondary }}">
             <i class="fa-regular fa-folder-open" aria-hidden="true"></i> Open
           </span>
         </a>
         <!-- Display edit & QA transitions (if authorised) -->
+        <!-- FIXME: implement proper permissions check -->
         {% if request.user.is_staff %}
         {% include "observations/edit_qa.html" %}
         {% endif %}

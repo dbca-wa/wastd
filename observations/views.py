@@ -1,10 +1,11 @@
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.shortcuts import redirect
-from django.utils import timezone
+from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import TemplateView, ListView, CreateView, DetailView, UpdateView
+from django.views.generic import View, TemplateView, ListView, CreateView, DetailView, UpdateView
 from django_fsm_log.models import StateLog
 from export_download.views import ResourceDownloadMixin
 from django_tables2 import RequestConfig, SingleTableView, tables
@@ -353,6 +354,45 @@ class AnimalEncounterUpdate(UpdateView):
                 flipper_tags.instance = self.object
                 flipper_tags.save()
         return super(AnimalEncounterUpdate, self).form_valid(form)
+
+
+class AnimalEncounterCurate(LoginRequiredMixin, View):
+    """Minimal view to handle GET request to mark a record as curated.
+    """
+
+    http_method_names = ["get"]
+
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        # FIXME: Permission check
+        if not request.user.is_staff:
+            return HttpResponseForbidden("You do not have permission to curate this record")
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request, *args, **kargs):
+        obj = AnimalEncounter.objects.get(pk=self.kwargs["pk"])
+        obj.curate(by=request.user, description="Record curated as trustworthy")
+        obj.save()
+        return HttpResponseRedirect(obj.get_absolute_url())
+
+
+class AnimalEncounterFlag(LoginRequiredMixin, View):
+    """Minimal view to handle POST request to mark a record as flagged.
+    """
+
+    http_method_names = ["get"]
+
+    def dispatch(self, request, *args, **kwargs):
+        # FIXME: Permission check
+        if not request.user.is_staff:
+            return HttpResponseForbidden("You do not have permission to curate this record")
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request, *args, **kargs):
+        obj = AnimalEncounter.objects.get(pk=self.kwargs["pk"])
+        obj.flag(by=request.user, description="Record flagged as untrustworthy")
+        obj.save()
+        return HttpResponseRedirect(obj.get_absolute_url())
 
 
 class TurtleNestEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):

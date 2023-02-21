@@ -41,7 +41,7 @@ from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from django_fsm import FSMField, transition
-from django_fsm_log.decorators import fsm_log_by
+from django_fsm_log.decorators import fsm_log_by, fsm_log_description
 from django_fsm_log.models import StateLog
 from polymorphic.models import PolymorphicModel
 from rest_framework.reverse import reverse as rest_reverse
@@ -2295,65 +2295,65 @@ class Encounter(PolymorphicModel, UrlsMixin, geo_models.Model):
         return self.STATUS_LABELS[self.status]
 
     # FSM transitions --------------------------------------------------------#
-    def can_proofread(self):
-        """Return true if this document can be proofread."""
-        return True
+    #def can_proofread(self):
+    #    """Return true if this document can be proofread."""
+    #    return True
 
     # New -> Proofread
-    @fsm_log_by
-    @transition(
-        field=status,
-        source=STATUS_NEW,
-        target=STATUS_PROOFREAD,
-        conditions=[can_proofread],
-        # permission=lambda instance, user: user in instance.all_permitted,
-        custom=dict(
-            verbose="Submit for QA",
-            explanation=(
-                "Submit this record as a faithful representation of the "
-                "data source for QA to become an accepted record."
-            ),
-            notify=True,
-        ),
-    )
-    def proofread(self, by=None):
-        """Mark encounter as proof-read.
+    #@fsm_log_by
+    #@transition(
+    #    field=status,
+    #    source=STATUS_NEW,
+    #    target=STATUS_PROOFREAD,
+    #    conditions=[can_proofread],
+    #    # permission=lambda instance, user: user in instance.all_permitted,
+    #    custom=dict(
+    #        verbose="Submit for QA",
+    #        explanation=(
+    #            "Submit this record as a faithful representation of the "
+    #            "data source for QA to become an accepted record."
+    #        ),
+    #        notify=True,
+    #    ),
+    #)
+    #def proofread(self, by=None):
+    #    """Mark encounter as proof-read.
 
-        Proofreading compares the attached data sheet with entered values.
-        Proofread data is deemed a faithful representation of original data
-        captured on a paper field data collection form, or stored in a legacy
-        system.
-        """
-        return
+    #    Proofreading compares the attached data sheet with entered values.
+    #    Proofread data is deemed a faithful representation of original data
+    #    captured on a paper field data collection form, or stored in a legacy
+    #    system.
+    #    """
+    #    return
 
-    def can_require_proofreading(self):
-        """Return true if this document can be proofread."""
-        return True
+    #def can_require_proofreading(self):
+    #    """Return true if this document can be proofread."""
+    #    return True
 
     # Proofread -> New
-    @fsm_log_by
-    @transition(
-        field=status,
-        source=STATUS_PROOFREAD,
-        target=STATUS_NEW,
-        conditions=[can_require_proofreading],
-        # permission=lambda instance, user: user in instance.all_permitted,
-        custom=dict(
-            verbose="Require proofreading",
-            explanation=(
-                "This record deviates from the data source and "
-                "requires proofreading."
-            ),
-            notify=True,
-        ),
-    )
-    def require_proofreading(self, by=None):
-        """Mark encounter as having typos, requiring more proofreading.
+    #@fsm_log_by
+    #@transition(
+    #    field=status,
+    #    source=STATUS_PROOFREAD,
+    #    target=STATUS_NEW,
+    #    conditions=[can_require_proofreading],
+    #    # permission=lambda instance, user: user in instance.all_permitted,
+    #    custom=dict(
+    #        verbose="Require proofreading",
+    #        explanation=(
+    #            "This record deviates from the data source and "
+    #            "requires proofreading."
+    #        ),
+    #        notify=True,
+    #    ),
+    #)
+    #def require_proofreading(self, by=None):
+    #    """Mark encounter as having typos, requiring more proofreading.
 
-        Proofreading compares the attached data sheet with entered values.
-        If a discrepancy to the data sheet is found, proofreading is required.
-        """
-        return
+    #    Proofreading compares the attached data sheet with entered values.
+    #    If a discrepancy to the data sheet is found, proofreading is required.
+    #    """
+    #    return
 
     def can_curate(self):
         """Return true if this record can be accepted."""
@@ -2361,6 +2361,7 @@ class Encounter(PolymorphicModel, UrlsMixin, geo_models.Model):
 
     # New|Proofread|Flagged -> Curated
     @fsm_log_by
+    @fsm_log_description
     @transition(
         field=status,
         source=[STATUS_NEW, STATUS_PROOFREAD, STATUS_FLAGGED],
@@ -2368,12 +2369,14 @@ class Encounter(PolymorphicModel, UrlsMixin, geo_models.Model):
         conditions=[can_curate],
         # permission=lambda instance, user: user in instance.all_permitted,
         custom=dict(
-            verbose="Accept as trustworthy",
+            verbose="Curate as trustworthy",
             explanation=("This record is deemed trustworthy."),
             notify=True,
+            url_path="curate/",
+            badge="badge-success",
         ),
     )
-    def curate(self, by=None):
+    def curate(self, by=None, description=None):
         """Accept record as trustworthy.
 
         Curated data is deemed trustworthy by a subject matter expert.
@@ -2385,11 +2388,12 @@ class Encounter(PolymorphicModel, UrlsMixin, geo_models.Model):
         """Return true if curated status can be revoked."""
         return True
 
-    # Curated -> Flagged
+    # New|Curated -> Flagged
     @fsm_log_by
+    @fsm_log_description
     @transition(
         field=status,
-        source=STATUS_CURATED,
+        source=[STATUS_NEW, STATUS_CURATED],
         target=STATUS_FLAGGED,
         conditions=[can_flag],
         # permission=lambda instance, user: user in instance.all_permitted,
@@ -2400,116 +2404,119 @@ class Encounter(PolymorphicModel, UrlsMixin, geo_models.Model):
                 " review by a subject matter expert."
             ),
             notify=True,
+            url_path="flag/",
+            badge="badge-danger",
         ),
     )
-    def flag(self, by=None):
+    def flag(self, by=None, description=None):
         """Flag as requiring changes to data.
 
         Curated data is deemed trustworthy by a subject matter expert.
         Revoking curation flags data for requiring changes by an expert.
         """
-        import ipdb
-
-        ipdb.set_trace()
         return
 
-    def can_reject(self):
-        """Return true if the record can be rejected as entirely wrong."""
-        return True
+    #def can_reject(self):
+    #    """Return true if the record can be rejected as entirely wrong."""
+    #    return True
 
     # Proofread|Curated|Flagged -> Rejected
-    @fsm_log_by
-    @transition(
-        field=status,
-        source=[STATUS_PROOFREAD, STATUS_CURATED, STATUS_FLAGGED],
-        target=STATUS_REJECTED,
-        conditions=[can_flag],
-        # permission=lambda instance, user: user in instance.all_permitted,
-        custom=dict(
-            verbose="Confirm as not trustworthy",
-            explanation=("This record is confirmed wrong and not trustworthy."),
-            notify=True,
-        ),
-    )
-    def reject(self, by=None):
-        """Confirm that a record is not trustworthy and beyond repair."""
-        return
+    #@fsm_log_by
+    #@transition(
+    #    field=status,
+    #    source=[STATUS_PROOFREAD, STATUS_CURATED, STATUS_FLAGGED],
+    #    target=STATUS_REJECTED,
+    #    conditions=[can_reject],
+    #    # permission=lambda instance, user: user in instance.all_permitted,
+    #    custom=dict(
+    #        verbose="Confirm as not trustworthy",
+    #        explanation=("This record is confirmed wrong and not trustworthy."),
+    #        notify=True,
+    #        url_path="",
+    #    ),
+    #)
+    #def reject(self, by=None):
+    #    """Confirm that a record is not trustworthy and beyond repair."""
+    #    return
 
-    def can_reset(self):
-        """Return true if the record QA status can be reset."""
-        return True
+    #def can_reset(self):
+    #    """Return true if the record QA status can be reset."""
+    #    return True
 
     # Rejected -> New
-    @fsm_log_by
-    @transition(
-        field=status,
-        source=STATUS_REJECTED,
-        target=STATUS_NEW,
-        conditions=[can_reset],
-        # permission=lambda instance, user: user in instance.all_permitted,
-        custom=dict(
-            verbose="Reset QA status",
-            explanation=("The QA status of this record needs to be reset."),
-            notify=True,
-        ),
-    )
-    def reset(self, by=None):
-        """Reset the QA status of a record to NEW.
+    #@fsm_log_by
+    #@transition(
+    #    field=status,
+    #    source=STATUS_REJECTED,
+    #    target=STATUS_NEW,
+    #    conditions=[can_reset],
+    #    # permission=lambda instance, user: user in instance.all_permitted,
+    #    custom=dict(
+    #        verbose="Reset QA status",
+    #        explanation=("The QA status of this record needs to be reset."),
+    #        notify=True,
+    #        url_path="reset/",
+    #    ),
+    #)
+    #def reset(self, by=None):
+    #    """Reset the QA status of a record to NEW.
 
-        This allows a record to be brought into the desired QA status.
-        """
-        return
+    #    This allows a record to be brought into the desired QA status.
+    #    """
+    #    return
 
-    def can_publish(self):
-        """Return true if this document can be published."""
-        return True
+    #def can_publish(self):
+    #    """Return true if this document can be published."""
+    #    return True
 
     # Curated -> Published
-    @fsm_log_by
-    @transition(
-        field=status,
-        source=STATUS_CURATED,
-        target=STATUS_PUBLISHED,
-        conditions=[can_publish],
-        # permission=lambda instance, user: user in instance.all_permitted,
-        custom=dict(
-            verbose="Publish",
-            explanation=("This record is fit for release."),
-            notify=True,
-        ),
-    )
-    def publish(self, by=None):
-        """Mark encounter as ready to be published.
+    #@fsm_log_by
+    #@transition(
+    #    field=status,
+    #    source=STATUS_CURATED,
+    #    target=STATUS_PUBLISHED,
+    #    conditions=[can_publish],
+    #    # permission=lambda instance, user: user in instance.all_permitted,
+    #    custom=dict(
+    #        verbose="Publish",
+    #        explanation=("This record is fit for release."),
+    #        notify=True,
+    #        url_path="publish/",
+    #    ),
+    #)
+    #def publish(self, by=None):
+    #    """Mark encounter as ready to be published.
 
-        Published data has been deemed fit for release by the data owner.
-        """
-        return
+    #    Published data has been deemed fit for release by the data owner.
+    #    """
+    #    return
 
-    def can_embargo(self):
-        """Return true if encounter can be embargoed."""
-        return True
+    #def can_embargo(self):
+    #    """Return true if encounter can be embargoed."""
+    #    return True
 
     # Published -> Curated
-    @fsm_log_by
-    @transition(
-        field=status,
-        source=STATUS_PUBLISHED,
-        target=STATUS_CURATED,
-        conditions=[can_embargo],
-        # permission=lambda instance, user: user in instance.all_permitted,
-        custom=dict(
-            verbose="Embargo",
-            explanation=("This record is not fit for release."),
-            notify=True,
-        ),
-    )
-    def embargo(self, by=None):
-        """Mark encounter as NOT ready to be published.
+    #@fsm_log_by
+    #@transition(
+    #    field=status,
+    #    source=STATUS_PUBLISHED,
+    #    target=STATUS_CURATED,
+    #    conditions=[can_embargo],
+    #    # permission=lambda instance, user: user in instance.all_permitted,
+    #    custom=dict(
+    #        verbose="Embargo",
+    #        explanation=("This record is not fit for release."),
+    #        notify=True,
+    #        url_path="embargo/",
+    #    ),
+    #)
+    #def embargo(self, by=None):
+    #    """Mark encounter as NOT ready to be published.
 
-        Published data has been deemed fit for release by the data owner.
-        Embargoed data is marked as curated, but not ready for release.
-        """
-        return
+    #    Published data has been deemed fit for release by the data owner.
+    #    Embargoed data is marked as curated, but not ready for release.
+    #    """
+    #    return
 
     # ------------------------------------------------------------------------#
     # URLs
@@ -2554,8 +2561,26 @@ class Encounter(PolymorphicModel, UrlsMixin, geo_models.Model):
             self._meta.model_name + "-detail", kwargs={"pk": self.pk, "format": format}
         )
 
+    def get_curate_url(self):
+        return reverse("observations:animalencounter-curate", kwargs={"pk": self.pk})
+
+    def get_flag_url(self):
+        return reverse("observations:animalencounter-flag", kwargs={"pk": self.pk})
+
     # -------------------------------------------------------------------------
     # Derived properties
+    def can_change(self):
+        # Returns True if editing this object is permitted, False otherwise.
+        # Determined by the object's QA status.
+        if self.status in [
+            self.STATUS_NEW,
+            self.STATUS_PROOFREAD,
+            self.STATUS_FLAGGED,
+            self.STATUS_REJECTED
+        ]:
+            return True
+        return False
+
     def card_template(self):
         return "observations/encounter_card.html"
 
