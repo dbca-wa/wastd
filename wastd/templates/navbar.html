@@ -342,5 +342,12 @@
             {% trans "Sign out" %}
         </a>
     </li>
+    {% else %}
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'login' %}">
+            <i class="fa-solid fa-arrow-right-to-bracket" title="Sign in" aria-hidden="true"></i>
+            {% trans "Sign in" %}
+        </a>
+    </li>
     {% endif %}
 </ul>
