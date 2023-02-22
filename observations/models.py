@@ -574,11 +574,12 @@ NEST_AGE_CHOICES = (
 )
 
 NEST_TYPE_DEFAULT = "track-not-assessed"
+NEST_TYPE_TRACK_UNSURE = "track-unsure"
 NEST_TYPE_CHOICES = (
     ("track-not-assessed", "track, not checked for nest"),
     ("false-crawl", "track without nest"),
     ("successful-crawl", "track with nest"),
-    ("track-unsure", "track, checked for nest, unsure if nest"),
+    (NEST_TYPE_TRACK_UNSURE, "track, checked for nest, unsure if nest"),
     ("nest", "nest, unhatched, no track"),  # egg counts, putting eggs back
     ("hatched-nest", "nest, hatched"),  # hatching and emergence success
     ("body-pit", "body pit, no track"),
@@ -3191,7 +3192,7 @@ class TurtleNestEncounter(Encounter):
     def get_encounter_type(self):
         """Infer the encounter type.
 
-        TurtleNestEncounters are always nest encounters. Would you have guessed?
+        TurtleNestEncounters are always nest encounters.
         """
         return Encounter.ENCOUNTER_NEST
 
@@ -3489,14 +3490,8 @@ class Observation(PolymorphicModel, LegacySourceMixin, models.Model):
         help_text=("The Encounter during which the observation was made"),
     )
 
-    class Meta:
-        """Class options."""
-
-        # base_manager_name = 'base_objects'
-
     def __str__(self):
-        """The unicode representation."""
-        return "Obs {0} for {1}".format(self.pk, self.encounter.__str__())
+        return f"Obs {self.pk} for {self.encounter}"
 
     @property
     def point(self):
