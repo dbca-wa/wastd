@@ -65,6 +65,33 @@ from .models import (
 logger = logging.getLogger(__name__)
 
 
+def guess_site(survey_instance):
+    """Return the first Area containing the start_location or None."""
+    if not survey_instance.start_location:
+        return None
+    else:
+        return Area.objects.filter(
+            area_type=Area.AREATYPE_SITE, geom__covers=survey_instance.start_location
+        ).first()
+
+
+def guess_area(survey_instance):
+    """Return the first Area containing the start_location or None."""
+    if not survey_instance.start_location:
+        return None
+    else:
+        return Area.objects.filter(
+            area_type=Area.AREATYPE_LOCALITY,
+            geom__covers=survey_instance.start_location,
+        ).first()
+
+
+def claim_encounters(survey_instance):
+    """Update Encounters within this Survey to reference survey=self."""
+    if survey_instance.encounters:
+        survey_instance.encounters.update(survey=survey_instance, site=survey_instance.site)
+
+
 def int_or_none(string):
     """Return the string as Integer or return None."""
     try:

@@ -24,7 +24,6 @@ import itertools
 import logging
 import urllib
 from datetime import timedelta
-from dateutil import parser as dateparser
 from dateutil import tz
 from dateutil.relativedelta import relativedelta
 
@@ -33,8 +32,6 @@ from django.conf import settings
 from django.contrib.gis.db import models as geo_models
 from django.db import models
 from django.db.models.fields import DurationField
-from django.db.models.signals import post_save, pre_delete, pre_save
-from django.dispatch import receiver
 from django.template import loader
 from django.urls import reverse
 from django.utils.encoding import force_text
@@ -54,7 +51,6 @@ from shared.models import (
     QualityControlMixin,
     UrlsMixin,
 )
-from shared.utils import sanitize_tag_label
 from users.models import User, Organisation
 
 
@@ -1134,28 +1130,6 @@ class Campaign(geo_models.Model):
         LOGGER.info("Adopted {0} surveys and {1} encounters.".format(no_svy, no_enc))
 
 
-@receiver(post_save, sender=Campaign)
-def campaign_post_save(sender, instance, *args, **kwargs):
-    """Campaign: Claim Surveys and Encounters."""
-    # Version 1
-    instance.adopt_all_surveys_and_encounters()
-    msg = "Campaign {0} has adopted {1} surveys and {2} encounters.".format(
-        instance, instance.surveys.count(), instance.encounters.count()
-    )
-    LOGGER.info(msg)
-
-    # Version 2
-    # if instance.orphaned_surveys:
-    #     for s in instance.orphaned_surveys:
-    #         s.campaign = instance
-    #         s.save()
-
-    # if instance.orphaned_encounters:
-    #     for e in instance.orphaned_encounters:
-    #         e.campaign = instance
-    #         e.save()
-
-
 class CampaignMediaAttachment(models.Model):
     """A media attachment to a Campaign."""
 
@@ -1499,15 +1473,11 @@ class Survey(QualityControlMixin, UrlsMixin, geo_models.Model):
             return None
         else:
             # https://docs.djangoproject.com/en/3.2/ref/contrib/gis/geoquerysets/#coveredby
-            e = Encounter.objects.filter(
+            return Encounter.objects.filter(
                 where__coveredby=self.site.geom,
                 when__gte=self.start_time,
                 when__lte=self.end_time,
             )
-            LOGGER.info(
-                "[Survey.encounters] {0} found {1} Encounters".format(self, e.count())
-            )
-            return e
 
     @property
     def start_date(self):
@@ -1630,27 +1600,6 @@ class Survey(QualityControlMixin, UrlsMixin, geo_models.Model):
         return msg
 
 
-def guess_area(survey_instance):
-    """Return the first Area containing the start_location or None."""
-    if not survey_instance.start_location:
-        return None
-    else:
-        return Area.objects.filter(
-            area_type=Area.AREATYPE_LOCALITY,
-            geom__covers=survey_instance.start_location,
-        ).first()
-
-
-def guess_site(survey_instance):
-    """Return the first Area containing the start_location or None."""
-    if not survey_instance.start_location:
-        return None
-    else:
-        return Area.objects.filter(
-            area_type=Area.AREATYPE_SITE, geom__covers=survey_instance.start_location
-        ).first()
-
-
 def claim_end_points(survey_instance):
     """Claim SurveyEnd.
 
@@ -1691,96 +1640,6 @@ def claim_end_points(survey_instance):
                 "[Survey.claim_end_points] Missing SiteVisitEnd for Survey"
                 " {0}".format(survey_instance)
             )
-
-
-def claim_encounters(survey_instance):
-    """Update Encounters within this Survey to reference survey=self."""
-    if survey_instance.encounters:
-        enc = survey_instance.encounters.update(
-            survey=survey_instance, site=survey_instance.site
-        )
-        LOGGER.info(
-            "[observations.models.claim_encounters] "
-            "Survey {0} claimed {1} Encounters".format(survey_instance, enc)
-        )
-
-
-@receiver(pre_save, sender=Survey)
-def survey_pre_save(
-    sender, instance, buffer_mins=30, initial_duration_hrs=6, *args, **kwargs
-):
-    """Survey pre-save: sanity check and data cleaning.
-
-    If a start or end time are given as string, they are parsed into a native datetime object.
-    If site or area are blank, they will be guessed via spatial overlap with known locations.
-
-    If the end time is not given or earlier than the start time (mostly due to data import errors), the
-    end time will be adjusted to ``initial_duration_hrs`` after the start time.
-    This will give the ``post_save`` signal an opportunity to ``claim_encounters``.
-
-    If the end time is exactly ``initial_duration_hrs`` later than the start time, it
-    will be adjusted to ``buffer_mins`` after the last encounter within.
-    """
-    msg = ""
-    if type(instance.start_time) == str:
-        instance.start_time = dateparser.parse(instance.start_time)
-    if type(instance.end_time) == str:
-        instance.end_time = dateparser.parse(instance.end_time)
-
-    if not instance.site:
-        instance.site = guess_site(instance)
-    if not instance.area:
-        instance.area = guess_area(instance)
-
-    # Deprecated: Survey is now reconstructed during ETL before upload,
-    # not from SVS and SVE in WAStD any more
-    # if instance.status == Survey.STATUS_NEW and not instance.end_time:
-    #     claim_end_points(instance)
-
-    if not instance.end_time:
-        instance.end_time = instance.start_time + timedelta(hours=initial_duration_hrs)
-        msg += (
-            "[survey_pre_save] End time was missing, "
-            "adjusted to {} hours after start time\n".format(initial_duration_hrs)
-        )
-
-    if instance.end_time < instance.start_time:
-        instance.end_time = instance.start_time + timedelta(hours=initial_duration_hrs)
-        msg += (
-            "[survey_pre_save] End time was before start time, "
-            "adjusted to {} hours after start time\n".format(initial_duration_hrs)
-        )
-
-    if instance.end_time == instance.start_time + timedelta(hours=initial_duration_hrs):
-        et = instance.end_time
-        if instance.encounters:
-            instance.end_time = instance.encounters.last().when + timedelta(
-                minutes=buffer_mins
-            )
-            msg += (
-                "[survey_pre_save] End time adjusted from {0} to {1}, "
-                "{2} minutes after last of {3} encounters."
-            ).format(et, instance.end_time, buffer_mins, len(instance.encounters))
-        else:
-            instance.end_time = instance.start_time + timedelta(
-                hours=initial_duration_hrs
-            )
-            msg += (
-                "[survey_pre_save] End time adjusted from {0} to {1}, "
-                "{2} hours after the start of the survey. "
-                "No encounters found."
-            ).format(et, instance.end_time, initial_duration_hrs)
-
-    if msg != "":
-        instance.end_comments = (instance.end_comments or "") + msg
-        LOGGER.info(msg)
-    instance.label = instance.make_label
-
-
-@receiver(post_save, sender=Survey)
-def survey_post_save(sender, instance, *args, **kwargs):
-    """Survey: Claim encounters."""
-    claim_encounters(instance)
 
 
 class SurveyEnd(geo_models.Model):
@@ -1974,17 +1833,6 @@ class SurveyMediaAttachment(LegacySourceMixin, models.Model):
             )
         else:
             return ""
-
-
-# Utilities ------------------------------------------------------------------#
-@receiver(pre_delete)
-def delete_observations(sender, instance, **kwargs):
-    """Delete Observations before deleting an Encounter.
-
-    See https://github.com/django-polymorphic/django-polymorphic/issues/34
-    """
-    if sender == Encounter:
-        [obs.delete() for obs in instance.observation_set.all()]
 
 
 # Encounter models -----------------------------------------------------------#
@@ -3626,36 +3474,6 @@ class LoggerEncounter(Encounter):
         return "observations/loggerencounter_card.html"
 
 
-# Encounter signals ----------------------------------------------------------#
-@receiver(pre_save, sender=Encounter)
-@receiver(pre_save, sender=AnimalEncounter)
-@receiver(pre_save, sender=TurtleNestEncounter)
-@receiver(pre_save, sender=LineTransectEncounter)
-def encounter_pre_save(sender, instance, *args, **kwargs):
-    """Encounter pre_save: calculate expensive lookups.
-
-    Bulk updates or bulk creates will bypass these to be reconstructed later.
-
-    * source_id: Set form short_name if empty
-    * area and site: Inferred from location (where) if empty
-    * encounter_type: Always from get_encounter_type
-    * as_html /as_latex: Always set from get_popup() and get_latex()
-    """
-    if not instance.source_id:
-        instance.source_id = instance.short_name
-    # This is slow, use set_name() instead in bulk
-    if (not instance.name) and instance.inferred_name:
-        instance.name = instance.inferred_name
-    if not instance.site:
-        instance.site = instance.guess_site
-    if not instance.area:
-        instance.area = instance.guess_area
-    instance.encounter_type = instance.get_encounter_type
-    instance.as_html = instance.get_popup()
-    # instance.as_latex = instance.get_latex()
-
-
-# Observation models ---------------------------------------------------------#
 class Observation(PolymorphicModel, LegacySourceMixin, models.Model):
     """The Observation base class for encounter observations.
 
@@ -3958,13 +3776,6 @@ class TagObservation(Observation):
         return "{0}?q={1}".format(cl, urllib.parse.quote_plus(self.name))
 
 
-@receiver(pre_save, sender=TagObservation)
-def tagobservation_pre_save(sender, instance, *args, **kwargs):
-    """TagObservation pre_save: sanitise tag_label, name Encounter after tag."""
-    if instance.encounter.status == Encounter.STATUS_NEW and instance.name:
-        instance.name = sanitize_tag_label(instance.name)
-
-
 class NestTagObservation(Observation):
     """Turtle Nest Tag Observation.
 
@@ -4058,24 +3869,6 @@ class NestTagObservation(Observation):
                 .replace(" ", ""),
                 "" if not self.date_nest_laid else str(self.date_nest_laid),
                 "" if not self.tag_label else self.tag_label.upper().replace(" ", ""),
-            ]
-        )
-
-
-@receiver(pre_save, sender=NestTagObservation)
-def nesttagobservation_pre_save(sender, instance, *args, **kwargs):
-    """NestTagObservation pre_save: sanitise tag_label, name unnamed Encounter after tag."""
-    if instance.encounter.status == Encounter.STATUS_NEW and instance.tag_label:
-        instance.tag_label = sanitize_tag_label(instance.tag_label)
-    if instance.encounter.status == Encounter.STATUS_NEW and instance.flipper_tag_id:
-        instance.flipper_tag_id = sanitize_tag_label(instance.flipper_tag_id)
-    if instance.encounter.status == Encounter.STATUS_NEW and (
-        not instance.encounter.name
-    ):
-        instance.encounter.name = instance.name
-        instance.encounter.save(
-            update_fields=[
-                "name",
             ]
         )
 
