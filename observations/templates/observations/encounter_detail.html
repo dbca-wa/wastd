@@ -32,6 +32,7 @@
               QA status: {{ object.get_status_display }}
             </span>
         </span>
+        <!-- FIXME: permissions check -->
         {% if request.user.is_staff %}
         <div>
             <!-- Display edit & QA transitions (if authorised) -->
@@ -156,7 +157,8 @@
 {% block tag_observation_cards %}{% endblock %}
 
 {% block state_logs %}
-{% if state_logs %}
+<!-- FIXME: permissions check -->
+{% if state_logs and request.user.is_staff %}
 <div class="row">
     <div class="col-sm-12 col-md-8">
         <h1>QA/QC logs</h1>
@@ -182,6 +184,7 @@
 </div>
 {% endif %}
 {% endblock state_logs %}
+
 {% endblock page_content_inner %}
 
 {% block extra_js %}
