@@ -90,7 +90,7 @@ class SurveyList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
     resource_class = SurveyResource
 
     def get_context_data(self, **kwargs):
-        context = super(SurveyList, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context["list_filter"] = SurveyFilter(
             self.request.GET, queryset=self.get_queryset()
         )
@@ -112,8 +112,10 @@ class SurveyDetail(DetailViewBreadcrumbMixin, DetailView):
     model = Survey
 
     def get_context_data(self, **kwargs):
-        data = super(SurveyDetail, self).get_context_data(**kwargs)
-        return data
+        context = super().get_context_data(**kwargs)
+        obj = self.get_object()
+        context["page_title"] = f"WAStD | Survey {obj.pk}"
+        return context
 
 
 def close_survey_duplicates(request, pk):
@@ -195,7 +197,7 @@ class PagedFilteredTableView(SingleTableView):
 
     def get_context_data(self, **kwargs):
         """Add the specified filter class to context."""
-        context = super(PagedFilteredTableView, self).get_context_data()
+        context = super().get_context_data(**kwargs)
         context[self.context_filter_name] = self.filter
         return context
 
@@ -220,7 +222,7 @@ class EncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
     resource_class = EncounterResource
 
     def get_context_data(self, **kwargs):
-        context = super(EncounterList, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context["list_filter"] = EncounterFilter(
             self.request.GET, queryset=self.get_queryset()
         )
@@ -242,9 +244,11 @@ class EncounterDetail(DetailViewBreadcrumbMixin, DetailView):
     model = Encounter
 
     def get_context_data(self, **kwargs):
-        data = super(EncounterDetail, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
+        obj = self.get_object()
+        context["page_title"] = f"WAStD | Encounter {obj.pk}"
         # data['tags'] = TagObservation.objects.filter(encounter__in=[self.get_object()])
-        return data
+        return context
 
 
 class EncounterCurate(LoginRequiredMixin, SingleObjectMixin, View):
@@ -293,7 +297,7 @@ class AnimalEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListVi
     resource_class = AnimalEncounterResource
 
     def get_context_data(self, **kwargs):
-        context = super(AnimalEncounterList, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         qs = self.get_queryset()
         context["list_filter"] = AnimalEncounterFilter(self.request.GET, queryset=qs)
         context["model_admin"] = admin.AnimalEncounterAdmin
@@ -356,11 +360,12 @@ class AnimalEncounterDetail(DetailViewBreadcrumbMixin, DetailView):
     model = AnimalEncounter
 
     def get_context_data(self, **kwargs):
-        data = super(AnimalEncounterDetail, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         obj = self.get_object()
-        data["tag_observations"] = TagObservation.objects.filter(encounter__in=[obj])
-        data["state_logs"] = StateLog.objects.for_(obj)
-        return data
+        context["tag_observations"] = TagObservation.objects.filter(encounter__in=[obj])
+        context["state_logs"] = StateLog.objects.for_(obj)
+        context["page_title"] = f"WAStD | Animal encounter {obj.pk}"
+        return context
 
 
 class AnimalEncounterUpdate(UpdateView):
@@ -415,7 +420,7 @@ class TurtleNestEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, Li
     resource_class = TurtleNestEncounterResource
 
     def get_context_data(self, **kwargs):
-        context = super(TurtleNestEncounterList, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         qs = self.get_queryset()
         context["list_filter"] = TurtleNestEncounterFilter(self.request.GET, queryset=qs)
         context["model_admin"] = admin.TurtleNestEncounterAdmin
@@ -435,6 +440,13 @@ class TurtleNestEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, Li
 
 class TurtleNestEncounterDetail(DetailViewBreadcrumbMixin, DetailView):
     model = TurtleNestEncounter
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        obj = self.get_object()
+        context["state_logs"] = StateLog.objects.for_(obj)
+        context["page_title"] = f"WAStD | Turtle nest encounter {obj.pk}"
+        return context
 
 
 class TurtleNestEncounterCurate(EncounterCurate):
@@ -459,7 +471,7 @@ class LineTransectEncounterList(
     resource_class = LineTransectEncounterResource
 
     def get_context_data(self, **kwargs):
-        context = super(LineTransectEncounterList, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context["list_filter"] = LineTransectEncounterFilter(
             self.request.GET, queryset=self.get_queryset()
         )
