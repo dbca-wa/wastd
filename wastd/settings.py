@@ -1,4 +1,3 @@
-from csv import QUOTE_ALL
 import dj_database_url
 import os
 from pathlib import Path
