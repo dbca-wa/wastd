@@ -567,10 +567,10 @@ NESTING_PRESENT = ("nest-with-eggs", "nest-unsure-of-eggs")
 
 NEST_AGE_DEFAULT = "unknown"
 NEST_AGE_CHOICES = (
-    ("old", "(O) old, made before last night"),
-    ("fresh", "(F) fresh, made last night"),
-    (NEST_AGE_DEFAULT, "(U) unknown age"),
-    ("missed", "(M) missed turtle, made within past hours"),
+    ("old", "old, made before last night"),
+    ("fresh", "fresh, made last night"),
+    (NEST_AGE_DEFAULT, "unknown age"),
+    ("missed", "missed turtle, made within past hours"),
 )
 
 NEST_TYPE_DEFAULT = "track-not-assessed"
@@ -831,8 +831,6 @@ class Area(geo_models.Model):
     )
 
     class Meta:
-        """Class options."""
-
         ordering = ["-northern_extent", "name"]
         unique_together = ("area_type", "name")
         verbose_name = "Area"
@@ -848,7 +846,6 @@ class Area(geo_models.Model):
         super(Area, self).save(*args, **kwargs)
 
     def __str__(self):
-        """The unicode representation."""
         return "{0} {1}".format(
             self.area_type,
             self.name,
@@ -964,7 +961,6 @@ class SiteVisitStartEnd(geo_models.Model):
     # media attachment
 
     def __str__(self):
-        """The unicode representation."""
         return "Site visit start or end on {0}".format(self.datetime.isoformat())
 
 
@@ -1043,12 +1039,9 @@ class Campaign(geo_models.Model):
     )
 
     class Meta:
-        """Class options."""
-
         ordering = ["-start_time", "destination", "owner"]
 
     def __str__(self):
-        """The unicode representation."""
         return "{0} {1} {2} to {3}".format(
             "-" if not self.owner else self.owner.label,
             "-" if not self.destination else self.destination.name,
@@ -1175,7 +1168,6 @@ class CampaignMediaAttachment(models.Model):
     )
 
     def __str__(self):
-        """The unicode representation."""
         return "Attachment {0} {1} for {2}".format(
             self.pk, self.title, self.campaign.__str__()
         )
@@ -1407,15 +1399,12 @@ class Survey(QualityControlMixin, UrlsMixin, geo_models.Model):
     )
 
     class Meta:
-        """Class options."""
-
         ordering = [
             "-start_time",
         ]
         unique_together = ("source", "source_id")
 
     def __str__(self):
-        """The unicode representation is cached in field ``label`` and updated pre-save."""
         return self.label or str(self.pk)
 
     @property
@@ -1729,8 +1718,6 @@ class SurveyEnd(geo_models.Model):
     )
 
     class Meta:
-        """Class options."""
-
         verbose_name = "Survey"
         verbose_name_plural = "Surveys"
         ordering = ["end_location", "end_time"]
@@ -1742,7 +1729,6 @@ class SurveyEnd(geo_models.Model):
         super(SurveyEnd, self).save(*args, **kwargs)
 
     def __str__(self):
-        """The unicode representation."""
         return "SurveyEnd {0} at {1} on {2}".format(
             self.pk,
             "na" if not self.site else self.site,
@@ -1800,12 +1786,9 @@ class SurveyMediaAttachment(LegacySourceMixin, models.Model):
     )
 
     class Meta:
-        """Class opts."""
-
         verbose_name = "Survey Media Attachment"
 
     def __str__(self):
-        """The unicode representation."""
         return "Media {0} {1} for {2}".format(
             self.pk if self.pk else "",
             self.title,
@@ -2117,8 +2100,6 @@ class Encounter(PolymorphicModel, UrlsMixin, geo_models.Model):
     )
 
     class Meta:
-        """Class options."""
-
         ordering = ["-when", "where"]
         unique_together = ("source", "source_id")
         index_together = [
@@ -2135,7 +2116,6 @@ class Encounter(PolymorphicModel, UrlsMixin, geo_models.Model):
         return self._meta
 
     def __str__(self):
-        """The unicode representation."""
         return "Encounter {0} on {1} by {2}".format(self.pk, self.when, self.observer)
 
     @property
@@ -2956,15 +2936,12 @@ class AnimalEncounter(Encounter):
     )
 
     class Meta:
-        """Class options."""
-
         verbose_name = "Animal Encounter"
         verbose_name_plural = "Animal Encounters"
         get_latest_by = "when"
         # base_manager_name = 'base_objects'  # fix delete bug
 
     def __str__(self):
-        """The unicode representation."""
         tpl = "AnimalEncounter {0} on {1} by {2} of {3}, {4} {5} {6} on {7}"
         return tpl.format(
             self.pk,
@@ -3172,21 +3149,12 @@ class TurtleNestEncounter(Encounter):
     )
 
     class Meta:
-        """Class options."""
-
         verbose_name = "Turtle Nest Encounter"
         verbose_name_plural = "Turtle Nest Encounters"
         get_latest_by = "when"
-        # base_manager_name = 'base_objects'  # fix delete bug
 
     def __str__(self):
-        """The unicode representation."""
-        return "{0} {1} of {2} in {3}".format(
-            self.get_nest_age_display(),
-            self.get_nest_type_display(),
-            self.get_species_display(),
-            self.get_habitat_display(),
-        )
+        return f"{self.pk}: {self.get_nest_type_display()}, {self.get_nest_age_display()}, {self.get_species_display()}"
 
     @property
     def get_encounter_type(self):
@@ -3285,15 +3253,12 @@ class LineTransectEncounter(Encounter):
     )
 
     class Meta:
-        """Class options."""
-
         verbose_name = "Line Transect Encounter"
         verbose_name_plural = "Line Transect Encounters"
         get_latest_by = "when"
         # base_manager_name = 'base_objects'  # fix delete bug
 
     def __str__(self):
-        """The unicode representation."""
         return "Line tx {0}".format(self.pk)
 
     def inferred_name(self):
@@ -3415,15 +3380,12 @@ class LoggerEncounter(Encounter):
     #     help_text=_("Comments"), )
 
     class Meta:
-        """Class options."""
-
         verbose_name = "Logger Encounter"
         verbose_name_plural = "Logger Encounters"
         get_latest_by = "when"
         # base_manager_name = 'base_objects'  # fix delete bug
 
     def __str__(self):
-        """The unicode representation."""
         return "{0} {1} {2}".format(
             self.get_logger_type_display(),
             self.name or "",
@@ -3573,12 +3535,9 @@ class MediaAttachment(Observation):
     )
 
     class Meta:
-        """Class opts."""
-
         verbose_name = "Media Attachment"
 
     def __str__(self):
-        """The unicode representation."""
         return "Media {0} for {1}".format(self.pk, self.encounter.__str__())
 
     @property
@@ -3719,8 +3678,6 @@ class TagObservation(Observation):
     )
 
     class Meta:
-        """Class opts."""
-
         verbose_name = "Turtle Tag Observation"
 
     def __str__(self):
@@ -3833,12 +3790,9 @@ class NestTagObservation(Observation):
     )
 
     class Meta:
-        """Class opts."""
-
         verbose_name = "Turtle Nest Tag Observation"
 
     def __str__(self):
-        """The unicode representation."""
         return "{0} ({1})".format(self.name, self.get_status_display())
 
     # def save(self, *args, **kwargs):
@@ -3890,12 +3844,9 @@ class ManagementAction(Observation):
     )
 
     class Meta:
-        """Class opts."""
-
         verbose_name = "Management Action"
 
     def __str__(self):
-        """The unicode representation."""
         return "Management Action {0} of {1}".format(self.pk, self.encounter.__str__())
 
 
@@ -4103,12 +4054,9 @@ class TurtleMorphometricObservation(Observation):
     )
 
     class Meta:
-        """Class opts."""
-
         verbose_name = "Turtle Morphometric Observation"
 
     def __str__(self):
-        """The unicode representation."""
         tpl = "Turtle Morphometrics {0} CCL {1} CCW {2} for Encounter {3}"
         return tpl.format(
             self.pk,
@@ -4143,12 +4091,9 @@ class HatchlingMorphometricObservation(Observation):
     )
 
     class Meta:
-        """Class opts."""
-
         verbose_name = "Turtle Hatchling Morphometric Observation"
 
     def __str__(self):
-        """The unicode representation."""
         tpl = "{0} Hatchling SCL {1} mm, SCW {2} mm, Wt {3} g"
         return tpl.format(
             self.pk,
@@ -4191,12 +4136,9 @@ class DugongMorphometricObservation(Observation):
     )
 
     class Meta:
-        """Class opts."""
-
         verbose_name = "Dugong Morphometric Observation"
 
     def __str__(self):
-        """The unicode representation."""
         tpl = "{0} {1} Hatchling SCL {2} mm, SCW {3} mm, Wt {4} g"
         return tpl.format(
             self.pk,
@@ -4242,12 +4184,9 @@ class TurtleDamageObservation(Observation):
     )
 
     class Meta:
-        """Class opts."""
-
         verbose_name = "Turtle Damage Observation"
 
     def __str__(self):
-        """The unicode representation."""
         return "{0}: {1} {2}".format(
             self.get_body_part_display(),
             self.get_damage_age_display(),
@@ -4290,12 +4229,9 @@ class TrackTallyObservation(Observation):
     )
 
     class Meta:
-        """Class opts."""
-
         verbose_name = "Turtle Track Tally Observation"
 
     def __str__(self):
-        """The unicode representation."""
         t1 = "TrackTally: {0} {1} {2}s of {3}"
         return t1.format(self.tally, self.nest_age, self.nest_type, self.species)
 
@@ -4341,12 +4277,9 @@ class TurtleNestDisturbanceTallyObservation(Observation):
     )
 
     class Meta:
-        """Class opts."""
-
         verbose_name = "Turtle Nest Disturbance Tally Observation"
 
     def __str__(self):
-        """The unicode representation."""
         t1 = (
             "Nest Damage Tally: {0} nests of {1} showing disturbance by {2} "
             "({3} disturbance signs sighted)"
@@ -4513,13 +4446,10 @@ class TurtleNestObservation(Observation):
     )
 
     class Meta:
-        """Class opts."""
-
         verbose_name = "Turtle Nest Excavation (Egg count)"
         verbose_name_plural = "Turtle Nest Excavations (Egg count)"
 
     def __str__(self):
-        """The unicode representation."""
         return "Nest Obs {0} eggs, hatching succ {1}, emerg succ {2}".format(
             self.egg_count, self.hatching_success, self.emergence_success
         )
@@ -4647,14 +4577,11 @@ class TurtleNestDisturbanceObservation(Observation):
     )
 
     def __str__(self):
-        """The unicode representation."""
         return "Nest Disturbance {0} {1}".format(
             self.disturbance_cause, self.disturbance_severity
         )
 
     class Meta:
-        """Class opts."""
-
         verbose_name = "Turtle Nest Disturbance Observation"
 
 
@@ -4684,9 +4611,6 @@ class PathToSea(models.Model):
     )
 
     class Meta:
-        """Class opts."""
-
-        # abstract = True
         ordering = [
             "code",
         ]
@@ -4884,8 +4808,6 @@ class TurtleHatchlingEmergenceObservation(Observation):
     )
 
     class Meta:
-        """Class opts."""
-
         verbose_name = "Turtle Hatchling Emergence Observation (Fan Angle)"
         verbose_name_plural = "Turtle Hatchling Emergence Observations (Fan Angles)"
 
@@ -4939,8 +4861,6 @@ class LightSourceObservation(Observation):
     )
 
     class Meta:
-        """Class opts."""
-
         verbose_name = "Turtle Hatchling Light Source Observation (Fan Angle)"
         verbose_name_plural = "Turtle Hatchling Light Source Observations (Fan Angles)"
 
@@ -4989,8 +4909,6 @@ class TurtleHatchlingEmergenceOutlierObservation(Observation):
     )
 
     class Meta:
-        """Class opts."""
-
         verbose_name = "Turtle Hatchling Emergence Outlier Observation (Fan Angle)"
         verbose_name_plural = (
             "Turtle Hatchling Emergence Outlier Observations (Fan Angles)"
@@ -5040,12 +4958,9 @@ class TemperatureLoggerSettings(Observation):
     )
 
     class Meta:
-        """Class opts."""
-
         verbose_name = "Temperature Logger Setting"
 
     def __str__(self):
-        """The unicode representation."""
         return "Sampling starting on {0} with rate {1}".format(
             self.recording_start, self.logging_interval
         )
@@ -5066,12 +4981,9 @@ class DispatchRecord(Observation):
     )
 
     class Meta:
-        """Class opts."""
-
         verbose_name = "Dispatch Record"
 
     def __str__(self):
-        """The unicode representation."""
         return "Sent on {0} to {1}".format(self.encounter.when, self.sent_to)
 
 
@@ -5135,12 +5047,9 @@ class TemperatureLoggerDeployment(Observation):
     )
 
     class Meta:
-        """Class opts."""
-
         verbose_name = "Temperature Logger Deployment"
 
     def __str__(self):
-        """The unicode representation."""
         return "Logger at {0} mm depth".format(self.depth_mm)
 
 
@@ -5197,6 +5106,4 @@ class LoggerObservation(Observation):
     )
 
     class Meta:
-        """Class opts."""
-
         verbose_name = "Logger Observation"
