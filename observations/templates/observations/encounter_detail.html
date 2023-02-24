@@ -24,9 +24,9 @@
         <span class="float-right">
             {% block title_labels %}{% endblock %}
         </span>
-        <h1>
+        <h2>
             {% block heading %}{{ object }}{% endblock heading %}
-        </h1>
+        </h2>
         <span class="float-right">
             <span class="badge badge-{{ object.status_colour|default:'secondary' }}">
               QA status: {{ object.get_status_display }}
@@ -109,7 +109,7 @@
                         {% endif %}
                     </td>
                 </tr>
-                {% block extra_observation_details %}{% endblock %}
+                {% block extra_encounter_details %}{% endblock %}
                 {% if object.observation_set %}
                 <tr>
                     <th>
@@ -161,7 +161,7 @@
 {% if state_logs and request.user.is_staff %}
 <div class="row">
     <div class="col-sm-12 col-md-8">
-        <h1>QA/QC logs</h1>
+        <h2>QA/QC logs</h2>
         <table class="table table-striped table-bordered table-condensed">
             <thead>
                 <th>Timestamp</th>

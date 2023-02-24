@@ -35,8 +35,7 @@
 {% endif %}
 {% endblock title_labels %}
 
-
-{% block extra_observation_details %}
+{% block extra_encounter_details %}
 <tr>
     <th>
         Identifiers
@@ -141,7 +140,7 @@
         {{ object.behaviour|safe|default:"" }}
     </td>
 </tr>
-{% endblock extra_observation_details %}
+{% endblock extra_encounter_details %}
 
 <!-- Tags -->
 {% block tag_observation_cards %}
