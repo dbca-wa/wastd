@@ -1,9 +1,88 @@
 {% extends "observations/encounter_detail.html" %}
 
-{% load leaflet_tags geojson_tags static observations %}
-
 {% block heading %}
-{{ object.get_nest_age_display }}
-{{ object.get_species_display }}
-{{ object.get_nest_type_display }}
+{{ object.get_nest_type_display|capfirst }}, {{ object.get_nest_age_display }}, {{ object.get_species_display }}
 {% endblock %}
+
+{% block extra_encounter_details %}
+<tr>
+    <th>
+        Age
+    </th>
+    <td>
+        {{ object.get_nest_age_display|capfirst }}
+    </td>
+</tr>
+<tr>
+    <th>
+        Type
+    </th>
+    <td>
+        {{ object.get_nest_type_display|capfirst }}
+    </td>
+</tr>
+<tr>
+    <th>
+        Species
+    </th>
+    <td>
+        {{ object.get_species_display }}
+    </td>
+</tr>
+<tr>
+    <th>
+        Habitat
+    </th>
+    <td>
+        {{ object.get_habitat_display|capfirst }}
+    </td>
+</tr>
+<tr>
+    <th>
+        Evidence of predation or other disturbance?
+    </th>
+    <td>
+        {{ object.get_disturbance_display }}
+    </td>
+</tr>
+<tr>
+    <th>
+        Nest tag
+    </th>
+    <td>
+        {{ object.get_nest_tagged_display }}
+    </td>
+</tr>
+<tr>
+    <th>
+        Logger found
+    </th>
+    <td>
+        {{ object.get_logger_found_display }}
+    </td>
+</tr>
+<tr>
+    <th>
+        Eggs counted
+    </th>
+    <td>
+        {{ object.get_eggs_counted_display }}
+    </td>
+</tr>
+<tr>
+    <th>
+        Hatchlings measured
+    </th>
+    <td>
+        {{ object.get_hatchlings_measured_display }}
+    </td>
+</tr>
+<tr>
+    <th>
+        Hatchling emergence recorded
+    </th>
+    <td>
+        {{ object.get_fan_angles_measured_display }}
+    </td>
+</tr>
+{% endblock extra_encounter_details %}
