@@ -97,7 +97,7 @@ class Command(BaseCommand):
                 if nest_encounters:
                     logger.info(f'Flagging {nest_encounters.count()} turtle nest encounters for curation: {species_name} at {area.name}')
                 for enc in nest_encounters:
-                    enc.flag(by=system_user, description=f'Flagging {nest_encounters.count()} turtle nest encounters for curation: {species_name} at {area.name}')
+                    enc.flag(by=system_user, description=f'Flagged for curation by automated checks: {species_name} at {area.name}')
                     enc.save()
 
                 nest_encounters = set()
@@ -113,7 +113,7 @@ class Command(BaseCommand):
                 if nest_encounters:
                     logger.info(f'Flagging {nest_encounters.count()} turtle nest encounters for curation: {species_name} at {area.name}')
                 for enc in nest_encounters:
-                    enc.flag(by=system_user, description=f'Flagging {nest_encounters.count()} turtle nest encounters for curation: {species_name} at {area.name}')
+                    enc.flag(by=system_user, description=f'Flagged for curation by automated checks: {species_name} at {area.name}')
                     enc.save()
 
         # Check: Any records with the following species at any of the following areas.
@@ -139,7 +139,7 @@ class Command(BaseCommand):
                 if nest_encounters:
                     logger.info(f'Flagging {nest_encounters.count()} turtle nest encounters for curation: {species_name} at {area.name}')
                 for enc in nest_encounters:
-                    enc.flag(by=system_user, description=f'Flagging {nest_encounters.count()} turtle nest encounters for curation: {species_name} at {area.name}')
+                    enc.flag(by=system_user, description=f'Flagged for curation by automated checks: {species_name} at {area.name}')
                     enc.save()
 
                 # Observations linked to TurtleNestEncounter objects.
@@ -156,7 +156,16 @@ class Command(BaseCommand):
                 if nest_encounters:
                     logger.info(f'Flagging {nest_encounters.count()} turtle nest encounters for curation: {species_name} at {area.name}')
                 for enc in nest_encounters:
-                    enc.flag(by=system_user, description=f'Flagging {nest_encounters.count()} turtle nest encounters for curation: {species_name} at {area.name}')
+                    enc.flag(by=system_user, description=f'Flagged for curation by automated checks: {species_name} at {area.name}')
                     enc.save()
+
+        # Mark remaining TurtleNestEncounter objects with status == New as imported (passed QA/QC checks).
+        # FIXME: STATUS_NEW may change to STATUS_IMPORTED.
+        nest_encounters = TurtleNestEncounter.objects.filter(status=Encounter.STATUS_NEW)
+        if nest_encounters:
+            logger.info(f'Marking {nest_encounters.count()} imported turtle nest encounters as curated (passed QA/QC checks)')
+        for enc in nest_encounters:
+            enc.curate(by=system_user, description=f'Curated by automated QA/QC (passed all checks)')
+            enc.save()
 
         logger.info('Automated QA/QC checks completed')
