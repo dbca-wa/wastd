@@ -1,9 +1,12 @@
 from django.core.management.base import BaseCommand
+import itertools
 import logging
 
 from observations.models import (
+    Area,
     Encounter,
     TurtleNestEncounter,
+    TrackTallyObservation,
     TurtleNestDisturbanceObservation,
     TurtleNestDisturbanceTallyObservation,
     TURTLE_SPECIES_DEFAULT,
@@ -27,7 +30,7 @@ class Command(BaseCommand):
         if nest_encounters:
             logger.info(f'Flagging {nest_encounters.count()} turtle nest encounters for curation due to uncertain species')
         for enc in nest_encounters:
-            enc.flag(by=system_user, description='Flagged by automated checks due to uncertain species')
+            enc.flag(by=system_user, description='Flagged for curation by automated checks due to uncertain species')
             enc.save()
 
         # Check: Any turtle nest encounter with uncertain nesting outcome.
@@ -36,7 +39,7 @@ class Command(BaseCommand):
         if nest_encounters:
             logger.info(f'Flagging {nest_encounters.count()} turtle nest encounters for curation due to uncertain nesting outcome')
         for enc in nest_encounters:
-            enc.flag(by=system_user, description='Flagged by automated checks due to uncertain nesting outcome')
+            enc.flag(by=system_user, description='Flagged for curation by automated checks due to uncertain nesting outcome')
             enc.save()
 
         # Check: Any turtle nest encounter with uncertain nest age.
@@ -45,7 +48,7 @@ class Command(BaseCommand):
         if nest_encounters:
             logger.info(f'Flagging {nest_encounters.count()} turtle nest encounters for curation due to uncertain nest age')
         for enc in nest_encounters:
-            enc.flag(by=system_user, description='Flagged by automated checks due to uncertain nest age')
+            enc.flag(by=system_user, description='Flagged for curation by automated checks due to uncertain nest age')
             enc.save()
 
         # Check: Any turtle nest encounter marked as uncertain for predation.
@@ -62,7 +65,98 @@ class Command(BaseCommand):
         if nest_encounters:
             logger.info(f'Flagging {nest_encounters.count()} turtle nest encounters for curation due to uncertain predation')
         for enc in nest_encounters:
-            enc.flag(by=system_user, description='Flagged by automated checks due to uncertain predation')
+            enc.flag(by=system_user, description='Flagged for curation by automated checks due to uncertain predation')
             enc.save()
+
+        # Check: Any records with the following species at any of the following areas.
+        # Species: Leatherback, Loggerhead, Olive Ridley
+        # Areas: Delambre Island, Thevenard Island, Port Hedland, Rosemary Island, Eco Beach, Barrow Island, Mundabullungana
+        localities = [
+            "Delambre Island",
+            "Thevenard Island",
+            "Port Hedland",
+            "Rosemary Island",
+            "Eco Beach",
+            "Barrow Island",
+            "Mundabullangana",
+        ]
+        species_list = [
+            ("dermochelys-coriacea", "Dermochelys coriacea (Leatherback turtle)"),
+            ("caretta-caretta", "Caretta caretta (Loggerhead turtle)"),
+            ("lepidochelys-olivacea", "Lepidochelys olivacea (Olive ridley turtle)"),
+        ]
+
+        for el in itertools.product(localities, species_list):
+            locality = Area.objects.get(name=el[0], area_type="Locality")
+            areas = Area.objects.filter(geom__coveredby=locality.geom)
+            species = el[1][0]
+            species_name = el[1][1]
+
+            for area in areas:
+                nest_encounters = TurtleNestEncounter.objects.filter(area=area, species=species, status=Encounter.STATUS_NEW)
+                if nest_encounters:
+                    logger.info(f'Flagging {nest_encounters.count()} turtle nest encounters for curation: {species_name} at {area.name}')
+                for enc in nest_encounters:
+                    enc.flag(by=system_user, description=f'Flagging {nest_encounters.count()} turtle nest encounters for curation: {species_name} at {area.name}')
+                    enc.save()
+
+                nest_encounters = set()
+                for obs in TrackTallyObservation.objects.filter(encounter__area=area, species=species):
+                    if isinstance(obs.encounter, TurtleNestEncounter):
+                        nest_encounters.add(obs.encounter)
+                for obs in TurtleNestDisturbanceTallyObservation.objects.filter(encounter__area=area, species=species):
+                    if isinstance(obs.encounter, TurtleNestEncounter):
+                        nest_encounters.add(obs.encounter)
+                pks = [enc.pk for enc in nest_encounters]
+                # Convert back to a queryset
+                nest_encounters = TurtleNestEncounter.objects.filter(pk__in=pks, status=Encounter.STATUS_NEW)
+                if nest_encounters:
+                    logger.info(f'Flagging {nest_encounters.count()} turtle nest encounters for curation: {species_name} at {area.name}')
+                for enc in nest_encounters:
+                    enc.flag(by=system_user, description=f'Flagging {nest_encounters.count()} turtle nest encounters for curation: {species_name} at {area.name}')
+                    enc.save()
+
+        # Check: Any records with the following species at any of the following areas.
+        # Species: Leatherback, Olive Ridley
+        # Areas: Ningaloo
+        localities = [
+            "Ningaloo",
+        ]
+        species_list = [
+            ("dermochelys-coriacea", "Dermochelys coriacea (Leatherback turtle)"),
+            ("lepidochelys-olivacea", "Lepidochelys olivacea (Olive ridley turtle)"),
+        ]
+
+        for el in itertools.product(localities, species_list):
+            locality = Area.objects.get(name=el[0], area_type="Locality")
+            areas = Area.objects.filter(geom__coveredby=locality.geom)
+            species = el[1][0]
+            species_name = el[1][1]
+
+            for area in areas:
+                # TurtleNestEncounter objects
+                nest_encounters = TurtleNestEncounter.objects.filter(area=area, species=species, status=Encounter.STATUS_NEW)
+                if nest_encounters:
+                    logger.info(f'Flagging {nest_encounters.count()} turtle nest encounters for curation: {species_name} at {area.name}')
+                for enc in nest_encounters:
+                    enc.flag(by=system_user, description=f'Flagging {nest_encounters.count()} turtle nest encounters for curation: {species_name} at {area.name}')
+                    enc.save()
+
+                # Observations linked to TurtleNestEncounter objects.
+                nest_encounters = set()
+                for obs in TrackTallyObservation.objects.filter(encounter__area=area, species=species):
+                    if isinstance(obs.encounter, TurtleNestEncounter):
+                        nest_encounters.add(obs.encounter)
+                for obs in TurtleNestDisturbanceTallyObservation.objects.filter(encounter__area=area, species=species):
+                    if isinstance(obs.encounter, TurtleNestEncounter):
+                        nest_encounters.add(obs.encounter)
+                pks = [enc.pk for enc in nest_encounters]
+                # Convert back to a queryset
+                nest_encounters = TurtleNestEncounter.objects.filter(pk__in=pks, status=Encounter.STATUS_NEW)
+                if nest_encounters:
+                    logger.info(f'Flagging {nest_encounters.count()} turtle nest encounters for curation: {species_name} at {area.name}')
+                for enc in nest_encounters:
+                    enc.flag(by=system_user, description=f'Flagging {nest_encounters.count()} turtle nest encounters for curation: {species_name} at {area.name}')
+                    enc.save()
 
         logger.info('Automated QA/QC checks completed')
