@@ -2822,7 +2822,7 @@ def update_wastd_user(u):
 # -----------------------------------------------------------------------------#
 # Mapping
 #
-def make_mapping():
+def get_odk_wastd_mapping():
     """Generate a mapping of ODK to WAStD keys."""
     species = map_and_keep(SPECIES_CHOICES)
     species.update(
@@ -2989,9 +2989,7 @@ def make_mapping():
 # -----------------------------------------------------------------------------#
 # Main import call
 #
-def import_odk(
-    datafile, flavour="odk-tt036", extradata=None, usercsv=None, mapping=make_mapping()
-):
+def import_odk(datafile, flavour="odk-tt036", extradata=None, usercsv=None, mapping=None):
     """Import ODK data.
 
     Arguments
@@ -3005,7 +3003,7 @@ def import_odk(
 
     usercsv A CSV file with columns "name" and "PERSON_ID"
 
-    mapping A dict mapping dropdown values from ODK to WAStD, default: ODK_MAPPING
+    mapping A dict mapping dropdown values from ODK to WAStD
 
     Preparation:
 
@@ -3036,6 +3034,9 @@ def import_odk(
         import_odk('data/latest/fs03.json', flavour="odk-fs03")
         import_odk('data/latest/mwi01.json', flavour="odk-mwi01")
     """
+    if not mapping:
+        mapping = get_odk_wastd_mapping()
+
     if flavour == "odk-tt034":
         logger.info("Using flavour ODK Track or Treat 0.34...")
         with open(datafile) as df:
