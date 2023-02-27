@@ -1,75 +1,42 @@
-"""Filters for WAStD Observations."""
 from django_filters import FilterSet
 from django_filters.filters import (
     DateFilter,
-    # DateTimeFilter,
     BooleanFilter,
-    CharFilter,
-    RangeFilter,
     ChoiceFilter,
     MultipleChoiceFilter,
     ModelChoiceFilter,
-    ModelMultipleChoiceFilter,
 )
 from shared.filters import FILTER_OVERRIDES
+from users.models import User
 from .models import (
     HEALTH_CHOICES,
     SOURCE_CHOICES,
     ACTIVITY_CHOICES,
     SPECIES_CHOICES,
+    TURTLE_SPECIES_CHOICES,
     Area,
     Survey,
     Encounter,
     AnimalEncounter,
     TurtleNestEncounter,
-    # LoggerEncounter,
     LineTransectEncounter,
 )
 
 
 class SurveyFilter(FilterSet):
-    """Survey Filter.
-
-    https://django-filter.readthedocs.io/en/latest/usage.html
-    """
-
-    no_start = BooleanFilter(
-        label="Start Point reconstructed", field_name="source_id", lookup_expr="isnull"
-    )
-
-    no_end = BooleanFilter(
-        label="End Point reconstructed",
-        field_name="end_source_id",
-        lookup_expr="isnull",
-    )
-
+    no_start = BooleanFilter(label="Start Point reconstructed", field_name="source_id", lookup_expr="isnull")
+    no_end = BooleanFilter(label="End Point reconstructed", field_name="end_source_id", lookup_expr="isnull")
     area = ModelChoiceFilter(
         label="Locality",
-        queryset=Area.objects.filter(
-            area_type__in=[
-                Area.AREATYPE_LOCALITY,
-            ]
-        ).order_by("name"),
+        queryset=Area.objects.filter(area_type__in=[Area.AREATYPE_LOCALITY]).order_by("name"),
     )
-
     site = ModelChoiceFilter(
         label="Site",
-        queryset=Area.objects.filter(
-            area_type__in=[
-                Area.AREATYPE_SITE,
-            ]
-        ).order_by("name"),
+        queryset=Area.objects.filter(area_type__in=[Area.AREATYPE_SITE]).order_by("name"),
     )
-
-    survey_date = DateFilter(
-        field_name="start_time",
-        lookup_expr="date",
-        label="Exact survey date (YYYY-mm-dd)",
-    )
+    survey_date = DateFilter(field_name="start_time", lookup_expr="date", label="Exact survey date (YYYY-mm-dd)")
 
     class Meta:
-        """Options for SurveyFilter."""
-
         model = Survey
         filter_overrides = FILTER_OVERRIDES
         fields = [
@@ -93,48 +60,25 @@ class SurveyFilter(FilterSet):
             "end_location_accuracy_m",
             "end_time",
             "end_comments",
-            # 'team', # m2m
-            # 'label',
             "transect",
         ]
 
 
 class EncounterFilter(FilterSet):
-    """Encounter Filter.
-
-    https://django-filter.readthedocs.io/en/latest/usage.html
-    """
-
     area = ModelChoiceFilter(
         label="Locality",
-        queryset=Area.objects.filter(
-            area_type__in=[
-                Area.AREATYPE_LOCALITY,
-            ]
-        ).order_by("name"),
+        queryset=Area.objects.filter(area_type__in=[Area.AREATYPE_LOCALITY]).order_by("name"),
     )
     site = ModelChoiceFilter(
         label="Site",
-        queryset=Area.objects.filter(
-            area_type__in=[
-                Area.AREATYPE_SITE,
-            ]
-        ).order_by("name"),
+        queryset=Area.objects.filter(area_type__in=[Area.AREATYPE_SITE]).order_by("name"),
     )
-
     encounter_date = DateFilter(
         field_name="when", lookup_expr="date", label="Exact encounter date (YYYY-mm-dd)"
     )
-
-    source = ChoiceFilter(
-        field_name="source",
-        choices=sorted(SOURCE_CHOICES),
-        label="Data Source",
-    )
+    source = ChoiceFilter(field_name="source", choices=sorted(SOURCE_CHOICES), label="Data Source")
 
     class Meta:
-        """Options for EncounterFilter."""
-
         model = Encounter
         filter_overrides = FILTER_OVERRIDES
         fields = [
@@ -151,16 +95,9 @@ class EncounterFilter(FilterSet):
 
 
 class AnimalEncounterFilter(EncounterFilter):
-
     health = MultipleChoiceFilter(choices=sorted(HEALTH_CHOICES))
-    activity = ChoiceFilter(
-        field_name="activity",
-        choices=sorted(ACTIVITY_CHOICES),
-    )
-    species = ChoiceFilter(
-        field_name="species",
-        choices=sorted(SPECIES_CHOICES),
-    )
+    activity = ChoiceFilter(field_name="activity", choices=sorted(ACTIVITY_CHOICES))
+    species = ChoiceFilter(field_name="species", choices=sorted(SPECIES_CHOICES))
 
     class Meta(EncounterFilter.Meta):
 
@@ -190,8 +127,8 @@ class AnimalEncounterFilter(EncounterFilter):
 
 
 class TurtleNestEncounterFilter(EncounterFilter):
-    class Meta(EncounterFilter.Meta):
 
+    class Meta(EncounterFilter.Meta):
         model = TurtleNestEncounter
         fields = EncounterFilter._meta.fields + [
             "species",
@@ -207,21 +144,54 @@ class TurtleNestEncounterFilter(EncounterFilter):
         ]
 
 
-# class LoggerEncounterFilter(EncounterFilter):
+class TurtleNestEncounterBasicFilter(FilterSet):
+    date_from = DateFilter(
+        field_name="when",
+        lookup_expr="date__gte",
+        label="Date from",
+    )
+    date_to = DateFilter(
+        field_name="when",
+        lookup_expr="date__lte",
+        label="Date to",
+    )
+    user_observer = ModelChoiceFilter(
+        field_name="observer",
+        label="Observed by",
+        queryset=User.objects.filter(pk__in=set(TurtleNestEncounter.objects.values_list("observer", flat=True))).order_by("name"),
+    )
+    user_reporter = ModelChoiceFilter(
+        field_name="reporter",
+        label="Reported by",
+        queryset=User.objects.filter(pk__in=set(TurtleNestEncounter.objects.values_list("reporter", flat=True))).order_by("name"),
+    )
+    species = ChoiceFilter(field_name="species", choices=sorted(TURTLE_SPECIES_CHOICES))
+    status = ChoiceFilter(
+        field_name="status",
+        choices=(
+            (Encounter.STATUS_NEW, "New"),
+            (Encounter.STATUS_CURATED, "Curated"),
+            (Encounter.STATUS_FLAGGED, "Flagged"),
+        ),
+        label="QA status",
+    )
 
-#     class Meta(EncounterFilter.Meta):
-
-#         model = LoggerEncounter
-#         fields = EncounterFilter._meta.fields + [
-#             'logger_type',
-#             'deployment_status',
-#             'logger_id',
-#         ]
+    class Meta:
+        model = TurtleNestEncounter
+        fields = [
+            "date_from",
+            "date_to",
+            "user_observer",
+            "user_reporter",
+            "nest_type",
+            "species",
+            "status",
+        ]
 
 
 class LineTransectEncounterFilter(EncounterFilter):
-    class Meta(EncounterFilter.Meta):
 
+    class Meta(EncounterFilter.Meta):
         model = LineTransectEncounter
         fields = EncounterFilter._meta.fields + [
             "transect",
