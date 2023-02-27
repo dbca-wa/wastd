@@ -18,6 +18,7 @@ from .filters import (
     EncounterFilter,
     AnimalEncounterFilter,
     TurtleNestEncounterFilter,
+    TurtleNestEncounterBasicFilter,
     LineTransectEncounterFilter,
 )
 from .forms import (
@@ -416,26 +417,24 @@ class TurtleNestEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, Li
     model = TurtleNestEncounter
     template_name = "default_list.html"
     paginate_by = 20
-    filter_class = TurtleNestEncounterFilter
+    #filter_class = TurtleNestEncounterFilter
+    filter_class = TurtleNestEncounterBasicFilter
     resource_class = TurtleNestEncounterResource
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         qs = self.get_queryset()
-        context["list_filter"] = TurtleNestEncounterFilter(self.request.GET, queryset=qs)
+        #context["list_filter"] = TurtleNestEncounterFilter(self.request.GET, queryset=qs)
+        context["list_filter"] = TurtleNestEncounterBasicFilter(self.request.GET, queryset=qs)
         context["model_admin"] = admin.TurtleNestEncounterAdmin
         context["object_count"] = qs.count()
         context["page_title"] = "WAStD | Turtle nest encounters"
         return context
 
     def get_queryset(self):
-        qs = (
-            super(TurtleNestEncounterList, self)
-            .get_queryset()
-            .prefetch_related("observer", "reporter", "area", "site")
-            .order_by("-when")
-        )
-        return TurtleNestEncounterFilter(self.request.GET, queryset=qs).qs
+        qs = super().get_queryset().prefetch_related("observer", "reporter", "area", "site").order_by("-when")
+        #return TurtleNestEncounterFilter(self.request.GET, queryset=qs).qs
+        return TurtleNestEncounterBasicFilter(self.request.GET, queryset=qs).qs
 
 
 class TurtleNestEncounterDetail(DetailViewBreadcrumbMixin, DetailView):
