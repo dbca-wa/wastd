@@ -201,12 +201,10 @@ TURTLE_SPECIES_CHOICES = (
     ("caretta-caretta", "Caretta caretta (Loggerhead turtle)"),
     ("lepidochelys-olivacea", "Lepidochelys olivacea (Olive ridley turtle)"),
     ("dermochelys-coriacea", "Dermochelys coriacea (Leatherback turtle)"),
-    (
-        "chelonia-mydas-agassazzi",
-        "Chelonia mydas agassazzi (Black turtle or East Pacific Green)",
-    ),
-    ("corolla-corolla", "Corolla corolla (Hatchback turtle)"),
+    ("chelonia-mydas-agassazzi", "Chelonia mydas agassazzi (Black turtle or East Pacific Green)"),
+    # ("corolla-corolla", "Corolla corolla (Hatchback turtle)"),
     (TURTLE_SPECIES_DEFAULT, "Cheloniidae (Unidentified turtle)"),
+    ("test-turtle", "Test turtle species (training)"),
     # Caretta caretta x Chelonia mydas (Hybrid turtle)
     # Chelonia mydas x Eretmochelys imbricata (Hybrid turtle)
     # Natator depressus x Caretta caretta (Hybrid turtle)
@@ -709,7 +707,6 @@ def survey_media(instance, filename):
     return "survey/{0}/{1}".format(instance.survey.id, filename)
 
 
-# Spatial models -------------------------------------------------------------#
 class Area(geo_models.Model):
     """An area with a polygonal extent.
 
@@ -964,9 +961,6 @@ class SiteVisitStartEnd(geo_models.Model):
         return "Site visit start or end on {0}".format(self.datetime.isoformat())
 
 
-# -----------------------------------------------------------------------------#
-# Campaign
-#
 class Campaign(geo_models.Model):
     """An endeavour of a team to a Locality within a defined time range.
 
@@ -1178,9 +1172,6 @@ class CampaignMediaAttachment(models.Model):
         return force_text(self.attachment.file)
 
 
-# -----------------------------------------------------------------------------#
-# Survey
-#
 class Survey(QualityControlMixin, UrlsMixin, geo_models.Model):
     """A visit to one site by a team of field workers collecting data."""
 
