@@ -401,3 +401,9 @@ LEAFLET_CONFIG = {
 
 # Phone number
 PHONENUMBER_DB_FORMAT = "INTERNATIONAL"
+
+# django-bootstrap4 preconfigured settings.
+# Reference: https://django-bootstrap4.readthedocs.io/en/latest/settings.html
+BOOTSTRAP4 = {
+    'success_css_class': '',  # Don't add `is-valid` to every form field by default.
+}
