@@ -1,5 +1,5 @@
 {% extends "base_wastd.html" %}
-{% load static crispy_forms_tags bootstrap4 %}
+{% load static %}
 
 {% block breadcrumbs %}
 <nav aria-label="breadcrumb">
@@ -27,7 +27,7 @@
     or download the data ready to go.
   </p>
   <p>
-    <a class="btn btn-danger btn-block"
+    <a class="btn btn-primary btn-block"
        href="https://turtledata.dbca.wa.gov.au/"
        target="_" rel="nofollow"
        title="Turtle Data Dashboard">
@@ -128,12 +128,14 @@
     </a>
   </p>
   {% endif %}
+  {% comment %}
   <p>
     <a class="btn btn-primary btn-block" href=""
         title="Get our app to report Marine Wildlife Incidents">
       Report (via app) »
     </a>
   </p>
+  {% endcomment %}
   <p>
     <a class="btn btn-secondary btn-block" href="https://odkc.dbca.wa.gov.au/-/single/iz382G6wGcCrWcbmNae6odIgYiU7cns?st=eHL5vK$CtNzbOj9P7KQ5uDhDLWvVakNqwfbs9zSKIwOBVdIHEKW6eQ7dnDc52WNk"
         title="Report a new Marine Wildlife Incident captured on paper.
