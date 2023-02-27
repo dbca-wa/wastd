@@ -1,4 +1,3 @@
-"""User models."""
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
@@ -119,32 +118,22 @@ class User(AbstractUser):
         verbose_name = "User"
         verbose_name_plural = "Users"
 
-    # -------------------------------------------------------------------------
-    # Representation
     def __str__(self):
-        """The unicode representation."""
-        return "{0} [{1} {2}]{3}".format(
-            self.name,
-            self.pk,
-            self.username,
-            "[INACTIVE]" if not self.is_active else "",
-        )
+        if self.is_active:
+            return self.name if self.name else self.email
+        else:
+            return f"{self.name} [INACTIVE]" if self.name else f"{self.email} [INACTIVE]"
 
     def save(self, *args, **kwargs):
-        """Save User."""
         if not self.password:
             self.set_unusable_password()
         if not self.date_joined:
             self.date_joined = timezone.now()
         super(User, self).save(*args, **kwargs)
 
-    # -------------------------------------------------------------------------
-    # Templates
     def card_template(self):
         return "users/user_card.html"
 
-    # -------------------------------------------------------------------------
-    # Properties
     def fullname(self):
         """The full name plus email."""
         return "{0} ({1})".format(self.name or self.username, self.role)
