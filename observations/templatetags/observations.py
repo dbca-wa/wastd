@@ -1,17 +1,13 @@
-import os
-
-import logging
-
-# import pypandoc
 from django import template
 from django.conf import settings
 from django.template.defaultfilters import stringfilter
 from django_fsm_log.models import StateLog
+import os
 from rest_framework.authtoken.models import Token
 
-from observations.models import OBSERVATION_ICONS, OBSERVATION_COLOURS, Encounter
+from observations.models import Encounter
+from observations.lookups import OBSERVATION_ICONS, OBSERVATION_COLOURS
 
-logger = logging.getLogger(__name__)
 register = template.Library()
 
 
@@ -98,9 +94,6 @@ def obs_colour(observation_value):
     try:
         col = OBSERVATION_COLOURS[observation_value]
     except:
-        logger.warning(
-            "Not found: OBSERVATION_COLOURS key {0}".format(observation_value)
-        )
         col = "secondary"
     return col
 
