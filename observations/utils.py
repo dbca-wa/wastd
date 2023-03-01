@@ -45,6 +45,8 @@ from .models import (
     TurtleHatchlingEmergenceOutlierObservation,
     LightSourceObservation,
     SurveyEnd,
+)
+from .lookups import (
     DAMAGE_TYPE_CHOICES,
     DAMAGE_AGE_CHOICES,
     HEALTH_CHOICES,

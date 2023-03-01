@@ -9,17 +9,19 @@ from django_filters.filters import (
 from shared.filters import FILTER_OVERRIDES
 from users.models import User
 from .models import (
-    HEALTH_CHOICES,
-    SOURCE_CHOICES,
-    ACTIVITY_CHOICES,
-    SPECIES_CHOICES,
-    TURTLE_SPECIES_CHOICES,
     Area,
     Survey,
     Encounter,
     AnimalEncounter,
     TurtleNestEncounter,
     LineTransectEncounter,
+)
+from .lookups import (
+    HEALTH_CHOICES,
+    SOURCE_CHOICES,
+    ACTIVITY_CHOICES,
+    SPECIES_CHOICES,
+    TURTLE_SPECIES_CHOICES,
 )
 
 
@@ -145,6 +147,7 @@ class TurtleNestEncounterFilter(EncounterFilter):
 
 
 class TurtleNestEncounterBasicFilter(FilterSet):
+    # TODO: spatial filters (locality, site, etc.)
     date_from = DateFilter(
         field_name="when",
         lookup_expr="date__gte",
