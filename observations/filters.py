@@ -147,7 +147,6 @@ class TurtleNestEncounterFilter(EncounterFilter):
 
 
 class TurtleNestEncounterBasicFilter(FilterSet):
-    # TODO: spatial filters (locality, site, etc.)
     date_from = DateFilter(
         field_name="when",
         lookup_expr="date__gte",
@@ -169,6 +168,14 @@ class TurtleNestEncounterBasicFilter(FilterSet):
         queryset=User.objects.filter(pk__in=set(TurtleNestEncounter.objects.values_list("reporter", flat=True))).order_by("name"),
     )
     species = ChoiceFilter(field_name="species", choices=sorted(TURTLE_SPECIES_CHOICES))
+    area = ModelChoiceFilter(
+        label="Locality",
+        queryset=Area.objects.filter(area_type__in=[Area.AREATYPE_LOCALITY]).order_by("name"),
+    )
+    site = ModelChoiceFilter(
+        label="Site",
+        queryset=Area.objects.filter(area_type__in=[Area.AREATYPE_SITE]).order_by("name"),
+    )
     status = ChoiceFilter(
         field_name="status",
         choices=(
@@ -187,6 +194,8 @@ class TurtleNestEncounterBasicFilter(FilterSet):
             "user_observer",
             "user_reporter",
             "nest_type",
+            "area",  # Locality
+            "site",
             "species",
             "status",
         ]
