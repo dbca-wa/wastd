@@ -109,21 +109,17 @@
                         {% endif %}
                     </td>
                 </tr>
-                {% block extra_encounter_details %}{% endblock %}
-                {% if object.observation_set %}
                 <tr>
                     <th>
-                        Observations
+                        Comments
                     </th>
                     <td>
-                        {% for obs in object.observation_set.all %}
-                        <div>
-                            {{ obs.as_html|safe }}
-                        </div>
-                        {% endfor %}
+                        {% if object.comments %}
+                        {{ object.comments }}
+                        {% endif %}
                     </td>
                 </tr>
-                {% endif %}
+                {% block extra_encounter_details %}{% endblock %}
             </tbody>
         </table>
     </div>
@@ -136,10 +132,34 @@
     {% endblock observation_map %}
 </div>
 
+<!-- Observations -->
+{% if object.observation_set %}
+<div class="row" id="row-enc-media">
+    <div class="col-sm-12 col-md-8">
+        <h3>Observations</h3>
+        <table class="table table-striped table-bordered table-condensed">
+            <tbody>
+                {% for obs in object.observation_set.all %}
+                <tr>
+                    <th>
+                        {% get_verbose_name obs %}
+                    </th>
+                    <td>
+                        {{ obs.as_html|safe }}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+
 <!-- Photos -->
 {% if object.photographs %}
 <div class="row" id="row-enc-media">
     <div class="col-12" id="col-enc-media">
+        <h3>Photographs</h3>
         <div class="card-columns mt-2">
             {% for a in object.photographs %}
             <div class="card shadow-lg">
@@ -161,7 +181,7 @@
 {% if state_logs and request.user.is_staff %}
 <div class="row">
     <div class="col-sm-12 col-md-8">
-        <h2>QA/QC logs</h2>
+        <h3>QA/QC logs</h3>
         <table class="table table-striped table-bordered table-condensed">
             <thead>
                 <th>Timestamp</th>

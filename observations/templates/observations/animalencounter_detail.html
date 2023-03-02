@@ -11,7 +11,7 @@
 {% block title_labels %}
 {% if object.nesting_event != 'na' %}
 <span class="badge badge-{{ object.nesting_event|obs_colour }}"
-  title="Nesting success: {{ object.get_nesting_event_display }}, disturbance during nesting: {{ object.get_nesting_disturbed_display }}">lay</span>
+  title="Nesting success: {{ object.get_nesting_event_display|capfirst }}, disturbance during nesting: {{ object.get_nesting_disturbed_display }}">lay</span>
 {% endif %}
 {% if object.checked_for_injuries != 'na' %}
 <span class="badge badge-{{ object.checked_for_injuries|obs_colour }}"

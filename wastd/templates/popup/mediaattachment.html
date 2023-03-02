@@ -1,8 +1,4 @@
 {% with original as o %}
-<div class="row">
-    <div class="col">
-        <i class="fa-solid fa-file" aria-hidden="true"></i>
-        <a href="{{ o.attachment.url }}" target="_">{{ o.title }}</a>
-    </div>
-</div>
+<i class="fa-solid fa-file" aria-hidden="true"></i>
+<a href="{{ o.attachment.url }}" target="_">{{ o.title }}</a>
 {% endwith %}

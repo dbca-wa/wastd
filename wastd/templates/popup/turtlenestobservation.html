@@ -1,32 +1,32 @@
 {% load observations %}
 {% with original as o %}
-<div class="row">
-    <span class="oi oi-check"></span>&nbsp;
-    Hatching success {{ o.hatching_success }} &#37;&nbsp;
-    Emergence success {{ o.emergence_success }} &#37;
+<div>
+    <i class="fa-solid fa-check"></i>
+    Hatching success {{ o.hatching_success }}&#37;&nbsp;
+    Emergence success {{ o.emergence_success }}&#37;
 </div>
 
-<div class="row">
-    <span class="oi oi-bar-chart"></span>&nbsp;
-    Total {{ o.egg_count }}&nbsp;&nbsp;
-    {% if o.no_emerged %}E {{ o.no_emerged }}&nbsp;&nbsp;{% endif %}
-    {% if o.no_egg_shells %}S {{ o.no_egg_shells }}&nbsp;&nbsp;{% endif %}
-    {% if o.no_live_hatchlings %}L {{ o.no_live_hatchlings }}&nbsp;&nbsp;{% endif %}
-    {% if o.no_dead_hatchlings %}D {{ o.no_dead_hatchlings }}&nbsp;&nbsp;{% endif %}
-    {% if o.no_undeveloped_eggs %}UD {{ o.no_undeveloped_eggs }}&nbsp;&nbsp;{% endif %}
-    {% if o.no_unhatched_eggs %}UH {{ o.no_unhatched_eggs }}&nbsp;&nbsp;{% endif %}
-    {% if o.no_unhatched_term %}UHT {{ o.no_unhatched_term }}&nbsp;&nbsp;{% endif %}
-    {% if o.no_depredated_eggs %}P {{ o.no_depredated_eggs }}&nbsp;&nbsp;{% endif %}
+<div>
+    <i class="fa-solid fa-chart-column"></i>
+    Total {{ o.egg_count|default_if_none:"0" }}&nbsp;
+    {% if o.no_emerged %}Emerged {{ o.no_emerged }}&nbsp;{% endif %}
+    {% if o.no_egg_shells %}Shells {{ o.no_egg_shells }}&nbsp;{% endif %}
+    {% if o.no_live_hatchlings %}Live {{ o.no_live_hatchlings }}&nbsp;{% endif %}
+    {% if o.no_dead_hatchlings %}Dead {{ o.no_dead_hatchlings }}&nbsp;{% endif %}
+    {% if o.no_undeveloped_eggs %}Undeveloped egs {{ o.no_undeveloped_eggs }}&nbsp;{% endif %}
+    {% if o.no_unhatched_eggs %}Unhatched eggs {{ o.no_unhatched_eggs }}&nbsp;{% endif %}
+    {% if o.no_unhatched_term %}Unhatched term {{ o.no_unhatched_term }}&nbsp;{% endif %}
+    {% if o.no_depredated_eggs %}Depredated {{ o.no_depredated_eggs }}{% endif %}
 </div>
 {% if o.nest_depth_top or o.nest_depth_bottom %}
-<div class="row">
-    <span class="oi oi-graph"></span>&nbsp;
+<div>
+    <i class="fa-solid fa-chart-bar"></i>
     Nest depth {{ o.nest_depth_top|mm_as_cm }} to {{ o.nest_depth_bottom|mm_as_cm }} cm
 </div>
 {% endif %}
-{% if o.sand_temp  or o.air_temp or o.water_temp or o.egg_temp%}
-<div class="row">
-    <span class="oi oi-graph"></span>&nbsp;
+{% if o.sand_temp or o.air_temp or o.water_temp or o.egg_temp%}
+<div>
+    <i class="fa-solid fa-chart-bar"></i>
     {% if o.sand_temp %}Sand {{ o.sand_temp }} &deg;C{% endif %}
     {% if o.air_temp %}Air {{ o.air_temp }} &deg;C{% endif %}
     {% if o.water_temp %}Water {{ o.water_temp }} &deg;C{% endif %}

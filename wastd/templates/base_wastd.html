@@ -29,15 +29,14 @@
 {% block map %}{% endblock %}
 
 {% block page_content %}
-{% block breadcrumbs %}{% endblock breadcrumbs %}
+
+{% block breadcrumbs %}{% endblock %}
 
 <div class="container-fluid">
-
     {% bootstrap_messages %}
-
-    <!-- Main page content -->
-    {% block page_content_inner %}{% endblock page_content_inner %}
+    {% block page_content_inner %}{% endblock %}
 </div><!-- /.container-fluid -->
+
 {% endblock page_content %}
 
 {% block page_footer %}

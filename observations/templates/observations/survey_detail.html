@@ -175,17 +175,17 @@ function map_init(map, options) {
       L.geoJson(data, {style: polystyle, onEachFeature: oef}).addTo(map);
   });
 
-  /* Data loading */
-  var survey_start = L.geoJson(
-    {{ object|geojsonfeature:"as_html,label:start_location"|safe }},
-    { style: pointstyle, pointToLayer: ptl_svs, onEachFeature: oef }
-  );
-  survey_start.addTo(map);
+  // Attach the endpoint to the map first.
   var survey_end = L.geoJson(
     {{ object|geojsonfeature:"as_html,label:end_location"|safe }},
     { style: pointstyle, pointToLayer: ptl_sve, onEachFeature: oef }
   );
   survey_end.addTo(map);
+  var survey_start = L.geoJson(
+    {{ object|geojsonfeature:"as_html,label:start_location"|safe }},
+    { style: pointstyle, pointToLayer: ptl_svs, onEachFeature: oef }
+  );
+  survey_start.addTo(map);
 
   var enc_layer = L.geoJson(
     {{ object.encounter_set.all|geojsonfeature:"as_html,leaflet_title,leaflet_icon,leaflet_colour:where"|safe }},
@@ -193,7 +193,11 @@ function map_init(map, options) {
   );
   enc_layer.addTo(map);
 
-  var group = new L.featureGroup([survey_start, survey_end, enc_layer]);
+  var group = new L.featureGroup([
+      survey_start,
+      survey_end,
+      enc_layer,
+  ]);
   map.fitBounds(group.getBounds());
 
   // var taxon_cluster_markers = L.markerClusterGroup();
