@@ -168,12 +168,12 @@ class AnimalEncounterBasicFilter(FilterSet):
     user_observer = ModelChoiceFilter(
         field_name="observer",
         label="Observed by",
-        queryset=User.objects.filter(pk__in=set(TurtleNestEncounter.objects.values_list("observer", flat=True))).order_by("name"),
+        queryset=User.objects.filter(pk__in=set(AnimalEncounter.objects.values_list("observer", flat=True))).order_by("name"),
     )
     user_reporter = ModelChoiceFilter(
         field_name="reporter",
         label="Reported by",
-        queryset=User.objects.filter(pk__in=set(TurtleNestEncounter.objects.values_list("reporter", flat=True))).order_by("name"),
+        queryset=User.objects.filter(pk__in=set(AnimalEncounter.objects.values_list("reporter", flat=True))).order_by("name"),
     )
     encounter_type = ChoiceFilter(
         field_name="encounter_type",
@@ -188,7 +188,6 @@ class AnimalEncounterBasicFilter(FilterSet):
     )
     species = ChoiceFilter(field_name="species", choices=sorted(SPECIES_CHOICES))
     health = ChoiceFilter(choices=sorted(HEALTH_CHOICES))
-    activity = ChoiceFilter(field_name="activity", choices=sorted(ACTIVITY_CHOICES))
     area = ModelChoiceFilter(
         label="Locality",
         queryset=Area.objects.filter(area_type__in=[Area.AREATYPE_LOCALITY]).order_by("name"),
@@ -219,7 +218,6 @@ class AnimalEncounterBasicFilter(FilterSet):
             "site",
             "species",
             "health",
-            "activity",
             "status",
         ]
 
