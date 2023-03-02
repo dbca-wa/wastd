@@ -91,6 +91,17 @@ class SurveyBasicFilter(FilterSet):
         queryset=Area.objects.filter(area_type__in=[Area.AREATYPE_SITE]).order_by("name"),
     )
 
+    class Meta:
+        model = Survey
+        fields = [
+            "date_from",
+            "date_to",
+            "user_reporter",
+            "area",
+            "site",
+            "production",
+        ]
+
 
 class EncounterFilter(FilterSet):
     area = ModelChoiceFilter(
@@ -209,6 +220,7 @@ class AnimalEncounterBasicFilter(FilterSet):
     class Meta:
         model = AnimalEncounter
         fields = [
+            "status",
             "date_from",
             "date_to",
             "user_observer",
@@ -218,7 +230,7 @@ class AnimalEncounterBasicFilter(FilterSet):
             "site",
             "species",
             "health",
-            "status",
+            "checked_for_flipper_tags",
         ]
 
 
@@ -283,6 +295,7 @@ class TurtleNestEncounterBasicFilter(FilterSet):
     class Meta:
         model = TurtleNestEncounter
         fields = [
+            "status",
             "date_from",
             "date_to",
             "user_observer",
@@ -291,7 +304,12 @@ class TurtleNestEncounterBasicFilter(FilterSet):
             "area",  # Locality
             "site",
             "species",
-            "status",
+            "disturbance",
+            "nest_tagged",
+            "logger_found",
+            "eggs_counted",
+            "hatchlings_measured",
+            "fan_angles_measured",
         ]
 
 

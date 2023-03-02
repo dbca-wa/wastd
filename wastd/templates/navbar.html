@@ -2,27 +2,9 @@
     <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="/" id="nav-li-species" title="Species" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <i class="fa-solid fa-table" aria-hidden="true"></i>
-            Animals
+            Tagging
         </a>
         <div class="dropdown-menu" aria-labelledby="nav-li-species">
-            <a class="dropdown-item" href="{% url 'observations:animalencounter-list' %}" title="Browse, filter and search all Animal Encounters">
-                <i class="fa-solid fa-table" aria-hidden="true"></i>
-                <span class="align-left">Browse all Animal Encounters</span>
-            </a>
-            <div class="dropdown-divider"></div>
-            <h6 class="dropdown-header">Animal Encounter flavours</h6>
-            <a class="dropdown-item" href="{% url 'observations:animalencounter-list' %}?health=alive" title="Browse, filter and search all encounters with healthy animals">
-                <i class="fa-solid fa-table" aria-hidden="true"></i>
-                <span class="align-left">Healthy Animals</span>
-            </a>
-            <a class="dropdown-item" href="{% url 'observations:animalencounter-list' %}?health=alive&health=alive-injured" title="Browse, filter and search all encounters with both healthy and injured animals">
-                <i class="fa-solid fa-table" aria-hidden="true"></i>
-                <span class="align-left">Alive Animals</span>
-            </a>
-            <a class="dropdown-item" href="{% url 'observations:animalencounter-list' %}?health=dead-edible&health=dead-organs-intact&health=dead-advanced&health=dead-mummified&health=dead-disarticulated" title="Browse, filter and search all encounters with dead animals">
-                <i class="fa-solid fa-table" aria-hidden="true"></i>
-                <span class="align-left">Dead Animals</span>
-            </a>
             <a class="dropdown-item" href="{% url 'observations:animalencounter-list' %}?encounter_type=tagging" title="Browse, filter and search all Turtle Tagging encounters">
                 <i class="fa-solid fa-table" aria-hidden="true"></i>
                 <span class="align-left">Tagged turtles</span>
@@ -49,7 +31,6 @@
                 Browse all Turtle Nest Encounters
             </a>
             <div class="dropdown-divider"></div>
-            <h6 class="dropdown-header">Turtle Nest Encounter flavours</h6>
             <a class="dropdown-item" href="{% url 'observations:turtlenestencounter-list' %}?disturbance=present" title="Browse, filter and search disturbed or predated nests">
                 <i class="fa-solid fa-table" aria-hidden="true"></i>
                 Disturbed nests
@@ -132,13 +113,24 @@
                 href="{% url 'observations:animalencounter-list' %}?health=alive-injured"
                 title="Browse, filter and search all encounters with injured animals">
                 <i class="fa-solid fa-table" aria-hidden="true"></i>
-                <span class="align-left">Injured Animals</span>
+                <span class="align-left">Injured animals</span>
             </a>
             <a class="dropdown-item"
                 href="{% url 'observations:animalencounter-list' %}?health=dead-edible&health=dead-organs-intact&health=dead-advanced&health=dead-mummified&health=dead-disarticulated"
-                title="Browse, filter and search all encounters with dead animals">
+                title="Browse encounters with dead animals">
                 <i class="fa-solid fa-table" aria-hidden="true"></i>
-                <span class="align-left">Dead Animals</span>
+                <span class="align-left">Dead animals</span>
+            </a>
+            <a class="dropdown-item" href="{% url 'observations:animalencounter-list' %}?health=alive"
+                title="Browse encounters with healthy animals">
+                <i class="fa-solid fa-table" aria-hidden="true"></i>
+                <span class="align-left">Healthy animals</span>
+            </a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="{% url 'observations:animalencounter-list' %}"
+                title="Browse all animal encounters">
+                <i class="fa-solid fa-table" aria-hidden="true"></i>
+                <span class="align-left">Browse all animal encounters</span>
             </a>
         </div>
     </li>
@@ -237,12 +229,14 @@
         Analysts
     </a>
     <div class="dropdown-menu" aria-labelledby="nav-li-analysts">
+        <!--
         <a class="dropdown-item"
             href="https://dbca-wa.github.io/wastd/index.html#document-data_consumers"
             title="Manual" target="_blank" rel="noreferrer">
             <i class="fa-solid fa-book" aria-hidden="true"></i>
             <span class="align-left">Data Analysts' Manual</span>
         </a>
+        -->
         <a class="dropdown-item" href="/api/1/" title="API" target="_blank" rel="noreferrer">
             <i class="fa-solid fa-terminal" aria-hidden="true"></i>
             <span class="align-left">RESTful API</span>
@@ -272,12 +266,14 @@
             Curators
         </a>
         <div class="dropdown-menu" aria-labelledby="nav-li-curators">
+            <!--
             <a class="dropdown-item"
                 href="https://dbca-wa.github.io/wastd/index.html#document-data_curators"
                 title="Manual" target="_blank">
                 <i class="fa-solid fa-book" aria-hidden="true"></i>
                 Data Curators' Manual
             </a>
+            -->
             <a class="dropdown-item"
                 href="{% url 'admin:index' %}"
                 target="_blank"
