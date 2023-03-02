@@ -509,22 +509,22 @@ NESTING_PRESENT = ("nest-with-eggs", "nest-unsure-of-eggs")
 
 NEST_AGE_DEFAULT = "unknown"
 NEST_AGE_CHOICES = (
-    ("old", "old, made before last night"),
-    ("fresh", "fresh, made last night"),
-    (NEST_AGE_DEFAULT, "unknown age"),
-    ("missed", "missed turtle, made within past hours"),
+    ("old", "Old, made before last night"),
+    ("fresh", "Fresh, made last night"),
+    (NEST_AGE_DEFAULT, "Unknown age"),
+    ("missed", "Missed turtle, made within past hours"),
 )
 
 NEST_TYPE_DEFAULT = "track-not-assessed"
 NEST_TYPE_TRACK_UNSURE = "track-unsure"
 NEST_TYPE_CHOICES = (
-    ("track-not-assessed", "track, not checked for nest"),
-    ("false-crawl", "track without nest"),
-    ("successful-crawl", "track with nest"),
-    (NEST_TYPE_TRACK_UNSURE, "track, checked for nest, unsure if nest"),
-    ("nest", "nest, unhatched, no track"),  # egg counts, putting eggs back
-    ("hatched-nest", "nest, hatched"),  # hatching and emergence success
-    ("body-pit", "body pit, no track"),
+    ("track-not-assessed", "Track, not checked for nest"),
+    ("false-crawl", "Track without nest"),
+    ("successful-crawl", "Track with nest"),
+    (NEST_TYPE_TRACK_UNSURE, "Track, checked for nest, unsure if nest"),
+    ("nest", "Nest, unhatched, no track"),  # egg counts, putting eggs back
+    ("hatched-nest", "Nest, hatched"),  # hatching and emergence success
+    ("body-pit", "Body pit, no track"),
 )
 
 OBSERVATION_CHOICES = (
