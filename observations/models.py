@@ -2504,9 +2504,10 @@ class TurtleNestEncounter(Encounter):
 
     @property
     def get_encounter_type(self):
-        """TurtleNestEncounters are always nest encounters.
-        """
-        return Encounter.ENCOUNTER_NEST
+        if self.nest_type in ["successful-crawl", "nest", "hatched-nest", "body-pit"]:
+            return Encounter.ENCOUNTER_NEST
+        else:
+            return Encounter.ENCOUNTER_TRACKS
 
     @property
     def short_name(self):
