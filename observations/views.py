@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
@@ -15,11 +16,8 @@ from shared.views import ListViewBreadcrumbMixin, DetailViewBreadcrumbMixin
 from observations import admin
 from .filters import (
     SurveyBasicFilter,
-    #SurveyFilter,
     EncounterFilter,
     AnimalEncounterBasicFilter,
-    #AnimalEncounterFilter,
-    #TurtleNestEncounterFilter,
     TurtleNestEncounterBasicFilter,
     LineTransectEncounterFilter,
 )
@@ -95,7 +93,7 @@ class SurveyList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
         context = super().get_context_data(**kwargs)
         context["list_filter"] = SurveyBasicFilter(self.request.GET, queryset=self.get_queryset())
         context["object_count"] = self.get_queryset().count()
-        context["page_title"] = "WAStD | Surveys"
+        context["page_title"] = f"{settings.SITE_CODE} | Surveys"
         return context
 
     def get_queryset(self):
@@ -109,7 +107,7 @@ class SurveyDetail(DetailViewBreadcrumbMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         obj = self.get_object()
-        context["page_title"] = f"WAStD | Survey {obj.pk}"
+        context["page_title"] = f"{settings.SITE_CODE} | Survey {obj.pk}"
         return context
 
 
@@ -220,7 +218,7 @@ class EncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
             self.request.GET, queryset=self.get_queryset()
         )
         context["model_admin"] = admin.EncounterAdmin
-        context["page_title"] = "WAStD | Encounters"
+        context["page_title"] = f"{settings.SITE_CODE} | Encounters"
         return context
 
     def get_queryset(self):
@@ -239,7 +237,7 @@ class EncounterDetail(DetailViewBreadcrumbMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         obj = self.get_object()
-        context["page_title"] = f"WAStD | Encounter {obj.pk}"
+        context["page_title"] = f"{settings.SITE_CODE} | Encounter {obj.pk}"
         # data['tags'] = TagObservation.objects.filter(encounter__in=[self.get_object()])
         return context
 
@@ -295,7 +293,7 @@ class AnimalEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListVi
         context["list_filter"] = AnimalEncounterBasicFilter(self.request.GET, queryset=qs)
         context["model_admin"] = admin.AnimalEncounterAdmin
         context["object_count"] = qs.count()
-        context["page_title"] = "WAStD | Animal encounters"
+        context["page_title"] = f"{settings.SITE_CODE} | Animal encounters"
         return context
 
     def get_queryset(self):
@@ -357,7 +355,7 @@ class AnimalEncounterDetail(DetailViewBreadcrumbMixin, DetailView):
         obj = self.get_object()
         context["tag_observations"] = TagObservation.objects.filter(encounter__in=[obj])
         context["state_logs"] = StateLog.objects.for_(obj)
-        context["page_title"] = f"WAStD | Animal encounter {obj.pk}"
+        context["page_title"] = f"{settings.SITE_CODE} | Animal encounter {obj.pk}"
         return context
 
 
@@ -409,23 +407,20 @@ class TurtleNestEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, Li
     model = TurtleNestEncounter
     template_name = "default_list.html"
     paginate_by = 20
-    #filter_class = TurtleNestEncounterFilter
     filter_class = TurtleNestEncounterBasicFilter
     resource_class = TurtleNestEncounterResource
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         qs = self.get_queryset()
-        #context["list_filter"] = TurtleNestEncounterFilter(self.request.GET, queryset=qs)
         context["list_filter"] = TurtleNestEncounterBasicFilter(self.request.GET, queryset=qs)
         context["model_admin"] = admin.TurtleNestEncounterAdmin
         context["object_count"] = qs.count()
-        context["page_title"] = "WAStD | Turtle nest encounters"
+        context["page_title"] = f"{settings.SITE_CODE} | Turtle nest encounters"
         return context
 
     def get_queryset(self):
         qs = super().get_queryset().prefetch_related("observer", "reporter", "area", "site").order_by("-when")
-        #return TurtleNestEncounterFilter(self.request.GET, queryset=qs).qs
         return TurtleNestEncounterBasicFilter(self.request.GET, queryset=qs).qs
 
 
@@ -436,7 +431,7 @@ class TurtleNestEncounterDetail(DetailViewBreadcrumbMixin, DetailView):
         context = super().get_context_data(**kwargs)
         obj = self.get_object()
         context["state_logs"] = StateLog.objects.for_(obj)
-        context["page_title"] = f"WAStD | Turtle nest encounter {obj.pk}"
+        context["page_title"] = f"{settings.SITE_CODE} | Turtle nest encounter {obj.pk}"
         return context
 
 
