@@ -1316,7 +1316,7 @@ class Encounter(PolymorphicModel, UrlsMixin, geo_models.Model):
     )
 
     area = models.ForeignKey(
-        Area,
+        Area,  # Always an Area of type 'Locality'.
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
@@ -1326,7 +1326,7 @@ class Encounter(PolymorphicModel, UrlsMixin, geo_models.Model):
     )
 
     site = models.ForeignKey(
-        Area,
+        Area,  # Always an Area of type 'Site'.
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
@@ -1707,8 +1707,6 @@ class Encounter(PolymorphicModel, UrlsMixin, geo_models.Model):
     #    """
     #    return
 
-    # ------------------------------------------------------------------------#
-    # URLs
     # Override create and update until we have front end forms
     @classmethod
     def create_url(cls):
@@ -2028,30 +2026,18 @@ class Encounter(PolymorphicModel, UrlsMixin, geo_models.Model):
 
     def get_popup(self):
         """Generate HTML popup content."""
-        t = loader.get_template("popup/{0}.html".format(self._meta.model_name))
-        # c = Context({"original": self})
+        t = loader.get_template("popup/{}.html".format(self._meta.model_name))
         return mark_safe(t.render({"original": self}))
 
     def get_report(self):
         """Generate an HTML report of the Encounter."""
-        t = loader.get_template("reports/{0}.html".format(self._meta.model_name))
-        # c = Context({"original": self})
+        t = loader.get_template("reports/{}.html".format(self._meta.model_name))
         return mark_safe(t.render({"original": self}))
-
-    # def get_latex(self):
-    #    """Generate a Latex fragment of the Encounter."""
-    #    t = loader.get_template("latex/fragments/{0}.tex".format(self._meta.model_name))
-    #    # c = Context({"original": self})
-    #    return mark_safe(t.render({"original": self}))
-
-    def get_observations(self):
-        """Return related observations as a queryset."""
-        return Observation.objects.filter(encounter=self)
 
     @property
     def observation_set(self):
         """Manually implement the backwards relation to the Observation model."""
-        return self.get_observations()
+        return Observation.objects.filter(encounter=self)
 
     @property
     def latitude(self):
@@ -2518,9 +2504,7 @@ class TurtleNestEncounter(Encounter):
 
     @property
     def get_encounter_type(self):
-        """Infer the encounter type.
-
-        TurtleNestEncounters are always nest encounters.
+        """TurtleNestEncounters are always nest encounters.
         """
         return Encounter.ENCOUNTER_NEST
 
@@ -2569,8 +2553,6 @@ class TurtleNestEncounter(Encounter):
         else:
             return None
 
-    # -------------------------------------------------------------------------
-    # URLs
     def get_absolute_url(self):
         return reverse(
             "observations:turtlenestencounter-detail", kwargs={"pk": self.pk}
@@ -2823,14 +2805,13 @@ class Observation(PolymorphicModel, LegacySourceMixin, models.Model):
     @property
     def as_html(self):
         """An HTML representation."""
-        t = loader.get_template("popup/{0}.html".format(self._meta.model_name))
+        t = loader.get_template("popup/{}.html".format(self._meta.model_name))
         return mark_safe(t.render({"original": self}))
 
     @property
     def as_latex(self):
         """A Latex representation."""
-        t = loader.get_template("latex/{0}.tex".format(self._meta.model_name))
-        # c = Context({"original": self})
+        t = loader.get_template("latex/{}.tex".format(self._meta.model_name))
         return mark_safe(t.render({"original": self}))
 
     @property
@@ -3153,11 +3134,7 @@ class NestTagObservation(Observation):
         verbose_name = "Turtle Nest Tag Observation"
 
     def __str__(self):
-        return "{0} ({1})".format(self.name, self.get_status_display())
-
-    # def save(self, *args, **kwargs):
-    #     """Cache name, centroid and northern extent."""
-    #     super(NestTagObservation, self).save(*args, **kwargs)
+        return f"{self.name} ({self.get_status_display()})"
 
     @property
     def history_url(self):
@@ -3856,7 +3833,7 @@ class TurtleNestObservation(Observation):
         if self.egg_count_calculated == 0:
             return
         else:
-            return round(100 * (self.no_egg_shells or 0) / self.egg_count_calculated, 2)
+            return round(100 * (self.no_egg_shells or 0) / self.egg_count_calculated, 1)
 
     @property
     def emergence_success(self):
@@ -3880,7 +3857,7 @@ class TurtleNestObservation(Observation):
                     - (self.no_dead_hatchlings or 0)
                 )
                 / self.egg_count_calculated,
-                2,
+                1,
             )
 
 
