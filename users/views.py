@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse
@@ -8,7 +9,7 @@ from django.views.generic import (
     UpdateView,
     FormView,
 )
-from django.http import HttpResponseRedirect, Http404
+from django.http import HttpResponseRedirect
 from export_download.views import ResourceDownloadMixin
 
 from .models import User
@@ -32,11 +33,11 @@ class UserListView(ListViewBreadcrumbMixin, ResourceDownloadMixin, LoginRequired
         qs = self.get_queryset()
         context["list_filter"] = UserFilter(self.request.GET, queryset=qs)
         context["object_count"] = qs.count()
-        context["page_title"] = "WAStD | Users"
+        context["page_title"] = f"{settings.SITE_CODE} | Users"
         return context
 
     def get_queryset(self):
-        qs = super(UserListView, self).get_queryset().order_by("username")
+        qs = super().get_queryset().order_by("username")
         return UserFilter(self.request.GET, queryset=qs).qs
 
 
@@ -44,49 +45,20 @@ class UserDetailView(DetailViewBreadcrumbMixin, LoginRequiredMixin, DetailView):
     """User detail view."""
 
     model = User
-    # These next two lines tell the view to index lookups by username
-    # slug_field = "username"
-    # slug_url_kwarg = "username"
 
     def get_context_data(self, **kwargs):
         from observations.models import Survey, Encounter
 
         context = super(UserDetailView, self).get_context_data(**kwargs)
         context["collapse_details"] = False
+        context["page_title"] = f"{settings.SITE_CODE} | User profile"
         context["surveys"] = Survey.objects.filter(
             reporter_id=self.kwargs["pk"]
-        ).prefetch_related(
-            "encounter_set", "reporter", "area", "site", "encounter_set__observations"
-        )[
-            0:100
-        ]
+        ).prefetch_related("encounter_set", "reporter", "area", "site", "encounter_set__observations")[0:100]
         context["encounters"] = Encounter.objects.filter(
             reporter_id=self.kwargs["pk"]
-        ).prefetch_related("observer", "reporter", "area", "site", "observations")[
-            0:100
-        ]
+        ).prefetch_related("observer", "reporter", "area", "site", "observations")[0:100]
         return context
-
-    def get_object(self):
-        """Get Object by pk."""
-        obj = (
-            User.objects.filter(pk=self.kwargs.get("pk"))
-            .prefetch_related(
-                # "reported_surveys",
-                # "encounters_observed",
-                # "encounters_observed__reporter",
-                # "encounters_observed__observer",
-                # "encounters_reported",
-                # "encounters_reported__reporter",
-                # "encounters_reported__observer",
-                # "encounters_reported__area",
-                # "encounters_reported__site",
-            )
-            .first()
-        )
-        if not obj:
-            raise Http404  # pragma: no cover
-        return obj
 
 
 class UserRedirectView(LoginRequiredMixin, RedirectView):
