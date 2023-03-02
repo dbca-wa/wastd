@@ -12,6 +12,11 @@ register = template.Library()
 
 
 @register.simple_tag
+def get_verbose_name(object):
+    return object._meta.verbose_name
+
+
+@register.simple_tag
 def google_maps_apikey(*args, **kwargs):
     """Return the settings key GOOGLE_MAPS_API_KEY."""
     return settings.GOOGLE_MAPS_API_KEY

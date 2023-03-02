@@ -1,8 +1,6 @@
 {% with original as o %}
-<div class="row">
-    <a href="{{ o.history_url }}" target="_">
-    <span class="oi oi-tags"></span>&nbsp;
+<i class="fa-solid fa-tags"></i>
+<a href="{{ o.history_url }}" target="_">
     {{ o.name }} ({{ o.get_status_display }})
-    </a>
-</div>
+</a>
 {% endwith %}
