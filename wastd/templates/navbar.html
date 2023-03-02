@@ -181,19 +181,19 @@
             <span class="align-left">Inactive Users</span>
             </a>
             <a class="dropdown-item"
-            href="{% url 'users:user-list' %}?name=%2C&is_active=true"
+            href="{% url 'users:user-list' %}?name__icontains=%2C&is_active=true"
             title="Users with a comma in the name were made from team lists and need to be merged">
             <i class="fa-solid fa-table" aria-hidden="true"></i>
             <span class="align-left">Users from teams (comma)</span>
             </a>
             <a class="dropdown-item"
-            href="{% url 'users:user-list' %}?username=_and_&is_active=true"
+            href="{% url 'users:user-list' %}?name__icontains=_and_&is_active=true"
             title="Users with an 'and' in the name were made from team lists and need to be merged">
             <i class="fa-solid fa-table" aria-hidden="true"></i>
             <span class="align-left">Users from teams (and)</span>
             </a>
             <a class="dropdown-item"
-            href="{% url 'users:user-list' %}?name=%26&is_active=true"
+            href="{% url 'users:user-list' %}?name__icontains=%26&is_active=true"
             title="Users with an ampersand in the name were made from team lists and need to be merged">
             <i class="fa-solid fa-table" aria-hidden="true"></i>
             <span class="align-left">Users from teams (ampersand)</span>
