@@ -14,7 +14,8 @@ from django_tables2 import RequestConfig, SingleTableView, tables
 from shared.views import ListViewBreadcrumbMixin, DetailViewBreadcrumbMixin
 from observations import admin
 from .filters import (
-    SurveyFilter,
+    SurveyBasicFilter,
+    #SurveyFilter,
     EncounterFilter,
     AnimalEncounterFilter,
     #TurtleNestEncounterFilter,
@@ -86,26 +87,19 @@ class SurveyList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
     model = Survey
     template_name = "default_list.html"
     paginate_by = 20
-    filter_class = SurveyFilter
+    filter_class = SurveyBasicFilter
     resource_class = SurveyResource
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["list_filter"] = SurveyFilter(
-            self.request.GET, queryset=self.get_queryset()
-        )
+        context["list_filter"] = SurveyBasicFilter(self.request.GET, queryset=self.get_queryset())
         context["object_count"] = self.get_queryset().count()
         context["page_title"] = "WAStD | Surveys"
         return context
 
     def get_queryset(self):
-        qs = (
-            super(SurveyList, self)
-            .get_queryset()
-            .prefetch_related("reporter", "site", "encounter_set", "campaign")
-            .order_by("-start_time")
-        )
-        return SurveyFilter(self.request.GET, queryset=qs).qs
+        qs = super().get_queryset().prefetch_related("reporter", "site", "encounter_set", "campaign").order_by("-start_time")
+        return SurveyBasicFilter(self.request.GET, queryset=qs).qs
 
 
 class SurveyDetail(DetailViewBreadcrumbMixin, DetailView):

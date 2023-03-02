@@ -66,6 +66,32 @@ class SurveyFilter(FilterSet):
         ]
 
 
+class SurveyBasicFilter(FilterSet):
+    date_from = DateFilter(
+        field_name="start_time",
+        lookup_expr="date__gte",
+        label="Date from",
+    )
+    date_to = DateFilter(
+        field_name="end_time",
+        lookup_expr="date__lte",
+        label="Date to",
+    )
+    user_reporter = ModelChoiceFilter(
+        field_name="reporter",
+        label="Reported by",
+        queryset=User.objects.filter(pk__in=set(Survey.objects.values_list("reporter", flat=True))).order_by("name"),
+    )
+    area = ModelChoiceFilter(
+        label="Locality",
+        queryset=Area.objects.filter(area_type__in=[Area.AREATYPE_LOCALITY]).order_by("name"),
+    )
+    site = ModelChoiceFilter(
+        label="Site",
+        queryset=Area.objects.filter(area_type__in=[Area.AREATYPE_SITE]).order_by("name"),
+    )
+
+
 class EncounterFilter(FilterSet):
     area = ModelChoiceFilter(
         label="Locality",
