@@ -17,7 +17,7 @@
                 <i class="fa-solid fa-calendar-days" title="When" aria-hidden="true"></i>
                 {{ object.when|date:'d M Y H:i' }}
                 <i class="fa-solid fa-binoculars" title="Encounter type" aria-hidden="true"></i>
-                {{ object.get_encounter_type_display }}
+                {{ object.get_encounter_type|capfirst }}
                 <i class="fa-solid fa-eye" title="Observed by" aria-hidden="true"></i>
                 <a href="{% url 'users:user-detail' pk=object.observer.pk %}">{{ object.observer.name }}</a>
                 <i class="fa-solid fa-tablet-screen-button" title="Reported by" aria-hidden="true"></i>

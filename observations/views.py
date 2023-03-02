@@ -206,8 +206,6 @@ class EncounterTableView(PagedFilteredTableView):
     formhelper_class = EncounterListFormHelper
 
 
-# -----------------------------------------------------------------------------#
-# Encounter
 class EncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
     model = Encounter
     template_name = "default_list.html"
