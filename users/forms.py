@@ -37,7 +37,7 @@ class UserMergeForm(forms.Form):
 
 
 class TransferForm(forms.Form):
-    old = forms.ModelChoiceField(
+    user_old = forms.ModelChoiceField(
         label="Transfer data incorrectly linked to User",
         queryset=User.objects.all(),
     )
@@ -45,7 +45,7 @@ class TransferForm(forms.Form):
         label="Restrict data transfer to Area",
         queryset=Area.objects.filter(area_type=Area.AREATYPE_LOCALITY),
     )
-    new = forms.ModelChoiceField(
+    user_new = forms.ModelChoiceField(
         label="Transfer data to User",
         queryset=User.objects.all(),
     )
@@ -59,9 +59,9 @@ class TransferForm(forms.Form):
             Div(
                 Fieldset(
                     "Transfer data to another user",
-                    Field("old"),
+                    Field("user_old"),
                     Field("area"),
-                    Field("new"),
+                    Field("user_new"),
                 ),
                 Div(
                     self.save_button,

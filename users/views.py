@@ -120,7 +120,7 @@ class UserUpdateView(LoginRequiredMixin, UpdateView):
 class UserMergeView(BreadcrumbContextMixin, FormView):
     """Merge any two User profiles.
     """
-    template_name = "users/user_merge_form.html"
+    template_name = "users/user_form.html"
     form_class = UserMergeForm
 
     def get_initial(self):
@@ -155,10 +155,10 @@ class UserMergeView(BreadcrumbContextMixin, FormView):
         return super().form_valid(form)
 
 
-class TransferView(FormView):
-    """Transfer data between two User profiles for a given Area."""
-
-    template_name = "default_form.html"
+class TransferView(BreadcrumbContextMixin, FormView):
+    """Transfer data between two User profiles for a given Area.
+    """
+    template_name = "users/user_form.html"
     form_class = TransferForm
 
     def get_initial(self):
@@ -170,17 +170,25 @@ class TransferView(FormView):
         """
         initial = super().get_initial()
         if "old_pk" in self.kwargs:
-            initial["old"] = User.objects.get(pk=self.kwargs["old_pk"])
+            initial["user_old"] = User.objects.get(pk=self.kwargs["old_pk"])
         if "new_pk" in self.kwargs:
-            initial["new"] = User.objects.get(pk=self.kwargs["new_pk"])
+            initial["user_new"] = User.objects.get(pk=self.kwargs["new_pk"])
         if "area_pk" in self.kwargs:
             initial["area"] = Area.objects.get(pk=self.kwargs["area_pk"])
         return initial
 
+    def get_breadcrumbs(self, request, obj=None, add=False):
+        """Create a list of breadcrumbs as named tuples of ('name', 'url')."""
+        return (
+            Breadcrumb("Home", reverse("home")),
+            Breadcrumb("Users", reverse("users:user-list") + "?is_active=true"),
+            Breadcrumb("Transfer data", None),
+        )
+
     def form_valid(self, form):
         """Transfer user, show result as success message, return to new user's detail."""
-        old = form.cleaned_data["old"]
-        new = form.cleaned_data["new"]
+        old = form.cleaned_data["user_old"]
+        new = form.cleaned_data["user_new"]
         area = form.cleaned_data["area"]
         msg = change_user_for_area(old, new, area)
         messages.success(self.request, msg)
