@@ -17,7 +17,7 @@ from .filters import (
     SurveyFilter,
     EncounterFilter,
     AnimalEncounterFilter,
-    TurtleNestEncounterFilter,
+    #TurtleNestEncounterFilter,
     TurtleNestEncounterBasicFilter,
     LineTransectEncounterFilter,
 )
@@ -40,7 +40,6 @@ from .resources import (
     AnimalEncounterResource,
     TurtleNestEncounterResource,
     LineTransectEncounterResource,
-    # LoggerEncounterResource
 )
 from .tasks import import_odka, update_names, reconstruct_surveys, resave_surveys
 
@@ -48,7 +47,7 @@ from .tasks import import_odka, update_names, reconstruct_surveys, resave_survey
 @csrf_exempt
 def import_odka_view(request):
     """Import all available ODK-Aggregate forms."""
-    msg = import_odka.now()
+    msg = import_odka()
     messages.success(request, msg)
     return HttpResponseRedirect("/")
 
@@ -56,7 +55,7 @@ def import_odka_view(request):
 @csrf_exempt
 def update_names_view(request):
     """Reconstruct animal encounter case histories and sighting status."""
-    msg = update_names.now()
+    msg = update_names()
     messages.success(request, msg)
     return HttpResponseRedirect("/")
 
@@ -64,7 +63,7 @@ def update_names_view(request):
 @csrf_exempt
 def resave_surveys_view(request):
     """Re-save all Surveys."""
-    msg = resave_surveys.now()
+    msg = resave_surveys()
     messages.success(request, msg)
     return HttpResponseRedirect("/")
 
@@ -72,7 +71,7 @@ def resave_surveys_view(request):
 @csrf_exempt
 def reconstruct_surveys_view(request):
     """Import all available ODK-Aggregate forms."""
-    msg = reconstruct_surveys.now()
+    msg = reconstruct_surveys()
     messages.success(request, msg)
     return HttpResponseRedirect("/")
 
