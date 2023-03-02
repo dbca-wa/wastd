@@ -17,7 +17,8 @@ from .filters import (
     SurveyBasicFilter,
     #SurveyFilter,
     EncounterFilter,
-    AnimalEncounterFilter,
+    AnimalEncounterBasicFilter,
+    #AnimalEncounterFilter,
     #TurtleNestEncounterFilter,
     TurtleNestEncounterBasicFilter,
     LineTransectEncounterFilter,
@@ -285,13 +286,13 @@ class AnimalEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListVi
     model = AnimalEncounter
     template_name = "default_list.html"
     paginate_by = 20
-    filter_class = AnimalEncounterFilter
+    filter_class = AnimalEncounterBasicFilter
     resource_class = AnimalEncounterResource
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         qs = self.get_queryset()
-        context["list_filter"] = AnimalEncounterFilter(self.request.GET, queryset=qs)
+        context["list_filter"] = AnimalEncounterBasicFilter(self.request.GET, queryset=qs)
         context["model_admin"] = admin.AnimalEncounterAdmin
         context["object_count"] = qs.count()
         context["page_title"] = "WAStD | Animal encounters"
@@ -311,7 +312,7 @@ class AnimalEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListVi
             )
             .order_by("-when")
         )
-        return AnimalEncounterFilter(self.request.GET, queryset=qs).qs
+        return AnimalEncounterBasicFilter(self.request.GET, queryset=qs).qs
 
 
 class AnimalEncounterCreate(CreateView):

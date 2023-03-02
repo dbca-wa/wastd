@@ -154,6 +154,76 @@ class AnimalEncounterFilter(EncounterFilter):
         ]
 
 
+class AnimalEncounterBasicFilter(FilterSet):
+    date_from = DateFilter(
+        field_name="when",
+        lookup_expr="date__gte",
+        label="Date from",
+    )
+    date_to = DateFilter(
+        field_name="when",
+        lookup_expr="date__lte",
+        label="Date to",
+    )
+    user_observer = ModelChoiceFilter(
+        field_name="observer",
+        label="Observed by",
+        queryset=User.objects.filter(pk__in=set(TurtleNestEncounter.objects.values_list("observer", flat=True))).order_by("name"),
+    )
+    user_reporter = ModelChoiceFilter(
+        field_name="reporter",
+        label="Reported by",
+        queryset=User.objects.filter(pk__in=set(TurtleNestEncounter.objects.values_list("reporter", flat=True))).order_by("name"),
+    )
+    encounter_type = ChoiceFilter(
+        field_name="encounter_type",
+        choices=(
+            (Encounter.ENCOUNTER_INWATER, "In water"),
+            #(Encounter.ENCOUNTER_LOGGER, "Logger"),
+            #(Encounter.ENCOUNTER_OTHER, "Other"),
+            (Encounter.ENCOUNTER_STRANDING, "Stranding"),
+            (Encounter.ENCOUNTER_TAGGING, "Tagging"),
+            #(Encounter.ENCOUNTER_TAG, "Tag Management"),
+        ),
+    )
+    species = ChoiceFilter(field_name="species", choices=sorted(SPECIES_CHOICES))
+    health = ChoiceFilter(choices=sorted(HEALTH_CHOICES))
+    activity = ChoiceFilter(field_name="activity", choices=sorted(ACTIVITY_CHOICES))
+    area = ModelChoiceFilter(
+        label="Locality",
+        queryset=Area.objects.filter(area_type__in=[Area.AREATYPE_LOCALITY]).order_by("name"),
+    )
+    site = ModelChoiceFilter(
+        label="Site",
+        queryset=Area.objects.filter(area_type__in=[Area.AREATYPE_SITE]).order_by("name"),
+    )
+    status = ChoiceFilter(
+        field_name="status",
+        choices=(
+            (Encounter.STATUS_NEW, "New"),
+            (Encounter.STATUS_CURATED, "Curated"),
+            (Encounter.STATUS_FLAGGED, "Flagged"),
+        ),
+        label="QA status",
+    )
+
+    class Meta:
+        model = AnimalEncounter
+        fields = [
+            "date_from",
+            "date_to",
+            "user_observer",
+            "user_reporter",
+            "encounter_type",
+            "area",  # Locality
+            "site",
+            "species",
+            "health",
+            "activity",
+            "status",
+        ]
+
+
 class TurtleNestEncounterFilter(EncounterFilter):
 
     class Meta(EncounterFilter.Meta):

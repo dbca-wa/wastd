@@ -298,16 +298,16 @@ HEALTH_D5 = "dead-mummified"
 HEALTH_D6 = "dead-disarticulated"
 DEATH_STAGES = (HEALTH_D1, HEALTH_D2, HEALTH_D3, HEALTH_D4, HEALTH_D5, HEALTH_D6)
 HEALTH_CHOICES = (
-    (NA_VALUE, "unknown health"),
-    ("alive", "alive, healthy"),
-    ("alive-injured", "alive, injured"),
+    (NA_VALUE, "Unknown health"),
+    ("alive", "Alive, healthy"),
+    ("alive-injured", "Alive, injured"),
     (HEALTH_D1, "D1 (alive, then died)"),
     (HEALTH_D2, "D2 (dead, fresh)"),
     (HEALTH_D3, "D3 (dead, organs intact)"),
     (HEALTH_D4, "D4 (dead, organs decomposed)"),
     (HEALTH_D5, "D5 (dead, mummified)"),
     (HEALTH_D6, "D6 (dead, disarticulated)"),
-    ("other", "other"),
+    ("other", "Other"),
 )
 
 # StrandNet: same as above
