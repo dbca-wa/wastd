@@ -124,9 +124,9 @@ LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 
 # Branding
-SITE_NAME = os.environ.get("SITE_NAME", "WA Sea Turtle and Strandings Database")
-SITE_TITLE = os.environ.get("SITE_TITLE", "WAStD")
-SITE_CODE = os.environ.get("SITE_CODE", "WAStD")
+SITE_NAME = os.environ.get("SITE_NAME", "Turtles Database")
+SITE_TITLE = os.environ.get("SITE_TITLE", "Turtles Database")
+SITE_CODE = os.environ.get("SITE_CODE", "Turtles")
 WASTD_RELEASE = "0.70.0"
 
 
