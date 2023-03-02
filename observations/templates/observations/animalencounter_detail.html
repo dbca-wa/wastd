@@ -52,7 +52,7 @@
     </th>
     <td>
         {% if object.sighting_status_reason %}
-        {{ object.sighting_status_reason }}
+        {{ object.sighting_status_reason|capfirst }}
         {% endif %}
     </td>
 </tr>
