@@ -1800,7 +1800,6 @@ class Encounter(PolymorphicModel, UrlsMixin, geo_models.Model):
             for log in StateLog.objects.for_(self)
         ]
 
-    @property
     def get_encounter_type(self):
         """Infer the encounter type.
 
@@ -2293,7 +2292,6 @@ class AnimalEncounter(Encounter):
             self.get_habitat_display(),
         )
 
-    @property
     def get_encounter_type(self):
         """Infer the encounter type.
 
@@ -2496,7 +2494,6 @@ class TurtleNestEncounter(Encounter):
     def __str__(self):
         return f"{self.pk}: {self.get_nest_type_display()}, {self.get_nest_age_display()}, {self.get_species_display()}"
 
-    @property
     def get_encounter_type(self):
         if self.nest_type in ["successful-crawl", "nest", "hatched-nest"]:
             return Encounter.ENCOUNTER_NEST
@@ -2601,7 +2598,6 @@ class LineTransectEncounter(Encounter):
         """Return an empty string."""
         return ""
 
-    @property
     def get_encounter_type(self):
         """Infer the encounter type.
 
@@ -2728,7 +2724,6 @@ class LoggerEncounter(Encounter):
             self.get_deployment_status_display(),
         )
 
-    @property
     def get_encounter_type(self):
         """Infer the encounter type.
 
