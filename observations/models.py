@@ -1255,8 +1255,8 @@ class Encounter(PolymorphicModel, UrlsMixin, geo_models.Model):
     }
 
     STATUS_NEW = "new"
-    #STATUS_IMPORTED = "imported"
-    #STATUS_MANUAL_INPUT = "manual input"
+    STATUS_IMPORTED = "imported"
+    STATUS_MANUAL_INPUT = "manual input"
     STATUS_PROOFREAD = "proofread"
     STATUS_CURATED = "curated"
     STATUS_PUBLISHED = "published"
@@ -1265,8 +1265,8 @@ class Encounter(PolymorphicModel, UrlsMixin, geo_models.Model):
 
     STATUS_CHOICES = (
         (STATUS_NEW, _("New")),
-        #(STATUS_IMPORTED, _("Imported")),
-        #(STATUS_MANUAL_INPUT, _("Manual input")),
+        (STATUS_IMPORTED, _("Imported")),
+        (STATUS_MANUAL_INPUT, _("Manual input")),
         (STATUS_PROOFREAD, _("Proofread")),
         (STATUS_CURATED, _("Curated")),
         (STATUS_PUBLISHED, _("Published")),
@@ -1276,8 +1276,8 @@ class Encounter(PolymorphicModel, UrlsMixin, geo_models.Model):
 
     STATUS_LABELS = {
         STATUS_NEW: "secondary",
-        #STATUS_IMPORTED: "secondary",
-        #STATUS_MANUAL_INPUT: "secondary",
+        STATUS_IMPORTED: "secondary",
+        STATUS_MANUAL_INPUT: "secondary",
         STATUS_PROOFREAD: "warning",
         STATUS_CURATED: "success",
         STATUS_PUBLISHED: "info",
@@ -1464,7 +1464,6 @@ class Encounter(PolymorphicModel, UrlsMixin, geo_models.Model):
         verbose_name = "Encounter"
         verbose_name_plural = "Encounters"
         get_latest_by = "when"
-        # base_manager_name = 'base_objects'  # fix delete bug
 
     @property
     def opts(self):
@@ -1544,12 +1543,12 @@ class Encounter(PolymorphicModel, UrlsMixin, geo_models.Model):
         """Return true if this record can be accepted."""
         return True
 
-    # New|Proofread|Flagged -> Curated
+    # New|Imported|Manual input|Flagged -> Curated
     @fsm_log_by
     @fsm_log_description
     @transition(
         field=status,
-        source=[STATUS_NEW, STATUS_PROOFREAD, STATUS_FLAGGED],
+        source=[STATUS_NEW, STATUS_IMPORTED, STATUS_MANUAL_INPUT, STATUS_FLAGGED],
         target=STATUS_CURATED,
         conditions=[can_curate],
         # permission=lambda instance, user: user in instance.all_permitted,
@@ -1573,12 +1572,12 @@ class Encounter(PolymorphicModel, UrlsMixin, geo_models.Model):
         """Return true if curated status can be revoked."""
         return True
 
-    # New|Curated -> Flagged
+    # New|Imported|Manual input|Curated -> Flagged
     @fsm_log_by
     @fsm_log_description
     @transition(
         field=status,
-        source=[STATUS_NEW, STATUS_CURATED],
+        source=[STATUS_NEW, STATUS_IMPORTED, STATUS_MANUAL_INPUT, STATUS_CURATED],
         target=STATUS_FLAGGED,
         conditions=[can_flag],
         # permission=lambda instance, user: user in instance.all_permitted,
@@ -1590,7 +1589,7 @@ class Encounter(PolymorphicModel, UrlsMixin, geo_models.Model):
             ),
             notify=True,
             url_path="flag/",
-            badge="badge-danger",
+            badge="badge-warning",
         ),
     )
     def flag(self, by=None, description=None):
@@ -1601,28 +1600,30 @@ class Encounter(PolymorphicModel, UrlsMixin, geo_models.Model):
         """
         return
 
-    #def can_reject(self):
-    #    """Return true if the record can be rejected as entirely wrong."""
-    #    return True
+    def can_reject(self):
+        """Return true if the record can be rejected as entirely wrong."""
+        return True
 
-    # Proofread|Curated|Flagged -> Rejected
-    #@fsm_log_by
-    #@transition(
-    #    field=status,
-    #    source=[STATUS_PROOFREAD, STATUS_CURATED, STATUS_FLAGGED],
-    #    target=STATUS_REJECTED,
-    #    conditions=[can_reject],
-    #    # permission=lambda instance, user: user in instance.all_permitted,
-    #    custom=dict(
-    #        verbose="Confirm as not trustworthy",
-    #        explanation=("This record is confirmed wrong and not trustworthy."),
-    #        notify=True,
-    #        url_path="",
-    #    ),
-    #)
-    #def reject(self, by=None):
-    #    """Confirm that a record is not trustworthy and beyond repair."""
-    #    return
+    # New|Imported|Manual input|Flagged -> Rejected
+    @fsm_log_by
+    @fsm_log_description
+    @transition(
+        field=status,
+        source=[STATUS_NEW, STATUS_IMPORTED, STATUS_MANUAL_INPUT, STATUS_FLAGGED],
+        target=STATUS_REJECTED,
+        conditions=[can_reject],
+        # permission=lambda instance, user: user in instance.all_permitted,
+        custom=dict(
+            verbose="Reject as not trustworthy",
+            explanation=("This record is confirmed wrong and not trustworthy."),
+            notify=True,
+            url_path="reject/",
+            badge="badge-danger",
+        ),
+    )
+    def reject(self, by=None, description=None):
+        """Confirm that a record is not trustworthy and beyond repair."""
+        return
 
     #def can_reset(self):
     #    """Return true if the record QA status can be reset."""
