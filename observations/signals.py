@@ -120,9 +120,7 @@ def survey_post_save(sender, instance, *args, **kwargs):
     """Survey: Claim encounters.
     """
     claim_encounters(instance)
-    LOGGER.info(
-        "{} claimed Encounters {}".format(instance, instance.encounters)
-    )
+    LOGGER.info(f"{instance} claimed Encounters {instance.encounters}")
 
 
 @receiver(pre_delete, sender=Encounter)
@@ -147,7 +145,7 @@ def encounter_pre_save(sender, instance, *args, **kwargs):
 
     * source_id: Set form short_name if empty
     * area and site: Inferred from location (where) if empty
-    * encounter_type: Always from get_encounter_type
+    * encounter_type: Always from instance.get_encounter_type()
     * as_html /as_latex: Always set from get_popup() and get_latex()
     """
     if not instance.source_id:
@@ -159,9 +157,8 @@ def encounter_pre_save(sender, instance, *args, **kwargs):
         instance.site = instance.guess_site
     if not instance.area:
         instance.area = instance.guess_area
-    instance.encounter_type = instance.get_encounter_type
+    instance.encounter_type = instance.get_encounter_type()
     instance.as_html = instance.get_popup()
-    # instance.as_latex = instance.get_latex()
 
 
 @receiver(pre_save, sender=TagObservation)
