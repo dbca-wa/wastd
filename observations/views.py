@@ -240,7 +240,7 @@ class EncounterDetail(DetailViewBreadcrumbMixin, DetailView):
 
 
 class EncounterCurate(LoginRequiredMixin, SingleObjectMixin, View):
-    """Minimal view to handle GET request to mark a record as curated.
+    """Minimal view to handle HTTP request to mark a record as curated.
     """
     model = Encounter
 
@@ -260,7 +260,7 @@ class EncounterCurate(LoginRequiredMixin, SingleObjectMixin, View):
 
 
 class EncounterFlag(LoginRequiredMixin, SingleObjectMixin, View):
-    """Minimal view to handle POST request to mark a record as flagged.
+    """Minimal view to handle HTTP request to mark a record as flagged.
     """
 
     def dispatch(self, request, *args, **kwargs):
@@ -274,6 +274,24 @@ class EncounterFlag(LoginRequiredMixin, SingleObjectMixin, View):
         obj.flag(by=request.user, description="Flagged record as untrustworthy")
         obj.save()
         messages.warning(request, f"Flagged {obj} as untrustworthy")
+        return HttpResponseRedirect(obj.get_absolute_url())
+
+
+class EncounterReject(LoginRequiredMixin, SingleObjectMixin, View):
+    """Minimal view to handle HTTP request to mark a record as rejected.
+    """
+
+    def dispatch(self, request, *args, **kwargs):
+        # FIXME: Permission check
+        if not request.user.is_staff:
+            return HttpResponseForbidden("You do not have permission to reject this record")
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request, *args, **kargs):
+        obj = self.get_object()
+        obj.reject(by=request.user, description="Rejected record as untrustworthy")
+        obj.save()
+        messages.error(request, f"Rejected {obj} as untrustworthy")
         return HttpResponseRedirect(obj.get_absolute_url())
 
 
@@ -389,14 +407,14 @@ class AnimalEncounterUpdate(UpdateView):
 
 
 class AnimalEncounterCurate(EncounterCurate):
-    """Minimal view to handle GET request to mark a record as curated.
-    """
     model = AnimalEncounter
 
 
 class AnimalEncounterFlag(EncounterFlag):
-    """Minimal view to handle POST request to mark a record as flagged.
-    """
+    model = AnimalEncounter
+
+
+class AnimalEncounterReject(EncounterReject):
     model = AnimalEncounter
 
 
@@ -433,14 +451,14 @@ class TurtleNestEncounterDetail(DetailViewBreadcrumbMixin, DetailView):
 
 
 class TurtleNestEncounterCurate(EncounterCurate):
-    """Minimal view to handle GET request to mark a record as curated.
-    """
     model = TurtleNestEncounter
 
 
 class TurtleNestEncounterFlag(EncounterFlag):
-    """Minimal view to handle POST request to mark a record as flagged.
-    """
+    model = TurtleNestEncounter
+
+
+class TurtleNestEncounterReject(EncounterReject):
     model = TurtleNestEncounter
 
 
