@@ -14,7 +14,7 @@ from observations import views as wastd_views
 
 urlpatterns = [
     path("", TemplateView.as_view(template_name="index.html"), name="home"),
-    path("map/", wastd_views.HomeView.as_view(), name="map"),
+    path("map/", wastd_views.MapView.as_view(), name="map"),
     path("admin/", admin.site.urls),
     path("login/", LoginView.as_view(template_name="login.html"), name="login"),
     path("logout/", LogoutView.as_view(template_name="logged_out.html"), name="logout"),
