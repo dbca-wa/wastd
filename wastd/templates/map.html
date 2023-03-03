@@ -1,15 +1,8 @@
 {% extends "base_wastd.html" %}
-{% load static leaflet_tags geojson_tags cache %}
+{% load leaflet_tags geojson_tags %}
 
-{% cache 600 maparea %}
-{% block map %}
-<div id="map">
-    {% leaflet_map "wastdmap" callback="window.map_init" %}
-</div>
-{% endblock %}
-{% endcache %}
-
-{% block extrastyle %}
+{% block extra_style %}
+{{ block.super }}
 <style>
 .leaflet-popup, .leaflet-popup-content-wrapper {
   width: 540px !important;
@@ -22,8 +15,14 @@
 </style>
 {% endblock %}
 
-{% block extrajs %}
-    <script src="//use.fontawesome.com/f8f5501a45.js"></script>
+{% block page_content %}
+<div id="map">
+    {% leaflet_map "wastdmap" callback="window.map_init" %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
 <script type="text/javascript">
 function map_init(map, options) {
     {% include 'shared/styles.js' %}

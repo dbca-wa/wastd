@@ -77,9 +77,7 @@ def reconstruct_surveys_view(request):
 
 
 class HomeView(TemplateView):
-    """HomeView."""
-
-    template_name = "pages/map.html"
+    template_name = "map.html"
 
 
 class SurveyList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
@@ -113,7 +111,6 @@ class SurveyDetail(DetailViewBreadcrumbMixin, DetailView):
 
 def close_survey_duplicates(request, pk):
     """Close duplicates for a given Survey PK with the request user as actor.
-
 
     All duplicate Surveys will be curated and marked as "not production".
     The given Survey will be curated and marked as "production",
