@@ -212,10 +212,7 @@ class Area(geo_models.Model):
         super(Area, self).save(*args, **kwargs)
 
     def __str__(self):
-        return "{0} {1}".format(
-            self.area_type,
-            self.name,
-        )
+        return f"{self.area_type} {self.name}"
 
     @property
     def derived_centroid(self):
@@ -931,7 +928,6 @@ class Survey(QualityControlMixin, UrlsMixin, geo_models.Model):
         if self.status != QualityControlMixin.STATUS_CURATED:
             self.curate(by=curator)
             self.save()
-            # print(self.status)
 
         # ...except cuckoo Encounters
         if all_encounters.count() > 0 and self.site is not None:
@@ -1914,7 +1910,6 @@ class Encounter(PolymorphicModel, UrlsMixin, geo_models.Model):
         """Set the animal name to a given value."""
         self.name = name
         self.save()
-        LOGGER.info("{0} name set to {1}".format(self.__str__(), name))
 
     @property
     def inferred_name(self):
@@ -1925,9 +1920,7 @@ class Encounter(PolymorphicModel, UrlsMixin, geo_models.Model):
         return None
         # TODO less dirty
         try:
-            return [enc.name for enc in self.related_encounters if enc.is_new_capture][
-                0
-            ]
+            return [enc.name for enc in self.related_encounters if enc.is_new_capture][0]
         except BaseException:
             return None
 
@@ -2398,10 +2391,11 @@ class AnimalEncounter(Encounter):
 
 class TurtleNestEncounter(Encounter):
     """The encounter of turtle nest during its life cycle.
+    May represent a track with no nest, and track & nest, or a nest with no track.
 
-    The observations are assumed to follow DPaW protocol.
+    The observations are assumed to follow DBCA protocol.
     TurtleNestEncouters by third parties can be recorded, but related
-    observations cannot if they don't follow DPaW protocol.
+    observations cannot if they don't follow DBCA protocol.
 
     Stages:
 
@@ -2504,7 +2498,7 @@ class TurtleNestEncounter(Encounter):
 
     @property
     def get_encounter_type(self):
-        if self.nest_type in ["successful-crawl", "nest", "hatched-nest", "body-pit"]:
+        if self.nest_type in ["successful-crawl", "nest", "hatched-nest"]:
             return Encounter.ENCOUNTER_NEST
         else:
             return Encounter.ENCOUNTER_TRACKS
@@ -2599,7 +2593,6 @@ class LineTransectEncounter(Encounter):
         verbose_name = "Line Transect Encounter"
         verbose_name_plural = "Line Transect Encounters"
         get_latest_by = "when"
-        # base_manager_name = 'base_objects'  # fix delete bug
 
     def __str__(self):
         return "Line tx {0}".format(self.pk)
@@ -2616,7 +2609,7 @@ class LineTransectEncounter(Encounter):
 
         TODO support other types of line transects when added
         """
-        return Encounter.ENCOUNTER_NEST
+        return Encounter.ENCOUNTER_TRACKS
 
     @property
     def short_name(self):
@@ -3791,9 +3784,6 @@ class TurtleNestObservation(Observation):
         return "Nest Obs {0} eggs, hatching succ {1}, emerg succ {2}".format(
             self.egg_count, self.hatching_success, self.emergence_success
         )
-
-    # TODO custom save()
-    # calculate egg_count;
 
     @property
     def no_emerged(self):

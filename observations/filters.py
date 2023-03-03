@@ -273,6 +273,24 @@ class TurtleNestEncounterBasicFilter(FilterSet):
         label="Reported by",
         queryset=User.objects.filter(pk__in=set(TurtleNestEncounter.objects.values_list("reporter", flat=True))).order_by("name"),
     )
+    encounter_type = ChoiceFilter(
+        field_name="encounter_type",
+        choices=(
+            (Encounter.ENCOUNTER_NEST, "Nest"),
+            (Encounter.ENCOUNTER_TRACKS, "Tracks"),
+        ),
+        label="Nest/tracks",
+    )
+    nest_type = ChoiceFilter(
+        field_name="nest_type",
+        choices=(
+            ("successful-crawl", "Track with nest"),
+            ("nest", "Nest, unhatched, no track"),
+            ("hatched-nest", "Nest, hatched"),
+            ("body-pit", "Body pit, no track"),
+        ),
+        label="Nest type",
+    )
     species = ChoiceFilter(field_name="species", choices=sorted(TURTLE_SPECIES_CHOICES))
     area = ModelChoiceFilter(
         label="Locality",
@@ -300,8 +318,9 @@ class TurtleNestEncounterBasicFilter(FilterSet):
             "date_to",
             "user_observer",
             "user_reporter",
+            "encounter_type",
             "nest_type",
-            "area",  # Locality
+            "area",
             "site",
             "species",
             "disturbance",
