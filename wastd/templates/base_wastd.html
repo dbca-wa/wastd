@@ -22,6 +22,15 @@
 <link rel="manifest" href="{% static 'site.webmanifest' %}">
 {% endblock favicon %}
 
+{# Make the top navbar collapse at a larger width, because we have more menu items #}
+{% block navbar_class %}navbar navbar-expand-xl fixed-top navbar-dark bg-dark{% endblock navbar_class %}
+
+{% block navbar_button %}
+<button class="{% block navbar_button_class %}navbar-toggler{% endblock %}" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+</button>
+{% endblock navbar_button %}
+
 {% block navbar_links %}
 {% include 'navbar.html' %}
 {% endblock navbar_links %}
