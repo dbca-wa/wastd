@@ -76,7 +76,7 @@ def reconstruct_surveys_view(request):
     return HttpResponseRedirect("/")
 
 
-class HomeView(TemplateView):
+class MapView(TemplateView):
     template_name = "map.html"
 
 
