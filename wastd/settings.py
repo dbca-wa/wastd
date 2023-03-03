@@ -321,7 +321,7 @@ LEAFLET_CONFIG = {
             {
                 "attribution": "Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community"
             },
-        ),  # noqa
+        ),
         (
             "Place names",
             "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
@@ -340,46 +340,46 @@ LEAFLET_CONFIG = {
                 "ext": "png",
             },
         ),
-        (
-            "Bathymetry",
-            "//server.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/{z}/{y}/{x}",
-            {
-                "attribution": "Tiles &copy; Esri &mdash; Sources: GEBCO, NOAA, CHS, OSU, UNH, CSUMB, National Geographic, DeLorme, NAVTEQ, and Esri",  # noqa
-                "maxZoom": 13,
-            },
-        ),
-        (
-            "Real time true colour",
-            "//map1.vis.earthdata.nasa.gov/wmts-webmerc/MODIS_Terra_CorrectedReflectance_TrueColor/default/{time}/{tilematrixset}{maxZoom}/{z}/{y}/{x}.{format}",  # noqa
-            {
-                "attribution": 'Imagery provided by services from the Global Imagery Browse Services (GIBS), operated by the NASA/GSFC/Earth Science Data and Information System (<a href="https://earthdata.nasa.gov">ESDIS</a>) with funding provided by NASA/HQ.',  # noqa
-                "bounds": [
-                    [-85.0511287776, -179.999999975],
-                    [85.0511287776, 179.999999975],
-                ],
-                "minZoom": 1,
-                "maxZoom": 9,
-                "format": "jpg",
-                "time": "",
-                "tilematrixset": "GoogleMapsCompatible_Level",
-            },
-        ),
-        (
-            "Real time false colour",
-            "//map1.vis.earthdata.nasa.gov/wmts-webmerc/MODIS_Terra_CorrectedReflectance_Bands367/default/{time}/{tilematrixset}{maxZoom}/{z}/{y}/{x}.{format}",  # noqa
-            {
-                "attribution": 'Imagery provided by services from the Global Imagery Browse Services (GIBS), operated by the NASA/GSFC/Earth Science Data and Information System (<a href="https://earthdata.nasa.gov">ESDIS</a>) with funding provided by NASA/HQ.',  # noqa
-                "bounds": [
-                    [-85.0511287776, -179.999999975],
-                    [85.0511287776, 179.999999975],
-                ],
-                "minZoom": 1,
-                "maxZoom": 9,
-                "format": "jpg",
-                "time": "",
-                "tilematrixset": "GoogleMapsCompatible_Level",
-            },
-        ),
+        #(
+        #    "Bathymetry",
+        #    "//server.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/{z}/{y}/{x}",
+        #    {
+        #        "attribution": "Tiles &copy; Esri &mdash; Sources: GEBCO, NOAA, CHS, OSU, UNH, CSUMB, National Geographic, DeLorme, NAVTEQ, and Esri",  # noqa
+        #        "maxZoom": 13,
+        #    },
+        #),
+        #(
+        #    "Real time true colour",
+        #    "//map1.vis.earthdata.nasa.gov/wmts-webmerc/MODIS_Terra_CorrectedReflectance_TrueColor/default/{time}/{tilematrixset}{maxZoom}/{z}/{y}/{x}.{format}",  # noqa
+        #    {
+        #        "attribution": 'Imagery provided by services from the Global Imagery Browse Services (GIBS), operated by the NASA/GSFC/Earth Science Data and Information System (<a href="https://earthdata.nasa.gov">ESDIS</a>) with funding provided by NASA/HQ.',  # noqa
+        #        "bounds": [
+        #            [-85.0511287776, -179.999999975],
+        #            [85.0511287776, 179.999999975],
+        #        ],
+        #        "minZoom": 1,
+        #        "maxZoom": 9,
+        #        "format": "jpg",
+        #        "time": "",
+        #        "tilematrixset": "GoogleMapsCompatible_Level",
+        #    },
+        #),
+        #(
+        #    "Real time false colour",
+        #    "//map1.vis.earthdata.nasa.gov/wmts-webmerc/MODIS_Terra_CorrectedReflectance_Bands367/default/{time}/{tilematrixset}{maxZoom}/{z}/{y}/{x}.{format}",  # noqa
+        #    {
+        #        "attribution": 'Imagery provided by services from the Global Imagery Browse Services (GIBS), operated by the NASA/GSFC/Earth Science Data and Information System (<a href="https://earthdata.nasa.gov">ESDIS</a>) with funding provided by NASA/HQ.',  # noqa
+        #        "bounds": [
+        #            [-85.0511287776, -179.999999975],
+        #            [85.0511287776, 179.999999975],
+        #        ],
+        #        "minZoom": 1,
+        #        "maxZoom": 9,
+        #        "format": "jpg",
+        #        "time": "",
+        #        "tilematrixset": "GoogleMapsCompatible_Level",
+        #    },
+        #),
         (
             "Light pollution",
             "//map1.vis.earthdata.nasa.gov/wmts-webmerc/VIIRS_CityLights_2012/default/{time}/{tilematrixset}{maxZoom}/{z}/{y}/{x}.{format}",  # noqa
