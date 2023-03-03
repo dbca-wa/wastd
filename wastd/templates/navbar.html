@@ -26,51 +26,55 @@
             Nests and Tracks
         </a>
         <div class="dropdown-menu" aria-labelledby="nav-li-tracks">
-            <a class="dropdown-item" href="{% url 'observations:turtlenestencounter-list' %}" title="Browse, filter and search all Turtle Nest Encounters">
+            <a class="dropdown-item" href="{% url 'observations:turtlenestencounter-list' %}"
+                title="Browse all turtle nest encounters">
                 <i class="fa-solid fa-table" aria-hidden="true"></i>
-                Browse all Turtle Nest Encounters
+                Browse all turtle nest/track encounters
             </a>
             <div class="dropdown-divider"></div>
-            <a class="dropdown-item" href="{% url 'observations:turtlenestencounter-list' %}?disturbance=present" title="Browse, filter and search disturbed or predated nests">
+            <a class="dropdown-item" href="{% url 'observations:turtlenestencounter-list' %}?disturbance=present"
+                title="Browse disturbed or predated nests">
                 <i class="fa-solid fa-table" aria-hidden="true"></i>
                 Disturbed nests
             </a>
-            {% comment %}
-            <a class="dropdown-item" href="{% url 'observations:encounter-list' %}" title="Browse, filter and search general disturbance or predator presence">
-                <i class="fa-solid fa-table" aria-hidden="true"></i>
-                General dist/pred
-            </a>
-            {% endcomment %}
-            <a class="dropdown-item" href="{% url 'observations:turtlenestencounter-list' %}?nest_tagged=present" title="Browse, filter and search tagged nests">
+            <a class="dropdown-item" href="{% url 'observations:turtlenestencounter-list' %}?nest_tagged=present"
+                title="Browse tagged nests">
                 <i class="fa-solid fa-table" aria-hidden="true"></i>
                 Tagged nests
             </a>
-            <a class="dropdown-item" href="{% url 'observations:turtlenestencounter-list' %}?logger_found=present" title="Browse, filter and search Turtle Nest Encounters where loggers were deployed or found">
+            <a class="dropdown-item" href="{% url 'observations:turtlenestencounter-list' %}?logger_found=present"
+                title="Browse turtle nest encounters where loggers were deployed or found">
                 <i class="fa-solid fa-table" aria-hidden="true"></i>
                 Nests with loggers
             </a>
             <a class="dropdown-item"
                 href="{% url 'observations:turtlenestencounter-list' %}?eggs_counted=present"
-                title="Browse, filter and search eggscavated nests">
+                title="Browse excavated nests">
                 <i class="fa-solid fa-table" aria-hidden="true"></i>
                 Excavated nests
             </a>
             <a class="dropdown-item"
                 href="{% url 'observations:turtlenestencounter-list' %}?hatchlings_measured=present"
-                title="Browse, filter and search excavated nests with hatchling morphometric measurements">
+                title="Browse excavated nests with hatchling morphometric measurements">
                 <i class="fa-solid fa-table" aria-hidden="true"></i>
                 Nests with live hatchlings
             </a>
             <a class="dropdown-item"
                 href="{% url 'observations:turtlenestencounter-list' %}?fan_angles_measured=present"
-                title="Browse, filter and search nests with fan angles">
+                title="Browse nests with fan angles">
+                <i class="fa-solid fa-table" aria-hidden="true"></i>
+                Nests with fan angles
+            </a>
+            <a class="dropdown-item"
+                href="{% url 'observations:turtlenestencounter-list' %}?encounter_type=tracks"
+                title="Browse track encounters (without nests)">
                 <i class="fa-solid fa-table" aria-hidden="true"></i>
                 Nests with fan angles
             </a>
             {% comment %}
             <a class="dropdown-item"
                 href="{% url 'observations:linetransectencounter-list' %}"
-                title="Browse, filter and search Track Tallies">
+                title="Browse, filter and search track tallies">
                 <i class="fa-solid fa-table" aria-hidden="true"></i>
                 Track Tallies
             </a>
@@ -111,7 +115,7 @@
             </a>
             <a class="dropdown-item"
                 href="{% url 'observations:animalencounter-list' %}?health=alive-injured"
-                title="Browse, filter and search all encounters with injured animals">
+                title="Browse encounters with injured animals">
                 <i class="fa-solid fa-table" aria-hidden="true"></i>
                 <span class="align-left">Injured animals</span>
             </a>
@@ -143,17 +147,17 @@
         <div class="dropdown-menu" aria-labelledby="nav-li-surveys">
             <a class="dropdown-item"
             href="{% url 'observations:survey-list' %}?production=true"
-            title="Browse, filter and search all Surveys - production surveys pre-selected">
+            title="Browse all production surveys">
                 <i class="fa-solid fa-table" aria-hidden="true"></i>
-                <span class="align-left">Browse production Surveys</span>
+                <span class="align-left">Browse production surveys</span>
             </a>
-            <div class="dropdown-divider"></div>
             <h6 class="dropdown-header">QA shortlists</h6>
+            <div class="dropdown-divider"></div>
             <a class="dropdown-item"
             href="{% url 'observations:survey-list' %}?production=false"
-            title="Browse, filter and search all Surveys - training surveys pre-selected">
+            title="Browse all training surveys">
                 <i class="fa-solid fa-table" aria-hidden="true"></i>
-                <span class="align-left">Browse training Surveys</span>
+                <span class="align-left">Browse training surveys</span>
             </a>
         </div>
     </li>
@@ -168,17 +172,17 @@
         <div class="dropdown-menu" aria-labelledby="nav-li-users">
             <a class="dropdown-item"
             href="{% url 'users:user-list' %}?is_active=true"
-            title="Browse, filter and search all active Users">
+            title="Browse all active users">
                 <i class="fa-solid fa-table" aria-hidden="true"></i>
-                <span class="align-left">Browse active Users</span>
+                <span class="align-left">Browse active users</span>
             </a>
             <div class="dropdown-divider"></div>
             <h6 class="dropdown-header">QA shortlists</h6>
             <a class="dropdown-item"
             href="{% url 'users:user-list' %}?is_active=false"
-            title="Browse, filter and search all Users marked as duplicates or deleted">
+            title="Browse all inactive users">
             <i class="fa-solid fa-table" aria-hidden="true"></i>
-            <span class="align-left">Inactive Users</span>
+            <span class="align-left">Inactive users</span>
             </a>
             <a class="dropdown-item"
             href="{% url 'users:user-list' %}?name__icontains=%2C&is_active=true"
@@ -203,15 +207,15 @@
             <h6 class="dropdown-header">QA operations</h6>
             <a class="dropdown-item"
             href="{% url 'users:user-merge' %}"
-            title="Merge duplicate User Profiles">
+            title="Merge duplicate user profiles">
             <i class="fa-solid fa-users" aria-hidden="true"></i>
-            <span class="align-left">Merge Profiles</span>
+            <span class="align-left">Merge user profiles</span>
             </a>
             <a class="dropdown-item"
             href="{% url 'users:user-transfer' %}"
-            title="Transfer data between User Profiles">
+            title="Transfer data between user profiles">
             <i class="fa-solid fa-users" aria-hidden="true"></i>
-            <span class="align-left">Transfer Data</span>
+            <span class="align-left">Transfer user data</span>
             </a>
             {% endif %}
         </div>
@@ -243,10 +247,10 @@
         </a>
         {% if request.user.is_authenticated %}
         <a class="dropdown-item"
-            title="My API Authentication"
+            title="My API authentication"
             href="{% url 'users:user-detail' request.user.pk  %}">
             <i class="fa-solid fa-user" aria-hidden="true"></i>
-            <span class="align-left">My API Authentication</span>
+            <span class="align-left">My API authentication</span>
         </a>
         {% endif %}
     </div>
@@ -279,7 +283,7 @@
                 target="_blank"
                 title="Data entry and curation area">
                 <i class="fa-solid fa-flask" aria-hidden="true"></i>
-                Data Curation Portal
+                Data curation portal
             </a>
             {% if request.user.is_superuser %}
             <div class="dropdown-divider"></div>
@@ -293,19 +297,19 @@
                 href="{% url 'reconstruct-surveys' %}"
                 title="Reconstruct missing surveys">
                 <i class="fa-solid fa-repeat" aria-hidden="true"></i>
-                Reconstruct missing Surveys
+                Reconstruct missing surveys
             </a>
             <a class="dropdown-item"
                 href="{% url 'resave-surveys' %}"
                 title="Rebuild names for surveys, tagged animals, and loggers.">
                 <i class="fa-solid fa-repeat" aria-hidden="true"></i>
-                Re-save existing Surveys
+                Re-save existing surveys
             </a>
             <a class="dropdown-item"
                 href="{% url 'update-names' %}"
                 title="Reconstruct animal encounter case histories.">
                 <i class="fa-solid fa-repeat" aria-hidden="true"></i>
-                Reconstruct Animal Case Histories
+                Reconstruct animal case histories
             </a>
             {% endif %}
         </div>
@@ -314,7 +318,7 @@
 
     {% comment %}
     <li class="nav-item">
-        <a class="nav-link" href="https://dbca-wa.github.io/wastd/index.html" title="Stuck? Here's all you want to know (and more)" target="_blank">
+        <a class="nav-link" href="https://dbca-wa.github.io/wastd/index.html" title="Manual" target="_blank">
             <i class="fa-solid fa-book" aria-hidden="true"></i> Manual
         </a>
     </li>
@@ -328,7 +332,7 @@
     <li class="nav-item">
         <a class="nav-link" href="{% url 'users:user-detail' request.user.pk  %}">
             <i class="fa-solid fa-user" title="Profile" aria-hidden="true"></i>
-            My Profile
+            My profile
         </a>
     </li>
     <li class="nav-item">
