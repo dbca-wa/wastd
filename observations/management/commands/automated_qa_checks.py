@@ -2,6 +2,11 @@ from django.core.management.base import BaseCommand
 import itertools
 import logging
 
+from observations.lookups import (
+    TURTLE_SPECIES_DEFAULT,
+    NEST_TYPE_TRACK_UNSURE,
+    NEST_AGE_DEFAULT,
+)
 from observations.models import (
     Area,
     Encounter,
@@ -9,9 +14,6 @@ from observations.models import (
     TrackTallyObservation,
     TurtleNestDisturbanceObservation,
     TurtleNestDisturbanceTallyObservation,
-    TURTLE_SPECIES_DEFAULT,
-    NEST_TYPE_TRACK_UNSURE,
-    NEST_AGE_DEFAULT,
 )
 from users.models import User
 
@@ -32,6 +34,16 @@ class Command(BaseCommand):
         for enc in nest_encounters:
             enc.flag(by=system_user, description='Flagged for curation by automated checks due to uncertain species')
             enc.save()
+
+        # Check: Any turtle nest encounter using 'test' species.
+        # FIXME: STATUS_NEW may change to STATUS_IMPORTED.
+        for species in ["corolla-corolla", "test-turtle"]:
+            nest_encounters = TurtleNestEncounter.objects.filter(species=species, status=Encounter.STATUS_NEW)
+            if nest_encounters:
+                logger.info(f'Flagging {nest_encounters.count()} turtle nest encounters for curation due to test species type')
+            for enc in nest_encounters:
+                enc.flag(by=system_user, description='Flagged for curation by automated checks due to test species type')
+                enc.save()
 
         # Check: Any turtle nest encounter with uncertain nesting outcome.
         # FIXME: STATUS_NEW may change to STATUS_IMPORTED.
