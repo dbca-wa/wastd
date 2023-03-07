@@ -47,6 +47,9 @@ class EncounterResource(ModelResource):
     observer = Field(column_name='observer')
     reporter = Field(column_name='reporter')
 
+    def dehydrate_status(self, encounter):
+        return encounter.get_status_display()
+
     def dehydrate_locality(self, encounter):
         return encounter.area.name if encounter.area else ''
 
@@ -66,6 +69,7 @@ class EncounterResource(ModelResource):
         model = Encounter
         fields = [
             "id",
+            "status",
             "when",
             "where",
             "locality",
@@ -76,6 +80,7 @@ class EncounterResource(ModelResource):
         ]
         export_order = [
             "id",
+            "status",
             "when",
             "where",
             "locality",
