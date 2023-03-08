@@ -320,6 +320,7 @@ class TurtleNestEncounterBasicFilter(FilterSet):
             "user_reporter",
             "encounter_type",
             "nest_type",
+            "nest_age",
             "area",
             "site",
             "species",
