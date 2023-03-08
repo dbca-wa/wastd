@@ -435,11 +435,13 @@ class TurtleNestEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, Li
         return context
 
     def get_queryset(self):
+        # FIXME: filtering via permissions model.
         qs = super().get_queryset().prefetch_related("observer", "reporter", "area", "site").order_by("-when")
         return TurtleNestEncounterBasicFilter(self.request.GET, queryset=qs).qs
 
 
 class TurtleNestEncounterDetail(DetailViewBreadcrumbMixin, DetailView):
+    # FIXME: filtering via permissions model.
     model = TurtleNestEncounter
 
     def get_context_data(self, **kwargs):

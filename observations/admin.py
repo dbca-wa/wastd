@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib import admin, messages
 from django.contrib.auth import get_user_model
+from django.contrib.admin import register, ModelAdmin, StackedInline, SimpleListFilter
 from django.contrib.admin.filters import RelatedFieldListFilter
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
@@ -81,7 +82,7 @@ class TagObservationInline(admin.TabularInline):
     # form = s2form(TagObservation, attrs=S2ATTRS)
 
 
-class NestTagObservationInline(admin.StackedInline):
+class NestTagObservationInline(StackedInline):
     """TabularInlineAdmin for NestTagObservation."""
 
     extra = 0
@@ -89,7 +90,7 @@ class NestTagObservationInline(admin.StackedInline):
     classes = ("grp-collapse grp-open",)
 
 
-class TurtleMorphometricObservationInline(admin.StackedInline):
+class TurtleMorphometricObservationInline(StackedInline):
     """Admin for TurtleMorphometricObservation."""
 
     extra = 0
@@ -145,7 +146,7 @@ class TurtleNestDisturbanceTallyObservationInline(admin.TabularInline):
     classes = ("grp-collapse grp-open",)
 
 
-class TurtleNestObservationInline(admin.StackedInline):
+class TurtleNestObservationInline(StackedInline):
     """Admin for TurtleNestObservation."""
 
     extra = 0
@@ -161,7 +162,7 @@ class TurtleNestDisturbanceObservationInline(admin.TabularInline):
     classes = ("grp-collapse grp-open",)
 
 
-class TurtleHatchlingEmergenceObservationInline(admin.StackedInline):
+class TurtleHatchlingEmergenceObservationInline(StackedInline):
     """Admin for TurtleHatchlingEmergenceObservation."""
 
     extra = 0
@@ -226,7 +227,7 @@ class SurveyMediaAttachmentInline(admin.TabularInline):
     formfield_overrides = FORMFIELD_OVERRIDES
 
 
-class ObservationAdminMixin(VersionAdmin, admin.ModelAdmin):
+class ObservationAdminMixin(VersionAdmin, ModelAdmin):
     """Admin mixin for Observation models."""
 
     save_on_top = True
@@ -324,7 +325,7 @@ class ObservationAdminMixin(VersionAdmin, admin.ModelAdmin):
     encounter_status.short_description = "QA status"
 
 
-@admin.register(ManagementAction)
+@register(ManagementAction)
 class ManagementActionAdmin(ObservationAdminMixin):
     """Admin for ManagementAction."""
 
@@ -359,7 +360,7 @@ class ManagementActionAdmin(ObservationAdminMixin):
         )
 
 
-@admin.register(MediaAttachment)
+@register(MediaAttachment)
 class MediaAttachmentAdmin(ObservationAdminMixin):
     """Admin for MediaAttachment."""
 
@@ -400,7 +401,7 @@ class MediaAttachmentAdmin(ObservationAdminMixin):
     thumbnail.allow_tags = True
 
 
-@admin.register(TurtleMorphometricObservation)
+@register(TurtleMorphometricObservation)
 class TurtleMorphometricObservationAdmin(ObservationAdminMixin):
     """Admin for TurtleMorphometricObservation."""
 
@@ -456,7 +457,7 @@ class TurtleMorphometricObservationAdmin(ObservationAdminMixin):
         )
 
 
-@admin.register(TagObservation)
+@register(TagObservation)
 class TagObservationAdmin(ObservationAdminMixin):
     """Admin for TagObservation."""
 
@@ -498,7 +499,7 @@ class TagObservationAdmin(ObservationAdminMixin):
     animal_name.short_description = "Animal Name"
 
 
-@admin.register(TurtleDamageObservation)
+@register(TurtleDamageObservation)
 class TurtleDamageObservationAdmin(ObservationAdminMixin):
     """Admin for TurtleDamageObservation."""
 
@@ -535,7 +536,7 @@ class TurtleDamageObservationAdmin(ObservationAdminMixin):
         )
 
 
-@admin.register(TurtleNestDisturbanceObservation)
+@register(TurtleNestDisturbanceObservation)
 class TurtleNestDisturbanceObservationAdmin(ObservationAdminMixin):
     """Admin for TurtleNestDisturbanceObservation."""
 
@@ -571,7 +572,7 @@ class TurtleNestDisturbanceObservationAdmin(ObservationAdminMixin):
         )
 
 
-@admin.register(TurtleNestObservation)
+@register(TurtleNestObservation)
 class TurtleNestObservationAdmin(ObservationAdminMixin):
     """Admin for TurtleNestObservation."""
 
@@ -612,7 +613,7 @@ class TurtleNestObservationAdmin(ObservationAdminMixin):
         )
 
 
-@admin.register(NestTagObservation)
+@register(NestTagObservation)
 class NestTagObservationAdmin(ObservationAdminMixin):
     """Admin for NestTagObservation."""
 
@@ -653,7 +654,7 @@ class NestTagObservationAdmin(ObservationAdminMixin):
         )
 
 
-@admin.register(HatchlingMorphometricObservation)
+@register(HatchlingMorphometricObservation)
 class HatchlingMorphometricObservationAdmin(ObservationAdminMixin):
     """Admin for HatchlingMorphometricObservation."""
 
@@ -679,7 +680,7 @@ class HatchlingMorphometricObservationAdmin(ObservationAdminMixin):
         )
 
 
-@admin.register(TurtleHatchlingEmergenceObservation)
+@register(TurtleHatchlingEmergenceObservation)
 class TurtleHatchlingEmergenceObservationAdmin(ObservationAdminMixin):
     """Admin for TurtleHatchlingEmergenceObservation."""
 
@@ -720,7 +721,7 @@ class TurtleHatchlingEmergenceObservationAdmin(ObservationAdminMixin):
         )
 
 
-@admin.register(TurtleHatchlingEmergenceOutlierObservation)
+@register(TurtleHatchlingEmergenceOutlierObservation)
 class TurtleHatchlingEmergenceOutlierObservationAdmin(ObservationAdminMixin):
     """Admin for TurtleHatchlingEmergenceOutlierObservation."""
 
@@ -750,7 +751,7 @@ class TurtleHatchlingEmergenceOutlierObservationAdmin(ObservationAdminMixin):
         )
 
 
-@admin.register(LightSourceObservation)
+@register(LightSourceObservation)
 class LightSourceObservationAdmin(ObservationAdminMixin):
     """Admin for LightSourceObservation."""
 
@@ -780,7 +781,7 @@ class LightSourceObservationAdmin(ObservationAdminMixin):
         )
 
 
-@admin.register(TrackTallyObservation)
+@register(TrackTallyObservation)
 class TrackTallyObservationAdmin(ObservationAdminMixin):
     """Admin for TrackTallyObservation."""
 
@@ -815,7 +816,7 @@ class TrackTallyObservationAdmin(ObservationAdminMixin):
         )
 
 
-@admin.register(TurtleNestDisturbanceTallyObservation)
+@register(TurtleNestDisturbanceTallyObservation)
 class TurtleNestDisturbanceTallyObservationAdmin(ObservationAdminMixin):
     """Admin for TurtleNestDisturbanceTallyObservation."""
 
@@ -850,7 +851,7 @@ class TurtleNestDisturbanceTallyObservationAdmin(ObservationAdminMixin):
         )
 
 
-@admin.register(LoggerObservation)
+@register(LoggerObservation)
 class LoggerObservationAdmin(ObservationAdminMixin):
     """Admin for TurtleNestDisturbanceTallyObservation."""
 
@@ -891,8 +892,8 @@ class CampaignMediaAttachmentInline(admin.TabularInline):
     formfield_overrides = FORMFIELD_OVERRIDES
 
 
-@admin.register(Survey)
-class SurveyAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
+@register(Survey)
+class SurveyAdmin(FSMTransitionMixin, VersionAdmin, ModelAdmin):
     """Survey Admin."""
 
     # model = Survey
@@ -1031,8 +1032,8 @@ class SurveyAdmin(FSMTransitionMixin, VersionAdmin, admin.ModelAdmin):
     owner.short_description = "Data Owner"
 
 
-@admin.register(Area)
-class AreaAdmin(admin.ModelAdmin):
+@register(Area)
+class AreaAdmin(ModelAdmin):
     """Area admin."""
 
     list_display = (
@@ -1053,8 +1054,8 @@ class AreaAdmin(admin.ModelAdmin):
     formfield_overrides = FORMFIELD_OVERRIDES
 
 
-@admin.register(Campaign)
-class CampaignAdmin(admin.ModelAdmin):
+@register(Campaign)
+class CampaignAdmin(ModelAdmin):
     """Campaign admin."""
 
     list_display = (
@@ -1110,41 +1111,52 @@ class CampaignAdmin(admin.ModelAdmin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
-@admin.register(Encounter)
+@register(Encounter)
 class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
     """Admin for Encounter with inlines for all Observations.
-
     This admin can be extended by other Encounter Admin classes.
     """
+    class QAStatusFilter(SimpleListFilter):
+        title = 'QA status'
+        parameter_name = 'qa_status'
 
-    # -------------------------------------------------------------------------
-    # Change list
-    change_list_filter_template = "admin/filter_listing.html"
+        def lookups(self, request, model_admin):
+            return (
+                (Encounter.STATUS_NEW, _("New")),
+                (Encounter.STATUS_IMPORTED, _("Imported")),
+                (Encounter.STATUS_MANUAL_INPUT, _("Manual input")),
+                (Encounter.STATUS_CURATED, _("Curated")),
+                (Encounter.STATUS_FLAGGED, _("Flagged")),
+                (Encounter.STATUS_REJECTED, _("Rejected")),
+            )
 
+        def queryset(self, request, queryset):
+            if self.value():
+                return queryset.filter(status=self.value())
+
+    #change_list_filter_template = "admin/filter_listing.html"
     date_hierarchy = "when"
-    # Filters for change_list
     list_filter = (
-        "campaign__owner",
+        #"campaign__owner",
         ("area", AreaFilter),
         ("site", SiteFilter),
-        "status",
+        QAStatusFilter,
         "observer",
         "reporter",
-        "location_accuracy",
+        #"location_accuracy",
         "encounter_type",
         "source",
-    )  # 'survey',
-
-    # Columns for change_list, allow re-use and inserting fields
+    )
     FIRST_COLS = (
         "when",
         "area",
         "site",
+        "encounter_type",
         "latitude",
         "longitude",
-        "location_accuracy",
-        "location_accuracy_m",
-        "name_link",
+        #"location_accuracy",
+        #"location_accuracy_m",
+        #"name_link",
     )
     LAST_COLS = (
         "observer",
@@ -1152,14 +1164,10 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
         "source_display",
         "source_id",
         "status",
-        "encounter_type",
-        "owner",
-    )  # 'survey',
+        #"owner",
+    )
     list_display = FIRST_COLS + LAST_COLS
-    # Layout: save buttons also on top - overridden by Grapelli admin skin
     # save_on_top = True
-
-    # Change_list fulltext search fields
     search_fields = (
         "observer__name",
         "observer__username",
@@ -1168,10 +1176,6 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
         "reporter__username",
         "source_id",
     )
-
-    # Performance
-    # https://docs.djangoproject.com/en/1.11/ref/contrib/admin/
-    # #django.contrib.admin.ModelAdmin.list_select_related
     list_select_related = ("area", "site", "survey", "observer", "reporter", "campaign")
 
     # -------------------------------------------------------------------------
@@ -1186,9 +1190,7 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
     readonly_fields = ("name",)
 
     # Django-fsm transitions config
-    fsm_field = [
-        "status",
-    ]
+    fsm_field = ["status"]
 
     # Change_view form layout
     fieldsets = (
@@ -1304,7 +1306,7 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
 
 
 def curate_encounter(modeladmin, request, queryset):
-    """A custom action to allow records to be marked as curated.
+    """A custom action to allow record status to be marked as curated.
     """
     for obj in queryset:
         obj.curate(by=request.user, description="Curated record as trustworthy")
@@ -1312,11 +1314,11 @@ def curate_encounter(modeladmin, request, queryset):
     messages.success(request, f"Curated selected encounter(s) as trustworthy")
 
 
-curate_encounter.short_description = 'Curate selected encounter records as trustworthy'
+curate_encounter.short_description = "Curate selected encounter records as trustworthy"
 
 
 def flag_encounter(modeladmin, request, queryset):
-    """A custom action to allow records to be marked as flagged.
+    """A custom action to allow record status to be marked as flagged.
     """
     for obj in queryset:
         obj.flag(by=request.user, description="Flagged record as untrustworthy")
@@ -1324,10 +1326,22 @@ def flag_encounter(modeladmin, request, queryset):
     messages.warning(request, f"Flagged selected encounter(s) as untrustworthy")
 
 
-flag_encounter.short_description = 'Flag selected encounter records as untrustworthy'
+flag_encounter.short_description = "Flag selected encounter records as untrustworthy"
 
 
-@admin.register(AnimalEncounter)
+def reject_encounter(modeladmin, request, queryset):
+    """A custom action to allow record status to be marked as rejected.
+    """
+    for obj in queryset:
+        obj.reject(by=request.user, description="Reject record as unusable")
+        obj.save()
+    messages.warning(request, f"Rejected selected encounter(s) as unusable")
+
+
+reject_encounter.short_description = "Reject selected encounter records as unusable"
+
+
+@register(AnimalEncounter)
 class AnimalEncounterAdmin(EncounterAdmin):
     actions = [curate_encounter, flag_encounter]
     form = s2form(AnimalEncounter, attrs=S2ATTRS)
@@ -1502,9 +1516,24 @@ class AnimalEncounterAdmin(EncounterAdmin):
     habitat_display.short_description = "Habitat"
 
 
-@admin.register(TurtleNestEncounter)
+@register(TurtleNestEncounter)
 class TurtleNestEncounterAdmin(EncounterAdmin):
-    actions = [curate_encounter, flag_encounter]
+
+    class TurtleNestEncounterTypeFilter(SimpleListFilter):
+        title = 'Encounter type'
+        parameter_name = 'encounter_type'
+
+        def lookups(self, request, model_admin):
+            return (
+                (Encounter.ENCOUNTER_NEST, "Nest"),
+                (Encounter.ENCOUNTER_TRACKS, "Tracks"),
+            )
+
+        def queryset(self, request, queryset):
+            if self.value():
+                return queryset.filter(encounter_type=self.value())
+
+    actions = [curate_encounter, flag_encounter, reject_encounter]
     form = s2form(TurtleNestEncounter, attrs=S2ATTRS)
     list_display = (
         EncounterAdmin.FIRST_COLS
@@ -1519,7 +1548,16 @@ class TurtleNestEncounterAdmin(EncounterAdmin):
         + EncounterAdmin.LAST_COLS
     )
     list_select_related = True
-    list_filter = EncounterAdmin.list_filter + (
+    list_filter = (
+        "campaign__owner",
+        ("area", AreaFilter),
+        ("site", SiteFilter),
+        EncounterAdmin.QAStatusFilter,
+        "observer",
+        "reporter",
+        #"location_accuracy",
+        TurtleNestEncounterTypeFilter,
+        "source",
         "nest_age",
         "nest_type",
         "species",
@@ -1566,11 +1604,7 @@ class TurtleNestEncounterAdmin(EncounterAdmin):
     ]
 
     def get_queryset(self, request):
-        return (
-            super(TurtleNestEncounterAdmin, self)
-            .get_queryset(request)
-            .prefetch_related("observer", "reporter", "area", "site")
-        )
+        return super().get_queryset(request).prefetch_related("observer", "reporter", "area", "site")
 
     def habitat_display(self, obj):
         """Make habitat human readable."""
@@ -1591,7 +1625,7 @@ class TurtleNestEncounterAdmin(EncounterAdmin):
     type_display.short_description = "Nest type"
 
 
-@admin.register(LineTransectEncounter)
+@register(LineTransectEncounter)
 class LineTransectEncounterAdmin(EncounterAdmin):
     """Admin for LineTransectEncounter."""
 
@@ -1630,53 +1664,3 @@ class LineTransectEncounterAdmin(EncounterAdmin):
                 "site",
             )
         )
-
-
-# @admin.register(LoggerEncounter)
-# class LoggerEncounterAdmin(EncounterAdmin):
-#     """Admin for LoggerEncounter. To be replaced with LoggerObservation."""
-
-#     form = s2form(LoggerEncounter, attrs=S2ATTRS)
-#     list_display = EncounterAdmin.FIRST_COLS + (
-#         'logger_type_display', 'deployment_status_display',
-#         'logger_id', 'comments',
-#     ) + EncounterAdmin.LAST_COLS
-#     list_select_related = ('area', 'site', 'survey', )
-#     list_filter = EncounterAdmin.list_filter + \
-#         ('logger_type', 'deployment_status',)
-#     search_fields = ('logger_id', 'source_id')
-#     fieldsets = EncounterAdmin.fieldsets + (
-#         ('Logger',
-#             {
-#                 'classes': ('grp-collapse', 'grp-open', 'wide', 'extrapretty'),
-#                 'fields': (
-#                     'logger_type', 'deployment_status', 'logger_id', 'comments',)
-#             }), )
-#     inlines = [
-#         MediaAttachmentInline,
-#         TagObservationInline,
-#         NestTagObservationInline,
-#         TemperatureLoggerSettingsInline,
-#         DispatchRecordInline,
-#         TemperatureLoggerDeploymentInline,
-#         CustomStateLogInline
-#     ]
-
-#     def get_queryset(self, request):
-#         return super(
-#             LoggerEncounterAdmin, self
-#         ).get_queryset(
-#             request
-#         ).prefetch_related(
-#             'observer', 'reporter', 'area', 'site',
-#         )
-
-#     def logger_type_display(self, obj):
-#         """Make habitat human readable."""
-#         return obj.get_logger_type_display()
-#     logger_type_display.short_description = 'Logger Type'
-
-#     def deployment_status_display(self, obj):
-#         """Make habitat human readable."""
-#         return obj.get_deployment_status_display()
-#     deployment_status_display.short_description = 'Deployment Status'
