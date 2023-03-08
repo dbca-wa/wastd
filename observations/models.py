@@ -1593,15 +1593,13 @@ class Encounter(PolymorphicModel, UrlsMixin, geo_models.Model):
         ),
     )
     def flag(self, by=None, description=None):
-        """Flag as requiring changes to data.
-
-        Curated data is deemed trustworthy by a subject matter expert.
-        Revoking curation flags data for requiring changes by an expert.
+        """Flag as requiring review by a subject matter expert.
         """
         return
 
     def can_reject(self):
-        """Return true if the record can be rejected as entirely wrong."""
+        """Return true if the record can be rejected as entirely wrong.
+        """
         return True
 
     # New|Imported|Manual input|Flagged -> Rejected
@@ -1615,14 +1613,15 @@ class Encounter(PolymorphicModel, UrlsMixin, geo_models.Model):
         # permission=lambda instance, user: user in instance.all_permitted,
         custom=dict(
             verbose="Reject as not trustworthy",
-            explanation=("This record is confirmed wrong and not trustworthy."),
+            explanation=("This record is confirmed wrong and not usable."),
             notify=True,
             url_path="reject/",
             badge="badge-danger",
         ),
     )
     def reject(self, by=None, description=None):
-        """Confirm that a record is not trustworthy and beyond repair."""
+        """Confirm that a record is confirmed wrong and not usable.
+        """
         return
 
     #def can_reset(self):

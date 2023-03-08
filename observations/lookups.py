@@ -1,17 +1,14 @@
-from django.utils.translation import gettext_lazy as _
-
-
 SOURCE_DEFAULT = "direct"
 SOURCE_CHOICES = (
-    (SOURCE_DEFAULT, _("Direct entry")),
-    ("paper", _("Paper data sheet")),
-    ("odk", _("OpenDataKit mobile data capture")),
-    ("wamtram", _("WAMTRAM 2 tagging DB")),
-    ("ntp-exmouth", _("NTP Access DB Exmouth")),
-    ("ntp-broome", _("NTP Access DB Broome")),
-    ("cet", _("Cetacean strandings DB")),
-    ("pin", _("Pinniped strandings DB")),
-    ("reconstructed", _("Reconstructed by WAStD")),
+    (SOURCE_DEFAULT, "Direct entry"),
+    ("paper", "Paper data sheet"),
+    ("odk", "OpenDataKit mobile data capture"),
+    ("wamtram", "WAMTRAM 2 tagging DB"),
+    ("ntp-exmouth", "NTP Access DB Exmouth"),
+    ("ntp-broome", "NTP Access DB Broome"),
+    ("cet", "Cetacean strandings DB"),
+    ("pin", "Pinniped strandings DB"),
+    ("reconstructed", "Reconstructed by WAStD"),
 )
 
 SIGHTING_STATUS_CHOICES = (
@@ -435,20 +432,17 @@ ACTIVITY_CHOICES = NA + NESTING_ACTIVITY_CHOICES + STRANDING_ACTIVITY_CHOICES
 
 BEACH_POSITION_CHOICES = (
     (NA_VALUE, "unknown habitat"),
-    ("beach-below-high-water", _("(B) beach below high water mark")),
-    ("beach-above-high-water", _("(A) beach above high water mark and dune")),
-    ("beach-edge-of-vegetation", _("(E) edge of vegetation")),
-    ("in-dune-vegetation", _("(V) inside vegetation")),
+    ("beach-below-high-water", "(B) beach below high water mark"),
+    ("beach-above-high-water", "(A) beach above high water mark and dune"),
+    ("beach-edge-of-vegetation", "(E) edge of vegetation"),
+    ("in-dune-vegetation", "(V) inside vegetation"),
 )
 
 HABITAT_CHOICES = BEACH_POSITION_CHOICES + (
     ("beach", "beach (below vegetation line)"),
     ("bays-estuaries", "bays, estuaries and other enclosed shallow soft sediments"),
     ("dune", "dune"),
-    (
-        "dune-constructed-hard-substrate",
-        "dune, constructed hard substrate (concrete slabs, timber floors, helipad)",
-    ),
+    ("dune-constructed-hard-substrate", "dune, constructed hard substrate (concrete slabs, timber floors, helipad)"),
     ("dune-grass-area", "dune, grass area"),
     ("dune-compacted-path", "dune, hard compacted areas (road ways, paths)"),
     ("dune-rubble", "dune, rubble, usually coral"),
@@ -459,22 +453,13 @@ HABITAT_CHOICES = BEACH_POSITION_CHOICES + (
     ("slope-grass", "slope, grass area"),
     ("slope-bare-sand", "slope, bare sand area"),
     ("slope-beneath-vegetation", "slope, beneath tree or shrub"),
-    (
-        "below-mean-spring-high-water-mark",
-        "below the mean spring high water line or current level of inundation (old db value)",
-    ),
-    (
-        "below-mshwm",
-        "below the mean spring high water line or current level of inundation",
-    ),
+    ("below-mean-spring-high-water-mark", "below the mean spring high water line or current level of inundation (old db value)"),
+    ("below-mshwm", "below the mean spring high water line or current level of inundation"),
     ("lagoon-patch-reef", "lagoon, patch reef"),
     ("lagoon-open-sand", "lagoon, open sand areas"),
     ("mangroves", "mangroves"),
     ("reef-coral", "coral reef"),
-    (
-        "reef-crest-front-slope",
-        "reef crest (dries at low water) and front reef slope areas",
-    ),
+    ("reef-crest-front-slope", "reef crest (dries at low water) and front reef slope areas"),
     ("reef-flat", "reef flat, dries at low tide"),
     ("reef-seagrass-flats", "coral reef with seagrass flats"),
     ("reef-rocky", "rocky reef"),
