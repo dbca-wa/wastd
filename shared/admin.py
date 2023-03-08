@@ -28,7 +28,7 @@ class CustomStateLogInline(StateLogInline):
 
     classes = (
         "grp-collapse",
-        "grp-closed",
+        #"grp-closed",
         "wide",
         "extrapretty",
     )
