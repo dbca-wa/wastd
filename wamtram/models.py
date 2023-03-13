@@ -7,7 +7,9 @@
 # Feel free to rename the models, but don't rename db_table values or field names.
 from datetime import datetime
 from django.conf import settings
+from django.contrib.gis.geos import Point
 from django.db import models
+from django.urls import reverse
 
 
 class TrtActivities(models.Model):
@@ -460,7 +462,7 @@ class TrtObservations(models.Model):
     zone = models.IntegerField(db_column='ZONE', blank=True, null=True)  # Field name made lowercase.
     easting = models.FloatField(db_column='EASTING', blank=True, null=True)  # Field name made lowercase.
     northing = models.FloatField(db_column='NORTHING', blank=True, null=True)  # Field name made lowercase.
-    activity_code = models.ForeignKey(TrtActivities, models.DO_NOTHING, db_column='ACTIVITY_CODE', blank=True, null=True)  # Field name made lowercase.
+    activity_code = models.ForeignKey('TrtActivities', models.DO_NOTHING, db_column='ACTIVITY_CODE', blank=True, null=True)  # Field name made lowercase.
     beach_position_code = models.ForeignKey(TrtBeachPositions, models.DO_NOTHING, db_column='BEACH_POSITION_CODE', blank=True, null=True)  # Field name made lowercase.
     condition_code = models.ForeignKey(TrtConditionCodes, models.DO_NOTHING, db_column='CONDITION_CODE', blank=True, null=True)  # Field name made lowercase.
     nesting = models.CharField(db_column='NESTING', max_length=1, blank=True, null=True)  # Field name made lowercase.
@@ -501,6 +503,7 @@ class TrtObservations(models.Model):
         managed = False
         db_table = 'TRT_OBSERVATIONS'
         unique_together = (('observation_id', 'turtle'),)
+        #ordering = ('-observation_date', '-observation_time')  # NOTE: ordering doesn't work.
 
     def __str__(self):
         if self.observation_status:
@@ -524,6 +527,26 @@ class TrtObservations(models.Model):
         else:
             obs = datetime(self.observation_date.year, self.observation_date.month, self.observation_date.day, 0, 0, tzinfo=settings.AWST)
         return obs.astimezone(settings.UTC)
+
+    def get_point(self):
+        """Returns a geometry point as WGS84.
+        """
+        if not self.longitude or not self.latitude:
+            return None
+        if self.datum_code:
+            if self.datum_code.datum_code == "AGD66":
+                datum = 4202
+            elif self.datum_code.datum_code == "AGD66":
+                datum = 4203
+            elif self.datum_code.datum_code == "GDA94":
+                datum = 4283
+            elif self.datum_code.datum_code == "WGS84":
+                datum = 4326
+        else:
+            datum = 4326
+        geom = Point(x=self.longitude, y=self.latitude, srid=datum)
+        geom.transform(4326)
+        return geom
 
 
 class TrtPersons(models.Model):
@@ -555,7 +578,7 @@ class TrtPitTags(models.Model):
     pit_tag_id = models.CharField(db_column='PIT_TAG_ID', primary_key=True, max_length=50)  # Field name made lowercase.
     issue_location = models.CharField(db_column='ISSUE_LOCATION', max_length=50, blank=True, null=True)  # Field name made lowercase.
     custodian_person_id = models.IntegerField(db_column='CUSTODIAN_PERSON_ID', blank=True, null=True)  # Field name made lowercase.
-    turtle = models.ForeignKey('TrtTurtles', models.DO_NOTHING, db_column='TURTLE_ID', blank=True, null=True)  # Field name made lowercase.
+    turtle = models.ForeignKey('TrtTurtles', models.DO_NOTHING, db_column='TURTLE_ID', related_name='pit_tags', blank=True, null=True)  # Field name made lowercase.
     pit_tag_status = models.CharField(db_column='PIT_TAG_STATUS', max_length=10, blank=True, null=True)  # Field name made lowercase.
     return_date = models.DateTimeField(db_column='RETURN_DATE', blank=True, null=True)  # Field name made lowercase.
     return_condition = models.CharField(db_column='RETURN_CONDITION', max_length=50, blank=True, null=True)  # Field name made lowercase.
@@ -595,7 +618,7 @@ class TrtPitTagStatus(models.Model):
 class TrtPlaces(models.Model):
     place_code = models.CharField(db_column='PLACE_CODE', primary_key=True, max_length=4)  # Field name made lowercase.
     place_name = models.CharField(db_column='PLACE_NAME', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    location_code = models.CharField(db_column='LOCATION_CODE', max_length=2)  # Field name made lowercase.
+    location_code = models.ForeignKey('TrtLocations', models.DO_NOTHING, db_column='LOCATION_CODE', related_name='places')
     rookery = models.CharField(db_column='ROOKERY', max_length=1, blank=True, null=True)  # Field name made lowercase.
     beach_approach = models.CharField(db_column='BEACH_APPROACH', max_length=50, blank=True, null=True)  # Field name made lowercase.
     aspect = models.CharField(db_column='ASPECT', max_length=3, blank=True, null=True)  # Field name made lowercase.
@@ -607,6 +630,12 @@ class TrtPlaces(models.Model):
     class Meta:
         managed = False
         db_table = 'TRT_PLACES'
+
+    def __str__(self):
+        if self.place_name:
+            return f"{self.location_code.location_name} - {self.place_name}"
+        else:
+            return f"{self.location_code.location_name} - {self.place_code}"
 
 
 class TrtRecordedIdentification(models.Model):
@@ -798,12 +827,16 @@ class TrtTurtles(models.Model):
     class Meta:
         managed = False
         db_table = 'TRT_TURTLES'
+        ordering = ('turtle_id',)
 
     def __str__(self):
         if self.turtle_name:
             return f'{self.turtle_id}: {self.species_code.common_name} ({self.sex}) - {self.turtle_name}'
         else:
             return f'{self.turtle_id}: {self.species_code.common_name} ({self.sex})'
+
+    def get_absolute_url(self):
+        return reverse('wamtram:turtle_detail', kwargs={'pk': self.pk})
 
 
 class TrtTurtleStatus(models.Model):

@@ -22,6 +22,8 @@ urlpatterns = [
     path("ajax_select/", include(ajax_select_urls)),
     path("users/", include(("users.urls", "users"), namespace="users")),
     path("select2/", include("django_select2.urls")),
+    # WAMTRAM readonly views
+    path("wamtram/", include("wamtram.urls")),
     # WAStD Encounters
     path("encounters/", wastd_views.EncounterTableView.as_view(), name="encounter_list"),
     path("observations/", include(("observations.urls"), namespace="observations")),
