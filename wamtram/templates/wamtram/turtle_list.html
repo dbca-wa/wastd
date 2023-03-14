@@ -1,5 +1,14 @@
 {% extends "base_wastd.html" %}
-{% load bootstrap_pagination %}
+{% load static bootstrap_pagination crispy_forms_tags %}
+
+{% block extra_style %}
+<link rel="stylesheet" href="{% static 'css/dbca-custom.css' %}">
+<style>
+.footer {
+    background-color: #f5f5f5;
+}
+</style>
+{% endblock extra_style %}
 
 {% block breadcrumbs %}
 <nav aria-label="breadcrumb">
@@ -13,10 +22,14 @@
 {% block page_content_inner %}
 <!-- Search bar -->
 <div class="row">
-    <div class="col col-sm-10">
+    <div class="col">
+        {% crispy search_form %}
+        {% comment %}
         <form action="" method="get">
             <input id="search_field" type="text" class="form-control" name="q" placeholder="Search turtles (ID, tag, etc.)" value="{{ query_string }}">
         </form>
+        {% endcomment %}
+        <br>
     </div>
 </div>
 
@@ -72,3 +85,6 @@
 {% endif %}
 
 {% endblock page_content_inner %}
+
+{% block jquery_version %}{% endblock %}
+{% block extra_js %}{% endblock %}
