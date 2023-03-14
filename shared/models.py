@@ -1,107 +1,10 @@
-"""Shared models."""
-from django.contrib.auth import get_user_model
 from django.db import models
-from django.db.models import options
 from django.urls import reverse
 from django.utils.safestring import mark_safe  # noqa
 from django.utils.translation import gettext_lazy as _
 from django_fsm import FSMField, transition
 from django_fsm_log.decorators import fsm_log_by
 import uuid
-
-
-# Instantiated models --------------------------------------------------------#
-
-
-# Abstract models ------------------------------------------------------------#
-class CodeLabelDescriptionMixin(models.Model):
-    """A Mixin providing code, label and description."""
-
-    code = models.SlugField(
-        max_length=500,
-        unique=True,
-        verbose_name=_("Code"),
-        help_text=_("A unique, url-safe code."),
-    )
-
-    label = models.CharField(
-        blank=True,
-        null=True,
-        max_length=500,
-        verbose_name=_("Label"),
-        help_text=_("A human-readable, self-explanatory label."),
-    )
-
-    description = models.TextField(
-        blank=True,
-        null=True,
-        verbose_name=_("Description"),
-        help_text=_("A comprehensive description."),
-    )
-
-    class Meta:
-        """Class opts."""
-
-        abstract = True
-        ordering = [
-            "code",
-        ]
-
-    def __str__(self):
-        """The full name."""
-        return self.label
-
-    # -------------------------------------------------------------------------
-    # URLs
-    @property
-    def absolute_admin_url(self):
-        """Return the absolute admin change URL."""
-        return reverse(
-            "admin:{0}_{1}_change".format(self._meta.app_label, self._meta.model_name),
-            args=[self.pk],
-        )
-
-
-# For RenderMixin: add Meta fields
-options.DEFAULT_NAMES = options.DEFAULT_NAMES + ("card_template", "latex_template")
-
-
-class RenderMixin(models.Model):
-    """A mixin providing a rendered representation as card, as popup and as latex.
-
-    Model options are made accessible as property self.opts.
-    This allows to include e.g. the path to a template, such as ``card_template``.
-
-    Helper functions ``as_card``, ``as_latex`` render the model
-    through the respective templates and return the HTML or Latex source code as safe string.
-
-    The template are expected at
-
-    Provides a standard template path ``<app_label>/{card, latex}/model_name.{html,tex}``.
-    Use in templates with
-
-    {% include object.card_template %}
-    """
-
-    class Meta:
-        """Class opts."""
-
-        abstract = True
-
-    @property
-    def opts(self):
-        """Return model options."""
-        return self._meta
-
-    @property
-    def card_template(self):
-        """The standard card template path is app_label/cards/model_name.html."""
-        return "{0}/cards/{1}.html".format(self.opts.app_label, self.opts.model_name)
-
-    @property
-    def latex_template(self):
-        """The standard latex template path is app_label/latex/model_name.html."""
-        return "{0}/latex/{1}.html".format(self.opts.app_label, self.opts.model_name)
 
 
 class UrlsMixin(models.Model):
@@ -167,39 +70,6 @@ class UrlsMixin(models.Model):
             "{0}:{1}-update".format(self._meta.app_label, self._meta.model_name),
             kwargs={"pk": self.pk},
         )
-
-
-class ObservationAuditMixin(models.Model):
-    """Mixin class to track observer and observation date."""
-
-    encountered_on = models.DateTimeField(
-        verbose_name=_("Encountered on"),
-        blank=True,
-        null=True,
-        db_index=True,
-        help_text=_(
-            "The datetime of the original encounter, "
-            "entered in the local time zone GMT+08 (Perth/Australia)."
-        ),
-    )
-
-    encountered_by = models.ForeignKey(
-        get_user_model(),
-        on_delete=models.PROTECT,
-        verbose_name=_("Encountered by"),
-        blank=True,
-        null=True,
-        help_text=_(
-            "The person who experienced the original encounter. "
-            "DBCA staff have to visit this site to create a new profile. "
-            "Add User profiles for external people through the data curation portal."
-        ),
-    )
-
-    class Meta:
-        """Class opts."""
-
-        abstract = True
 
 
 class LegacySourceMixin(models.Model):
