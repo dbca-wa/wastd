@@ -62,33 +62,3 @@ FORMFIELD_OVERRIDES = {
     models.ImageField: {"widget": AdminImageWidget},
     models.FileField: {"widget": AdminImageWidget},
 }
-
-
-class CodeLabelDescriptionAdmin(VersionAdmin):
-    """VersionAdmin for CodeLabelDescriptionMixin models."""
-
-    # Change list
-    list_display = [
-        "code",
-        "label",
-        "description",
-    ]
-    search_fields = (
-        "code",
-        "label",
-        "description",
-    )
-
-    # Change view
-    formfield_overrides = FORMFIELD_OVERRIDES
-    prepopulated_fields = {"code": ("label",)}
-
-    fieldsets = (
-        (
-            _("Details"),
-            {
-                "classes": ("grp-collapse", "grp-open", "wide", "extrapretty"),
-                "fields": ("label", "description", "code"),
-            },
-        ),
-    )
