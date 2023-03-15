@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     "users",
     "observations",
     "wamtram",  # WAMTRAM database
+    "turtle_tag",
 ]
 
 MIDDLEWARE = [
