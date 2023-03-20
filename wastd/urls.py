@@ -1,4 +1,4 @@
-from ajax_select import urls as ajax_select_urls
+#from ajax_select import urls as ajax_select_urls
 from django.contrib import admin
 from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import include, path
@@ -19,12 +19,10 @@ urlpatterns = [
     path("login/", LoginView.as_view(template_name="login.html"), name="login"),
     path("logout/", LogoutView.as_view(template_name="logged_out.html"), name="logout"),
     path("grappelli/", include("grappelli.urls")),
-    path("ajax_select/", include(ajax_select_urls)),
-    path("users/", include(("users.urls", "users"), namespace="users")),
+    path("ajax_select/", include("ajax_select.urls")),
     path("select2/", include("django_select2.urls")),
-    # WAMTRAM readonly views
-    path("wamtram/", include("wamtram.urls")),
-    # WAStD Encounters
+    path("users/", include(("users.urls", "users"), namespace="users")),
+    path("tagging/", include("turtle_tag.urls")),
     path("encounters/", wastd_views.EncounterTableView.as_view(), name="encounter_list"),
     path("observations/", include(("observations.urls"), namespace="observations")),
     # API
