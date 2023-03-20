@@ -13,16 +13,87 @@ from django.db import models
 from django.urls import reverse
 
 
-class TrtActivities(models.Model):
-    activity_code = models.CharField(db_column='ACTIVITY_CODE', primary_key=True, max_length=1)
-    description = models.CharField(db_column='DESCRIPTION', max_length=50)
-    nesting = models.CharField(db_column='NESTING', max_length=50)
-    new_code = models.CharField(db_column='New_Code', max_length=255, blank=True, null=True)
-    display_observation = models.BooleanField(db_column='Display_Observation')
+class TrtPersons(models.Model):
+    person_id = models.AutoField(db_column='PERSON_ID', primary_key=True)
+    first_name = models.CharField(db_column='FIRST_NAME', max_length=50)
+    middle_name = models.CharField(db_column='MIDDLE_NAME', max_length=50, blank=True, null=True)
+    surname = models.CharField(db_column='SURNAME', max_length=50, blank=True, null=True)
+    specialty = models.CharField(db_column='SPECIALTY', max_length=255, blank=True, null=True)
+    address_line_1 = models.CharField(db_column='ADDRESS_LINE_1', max_length=255, blank=True, null=True)
+    address_line_2 = models.CharField(db_column='ADDRESS_LINE_2', max_length=255, blank=True, null=True)
+    town = models.CharField(db_column='TOWN', max_length=50, blank=True, null=True)
+    state = models.CharField(db_column='STATE', max_length=10, blank=True, null=True)
+    post_code = models.CharField(db_column='POST_CODE', max_length=10, blank=True, null=True)
+    country = models.CharField(db_column='COUNTRY', max_length=50, blank=True, null=True)
+    telephone = models.CharField(db_column='TELEPHONE', max_length=20, blank=True, null=True)
+    fax = models.CharField(db_column='FAX', max_length=20, blank=True, null=True)
+    mobile = models.CharField(db_column='MOBILE', max_length=20, blank=True, null=True)
+    email = models.CharField(db_column='EMAIL', max_length=150, blank=True, null=True)
+    comments = models.CharField(db_column='COMMENTS', max_length=400, blank=True, null=True)
+    transfer = models.CharField(db_column='Transfer', max_length=50, blank=True, null=True)
+    recorder = models.BooleanField(db_column='Recorder')
 
     class Meta:
         managed = False
-        db_table = 'TRT_ACTIVITIES'
+        db_table = 'TRT_PERSONS'
+
+    def __str__(self):
+        return f"{self.person_id} {self.first_name} {self.surname}"
+
+    def get_name(self):
+        return f"{self.first_name} {self.surname}".strip()
+
+
+class TrtLocations(models.Model):
+    location_code = models.CharField(db_column='LOCATION_CODE', primary_key=True, max_length=2)
+    location_name = models.CharField(db_column='LOCATION_NAME', max_length=50)
+
+    class Meta:
+        managed = False
+        db_table = 'TRT_LOCATIONS'
+
+
+class TrtPlaces(models.Model):
+    place_code = models.CharField(db_column='PLACE_CODE', primary_key=True, max_length=4)
+    place_name = models.CharField(db_column='PLACE_NAME', max_length=50, blank=True, null=True)
+    location_code = models.ForeignKey(TrtLocations, models.DO_NOTHING, db_column='LOCATION_CODE', related_name='places')
+    rookery = models.CharField(db_column='ROOKERY', max_length=1, blank=True, null=True)
+    beach_approach = models.CharField(db_column='BEACH_APPROACH', max_length=50, blank=True, null=True)
+    aspect = models.CharField(db_column='ASPECT', max_length=3, blank=True, null=True)
+    datum_code = models.CharField(db_column='DATUM_CODE', max_length=5, blank=True, null=True)
+    latitude = models.FloatField(db_column='LATITUDE', blank=True, null=True)
+    longitude = models.FloatField(db_column='LONGITUDE', blank=True, null=True)
+    comments = models.CharField(db_column='COMMENTS', max_length=255, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'TRT_PLACES'
+
+    def __str__(self):
+        if self.place_name:
+            return f"{self.location_code.location_name} - {self.place_name}"
+        else:
+            return f"{self.location_code.location_name} - {self.place_code}"
+
+    def get_point(self):
+        """Returns a geometry point as WGS84.
+        """
+        if not self.longitude or not self.latitude:
+            return None
+        if self.datum_code:
+            if self.datum_code == "AGD66":
+                datum = 4202
+            elif self.datum_code == "AGD66":
+                datum = 4203
+            elif self.datum_code == "GDA94":
+                datum = 4283
+            elif self.datum_code == "WGS84":
+                datum = 4326
+        else:
+            datum = 4326
+        geom = Point(x=self.longitude, y=self.latitude, srid=datum)
+        geom.transform(4326)
+        return geom
 
 
 class TrtBeachPositions(models.Model):
@@ -63,17 +134,23 @@ class TrtConditionCodes(models.Model):
         db_table = 'TRT_CONDITION_CODES'
 
 
-class TrtDamage(models.Model):
-    observation = models.OneToOneField('TrtObservations', models.DO_NOTHING, db_column='OBSERVATION_ID', primary_key=True)
-    body_part = models.ForeignKey(TrtBodyParts, models.DO_NOTHING, db_column='BODY_PART')
-    damage_code = models.ForeignKey('TrtDamageCodes', models.DO_NOTHING, db_column='DAMAGE_CODE')
-    damage_cause_code = models.ForeignKey('TrtDamageCauseCodes', models.DO_NOTHING, db_column='DAMAGE_CAUSE_CODE', blank=True, null=True)
-    comments = models.CharField(db_column='COMMENTS', max_length=255, blank=True, null=True)
+class TrtDamageCodes(models.Model):
+    damage_code = models.CharField(db_column='DAMAGE_CODE', primary_key=True, max_length=1)
+    description = models.CharField(db_column='DESCRIPTION', max_length=50)
+    flipper = models.BooleanField(db_column='FLIPPER')
 
     class Meta:
         managed = False
-        db_table = 'TRT_DAMAGE'
-        unique_together = (('observation', 'body_part', 'body_part'),)
+        db_table = 'TRT_DAMAGE_CODES'
+
+
+class TrtDamageCauseCodes(models.Model):
+    damage_cause_code = models.CharField(db_column='DAMAGE_CAUSE_CODE', primary_key=True, max_length=2)
+    description = models.CharField(db_column='DESCRIPTION', max_length=50)
+
+    class Meta:
+        managed = False
+        db_table = 'TRT_DAMAGE_CAUSE_CODES'
 
 
 class TrtDamageCause(models.Model):
@@ -87,25 +164,6 @@ class TrtDamageCause(models.Model):
         db_table = 'TRT_DAMAGE_CAUSE'
 
 
-class TrtDamageCauseCodes(models.Model):
-    damage_cause_code = models.CharField(db_column='DAMAGE_CAUSE_CODE', primary_key=True, max_length=2)
-    description = models.CharField(db_column='DESCRIPTION', max_length=50)
-
-    class Meta:
-        managed = False
-        db_table = 'TRT_DAMAGE_CAUSE_CODES'
-
-
-class TrtDamageCodes(models.Model):
-    damage_code = models.CharField(db_column='DAMAGE_CODE', primary_key=True, max_length=1)
-    description = models.CharField(db_column='DESCRIPTION', max_length=50)
-    flipper = models.BooleanField(db_column='FLIPPER')
-
-    class Meta:
-        managed = False
-        db_table = 'TRT_DAMAGE_CODES'
-
-
 class TrtDataChanged(models.Model):
     trt_data_changed_id = models.AutoField(db_column='TRT_DATA_CHANGED_ID', primary_key=True)
     datachanged_date = models.DateTimeField(db_column='DATACHANGED_DATE', blank=True, null=True)
@@ -117,9 +175,22 @@ class TrtDataChanged(models.Model):
         db_table = 'TRT_DATA_CHANGED'
 
 
+class TrtEntryBatches(models.Model):
+    entry_batch_id = models.AutoField(db_column='ENTRY_BATCH_ID', primary_key=True)
+    entry_date = models.DateTimeField(db_column='ENTRY_DATE', blank=True, null=True)
+    entered_person_id = models.IntegerField(db_column='ENTERED_PERSON_ID', blank=True, null=True)
+    filename = models.CharField(db_column='FILENAME', max_length=255, blank=True, null=True)
+    comments = models.CharField(db_column='COMMENTS', max_length=255, blank=True, null=True)
+    pr_date_convention = models.BooleanField(db_column='PR_DATE_CONVENTION')
+
+    class Meta:
+        managed = False
+        db_table = 'TRT_ENTRY_BATCHES'
+
+
 class TrtDataEntry(models.Model):
     data_entry_id = models.AutoField(db_column='DATA_ENTRY_ID', primary_key=True)
-    entry_batch = models.ForeignKey('TrtEntryBatches', models.DO_NOTHING, db_column='ENTRY_BATCH_ID')
+    entry_batch = models.ForeignKey(TrtEntryBatches, models.DO_NOTHING, db_column='ENTRY_BATCH_ID')
     user_entry_id = models.IntegerField(db_column='USER_ENTRY_ID')
     turtle_id = models.IntegerField(db_column='TURTLE_ID', blank=True, null=True)
     observation_id = models.IntegerField(db_column='OBSERVATION_ID', blank=True, null=True)
@@ -284,7 +355,7 @@ class TrtDataEntryExceptions(models.Model):
 
 class TrtDataEntryPersons(models.Model):
     data_entry_person_id = models.AutoField(db_column='DATA_ENTRY_PERSON_ID', primary_key=True)
-    entry_batch = models.ForeignKey('TrtEntryBatches', models.DO_NOTHING, db_column='ENTRY_BATCH_ID')
+    entry_batch = models.ForeignKey(TrtEntryBatches, models.DO_NOTHING, db_column='ENTRY_BATCH_ID')
     person_name = models.CharField(db_column='PERSON_NAME', max_length=100)
     person_id = models.IntegerField(db_column='PERSON_ID', blank=True, null=True)
 
@@ -348,31 +419,6 @@ class TrtEggCountMethods(models.Model):
         db_table = 'TRT_EGG_COUNT_METHODS'
 
 
-class TrtEntryBatches(models.Model):
-    entry_batch_id = models.AutoField(db_column='ENTRY_BATCH_ID', primary_key=True)
-    entry_date = models.DateTimeField(db_column='ENTRY_DATE', blank=True, null=True)
-    entered_person_id = models.IntegerField(db_column='ENTERED_PERSON_ID', blank=True, null=True)
-    filename = models.CharField(db_column='FILENAME', max_length=255, blank=True, null=True)
-    comments = models.CharField(db_column='COMMENTS', max_length=255, blank=True, null=True)
-    pr_date_convention = models.BooleanField(db_column='PR_DATE_CONVENTION')
-
-    class Meta:
-        managed = False
-        db_table = 'TRT_ENTRY_BATCHES'
-
-
-class TrtIdentification(models.Model):
-    turtle = models.OneToOneField('TrtTurtles', models.DO_NOTHING, db_column='TURTLE_ID', primary_key=True)
-    identification_type = models.ForeignKey('TrtIdentificationTypes', models.DO_NOTHING, db_column='IDENTIFICATION_TYPE')
-    identifier = models.CharField(db_column='IDENTIFIER', max_length=20)
-    comments = models.CharField(db_column='COMMENTS', max_length=255, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'TRT_IDENTIFICATION'
-        unique_together = (('turtle', 'identification_type', 'identifier'),)
-
-
 class TrtIdentificationTypes(models.Model):
     identification_type = models.CharField(db_column='IDENTIFICATION_TYPE', primary_key=True, max_length=10)
     description = models.CharField(db_column='DESCRIPTION', max_length=50)
@@ -380,27 +426,6 @@ class TrtIdentificationTypes(models.Model):
     class Meta:
         managed = False
         db_table = 'TRT_IDENTIFICATION_TYPES'
-
-
-class TrtLocations(models.Model):
-    location_code = models.CharField(db_column='LOCATION_CODE', primary_key=True, max_length=2)
-    location_name = models.CharField(db_column='LOCATION_NAME', max_length=50)
-
-    class Meta:
-        managed = False
-        db_table = 'TRT_LOCATIONS'
-
-
-class TrtMeasurements(models.Model):
-    observation = models.OneToOneField('TrtObservations', models.DO_NOTHING, db_column='OBSERVATION_ID', primary_key=True)
-    measurement_type = models.ForeignKey('TrtMeasurementTypes', models.DO_NOTHING, db_column='MEASUREMENT_TYPE')
-    measurement_value = models.FloatField(db_column='MEASUREMENT_VALUE')
-    comments = models.CharField(db_column='COMMENTS', max_length=255, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'TRT_MEASUREMENTS'
-        unique_together = (('observation', 'measurement_type'),)
 
 
 class TrtMeasurementTypes(models.Model):
@@ -438,18 +463,96 @@ class TrtNestingSeason(models.Model):
         db_table = 'TRT_NESTING_SEASON'
 
 
+class TrtSpecies(models.Model):
+    species_code = models.CharField(db_column='SPECIES_CODE', primary_key=True, max_length=2)
+    scientific_name = models.CharField(db_column='SCIENTIFIC_NAME', max_length=50, blank=True, null=True)
+    common_name = models.CharField(db_column='COMMON_NAME', max_length=50, blank=True, null=True)
+    old_species_code = models.CharField(db_column='OLD_SPECIES_CODE', max_length=2, blank=True, null=True)
+    hide_dataentry = models.BooleanField(db_column='Hide_DataEntry')
+
+    class Meta:
+        managed = False
+        db_table = 'TRT_SPECIES'
+
+
+class TrtTurtleStatus(models.Model):
+    turtle_status = models.CharField(db_column='TURTLE_STATUS', primary_key=True, max_length=1)
+    description = models.CharField(db_column='DESCRIPTION', max_length=100)
+    new_tag_list = models.BooleanField(db_column='NEW_TAG_LIST')
+
+    class Meta:
+        managed = False
+        db_table = 'TRT_TURTLE_STATUS'
+
+
+class TrtTurtles(models.Model):
+    turtle_id = models.IntegerField(db_column='TURTLE_ID', primary_key=True)
+    species_code = models.ForeignKey(TrtSpecies, models.DO_NOTHING, db_column='SPECIES_CODE')
+    identification_confidence = models.CharField(db_column='IDENTIFICATION_CONFIDENCE', max_length=1, blank=True, null=True)
+    sex = models.CharField(db_column='SEX', max_length=1)
+    turtle_status = models.ForeignKey(TrtTurtleStatus, models.DO_NOTHING, db_column='TURTLE_STATUS', blank=True, null=True)
+    location_code = models.ForeignKey(TrtLocations, models.DO_NOTHING, db_column='LOCATION_CODE', blank=True, null=True)
+    cause_of_death = models.ForeignKey(TrtCauseOfDeath, models.DO_NOTHING, db_column='CAUSE_OF_DEATH', blank=True, null=True)
+    re_entered_population = models.CharField(db_column='RE_ENTERED_POPULATION', max_length=1, blank=True, null=True)
+    comments = models.CharField(db_column='COMMENTS', max_length=255, blank=True, null=True)
+    entered_by = models.CharField(db_column='ENTERED_BY', max_length=50, blank=True, null=True)
+    date_entered = models.DateTimeField(db_column='DATE_ENTERED', blank=True, null=True)
+    original_turtle_id = models.IntegerField(db_column='ORIGINAL_TURTLE_ID', blank=True, null=True)
+    entry_batch_id = models.IntegerField(db_column='ENTRY_BATCH_ID', blank=True, null=True)
+    tag = models.CharField(db_column='Tag', max_length=255, blank=True, null=True)
+    mund_id = models.CharField(db_column='Mund_ID', max_length=255, blank=True, null=True)
+    turtle_name = models.CharField(db_column='TURTLE_NAME', max_length=50, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'TRT_TURTLES'
+
+    def __str__(self):
+        if self.turtle_name:
+            return f'{self.turtle_id}: {self.species_code.common_name} ({self.sex}) - {self.turtle_name}'
+        else:
+            return f'{self.turtle_id}: {self.species_code.common_name} ({self.sex})'
+
+    def get_absolute_url(self):
+        return reverse('wamtram:turtle_detail', kwargs={'pk': self.pk})
+
+
+class TrtIdentification(models.Model):
+    turtle = models.OneToOneField(TrtTurtles, models.DO_NOTHING, db_column='TURTLE_ID', primary_key=True)
+    identification_type = models.ForeignKey(TrtIdentificationTypes, models.DO_NOTHING, db_column='IDENTIFICATION_TYPE')
+    identifier = models.CharField(db_column='IDENTIFIER', max_length=20)
+    comments = models.CharField(db_column='COMMENTS', max_length=255, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'TRT_IDENTIFICATION'
+        unique_together = (('turtle', 'identification_type', 'identifier'),)
+
+
+class TrtActivities(models.Model):
+    activity_code = models.CharField(db_column='ACTIVITY_CODE', primary_key=True, max_length=1)
+    description = models.CharField(db_column='DESCRIPTION', max_length=50)
+    nesting = models.CharField(db_column='NESTING', max_length=50)
+    new_code = models.CharField(db_column='New_Code', max_length=255, blank=True, null=True)
+    display_observation = models.BooleanField(db_column='Display_Observation')
+
+    class Meta:
+        managed = False
+        db_table = 'TRT_ACTIVITIES'
+
+
 class TrtObservations(models.Model):
     observation_id = models.AutoField(db_column='OBSERVATION_ID', primary_key=True)
-    turtle = models.ForeignKey('TrtTurtles', models.DO_NOTHING, db_column='TURTLE_ID', related_name='observations')
+    turtle = models.ForeignKey(TrtTurtles, models.DO_NOTHING, db_column='TURTLE_ID', related_name='observations')
     observation_date = models.DateTimeField(db_column='OBSERVATION_DATE')
     observation_time = models.DateTimeField(db_column='OBSERVATION_TIME', blank=True, null=True)
     observation_date_old = models.DateTimeField(db_column='OBSERVATION_DATE_OLD', blank=True, null=True)
     alive = models.CharField(db_column='ALIVE', max_length=1, blank=True, null=True)
-    measurer_person = models.ForeignKey('TrtPersons', models.DO_NOTHING, db_column='MEASURER_PERSON_ID', blank=True, null=True, related_name='measurer_person')
-    measurer_reporter_person = models.ForeignKey('TrtPersons', models.DO_NOTHING, db_column='MEASURER_REPORTER_PERSON_ID', blank=True, null=True, related_name='measurer_reporter_person')
-    tagger_person = models.ForeignKey('TrtPersons', models.DO_NOTHING, db_column='TAGGER_PERSON_ID', blank=True, null=True, related_name='tagger_person')
-    reporter_person = models.ForeignKey('TrtPersons', models.DO_NOTHING, db_column='REPORTER_PERSON_ID', blank=True, null=True, related_name='reporter_person')
-    place_code = models.ForeignKey('TrtPlaces', models.DO_NOTHING, db_column='PLACE_CODE', blank=True, null=True)
+    measurer_person = models.ForeignKey(TrtPersons, models.DO_NOTHING, db_column='MEASURER_PERSON_ID', blank=True, null=True, related_name='measurer_person')
+    measurer_reporter_person = models.ForeignKey(TrtPersons, models.DO_NOTHING, db_column='MEASURER_REPORTER_PERSON_ID', blank=True, null=True, related_name='measurer_reporter_person')
+    tagger_person = models.ForeignKey(TrtPersons, models.DO_NOTHING, db_column='TAGGER_PERSON_ID', blank=True, null=True, related_name='tagger_person')
+    reporter_person = models.ForeignKey(TrtPersons, models.DO_NOTHING, db_column='REPORTER_PERSON_ID', blank=True, null=True, related_name='reporter_person')
+    place_code = models.ForeignKey(TrtPlaces, models.DO_NOTHING, db_column='PLACE_CODE', blank=True, null=True)
     place_description = models.CharField(db_column='PLACE_DESCRIPTION', max_length=300, blank=True, null=True)
     datum_code = models.ForeignKey(TrtDatumCodes, models.DO_NOTHING, db_column='DATUM_CODE', blank=True, null=True)
     latitude = models.FloatField(db_column='LATITUDE', blank=True, null=True)
@@ -463,7 +566,7 @@ class TrtObservations(models.Model):
     zone = models.IntegerField(db_column='ZONE', blank=True, null=True)
     easting = models.FloatField(db_column='EASTING', blank=True, null=True)
     northing = models.FloatField(db_column='NORTHING', blank=True, null=True)
-    activity_code = models.ForeignKey('TrtActivities', models.DO_NOTHING, db_column='ACTIVITY_CODE', blank=True, null=True)
+    activity_code = models.ForeignKey(TrtActivities, models.DO_NOTHING, db_column='ACTIVITY_CODE', blank=True, null=True)
     beach_position_code = models.ForeignKey(TrtBeachPositions, models.DO_NOTHING, db_column='BEACH_POSITION_CODE', blank=True, null=True)
     condition_code = models.ForeignKey(TrtConditionCodes, models.DO_NOTHING, db_column='CONDITION_CODE', blank=True, null=True)
     nesting = models.CharField(db_column='NESTING', max_length=1, blank=True, null=True)
@@ -484,7 +587,7 @@ class TrtObservations(models.Model):
     other_tags_identification_type = models.ForeignKey(TrtIdentificationTypes, models.DO_NOTHING, db_column='OTHER_TAGS_IDENTIFICATION_TYPE', blank=True, null=True)
     transferid = models.IntegerField(db_column='TransferID', blank=True, null=True)
     mund = models.BooleanField(db_column='Mund')
-    entered_by_person = models.ForeignKey('TrtPersons', models.DO_NOTHING, db_column='ENTERED_BY_PERSON_ID', blank=True, null=True)
+    entered_by_person = models.ForeignKey(TrtPersons, models.DO_NOTHING, db_column='ENTERED_BY_PERSON_ID', blank=True, null=True)
     scars_left_scale_1 = models.BooleanField(db_column='SCARS_LEFT_SCALE_1')
     scars_left_scale_2 = models.BooleanField(db_column='SCARS_LEFT_SCALE_2')
     scars_left_scale_3 = models.BooleanField(db_column='SCARS_LEFT_SCALE_3')
@@ -549,36 +652,36 @@ class TrtObservations(models.Model):
         return geom
 
 
-class TrtPersons(models.Model):
-    person_id = models.AutoField(db_column='PERSON_ID', primary_key=True)
-    first_name = models.CharField(db_column='FIRST_NAME', max_length=50)
-    middle_name = models.CharField(db_column='MIDDLE_NAME', max_length=50, blank=True, null=True)
-    surname = models.CharField(db_column='SURNAME', max_length=50, blank=True, null=True)
-    specialty = models.CharField(db_column='SPECIALTY', max_length=255, blank=True, null=True)
-    address_line_1 = models.CharField(db_column='ADDRESS_LINE_1', max_length=255, blank=True, null=True)
-    address_line_2 = models.CharField(db_column='ADDRESS_LINE_2', max_length=255, blank=True, null=True)
-    town = models.CharField(db_column='TOWN', max_length=50, blank=True, null=True)
-    state = models.CharField(db_column='STATE', max_length=10, blank=True, null=True)
-    post_code = models.CharField(db_column='POST_CODE', max_length=10, blank=True, null=True)
-    country = models.CharField(db_column='COUNTRY', max_length=50, blank=True, null=True)
-    telephone = models.CharField(db_column='TELEPHONE', max_length=20, blank=True, null=True)
-    fax = models.CharField(db_column='FAX', max_length=20, blank=True, null=True)
-    mobile = models.CharField(db_column='MOBILE', max_length=20, blank=True, null=True)
-    email = models.CharField(db_column='EMAIL', max_length=150, blank=True, null=True)
-    comments = models.CharField(db_column='COMMENTS', max_length=400, blank=True, null=True)
-    transfer = models.CharField(db_column='Transfer', max_length=50, blank=True, null=True)
-    recorder = models.BooleanField(db_column='Recorder')
+class TrtDamage(models.Model):
+    observation = models.OneToOneField(TrtObservations, models.DO_NOTHING, db_column='OBSERVATION_ID', primary_key=True)
+    body_part = models.ForeignKey(TrtBodyParts, models.DO_NOTHING, db_column='BODY_PART')
+    damage_code = models.ForeignKey(TrtDamageCodes, models.DO_NOTHING, db_column='DAMAGE_CODE')
+    damage_cause_code = models.ForeignKey(TrtDamageCauseCodes, models.DO_NOTHING, db_column='DAMAGE_CAUSE_CODE', blank=True, null=True)
+    comments = models.CharField(db_column='COMMENTS', max_length=255, blank=True, null=True)
 
     class Meta:
         managed = False
-        db_table = 'TRT_PERSONS'
+        db_table = 'TRT_DAMAGE'
+        unique_together = (('observation', 'body_part', 'body_part'),)
+
+
+class TrtMeasurements(models.Model):
+    observation = models.OneToOneField(TrtObservations, models.DO_NOTHING, db_column='OBSERVATION_ID', primary_key=True)
+    measurement_type = models.ForeignKey(TrtMeasurementTypes, models.DO_NOTHING, db_column='MEASUREMENT_TYPE')
+    measurement_value = models.FloatField(db_column='MEASUREMENT_VALUE')
+    comments = models.CharField(db_column='COMMENTS', max_length=255, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'TRT_MEASUREMENTS'
+        unique_together = (('observation', 'measurement_type'),)
 
 
 class TrtPitTags(models.Model):
     pit_tag_id = models.CharField(db_column='PIT_TAG_ID', primary_key=True, max_length=50)
     issue_location = models.CharField(db_column='ISSUE_LOCATION', max_length=50, blank=True, null=True)
     custodian_person_id = models.IntegerField(db_column='CUSTODIAN_PERSON_ID', blank=True, null=True)
-    turtle = models.ForeignKey('TrtTurtles', models.DO_NOTHING, db_column='TURTLE_ID', related_name='pit_tags', blank=True, null=True)
+    turtle = models.ForeignKey(TrtTurtles, models.DO_NOTHING, db_column='TURTLE_ID', related_name='pit_tags', blank=True, null=True)
     pit_tag_status = models.CharField(db_column='PIT_TAG_STATUS', max_length=10, blank=True, null=True)
     return_date = models.DateTimeField(db_column='RETURN_DATE', blank=True, null=True)
     return_condition = models.CharField(db_column='RETURN_CONDITION', max_length=50, blank=True, null=True)
@@ -593,17 +696,8 @@ class TrtPitTags(models.Model):
         db_table = 'TRT_PIT_TAGS'
         unique_together = (('pit_tag_id', 'turtle'),)
 
-
-class TrtPitTagStates(models.Model):
-    pit_tag_state = models.CharField(db_column='PIT_TAG_STATE', primary_key=True, max_length=10)
-    description = models.CharField(db_column='DESCRIPTION', max_length=50)
-    pit_tag_status = models.ForeignKey('TrtPitTagStatus', models.DO_NOTHING, db_column='PIT_TAG_STATUS')
-    existing_tag_list = models.BooleanField(db_column='EXISTING_TAG_LIST')
-    new_tag_list = models.BooleanField(db_column='NEW_TAG_LIST')
-
-    class Meta:
-        managed = False
-        db_table = 'TRT_PIT_TAG_STATES'
+    def __str__(self):
+        return self.pit_tag_id
 
 
 class TrtPitTagStatus(models.Model):
@@ -615,27 +709,16 @@ class TrtPitTagStatus(models.Model):
         db_table = 'TRT_PIT_TAG_STATUS'
 
 
-class TrtPlaces(models.Model):
-    place_code = models.CharField(db_column='PLACE_CODE', primary_key=True, max_length=4)
-    place_name = models.CharField(db_column='PLACE_NAME', max_length=50, blank=True, null=True)
-    location_code = models.ForeignKey('TrtLocations', models.DO_NOTHING, db_column='LOCATION_CODE', related_name='places')
-    rookery = models.CharField(db_column='ROOKERY', max_length=1, blank=True, null=True)
-    beach_approach = models.CharField(db_column='BEACH_APPROACH', max_length=50, blank=True, null=True)
-    aspect = models.CharField(db_column='ASPECT', max_length=3, blank=True, null=True)
-    datum_code = models.CharField(db_column='DATUM_CODE', max_length=5, blank=True, null=True)
-    latitude = models.FloatField(db_column='LATITUDE', blank=True, null=True)
-    longitude = models.FloatField(db_column='LONGITUDE', blank=True, null=True)
-    comments = models.CharField(db_column='COMMENTS', max_length=255, blank=True, null=True)
+class TrtPitTagStates(models.Model):
+    pit_tag_state = models.CharField(db_column='PIT_TAG_STATE', primary_key=True, max_length=10)
+    description = models.CharField(db_column='DESCRIPTION', max_length=50)
+    pit_tag_status = models.ForeignKey(TrtPitTagStatus, models.DO_NOTHING, db_column='PIT_TAG_STATUS')
+    existing_tag_list = models.BooleanField(db_column='EXISTING_TAG_LIST')
+    new_tag_list = models.BooleanField(db_column='NEW_TAG_LIST')
 
     class Meta:
         managed = False
-        db_table = 'TRT_PLACES'
-
-    def __str__(self):
-        if self.place_name:
-            return f"{self.location_code.location_name} - {self.place_name}"
-        else:
-            return f"{self.location_code.location_name} - {self.place_code}"
+        db_table = 'TRT_PIT_TAG_STATES'
 
 
 class TrtRecordedIdentification(models.Model):
@@ -681,11 +764,20 @@ class TrtRecordedTags(models.Model):
         db_table = 'TRT_RECORDED_TAGS'
 
 
+class TrtTissueTypes(models.Model):
+    tissue_type = models.CharField(db_column='TISSUE_TYPE', primary_key=True, max_length=5)
+    description = models.CharField(db_column='DESCRIPTION', max_length=50)
+
+    class Meta:
+        managed = False
+        db_table = 'TRT_TISSUE_TYPES'
+
+
 class TrtSamples(models.Model):
     sample_id = models.AutoField(db_column='SAMPLE_ID', primary_key=True)
-    turtle = models.ForeignKey('TrtTurtles', models.DO_NOTHING, db_column='TURTLE_ID')
+    turtle = models.ForeignKey(TrtTurtles, models.DO_NOTHING, db_column='TURTLE_ID')
     sample_date = models.DateTimeField(db_column='SAMPLE_DATE', blank=True, null=True)
-    tissue_type = models.ForeignKey('TrtTissueTypes', models.DO_NOTHING, db_column='TISSUE_TYPE')
+    tissue_type = models.ForeignKey(TrtTissueTypes, models.DO_NOTHING, db_column='TISSUE_TYPE')
     arsenic = models.FloatField(db_column='ARSENIC', blank=True, null=True)
     selenium = models.FloatField(db_column='SELENIUM', blank=True, null=True)
     zinc = models.FloatField(db_column='ZINC', blank=True, null=True)
@@ -725,16 +817,13 @@ class TrtSighting(models.Model):
         db_table = 'TRT_SIGHTING'
 
 
-class TrtSpecies(models.Model):
-    species_code = models.CharField(db_column='SPECIES_CODE', primary_key=True, max_length=2)
-    scientific_name = models.CharField(db_column='SCIENTIFIC_NAME', max_length=50, blank=True, null=True)
-    common_name = models.CharField(db_column='COMMON_NAME', max_length=50, blank=True, null=True)
-    old_species_code = models.CharField(db_column='OLD_SPECIES_CODE', max_length=2, blank=True, null=True)
-    hide_dataentry = models.BooleanField(db_column='Hide_DataEntry')
+class TrtTagStatus(models.Model):
+    tag_status = models.CharField(db_column='TAG_STATUS', primary_key=True, max_length=10)
+    description = models.CharField(db_column='DESCRIPTION', max_length=50)
 
     class Meta:
         managed = False
-        db_table = 'TRT_SPECIES'
+        db_table = 'TRT_TAG_STATUS'
 
 
 class TrtTags(models.Model):
@@ -742,9 +831,9 @@ class TrtTags(models.Model):
     tag_order_id = models.IntegerField(db_column='TAG_ORDER_ID', blank=True, null=True)
     issue_location = models.CharField(db_column='ISSUE_LOCATION', max_length=50, blank=True, null=True)
     custodian_person_id = models.IntegerField(db_column='CUSTODIAN_PERSON_ID', blank=True, null=True)
-    turtle = models.ForeignKey('TrtTurtles', models.DO_NOTHING, db_column='TURTLE_ID', related_name='tags', blank=True, null=True)
+    turtle = models.ForeignKey(TrtTurtles, models.DO_NOTHING, db_column='TURTLE_ID', related_name='tags', blank=True, null=True)
     side = models.CharField(db_column='SIDE', max_length=1, blank=True, null=True)
-    tag_status = models.ForeignKey('TrtTagStatus', models.DO_NOTHING, db_column='TAG_STATUS', blank=True, null=True)
+    tag_status = models.ForeignKey(TrtTagStatus, models.DO_NOTHING, db_column='TAG_STATUS', blank=True, null=True)
     return_date = models.DateTimeField(db_column='RETURN_DATE', blank=True, null=True)
     return_condition = models.CharField(db_column='RETURN_CONDITION', max_length=50, blank=True, null=True)
     comments = models.CharField(db_column='COMMENTS', max_length=255, blank=True, null=True)
@@ -786,66 +875,6 @@ class TrtTagStates(models.Model):
     class Meta:
         managed = False
         db_table = 'TRT_TAG_STATES'
-
-
-class TrtTagStatus(models.Model):
-    tag_status = models.CharField(db_column='TAG_STATUS', primary_key=True, max_length=10)
-    description = models.CharField(db_column='DESCRIPTION', max_length=50)
-
-    class Meta:
-        managed = False
-        db_table = 'TRT_TAG_STATUS'
-
-
-class TrtTissueTypes(models.Model):
-    tissue_type = models.CharField(db_column='TISSUE_TYPE', primary_key=True, max_length=5)
-    description = models.CharField(db_column='DESCRIPTION', max_length=50)
-
-    class Meta:
-        managed = False
-        db_table = 'TRT_TISSUE_TYPES'
-
-
-class TrtTurtles(models.Model):
-    turtle_id = models.IntegerField(db_column='TURTLE_ID', primary_key=True)
-    species_code = models.ForeignKey(TrtSpecies, models.DO_NOTHING, db_column='SPECIES_CODE')
-    identification_confidence = models.CharField(db_column='IDENTIFICATION_CONFIDENCE', max_length=1, blank=True, null=True)
-    sex = models.CharField(db_column='SEX', max_length=1)
-    turtle_status = models.ForeignKey('TrtTurtleStatus', models.DO_NOTHING, db_column='TURTLE_STATUS', blank=True, null=True)
-    location_code = models.ForeignKey(TrtLocations, models.DO_NOTHING, db_column='LOCATION_CODE', blank=True, null=True)
-    cause_of_death = models.ForeignKey(TrtCauseOfDeath, models.DO_NOTHING, db_column='CAUSE_OF_DEATH', blank=True, null=True)
-    re_entered_population = models.CharField(db_column='RE_ENTERED_POPULATION', max_length=1, blank=True, null=True)
-    comments = models.CharField(db_column='COMMENTS', max_length=255, blank=True, null=True)
-    entered_by = models.CharField(db_column='ENTERED_BY', max_length=50, blank=True, null=True)
-    date_entered = models.DateTimeField(db_column='DATE_ENTERED', blank=True, null=True)
-    original_turtle_id = models.IntegerField(db_column='ORIGINAL_TURTLE_ID', blank=True, null=True)
-    entry_batch_id = models.IntegerField(db_column='ENTRY_BATCH_ID', blank=True, null=True)
-    tag = models.CharField(db_column='Tag', max_length=255, blank=True, null=True)
-    mund_id = models.CharField(db_column='Mund_ID', max_length=255, blank=True, null=True)
-    turtle_name = models.CharField(db_column='TURTLE_NAME', max_length=50, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'TRT_TURTLES'
-
-    def __str__(self):
-        if self.turtle_name:
-            return f'{self.turtle_id}: {self.species_code.common_name} ({self.sex}) - {self.turtle_name}'
-        else:
-            return f'{self.turtle_id}: {self.species_code.common_name} ({self.sex})'
-
-    def get_absolute_url(self):
-        return reverse('wamtram:turtle_detail', kwargs={'pk': self.pk})
-
-
-class TrtTurtleStatus(models.Model):
-    turtle_status = models.CharField(db_column='TURTLE_STATUS', primary_key=True, max_length=1)
-    description = models.CharField(db_column='DESCRIPTION', max_length=100)
-    new_tag_list = models.BooleanField(db_column='NEW_TAG_LIST')
-
-    class Meta:
-        managed = False
-        db_table = 'TRT_TURTLE_STATUS'
 
 
 class TrtYesNo(models.Model):
