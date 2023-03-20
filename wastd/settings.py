@@ -64,8 +64,8 @@ INSTALLED_APPS = [
     # Local apps
     "users",
     "observations",
-    "wamtram",  # WAMTRAM database
-    "turtle_tag",
+    "wamtram",  # Legacy WAMTRAM database
+    "turtle_tag",  # Migrated turtle tagging application
 ]
 
 MIDDLEWARE = [
@@ -181,10 +181,8 @@ UTC = ZoneInfo("UTC")
 # Email settings.
 EMAIL_HOST = os.environ.get("EMAIL_HOST", "email.host")
 EMAIL_PORT = os.environ.get("EMAIL_PORT", 25)
-DEFAULT_FROM_EMAIL = os.environ.get(
-    "DEFAULT_FROM_EMAIL", "wastd-noreply@dbca.wa.gov.au"
-)
-EMAIL_SUBJECT_PREFIX = os.environ.get("DJANGO_EMAIL_SUBJECT_PREFIX", "[WAStD] ")
+DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "noreply@dbca.wa.gov.au")
+EMAIL_SUBJECT_PREFIX = os.environ.get("DJANGO_EMAIL_SUBJECT_PREFIX", "[Turtles DB] ")
 
 
 # Static files (CSS, JavaScript, Images)
@@ -221,7 +219,7 @@ LOGGING = {
             "stream": sys.stdout,
             "level": "WARNING",
         },
-        "wastd": {
+        "turtles": {
             "class": "logging.StreamHandler",
             "formatter": "verbose",
             "stream": sys.stdout,
@@ -233,18 +231,21 @@ LOGGING = {
             "handlers": ["console"],
             "level": "ERROR",
         },
-        "wastd": {
-            "handlers": ["wastd"],
+        "turtles": {
+            "handlers": ["turtles"],
             "level": "INFO",
         },
     },
 }
 
 
+# django-crispy-forms config
 # See: http://django-crispy-forms.readthedocs.io/en/latest/install.html#template-packs
 CRISPY_TEMPLATE_PACK = "bootstrap4"
+
+
 # Grappelli admin
-GRAPPELLI_ADMIN_TITLE = "WAStD Data Entry and Curation Portal"
+GRAPPELLI_ADMIN_TITLE = "Turtles Database data curation portal"
 GRAPPELLI_INDEX_DASHBOARD = "wastd.dashboard.AdminDashboard"
 
 # django-restframework
@@ -280,10 +281,6 @@ REST_FRAMEWORK = {
     "HTML_SELECT_CUTOFF": 100,
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
 }
-
-# Shared Latex resources for DRF-latex
-# http://drf-latex.readthedocs.io/en/latest/
-# LATEX_RESOURCES = os.path.join(BASE_DIR, 'wastd', 'templates', 'latex', 'common')
 
 # Biosys
 BIOSYS_TSC_URL = os.environ.get("BIOSYS_TSC", "biosys.url")
