@@ -1,4 +1,3 @@
-#from ajax_select import urls as ajax_select_urls
 from django.contrib import admin
 from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import include, path
@@ -8,13 +7,12 @@ from djgeojson.views import GeoJSONLayerView, TiledGeoJSONLayerView
 from rest_framework.authtoken import views as drf_authviews
 
 from wastd.router import router
-from observations import models as wastd_models
 from observations import views as wastd_views
+from observations.models import Area, AnimalEncounter
 
 
 urlpatterns = [
     path("", TemplateView.as_view(template_name="index.html"), name="home"),
-    path("map/", wastd_views.MapView.as_view(), name="map"),
     path("admin/", admin.site.urls),
     path("login/", LoginView.as_view(template_name="login.html"), name="login"),
     path("logout/", LogoutView.as_view(template_name="logged_out.html"), name="logout"),
@@ -23,75 +21,19 @@ urlpatterns = [
     path("select2/", include("django_select2.urls")),
     path("users/", include(("users.urls", "users"), namespace="users")),
     path("tagging/", include("turtle_tag.urls")),
-    path("encounters/", wastd_views.EncounterTableView.as_view(), name="encounter_list"),
     path("observations/", include(("observations.urls"), namespace="observations")),
     # API
     path("api/1/", include((router.urls, "api"), namespace="api")),
     path("api-auth/", include(("rest_framework.urls", "api-auth"), namespace="rest_framework")),
     path("api-token-auth/", drf_authviews.obtain_auth_token, name="api-auth"),
     # Djgeojson
-    path(
-        "observations.geojson",
-        GeoJSONLayerView.as_view(
-            model=wastd_models.Encounter,
-            properties=("as_html",),
-            geometry_field="where",
-        ),
-        name="observation-geojson",
-    ),
-    path(
-        "areas.geojson",
-        GeoJSONLayerView.as_view(
-            model=wastd_models.Area, properties=("leaflet_title", "as_html")
-        ),
-        name="areas-geojson",
-    ),
-    path(
-        "localities.geojson",
-        GeoJSONLayerView.as_view(
-            model=wastd_models.Area,
-            queryset=wastd_models.Area.objects.filter(
-                area_type=wastd_models.Area.AREATYPE_LOCALITY
-            ),
-            properties=("leaflet_title", "as_html"),
-        ),
-        name="localities-geojson",
-    ),
-    path(
-        "sites.geojson",
-        GeoJSONLayerView.as_view(
-            model=wastd_models.Area,
-            queryset=wastd_models.Area.objects.filter(
-                area_type=wastd_models.Area.AREATYPE_SITE
-            ),
-            properties=("leaflet_title", "as_html"),
-        ),
-        name="sites-geojson",
-    ),
+    #path("observations.geojson", GeoJSONLayerView.as_view(model=Encounter, properties=("as_html",), geometry_field="where"), name="observation-geojson"),
+    path("areas.geojson", GeoJSONLayerView.as_view(model=Area, properties=("leaflet_title", "as_html")), name="areas-geojson"),
+    path("localities.geojson", GeoJSONLayerView.as_view(model=Area, queryset=Area.objects.filter(area_type=Area.AREATYPE_LOCALITY), properties=("leaflet_title", "as_html")), name="localities-geojson"),
+    path("sites.geojson", GeoJSONLayerView.as_view(model=Area, queryset=Area.objects.filter(area_type=Area.AREATYPE_SITE), properties=("leaflet_title", "as_html")), name="sites-geojson"),
     # Encounter as tiled GeoJSON
-    path(
-        "data/<int:z>/<int:x>/<int:y>.geojson",
-        TiledGeoJSONLayerView.as_view(
-            model=wastd_models.AnimalEncounter,
-            properties=(
-                "as_html",
-                "leaflet_title",
-                "leaflet_icon",
-                "leaflet_colour",
-            ),
-            geometry_field="where",
-        ),
-        name="encounter-tiled-geojson",
-    ),
-    # CommunityAreaEncounter as tiled GeoJSON
-    # path('community-encounters-poly/<int:z>/<int:x>/<int:y>.geojson', TiledGeoJSONLayerView.as_view(
-    #     model=CommunityAreaEncounter,
-    #     properties=('as_html', 'label'),
-    #     geometry_field="geom"
-    # ), name='community-area-encounter-tiled-geojson'),
-    # path('areas/<int:z>/<int:x>/<int:y>.geojson', TiledGeoJSONLayerView.as_view(
-    #     model=Area, properties=('name',), geometry_field="geom"
-    # ), name='area-tiled-geojson'),
+    path("data/<int:z>/<int:x>/<int:y>.geojson", TiledGeoJSONLayerView.as_view(model=AnimalEncounter, properties=("as_html", "leaflet_title", "leaflet_icon", "leaflet_colour"), geometry_field="where"), name="encounter-tiled-geojson"),
+    path("map/", wastd_views.MapView.as_view(), name="map"),
     path("tasks/import-odka/", wastd_views.import_odka_view, name="import-odka"),
     path("tasks/update-names/", wastd_views.update_names_view, name="update-names"),
     path("tasks/resave-surveys/", wastd_views.resave_surveys_view, name="resave-surveys"),
