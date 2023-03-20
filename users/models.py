@@ -41,11 +41,7 @@ class Organisation(models.Model):
     )
 
     class Meta:
-        """Class opts."""
-
-        ordering = [
-            "code",
-        ]
+        ordering = ("code",)
 
     def __str__(self):
         """The full name."""
@@ -111,8 +107,6 @@ class User(AbstractUser):
     )
 
     class Meta:
-        """Class opts."""
-
         ordering = ["name", "username"]
         verbose_name = "User"
         verbose_name_plural = "Users"
@@ -197,10 +191,7 @@ class User(AbstractUser):
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=None, created=False, **kwargs):
-    """Create API auth token."""
+    """Create API auth token on User create.
+    """
     if created:
         Token.objects.create(user=instance)
-        # try:
-        # Token.objects.create(user=instance)
-        # except:
-        # logger.warning("Failed to create Token for User {0}".format(instance))
