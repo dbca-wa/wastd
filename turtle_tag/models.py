@@ -125,10 +125,15 @@ class Turtle(models.Model):
         ('SH', 'Shark predation'),
         ('UK', 'Unknown'),
     )
+    SEX_CHOICES = (
+        ('F', 'Female'),
+        ('M', 'Male'),
+        ('U', 'Unknown'),
+    )
 
     species = models.ForeignKey(TurtleSpecies, models.PROTECT, blank=True, null=True)
     identification_confidence = models.CharField(max_length=1, blank=True, null=True)
-    sex = models.CharField(max_length=1)
+    sex = models.CharField(max_length=1, choices=SEX_CHOICES)
     status = models.ForeignKey(TurtleStatus, models.PROTECT, blank=True, null=True)
     location = models.ForeignKey(Location, models.PROTECT, related_name='turtles', blank=True, null=True)
     cause_of_death = models.CharField(max_length=2, choices=CAUSE_OF_DEATH_CHOICES, blank=True, null=True)
@@ -220,26 +225,25 @@ class TurtleObservation(models.Model):
 
     def __str__(self):
         if self.observation_status:
-            return f'{self.observation_id} ({self.get_observation_datetime_awst().isoformat()}) {(self.observation_status)}'
+            return f'{self.pk} ({self.get_observation_datetime_awst().isoformat()}) {(self.observation_status)}'
         else:
-            return f'{self.observation_id} ({self.get_observation_datetime_awst().isoformat()})'
+            return f'{self.pk} ({self.get_observation_datetime_awst().isoformat()})'
 
     def get_observation_datetime_awst(self):
-        """Returns a combined observation datetime, in AWST.
+        """Returns observation datetime in AWST.
         """
-        if self.observation_time:
-            return datetime(self.observation_date.year, self.observation_date.month, self.observation_date.day, self.observation_time.hour, self.observation_time.minute, tzinfo=settings.AWST)
+        if self.observation_datetime:
+            return self.observation_datetime.astimezone(settings.AWST)
         else:
-            return datetime(self.observation_date.year, self.observation_date.month, self.observation_date.day, 0, 0, tzinfo=settings.AWST)
+            return None
 
     def get_observation_datetime_utc(self):
-        """Returns a combined observation datetime, in UTC.
+        """Returns observation datetime in UTC.
         """
-        if self.observation_time:
-            obs = datetime(self.observation_date.year, self.observation_date.month, self.observation_date.day, self.observation_time.hour, self.observation_time.minute, tzinfo=settings.AWST)
+        if self.observation_datetime:
+            return self.observation_datetime.astimezone(settings.UTC)
         else:
-            obs = datetime(self.observation_date.year, self.observation_date.month, self.observation_date.day, 0, 0, tzinfo=settings.AWST)
-        return obs.astimezone(settings.UTC)
+            return None
 
 
 class TagOrder(models.Model):
