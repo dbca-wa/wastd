@@ -94,7 +94,43 @@ L.Control.ResetView.ICON = "url({% static 'leaflet/images/reset-view.png' %})";
   window.addEventListener("map:init", function (event) {
     var map = event.detail.map;
     {% include 'shared/styles.js' %}
-    {% include 'shared/overlays.html' %}
+    /* Transparent overlay layers */
+    var lc = map.layerscontrol;
+
+    /* lc.addOverlay(L.tileLayer.wms('https://spatial-beta.ala.org.au/geoserver/ALA/wms',
+     *   {layers: 'ALA:aus2', format: 'image/png', transparent: true}), 'Australia');
+     */
+
+    $.getJSON("{% url 'sites-geojson' %}", function (data) {
+        lc.addOverlay(L.geoJson(data, {style: polystyle, onEachFeature: oef}), 'WAStD Sites')
+    });
+
+    // FIXME: Switch to using WMTS.
+    const kmi_wms = 'https://kmi.dbca.wa.gov.au/geoserver/ows';
+    const wmsoptions = function(lyr) {
+        return {
+            layers: lyr,
+            format: 'image/png',
+            transparent: true
+        }
+    };
+    lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:townsite_poly')), 'WA Townsites');
+    lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:dbca_managed_tenure')), 'DBCA-managed tenure');
+    lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:unallocated_crown_land')), 'Unallocated Crown Land');
+    lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('landgate:DBCA-022')), 'DBCA Region Boundaries');
+    lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('landgate:DBCA-023')), 'DBCA District Boundaries');
+    lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('landgate:LGATE-233')), 'LGA Boundaries');
+    lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:ibra_wa_subregions')), 'IBRA WA Regions');
+    lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:dpaw_fire_history')), 'P&W Fire History');
+    //lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:road_centrelines')), 'Road Centrelines');
+    //lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:cadastre')), 'Cadastre');
+    //lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:remnant_vegetation')), 'Remnant Vegetation');
+    //lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:dra')), 'Forest Disease Risk');
+    //lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:threatened_fauna')), 'Threatened Fauna');
+    lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:threatened_priority_flora')), 'Threatened and Priority Flora');
+    lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:tec_sites_buffered')), 'Threatened Community Sites buffered');
+    lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:scientific_study_sites')), 'Scientific Study Sites');
+    lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('dpaw:pilbara_fuelage')), 'Pilbara Fuel Age');
     map.addControl(new L.control.fullscreen());
     map.addControl(new L.Control.Geocoder({placeholder: '⇧+⏎ to search'}));
 });
