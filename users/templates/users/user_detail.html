@@ -1,21 +1,4 @@
 {% extends "base_wastd.html" %}
-{% load leaflet_tags geojson_tags static %}
-
-{% block extra_style %}
-{{ block.super }}
-<style>
-.leaflet-popup, .leaflet-popup-content-wrapper, .leaflet-popup-content {
-  width: 350px;    /* narrower popup */
-  padding: -10px;  /* fix close button position */
-}
-.leaflet-tooltip.leaflet-tooltip-wide {
-  width: 400px;
-  overflow-wrap: break-word; /* work wrap not working yet */
-  word-wrap: break-word;
-  hyphens: auto;
-}
-</style>
-{% endblock %}
 
 {% block breadcrumbs %}
   <nav aria-label="breadcrumb">
@@ -40,11 +23,6 @@
     <div class="col-12 col-sm-12 col-md-6 col-lg-8">
       {% include object.card_template %}
     </div><!-- .col -->
-    <div class="col-12 col-md-6 col-lg-4" id="occ-detail-map">
-      <div>
-        {% leaflet_map "detailmap" callback="window.map_init" %}
-      </div>
-    </div><!-- /.col#occ-map -->
   </div><!-- .row#id="obj-detail-main" -->
 
   <!-- Nav tabs -->
@@ -79,36 +57,3 @@
     </div>
   </div>
 {% endblock page_content_inner %}
-
-{% block extra_js %}
-{{ block.super }}
-<script type="text/javascript">
-function map_init(map, options) {
-    {% include 'shared/styles.js' %}
-    $.getJSON("{% url 'sites-geojson' %}", function (data) {
-        L.geoJson(data, {style: polystyle, onEachFeature: oef}).addTo(map);
-    });
-    var survey_start = L.geoJson(
-      {{ surveys|geojsonfeature:"label,as_html:start_location"|safe }},
-      { style: pointstyle, pointToLayer: ptl_svs, onEachFeature: oef_wideTT }
-    );
-    survey_start.addTo(map);
-    var survey_end = L.geoJson(
-      {{ surveys|geojsonfeature:"label,as_html:end_location"|safe }},
-      { style: pointstyle, pointToLayer: ptl_sve, onEachFeature: oef_wideTT }
-    );
-    survey_end.addTo(map);
-    var enc_layer = L.geoJson(
-      {{ encounters|geojsonfeature:"as_html,leaflet_title,leaflet_icon,leaflet_colour:where"|safe }},
-      { style: pointstyle, pointToLayer: ptl, onEachFeature: oef_llwideTT }
-    );
-    enc_layer.addTo(map);
-    var group = new L.featureGroup([survey_start, survey_end, enc_layer]);
-    map.fitBounds(group.getBounds());
-
-    $(".zoom-map").click(function() {
-      map.flyTo([this.dataset.lat, this.dataset.lon], 18, {animate: true});
-    });
-};
-</script>
-{% endblock extra_js %}
