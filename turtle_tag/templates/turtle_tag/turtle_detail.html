@@ -14,12 +14,9 @@
 {% block page_content_inner %}
 <div class="row">
     <div class="col-sm-12 col-md-8">
+        <h2>Tagged turtle ID {{ object.pk }}</h2>
         <table class="table table-striped table-bordered table-condensed">
             <tbody>
-                <tr>
-                    <th>ID</th>
-                    <td>{{ object.pk }}</td>
-                </tr>
                 <tr>
                     <th>Species</th>
                     <td>{{ object.species.common_name }}</td>
@@ -153,19 +150,20 @@
         </table>
     </div>
 </div>
+{% if observation_points %}
 <div class="row">
     <div class="col">
     {% leaflet_map "detailmap" callback="window.map_init" %}
     </div>
 </div>
+{% endif %}<!-- observation_points -->
 {% else %}
 <p>None recorded</p>
-{% endif %}
+{% endif %}<!-- object.turtleobservation_set.exists -->
 
 {% endblock page_content_inner %}
 
 {% block extra_js %}
-
 {% if observation_points %}
 {{ block.super }}
 <script type="text/javascript">
@@ -173,13 +171,12 @@
         {% include "shared/styles.js" %}
         var observations_layer = L.geoJson();
         {% for point in observation_points %}
-        point = {{ point|safe }};
-        observations_layer.addData(point);
+            point = {{ point|safe }};
+            observations_layer.addData(point);
         {% endfor %}
         observations_layer.addTo(map);
         map.fitBounds(observations_layer.getBounds());
     };
 </script>
 {% endif %}
-
 {% endblock extra_js %}
