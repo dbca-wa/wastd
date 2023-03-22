@@ -216,30 +216,52 @@ def import_wamtram():
         else:
             user = None
 
-        EntryBatch.objects.get_or_create(
-            pk=b.entry_batch_id,
-            entry_date=b.entry_date.date() if b.entry_date else None,
-            entered_person=user,
-            filename=b.filename,
-            comments=b.comments,
-            pr_date_convention=b.pr_date_convention,
-        )
+        if EntryBatch.objects.filter(pk=b.entry_batch_id).exists():
+            eb = EntryBatch.objects.get(pk=b.entry_batch_id)
+            eb.entry_date = b.entry_date.date() if b.entry_date else None
+            eb.entered_person = user
+            eb.filename = b.filename
+            eb.comments = b.comments
+            eb.pr_date_convention = b.pr_date_convention
+            eb.save()
+        else:
+            EntryBatch.objects.create(
+                pk=b.entry_batch_id,
+                entry_date=b.entry_date.date() if b.entry_date else None,
+                entered_person=user,
+                filename=b.filename,
+                comments=b.comments,
+                pr_date_convention=b.pr_date_convention,
+            )
     print(f"Object count: {EntryBatch.objects.count()}")
 
     print("Importing tag orders")
     for o in TrtTagOrders.objects.all():
-        TagOrder.objects.get_or_create(
-            pk=o.tag_order_id,
-            order_number=o.order_number,
-            order_date=o.order_date.date() if o.order_date else None,
-            tag_prefix=o.tag_prefix,
-            start_tag_number=o.start_tag_number,
-            end_tag_number=o.end_tag_number,
-            total_tags=o.total_tags,
-            date_received=o.date_received.date() if o.date_received else None,
-            paid_by=o.paid_by,
-            comments=o.comments,
-        )
+        if TagOrder.objects.filter(pk=o.tag_order_id).exists():
+            to = TagOrder.objects.get(pk=o.tag_order_id)
+            to.order_number = o.order_number
+            to.order_date = o.order_date.date() if o.order_date else None
+            to.tag_prefix = o.tag_prefix
+            to.start_tag_number = o.start_tag_number
+            to.end_tag_number = o.end_tag_number
+            to.total_tags = o.total_tags
+            to.date_received = o.date_received.date() if o.date_received else None
+            to.paid_by = o.paid_by
+            to.comments = o.comments
+            to.save()
+        else:
+            TagOrder.objects.create(
+                pk=o.tag_order_id,
+                order_number=o.order_number,
+                order_date=o.order_date.date() if o.order_date else None,
+                tag_prefix=o.tag_prefix,
+                start_tag_number=o.start_tag_number,
+                end_tag_number=o.end_tag_number,
+                total_tags=o.total_tags,
+                date_received=o.date_received.date() if o.date_received else None,
+                paid_by=o.paid_by,
+                comments=o.comments,
+            )
     print(f"Object count: {TagOrder.objects.count()}")
 
     print("Importing turtles")
@@ -260,24 +282,43 @@ def import_wamtram():
         else:
             location = None
 
-        Turtle.objects.get_or_create(
-            pk=t.turtle_id,
-            species=species,
-            identification_confidence=t.identification_confidence,
-            sex=t.sex,
-            status=status,
-            location=location,
-            cause_of_death=t.cause_of_death_id if t.cause_of_death else None,
-            re_entered_population=t.re_entered_population,
-            comments=t.comments,
-            entered_by=t.entered_by,
-            date_entered=t.date_entered.date(),
-            original_turtle_id=t.original_turtle_id,
-            entry_batch_id=t.entry_batch_id,
-            tag=t.tag,
-            mund_id=t.mund_id,
-            name=t.turtle_name,
-        )
+        if Turtle.objects.filter(pk=t.turtle_id).exists():
+            tu = Turtle.objects.get(pk=t.turtle_id)
+            tu.species = species
+            tu.identification_confidence = t.identification_confidence
+            tu.sex = t.sex
+            tu.status = status
+            tu.location = location
+            tu.cause_of_death = t.cause_of_death_id if t.cause_of_death else None
+            tu.re_entered_population = t.re_entered_population
+            tu.comments = t.comments
+            tu.entered_by = t.entered_by
+            tu.date_entered = t.date_entered.date()
+            tu.original_turtle_id = t.original_turtle_id
+            tu.entry_batch_id = t.entry_batch_id
+            tu.tag = t.tag
+            tu.mund_id = t.mund_id
+            tu.name = t.turtle_name
+            tu.save()
+        else:
+            Turtle.objects.create(
+                pk=t.turtle_id,
+                species=species,
+                identification_confidence=t.identification_confidence,
+                sex=t.sex,
+                status=status,
+                location=location,
+                cause_of_death=t.cause_of_death_id if t.cause_of_death else None,
+                re_entered_population=t.re_entered_population,
+                comments=t.comments,
+                entered_by=t.entered_by,
+                date_entered=t.date_entered.date(),
+                original_turtle_id=t.original_turtle_id,
+                entry_batch_id=t.entry_batch_id,
+                tag=t.tag,
+                mund_id=t.mund_id,
+                name=t.turtle_name,
+            )
         count += 1
         if count % 1000 == 0:
             print(f"{count} imported")
@@ -297,18 +338,31 @@ def import_wamtram():
         else:
             field_person = None
 
-        TurtleTag.objects.get_or_create(
-            serial=t.tag_id,
-            turtle_id=t.turtle_id,
-            issue_location=t.issue_location,
-            custodian=custodian,
-            status=t.tag_status.tag_status,
-            return_date=t.return_date.date() if t.return_date else None,
-            return_condition=t.return_condition,
-            comments=t.comments,
-            field_person=field_person,
-            tag_order_id=t.tag_order_id if TagOrder.objects.filter(pk=t.tag_order_id).exists() else None,
-        )
+        if TurtleTag.objects.filter(serial=t.tag_id).exists():
+            tag = TurtleTag.objects.get(serial=t.tag_id)
+            tag.turtle_id = t.turtle_id
+            tag.issue_location = t.issue_location
+            tag.custodian = custodian
+            tag.status = t.tag_status.tag_status
+            tag.return_date = t.return_date.date() if t.return_date else None
+            tag.return_condition = t.return_condition
+            tag.comments = t.comments
+            tag.field_person = field_person
+            tag.tag_order_id = t.tag_order_id if TagOrder.objects.filter(pk=t.tag_order_id).exists() else None
+            tag.save()
+        else:
+            TurtleTag.objects.create(
+                serial=t.tag_id,
+                turtle_id=t.turtle_id,
+                issue_location=t.issue_location,
+                custodian=custodian,
+                status=t.tag_status.tag_status,
+                return_date=t.return_date.date() if t.return_date else None,
+                return_condition=t.return_condition,
+                comments=t.comments,
+                field_person=field_person,
+                tag_order_id=t.tag_order_id if TagOrder.objects.filter(pk=t.tag_order_id).exists() else None,
+            )
         count += 1
         if count % 1000 == 0:
             print(f"{count} imported")
@@ -328,20 +382,35 @@ def import_wamtram():
         else:
             field_person = None
 
-        TurtlePitTag.objects.get_or_create(
-            serial=t.pit_tag_id,
-            turtle_id=t.turtle_id,
-            issue_location=t.issue_location,
-            custodian=custodian,
-            status=t.pit_tag_status,
-            return_date=t.return_date.date() if t.return_date else None,
-            return_condition=t.return_condition,
-            comments=t.comments,
-            field_person=field_person,
-            tag_order_id=t.tag_order_id if TagOrder.objects.filter(pk=t.tag_order_id).exists() else None,
-            batch_number=t.batch_number,
-            box_number=t.box_number,
-        )
+        if TurtlePitTag.objects.filter(serial=t.pit_tag_id).exists():
+            tag = TurtlePitTag.objects.get(serial=t.pit_tag_id)
+            tag.turtle_id = t.turtle_id
+            tag.issue_location = t.issue_location
+            tag.custodian = custodian
+            tag.status = t.pit_tag_status
+            tag.return_date = t.return_date.date() if t.return_date else None
+            tag.return_condition = t.return_condition
+            tag.comments = t.comments
+            tag.field_person = field_person
+            tag.tag_order_id = t.tag_order_id if TagOrder.objects.filter(pk=t.tag_order_id).exists() else None
+            tag.batch_number = t.batch_number
+            tag.box_number = t.box_number
+            tag.save()
+        else:
+            TurtlePitTag.objects.create(
+                serial=t.pit_tag_id,
+                turtle_id=t.turtle_id,
+                issue_location=t.issue_location,
+                custodian=custodian,
+                status=t.pit_tag_status,
+                return_date=t.return_date.date() if t.return_date else None,
+                return_condition=t.return_condition,
+                comments=t.comments,
+                field_person=field_person,
+                tag_order_id=t.tag_order_id if TagOrder.objects.filter(pk=t.tag_order_id).exists() else None,
+                batch_number=t.batch_number,
+                box_number=t.box_number,
+            )
         count += 1
         if count % 1000 == 0:
             print(f"{count} imported")
@@ -383,56 +452,107 @@ def import_wamtram():
         else:
             entered_by = None
 
-        TurtleObservation.objects.get_or_create(
-            pk=obs.observation_id,
-            turtle_id=obs.turtle_id,
-            observation_datetime=obs.get_observation_datetime_utc(),
-            observation_date_old=obs.observation_date_old.date() if obs.observation_date_old else None,
-            alive=True if obs.alive == "Y" else False if obs.alive == "N" else None,
-            measurer_person=measurer,
-            measurer_reporter_person=measurer_reporter,
-            tagger_person=tagger,
-            reporter_person=reporter,
-            place=place,
-            place_description=obs.place_description,
-            point=obs.get_point(),
-            activity=activity,
-            beach_position=beach_position,
-            condition=obs.condition_code.condition_code if obs.condition_code else None,
-            nesting=True if obs.nesting == "Y" else False if obs.nesting == "N" else None,
-            clutch_completed=obs.clutch_completed,
-            number_of_eggs=obs.number_of_eggs,
-            egg_count_method=obs.egg_count_method.egg_count_method if obs.egg_count_method else None,
-            measurements=obs.measurements,
-            action_taken=obs.action_taken,
-            comments=obs.comments,
-            entered_by=obs.entered_by,
-            date_entered=obs.date_entered.date() if obs.date_entered else None,
-            original_observation_id=obs.original_observation_id,
-            entry_batch=EntryBatch.objects.get(pk=obs.entry_batch_id) if obs.entry_batch else None,
-            comment_fromrecordedtagstable=obs.comment_fromrecordedtagstable,
-            scars_left=obs.scars_left,
-            scars_right=obs.scars_right,
-            other_tags=obs.other_tags,
-            other_tags_identification_type=obs.other_tags_identification_type.identification_type if obs.other_tags_identification_type else None,
-            transferid=obs.transferid,
-            mund=obs.mund,
-            entered_by_person=entered_by,
-            scars_left_scale_1=obs.scars_left_scale_1,
-            scars_left_scale_2=obs.scars_left_scale_2,
-            scars_left_scale_3=obs.scars_left_scale_3,
-            scars_right_scale_1=obs.scars_right_scale_1,
-            scars_right_scale_2=obs.scars_right_scale_2,
-            scars_right_scale_3=obs.scars_right_scale_3,
-            cc_length_not_measured=obs.cc_length_not_measured,
-            cc_notch_length_not_measured=obs.cc_notch_length_not_measured,
-            cc_width_not_measured=obs.cc_width_not_measured,
-            tagscarnotchecked=obs.tagscarnotchecked,
-            didnotcheckforinjury=obs.didnotcheckforinjury,
-            date_convention=obs.date_convention,
-            observation_status=obs.observation_status,
-            corrected_date=obs.corrected_date.date() if obs.corrected_date else None,
-        )
+        if TurtleObservation.objects.filter(pk=obs.observation_id).exists():
+            o = TurtleObservation.objects.get(pk=obs.observation_id)
+            o.turtle_id = obs.turtle_id
+            o.observation_datetime = obs.get_observation_datetime_utc()
+            o.observation_date_old = obs.observation_date_old.date() if obs.observation_date_old else None
+            o.alive = True if obs.alive == "Y" else False if obs.alive == "N" else None
+            o.measurer_person = measurer
+            o.measurer_reporter_person = measurer_reporter
+            o.tagger_person = tagger
+            o.reporter_person = reporter
+            o.place = place
+            o.place_description = obs.place_description
+            o.point = obs.get_point()
+            o.activity = activity
+            o.beach_position = beach_position
+            o.condition = obs.condition_code.condition_code if obs.condition_code else None
+            o.nesting = True if obs.nesting == "Y" else False if obs.nesting == "N" else None
+            o.clutch_completed = obs.clutch_completed
+            o.number_of_eggs = obs.number_of_eggs
+            o.egg_count_method = obs.egg_count_method.egg_count_method if obs.egg_count_method else None
+            o.measurements = obs.measurements
+            o.action_taken = obs.action_taken
+            o.comments = obs.comments
+            o.entered_by = obs.entered_by
+            o.date_entered = obs.date_entered.date() if obs.date_entered else None
+            o.original_observation_id = obs.original_observation_id
+            o.entry_batch = EntryBatch.objects.get(pk=obs.entry_batch_id) if obs.entry_batch else None
+            o.comment_fromrecordedtagstable = obs.comment_fromrecordedtagstable
+            o.scars_left = obs.scars_left
+            o.scars_right = obs.scars_right
+            o.other_tags = obs.other_tags
+            o.other_tags_identification_type = obs.other_tags_identification_type.identification_type if obs.other_tags_identification_type else None
+            o.transferid = obs.transferid
+            o.mund = obs.mund
+            o.entered_by_person = entered_by
+            o.scars_left_scale_1 = obs.scars_left_scale_1
+            o.scars_left_scale_2 = obs.scars_left_scale_2
+            o.scars_left_scale_3 = obs.scars_left_scale_3
+            o.scars_right_scale_1 = obs.scars_right_scale_1
+            o.scars_right_scale_2 = obs.scars_right_scale_2
+            o.scars_right_scale_3 = obs.scars_right_scale_3
+            o.cc_length_not_measured = obs.cc_length_not_measured
+            o.cc_notch_length_not_measured = obs.cc_notch_length_not_measured
+            o.cc_width_not_measured = obs.cc_width_not_measured
+            o.tagscarnotchecked = obs.tagscarnotchecked
+            o.didnotcheckforinjury = obs.didnotcheckforinjury
+            o.date_convention = obs.date_convention
+            o.observation_status = obs.observation_status
+            o.corrected_date = obs.corrected_date.date() if obs.corrected_date else None
+            o.save()
+        else:
+            TurtleObservation.objects.create(
+                pk=obs.observation_id,
+                turtle_id=obs.turtle_id,
+                observation_datetime=obs.get_observation_datetime_utc(),
+                observation_date_old=obs.observation_date_old.date() if obs.observation_date_old else None,
+                alive=True if obs.alive == "Y" else False if obs.alive == "N" else None,
+                measurer_person=measurer,
+                measurer_reporter_person=measurer_reporter,
+                tagger_person=tagger,
+                reporter_person=reporter,
+                place=place,
+                place_description=obs.place_description,
+                point=obs.get_point(),
+                activity=activity,
+                beach_position=beach_position,
+                condition=obs.condition_code.condition_code if obs.condition_code else None,
+                nesting=True if obs.nesting == "Y" else False if obs.nesting == "N" else None,
+                clutch_completed=obs.clutch_completed,
+                number_of_eggs=obs.number_of_eggs,
+                egg_count_method=obs.egg_count_method.egg_count_method if obs.egg_count_method else None,
+                measurements=obs.measurements,
+                action_taken=obs.action_taken,
+                comments=obs.comments,
+                entered_by=obs.entered_by,
+                date_entered=obs.date_entered.date() if obs.date_entered else None,
+                original_observation_id=obs.original_observation_id,
+                entry_batch=EntryBatch.objects.get(pk=obs.entry_batch_id) if obs.entry_batch else None,
+                comment_fromrecordedtagstable=obs.comment_fromrecordedtagstable,
+                scars_left=obs.scars_left,
+                scars_right=obs.scars_right,
+                other_tags=obs.other_tags,
+                other_tags_identification_type=obs.other_tags_identification_type.identification_type if obs.other_tags_identification_type else None,
+                transferid=obs.transferid,
+                mund=obs.mund,
+                entered_by_person=entered_by,
+                scars_left_scale_1=obs.scars_left_scale_1,
+                scars_left_scale_2=obs.scars_left_scale_2,
+                scars_left_scale_3=obs.scars_left_scale_3,
+                scars_right_scale_1=obs.scars_right_scale_1,
+                scars_right_scale_2=obs.scars_right_scale_2,
+                scars_right_scale_3=obs.scars_right_scale_3,
+                cc_length_not_measured=obs.cc_length_not_measured,
+                cc_notch_length_not_measured=obs.cc_notch_length_not_measured,
+                cc_width_not_measured=obs.cc_width_not_measured,
+                tagscarnotchecked=obs.tagscarnotchecked,
+                didnotcheckforinjury=obs.didnotcheckforinjury,
+                date_convention=obs.date_convention,
+                observation_status=obs.observation_status,
+                corrected_date=obs.corrected_date.date() if obs.corrected_date else None,
+            )
         count += 1
         if count % 1000 == 0:
             print(f"{count} imported")
