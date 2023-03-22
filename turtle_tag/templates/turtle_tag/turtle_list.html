@@ -59,24 +59,26 @@
                 <th>ID</th>
                 <th>Species</th>
                 <th>Sex</th>
-                <th>Status</th>
+                <th>Tags</th>
                 <th>Nesting/other group</th>
                 <th>Date entered</th>
                 <th>Name</th>
+                <th>Status</th>
                 <th>Cause of death</th>
             </tr>
         </thead>
         <tbody>
-            {% for object in object_list %}
+            {% for obj in object_list %}
             <tr>
-                <td>{{ object.pk }}</td>
-                <td><a href="{{ object.get_absolute_url }}">{{ object.species.common_name }}</a></td>
-                <td>{{ object.get_sex_display }}</td>
-                <td>{{ object.status.description|default_if_none:"" }}</td>
-                <td>{{ object.location.name }}</td>
-                <td>{{ object.date_entered|date:"j M Y" }}</td>
-                <td>{{ object.name|default_if_none:"" }}</td>
-                <td>{{ object.get_cause_of_death_display|default_if_none:"" }}</td>
+                <td>{{ obj.pk }}</td>
+                <td><a href="{{ obj.get_absolute_url }}">{{ obj.species.common_name }}</a></td>
+                <td>{{ obj.get_sex_display }}</td>
+                <td>{{ obj.get_tags_description }}</td>
+                <td>{{ obj.location.name }}</td>
+                <td>{{ obj.date_entered|date:"j M Y" }}</td>
+                <td>{{ obj.name|default_if_none:"" }}</td>
+                <td>{{ obj.status.description|default_if_none:"" }}</td>
+                <td>{{ obj.get_cause_of_death_display|default_if_none:"" }}</td>
             </tr>
             {% endfor %}
         </tbody>

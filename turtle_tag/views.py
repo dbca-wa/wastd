@@ -34,7 +34,7 @@ class TurtleList(LoginRequiredMixin, ListView):
             return qs.filter(tags__pk=self.request.GET['tag_id']).order_by('pk')
         if 'pit_tag_id' in self.request.GET and self.request.GET['pit_tag_id']:
             return qs.filter(pit_tags__pk=self.request.GET['pit_tag_id']).order_by('pk')
-        return qs
+        return qs.order_by('pk')
 
 
 class TurtleDetail(LoginRequiredMixin, DetailView):
