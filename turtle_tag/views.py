@@ -31,9 +31,9 @@ class TurtleList(LoginRequiredMixin, ListView):
         if 'turtle_id' in self.request.GET and self.request.GET['turtle_id']:
             return qs.filter(pk=self.request.GET['turtle_id']).order_by('pk')
         if 'tag_id' in self.request.GET and self.request.GET['tag_id']:
-            return qs.filter(tags__pk=self.request.GET['tag_id']).order_by('pk')
+            return qs.filter(tags__serial__icontains=self.request.GET['tag_id']).order_by('pk')
         if 'pit_tag_id' in self.request.GET and self.request.GET['pit_tag_id']:
-            return qs.filter(pit_tags__pk=self.request.GET['pit_tag_id']).order_by('pk')
+            return qs.filter(pit_tags__serial__icontains=self.request.GET['pit_tag_id']).order_by('pk')
         return qs.order_by('pk')
 
 
