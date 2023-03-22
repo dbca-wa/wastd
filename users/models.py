@@ -113,9 +113,9 @@ class User(AbstractUser):
 
     def __str__(self):
         if self.is_active:
-            return self.name if self.name else self.email
+            return f"{self.name} ({self.pk})" if self.name else self.email
         else:
-            return f"{self.name} [INACTIVE]" if self.name else f"{self.email} [INACTIVE]"
+            return f"{self.name} ({self.pk}) [INACTIVE]" if self.name else f"{self.email} ({self.pk}) [INACTIVE]"
 
     def save(self, *args, **kwargs):
         if not self.password:

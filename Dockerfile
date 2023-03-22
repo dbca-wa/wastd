@@ -33,6 +33,7 @@ FROM python_libs
 COPY gunicorn.py manage.py ./
 COPY observations ./observations
 COPY shared ./shared
+COPY turtle_tag ./turtle_tag
 COPY users ./users
 COPY wastd ./wastd
 COPY wamtram ./wamtram
