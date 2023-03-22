@@ -1,4 +1,3 @@
-from datetime import datetime
 from django.conf import settings
 from django.contrib.gis.db import models
 from django.urls import reverse
@@ -156,6 +155,14 @@ class Turtle(models.Model):
     def get_absolute_url(self):
         return reverse('turtle_tag:turtle_detail', kwargs={'pk': self.pk})
 
+    def get_tags_description(self):
+        tags = []
+        for tag in self.tags.all():
+            tags.append(str(tag))
+        for tag in self.pit_tags.all():
+            tags.append(f"{str(tag)} (pit tag)")
+        return ", ".join(tags)
+
 
 class TurtleObservation(models.Model):
 
@@ -298,6 +305,9 @@ class TurtleTag(models.Model):
     tag_order = models.ForeignKey(TagOrder, on_delete=models.PROTECT, blank=True, null=True)
     side = models.CharField(max_length=1, blank=True, null=True)
 
+    def __str__(self):
+        return self.serial
+
 
 class TurtlePitTag(models.Model):
 
@@ -330,3 +340,6 @@ class TurtlePitTag(models.Model):
     tag_order = models.ForeignKey(TagOrder, on_delete=models.PROTECT, blank=True, null=True)
     batch_number = models.CharField(max_length=128, blank=True, null=True)
     box_number = models.CharField(max_length=128, blank=True, null=True)
+
+    def __str__(self):
+        return self.serial
