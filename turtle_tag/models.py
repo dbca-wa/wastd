@@ -252,6 +252,12 @@ class TurtleObservation(models.Model):
         else:
             return None
 
+    def get_absolute_url(self):
+        return reverse('turtle_tag:turtleobservation_detail', kwargs={'pk': self.pk})
+
+    class Meta:
+        ordering = ('observation_datetime',)
+
 
 class TagOrder(models.Model):
     order_number = models.CharField(max_length=64)
