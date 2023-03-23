@@ -64,6 +64,7 @@
                 <th>Date entered</th>
                 <th>Name</th>
                 <th>Status</th>
+                <th>Observations</th>
                 <th>Cause of death</th>
             </tr>
         </thead>
@@ -78,6 +79,7 @@
                 <td>{{ obj.date_entered|date:"j M Y" }}</td>
                 <td>{{ obj.name|default_if_none:"" }}</td>
                 <td>{{ obj.status.description|default_if_none:"" }}</td>
+                <td>{{ obj.turtleobservation_set.count }}</td>
                 <td>{{ obj.get_cause_of_death_display|default_if_none:"" }}</td>
             </tr>
             {% endfor %}

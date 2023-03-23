@@ -133,17 +133,19 @@
                     <th>Place</th>
                     <th>Nesting?</th>
                     <th>Activity</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
                 {% for obs in object.turtleobservation_set.all %}
                 <tr>
-                    <td>{{ obs.get_observation_datetime_awst|date:"D, j M Y H:i" }}</td>
+                    <td><a href="{{ obs.get_absolute_url }}">{{ obs.get_observation_datetime_awst|date:"D, j M Y H:i" }}</a></td>
                     <td>{{ obs.observation_status }}</td>
                     <td>{{ obs.alive|yesno:"Yes,No,Unknown" }}</td>
                     <td>{{ obs.place_code }}</td>
                     <td>{{ obs.nesting|yesno:"Yes,No,Unknown" }}</td>
                     <td>{{ obs.activity_code.description }}</td>
+                    <td>{% if obs.point %}<i class="fa-solid fa-location-pin"></i>{% endif %}</td>
                 </tr>
                 {% endfor %}
             </tbody>
