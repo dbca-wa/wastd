@@ -138,9 +138,11 @@ TRT_CONDITION_MAP = {
 }
 
 
-def import_wamtram():
+def import_wamtram(reload=True):
     """Utility function to import/convert data from wamtram (SQL Server) to turtle_data (local).
     The function is idempotent, and may be run multiple times safely without creating duplicate data.
+
+    If `reload` is False, some existing records will be skipped (those having the PK brought across).
     """
     print("Importing species")
     TurtleSpecies.objects.get_or_create(
@@ -216,7 +218,7 @@ def import_wamtram():
         else:
             user = None
 
-        if EntryBatch.objects.filter(pk=b.entry_batch_id).exists():
+        if EntryBatch.objects.filter(pk=b.entry_batch_id).exists() and reload:
             eb = EntryBatch.objects.get(pk=b.entry_batch_id)
             eb.entry_date = b.entry_date.date() if b.entry_date else None
             eb.entered_person = user
@@ -224,7 +226,7 @@ def import_wamtram():
             eb.comments = b.comments
             eb.pr_date_convention = b.pr_date_convention
             eb.save()
-        else:
+        elif reload:
             EntryBatch.objects.create(
                 pk=b.entry_batch_id,
                 entry_date=b.entry_date.date() if b.entry_date else None,
@@ -237,7 +239,7 @@ def import_wamtram():
 
     print("Importing tag orders")
     for o in TrtTagOrders.objects.all():
-        if TagOrder.objects.filter(pk=o.tag_order_id).exists():
+        if TagOrder.objects.filter(pk=o.tag_order_id).exists() and reload:
             to = TagOrder.objects.get(pk=o.tag_order_id)
             to.order_number = o.order_number
             to.order_date = o.order_date.date() if o.order_date else None
@@ -249,7 +251,7 @@ def import_wamtram():
             to.paid_by = o.paid_by
             to.comments = o.comments
             to.save()
-        else:
+        elif reload:
             TagOrder.objects.create(
                 pk=o.tag_order_id,
                 order_number=o.order_number,
@@ -282,7 +284,7 @@ def import_wamtram():
         else:
             location = None
 
-        if Turtle.objects.filter(pk=t.turtle_id).exists():
+        if Turtle.objects.filter(pk=t.turtle_id).exists() and reload:
             tu = Turtle.objects.get(pk=t.turtle_id)
             tu.species = species
             tu.identification_confidence = t.identification_confidence
@@ -300,7 +302,7 @@ def import_wamtram():
             tu.mund_id = t.mund_id
             tu.name = t.turtle_name
             tu.save()
-        else:
+        elif reload:
             Turtle.objects.create(
                 pk=t.turtle_id,
                 species=species,
@@ -338,7 +340,7 @@ def import_wamtram():
         else:
             field_person = None
 
-        if TurtleTag.objects.filter(serial=t.tag_id).exists():
+        if TurtleTag.objects.filter(serial=t.tag_id).exists() and reload:
             tag = TurtleTag.objects.get(serial=t.tag_id)
             tag.turtle_id = t.turtle_id
             tag.issue_location = t.issue_location
@@ -350,7 +352,7 @@ def import_wamtram():
             tag.field_person = field_person
             tag.tag_order_id = t.tag_order_id if TagOrder.objects.filter(pk=t.tag_order_id).exists() else None
             tag.save()
-        else:
+        elif reload:
             TurtleTag.objects.create(
                 serial=t.tag_id,
                 turtle_id=t.turtle_id,
@@ -382,7 +384,7 @@ def import_wamtram():
         else:
             field_person = None
 
-        if TurtlePitTag.objects.filter(serial=t.pit_tag_id).exists():
+        if TurtlePitTag.objects.filter(serial=t.pit_tag_id).exists() and reload:
             tag = TurtlePitTag.objects.get(serial=t.pit_tag_id)
             tag.turtle_id = t.turtle_id
             tag.issue_location = t.issue_location
@@ -396,7 +398,7 @@ def import_wamtram():
             tag.batch_number = t.batch_number
             tag.box_number = t.box_number
             tag.save()
-        else:
+        elif reload:
             TurtlePitTag.objects.create(
                 serial=t.pit_tag_id,
                 turtle_id=t.turtle_id,
@@ -452,7 +454,7 @@ def import_wamtram():
         else:
             entered_by = None
 
-        if TurtleObservation.objects.filter(pk=obs.observation_id).exists():
+        if TurtleObservation.objects.filter(pk=obs.observation_id).exists() and reload:
             o = TurtleObservation.objects.get(pk=obs.observation_id)
             o.turtle_id = obs.turtle_id
             o.observation_datetime = obs.get_observation_datetime_utc()
@@ -502,7 +504,7 @@ def import_wamtram():
             o.observation_status = obs.observation_status
             o.corrected_date = obs.corrected_date.date() if obs.corrected_date else None
             o.save()
-        else:
+        elif reload:
             TurtleObservation.objects.create(
                 pk=obs.observation_id,
                 turtle_id=obs.turtle_id,
