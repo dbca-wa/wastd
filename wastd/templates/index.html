@@ -48,6 +48,12 @@
   </p>
   <p>
     <a class="btn btn-primary btn-block"
+       href="{% url 'turtle_tag:home' %}"
+       title="Browse, filter and search turtle tagging data">
+      Browse »
+    </a>
+    {% comment %}
+    <a class="btn btn-primary btn-block"
        href="{% url 'observations:animalencounter-list' %}?encounter_type=tagging"
        title="Browse, filter and search animal encounters">
       Browse »
@@ -59,6 +65,7 @@
       Curate »
     </a>
     {% endif %}
+    {% endcomment %}
   </p>
 </div>
 

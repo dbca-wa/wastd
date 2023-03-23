@@ -1,11 +1,16 @@
 <div class="collapse navbar-collapse" id="navbarCollapse">
     <ul class="navbar-nav mr-auto">
         <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="/" id="nav-li-species" title="Species" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <a class="nav-link dropdown-toggle" href="/" id="nav-li-tagging" title="Taggin" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="fa-solid fa-table" aria-hidden="true"></i>
                 Tagging
             </a>
-            <div class="dropdown-menu" aria-labelledby="nav-li-species">
+            <div class="dropdown-menu" aria-labelledby="nav-li-tagging">
+                <a class="dropdown-item" href="{% url 'turtle_tag:turtle_list' %}" title="Browse, filter and search all tagged turtles">
+                    <i class="fa-solid fa-table" aria-hidden="true"></i>
+                    <span class="align-left">Tagged turtles</span>
+                </a>
+                {% comment %}
                 <a class="dropdown-item" href="{% url 'observations:animalencounter-list' %}?encounter_type=tagging" title="Browse, filter and search all Turtle Tagging encounters">
                     <i class="fa-solid fa-table" aria-hidden="true"></i>
                     <span class="align-left">Tagged turtles</span>
@@ -18,6 +23,7 @@
                     <i class="fa-solid fa-table" aria-hidden="true"></i>
                     <span class="align-left">In-water encounters</span>
                 </a>
+                {% endcomment %}
             </div>
         </li>
 
