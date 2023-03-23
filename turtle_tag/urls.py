@@ -5,6 +5,10 @@ app_name = "turtle_tag"
 
 
 urlpatterns = [
+    path("", views.TurtleList.as_view(), name="home"),
     path("turtles/", views.TurtleList.as_view(), name="turtle_list"),
     path("turtles/<int:pk>/", views.TurtleDetail.as_view(), name="turtle_detail"),
+    # observations
+    # tags
+    # pit tags
 ]
