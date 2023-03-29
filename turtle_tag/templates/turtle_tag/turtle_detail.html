@@ -38,6 +38,10 @@
                     <td>{{ object.date_entered|date:"j-M-Y" }}</td>
                 </tr>
                 <tr>
+                    <th>Entered by</th>
+                    <td>{{ object.entered_by_person.name|default_if_none:"" }}</td>
+                </tr>
+                <tr>
                     <th>Name</th>
                     <td>{{ object.name|default_if_none:"" }}</td>
                 </tr>

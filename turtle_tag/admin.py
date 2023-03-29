@@ -7,7 +7,7 @@ class TurtleAdmin(ModelAdmin):
     date_hierarchy = 'date_entered'
     list_display = ('pk', 'species', 'sex', 'status', 'location', 'date_entered', 'name', 'cause_of_death')
     list_filters = ('species', 'sex', 'status', 'location', 'cause_of_death')
-    search_fields = ('pk', 'name', 'pit_tags__pk', 'tags__pk')
+    search_fields = ('pk', 'name', 'pit_tags__serial', 'tags__serial')
     fields = ('pk', 'species', 'sex', 'status', 'location', 'date_entered', 'name', 'cause_of_death')
 
 

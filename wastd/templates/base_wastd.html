@@ -37,7 +37,9 @@
 
 {% block page_content %}
 
-{% block breadcrumbs %}{% endblock %}
+{% block breadcrumbs %}
+{% include 'breadcrumbs.html' %}
+{% endblock %}
 
 <div class="container-fluid">
     {% bootstrap_messages %}
