@@ -1,19 +1,11 @@
 {% extends "base_wastd.html" %}
-{% load static bootstrap_pagination crispy_forms_tags %}
-
-{% block breadcrumbs %}
-<nav aria-label="breadcrumb">
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-        <li class="breadcrumb-item active">Tagged turtles</li>
-    </ol>
-</nav>
-{% endblock %}
+{% load bootstrap_pagination crispy_forms_tags %}
 
 {% block page_content_inner %}
 <!-- Search bar -->
 <div class="row">
-    <div class="col">
+    <div class="col-xs-12 col-sm-6">
+        {% comment %}
         <div class="accordion" id="filterTurtles">
             <div class="card">
                 <div class="card-header p-0" id="headingFilterTurtles">
@@ -31,11 +23,18 @@
                 </div>
             </div>
         </div>
-        {% comment %}
-        <form action="" method="get">
-            <input id="search_field" type="text" class="form-control" name="q" placeholder="Search turtles (ID, tag, name, etc.)" value="{{ query_string }}">
-        </form>
         {% endcomment %}
+        <form action="" method="get">
+            <input id="search_field" type="text" class="form-control" name="q" placeholder="Search turtles (ID, tags, name, etc.)" value="{{ query_string }}">
+        </form>
+    </div>
+    <div class="col-xs-12 col-sm-6">
+        <span class="float-right">
+            <a class="btn btn-primary" href="{% url 'turtle_tag:turtle_create' %}">
+                <i class="fa-solid fa-plus"></i>
+                Create new turtle
+            </a>
+        </span>
     </div>
 </div>
 
