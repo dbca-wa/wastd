@@ -269,6 +269,8 @@ def import_wamtram(reload=True):
 
     print("Importing turtles")
     count = 0
+    bobp = User.objects.get(username='bobp')
+    admin = User.objects.get(pk=1)
     for t in TrtTurtles.objects.all():
         if t.species_code_id == "?":
             species = TurtleSpecies.objects.get(scientific_name='Unknown')
@@ -284,6 +286,10 @@ def import_wamtram(reload=True):
             location = Location.objects.get(name=TRT_LOCATION_MAP[t.location_code_id]['name'])
         else:
             location = None
+        if t.entered_by == 'bobp':
+            entered_by = bobp
+        else:
+            entered_by = admin
 
         if Turtle.objects.filter(pk=t.turtle_id).exists() and reload:
             tu = Turtle.objects.get(pk=t.turtle_id)
@@ -296,7 +302,7 @@ def import_wamtram(reload=True):
             tu.re_entered_population = t.re_entered_population
             tu.comments = t.comments
             tu.entered_by = t.entered_by
-            # TODO: set entered_by_person
+            tu.entered_by_person = entered_by
             tu.date_entered = t.date_entered.date()
             tu.original_turtle_id = t.original_turtle_id
             tu.entry_batch_id = t.entry_batch_id
@@ -316,7 +322,7 @@ def import_wamtram(reload=True):
                 re_entered_population=t.re_entered_population,
                 comments=t.comments,
                 entered_by=t.entered_by,
-                # TODO: set entered_by_person
+                entered_by_person=entered_by,
                 date_entered=t.date_entered.date(),
                 original_turtle_id=t.original_turtle_id,
                 entry_batch_id=t.entry_batch_id,
