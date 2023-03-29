@@ -37,10 +37,11 @@ class TurtleSpecies(models.Model):
 
     class Meta:
         verbose_name_plural = 'turtle species'
+        ordering = ('common_name',)
 
     def __str__(self):
         if self.common_name:
-            return f"{self.scientific_name} ({self.common_name})"
+            return f"{self.common_name} ({self.scientific_name})"
         else:
             return f"{self.scientific_name}"
 
@@ -127,7 +128,7 @@ class Turtle(models.Model):
     SEX_CHOICES = (
         ('F', 'Female'),
         ('M', 'Male'),
-        ('U', 'Unknown'),
+        ('U', 'Indeterminate'),
     )
 
     species = models.ForeignKey(TurtleSpecies, models.PROTECT, blank=True, null=True)
@@ -139,7 +140,8 @@ class Turtle(models.Model):
     re_entered_population = models.CharField(max_length=1, blank=True, null=True)
     comments = models.TextField(blank=True, null=True)
     entered_by = models.CharField(max_length=50, blank=True, null=True)
-    date_entered = models.DateField(blank=True, null=True)
+    entered_by_person = models.ForeignKey(User, models.SET_NULL, related_name='entered_by_user', blank=True, null=True)
+    date_entered = models.DateField(blank=True, null=True, auto_now_add=True)
     original_turtle_id = models.IntegerField(blank=True, null=True)
     entry_batch_id = models.IntegerField(blank=True, null=True)
     tag = models.CharField(max_length=255, blank=True, null=True)
