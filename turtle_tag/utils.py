@@ -1,3 +1,4 @@
+from django.db.models import Max
 from wamtram.models import (
     TrtPlaces,
     TrtPersons,
@@ -295,6 +296,7 @@ def import_wamtram(reload=True):
             tu.re_entered_population = t.re_entered_population
             tu.comments = t.comments
             tu.entered_by = t.entered_by
+            # TODO: set entered_by_person
             tu.date_entered = t.date_entered.date()
             tu.original_turtle_id = t.original_turtle_id
             tu.entry_batch_id = t.entry_batch_id
@@ -314,6 +316,7 @@ def import_wamtram(reload=True):
                 re_entered_population=t.re_entered_population,
                 comments=t.comments,
                 entered_by=t.entered_by,
+                # TODO: set entered_by_person
                 date_entered=t.date_entered.date(),
                 original_turtle_id=t.original_turtle_id,
                 entry_batch_id=t.entry_batch_id,
@@ -561,3 +564,12 @@ def import_wamtram(reload=True):
     print(f"Object count: {TurtleObservation.objects.count()}")
 
     print("Complete")
+    print("Set sequence values for: EntryBatch, TagOrder, Turtle, TurtleObservation")
+    entrybatch_id_max = EntryBatch.objects.aggregate(Max('pk'))['pk__max']
+    print(f"SELECT setval('turtle_tag_entrybatch_id_seq', {entrybatch_id_max}, true);")
+    tagorder_id_max = TagOrder.objects.aggregate(Max('pk'))['pk__max']
+    print(f"SELECT setval('turtle_tag_tagorder_id_seq', {tagorder_id_max}, true);")
+    turtle_id_max = Turtle.objects.aggregate(Max('pk'))['pk__max']
+    print(f"SELECT setval('turtle_tag_turtle_id_seq', {turtle_id_max}, true);")
+    turtleobservation_id_max = TurtleObservation.objects.aggregate(Max('pk'))['pk__max']
+    print(f"SELECT setval('turtle_tag_turtleobservation_id_seq', {turtleobservation_id_max}, true);")
