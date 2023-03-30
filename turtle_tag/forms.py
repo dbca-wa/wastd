@@ -106,7 +106,7 @@ class TurtleTagUpdateForm(forms.ModelForm):
     """
     class Meta:
         model = Turtle
-        fields = ('species',)
+        fields = ('tag',)  # Field will not be touched on save.
 
 
 class TurtleTagForm(forms.ModelForm):

@@ -89,7 +89,7 @@
                 {% for tag in object.tags.all %}
                 <tr>
                     <td>{{ tag.serial }}</td>
-                    <td>{{ tag.side|default_if_none:"" }}</td>
+                    <td>{{ tag.get_side_display|default_if_none:"" }}</td>
                     <td>{{ tag.tag_status.description }}</td>
                     <td>{{ tag.return_date|date:"j-M-Y" }}</td>
                     <td>{{ tag.return_condition|default_if_none:"" }}</td>
