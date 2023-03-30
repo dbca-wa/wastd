@@ -36,4 +36,9 @@ class Migration(migrations.Migration):
             name='sex',
             field=models.CharField(choices=[('F', 'Female'), ('M', 'Male'), ('U', 'Indeterminate')], max_length=1),
         ),
+        migrations.AlterField(
+            model_name='turtletag',
+            name='side',
+            field=models.CharField(blank=True, choices=[('L', 'Left'), ('R', 'Right')], max_length=1, null=True),
+        ),
     ]

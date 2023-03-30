@@ -300,6 +300,10 @@ class TurtleTag(models.Model):
         ('SAL', 'Salvage for reuse'),
         ('U', 'Unused Tag'),
     )
+    SIDE_CHOICES = (
+        ('L', 'Left'),
+        ('R', 'Right'),
+    )
 
     serial = models.CharField(max_length=64, unique=True)
     turtle = models.ForeignKey(Turtle, models.PROTECT, related_name='tags', blank=True, null=True)
@@ -311,7 +315,7 @@ class TurtleTag(models.Model):
     comments = models.TextField(blank=True, null=True)
     field_person = models.ForeignKey(User, models.SET_NULL, related_name='tag_field_person', blank=True, null=True)
     tag_order = models.ForeignKey(TagOrder, on_delete=models.PROTECT, blank=True, null=True)
-    side = models.CharField(max_length=1, blank=True, null=True)
+    side = models.CharField(max_length=1, choices=SIDE_CHOICES, blank=True, null=True)
 
     def __str__(self):
         return self.serial
