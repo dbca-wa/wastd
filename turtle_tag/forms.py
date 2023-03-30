@@ -3,7 +3,7 @@ from crispy_forms.layout import Layout, Submit, Field, Div, HTML
 from crispy_forms.bootstrap import InlineCheckboxes
 from django import forms
 
-from .models import Turtle, TurtleObservation
+from .models import Turtle, TurtleObservation, TurtleTag
 
 
 class TurtleSearchForm(forms.Form):
@@ -43,7 +43,7 @@ class BaseFormHelper(FormHelper):
 class BaseForm(forms.ModelForm):
     """Base ModelForm class for referral models.
     """
-    save_button = Submit('save', 'Save and record tag(s)', css_class='btn-lg')
+    save_button = Submit('save', 'Save', css_class='btn-lg')
     cancel_button = Submit('cancel', 'Cancel', css_class='btn-secondary')
 
     def __init__(self, *args, **kwargs):
@@ -99,3 +99,41 @@ class TurtleObservationCreateForm(BaseForm):
     class Meta:
         model = TurtleObservation
         exclude = ('turtle', 'observation_date_old')
+
+
+class TurtleTagUpdateForm(forms.ModelForm):
+    """A basic placeholder ModelForm, used for the 'tags update' view.
+    """
+    class Meta:
+        model = Turtle
+        fields = ('species',)
+
+
+class TurtleTagForm(forms.ModelForm):
+    comments = forms.CharField(required=False)
+
+    class Meta:
+        model = TurtleTag
+        fields = ('serial', 'side', 'status', 'comments')
+
+
+# Define a formset class to contain TurtleTagForm instances.
+# Reference: https://docs.djangoproject.com/en/3.2/topics/forms/modelforms/#model-formsets
+TagFormSet = forms.inlineformset_factory(
+    parent_model=Turtle,
+    model=TurtleTag,
+    form=TurtleTagForm,
+    extra=1,
+    can_delete=False,
+    max_num=6,
+)
+
+
+class TagFormSetHelper(FormHelper):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.form_class = 'form-inline'
+        # Override the table inline formset template (required to properly hide the "hidden" form).
+        self.template = 'turtle_tag/table_inline_formset.html'
+        self.add_input(Submit('save', 'Save', css_class='btn-lg'))
+        self.add_input(Submit('cancel', 'Cancel', css_class='btn-secondary'))
