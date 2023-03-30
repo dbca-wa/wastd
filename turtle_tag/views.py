@@ -4,7 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
-from django.views.generic import ListView, DetailView, CreateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from shared.utils import Breadcrumb
 from wastd.utils import search_filter
 
@@ -13,6 +13,9 @@ from .forms import (
     #TurtleSearchForm,
     TurtleCreateForm,
     TurtleObservationCreateForm,
+    TurtleTagUpdateForm,
+    TagFormSet,
+    TagFormSetHelper,
 )
 
 
@@ -72,6 +75,10 @@ class TurtleCreate(LoginRequiredMixin, CreateView):
     model = Turtle
     form_class = TurtleCreateForm
 
+    def dispatch(self, request, *args, **kwargs):
+        # FIXME: permissions checking
+        return super().dispatch(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["page_title"] = f"{settings.SITE_CODE} | Create new turtle"
@@ -103,6 +110,60 @@ class TurtleCreate(LoginRequiredMixin, CreateView):
         self.object.save()
         messages.success(self.request, "{} has been created.".format(self.object))
         return HttpResponseRedirect(self.get_success_url())
+
+
+class TurtleTagsUpdate(LoginRequiredMixin, UpdateView):
+    model = Turtle
+    template_name = "turtle_tag/turtle_tags_form.html"
+    # We don't really use the form class, but we need to define it for the view class.
+    form_class = TurtleTagUpdateForm
+
+    def dispatch(self, request, *args, **kwargs):
+        # FIXME: permissions checking
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        obj = self.get_object()
+        context["page_title"] = f"{settings.SITE_CODE} | Tagged turtles | {obj.pk} | Update tags"
+        context["title"] = f"Turtle {obj.pk} - Update tags"
+        if "tag_formset" in kwargs:
+            context["tag_formset"] = kwargs["tag_formset"]
+        else:
+            context["tag_formset"] = TagFormSet(instance=obj, prefix="tags")
+        context["tag_formset"].helper = TagFormSetHelper()
+        # pit_tag_formset
+        context["breadcrumbs"] = (
+            Breadcrumb("Home", reverse("home")),
+            Breadcrumb("Tagged Turtles", reverse("turtle_tag:turtle_list")),
+            Breadcrumb(obj.pk, obj.get_absolute_url()),
+            Breadcrumb("Update tags", None),
+        )
+        return context
+
+    def post(self, request, *args, **kwargs):
+        # If the user clicked Cancel, redirect back to the turtle detail page.
+        if request.POST.get("cancel"):
+            return redirect(self.get_object().get_absolute_url())
+        return super().post(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        obj = self.get_object()
+        tag_formset = TagFormSet(self.request.POST, instance=obj, prefix="tags")
+        #import ipdb; ipdb.set_trace()
+        if tag_formset.is_valid():
+            tag_formset.save()
+            messages.success(self.request, f"{obj} tags have been updated.")
+        else:
+            #messages.error(self.request, "Errors")
+            #context = self.get_context_data(form=form)
+            #context['tag_formset'] = tag_formset
+            #return self.render_to_response(context)
+            return self.render_to_response(self.get_context_data(form=form, tag_formset=tag_formset))
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_success_url(self):
+        return self.get_object().get_absolute_url()
 
 
 class TurtleObservationList(LoginRequiredMixin, ListView):
@@ -150,12 +211,16 @@ class TurtleObservationCreate(LoginRequiredMixin, CreateView):
     form_class = TurtleObservationCreateForm
     template_name = "turtle_tag/turtle_observation_create.html"
 
-    @property
     def get_turtle(self):
         return get_object_or_404(Turtle, pk=self.kwargs["pk"])
 
-    #def get_context_data(self, **kwargs):
-    #    pass
+    def dispatch(self, request, *args, **kwargs):
+        # FIXME: permissions checking
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
 
     def post(self, request, *args, **kwargs):
         # If the user clicked Cancel, redirect back to the turtle detail page.

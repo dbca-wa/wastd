@@ -58,7 +58,19 @@
     </div>
 </div>
 
-<h3>Tags</h3>
+<div class="row">
+    <div class="col">
+        <h3>Tags</h3>
+    </div>
+    <div class="col">
+        <span class="float-right">
+            <a class="btn btn-primary" href="{% url 'turtle_tag:turtle_tags_update' pk=object.pk %}">
+                <i class="fa-solid fa-pencil"></i>
+                Update tags
+            </a>
+        </span>
+    </div>
+</div>
 {% if object.tags.count %}
 <div class="row">
     <div class="col">
