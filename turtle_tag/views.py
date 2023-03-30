@@ -124,19 +124,18 @@ class TurtleTagsUpdate(LoginRequiredMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        obj = self.get_object()
-        context["page_title"] = f"{settings.SITE_CODE} | Tagged turtles | {obj.pk} | Update tags"
-        context["title"] = f"Turtle {obj.pk} - Update tags"
+        context["page_title"] = f"{settings.SITE_CODE} | Tagged turtles | {self.object.pk} | Update tags"
+        context["title"] = f"Turtle {self.object.pk} - Update tags"
         if self.request.POST:
-            context["tag_formset"] = TagFormSet(self.request.POST, instance=obj, prefix="tags")
+            context["tag_formset"] = TagFormSet(self.request.POST, instance=self.object, prefix="tags")
         else:
-            context["tag_formset"] = TagFormSet(instance=obj, prefix="tags")
+            context["tag_formset"] = TagFormSet(instance=self.object, prefix="tags")
         context["tag_formset"].helper = TagFormSetHelper()
         # pit_tag_formset
         context["breadcrumbs"] = (
             Breadcrumb("Home", reverse("home")),
             Breadcrumb("Tagged Turtles", reverse("turtle_tag:turtle_list")),
-            Breadcrumb(obj.pk, obj.get_absolute_url()),
+            Breadcrumb(self.object.pk, self.object.get_absolute_url()),
             Breadcrumb("Update tags", None),
         )
         return context
@@ -148,17 +147,16 @@ class TurtleTagsUpdate(LoginRequiredMixin, UpdateView):
         return super().post(request, *args, **kwargs)
 
     def form_valid(self, form):
-        obj = self.get_object()
-        tag_formset = TagFormSet(self.request.POST, instance=obj, prefix="tags")
+        tag_formset = TagFormSet(self.request.POST, instance=self.object, prefix="tags")
         if tag_formset.is_valid():
             tag_formset.save()
-            messages.success(self.request, f"{obj} tags have been updated.")
+            messages.success(self.request, f"Turtle {self.object} tags have been updated.")
         else:
             return self.render_to_response(self.get_context_data(form=form))
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
-        return self.get_object().get_absolute_url()
+        return self.object.get_absolute_url()
 
 
 class TurtleObservationList(LoginRequiredMixin, ListView):

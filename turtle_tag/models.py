@@ -149,10 +149,12 @@ class Turtle(models.Model):
     name = models.CharField(max_length=128, blank=True, null=True)
 
     def __str__(self):
-        if self.name:
-            return f'{self.pk}: {self.species.common_name} ({self.sex}) - {self.name}'
+        if self.name and self.species:
+            return f'{self.pk} {self.species.common_name} ({self.sex}) - {self.name}'
+        elif self.species:
+            return f'{self.pk} {self.species.common_name} ({self.sex})'
         else:
-            return f'{self.pk}: {self.species.common_name} ({self.sex})'
+            return f'{self.pk} ({self.sex})'
 
     def get_absolute_url(self):
         return reverse('turtle_tag:turtle_detail', kwargs={'pk': self.pk})
