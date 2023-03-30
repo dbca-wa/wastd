@@ -15,6 +15,7 @@ from .forms import (
     TurtleObservationCreateForm,
     TurtleTagUpdateForm,
     TagFormSet,
+    PitTagFormSet,
     TagFormSetHelper,
 )
 
@@ -126,12 +127,12 @@ class TurtleTagsUpdate(LoginRequiredMixin, UpdateView):
         context = super().get_context_data(**kwargs)
         context["page_title"] = f"{settings.SITE_CODE} | Tagged turtles | {self.object.pk} | Update tags"
         context["title"] = f"Turtle {self.object.pk} - Update tags"
+        context["tag_type"] = "Pit tags"
         if self.request.POST:
-            context["tag_formset"] = TagFormSet(self.request.POST, instance=self.object, prefix="tags")
+            context["tag_formset"] = TagFormSet(self.request.POST, instance=self.object, prefix="tag")
         else:
-            context["tag_formset"] = TagFormSet(instance=self.object, prefix="tags")
+            context["tag_formset"] = TagFormSet(instance=self.object, prefix="tag")
         context["tag_formset"].helper = TagFormSetHelper()
-        # pit_tag_formset
         context["breadcrumbs"] = (
             Breadcrumb("Home", reverse("home")),
             Breadcrumb("Tagged Turtles", reverse("turtle_tag:turtle_list")),
@@ -147,7 +148,7 @@ class TurtleTagsUpdate(LoginRequiredMixin, UpdateView):
         return super().post(request, *args, **kwargs)
 
     def form_valid(self, form):
-        tag_formset = TagFormSet(self.request.POST, instance=self.object, prefix="tags")
+        tag_formset = TagFormSet(self.request.POST, instance=self.object, prefix="tag")
         if tag_formset.is_valid():
             tag_formset.save()
             messages.success(self.request, f"Turtle {self.object} tags have been updated.")
@@ -157,6 +158,36 @@ class TurtleTagsUpdate(LoginRequiredMixin, UpdateView):
 
     def get_success_url(self):
         return self.object.get_absolute_url()
+
+
+class TurtlePitTagsUpdate(TurtleTagsUpdate):
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["page_title"] = f"{settings.SITE_CODE} | Tagged turtles | {self.object.pk} | Update pit tags"
+        context["title"] = f"Turtle {self.object.pk} - Update pit tags"
+        context["tag_type"] = "Pit tags"
+        if self.request.POST:
+            context["tag_formset"] = PitTagFormSet(self.request.POST, instance=self.object, prefix="pit_tag")
+        else:
+            context["tag_formset"] = PitTagFormSet(instance=self.object, prefix="pit_tag")
+        context["tag_formset"].helper = TagFormSetHelper()
+        context["breadcrumbs"] = (
+            Breadcrumb("Home", reverse("home")),
+            Breadcrumb("Tagged Turtles", reverse("turtle_tag:turtle_list")),
+            Breadcrumb(self.object.pk, self.object.get_absolute_url()),
+            Breadcrumb("Update pit tags", None),
+        )
+        return context
+
+    def form_valid(self, form):
+        tag_formset = PitTagFormSet(self.request.POST, instance=self.object, prefix="pit_tag")
+        if tag_formset.is_valid():
+            tag_formset.save()
+            messages.success(self.request, f"Turtle {self.object} pit tags have been updated.")
+        else:
+            return self.render_to_response(self.get_context_data(form=form))
+        return HttpResponseRedirect(self.get_success_url())
 
 
 class TurtleObservationList(LoginRequiredMixin, ListView):
