@@ -127,8 +127,8 @@ class TurtleTagsUpdate(LoginRequiredMixin, UpdateView):
         obj = self.get_object()
         context["page_title"] = f"{settings.SITE_CODE} | Tagged turtles | {obj.pk} | Update tags"
         context["title"] = f"Turtle {obj.pk} - Update tags"
-        if "tag_formset" in kwargs:
-            context["tag_formset"] = kwargs["tag_formset"]
+        if self.request.POST:
+            context["tag_formset"] = TagFormSet(self.request.POST, instance=obj, prefix="tags")
         else:
             context["tag_formset"] = TagFormSet(instance=obj, prefix="tags")
         context["tag_formset"].helper = TagFormSetHelper()
@@ -150,16 +150,11 @@ class TurtleTagsUpdate(LoginRequiredMixin, UpdateView):
     def form_valid(self, form):
         obj = self.get_object()
         tag_formset = TagFormSet(self.request.POST, instance=obj, prefix="tags")
-        #import ipdb; ipdb.set_trace()
         if tag_formset.is_valid():
             tag_formset.save()
             messages.success(self.request, f"{obj} tags have been updated.")
         else:
-            #messages.error(self.request, "Errors")
-            #context = self.get_context_data(form=form)
-            #context['tag_formset'] = tag_formset
-            #return self.render_to_response(context)
-            return self.render_to_response(self.get_context_data(form=form, tag_formset=tag_formset))
+            return self.render_to_response(self.get_context_data(form=form))
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):

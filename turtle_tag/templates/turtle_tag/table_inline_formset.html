@@ -4,6 +4,10 @@ Reference: https://django-crispy-forms.readthedocs.io/en/latest/crispy_tag_forms
 {% endcomment %}
 {% load crispy_forms_tags crispy_forms_utils crispy_forms_field %}
 
+{% if formset.errors %}
+<div class="alert alert-danger" role="alert">Please correct the error(s) below</div>
+{% endif %}
+
 {% specialspaceless %}
 {% if formset_tag %}
 <form {{ flat_attrs|safe }} method="{{ form_method }}" {% if formset.is_multipart %} enctype="multipart/form-data"{% endif %}>
