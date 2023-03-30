@@ -93,7 +93,7 @@
                     <td>{{ tag.tag_status.description }}</td>
                     <td>{{ tag.return_date|date:"j-M-Y" }}</td>
                     <td>{{ tag.return_condition|default_if_none:"" }}</td>
-                    <td>{{ tag.comments }}</td>
+                    <td>{{ tag.comments|default_if_none:"" }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -104,7 +104,19 @@
 <p>None recorded</p>
 {% endif %}
 
-<h3>Pit tags</h3>
+<div class="row">
+    <div class="col">
+        <h3>Pit tags</h3>
+    </div>
+    <div class="col">
+        <span class="float-right">
+            <a class="btn btn-primary" href="{% url 'turtle_tag:turtle_pit_tags_update' pk=object.pk %}">
+                <i class="fa-solid fa-pencil"></i>
+                Update pit tags
+            </a>
+        </span>
+    </div>
+</div>
 {% if object.pit_tags.count %}
 <div class="row">
     <div class="col">
@@ -125,7 +137,7 @@
                     <td>{{ pit_tag.pit_tag_status }}</td>
                     <td>{{ pit_tag.return_date|date:"j-M-Y" }}</td>
                     <td>{{ pit_tag.return_condition|default_if_none:"" }}</td>
-                    <td>{{ pit_tag.comments }}</td>
+                    <td>{{ pit_tag.comments|default_if_none:"" }}</td>
                 </tr>
                 {% endfor %}
             </tbody>

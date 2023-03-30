@@ -3,7 +3,7 @@ from crispy_forms.layout import Layout, Submit, Field, Div, HTML
 from crispy_forms.bootstrap import InlineCheckboxes
 from django import forms
 
-from .models import Turtle, TurtleObservation, TurtleTag
+from .models import Turtle, TurtleObservation, TurtleTag, TurtlePitTag
 
 
 class TurtleSearchForm(forms.Form):
@@ -137,3 +137,28 @@ class TagFormSetHelper(FormHelper):
         self.template = 'turtle_tag/table_inline_formset.html'
         self.add_input(Submit('save', 'Save', css_class='btn-lg'))
         self.add_input(Submit('cancel', 'Cancel', css_class='btn-secondary'))
+
+
+class TurtlePitTagForm(forms.ModelForm):
+    POSITION_CHOICES = (
+        (None, '----'),
+        ('LF', 'Left front'),
+        ('RF', 'Right front'),
+        ('LR', 'Left rear'),
+        ('RR', 'Right rear'),
+    )
+    position = forms.ChoiceField(required=False, choices=POSITION_CHOICES)
+
+    class Meta:
+        model = TurtlePitTag
+        fields = ('serial', 'position')
+
+
+PitTagFormSet = forms.inlineformset_factory(
+    parent_model=Turtle,
+    model=TurtlePitTag,
+    form=TurtlePitTagForm,
+    extra=1,
+    can_delete=False,
+    max_num=4,
+)
