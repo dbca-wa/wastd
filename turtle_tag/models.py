@@ -184,6 +184,13 @@ class TurtleObservation(models.Model):
         ('P', 'Poor - thin'),
         ('U', 'Floater - unable to dive'),
     )
+    CLUTCH_COMPLETED_CHOICES = (
+        ('Y', 'Yes'),
+        ('N', 'No'),
+        ('P', 'Possible'),
+        ('U', 'Uncertain'),
+        ('D', "Didn't check"),
+    )
     EGG_COUNT_METHOD_CHOICES = (
         ('1Dr', 'Obs drop on laying'),
         ('2Ex', 'Exc & count post-lay'),
@@ -205,7 +212,7 @@ class TurtleObservation(models.Model):
     beach_position = models.ForeignKey(BeachPosition, models.PROTECT, blank=True, null=True)
     condition = models.CharField(max_length=1, choices=CONDITION_CHOICES, blank=True, null=True)
     nesting = models.BooleanField(null=True)
-    clutch_completed = models.CharField(max_length=1, blank=True, null=True)
+    clutch_completed = models.CharField(max_length=1, choices=CLUTCH_COMPLETED_CHOICES, blank=True, null=True)
     number_of_eggs = models.IntegerField(blank=True, null=True)
     egg_count_method = models.CharField(max_length=3, choices=EGG_COUNT_METHOD_CHOICES, blank=True, null=True)
     measurements = models.CharField(max_length=1)  # FIXME: remove pointless boolean field
