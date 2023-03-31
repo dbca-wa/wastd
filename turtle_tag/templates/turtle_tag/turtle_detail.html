@@ -90,7 +90,7 @@
                 <tr>
                     <td>{{ tag.serial }}</td>
                     <td>{{ tag.get_side_display|default_if_none:"" }}</td>
-                    <td>{{ tag.tag_status.description }}</td>
+                    <td>{{ tag.get_status_display|default_if_none:"" }}</td>
                     <td>{{ tag.return_date|date:"j-M-Y" }}</td>
                     <td>{{ tag.return_condition|default_if_none:"" }}</td>
                     <td>{{ tag.comments|default_if_none:"" }}</td>
@@ -134,7 +134,7 @@
                 {% for pit_tag in object.pit_tags.all %}
                 <tr>
                     <td>{{ pit_tag.serial }}</td>
-                    <td>{{ pit_tag.pit_tag_status }}</td>
+                    <td>{{ pit_tag.get_status_display|default_if_none:"" }}</td>
                     <td>{{ pit_tag.return_date|date:"j-M-Y" }}</td>
                     <td>{{ pit_tag.return_condition|default_if_none:"" }}</td>
                     <td>{{ pit_tag.comments|default_if_none:"" }}</td>
