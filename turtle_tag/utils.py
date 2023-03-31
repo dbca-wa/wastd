@@ -12,6 +12,7 @@ from wamtram.models import (
     TrtMeasurements,
     TrtDamage,
     TrtRecordedTags,
+    TrtRecordedPitTags,
 )
 from users.models import User
 from .models import (
@@ -31,6 +32,7 @@ from .models import (
     Measurement,
     TurtleDamage,
     TurtleTagObservation,
+    TurtlePitTagObservation,
 )
 
 
@@ -472,6 +474,12 @@ def import_wamtram(reload=True):
             entered_by = User.objects.get(name__iexact=obs.entered_by_person.get_name(), is_active=True)
         else:
             entered_by = None
+        if obs.clutch_completed and obs.clutch_completed == 'y':
+            clutch_completed = 'Y'
+        elif obs.clutch_completed and obs.clutch_completed == 'n':
+            clutch_completed = 'U'
+        else:
+            clutch_completed = 'U'
 
         if TurtleObservation.objects.filter(pk=obs.observation_id).exists() and reload:
             o = TurtleObservation.objects.get(pk=obs.observation_id)
@@ -490,7 +498,7 @@ def import_wamtram(reload=True):
             o.beach_position = beach_position
             o.condition = obs.condition_code.condition_code if obs.condition_code else None
             o.nesting = True if obs.nesting == "Y" else False if obs.nesting == "N" else None
-            o.clutch_completed = obs.clutch_completed
+            o.clutch_completed = clutch_completed
             o.number_of_eggs = obs.number_of_eggs
             o.egg_count_method = obs.egg_count_method.egg_count_method if obs.egg_count_method else None
             o.measurements = obs.measurements
@@ -541,7 +549,7 @@ def import_wamtram(reload=True):
                 beach_position=beach_position,
                 condition=obs.condition_code.condition_code if obs.condition_code else None,
                 nesting=True if obs.nesting == "Y" else False if obs.nesting == "N" else None,
-                clutch_completed=obs.clutch_completed,
+                clutch_completed=clutch_completed,
                 number_of_eggs=obs.number_of_eggs,
                 egg_count_method=obs.egg_count_method.egg_count_method if obs.egg_count_method else None,
                 measurements=obs.measurements,
@@ -639,6 +647,23 @@ def import_wamtram(reload=True):
         if count % 1000 == 0:
             print(f"{count} imported")
     print(f"Object count: {TurtleTagObservation.objects.count()}")
+
+    print("Importing turtle pit tag observation records")
+    count = 0
+    for t in TrtRecordedPitTags.objects.all():
+        pit_tag = TurtlePitTag.objects.get(serial=t.pit_tag_id)
+        TurtlePitTagObservation.objects.get_or_create(
+            tag=pit_tag,
+            observation_id=t.observation_id,
+            status=t.pit_tag_state.pit_tag_state,
+            position=t.pit_tag_position,
+            checked=t.checked,
+            comments=t.comments,
+        )
+        count += 1
+        if count % 1000 == 0:
+            print(f"{count} imported")
+    print(f"Object count: {TurtlePitTagObservation.objects.count()}")
 
     print("Complete")
     print("Set sequence values for: EntryBatch, TagOrder, Turtle, TurtleObservation")
