@@ -13,9 +13,14 @@
 
 {% block page_content_inner %}
 <div class="row">
-    <div class="col-sm-12 col-md-8">
+    <div class="col">
         <h2>Turtle observation ID {{ object.pk }}</h2>
-        <table class="table table-striped table-bordered table-condensed">
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-12 col-md-6">
+        <table class="table table-striped table-bordered table-sm">
             <tbody>
                 <tr>
                     <th>Observation time</th>
@@ -26,20 +31,117 @@
                     <td><a href="{{ object.turtle.get_absolute_url }}">{{ object.turtle }}</a></td>
                 </tr>
                 <tr>
-                    <th>Alive</th>
+                    <th>Tagger</th>
+                    <td>{{ object.tagger_person.name|default_if_none:"" }}</td>
+                </tr>
+                <tr>
+                    <th>Reporter</th>
+                    <td>{{ object.reporter_person.name|default_if_none:"" }}</td>
+                </tr>
+                <tr>
+                    <th>Measurer</th>
+                    <td>{{ object.measurer_person.name|default_if_none:"" }}</td>
+                </tr>
+                <tr>
+                    <th>Measurer Reporter</th>
+                    <td>{{ object.measurer_reporter_person.name|default_if_none:"" }}</td>
+                </tr>
+                <tr>
+                    <th>Action taken</th>
+                    <td>{{ object.action_taken|default_if_none:"" }}</td>
+                </tr>
+                <tr>
+                    <th>Comments</th>
+                    <td>{{ object.comments|default_if_none:"" }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="col-sm-12 col-md-6">
+        <table class="table table-striped table-bordered table-sm">
+            <tbody>
+                <tr>
+                    <th>Alive?</th>
                     <td>{{ object.alive|yesno:"Yes,No,Unknown" }}</td>
                 </tr>
                 <tr>
+                    <th>Nesting?</th>
+                    <td>{{ object.nest|yesno:"Yes,No,Unknown" }}</td>
+                </tr>
+                <tr>
+                    <th>Clutch completed?</th>
+                    <td>{{ object.clutch_completed }}</td>
+                </tr>
+                <tr>
                     <th>Place</th>
-                    <td>{{ object.location.name|default_if_none:"" }}</td>
+                    <td>{{ object.place.name|default_if_none:"" }}</td>
+                </tr>
+                <tr>
+                    <th>Place description</th>
+                    <td>{{ object.place_description|default_if_none:"" }}</td>
                 </tr>
                 <tr>
                     <th>Activity</th>
                     <td>{{ object.activity|default_if_none:"" }}</td>
                 </tr>
                 <tr>
-                    <th>Tagger</th>
-                    <td>{{ object.tagger_person.name|default_if_none:"" }}</td>
+                    <th>Beach position</th>
+                    <td>{{ object.beach_position_code.description|default_if_none:"" }}</td>
+                </tr>
+                <tr>
+                    <th>Condition</th>
+                    <td>{{ object.get_condition_display|default_if_none:"" }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col">
+        <h3>Flipper tag observations</h3>
+        <p>Not recorded.</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col">
+        <h3>Pit tag observations</h3>
+        <p>Not recorded.</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col">
+        <h3>Measurements</h3>
+        <p>Not recorded.</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col">
+        <h3>Damage</h3>
+        <p>Not recorded.</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col">
+        <h3>Scars</h3>
+        <p>Tag scars not checked: {{ object.tagscarnotchecked|yesno:"Yes,No,Unknown" }}</p>
+        <table class="table table-striped table-bordered table-sm">
+            <tbody>
+                <tr>
+                    <td>Scars left scale 1: {{ object.scars_left_scale_1|yesno:"Yes,No,Unknown" }}</td>
+                    <td>Scars right scale 1: {{ object.scars_right_scale_1|yesno:"Yes,No,Unknown" }}</td>
+                </tr>
+                <tr>
+                    <td>Scars left scale 2: {{ object.scars_left_scale_2|yesno:"Yes,No,Unknown" }}</td>
+                    <td>Scars right scale 2: {{ object.scars_right_scale_2|yesno:"Yes,No,Unknown" }}</td>
+                </tr>
+                <tr>
+                    <td>Scars left scale 3: {{ object.scars_left_scale_3|yesno:"Yes,No,Unknown" }}</td>
+                    <td>Scars right scale 3: {{ object.scars_right_scale_3|yesno:"Yes,No,Unknown" }}</td>
                 </tr>
             </tbody>
         </table>
@@ -49,11 +151,21 @@
 {% if observation_points %}
 <div class="row">
     <div class="col">
-    {% leaflet_map "detailmap" callback="window.map_init" %}
+        <h3>Location</h3>
+        {% leaflet_map "detailmap" callback="window.map_init" %}
     </div>
 </div>
 {% endif %}
 
+<div class="row">
+    <div class="col">
+        <div class="alert alert-secondary">
+            <p><strong>Observation details</strong></p>
+            <p>Entered by: {{ object.entered_by_person.name|default_if_none:"" }}</p>
+            <p>Date entered: {{ object.date_entered|date:"j M Y" }}</p>
+        </div>
+    </div>
+</div>
 {% endblock page_content_inner %}
 
 {% block extra_js %}
