@@ -27,6 +27,10 @@ IDENTIFICATION_TYPE_CHOICES = (
     ('UWW', 'Underwater World [now AQWA]'),
     ('WAMusR', 'WA Museum R#'),
 )
+SIDE_CHOICES = (
+    ('L', 'Left'),
+    ('R', 'Right'),
+)
 
 
 class TurtleSpecies(models.Model):
@@ -302,10 +306,6 @@ class TurtleTag(models.Model):
         ('SAL', 'Salvage for reuse'),
         ('U', 'Unused Tag'),
     )
-    SIDE_CHOICES = (
-        ('L', 'Left'),
-        ('R', 'Right'),
-    )
 
     serial = models.CharField(max_length=64, unique=True)
     turtle = models.ForeignKey(Turtle, models.PROTECT, related_name='tags', blank=True, null=True)
@@ -434,3 +434,41 @@ class TurtleDamage(models.Model):
 
     def __str__(self):
         return f"{self.get_body_part_display()} ({self.get_damage_display()})"
+
+
+class TurtleTagObservation(models.Model):
+
+    STATUS_CHOICES = (
+        ('#', 'Query number - Tag on'),
+        ('0L', 'False Id as Lost'),
+        ('A1', 'Applied new - OK fix'),
+        ('A2', 'No tag applied'),
+        ('AE', 'Applied new - end clinch noted'),
+        ('M', 'Missing - obs record'),
+        ('M1', 'Missing  - NOT obs'),
+        ('N', 'Not Recorded'),
+        ('OO', 'Open at Obs - Tag came off & not refixed'),
+        ('OX', 'Open at Obs - Tag refixed'),
+        ('P', 'Present Obs - & Read only'),
+        ('P_ED', 'Present Obs - nr F edge & Read'),
+        ('P_OK', 'Present Obs - OK fix & Read'),
+        ('PX', 'Present Obs - Tag#s not read'),
+        ('Q', 'Query present'),
+        ('R', 'Removed by Obs'),
+        ('RC', 'Insecure at Obs - reclinched in situ'),
+        ('RQ', 'Insecure at Obs - Action ??'),
+    )
+    tag = models.ForeignKey(TurtleTag, on_delete=models.PROTECT, related_name="observations")
+    observation = models.ForeignKey(TurtleObservation, on_delete=models.PROTECT, related_name="tag_observations")
+    side = models.CharField(max_length=1, choices=SIDE_CHOICES, blank=True, null=True)
+    status = models.CharField(max_length=8, choices=STATUS_CHOICES, blank=True, null=True)
+    position = models.SmallIntegerField(blank=True, null=True)  # Scale no. (1, 2, 3)
+    barnacles = models.BooleanField()
+    comments = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        d = self.observation.observation_datetime.strftime("%c")
+        if self.status:
+            return f"{self.tag.serial} ({d}) - {self.get_status_display}"
+        else:
+            return f"{self.tag.serial} ({d})"
