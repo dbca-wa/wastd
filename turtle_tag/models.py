@@ -208,7 +208,7 @@ class TurtleObservation(models.Model):
     action_taken = models.TextField(blank=True, null=True)
     comments = models.TextField(blank=True, null=True)
     entered_by = models.CharField(max_length=50, blank=True, null=True)
-    date_entered = models.DateField(blank=True, null=True)
+    date_entered = models.DateField(blank=True, null=True, auto_now_add=True)
     original_observation_id = models.IntegerField(blank=True, null=True)
     entry_batch = models.ForeignKey(EntryBatch, models.PROTECT, blank=True, null=True)
     comment_fromrecordedtagstable = models.TextField(blank=True, null=True)
