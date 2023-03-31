@@ -472,3 +472,34 @@ class TurtleTagObservation(models.Model):
             return f"{self.tag.serial} ({d}) - {self.get_status_display}"
         else:
             return f"{self.tag.serial} ({d})"
+
+
+class TurtlePitTagObservation(models.Model):
+
+    STATUS_CHOICES = (
+        ('A1', 'Applied new - Read OK'),
+        ('AE', 'Applied new - Did not read'),
+        ('N', 'Not Recorded'),
+        ('P', 'Present Obs - & Read OK'),
+        ('P_OK', 'Present Obs - OK fix & Read'),
+        ('PX', 'Present Obs - Tag#s not read'),
+        ('RQ', 'Insecure at Obs - Action ??'),
+    )
+    POSITION_CHOICES = (
+        ('LF', 'Left front'),
+        ('RF', 'Right front'),
+        ('Other', 'Other'),
+    )
+    tag = models.ForeignKey(TurtlePitTag, on_delete=models.PROTECT, related_name="observations")
+    observation = models.ForeignKey(TurtleObservation, on_delete=models.PROTECT, related_name="pit_tag_observations")
+    status = models.CharField(max_length=8, choices=STATUS_CHOICES, blank=True, null=True)
+    position = models.CharField(max_length=8, choices=STATUS_CHOICES, blank=True, null=True)
+    checked = models.BooleanField()
+    comments = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        d = self.observation.observation_datetime.strftime("%c")
+        if self.status:
+            return f"{self.tag.serial} ({d}) - {self.get_status_display}"
+        else:
+            return f"{self.tag.serial} ({d})"
