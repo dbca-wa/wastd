@@ -10,6 +10,7 @@ from wamtram.models import (
     TrtPitTags,
     TrtMeasurementTypes,
     TrtMeasurements,
+    TrtDamage,
 )
 from users.models import User
 from .models import (
@@ -27,6 +28,7 @@ from .models import (
     TurtlePitTag,
     MeasurementType,
     Measurement,
+    TurtleDamage,
 )
 
 
@@ -602,6 +604,21 @@ def import_wamtram(reload=True):
         if count % 1000 == 0:
             print(f"{count} imported")
     print(f"Object count: {Measurement.objects.count()}")
+
+    print("Importing turtle damage")
+    count = 0
+    for d in TrtDamage.objects.all():
+        TurtleDamage.objects.get_or_create(
+            observation_id=d.observation_id,
+            body_part=d.body_part_id,
+            damage=d.damage_code_id,
+            cause=d.damage_cause_code_id,
+            comments=d.comments,
+        )
+        count += 1
+        if count % 1000 == 0:
+            print(f"{count} imported")
+    print(f"Object count: {TurtleDamage.objects.count()}")
 
     print("Complete")
     print("Set sequence values for: EntryBatch, TagOrder, Turtle, TurtleObservation")
