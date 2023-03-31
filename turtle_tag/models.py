@@ -433,4 +433,4 @@ class TurtleDamage(models.Model):
     comments = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return f"{self.get_body_part_display()} - {self.get_damage_display()}"
+        return f"{self.get_body_part_display()} ({self.get_damage_display()})"

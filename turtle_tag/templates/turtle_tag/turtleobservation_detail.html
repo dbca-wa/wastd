@@ -140,7 +140,24 @@
 <div class="row">
     <div class="col">
         <h3>Damage</h3>
+        {% if object.damage.exists %}
+        <table class="table table-striped table-bordered table-sm">
+            <tbody>
+                <tr>
+                    <th>Damage</th>
+                    <th>Comments</th>
+                </tr>
+                {% for damage in object.damage.all %}
+                <tr>
+                    <td>{{ damage }}</td>
+                    <td>{{ damage.comments|default_if_none:"" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
         <p>Not recorded.</p>
+        {% endif %}
     </div>
 </div>
 
