@@ -385,3 +385,49 @@ class Measurement(models.Model):
             return f"{self.value} {self.measurement_type.unit}"
         else:
             return f"{self.value}"
+
+
+class TurtleDamage(models.Model):
+    BODY_PART_CHOICES = (
+        ('A', 'Carapace - entire'),
+        ('B', 'Left front flipper'),
+        ('C', 'Right front flipper'),
+        ('D', 'Left rear flipper'),
+        ('E', 'Right rear flipper'),
+        ('H', 'Head'),
+        ('I', 'Center mid-carapace'),
+        ('J', 'Right front carapace'),
+        ('K', 'Left front carapace'),
+        ('L', 'Left rear carapace'),
+        ('M', 'Right rear carapace'),
+        ('N', 'Front mid-carapace'),
+        ('O', 'Rear mid-carapace'),
+        ('P', 'Plastron - entire'),
+        ('T', 'Tail'),
+        ('W', 'Whole animal'),
+    )
+    DAMAGE_CHOICES = (
+        ('0', 'None significant'),
+        ('1', 'Tip off - Flipper'),
+        ('2', 'Lost from Nail - Flipper'),
+        ('3', 'Lost half - Flipper'),
+        ('4', 'Lost whole - Flipper'),
+        ('5', 'Minor Wounds or cuts'),
+        ('6', 'Major Wounds or cuts'),
+        ('7', 'Deformity'),
+    )
+    CAUSE_CHOICES = (
+        ('AG', 'Thick algae'),
+        ('BB', 'Barnacles'),
+        ('BP', 'Bite from predator'),
+        ('BT', 'Bite from turtle'),
+        ('MM', 'Thick mud'),
+        ('OI', 'Other Impact'),
+        ('PS', 'Parasites (other than barnacles)'),
+        ('SD', 'Strike damage'),
+    )
+    observation = models.ForeignKey(TurtleObservation, models.PROTECT)
+    body_part = models.CharField(max_length=4, choices=BODY_PART_CHOICES)
+    damage = models.CharField(max_length=4, choices=DAMAGE_CHOICES)
+    cause = models.CharField(max_length=4, choices=CAUSE_CHOICES, blank=True, null=True)
+    comments = models.TextField(blank=True, null=True)
