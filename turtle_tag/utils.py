@@ -8,6 +8,8 @@ from wamtram.models import (
     TrtTagOrders,
     TrtTags,
     TrtPitTags,
+    TrtMeasurementTypes,
+    TrtMeasurements,
 )
 from users.models import User
 from .models import (
@@ -23,6 +25,8 @@ from .models import (
     TagOrder,
     TurtleTag,
     TurtlePitTag,
+    MeasurementType,
+    Measurement,
 )
 
 
@@ -354,6 +358,7 @@ def import_wamtram(reload=True):
             tag.turtle_id = t.turtle_id
             tag.issue_location = t.issue_location
             tag.custodian = custodian
+            tag.side = t.side
             tag.status = t.tag_status.tag_status
             tag.return_date = t.return_date.date() if t.return_date else None
             tag.return_condition = t.return_condition
@@ -367,6 +372,7 @@ def import_wamtram(reload=True):
                 turtle_id=t.turtle_id,
                 issue_location=t.issue_location,
                 custodian=custodian,
+                side=t.side,
                 status=t.tag_status.tag_status,
                 return_date=t.return_date.date() if t.return_date else None,
                 return_condition=t.return_condition,
@@ -568,6 +574,34 @@ def import_wamtram(reload=True):
         if count % 1000 == 0:
             print(f"{count} imported")
     print(f"Object count: {TurtleObservation.objects.count()}")
+
+    print("Importing measurement types")
+    for t in TrtMeasurementTypes.objects.all():
+        MeasurementType.objects.get_or_create(
+            short_desc=t.measurement_type,
+            description=t.description,
+            unit=t.measurement_units,
+            minimum_value=t.minimum_value,
+            maximum_value=t.maximum_value,
+            comments=t.comments,
+        )
+    print(f"Object count: {MeasurementType.objects.count()}")
+
+    print("Importing measurements")
+    count = 0
+    for m in TrtMeasurements.objects.all():
+        obs = TurtleObservation.objects.get(pk=m.observation.observation_id)
+        mtype = MeasurementType.objects.get(short_desc=m.measurement_type.measurement_type)
+        Measurement.objects.get_or_create(
+            observation=obs,
+            measurement_type=mtype,
+            value=m.measurement_value,
+            comments=m.comments,
+        )
+        count += 1
+        if count % 1000 == 0:
+            print(f"{count} imported")
+    print(f"Object count: {Measurement.objects.count()}")
 
     print("Complete")
     print("Set sequence values for: EntryBatch, TagOrder, Turtle, TurtleObservation")

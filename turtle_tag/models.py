@@ -357,3 +357,31 @@ class TurtlePitTag(models.Model):
 
     def __str__(self):
         return self.serial
+
+
+class MeasurementType(models.Model):
+    short_desc = models.CharField(max_length=16, unique=True)
+    description = models.CharField(max_length=128)
+    unit = models.CharField(max_length=16, blank=True, null=True)
+    minimum_value = models.FloatField(blank=True, null=True)
+    maximum_value = models.FloatField(blank=True, null=True)
+    comments = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return self.description
+
+
+class Measurement(models.Model):
+    observation = models.ForeignKey(TurtleObservation, models.PROTECT)
+    measurement_type = models.ForeignKey(MeasurementType, models.PROTECT)
+    value = models.FloatField()
+    comments = models.TextField(blank=True, null=True)
+
+    class Meta:
+        unique_together = ('observation', 'measurement_type')
+
+    def __str__(self):
+        if self.measurement_type.unit:
+            return f"{self.value}{self.measurement_type.unit}"
+        else:
+            return f"{self.value}"
