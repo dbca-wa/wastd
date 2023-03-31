@@ -426,8 +426,11 @@ class TurtleDamage(models.Model):
         ('PS', 'Parasites (other than barnacles)'),
         ('SD', 'Strike damage'),
     )
-    observation = models.ForeignKey(TurtleObservation, models.PROTECT)
+    observation = models.ForeignKey(TurtleObservation, models.PROTECT, related_name='damage')
     body_part = models.CharField(max_length=4, choices=BODY_PART_CHOICES)
     damage = models.CharField(max_length=4, choices=DAMAGE_CHOICES)
     cause = models.CharField(max_length=4, choices=CAUSE_CHOICES, blank=True, null=True)
     comments = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.get_body_part_display()} - {self.get_damage_display()}"
