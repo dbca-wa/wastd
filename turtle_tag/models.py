@@ -204,7 +204,7 @@ class TurtleObservation(models.Model):
     clutch_completed = models.CharField(max_length=1, blank=True, null=True)
     number_of_eggs = models.IntegerField(blank=True, null=True)
     egg_count_method = models.CharField(max_length=3, choices=EGG_COUNT_METHOD_CHOICES, blank=True, null=True)
-    measurements = models.CharField(max_length=1)
+    measurements = models.CharField(max_length=1)  # FIXME: remove pointless boolean field
     action_taken = models.TextField(blank=True, null=True)
     comments = models.TextField(blank=True, null=True)
     entered_by = models.CharField(max_length=50, blank=True, null=True)
@@ -382,6 +382,6 @@ class Measurement(models.Model):
 
     def __str__(self):
         if self.measurement_type.unit:
-            return f"{self.value}{self.measurement_type.unit}"
+            return f"{self.value} {self.measurement_type.unit}"
         else:
             return f"{self.value}"

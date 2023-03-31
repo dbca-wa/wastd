@@ -114,7 +114,26 @@
 <div class="row">
     <div class="col">
         <h3>Measurements</h3>
+        {% if object.measurement_set.exists %}
+        <table class="table table-striped table-bordered table-sm">
+            <tbody>
+                <tr>
+                    <th>Measurement</th>
+                    <th>Value</th>
+                    <th>Comments</th>
+                </tr>
+                {% for measure in object.measurement_set.all %}
+                <tr>
+                    <td>{{ measure.measurement_type }}</td>
+                    <td>{{ measure }}</td>
+                    <td>{{ measure.comments|default_if_none:"" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
         <p>Not recorded.</p>
+        {% endif %}
     </div>
 </div>
 
