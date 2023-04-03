@@ -78,3 +78,4 @@ taxonomy/fixtures/test_tax_*
 
 # Database exports
 *.csv
+*.pgdump
