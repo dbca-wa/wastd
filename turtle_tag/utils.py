@@ -602,6 +602,10 @@ def import_wamtram(reload=True):
     print("Importing measurements")
     count = 0
     for m in TrtMeasurements.objects.all():
+        # Skip invalid data.
+        if not TurtleObservation.objects.filter(pk=m.observation.observation_id).exists():
+            print(f"Skipped TrtMeasurements object referencing TrtObservations {m.observation}")
+            continue
         obs = TurtleObservation.objects.get(pk=m.observation.observation_id)
         mtype = MeasurementType.objects.get(short_desc=m.measurement_type.measurement_type)
         Measurement.objects.get_or_create(
@@ -615,9 +619,12 @@ def import_wamtram(reload=True):
             print(f"{count} imported")
     print(f"Object count: {Measurement.objects.count()}")
 
-    print("Importing turtle damage")
+    print("Importing turtle damage records")
     count = 0
     for d in TrtDamage.objects.all():
+        if not TurtleObservation.objects.filter(pk=d.observation_id).exists():
+            print(f"Skipped TrtDamage object referencing TrtObservations {d.observation}")
+            continue
         TurtleDamage.objects.get_or_create(
             observation_id=d.observation_id,
             body_part=d.body_part_id,
@@ -633,6 +640,12 @@ def import_wamtram(reload=True):
     print("Importing turtle tag observation records")
     count = 0
     for t in TrtRecordedTags.objects.all():
+        if not TurtleObservation.objects.filter(pk=t.observation_id).exists():
+            print(f"Skipped TrtRecordedTags object referencing TrtObservations {t.observation}")
+            continue
+        if not TurtleTag.objects.filter(serial=t.tag_id).exists():
+            print(f"Skipped TrtRecordedTags object referencing TurtleTag {t.tag_id}")
+            continue
         tag = TurtleTag.objects.get(serial=t.tag_id)
         TurtleTagObservation.objects.get_or_create(
             tag=tag,
@@ -651,6 +664,12 @@ def import_wamtram(reload=True):
     print("Importing turtle pit tag observation records")
     count = 0
     for t in TrtRecordedPitTags.objects.all():
+        if not TurtleObservation.objects.filter(pk=t.observation_id).exists():
+            print(f"Skipped TrtRecordedPitTags object referencing TrtObservations {t.observation_id}")
+            continue
+        if not TurtlePitTag.objects.filter(serial=t.pit_tag_id).exists():
+            print(f"Skipped TrtRecordedPitTags object referencing TurtlePitTag {t.pit_tag_id}")
+            continue
         pit_tag = TurtlePitTag.objects.get(serial=t.pit_tag_id)
         TurtlePitTagObservation.objects.get_or_create(
             tag=pit_tag,
