@@ -52,6 +52,9 @@ class TrtLocations(models.Model):
         managed = False
         db_table = 'TRT_LOCATIONS'
 
+    def __str__(self):
+        return f"{self.location_code} - {self.location_name}"
+
 
 class TrtPlaces(models.Model):
     place_code = models.CharField(db_column='PLACE_CODE', primary_key=True, max_length=4)
@@ -71,9 +74,9 @@ class TrtPlaces(models.Model):
 
     def __str__(self):
         if self.place_name:
-            return f"{self.location_code.location_name} - {self.place_name}"
+            return f"{self.place_code} - {self.place_name}"
         else:
-            return f"{self.location_code.location_name} - {self.place_code}"
+            return f"{self.place_code}"
 
     def get_point(self):
         """Returns a geometry point as WGS84.
