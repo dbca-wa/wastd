@@ -23,7 +23,7 @@ class TurtlePitTagInline(TabularInline):
 class TurtleObservationInline(TabularInline):
     model = TurtleObservation
     extra = 0
-    fields = ('observation_datetime', 'observation_status', 'alive', 'place', 'activity')
+    fields = ('observation_datetime', 'status', 'alive', 'place', 'activity')
     can_delete = False
 
 
