@@ -132,7 +132,8 @@ class Turtle(models.Model):
     SEX_CHOICES = (
         ('F', 'Female'),
         ('M', 'Male'),
-        ('U', 'Indeterminate'),
+        ('U', 'Unknown'),
+        ('I', 'Indeterminate'),
     )
 
     species = models.ForeignKey(TurtleSpecies, models.PROTECT, blank=True, null=True)
@@ -145,7 +146,7 @@ class Turtle(models.Model):
     comments = models.TextField(blank=True, null=True)
     entered_by = models.CharField(max_length=50, blank=True, null=True)
     entered_by_person = models.ForeignKey(User, models.SET_NULL, related_name='entered_by_user', blank=True, null=True)
-    date_entered = models.DateField(blank=True, null=True, auto_now_add=True)
+    date_entered = models.DateField(blank=True, null=True)  # , auto_now_add=True)
     original_turtle_id = models.IntegerField(blank=True, null=True)
     entry_batch_id = models.IntegerField(blank=True, null=True)
     tag = models.CharField(max_length=255, blank=True, null=True)
@@ -196,6 +197,12 @@ class TurtleObservation(models.Model):
         ('2Ex', 'Exc & count post-lay'),
         ('3PH', 'Post-hatch nest exhumation'),
     )
+    STATUS_CHOICES = (
+        ('Initial Nesting', 'Initial Nesting'),
+        ('Initial Sighting', 'Initial Sighting'),
+        ('Remigrant', 'Remigrant'),
+        ('Resighting', 'Resighting'),
+    )
 
     turtle = models.ForeignKey(Turtle, models.PROTECT)
     observation_datetime = models.DateTimeField()
@@ -219,7 +226,7 @@ class TurtleObservation(models.Model):
     action_taken = models.TextField(blank=True, null=True)
     comments = models.TextField(blank=True, null=True)
     entered_by = models.CharField(max_length=50, blank=True, null=True)
-    date_entered = models.DateField(blank=True, null=True, auto_now_add=True)
+    date_entered = models.DateField(blank=True, null=True)  # , auto_now_add=True)
     original_observation_id = models.IntegerField(blank=True, null=True)
     entry_batch = models.ForeignKey(EntryBatch, models.PROTECT, blank=True, null=True)
     comment_fromrecordedtagstable = models.TextField(blank=True, null=True)
@@ -242,7 +249,7 @@ class TurtleObservation(models.Model):
     tagscarnotchecked = models.BooleanField()
     didnotcheckforinjury = models.BooleanField()
     date_convention = models.CharField(max_length=1)
-    observation_status = models.CharField(max_length=128, blank=True, null=True)
+    observation_status = models.CharField(max_length=128, choices=STATUS_CHOICES, blank=True, null=True)
     corrected_date = models.DateField(blank=True, null=True)
 
     def __str__(self):
