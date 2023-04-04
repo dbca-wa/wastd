@@ -203,10 +203,17 @@ class TurtleObservation(models.Model):
         ('Remigrant', 'Remigrant'),
         ('Resighting', 'Resighting'),
     )
+    DATE_CONVENTION_CHOICES = (
+        ('C', 'Calendar'),
+        ('E', 'Evening'),
+        ('U', 'Unknown'),
+    )
 
     turtle = models.ForeignKey(Turtle, models.PROTECT)
     observation_datetime = models.DateTimeField()
     observation_date_old = models.DateField(blank=True, null=True)
+    date_convention = models.CharField(max_length=1, choices=DATE_CONVENTION_CHOICES)
+    status = models.CharField(max_length=128, choices=STATUS_CHOICES, blank=True, null=True)
     alive = models.BooleanField(null=True)
     measurer_person = models.ForeignKey(User, models.SET_NULL, related_name='measurer', blank=True, null=True)
     measurer_reporter_person = models.ForeignKey(User, models.SET_NULL, related_name='measurer_reporter', blank=True, null=True)
@@ -248,13 +255,11 @@ class TurtleObservation(models.Model):
     cc_width_not_measured = models.BooleanField()
     tagscarnotchecked = models.BooleanField()
     didnotcheckforinjury = models.BooleanField()
-    date_convention = models.CharField(max_length=1)
-    observation_status = models.CharField(max_length=128, choices=STATUS_CHOICES, blank=True, null=True)
     corrected_date = models.DateField(blank=True, null=True)
 
     def __str__(self):
-        if self.observation_status:
-            return f'{self.pk} ({self.get_observation_datetime_awst().isoformat()}) {(self.observation_status)}'
+        if self.status:
+            return f'{self.pk} ({self.get_observation_datetime_awst().isoformat()}) {(self.status)}'
         else:
             return f'{self.pk} ({self.get_observation_datetime_awst().isoformat()})'
 

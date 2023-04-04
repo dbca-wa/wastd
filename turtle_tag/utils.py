@@ -528,7 +528,7 @@ def import_wamtram(reload=True):
             o.tagscarnotchecked = obs.tagscarnotchecked
             o.didnotcheckforinjury = obs.didnotcheckforinjury
             o.date_convention = obs.date_convention
-            o.observation_status = obs.observation_status
+            o.status = obs.observation_status
             o.corrected_date = obs.corrected_date.date() if obs.corrected_date else None
             o.save()
         elif reload:
@@ -579,7 +579,7 @@ def import_wamtram(reload=True):
                 tagscarnotchecked=obs.tagscarnotchecked,
                 didnotcheckforinjury=obs.didnotcheckforinjury,
                 date_convention=obs.date_convention,
-                observation_status=obs.observation_status,
+                status=obs.observation_status,
                 corrected_date=obs.corrected_date.date() if obs.corrected_date else None,
             )
         count += 1
