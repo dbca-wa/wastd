@@ -3,7 +3,7 @@ from crispy_forms.layout import Layout, Submit, Field, Div, HTML
 from crispy_forms.bootstrap import InlineCheckboxes
 from django import forms
 
-from .models import Turtle, TurtleObservation, TurtleTag, TurtlePitTag
+from .models import Turtle, TurtleObservation, TurtleTag, TurtlePitTag, TurtleTagObservation
 
 
 class TurtleSearchForm(forms.Form):
@@ -119,7 +119,7 @@ class TurtleTagForm(forms.ModelForm):
 
 # Define a formset class to contain TurtleTagForm instances.
 # Reference: https://docs.djangoproject.com/en/3.2/topics/forms/modelforms/#model-formsets
-TagFormSet = forms.inlineformset_factory(
+TurtleTagFormSet = forms.inlineformset_factory(
     parent_model=Turtle,
     model=TurtleTag,
     form=TurtleTagForm,
@@ -129,7 +129,7 @@ TagFormSet = forms.inlineformset_factory(
 )
 
 
-class TagFormSetHelper(FormHelper):
+class TurtleTagFormSetHelper(FormHelper):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.form_class = 'form-inline'
@@ -161,4 +161,20 @@ PitTagFormSet = forms.inlineformset_factory(
     extra=1,
     can_delete=False,
     max_num=4,
+)
+
+
+class TurtleTagObservationForm(forms.ModelForm):
+    comments = forms.CharField(required=False)
+
+    class Meta:
+        model = TurtleTagObservation
+        fields = ('tag', 'side', 'status', 'position', 'barnacles', 'comments')
+
+
+TurtleTagObservationFormSet = forms.inlineformset_factory(
+    parent_model=TurtleObservation,
+    model=TurtleTagObservation,
+    form=TurtleTagObservationForm,
+    can_delete=False,
 )

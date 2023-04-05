@@ -14,9 +14,9 @@ from .forms import (
     TurtleCreateForm,
     TurtleObservationCreateForm,
     TurtleTagUpdateForm,
-    TagFormSet,
+    TurtleTagFormSet,
     PitTagFormSet,
-    TagFormSetHelper,
+    TurtleTagFormSetHelper,
 )
 
 
@@ -129,10 +129,10 @@ class TurtleTagsUpdate(LoginRequiredMixin, UpdateView):
         context["title"] = f"Turtle {self.object.pk} - Update tags"
         context["tag_type"] = "Pit tags"
         if self.request.POST:
-            context["tag_formset"] = TagFormSet(self.request.POST, instance=self.object, prefix="tag")
+            context["tag_formset"] = TurtleTagFormSet(self.request.POST, instance=self.object, prefix="tag")
         else:
-            context["tag_formset"] = TagFormSet(instance=self.object, prefix="tag")
-        context["tag_formset"].helper = TagFormSetHelper()
+            context["tag_formset"] = TurtleTagFormSet(instance=self.object, prefix="tag")
+        context["tag_formset"].helper = TurtleTagFormSetHelper()
         context["breadcrumbs"] = (
             Breadcrumb("Home", reverse("home")),
             Breadcrumb("Tagged Turtles", reverse("turtle_tag:turtle_list")),
@@ -148,7 +148,7 @@ class TurtleTagsUpdate(LoginRequiredMixin, UpdateView):
         return super().post(request, *args, **kwargs)
 
     def form_valid(self, form):
-        tag_formset = TagFormSet(self.request.POST, instance=self.object, prefix="tag")
+        tag_formset = TurtleTagFormSet(self.request.POST, instance=self.object, prefix="tag")
         if tag_formset.is_valid():
             tag_formset.save()
             messages.success(self.request, f"Turtle {self.object} tags have been updated.")
@@ -171,7 +171,7 @@ class TurtlePitTagsUpdate(TurtleTagsUpdate):
             context["tag_formset"] = PitTagFormSet(self.request.POST, instance=self.object, prefix="pit_tag")
         else:
             context["tag_formset"] = PitTagFormSet(instance=self.object, prefix="pit_tag")
-        context["tag_formset"].helper = TagFormSetHelper()
+        context["tag_formset"].helper = TurtleTagFormSetHelper()
         context["breadcrumbs"] = (
             Breadcrumb("Home", reverse("home")),
             Breadcrumb("Tagged Turtles", reverse("turtle_tag:turtle_list")),
