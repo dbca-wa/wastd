@@ -37,7 +37,7 @@ class TurtleSpecies(models.Model):
     scientific_name = models.CharField(max_length=128, unique=True)
     common_name = models.CharField(max_length=128, blank=True, null=True)
     old_species_code = models.CharField(max_length=2, blank=True, null=True)
-    hide_dataentry = models.BooleanField()
+    hide_dataentry = models.BooleanField(null=True)
 
     class Meta:
         verbose_name_plural = 'turtle species'
@@ -52,7 +52,7 @@ class TurtleSpecies(models.Model):
 
 class TurtleStatus(models.Model):
     description = models.CharField(max_length=128)
-    new_tag_list = models.BooleanField()
+    new_tag_list = models.BooleanField(null=True)
 
     class Meta:
         verbose_name_plural = 'turtle statuses'
@@ -88,7 +88,7 @@ class Activity(models.Model):
     description = models.CharField(max_length=128)
     nesting = models.CharField(max_length=128)
     new_code = models.CharField(max_length=255, blank=True, null=True)
-    display_observation = models.BooleanField()
+    display_observation = models.BooleanField(null=True)
 
     class Meta:
         verbose_name_plural = 'activities'
@@ -110,7 +110,7 @@ class EntryBatch(models.Model):
     entered_person = models.ForeignKey(User, models.SET_NULL, blank=True, null=True)
     filename = models.TextField(blank=True, null=True)
     comments = models.TextField(blank=True, null=True)
-    pr_date_convention = models.BooleanField()
+    pr_date_convention = models.BooleanField(null=True)
 
     class Meta:
         verbose_name_plural = 'entry batches'
@@ -238,24 +238,24 @@ class TurtleObservation(models.Model):
     original_observation_id = models.IntegerField(blank=True, null=True)
     entry_batch = models.ForeignKey(EntryBatch, models.PROTECT, blank=True, null=True)
     comment_fromrecordedtagstable = models.TextField(blank=True, null=True)
-    scars_left = models.BooleanField()
-    scars_right = models.BooleanField()
+    scars_left = models.BooleanField(null=True)
+    scars_right = models.BooleanField(null=True)
     other_tags = models.TextField(blank=True, null=True)
     other_tags_identification_type = models.CharField(max_length=10, choices=IDENTIFICATION_TYPE_CHOICES, blank=True, null=True)
     transferid = models.IntegerField(blank=True, null=True)
-    mund = models.BooleanField()
+    mund = models.BooleanField(null=True)
     entered_by_person = models.ForeignKey(User, models.SET_NULL, related_name='entered_by', blank=True, null=True)
-    scars_left_scale_1 = models.BooleanField()
-    scars_left_scale_2 = models.BooleanField()
-    scars_left_scale_3 = models.BooleanField()
-    scars_right_scale_1 = models.BooleanField()
-    scars_right_scale_2 = models.BooleanField()
-    scars_right_scale_3 = models.BooleanField()
-    cc_length_not_measured = models.BooleanField()
-    cc_notch_length_not_measured = models.BooleanField()
-    cc_width_not_measured = models.BooleanField()
-    tagscarnotchecked = models.BooleanField()
-    didnotcheckforinjury = models.BooleanField()
+    scars_left_scale_1 = models.BooleanField(null=True)
+    scars_left_scale_2 = models.BooleanField(null=True)
+    scars_left_scale_3 = models.BooleanField(null=True)
+    scars_right_scale_1 = models.BooleanField(null=True)
+    scars_right_scale_2 = models.BooleanField(null=True)
+    scars_right_scale_3 = models.BooleanField(null=True)
+    cc_length_not_measured = models.BooleanField(null=True)
+    cc_notch_length_not_measured = models.BooleanField(null=True)
+    cc_width_not_measured = models.BooleanField(null=True)
+    tagscarnotchecked = models.BooleanField(null=True)
+    didnotcheckforinjury = models.BooleanField(null=True)
     corrected_date = models.DateField(blank=True, null=True)
 
     def __str__(self):
@@ -483,7 +483,7 @@ class TurtleTagObservation(models.Model):
     side = models.CharField(max_length=1, choices=SIDE_CHOICES, blank=True, null=True)
     status = models.CharField(max_length=8, choices=STATUS_CHOICES, blank=True, null=True)
     position = models.SmallIntegerField(blank=True, null=True)  # Scale no. (1, 2, 3)
-    barnacles = models.BooleanField()
+    barnacles = models.BooleanField(null=True)
     comments = models.TextField(blank=True, null=True)
 
     def __str__(self):
@@ -514,7 +514,7 @@ class TurtlePitTagObservation(models.Model):
     observation = models.ForeignKey(TurtleObservation, on_delete=models.PROTECT, related_name="pit_tag_observations")
     status = models.CharField(max_length=8, choices=STATUS_CHOICES, blank=True, null=True)
     position = models.CharField(max_length=8, choices=STATUS_CHOICES, blank=True, null=True)
-    checked = models.BooleanField()
+    checked = models.BooleanField(null=True)
     comments = models.TextField(blank=True, null=True)
 
     def __str__(self):
