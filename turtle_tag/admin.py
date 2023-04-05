@@ -119,3 +119,46 @@ class TurtleObservationAdmin(ModelAdmin):
         obj.entered_by_person = request.user
         obj.save()
         return super().response_add(request, obj, post_url_continue)
+
+
+@register(TurtleTag)
+class TurtleTagAdmin(ModelAdmin):
+    list_display = ('serial', 'turtle', 'issue_location', 'custodian', 'field_person', 'status', 'return_date')
+    list_filter = ('status',)
+    raw_id_fields = ('turtle', 'custodian', 'field_person')
+    search_fields = ('serial', 'custodian__name', 'field_person__name')
+    fields = (
+        'serial',
+        'turtle',
+        'issue_location',
+        'tag_order',
+        'custodian',
+        'field_person',
+        'side',
+        'status',
+        'return_date',
+        'return_condition',
+        'comments',
+    )
+
+
+@register(TurtlePitTag)
+class TurtlePitTagAdmin(ModelAdmin):
+    list_display = ('serial', 'turtle', 'issue_location', 'custodian', 'field_person', 'status', 'return_date')
+    list_filter = ('status',)
+    raw_id_fields = ('turtle', 'custodian', 'field_person')
+    search_fields = ('serial', 'custodian__name', 'field_person__name')
+    fields = (
+        'serial',
+        'turtle',
+        'issue_location',
+        'tag_order',
+        'custodian',
+        'field_person',
+        'status',
+        'return_date',
+        'return_condition',
+        'comments',
+        'batch_number',
+        'box_number',
+    )
