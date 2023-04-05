@@ -28,16 +28,22 @@
             <input id="search_field" type="text" class="form-control" name="q" placeholder="Search turtles (ID, tags, name, etc.)" value="{{ query_string }}">
         </form>
     </div>
-    {% comment %}
     <div class="col-xs-12 col-sm-6">
         <span class="float-right">
-            <a class="btn btn-primary" href="{% url 'turtle_tag:turtle_create' %}">
+            <!-- FIXME: proper permissions check -->
+            {% if user.is_staff %}
+            <a class="btn btn-primary" href="{% url 'admin:turtle_tag_turtle_add' %}">
                 <i class="fa-solid fa-plus"></i>
                 Create new turtle
             </a>
+            {% else %}
+            <a class="btn btn-primary disabled" href="">
+                <i class="fa-solid fa-plus"></i>
+                Create new turtle
+            </a>
+            {% endif %}
         </span>
     </div>
-    {% endcomment %}
 </div>
 
 {% block pagination_row %}
