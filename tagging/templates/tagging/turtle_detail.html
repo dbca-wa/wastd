@@ -5,7 +5,7 @@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-        <li class="breadcrumb-item"><a href="{% url 'turtle_tag:turtle_list' %}">Tagged turtles</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'tagging:turtle_list' %}">Tagged turtles</a></li>
         <li class="breadcrumb-item active">{{ object.pk }}</li>
     </ol>
 </nav>
@@ -20,11 +20,11 @@
         <span class="float-right">
             <!-- FIXME: proper permissions check -->
             {% if user.is_staff %}
-            <a class="btn btn-primary" href="{% url 'admin:turtle_tag_turtle_change' object_id=object.pk %}">
+            <a class="btn btn-primary" href="{% url 'admin:tagging_turtle_change' object_id=object.pk %}">
                 <i class="fa-solid fa-pencil"></i>
                 Change turtle details
             </a>
-            <a class="btn btn-primary" href="{% url 'admin:turtle_tag_turtleobservation_add' %}?turtle={{ object.pk }}">
+            <a class="btn btn-primary" href="{% url 'admin:tagging_turtleobservation_add' %}?turtle={{ object.pk }}">
                 <i class="fa-solid fa-plus"></i>
                 Record an observation
             </a>
@@ -94,7 +94,7 @@
     <div class="col">
         <span class="float-right">
             {# FIXME: permissions check #}
-            <a class="btn btn-primary" href="{% url 'turtle_tag:turtle_tags_update' pk=object.pk %}">
+            <a class="btn btn-primary" href="{% url 'tagging:turtle_tags_update' pk=object.pk %}">
                 <i class="fa-solid fa-pencil"></i>
                 Update tags
             </a>
@@ -143,7 +143,7 @@
     <div class="col">
         <span class="float-right">
             {# FIXME: permissions check #}
-            <a class="btn btn-primary" href="{% url 'turtle_tag:turtle_pit_tags_update' pk=object.pk %}">
+            <a class="btn btn-primary" href="{% url 'tagging:turtle_pit_tags_update' pk=object.pk %}">
                 <i class="fa-solid fa-pencil"></i>
                 Update pit tags
             </a>

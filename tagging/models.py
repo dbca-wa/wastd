@@ -1,32 +1,10 @@
 from django.conf import settings
 from django.contrib.gis.db import models
 from django.urls import reverse
+from django.utils import timezone
 from users.models import User
 
 
-IDENTIFICATION_TYPE_CHOICES = (
-    ('A', 'Qld - monel A series tag'),
-    ('Acoustic', 'Acoustic'),
-    ('ATLANTIS', 'Atlantis [now closed]'),
-    ('CA', 'CofAust - titanium tag'),
-    ('CT', 'Cayman - juvenile tag'),
-    ('CTD', 'Conductivity - Temp - Depth SRDL'),
-    ('ENT/REL', 'Untagged turtle - live release from entanglement'),
-    ('ENT/SAL', 'Untagged turtle - salvage from entanglement'),
-    ('FISH/DECD', 'Untagged turtle - Fishery capture victim'),
-    ('FREE/OBS', 'Untagged turtle - live obs'),
-    ('I', 'HIMB - Inconel tag'),
-    ('K', 'Qld - titanium K series tag'),
-    ('PTT', 'PT transmitter'),
-    ('PZ ID', 'Perth Zoo Vets - case ID'),
-    ('RREC', 'Naragebup rehab'),
-    ('SFU/FIU', 'RotoTag'),
-    ('SRDL', 'Satellite Relay Data Logger (SRDL)/?CATS-SATags'),
-    ('STRAND/SAL', 'Untagged turtle - stranding victim'),
-    ('T', 'Qld - titanium T series tag'),
-    ('UWW', 'Underwater World [now AQWA]'),
-    ('WAMusR', 'WA Museum R#'),
-)
 SIDE_CHOICES = (
     ('L', 'Left'),
     ('R', 'Right'),
@@ -50,17 +28,6 @@ class TurtleSpecies(models.Model):
             return f"{self.scientific_name}"
 
 
-class TurtleStatus(models.Model):
-    description = models.CharField(max_length=128)
-    new_tag_list = models.BooleanField(null=True)
-
-    class Meta:
-        verbose_name_plural = 'turtle statuses'
-
-    def __str__(self):
-        return self.description
-
-
 class Location(models.Model):
     name = models.CharField(max_length=128)
 
@@ -72,7 +39,7 @@ class Place(models.Model):
     location = models.ForeignKey(Location, models.PROTECT, related_name='places')
     name = models.CharField(max_length=128, blank=True, null=True)
     rookery = models.BooleanField(null=True)
-    beach_approach = models.CharField(max_length=50, blank=True, null=True)
+    beach_approach = models.CharField(max_length=64, blank=True, null=True)
     aspect = models.CharField(max_length=3, blank=True, null=True)
     point = models.PointField(srid=4326, blank=True, null=True)  # WGS 84
     comments = models.TextField(blank=True, null=True)
@@ -84,30 +51,9 @@ class Place(models.Model):
             return f"{self.location.name}"
 
 
-class Activity(models.Model):
-    description = models.CharField(max_length=128)
-    nesting = models.CharField(max_length=128)
-    new_code = models.CharField(max_length=255, blank=True, null=True)
-    display_observation = models.BooleanField(null=True)
-
-    class Meta:
-        verbose_name_plural = 'activities'
-
-    def __str__(self):
-        return self.description
-
-
-class BeachPosition(models.Model):
-    description = models.CharField(max_length=128)
-    new_code = models.CharField(max_length=128)
-
-    def __str__(self):
-        return self.description
-
-
 class EntryBatch(models.Model):
     entry_date = models.DateField(blank=True, null=True)
-    entered_person = models.ForeignKey(User, models.SET_NULL, blank=True, null=True)
+    entered_by = models.ForeignKey(User, models.PROTECT, blank=True, null=True)
     filename = models.TextField(blank=True, null=True)
     comments = models.TextField(blank=True, null=True)
     pr_date_convention = models.BooleanField(null=True)
@@ -117,7 +63,6 @@ class EntryBatch(models.Model):
 
 
 class Turtle(models.Model):
-
     CAUSE_OF_DEATH_CHOICES = (
         ('BS', 'Boat strike'),
         ('DR', 'Drowning'),
@@ -135,24 +80,34 @@ class Turtle(models.Model):
         ('U', 'Unknown'),
         ('I', 'Indeterminate'),
     )
+    STATUS_CHOICES = (
+        ('A', 'Tag Turtles'),
+        ('C', 'Captive'),
+        ('E', 'Error (data not to be used)'),
+        ('N', 'Non-tagged turtle'),
+        ('P', 'Query new tagged'),
+        ('Q', 'Query identity'),
+        ('R', 'Re-entered population - Original Tag identity now unknown'),
+        ('S', 'Salvage'),
+        ('T', 'Tagged turtle - with full Tag history: first tag to last known'),
+    )
 
+    created = models.DateTimeField(default=timezone.now, editable=False)
+    modified = models.DateTimeField(auto_now=True, editable=False)
+    entered_by = models.ForeignKey(User, models.PROTECT, related_name='turtles_entered', blank=True, null=True)
     species = models.ForeignKey(TurtleSpecies, models.PROTECT, blank=True, null=True)
-    identification_confidence = models.CharField(max_length=1, blank=True, null=True)
     sex = models.CharField(max_length=1, choices=SEX_CHOICES)
-    status = models.ForeignKey(TurtleStatus, models.PROTECT, blank=True, null=True)
+    status = models.CharField(max_length=1, choices=STATUS_CHOICES, blank=True, null=True)
+    name = models.CharField(max_length=128, blank=True, null=True)
     # Query: is location a valid field for things that migrate and move around?
     location = models.ForeignKey(Location, models.PROTECT, related_name='turtles', blank=True, null=True)
     cause_of_death = models.CharField(max_length=2, choices=CAUSE_OF_DEATH_CHOICES, blank=True, null=True)
     re_entered_population = models.CharField(max_length=1, blank=True, null=True)
     comments = models.TextField(blank=True, null=True)
-    entered_by = models.CharField(max_length=50, blank=True, null=True)
-    entered_by_person = models.ForeignKey(User, models.SET_NULL, related_name='entered_by_user', blank=True, null=True)
-    date_entered = models.DateField(blank=True, null=True, auto_now_add=True)
     original_turtle_id = models.IntegerField(blank=True, null=True)
-    entry_batch_id = models.IntegerField(blank=True, null=True)
-    tag = models.CharField(max_length=255, blank=True, null=True)
+    entry_batch = models.ForeignKey(EntryBatch, models.PROTECT, blank=True, null=True)
     mund_id = models.CharField(max_length=255, blank=True, null=True)
-    name = models.CharField(max_length=128, blank=True, null=True)
+    identification_confidence = models.CharField(max_length=1, blank=True, null=True)
 
     def __str__(self):
         if self.name and self.species:
@@ -163,7 +118,7 @@ class Turtle(models.Model):
             return f'{self.pk} ({self.sex})'
 
     def get_absolute_url(self):
-        return reverse('turtle_tag:turtle_detail', kwargs={'pk': self.pk})
+        return reverse('tagging:turtle_detail', kwargs={'pk': self.pk})
 
     def get_tags_description(self):
         tags = []
@@ -175,7 +130,6 @@ class Turtle(models.Model):
 
 
 class TurtleObservation(models.Model):
-
     CONDITION_CHOICES = (
         ('D', 'Carcase - decomposed'),
         ('F', 'Carcase - fresh'),
@@ -209,42 +163,74 @@ class TurtleObservation(models.Model):
         ('E', 'Evening'),
         ('U', 'Unknown'),
     )
+    BEACH_POSITION_CHOICES = (
+        ('?', 'Not listed - Nesting event'),
+        ('A', 'Above high water - Nesting event'),
+        ('B', 'At high water - Nesting event'),
+        ('C', 'Below high water - Nesting event'),
+        ('D', 'Edge of spinifex (beach veg line) - Nesting event'),
+        ('E', 'In spinifex (among beach veg) - Nesting event'),
+    )
+    ACTIVITY_CHOICES = (
+        ('L', 'Arriving - Nesting'),
+        ('K', 'Basking - on beach above waterline'),
+        ('&', 'Captive animal'),
+        ('W', 'Captured in water (reef or sea)'),
+        ('V', 'Caught in fishing gear - Deceased'),
+        ('Y', 'Caught in fishing gear - Released'),
+        ('J', 'Check/edit these: only on VA records'),
+        ('C', 'Climbing beach slope - Nesting'),
+        ('H', 'Covering nest (filling in) - Nesting'),
+        ('N', 'Courting'),
+        ('E', 'Digging body hole - Nesting'),
+        ('F', 'Excavating egg chamber - Nesting'),
+        ('O', 'Free at sea'),
+        ('Z', 'Hunted for food by Ab & others'),
+        ('G', 'Laying eggs - confirmed observation - Nesting'),
+        ('B', 'Leaving water - Nesting'),
+        ('M', 'Mating'),
+        ('D', 'Moving over bare sand (=beach) - Nesting'),
+        ('P', 'Not listed - Nesting event'),
+        ('Q', 'Not recorded in field'),
+        ('R', 'Released to wild'),
+        ('S', 'Rescued from stranding'),
+        ('A', 'Resting at waters edge - Nesting'),
+        ('I', 'Returning to water - Nesting'),
+        ('X', 'Turtle dead'),
+    )
 
+    created = models.DateTimeField(default=timezone.now, editable=False)
+    modified = models.DateTimeField(auto_now=True, editable=False)
+    entered_by = models.ForeignKey(User, models.PROTECT, related_name='turtleobservations_entered', blank=True, null=True)
     turtle = models.ForeignKey(Turtle, models.PROTECT)
-    observation_datetime = models.DateTimeField()
+    observed = models.DateTimeField()
     observation_date_old = models.DateField(blank=True, null=True)
     date_convention = models.CharField(max_length=1, choices=DATE_CONVENTION_CHOICES)
     status = models.CharField(max_length=128, choices=STATUS_CHOICES, blank=True, null=True)
     alive = models.BooleanField(null=True)
-    measurer_person = models.ForeignKey(User, models.SET_NULL, related_name='measurer', blank=True, null=True)
-    measurer_reporter_person = models.ForeignKey(User, models.SET_NULL, related_name='measurer_reporter', blank=True, null=True)
-    tagger_person = models.ForeignKey(User, models.SET_NULL, related_name='tagger', blank=True, null=True)
-    reporter_person = models.ForeignKey(User, models.SET_NULL, related_name='reporter', blank=True, null=True)
+    measurer = models.ForeignKey(User, models.PROTECT, related_name='measurer', blank=True, null=True)
+    measurer_reporter = models.ForeignKey(User, models.PROTECT, related_name='measurer_reporter', blank=True, null=True)
+    tagger = models.ForeignKey(User, models.PROTECT, related_name='tagger', blank=True, null=True)
+    reporter = models.ForeignKey(User, models.PROTECT, related_name='reporter', blank=True, null=True)
     place = models.ForeignKey(Place, models.PROTECT, blank=True, null=True)
     place_description = models.TextField(blank=True, null=True)
     point = models.PointField(srid=4326, blank=True, null=True)  # WGS 84
-    activity = models.ForeignKey(Activity, models.PROTECT, blank=True, null=True)
-    beach_position = models.ForeignKey(BeachPosition, models.PROTECT, blank=True, null=True)
+    activity = models.CharField(max_length=1, choices=ACTIVITY_CHOICES, blank=True, null=True)
+    beach_position = models.CharField(max_length=1, choices=BEACH_POSITION_CHOICES, blank=True, null=True)
     condition = models.CharField(max_length=1, choices=CONDITION_CHOICES, blank=True, null=True)
     nesting = models.BooleanField(null=True)
     clutch_completed = models.CharField(max_length=1, choices=CLUTCH_COMPLETED_CHOICES, blank=True, null=True)
     number_of_eggs = models.IntegerField(blank=True, null=True)
     egg_count_method = models.CharField(max_length=3, choices=EGG_COUNT_METHOD_CHOICES, blank=True, null=True)
-    measurements = models.CharField(max_length=1)  # FIXME: remove pointless boolean field
     action_taken = models.TextField(blank=True, null=True)
     comments = models.TextField(blank=True, null=True)
-    entered_by = models.CharField(max_length=50, blank=True, null=True)
-    date_entered = models.DateField(blank=True, null=True, auto_now_add=True)
     original_observation_id = models.IntegerField(blank=True, null=True)
     entry_batch = models.ForeignKey(EntryBatch, models.PROTECT, blank=True, null=True)
     comment_fromrecordedtagstable = models.TextField(blank=True, null=True)
     scars_left = models.BooleanField(null=True)
     scars_right = models.BooleanField(null=True)
-    other_tags = models.TextField(blank=True, null=True)
-    other_tags_identification_type = models.CharField(max_length=10, choices=IDENTIFICATION_TYPE_CHOICES, blank=True, null=True)
     transferid = models.IntegerField(blank=True, null=True)
     mund = models.BooleanField(null=True)
-    entered_by_person = models.ForeignKey(User, models.SET_NULL, related_name='entered_by', blank=True, null=True)
     scars_left_scale_1 = models.BooleanField(null=True)
     scars_left_scale_2 = models.BooleanField(null=True)
     scars_left_scale_3 = models.BooleanField(null=True)
@@ -260,31 +246,31 @@ class TurtleObservation(models.Model):
 
     def __str__(self):
         if self.status:
-            return f'{self.pk} ({self.get_observation_datetime_awst().isoformat()}) {(self.status)}'
+            return f'{self.pk} ({self.get_observed_awst().isoformat()}) {(self.status)}'
         else:
-            return f'{self.pk} ({self.get_observation_datetime_awst().isoformat()})'
+            return f'{self.pk} ({self.get_observed_awst().isoformat()})'
 
-    def get_observation_datetime_awst(self):
+    def get_observed_awst(self):
         """Returns observation datetime in AWST.
         """
-        if self.observation_datetime:
-            return self.observation_datetime.astimezone(settings.AWST)
+        if self.observed:
+            return self.observed.astimezone(settings.AWST)
         else:
             return None
 
-    def get_observation_datetime_utc(self):
+    def get_observed_utc(self):
         """Returns observation datetime in UTC.
         """
-        if self.observation_datetime:
-            return self.observation_datetime.astimezone(settings.UTC)
+        if self.observed:
+            return self.observed.astimezone(settings.UTC)
         else:
             return None
 
     def get_absolute_url(self):
-        return reverse('turtle_tag:turtleobservation_detail', kwargs={'pk': self.pk})
+        return reverse('tagging:turtleobservation_detail', kwargs={'pk': self.pk})
 
     class Meta:
-        ordering = ('observation_datetime',)
+        ordering = ('observed',)
 
 
 class TagOrder(models.Model):
@@ -303,7 +289,6 @@ class TagOrder(models.Model):
 
 
 class TurtleTag(models.Model):
-
     TAG_STATUS_CHOICES = (
         ('0BRK', '0 BRK - Tag Broken'),
         ('1DD', '1 DUD - Tag U/s'),
@@ -330,8 +315,8 @@ class TurtleTag(models.Model):
     serial = models.CharField(max_length=64, unique=True)
     turtle = models.ForeignKey(Turtle, models.PROTECT, related_name='tags', blank=True, null=True)
     issue_location = models.CharField(max_length=128, blank=True, null=True)
-    custodian = models.ForeignKey(User, models.SET_NULL, related_name='tag_custodian', blank=True, null=True)
-    field_person = models.ForeignKey(User, models.SET_NULL, related_name='tag_field_person', blank=True, null=True)
+    custodian = models.ForeignKey(User, models.PROTECT, related_name='tag_custodian', blank=True, null=True)
+    field_person = models.ForeignKey(User, models.PROTECT, related_name='tag_field_person', blank=True, null=True)
     status = models.CharField(max_length=16, choices=TAG_STATUS_CHOICES, blank=True, null=True)
     return_date = models.DateField(blank=True, null=True)
     return_condition = models.CharField(max_length=128, blank=True, null=True)
@@ -344,7 +329,6 @@ class TurtleTag(models.Model):
 
 
 class TurtlePitTag(models.Model):
-
     PIT_TAG_STATUS_CHOICES = (
         ('1DD', '1 DUD - Tag U/s'),
         ('2DB', '2 DUDB - Tag U/s break'),
@@ -365,8 +349,8 @@ class TurtlePitTag(models.Model):
     serial = models.CharField(max_length=64, unique=True)
     turtle = models.ForeignKey(Turtle, models.PROTECT, related_name='pit_tags', blank=True, null=True)
     issue_location = models.CharField(max_length=128, blank=True, null=True)
-    custodian = models.ForeignKey(User, models.SET_NULL, related_name='pit_tag_custodian', blank=True, null=True)
-    field_person = models.ForeignKey(User, models.SET_NULL, related_name='pit_tag_field_person', blank=True, null=True)
+    custodian = models.ForeignKey(User, models.PROTECT, related_name='pit_tag_custodian', blank=True, null=True)
+    field_person = models.ForeignKey(User, models.PROTECT, related_name='pit_tag_field_person', blank=True, null=True)
     status = models.CharField(max_length=16, choices=PIT_TAG_STATUS_CHOICES, blank=True, null=True)
     return_date = models.DateField(blank=True, null=True)
     return_condition = models.CharField(max_length=128, blank=True, null=True)
@@ -391,7 +375,7 @@ class MeasurementType(models.Model):
         return self.description
 
 
-class Measurement(models.Model):
+class TurtleMeasurement(models.Model):
     observation = models.ForeignKey(TurtleObservation, models.PROTECT)
     measurement_type = models.ForeignKey(MeasurementType, models.PROTECT)
     value = models.FloatField()
@@ -452,12 +436,14 @@ class TurtleDamage(models.Model):
     cause = models.CharField(max_length=4, choices=CAUSE_CHOICES, blank=True, null=True)
     comments = models.TextField(blank=True, null=True)
 
+    class Meta:
+        verbose_name_plural = 'turtle damage'
+
     def __str__(self):
         return f"{self.get_body_part_display()} ({self.get_damage_display()})"
 
 
 class TurtleTagObservation(models.Model):
-
     STATUS_CHOICES = (
         ('#', 'Query number - Tag on'),
         ('0L', 'False Id as Lost'),
@@ -480,14 +466,13 @@ class TurtleTagObservation(models.Model):
     )
     tag = models.ForeignKey(TurtleTag, on_delete=models.PROTECT, related_name="observations")
     observation = models.ForeignKey(TurtleObservation, on_delete=models.PROTECT, related_name="tag_observations")
-    side = models.CharField(max_length=1, choices=SIDE_CHOICES, blank=True, null=True)
     status = models.CharField(max_length=8, choices=STATUS_CHOICES, blank=True, null=True)
     position = models.SmallIntegerField(blank=True, null=True)  # Scale no. (1, 2, 3)
     barnacles = models.BooleanField(null=True)
     comments = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        d = self.observation.observation_datetime.strftime("%c")
+        d = self.observation.observed.strftime("%c")
         if self.status:
             return f"{self.tag.serial} ({d}) - {self.get_status_display}"
         else:
@@ -495,7 +480,6 @@ class TurtleTagObservation(models.Model):
 
 
 class TurtlePitTagObservation(models.Model):
-
     STATUS_CHOICES = (
         ('A1', 'Applied new - Read OK'),
         ('AE', 'Applied new - Did not read'),
@@ -518,8 +502,103 @@ class TurtlePitTagObservation(models.Model):
     comments = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        d = self.observation.observation_datetime.strftime("%c")
+        d = self.observation.observed.strftime("%c")
         if self.status:
             return f"{self.tag.serial} ({d}) - {self.get_status_display}"
         else:
             return f"{self.tag.serial} ({d})"
+
+
+class TurtleSample(models.Model):
+    TISSUE_TYPE_CHOICES = (
+        ('1', 'Blood'),
+        ('2', 'Skin'),
+        ('3', 'Muscle - Pectoral'),
+        ('4', 'Liver'),
+        ('5', 'Heart'),
+        ('6', 'Kidney'),
+        ('7', 'Gonad'),
+        ('8', 'Fat - depot storage'),
+        ('9', 'Biopsy - gen'),
+        ('B', 'Brain'),
+        ('D', 'A-Tract contents'),
+        ('D2', 'Faecal matter'),
+        ('E', 'Epibiota'),
+        ('EGGs', 'Eggs'),
+        ('K', 'Keratin - Fnail'),
+        ('S', 'Skeletal'),
+        ('W', 'Whole animal'),
+    )
+    observation = models.ForeignKey(TurtleObservation, on_delete=models.PROTECT, related_name="samples")
+    tissue_type = models.CharField(max_length=8, choices=TISSUE_TYPE_CHOICES)
+    label = models.CharField(max_length=64, blank=True, null=True)
+    sample_date = models.DateField(blank=True, null=True)
+    arsenic = models.FloatField(blank=True, null=True)
+    selenium = models.FloatField(blank=True, null=True)
+    zinc = models.FloatField(blank=True, null=True)
+    cadmium = models.FloatField(blank=True, null=True)
+    copper = models.FloatField(blank=True, null=True)
+    lead = models.FloatField(blank=True, null=True)
+    mercury = models.FloatField(blank=True, null=True)
+    comments = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        d = self.observation.observed.strftime("%c")
+        if self.label:
+            return f"{self.get_tissue_type_display} ({d}) - {self.label}"
+        else:
+            return f"{self.get_tissue_type_display} ({d})"
+
+
+class TurtleIdentification(models.Model):
+    IDENTIFICATION_TYPE_CHOICES = (
+        ('A', 'Qld - monel A series tag'),
+        ('Acoustic', 'Acoustic'),
+        ('ATLANTIS', 'Atlantis [now closed]'),
+        ('CA', 'CofAust - titanium tag'),
+        ('CT', 'Cayman - juvenile tag'),
+        ('CTD', 'Conductivity - Temp - Depth SRDL'),
+        ('ENT/REL', 'Untagged turtle - live release from entanglement'),
+        ('ENT/SAL', 'Untagged turtle - salvage from entanglement'),
+        ('FISH/DECD', 'Untagged turtle - Fishery capture victim'),
+        ('FREE/OBS', 'Untagged turtle - live obs'),
+        ('I', 'HIMB - Inconel tag'),
+        ('K', 'Qld - titanium K series tag'),
+        ('PTT', 'PT transmitter'),
+        ('PZ ID', 'Perth Zoo Vets - case ID'),
+        ('RREC', 'Naragebup rehab'),
+        ('SFU/FIU', 'RotoTag'),
+        ('SRDL', 'Satellite Relay Data Logger (SRDL)/?CATS-SATags'),
+        ('STRAND/SAL', 'Untagged turtle - stranding victim'),
+        ('T', 'Qld - titanium T series tag'),
+        ('UWW', 'Underwater World [now AQWA]'),
+        ('WAMusR', 'WA Museum R#'),('A', 'Qld - monel A series tag'),
+        ('Acoustic', 'Acoustic'),
+        ('ATLANTIS', 'Atlantis [now closed]'),
+        ('CA', 'CofAust - titanium tag'),
+        ('CT', 'Cayman - juvenile tag'),
+        ('CTD', 'Conductivity - Temp - Depth SRDL'),
+        ('ENT/REL', 'Untagged turtle - live release from entanglement'),
+        ('ENT/SAL', 'Untagged turtle - salvage from entanglement'),
+        ('FISH/DECD', 'Untagged turtle - Fishery capture victim'),
+        ('FREE/OBS', 'Untagged turtle - live obs'),
+        ('I', 'HIMB - Inconel tag'),
+        ('K', 'Qld - titanium K series tag'),
+        ('PTT', 'PT transmitter'),
+        ('PZ ID', 'Perth Zoo Vets - case ID'),
+        ('RREC', 'Naragebup rehab'),
+        ('SFU/FIU', 'RotoTag'),
+        ('SRDL', 'Satellite Relay Data Logger (SRDL)/?CATS-SATags'),
+        ('STRAND/SAL', 'Untagged turtle - stranding victim'),
+        ('T', 'Qld - titanium T series tag'),
+        ('UWW', 'Underwater World [now AQWA]'),
+        ('WAMusR', 'WA Museum R#'),
+    )
+
+    turtle = models.ForeignKey(Turtle, models.PROTECT)
+    identification_type = models.CharField(max_length=32, choices=IDENTIFICATION_TYPE_CHOICES)
+    identifier = models.CharField(max_length=64)
+    comments = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.identifier} ({self.get_identification_type_display})"

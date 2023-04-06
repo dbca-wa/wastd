@@ -1,9 +1,10 @@
 from django.contrib.admin import register, ModelAdmin, TabularInline
 from django.db.models import TextField
 from django.forms.widgets import TextInput
+from django.urls import reverse
 from shared.admin import FORMFIELD_OVERRIDES
 
-from .models import Turtle, TurtleObservation, TurtleTag, TurtlePitTag
+from .models import Turtle, TurtleObservation, TurtleTag, TurtlePitTag, TurtleMeasurement, TurtleDamage
 
 
 class TurtleTagInline(TabularInline):
@@ -25,20 +26,37 @@ class TurtlePitTagInline(TabularInline):
 class TurtleObservationInline(TabularInline):
     model = TurtleObservation
     extra = 0
-    fields = ('observation_datetime', 'status', 'alive', 'place', 'activity')
+    fields = ('observed', 'status', 'alive', 'place', 'activity')
+    can_delete = False
+
+
+class TurtleMeasurementInline(TabularInline):
+    model = TurtleMeasurement
+    classes = ('grp-collapse', 'grp-open')
+    extra = 0
+    fields = ('measurement_type', 'value', 'comments')
+    #formfield_overrides = {TextField: {'widget': TextInput}}
+    can_delete = False
+
+
+class TurtleDamageInline(TabularInline):
+    model = TurtleDamage
+    classes = ('grp-collapse', 'grp-open')
+    extra = 0
+    fields = ('body_part', 'damage', 'cause', 'comments')
     can_delete = False
 
 
 @register(Turtle)
 class TurtleAdmin(ModelAdmin):
-    date_hierarchy = 'date_entered'
-    list_display = ('id', 'species', 'sex', 'status', 'location', 'date_entered', 'name', 'cause_of_death')
+    date_hierarchy = 'created'
+    list_display = ('id', 'species', 'sex', 'status', 'location', 'created', 'name', 'cause_of_death')
     list_filter = ('species', 'sex', 'status', 'location', 'cause_of_death')
     search_fields = ('id', 'name', 'pit_tags__serial', 'tags__serial')
-    readonly_fields = ('date_entered', 'entered_by_person')
+    readonly_fields = ('created', 'entered_by')
     fields = (
-        'date_entered',
-        'entered_by_person',
+        'created',
+        'entered_by',
         'species',
         'sex',
         'status',
@@ -50,34 +68,33 @@ class TurtleAdmin(ModelAdmin):
     inlines = (
         TurtleTagInline,
         TurtlePitTagInline,
-        TurtleObservationInline,
     )
 
     def response_add(self, request, obj, post_url_continue=None):
         """Set the request user as the person who entered the record.
         """
-        obj.entered_by_person = request.user
+        obj.entered_by = request.user
         obj.save()
         return super().response_add(request, obj, post_url_continue)
 
 
 @register(TurtleObservation)
 class TurtleObservationAdmin(ModelAdmin):
-    date_hierarchy = 'observation_datetime'
-    list_display = ('pk', 'turtle', 'observation_datetime', 'status', 'alive', 'place', 'activity')
+    date_hierarchy = 'observed'
+    list_display = ('pk', 'turtle', 'observed', 'status', 'alive', 'place', 'activity')
     list_filter = ('status', 'alive', 'place', 'condition')
-    search_fields = ('pk', 'tagger_person__name', 'turtle__pk', 'turtle__tags__serial', 'turtle__pit_tags__serial')
-    raw_id_fields = ('turtle', 'measurer_person', 'measurer_reporter_person', 'tagger_person', 'reporter_person')
-    readonly_fields = ('date_entered', 'entered_by_person')
+    search_fields = ('pk', 'turtle__pk', 'turtle__tags__serial', 'turtle__pit_tags__serial')
+    raw_id_fields = ('turtle', 'measurer', 'measurer_reporter', 'tagger', 'reporter')
+    readonly_fields = ('created', 'entered_by')
     fieldsets = (
         (
             'Observation',
             {
                 'fields': (
-                    'date_entered',
-                    'entered_by_person',
+                    'created',
+                    'entered_by',
                     'turtle',
-                    'observation_datetime',
+                    'observed',
                     'date_convention',
                     'status',
                     'alive',
@@ -87,17 +104,33 @@ class TurtleObservationAdmin(ModelAdmin):
                     'number_of_eggs',
                     'egg_count_method',
                 ),
+                'classes': ('grp-collapse', 'grp-open'),
+            },
+        ),
+        (
+            'Scars',
+            {
+                'fields': (
+                    'scars_left_scale_1',
+                    'scars_left_scale_2',
+                    'scars_left_scale_3',
+                    'scars_right_scale_1',
+                    'scars_right_scale_2',
+                    'scars_right_scale_3',
+                ),
+                'classes': ('grp-collapse', 'grp-open'),
             },
         ),
         (
             'People',
             {
                 'fields': (
-                    'measurer_person',
-                    'measurer_reporter_person',
-                    'tagger_person',
-                    'reporter_person',
+                    'measurer',
+                    'measurer_reporter',
+                    'tagger',
+                    'reporter',
                 ),
+                'classes': ('grp-collapse', 'grp-open'),
             },
         ),
         (
@@ -108,16 +141,22 @@ class TurtleObservationAdmin(ModelAdmin):
                     'place_description',
                     'point',
                 ),
+                'classes': ('grp-collapse', 'grp-open'),
             },
         ),
     )
     formfield_overrides = FORMFIELD_OVERRIDES
+    inlines = (
+        TurtleMeasurementInline,
+        TurtleDamageInline,
+    )
 
     def response_add(self, request, obj, post_url_continue=None):
         """Set the request user as the person who entered the record.
         """
-        obj.entered_by_person = request.user
+        obj.entered_by = request.user
         obj.save()
+        post_url_continue = reverse('admin:tagging_turtleobservation_add') + f'?turtle={obj.pk}'
         return super().response_add(request, obj, post_url_continue)
 
 

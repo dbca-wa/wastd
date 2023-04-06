@@ -86,7 +86,7 @@ class TurtleCreate(LoginRequiredMixin, CreateView):
         context["title"] = "Create new turtle"
         context["breadcrumbs"] = (
             Breadcrumb("Home", reverse("home")),
-            Breadcrumb("Tagged Turtles", reverse("turtle_tag:turtle_list")),
+            Breadcrumb("Tagged Turtles", reverse("tagging:turtle_list")),
             Breadcrumb("Create new turtle", None),
         )
         return context
@@ -94,13 +94,11 @@ class TurtleCreate(LoginRequiredMixin, CreateView):
     def get_success_url(self):
         # Turtle detail view.
         return self.object.get_absolute_url()
-        # TODO: go to the "create tags" view
-        #return reverse("turtle_tags_update", kwargs={"pk": self.object.pk})
 
     def post(self, request, *args, **kwargs):
         # If the user clicked Cancel, redirect back to the turtle list view.
         if request.POST.get("cancel"):
-            return redirect("turtle_tag:turtle_list")
+            return redirect("tagging:turtle_list")
         return super().post(request, *args, **kwargs)
 
     def form_valid(self, form):
@@ -115,7 +113,7 @@ class TurtleCreate(LoginRequiredMixin, CreateView):
 
 class TurtleTagsUpdate(LoginRequiredMixin, UpdateView):
     model = Turtle
-    template_name = "turtle_tag/turtle_tags_form.html"
+    template_name = "tagging/turtle_tags_form.html"
     # We don't really use the form class, but we need to define it for the view class.
     form_class = TurtleTagUpdateForm
 
@@ -135,7 +133,7 @@ class TurtleTagsUpdate(LoginRequiredMixin, UpdateView):
         context["tag_formset"].helper = TurtleTagFormSetHelper()
         context["breadcrumbs"] = (
             Breadcrumb("Home", reverse("home")),
-            Breadcrumb("Tagged Turtles", reverse("turtle_tag:turtle_list")),
+            Breadcrumb("Tagged Turtles", reverse("tagging:turtle_list")),
             Breadcrumb(self.object.pk, self.object.get_absolute_url()),
             Breadcrumb("Update tags", None),
         )
@@ -174,7 +172,7 @@ class TurtlePitTagsUpdate(TurtleTagsUpdate):
         context["tag_formset"].helper = TurtleTagFormSetHelper()
         context["breadcrumbs"] = (
             Breadcrumb("Home", reverse("home")),
-            Breadcrumb("Tagged Turtles", reverse("turtle_tag:turtle_list")),
+            Breadcrumb("Tagged Turtles", reverse("tagging:turtle_list")),
             Breadcrumb(self.object.pk, self.object.get_absolute_url()),
             Breadcrumb("Update pit tags", None),
         )
@@ -233,7 +231,7 @@ class TurtleObservationDetail(LoginRequiredMixin, DetailView):
 class TurtleObservationCreate(LoginRequiredMixin, CreateView):
     model = TurtleObservation
     form_class = TurtleObservationCreateForm
-    template_name = "turtle_tag/turtle_observation_create.html"
+    template_name = "tagging/turtle_observation_create.html"
 
     def get_turtle(self):
         return get_object_or_404(Turtle, pk=self.kwargs["pk"])
