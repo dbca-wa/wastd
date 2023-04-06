@@ -12,12 +12,9 @@ class AdminDashboard(Dashboard):
             modules.Group(
                 "WA Sea Turtle Database",
                 column=1,
-                #collapsible=True,
                 children=[
                     modules.AppList(
                         "Places, Campaigns, Surveys",
-                        #column=2,
-                        #collapsible=True,
                         models=(
                             "observations.models.Area",
                             "observations.models.Campaign",
@@ -26,13 +23,10 @@ class AdminDashboard(Dashboard):
                     ),
                     modules.AppList(
                         "Encounters",
-                        #column=2,
-                        #collapsible=True,
                         models=(
                             "observations.models.Encounter",
                             "observations.models.AnimalEncounter",
                             "observations.models.TurtleNestEncounter",
-                            #"observations.models.LineTransectEncounter",
                         ),
                     ),
                 ],
@@ -44,13 +38,9 @@ class AdminDashboard(Dashboard):
             modules.Group(
                 "User Administration",
                 column=2,
-                #collapsible=True,
                 children=[
                     modules.AppList(
                         "User access management",
-                        #column=2,
-                        #css_classes=("collapse grp-closed",),
-                        #collapsible=True,
                         models=(
                             "users.*",
                             "django.contrib.*",
@@ -62,16 +52,16 @@ class AdminDashboard(Dashboard):
 
         self.children.append(
             modules.Group(
-                "Turtle Tagging Database",
+                "Tagging",
                 column=3,
                 children=[
                     modules.AppList(
-                        "Turtle tagging records",
+                        "Turtle tagging",
                         models=(
-                            "turtle_tag.models.Turtle",
-                            "turtle_tag.models.TurtleObservation",
-                            "turtle_tag.models.TurtleTag",
-                            "turtle_tag.models.TurtlePitTag",
+                            "tagging.models.Turtle",
+                            "tagging.models.TurtleObservation",
+                            "tagging.models.TurtleTag",
+                            "tagging.models.TurtlePitTag",
                         )
                     )
                 ],

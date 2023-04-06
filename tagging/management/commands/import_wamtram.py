@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from turtle_tag.utils import import_wamtram
+from tagging.utils import import_wamtram
 
 
 class Command(BaseCommand):

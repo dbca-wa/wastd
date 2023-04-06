@@ -20,7 +20,7 @@ urlpatterns = [
     path("ajax_select/", include("ajax_select.urls")),
     path("select2/", include("django_select2.urls")),
     path("users/", include(("users.urls", "users"), namespace="users")),
-    path("tagging/", include("turtle_tag.urls")),
+    path("tagging/", include("tagging.urls")),
     path("observations/", include(("observations.urls"), namespace="observations")),
     # API
     path("api/1/", include((router.urls, "api"), namespace="api")),

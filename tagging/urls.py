@@ -1,7 +1,7 @@
 from django.urls import path
 from . import views
 
-app_name = "turtle_tag"
+app_name = "tagging"
 
 
 urlpatterns = [

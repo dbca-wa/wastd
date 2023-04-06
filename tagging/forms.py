@@ -106,7 +106,7 @@ class TurtleTagUpdateForm(forms.ModelForm):
     """
     class Meta:
         model = Turtle
-        fields = ('tag',)  # Field will not be touched on save.
+        fields = ('comments',)
 
 
 class TurtleTagForm(forms.ModelForm):
@@ -114,7 +114,7 @@ class TurtleTagForm(forms.ModelForm):
 
     class Meta:
         model = TurtleTag
-        fields = ('serial', 'side', 'status', 'comments')
+        fields = ('serial', 'status', 'comments')
 
 
 # Define a formset class to contain TurtleTagForm instances.
@@ -134,7 +134,7 @@ class TurtleTagFormSetHelper(FormHelper):
         super().__init__(*args, **kwargs)
         self.form_class = 'form-inline'
         # Override the table inline formset template (required to properly hide the "hidden" form).
-        self.template = 'turtle_tag/table_inline_formset.html'
+        self.template = 'tagging/table_inline_formset.html'
         self.add_input(Submit('save', 'Save', css_class='btn-lg'))
         self.add_input(Submit('cancel', 'Cancel', css_class='btn-secondary'))
 
@@ -169,7 +169,7 @@ class TurtleTagObservationForm(forms.ModelForm):
 
     class Meta:
         model = TurtleTagObservation
-        fields = ('tag', 'side', 'status', 'position', 'barnacles', 'comments')
+        fields = ('tag', 'status', 'position', 'barnacles', 'comments')
 
 
 TurtleTagObservationFormSet = forms.inlineformset_factory(
