@@ -2,8 +2,8 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Field, Div, HTML
 from crispy_forms.bootstrap import InlineCheckboxes
 from django import forms
-
-from .models import Turtle, TurtleObservation, TurtleTag, TurtlePitTag, TurtleTagObservation
+from easy_select2 import Select2
+from .models import Turtle, TurtleObservation, TurtleTag, TurtlePitTag, TurtleTagObservation, Place
 
 
 class TurtleSearchForm(forms.Form):
@@ -99,6 +99,14 @@ class TurtleObservationCreateForm(BaseForm):
     class Meta:
         model = TurtleObservation
         exclude = ('turtle', 'observation_date_old')
+
+
+class TurtleObservationAdminForm(forms.ModelForm):
+    place = forms.ModelChoiceField(queryset=Place.objects.all(), widget=Select2())
+
+    class Meta:
+        fields = '__all__'
+        model = TurtleObservation
 
 
 class TurtleTagUpdateForm(forms.ModelForm):
