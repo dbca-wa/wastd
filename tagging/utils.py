@@ -410,7 +410,7 @@ def import_wamtram(reload=True):
             o.place = place
             o.place_description = obs.place_description
             o.point = obs.get_point()
-            o.activity = obs.activity_code
+            o.activity = obs.activity_code.activity_code if obs.activity_code else None
             o.beach_position = obs.beach_position_code.beach_position_code if obs.beach_position_code else None
             o.condition = obs.condition_code.condition_code if obs.condition_code else None
             o.nesting = True if obs.nesting == "Y" else False if obs.nesting == "N" else None
@@ -457,7 +457,7 @@ def import_wamtram(reload=True):
                 place=place,
                 place_description=obs.place_description,
                 point=obs.get_point(),
-                activity=obs.activity_code,
+                activity=obs.activity_code.activity_code if obs.activity_code else None,
                 beach_position=obs.beach_position_code.beach_position_code if obs.beach_position_code else None,
                 condition=obs.condition_code.condition_code if obs.condition_code else None,
                 nesting=True if obs.nesting == "Y" else False if obs.nesting == "N" else None,
