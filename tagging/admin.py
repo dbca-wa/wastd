@@ -2,9 +2,11 @@ from django.contrib.admin import register, ModelAdmin, TabularInline
 from django.db.models import TextField
 from django.forms.widgets import TextInput
 from django.urls import reverse
+from django.utils.html import mark_safe
 from shared.admin import FORMFIELD_OVERRIDES
 
 from .models import Turtle, TurtleObservation, TurtleTag, TurtlePitTag, TurtleMeasurement, TurtleDamage
+from .forms import TurtleObservationAdminForm
 
 
 class TurtleTagInline(TabularInline):
@@ -35,7 +37,7 @@ class TurtleMeasurementInline(TabularInline):
     classes = ('grp-collapse', 'grp-open')
     extra = 0
     fields = ('measurement_type', 'value', 'comments')
-    #formfield_overrides = {TextField: {'widget': TextInput}}
+    formfield_overrides = {TextField: {'widget': TextInput}}
     can_delete = False
 
 
@@ -44,6 +46,7 @@ class TurtleDamageInline(TabularInline):
     classes = ('grp-collapse', 'grp-open')
     extra = 0
     fields = ('body_part', 'damage', 'cause', 'comments')
+    formfield_overrides = {TextField: {'widget': TextInput}}
     can_delete = False
 
 
@@ -81,6 +84,7 @@ class TurtleAdmin(ModelAdmin):
 @register(TurtleObservation)
 class TurtleObservationAdmin(ModelAdmin):
     date_hierarchy = 'observed'
+    form = TurtleObservationAdminForm
     list_display = ('pk', 'turtle', 'observed', 'status', 'alive', 'place', 'activity')
     list_filter = ('status', 'alive', 'place', 'condition')
     search_fields = ('pk', 'turtle__pk', 'turtle__tags__serial', 'turtle__pit_tags__serial')
@@ -91,14 +95,14 @@ class TurtleObservationAdmin(ModelAdmin):
             'Observation',
             {
                 'fields': (
-                    'created',
-                    'entered_by',
                     'turtle',
                     'observed',
                     'date_convention',
                     'status',
                     'alive',
                     'activity',
+                    'beach_position',
+                    'condition',
                     'nesting',
                     'clutch_completed',
                     'number_of_eggs',
@@ -108,7 +112,7 @@ class TurtleObservationAdmin(ModelAdmin):
             },
         ),
         (
-            'Scars',
+            'Tag scars',
             {
                 'fields': (
                     'scars_left_scale_1',
@@ -162,7 +166,7 @@ class TurtleObservationAdmin(ModelAdmin):
 
 @register(TurtleTag)
 class TurtleTagAdmin(ModelAdmin):
-    list_display = ('serial', 'turtle', 'issue_location', 'custodian', 'field_person', 'status', 'return_date')
+    list_display = ('serial', 'turtle_link', 'issue_location', 'custodian', 'field_person', 'status', 'return_date')
     list_filter = ('status',)
     raw_id_fields = ('turtle', 'custodian', 'field_person')
     search_fields = ('serial', 'custodian__name', 'field_person__name')
@@ -179,6 +183,14 @@ class TurtleTagAdmin(ModelAdmin):
         'return_condition',
         'comments',
     )
+
+    def turtle_link(self, obj):
+        if obj.turtle:
+            url = reverse('admin:tagging_turtle_change', kwargs={'object_id': obj.turtle.pk})
+            link = f'<a href="{url}">{obj.turtle}</a>'
+            return mark_safe(link)
+        return ''
+    turtle_link.short_description = 'turtle'
 
 
 @register(TurtlePitTag)

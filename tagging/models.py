@@ -164,12 +164,12 @@ class TurtleObservation(models.Model):
         ('U', 'Unknown'),
     )
     BEACH_POSITION_CHOICES = (
-        ('?', 'Not listed - Nesting event'),
         ('A', 'Above high water - Nesting event'),
         ('B', 'At high water - Nesting event'),
         ('C', 'Below high water - Nesting event'),
         ('D', 'Edge of spinifex (beach veg line) - Nesting event'),
         ('E', 'In spinifex (among beach veg) - Nesting event'),
+        ('?', 'Not listed - Nesting event'),
     )
     ACTIVITY_CHOICES = (
         ('L', 'Arriving - Nesting'),
