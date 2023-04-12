@@ -5,40 +5,117 @@ from django.urls import reverse
 from django.utils.html import mark_safe
 from shared.admin import FORMFIELD_OVERRIDES
 
-from .models import Turtle, TurtleObservation, TurtleTag, TurtlePitTag, TurtleMeasurement, TurtleDamage
-from .forms import TurtleObservationAdminForm
+from .forms import (
+    TurtleAddForm,
+    TurtleChangeForm,
+    TurtleObservationForm,
+    TurtleFlipperDamageForm,
+    TurtleInjuryForm,
+    TurtleSampleForm,
+    TurtleTagAddForm,
+    TurtlePitTagAddForm,
+)
+from .models import (
+    Turtle,
+    TurtleObservation,
+    TurtleTag,
+    TurtlePitTag,
+    TurtleMeasurement,
+    TurtleDamage,
+    TurtleSample,
+    TurtleIdentification,
+)
 
 
 class TurtleTagInline(TabularInline):
+    """Tabular inline ModelFormset used during update of an existing Turtle instance.
+    """
     model = TurtleTag
-    extra = 0
     fields = ('serial', 'side', 'status', 'return_date', 'return_condition', 'comments')
     formfield_overrides = {TextField: {'widget': TextInput}}
+    extra = 0
+    can_delete = False
+
+
+class TurtleTagAddInline(TabularInline):
+    """Tabular inline ModelFormset used during creation of a new Turtle instance.
+    """
+    model = TurtleTag
+    form = TurtleTagAddForm
+    formfield_overrides = {TextField: {'widget': TextInput}}
+    extra = 0
     can_delete = False
 
 
 class TurtlePitTagInline(TabularInline):
+    """Tabular inline ModelFormset used during update of an existing Turtle instance.
+    """
     model = TurtlePitTag
-    extra = 0
     fields = ('serial', 'status', 'return_date', 'return_condition', 'comments')
     formfield_overrides = {TextField: {'widget': TextInput}}
-    can_delete = False
-
-
-class TurtleObservationInline(TabularInline):
-    model = TurtleObservation
     extra = 0
-    fields = ('observed', 'status', 'alive', 'place', 'activity')
     can_delete = False
+
+
+class TurtlePitTagAddInline(TabularInline):
+    """Tabular inline ModelFormset used during creation of a new Turtle instance.
+    """
+    model = TurtlePitTag
+    form = TurtlePitTagAddForm
+    formfield_overrides = {TextField: {'widget': TextInput}}
+    extra = 0
+    can_delete = False
+
+
+class TurtleIdentificationInline(TabularInline):
+    model = TurtleIdentification
+    fields = ('identification_type', 'identifier', 'comments')
+    formfield_overrides = {TextField: {'widget': TextInput(attrs={'class': 'vTextField'})}}
+    extra = 0
+    can_delete = False
+    verbose_name = 'other identification record'
+    verbose_name_plural = 'other identification records'
 
 
 class TurtleMeasurementInline(TabularInline):
     model = TurtleMeasurement
     classes = ('grp-collapse', 'grp-open')
-    extra = 0
     fields = ('measurement_type', 'value', 'comments')
+    extra = 0
     formfield_overrides = {TextField: {'widget': TextInput}}
     can_delete = False
+
+
+class TurtleInjuryInline(TabularInline):
+    model = TurtleDamage
+    form = TurtleInjuryForm
+    classes = ('grp-collapse', 'grp-open')
+    formfield_overrides = {TextField: {'widget': TextInput}}
+    extra = 0
+    can_delete = False
+    verbose_name = 'injury record'
+    verbose_name_plural = 'injury records'
+
+
+class TurtleFlipperDamageInline(TabularInline):
+    model = TurtleDamage
+    form = TurtleFlipperDamageForm
+    classes = ('grp-collapse', 'grp-open')
+    formfield_overrides = {TextField: {'widget': TextInput}}
+    extra = 0
+    can_delete = False
+    verbose_name = 'flipper damage record'
+    verbose_name_plural = 'flipper damage'
+
+
+class TurtleTissueSampleInline(TabularInline):
+    model = TurtleSample
+    form = TurtleSampleForm
+    classes = ('grp-collapse', 'grp-open')
+    extra = 0
+    can_delete = False
+    verbose_name = 'tissue sample'
+    verbose_name_plural = 'tissue samples'
 
 
 class TurtleDamageInline(TabularInline):
@@ -56,22 +133,19 @@ class TurtleAdmin(ModelAdmin):
     list_display = ('id', 'species', 'sex', 'status', 'location', 'created', 'name', 'cause_of_death')
     list_filter = ('species', 'sex', 'status', 'location', 'cause_of_death')
     search_fields = ('id', 'name', 'pit_tags__serial', 'tags__serial')
-    readonly_fields = ('created', 'entered_by')
-    fields = (
-        'created',
-        'entered_by',
-        'species',
-        'sex',
-        'status',
-        'location',
-        'name',
-        'cause_of_death',
-        'comments',
-    )
-    inlines = (
-        TurtleTagInline,
-        TurtlePitTagInline,
-    )
+
+    def get_form(self, request, obj=None, **kwargs):
+        if not obj:  # Add new instance.
+            kwargs['form'] = TurtleAddForm
+        else:
+            kwargs['form'] = TurtleChangeForm
+        return super().get_form(request, obj, **kwargs)
+
+    def get_inlines(self, request, obj):
+        if not obj:  # New instance.
+            return (TurtleTagAddInline, TurtlePitTagAddInline, TurtleIdentificationInline)
+        else:
+            return (TurtleTagInline, TurtlePitTagInline, TurtleIdentificationInline)
 
     def response_add(self, request, obj, post_url_continue=None):
         """Set the request user as the person who entered the record.
@@ -84,7 +158,7 @@ class TurtleAdmin(ModelAdmin):
 @register(TurtleObservation)
 class TurtleObservationAdmin(ModelAdmin):
     date_hierarchy = 'observed'
-    form = TurtleObservationAdminForm
+    form = TurtleObservationForm
     list_display = ('pk', 'turtle', 'observed', 'status', 'alive', 'place', 'activity')
     list_filter = ('status', 'alive', 'place', 'condition')
     search_fields = ('pk', 'turtle__pk', 'turtle__tags__serial', 'turtle__pit_tags__serial')
@@ -97,22 +171,24 @@ class TurtleObservationAdmin(ModelAdmin):
                 'fields': (
                     'turtle',
                     'observed',
-                    'date_convention',
-                    'status',
+                    'measurer',
+                    'measurer_reporter',
+                    'tagger',
+                    'reporter',
                     'alive',
+                    'place',
                     'activity',
                     'beach_position',
-                    'condition',
-                    'nesting',
                     'clutch_completed',
                     'number_of_eggs',
                     'egg_count_method',
+                    'comments',
                 ),
                 'classes': ('grp-collapse', 'grp-open'),
             },
         ),
         (
-            'Tag scars',
+            'Flipper tag scars',
             {
                 'fields': (
                     'scars_left_scale_1',
@@ -126,34 +202,22 @@ class TurtleObservationAdmin(ModelAdmin):
             },
         ),
         (
-            'People',
+            'Location',
             {
                 'fields': (
-                    'measurer',
-                    'measurer_reporter',
-                    'tagger',
-                    'reporter',
-                ),
-                'classes': ('grp-collapse', 'grp-open'),
-            },
-        ),
-        (
-            'Place',
-            {
-                'fields': (
-                    'place',
-                    'place_description',
                     'point',
                 ),
                 'classes': ('grp-collapse', 'grp-open'),
             },
         ),
     )
-    formfield_overrides = FORMFIELD_OVERRIDES
     inlines = (
         TurtleMeasurementInline,
-        TurtleDamageInline,
+        TurtleFlipperDamageInline,
+        TurtleInjuryInline,
+        TurtleTissueSampleInline,
     )
+    formfield_overrides = FORMFIELD_OVERRIDES
 
     def response_add(self, request, obj, post_url_continue=None):
         """Set the request user as the person who entered the record.
