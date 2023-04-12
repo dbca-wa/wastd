@@ -164,12 +164,12 @@ class TurtleObservation(models.Model):
         ('U', 'Unknown'),
     )
     BEACH_POSITION_CHOICES = (
+        ('?', 'Not listed - Nesting event'),
         ('A', 'Above high water - Nesting event'),
         ('B', 'At high water - Nesting event'),
         ('C', 'Below high water - Nesting event'),
         ('D', 'Edge of spinifex (beach veg line) - Nesting event'),
         ('E', 'In spinifex (among beach veg) - Nesting event'),
-        ('?', 'Not listed - Nesting event'),
     )
     ACTIVITY_CHOICES = (
         ('L', 'Arriving - Nesting'),
@@ -231,12 +231,12 @@ class TurtleObservation(models.Model):
     scars_right = models.BooleanField(null=True)
     transferid = models.IntegerField(blank=True, null=True)
     mund = models.BooleanField(null=True)
-    scars_left_scale_1 = models.BooleanField(null=True)
-    scars_left_scale_2 = models.BooleanField(null=True)
-    scars_left_scale_3 = models.BooleanField(null=True)
-    scars_right_scale_1 = models.BooleanField(null=True)
-    scars_right_scale_2 = models.BooleanField(null=True)
-    scars_right_scale_3 = models.BooleanField(null=True)
+    scars_left_scale_1 = models.BooleanField(null=True, help_text='Left flipper scale closest to body')
+    scars_left_scale_2 = models.BooleanField(null=True, help_text='Left flipper scale 2nd from body')
+    scars_left_scale_3 = models.BooleanField(null=True, help_text='Left flipper scale 3rd from body')
+    scars_right_scale_1 = models.BooleanField(null=True, help_text='Right flipper scale closest to body')
+    scars_right_scale_2 = models.BooleanField(null=True, help_text='Right flipper scale 2nd from body')
+    scars_right_scale_3 = models.BooleanField(null=True, help_text='Right flipper scale 3rd from body')
     cc_length_not_measured = models.BooleanField(null=True)
     cc_notch_length_not_measured = models.BooleanField(null=True)
     cc_width_not_measured = models.BooleanField(null=True)
@@ -372,7 +372,10 @@ class MeasurementType(models.Model):
     comments = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return self.description
+        if self.unit:
+            return f"{self.description} ({self.unit})"
+        else:
+            return self.description
 
 
 class TurtleMeasurement(models.Model):
