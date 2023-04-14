@@ -83,7 +83,7 @@
                 <td>{{ obj.get_sex_display }}</td>
                 <td>{{ obj.get_tags_description }}</td>
                 <td>{{ obj.location.name }}</td>
-                <td>{{ obj.date_entered|date:"j M Y" }}</td>
+                <td>{{ obj.created|date:"j M Y" }}</td>
                 <td>{{ obj.name|default_if_none:"" }}</td>
                 <td>{{ obj.status.description|default_if_none:"" }}</td>
                 <td>{{ obj.turtleobservation_set.count }}</td>

@@ -51,12 +51,12 @@
             {% for obj in object_list %}
             <tr>
                 <td>{{ obj.pk }}</td>
-                <td><a href="{{ obj.get_absolute_url }}">{{ obj.observation_datetime|date:"D, j M Y H:i" }}</a></td>
+                <td><a href="{{ obj.get_absolute_url }}">{{ obj.observed|date:"D, j M Y H:i" }}</a></td>
                 <td><a href="{{ obj.turtle.get_absolute_url }}">{{ obj.turtle }}</a></td>
                 <td>{{ obj.alive|yesno:"Yes,No,Unknown" }}</td>
                 <td>{{ obj.place|default_if_none:"" }}</td>
-                <td>{{ obj.activity|default_if_none:"" }}</td>
-                <td>{{ obj.tagger_person.name|default_if_none:"" }}</td>
+                <td>{{ obj.get_activity_display|default_if_none:"" }}</td>
+                <td>{{ obj.tagger.name|default_if_none:"" }}</td>
                 <td>{% if obj.point %}<i class="fa-solid fa-location-pin"></i>{% endif %}</td>
             </tr>
             {% endfor %}
