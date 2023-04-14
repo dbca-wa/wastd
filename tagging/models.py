@@ -604,4 +604,4 @@ class TurtleIdentification(models.Model):
     comments = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return f"{self.identifier} ({self.get_identification_type_display})"
+        return self.identifier
