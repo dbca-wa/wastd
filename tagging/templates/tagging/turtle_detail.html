@@ -63,11 +63,11 @@
                 </tr>
                 <tr>
                     <th>Date entered</th>
-                    <td>{{ object.date_entered|date:"j-M-Y" }}</td>
+                    <td>{{ object.created|date:"j-M-Y" }}</td>
                 </tr>
                 <tr>
                     <th>Entered by</th>
-                    <td>{{ object.entered_by_person.name|default_if_none:"" }}</td>
+                    <td>{{ object.entered_by.name|default_if_none:"" }}</td>
                 </tr>
                 <tr>
                     <th>Name</th>
@@ -201,12 +201,12 @@
             <tbody>
                 {% for obs in object.turtleobservation_set.all %}
                 <tr>
-                    <td><a href="{{ obs.get_absolute_url }}">{{ obs.get_observation_datetime_awst|date:"D, j M Y H:i" }}</a></td>
-                    <td>{{ obs.observation_status }}</td>
+                    <td><a href="{{ obs.get_absolute_url }}">{{ obs.get_observed_awst|date:"D, j M Y H:i" }}</a></td>
+                    <td>{{ obs.get_status_display }}</td>
                     <td>{{ obs.alive|yesno:"Yes,No,Unknown" }}</td>
                     <td>{{ obs.place.name|default_if_none:"" }}</td>
                     <td>{{ obs.nesting|yesno:"Yes,No,Unknown" }}</td>
-                    <td>{{ obs.activity.description|default_if_none:"" }}</td>
+                    <td>{{ obs.get_activity_display|default_if_none:"" }}</td>
                     <td>{% if obs.point %}<i class="fa-solid fa-location-pin"></i>{% endif %}</td>
                 </tr>
                 {% endfor %}

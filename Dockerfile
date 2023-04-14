@@ -33,10 +33,10 @@ FROM python_libs
 COPY gunicorn.py manage.py ./
 COPY observations ./observations
 COPY shared ./shared
-COPY tagging ./tagging
 COPY users ./users
 COPY wastd ./wastd
 COPY wamtram ./wamtram
+COPY tagging ./tagging
 RUN python manage.py collectstatic --noinput
 # Run the application as the www-data user.
 USER www-data

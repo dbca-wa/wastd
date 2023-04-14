@@ -16,6 +16,22 @@
     <div class="col">
         <h2>Turtle observation ID {{ object.pk }}</h2>
     </div>
+    <div class="col-xs-12 col-sm-6">
+        <span class="float-right">
+            <!-- FIXME: proper permissions check -->
+            {% if user.is_staff %}
+            <a class="btn btn-primary" href="{% url 'admin:tagging_turtleobservation_change' object_id=object.pk %}">
+                <i class="fa-solid fa-pencil"></i>
+                Change observation details
+            </a>
+            {% else %}
+            <a class="btn btn-primary disabled" href="">
+                <i class="fa-solid fa-pencil"></i>
+                Change observation details
+            </a>
+            {% endif %}
+        </span>
+    </div>
 </div>
 
 <div class="row">
@@ -23,8 +39,8 @@
         <table class="table table-striped table-bordered table-sm">
             <tbody>
                 <tr>
-                    <th>Observation time</th>
-                    <td>{{ object.observation_datetime|date:"D, j M Y H:i" }}</td>
+                    <th>Observed</th>
+                    <td>{{ object.observed|date:"D, j M Y H:i" }}</td>
                 </tr>
                 <tr>
                     <th>Turtle</th>
@@ -32,19 +48,19 @@
                 </tr>
                 <tr>
                     <th>Tagger</th>
-                    <td>{{ object.tagger_person.name|default_if_none:"" }}</td>
+                    <td>{{ object.tagger.name|default_if_none:"" }}</td>
                 </tr>
                 <tr>
                     <th>Reporter</th>
-                    <td>{{ object.reporter_person.name|default_if_none:"" }}</td>
+                    <td>{{ object.reporter.name|default_if_none:"" }}</td>
                 </tr>
                 <tr>
                     <th>Measurer</th>
-                    <td>{{ object.measurer_person.name|default_if_none:"" }}</td>
+                    <td>{{ object.measurer.name|default_if_none:"" }}</td>
                 </tr>
                 <tr>
                     <th>Measurer Reporter</th>
-                    <td>{{ object.measurer_reporter_person.name|default_if_none:"" }}</td>
+                    <td>{{ object.measurer_reporter.name|default_if_none:"" }}</td>
                 </tr>
                 <tr>
                     <th>Action taken</th>
@@ -90,7 +106,7 @@
                 </tr>
                 <tr>
                     <th>Activity</th>
-                    <td>{{ object.activity|default_if_none:"" }}</td>
+                    <td>{{ object.get_activity_display|default_if_none:"" }}</td>
                 </tr>
                 <tr>
                     <th>Beach position</th>
@@ -166,7 +182,7 @@
 <div class="row">
     <div class="col">
         <h3>Measurements</h3>
-        {% if object.measurement_set.exists %}
+        {% if object.turtlemeasurement_set.exists %}
         <table class="table table-striped table-bordered table-sm">
             <tbody>
                 <tr>
@@ -174,7 +190,7 @@
                     <th>Value</th>
                     <th>Comments</th>
                 </tr>
-                {% for measure in object.measurement_set.all %}
+                {% for measure in object.turtlemeasurement_set.all %}
                 <tr>
                     <td>{{ measure.measurement_type }}</td>
                     <td>{{ measure }}</td>
@@ -249,8 +265,8 @@
     <div class="col">
         <div class="alert alert-secondary">
             <p><strong>Observation details</strong></p>
-            <p>Entered by: {{ object.entered_by_person.name|default_if_none:"" }}</p>
-            <p>Date entered: {{ object.date_entered|date:"j M Y" }}</p>
+            <p>Entered by: {{ object.entered_by.name|default_if_none:"" }}</p>
+            <p>Date entered: {{ object.created|date:"j-M-Y" }}</p>
         </div>
     </div>
 </div>
