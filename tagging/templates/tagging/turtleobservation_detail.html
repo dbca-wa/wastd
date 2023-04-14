@@ -252,6 +252,30 @@
     </div>
 </div>
 
+<div class="row">
+    <div class="col">
+        <h3>Tissue samples</h3>
+        {% if object.samples.exists %}
+        <table class="table table-striped table-bordered table-sm">
+            <tbody>
+                <tr>
+                    <th>Type</th>
+                    <th>Label</th>
+                </tr>
+                {% for sample in object.samples.all %}
+                <tr>
+                    <td>{{ sample.get_tissue_type_display }}</td>
+                    <td>{{ sample.label|default_if_none:"" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>Not recorded.</p>
+        {% endif %}
+    </div>
+</div>
+
 {% if observation_points %}
 <div class="row">
     <div class="col">
