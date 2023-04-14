@@ -5,25 +5,6 @@
 <!-- Search bar -->
 <div class="row">
     <div class="col-xs-12 col-sm-6">
-        {% comment %}
-        <div class="accordion" id="filterTurtles">
-            <div class="card">
-                <div class="card-header p-0" id="headingFilterTurtles">
-                    <h5 class="m-0">
-                        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseFilter" aria-expanded="true" aria-controls="collapseFilter">
-                            <i class="fa-solid fa-square-caret-down" aria-hidden="true"></i>
-                            Filter/search turtles
-                        </button>
-                    </h5>
-                </div>
-                <div id="collapseFilter" class="collapse show" aria-labelledby="headingFilterTurtles" data-parent="#filterTurtles">
-                    <div class="card-body p-2">
-                        {% crispy search_form %}
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% endcomment %}
         <form action="" method="get">
             <input id="search_field" type="text" class="form-control" name="q" placeholder="Search turtles (ID, tags, name, etc.)" value="{{ query_string }}">
         </form>
@@ -85,7 +66,7 @@
                 <td>{{ obj.location.name }}</td>
                 <td>{{ obj.created|date:"j M Y" }}</td>
                 <td>{{ obj.name|default_if_none:"" }}</td>
-                <td>{{ obj.status.description|default_if_none:"" }}</td>
+                <td>{{ obj.get_status_display|default_if_none:"" }}</td>
                 <td>{{ obj.turtleobservation_set.count }}</td>
                 <td>{{ obj.get_cause_of_death_display|default_if_none:"" }}</td>
             </tr>
