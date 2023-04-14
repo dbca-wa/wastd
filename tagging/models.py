@@ -477,7 +477,7 @@ class TurtleTagObservation(models.Model):
     def __str__(self):
         d = self.observation.observed.strftime("%c")
         if self.status:
-            return f"{self.tag.serial} ({d}) - {self.get_status_display}"
+            return f"{self.tag.serial} ({d}) - {self.get_status_display()}"
         else:
             return f"{self.tag.serial} ({d})"
 
@@ -507,7 +507,7 @@ class TurtlePitTagObservation(models.Model):
     def __str__(self):
         d = self.observation.observed.strftime("%c")
         if self.status:
-            return f"{self.tag.serial} ({d}) - {self.get_status_display}"
+            return f"{self.tag.serial} ({d}) - {self.get_status_display()}"
         else:
             return f"{self.tag.serial} ({d})"
 
@@ -548,9 +548,9 @@ class TurtleSample(models.Model):
     def __str__(self):
         d = self.observation.observed.strftime("%c")
         if self.label:
-            return f"{self.get_tissue_type_display} ({d}) - {self.label}"
+            return f"{self.get_tissue_type_display()} ({d}) - {self.label}"
         else:
-            return f"{self.get_tissue_type_display} ({d})"
+            return f"{self.get_tissue_type_display()} ({d})"
 
 
 class TurtleIdentification(models.Model):
@@ -604,4 +604,4 @@ class TurtleIdentification(models.Model):
     comments = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return self.identifier
+        return f"{self.identifier} ({self.get_identification_type_display()})"
