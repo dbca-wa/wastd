@@ -55,7 +55,7 @@
                 </tr>
                 <tr>
                     <th>Status</th>
-                    <td>{{ object.status.description|default_if_none:"" }}</td>
+                    <td>{{ object.get_status_display|default_if_none:"" }}</td>
                 </tr>
                 <tr>
                     <th>Nesting/other group</th>
@@ -90,17 +90,6 @@
     <div class="col">
         <h3>Tags</h3>
     </div>
-    {% comment %}
-    <div class="col">
-        <span class="float-right">
-            {# FIXME: permissions check #}
-            <a class="btn btn-primary" href="{% url 'tagging:turtle_tags_update' pk=object.pk %}">
-                <i class="fa-solid fa-pencil"></i>
-                Update tags
-            </a>
-        </span>
-    </div>
-    {% endcomment %}
 </div>
 {% if object.tags.count %}
 <div class="row">
