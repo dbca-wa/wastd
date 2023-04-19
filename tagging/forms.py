@@ -17,17 +17,6 @@ from .models import (
 class TurtleAddForm(forms.ModelForm):
     """A modified form to allow some additional recordkeeping on creation of new Turtle instances.
     """
-    FLIPPER_CHOICES = (
-        ('l1', 'Left flipper scale closest to body'),
-        ('l2', 'Left flipper scale 2nd from body'),
-        ('l3', 'Left flipper scale 3rd from body'),
-        ('r1', 'Right flipper scale closest to body'),
-        ('r2', 'Right flipper scale 2nd from body'),
-        ('r3', 'Right flipper scale 3rd from body'),
-    )
-    #prev_tags_lost = forms.BooleanField(required=False, label='All previous tags and IDs lost')
-    #scars_not_checked = forms.BooleanField(required=False, label='Tag scars were not checked')
-    #flipper_tag_scars = forms.MultipleChoiceField(choices=FLIPPER_CHOICES, required=False)
 
     class Meta:
         model = Turtle
@@ -36,9 +25,6 @@ class TurtleAddForm(forms.ModelForm):
             'sex',
             'name',
             'comments',
-            #'prev_tags_lost',
-            #'scars_not_checked',
-            #'flipper_tag_scars',
         )
 
     def __init__(self, *args, **kwargs):
@@ -83,6 +69,7 @@ class TurtleObservationForm(forms.ModelForm):
         observed = self.cleaned_data['observed']
         if observed >= datetime.now().astimezone(settings.AWST):
             raise ValidationError("Observations cannot be recorded in the future")
+        return observed
 
 
 class TurtleFlipperDamageForm(forms.ModelForm):
@@ -145,6 +132,13 @@ class TurtleSampleForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['label'].required = True
+
+
+class TurtleTagForm(forms.ModelForm):
+
+    class Meta:
+        model = TurtleTag
+        fields = ('serial', 'side', 'status', 'return_date', 'return_condition', 'comments')
 
 
 class TurtleTagAddForm(forms.ModelForm):

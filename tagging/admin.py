@@ -12,6 +12,7 @@ from .forms import (
     TurtleFlipperDamageForm,
     TurtleInjuryForm,
     TurtleSampleForm,
+    TurtleTagForm,
     TurtleTagAddForm,
     TurtlePitTagAddForm,
 )
@@ -31,10 +32,10 @@ class TurtleTagInline(TabularInline):
     """Tabular inline ModelFormset used during update of an existing Turtle instance.
     """
     model = TurtleTag
-    fields = ('serial', 'side', 'status', 'return_date', 'return_condition', 'comments')
+    form = TurtleTagForm
     formfield_overrides = {TextField: {'widget': TextInput}}
     extra = 0
-    can_delete = False
+    can_delete = True
 
 
 class TurtleTagAddInline(TabularInline):
@@ -54,7 +55,7 @@ class TurtlePitTagInline(TabularInline):
     fields = ('serial', 'status', 'return_date', 'return_condition', 'comments')
     formfield_overrides = {TextField: {'widget': TextInput}}
     extra = 0
-    can_delete = False
+    can_delete = True
 
 
 class TurtlePitTagAddInline(TabularInline):
@@ -77,56 +78,6 @@ class TurtleIdentificationInline(TabularInline):
     verbose_name_plural = 'other identification records'
 
 
-class TurtleMeasurementInline(TabularInline):
-    model = TurtleMeasurement
-    classes = ('grp-collapse', 'grp-open')
-    fields = ('measurement_type', 'value', 'comments')
-    extra = 0
-    formfield_overrides = {TextField: {'widget': TextInput}}
-    can_delete = False
-
-
-class TurtleInjuryInline(TabularInline):
-    model = TurtleDamage
-    form = TurtleInjuryForm
-    classes = ('grp-collapse', 'grp-open')
-    formfield_overrides = {TextField: {'widget': TextInput}}
-    extra = 0
-    can_delete = False
-    verbose_name = 'injury record'
-    verbose_name_plural = 'injury records'
-
-
-class TurtleFlipperDamageInline(TabularInline):
-    model = TurtleDamage
-    form = TurtleFlipperDamageForm
-    classes = ('grp-collapse', 'grp-open')
-    formfield_overrides = {TextField: {'widget': TextInput}}
-    extra = 0
-    can_delete = False
-    verbose_name = 'flipper damage record'
-    verbose_name_plural = 'flipper damage'
-
-
-class TurtleTissueSampleInline(TabularInline):
-    model = TurtleSample
-    form = TurtleSampleForm
-    classes = ('grp-collapse', 'grp-open')
-    extra = 0
-    can_delete = False
-    verbose_name = 'tissue sample'
-    verbose_name_plural = 'tissue samples'
-
-
-class TurtleDamageInline(TabularInline):
-    model = TurtleDamage
-    classes = ('grp-collapse', 'grp-open')
-    extra = 0
-    fields = ('body_part', 'damage', 'cause', 'comments')
-    formfield_overrides = {TextField: {'widget': TextInput}}
-    can_delete = False
-
-
 @register(Turtle)
 class TurtleAdmin(ModelAdmin):
     date_hierarchy = 'created'
@@ -142,7 +93,7 @@ class TurtleAdmin(ModelAdmin):
         return super().get_form(request, obj, **kwargs)
 
     def get_inlines(self, request, obj):
-        if not obj:  # New instance.
+        if not obj:  # New instance, use different inline forms.
             return (TurtleTagAddInline, TurtlePitTagAddInline, TurtleIdentificationInline)
         else:
             return (TurtleTagInline, TurtlePitTagInline, TurtleIdentificationInline)
@@ -155,11 +106,52 @@ class TurtleAdmin(ModelAdmin):
         return super().response_add(request, obj, post_url_continue)
 
 
+class TurtleMeasurementInline(TabularInline):
+    model = TurtleMeasurement
+    classes = ('grp-collapse', 'grp-open')
+    fields = ('measurement_type', 'value', 'comments')
+    extra = 0
+    formfield_overrides = {TextField: {'widget': TextInput}}
+    can_delete = False
+
+
+class TurtleFlipperDamageInline(TabularInline):
+    model = TurtleDamage
+    form = TurtleFlipperDamageForm
+    classes = ('grp-collapse', 'grp-open')
+    formfield_overrides = {TextField: {'widget': TextInput}}
+    extra = 0
+    can_delete = False
+    verbose_name = 'flipper damage record'
+    verbose_name_plural = 'flipper damage'
+
+
+class TurtleInjuryInline(TabularInline):
+    model = TurtleDamage
+    form = TurtleInjuryForm
+    classes = ('grp-collapse', 'grp-open')
+    formfield_overrides = {TextField: {'widget': TextInput}}
+    extra = 0
+    can_delete = False
+    verbose_name = 'injury record'
+    verbose_name_plural = 'injury records'
+
+
+class TurtleTissueSampleInline(TabularInline):
+    model = TurtleSample
+    form = TurtleSampleForm
+    classes = ('grp-collapse', 'grp-open')
+    extra = 0
+    can_delete = False
+    verbose_name = 'tissue sample'
+    verbose_name_plural = 'tissue samples'
+
+
 @register(TurtleObservation)
 class TurtleObservationAdmin(ModelAdmin):
     date_hierarchy = 'observed'
     form = TurtleObservationForm
-    list_display = ('pk', 'turtle', 'observed', 'status', 'alive', 'place', 'activity')
+    list_display = ('pk', 'turtle_link', 'observed', 'status', 'alive', 'place', 'activity')
     list_filter = ('status', 'alive', 'place', 'condition')
     search_fields = ('pk', 'turtle__pk', 'turtle__tags__serial', 'turtle__pit_tags__serial')
     raw_id_fields = ('turtle', 'measurer', 'measurer_reporter', 'tagger', 'reporter')
@@ -216,8 +208,17 @@ class TurtleObservationAdmin(ModelAdmin):
         TurtleFlipperDamageInline,
         TurtleInjuryInline,
         TurtleTissueSampleInline,
+
     )
     formfield_overrides = FORMFIELD_OVERRIDES
+
+    def turtle_link(self, obj):
+        if obj.turtle:
+            url = reverse('admin:tagging_turtle_change', kwargs={'object_id': obj.turtle.pk})
+            link = f'<a href="{url}">{obj.turtle}</a>'
+            return mark_safe(link)
+        return ''
+    turtle_link.short_description = 'turtle'
 
     def response_add(self, request, obj, post_url_continue=None):
         """Set the request user as the person who entered the record.
@@ -256,10 +257,15 @@ class TurtleTagAdmin(ModelAdmin):
         return ''
     turtle_link.short_description = 'turtle'
 
+    def delete_model(self, request, obj):
+        """Objects deleted via the admin site should be deleted properly.
+        """
+        obj.delete(permanent=True)
+
 
 @register(TurtlePitTag)
 class TurtlePitTagAdmin(ModelAdmin):
-    list_display = ('serial', 'turtle', 'issue_location', 'custodian', 'field_person', 'status', 'return_date')
+    list_display = ('serial', 'turtle_link', 'issue_location', 'custodian', 'field_person', 'status', 'return_date')
     list_filter = ('status',)
     raw_id_fields = ('turtle', 'custodian', 'field_person')
     search_fields = ('serial', 'custodian__name', 'field_person__name')
@@ -277,3 +283,16 @@ class TurtlePitTagAdmin(ModelAdmin):
         'batch_number',
         'box_number',
     )
+
+    def turtle_link(self, obj):
+        if obj.turtle:
+            url = reverse('admin:tagging_turtle_change', kwargs={'object_id': obj.turtle.pk})
+            link = f'<a href="{url}">{obj.turtle}</a>'
+            return mark_safe(link)
+        return ''
+    turtle_link.short_description = 'turtle'
+
+    def delete_model(self, request, obj):
+        """Objects deleted via the admin site should be deleted properly.
+        """
+        obj.delete(permanent=True)
