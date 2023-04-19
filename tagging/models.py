@@ -301,15 +301,15 @@ class TurtleTag(models.Model):
         ('8YY', 'Tag unknown fate'),
         ('ATT', 'Tag attached to turtle'),
         ('DET', 'Tag taken from dead turtle'),
-        ('LOST', 'Tag Lost off turtle'),
+        ('LOST', 'Tag lost off turtle'),
         ('Nil', 'No tag applied'),
         ('POOR', 'Poor fix on turtle'),
         ('QRY', 'Unknown if tag present'),
-        ('RCL', 'Tag reclinched at Obs'),
-        ('RFX', 'Tag refixed at Obs'),
+        ('RCL', 'Tag reclinched at obs'),
+        ('RFX', 'Tag refixed at obs'),
         ('RMVD', 'Tag removed ex live turtle'),
         ('SAL', 'Salvage for reuse'),
-        ('U', 'Unused Tag'),
+        ('U', 'Unused tag'),
     )
 
     serial = models.CharField(max_length=64, unique=True)
@@ -326,6 +326,18 @@ class TurtleTag(models.Model):
 
     def __str__(self):
         return self.serial
+
+    def delete(self, permanent=False, *args, **kwargs):
+        '''Overide the delete method; in the absense of `permanent=True` being passed in, instead
+        set the the turtle, status and side fields to None.
+        '''
+        if not permanent:
+            self.turtle = None
+            self.status = None
+            self.side = None
+            super(TurtleTag, self).save(*args, **kwargs)
+        else:
+            super(TurtleTag, self).delete(*args, **kwargs)
 
 
 class TurtlePitTag(models.Model):
@@ -361,6 +373,17 @@ class TurtlePitTag(models.Model):
 
     def __str__(self):
         return self.serial
+
+    def delete(self, permanent=False, *args, **kwargs):
+        '''Overide the delete method; in the absense of `permanent=True` being passed in, instead
+        set the the turtle and status fields to None.
+        '''
+        if not permanent:
+            self.turtle = None
+            self.status = None
+            super(TurtlePitTag, self).save(*args, **kwargs)
+        else:
+            super(TurtlePitTag, self).delete(*args, **kwargs)
 
 
 class MeasurementType(models.Model):
@@ -467,7 +490,7 @@ class TurtleTagObservation(models.Model):
         ('RC', 'Insecure at Obs - reclinched in situ'),
         ('RQ', 'Insecure at Obs - Action ??'),
     )
-    tag = models.ForeignKey(TurtleTag, on_delete=models.PROTECT, related_name="observations")
+    tag = models.ForeignKey(TurtleTag, on_delete=models.CASCADE, related_name="observations")
     observation = models.ForeignKey(TurtleObservation, on_delete=models.PROTECT, related_name="tag_observations")
     status = models.CharField(max_length=8, choices=STATUS_CHOICES, blank=True, null=True)
     position = models.SmallIntegerField(blank=True, null=True)  # Scale no. (1, 2, 3)
@@ -497,7 +520,7 @@ class TurtlePitTagObservation(models.Model):
         ('RF', 'Right front'),
         ('Other', 'Other'),
     )
-    tag = models.ForeignKey(TurtlePitTag, on_delete=models.PROTECT, related_name="observations")
+    tag = models.ForeignKey(TurtlePitTag, on_delete=models.CASCADE, related_name="observations")
     observation = models.ForeignKey(TurtleObservation, on_delete=models.PROTECT, related_name="pit_tag_observations")
     status = models.CharField(max_length=8, choices=STATUS_CHOICES, blank=True, null=True)
     position = models.CharField(max_length=8, choices=STATUS_CHOICES, blank=True, null=True)
