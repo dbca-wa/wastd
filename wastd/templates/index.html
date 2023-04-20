@@ -48,11 +48,28 @@
   </p>
   <p>
     <a class="btn btn-primary btn-block"
-       href="{% url 'tagging:home' %}"
-       title="Browse, filter and search turtle tagging data">
-      Browse »
+      href="{% url 'tagging:turtle_list' %}"
+      title="Browse, filter and search turtle tagging data">
+      Browse tagged turtles »
     </a>
-    {% comment %}
+  </p>
+    <a class="btn btn-primary btn-block"
+      href="{% url 'tagging:turtleobservation_list' %}"
+      title="Browse, filter and search turtle tagging data">
+      Browse turtle observations »
+    </a>
+  <p>
+  {# FIXME: permissions check #}
+  {% if request.user.is_staff %}
+  <p>
+    <a class="btn btn-success btn-block"
+      href="{% url 'admin:app_list' 'tagging' %}"
+      title="Curate tagged turtles">
+      Curate »
+    </a>
+  </p>
+  {% endif %}
+  {% comment %}
     <a class="btn btn-primary btn-block"
        href="{% url 'observations:animalencounter-list' %}?encounter_type=tagging"
        title="Browse, filter and search animal encounters">
@@ -65,8 +82,7 @@
       Curate »
     </a>
     {% endif %}
-    {% endcomment %}
-  </p>
+  {% endcomment %}
 </div>
 
 <!-- Turtle Nests and Tracks column -->
