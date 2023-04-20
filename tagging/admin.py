@@ -1,4 +1,4 @@
-from django.contrib.admin import register, ModelAdmin, TabularInline
+from django.contrib.admin import register, ModelAdmin, TabularInline, SimpleListFilter
 from django.db.models import TextField
 from django.forms.widgets import TextInput
 from django.urls import reverse
@@ -229,10 +229,29 @@ class TurtleObservationAdmin(ModelAdmin):
         return super().response_add(request, obj, post_url_continue)
 
 
+class AssignedTurtleFilter(SimpleListFilter):
+    title = 'assigned to turtle'
+    parameter_name = 'assigned_turtle'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('true', 'Assigned to turtle'),
+            ('false', 'Not assigned to turtle')
+        )
+
+    def queryset(self, request, queryset):
+        if self.value():
+            if self.value() == "false":
+                return queryset.filter(turtle__isnull=True)
+            else:
+                return queryset.filter(turtle__isnull=False)
+
+
 @register(TurtleTag)
 class TurtleTagAdmin(ModelAdmin):
+
     list_display = ('serial', 'turtle_link', 'issue_location', 'custodian', 'field_person', 'status', 'return_date')
-    list_filter = ('status',)
+    list_filter = ('status', AssignedTurtleFilter)
     raw_id_fields = ('turtle', 'custodian', 'field_person')
     search_fields = ('serial', 'custodian__name', 'field_person__name')
     fields = (
@@ -266,7 +285,7 @@ class TurtleTagAdmin(ModelAdmin):
 @register(TurtlePitTag)
 class TurtlePitTagAdmin(ModelAdmin):
     list_display = ('serial', 'turtle_link', 'issue_location', 'custodian', 'field_person', 'status', 'return_date')
-    list_filter = ('status',)
+    list_filter = ('status', AssignedTurtleFilter)
     raw_id_fields = ('turtle', 'custodian', 'field_person')
     search_fields = ('serial', 'custodian__name', 'field_person__name')
     fields = (
