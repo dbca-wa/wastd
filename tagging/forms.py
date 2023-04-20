@@ -140,20 +140,57 @@ class TurtleTagForm(forms.ModelForm):
         model = TurtleTag
         fields = ('serial', 'side', 'status', 'return_date', 'return_condition', 'comments')
 
+    def clean_serial(self):
+        """Only validate serial number uniqueness on creation of new tags.
+        """
+        serial = self.cleaned_data['serial'].strip()
+        if not self.instance.pk:
+            if TurtleTag.objects.filter(serial__iexact=serial).exists():
+                existing_tag = TurtleTag.objects.get(serial__iexact=serial)
+                if existing_tag.turtle:
+                    raise ValidationError(f"Tag with serial {existing_tag.serial} already exists and is assigned to {existing_tag.turtle}")
+                else:
+                    raise ValidationError(f"Tag with serial {existing_tag.serial} already exists")
+            return serial
+        return serial
 
-class TurtleTagAddForm(forms.ModelForm):
+
+class TurtleTagAddForm(TurtleTagForm):
+    """Override the normal form, to be used when creating a new turtle.
+    """
     TAG_STATUS_CHOICES = (
         ('ATT', 'Tag attached to turtle'),
         ('POOR', 'Poor fix on turtle'),
     )
     status = forms.ChoiceField(required=True, choices=TAG_STATUS_CHOICES)
 
-    class Meta:
-        model = TurtleTag
+    class Meta(TurtleTagForm.Meta):
         fields = ('serial', 'side', 'status', 'comments')
 
 
-class TurtlePitTagAddForm(forms.ModelForm):
+class TurtlePitTagForm(forms.ModelForm):
+
+    class Meta:
+        fields = ('serial', 'status', 'return_date', 'return_condition', 'comments')
+        model = TurtlePitTag
+
+    def clean_serial(self):
+        """Only validate serial number uniqueness on creation of new tags.
+        """
+        serial = self.cleaned_data['serial'].strip()
+        if not self.instance.pk:
+            if TurtlePitTag.objects.filter(serial__iexact=serial).exists():
+                existing_tag = TurtlePitTag.objects.get(serial__iexact=serial)
+                if existing_tag.turtle:
+                    raise ValidationError(f"Pit tag with serial {existing_tag.serial} already exists and is assigned to {existing_tag.turtle}")
+                else:
+                    raise ValidationError(f"Pit tag with serial {existing_tag.serial} already exists")
+        return serial
+
+
+class TurtlePitTagAddForm(TurtlePitTagForm):
+    """Override the normal form, to be used when creating a new turtle.
+    """
     POSITION_CHOICES = (
         ('LF', 'Left front'),
         ('RF', 'Right front'),
@@ -167,6 +204,5 @@ class TurtlePitTagAddForm(forms.ModelForm):
     status = forms.ChoiceField(required=True, choices=PIT_TAG_STATUS_CHOICES)
     position = forms.ChoiceField(required=False, choices=POSITION_CHOICES)
 
-    class Meta:
-        model = TurtlePitTag
+    class Meta(TurtlePitTagForm.Meta):
         fields = ('serial', 'status', 'position', 'comments')

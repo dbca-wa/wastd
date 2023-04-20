@@ -14,6 +14,7 @@ from .forms import (
     TurtleSampleForm,
     TurtleTagForm,
     TurtleTagAddForm,
+    TurtlePitTagForm,
     TurtlePitTagAddForm,
 )
 from .models import (
@@ -52,7 +53,7 @@ class TurtlePitTagInline(TabularInline):
     """Tabular inline ModelFormset used during update of an existing Turtle instance.
     """
     model = TurtlePitTag
-    fields = ('serial', 'status', 'return_date', 'return_condition', 'comments')
+    form = TurtlePitTagForm
     formfield_overrides = {TextField: {'widget': TextInput}}
     extra = 0
     can_delete = True
