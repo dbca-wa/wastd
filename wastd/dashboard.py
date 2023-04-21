@@ -1,13 +1,9 @@
 from grappelli.dashboard import modules, Dashboard
-from grappelli.dashboard.utils import get_admin_site_name
 
 
 class AdminDashboard(Dashboard):
 
     def init_with_context(self, context):
-        site_name = get_admin_site_name(context)
-
-        # Col: WAStD
         self.children.append(
             modules.Group(
                 "WA Sea Turtle Database",
@@ -33,7 +29,6 @@ class AdminDashboard(Dashboard):
             )
         )
 
-        # Col: User Admin
         self.children.append(
             modules.Group(
                 "User Administration",
@@ -52,16 +47,18 @@ class AdminDashboard(Dashboard):
 
         self.children.append(
             modules.Group(
-                "Tagging",
+                "Animal Tagging",
                 column=3,
                 children=[
                     modules.AppList(
-                        "Turtle tagging",
+                        "Turtle tagging records",
                         models=(
                             "tagging.models.Turtle",
                             "tagging.models.TurtleObservation",
                             "tagging.models.TurtleTag",
                             "tagging.models.TurtlePitTag",
+                            "tagging.models.TagOrder",
+                            "tagging.models.TurtleSample",
                         )
                     )
                 ],

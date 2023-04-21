@@ -138,8 +138,8 @@ class Turtle(models.Model):
 
 class TurtleObservation(models.Model):
     CONDITION_CHOICES = (
-        ('D', 'Carcase - decomposed'),
-        ('F', 'Carcase - fresh'),
+        ('D', 'Carcass - decomposed'),
+        ('F', 'Carcass - fresh'),
         ('G', 'Good - fat'),
         ('H', 'Live & fit'),
         ('I', 'Injured but OK'),
