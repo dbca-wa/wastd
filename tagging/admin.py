@@ -18,6 +18,7 @@ from .forms import (
     TurtlePitTagAddForm,
 )
 from .models import (
+    TagOrder,
     Turtle,
     TurtleObservation,
     TurtleTag,
@@ -27,6 +28,14 @@ from .models import (
     TurtleSample,
     TurtleIdentification,
 )
+
+
+@register(TagOrder)
+class TagOrderAdmin(ModelAdmin):
+    date_hierarchy = 'order_date'
+    list_display = ('order_number', 'order_date', 'tag_prefix', 'start_tag_number', 'end_tag_number', 'total_tags')
+    list_filter = ('tag_prefix',)
+    search_fields = ('order_number', 'tag_prefix', 'paid_by', 'comments')
 
 
 class TurtleTagInline(TabularInline):
@@ -316,3 +325,24 @@ class TurtlePitTagAdmin(ModelAdmin):
         """Objects deleted via the admin site should be deleted properly.
         """
         obj.delete(permanent=True)
+
+
+@register(TurtleSample)
+class TurtleSampleAdmin(ModelAdmin):
+    date_hierarchy = 'sample_date'
+    list_display = ('id', 'observation_link', 'turtle_link', 'tissue_type', 'label', 'sample_date')
+    list_filter = ('tissue_type',)
+    raw_id_fields = ('observation',)
+    search_fields = ('label', 'comments')
+
+    def observation_link(self, obj):
+        url = reverse('admin:tagging_turtleobservation_change', kwargs={'object_id': obj.observation.pk})
+        link = f'<a href="{url}">{obj.observation}</a>'
+        return mark_safe(link)
+    observation_link.short_description = 'observation'
+
+    def turtle_link(self, obj):
+        url = reverse('admin:tagging_turtle_change', kwargs={'object_id': obj.observation.turtle.pk})
+        link = f'<a href="{url}">{obj.observation.turtle}</a>'
+        return mark_safe(link)
+    turtle_link.short_description = 'turtle'
