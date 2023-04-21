@@ -1,9 +1,14 @@
+from django.contrib import messages
 from django.contrib.admin import register, ModelAdmin, TabularInline, SimpleListFilter
 from django.db.models import TextField
 from django.forms.widgets import TextInput
+from django.http import HttpResponseRedirect
+from django.utils.html import format_html
 from django.urls import reverse
 from django.utils.html import mark_safe
+from django.utils.translation import gettext as _
 from shared.admin import FORMFIELD_OVERRIDES
+from urllib.parse import quote as urlquote
 
 from .forms import (
     TurtleAddForm,
@@ -113,7 +118,38 @@ class TurtleAdmin(ModelAdmin):
         """
         obj.entered_by = request.user
         obj.save()
+        # User clicked the 'Save and add observation' button.
+        if "_saveaddobservation" in request.POST:
+            opts = self.model._meta
+            msg_dict = {
+                'name': opts.verbose_name,
+                'obj': format_html('<a href="{}">{}</a>', urlquote(request.path), obj),
+            }
+            msg = format_html(
+                _('The {name} “{obj}” was added successfully. You may add an observation for it below.'),
+                **msg_dict
+            )
+            self.message_user(request, msg, messages.SUCCESS)
+            redirect_url = reverse('admin:tagging_turtleobservation_add') + f'?turtle={obj.pk}'
+            return HttpResponseRedirect(redirect_url)
         return super().response_add(request, obj, post_url_continue)
+
+    def response_change(self, request, obj):
+        # User clicked the 'Save and add observation' button.
+        if "_saveaddobservation" in request.POST:
+            opts = self.model._meta
+            msg_dict = {
+                'name': opts.verbose_name,
+                'obj': format_html('<a href="{}">{}</a>', urlquote(request.path), obj),
+            }
+            msg = format_html(
+                _('The {name} “{obj}” was changed successfully. You may add an observation for it below.'),
+                **msg_dict
+            )
+            self.message_user(request, msg, messages.SUCCESS)
+            redirect_url = reverse('admin:tagging_turtleobservation_add') + f'?turtle={obj.pk}'
+            return HttpResponseRedirect(redirect_url)
+        return super().response_change(request, obj)
 
 
 class TurtleMeasurementInline(TabularInline):
@@ -236,6 +272,7 @@ class TurtleObservationAdmin(ModelAdmin):
         obj.entered_by = request.user
         obj.save()
         post_url_continue = reverse('admin:tagging_turtleobservation_add') + f'?turtle={obj.pk}'
+        # TODO: for each tag present on the turtle, record a tag observation for it.
         return super().response_add(request, obj, post_url_continue)
 
 
@@ -294,10 +331,10 @@ class TurtleTagAdmin(ModelAdmin):
 
 @register(TurtlePitTag)
 class TurtlePitTagAdmin(ModelAdmin):
-    list_display = ('serial', 'turtle_link', 'issue_location', 'custodian', 'field_person', 'status', 'return_date')
+    list_display = ('serial', 'turtle_link', 'issue_location', 'custodian', 'field_person', 'status', 'return_date', 'batch_number', 'box_number')
     list_filter = ('status', AssignedTurtleFilter)
     raw_id_fields = ('turtle', 'custodian', 'field_person')
-    search_fields = ('serial', 'custodian__name', 'field_person__name')
+    search_fields = ('serial', 'custodian__name', 'field_person__name', 'batch_number', 'box_number')
     fields = (
         'serial',
         'turtle',

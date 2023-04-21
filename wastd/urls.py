@@ -13,10 +13,11 @@ from observations.models import Area, AnimalEncounter
 
 urlpatterns = [
     path("", TemplateView.as_view(template_name="index.html"), name="home"),
-    path("admin/", admin.site.urls),
     path("login/", LoginView.as_view(template_name="login.html"), name="login"),
     path("logout/", LogoutView.as_view(template_name="logged_out.html"), name="logout"),
     path("grappelli/", include("grappelli.urls")),
+    #path("grappelli-docs/", include('grappelli.urls_docs')),
+    path("admin/", admin.site.urls),
     path("ajax_select/", include("ajax_select.urls")),
     path("select2/", include("django_select2.urls")),
     path("users/", include(("users.urls", "users"), namespace="users")),
