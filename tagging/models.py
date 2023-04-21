@@ -525,12 +525,14 @@ class TurtlePitTagObservation(models.Model):
     POSITION_CHOICES = (
         ('LF', 'Left front'),
         ('RF', 'Right front'),
+        ('LR', 'Left rear'),
+        ('RR', 'Right rear'),
         ('Other', 'Other'),
     )
     tag = models.ForeignKey(TurtlePitTag, on_delete=models.CASCADE, related_name="observations")
     observation = models.ForeignKey(TurtleObservation, on_delete=models.PROTECT, related_name="pit_tag_observations")
     status = models.CharField(max_length=8, choices=STATUS_CHOICES, blank=True, null=True)
-    position = models.CharField(max_length=8, choices=STATUS_CHOICES, blank=True, null=True)
+    position = models.CharField(max_length=8, choices=POSITION_CHOICES, blank=True, null=True)
     checked = models.BooleanField(null=True)
     comments = models.TextField(blank=True, null=True)
 
