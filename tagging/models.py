@@ -31,24 +31,31 @@ class TurtleSpecies(models.Model):
 class Location(models.Model):
     name = models.CharField(max_length=128)
 
+    class Meta:
+        verbose_name_plural = 'turtle species'
+        ordering = ('name',)
+
     def __str__(self):
         return self.name
 
 
 class Place(models.Model):
     location = models.ForeignKey(Location, models.PROTECT, related_name='places')
-    name = models.CharField(max_length=128, blank=True, null=True)
+    name = models.CharField(max_length=128)
     rookery = models.BooleanField(null=True)
     beach_approach = models.CharField(max_length=64, blank=True, null=True)
     aspect = models.CharField(max_length=3, blank=True, null=True)
     point = models.PointField(srid=4326, blank=True, null=True)  # WGS 84
     comments = models.TextField(blank=True, null=True)
 
+    class Meta:
+        ordering = ('name',)
+
     def __str__(self):
-        if self.name:
-            return f"{self.location.name} - {self.name}"
+        if self.rookery:
+            return f"{self.location.name} - {self.name} (rookery)"
         else:
-            return f"{self.location.name}"
+            return f"{self.location.name} - {self.name}"
 
 
 class EntryBatch(models.Model):
