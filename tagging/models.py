@@ -346,6 +346,14 @@ class TurtleTag(models.Model):
         else:
             super(TurtleTag, self).delete(*args, **kwargs)
 
+    def is_attached(self):
+        '''Returns True if the tag is attached to a turtle, based on the status value.
+        '''
+        if self.status in ['ATT', 'RCL', 'RFX']:
+            return True
+        else:
+            return False
+
 
 class TurtlePitTag(models.Model):
     PIT_TAG_STATUS_CHOICES = (
@@ -391,6 +399,14 @@ class TurtlePitTag(models.Model):
             super(TurtlePitTag, self).save(*args, **kwargs)
         else:
             super(TurtlePitTag, self).delete(*args, **kwargs)
+
+    def is_attached(self):
+        '''Returns True if the tag is attached to a turtle, based on the status value.
+        '''
+        if self.status in ['ATT', 'POOR']:
+            return True
+        else:
+            return False
 
 
 class MeasurementType(models.Model):
