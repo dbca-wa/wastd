@@ -32,6 +32,8 @@ from .models import (
     TurtleDamage,
     TurtleSample,
     TurtleIdentification,
+    TurtleTagObservation,
+    TurtlePitTagObservation,
 )
 
 
@@ -193,6 +195,32 @@ class TurtleTissueSampleInline(TabularInline):
     verbose_name_plural = 'tissue samples'
 
 
+class TurtleTagObservationInline(TabularInline):
+    model = TurtleTagObservation
+    fields = ('tag', 'status', 'barnacles', 'comments')
+    classes = ('grp-collapse', 'grp-open')
+    formfield_overrides = {TextField: {'widget': TextInput}}
+    extra = 0
+    can_delete = True
+    readonly_fields = ('tag',)
+
+    def has_add_permission(self, request, obj):
+        return False
+
+
+class TurtlePitTagObservationInline(TabularInline):
+    model = TurtlePitTagObservation
+    fields = ('tag', 'status', 'position', 'checked', 'comments')
+    classes = ('grp-collapse', 'grp-open')
+    formfield_overrides = {TextField: {'widget': TextInput}}
+    extra = 0
+    can_delete = True
+    readonly_fields = ('tag',)
+
+    def has_add_permission(self, request, obj):
+        return False
+
+
 @register(TurtleObservation)
 class TurtleObservationAdmin(ModelAdmin):
     date_hierarchy = 'observed'
@@ -249,14 +277,25 @@ class TurtleObservationAdmin(ModelAdmin):
             },
         ),
     )
-    inlines = (
-        TurtleMeasurementInline,
-        TurtleFlipperDamageInline,
-        TurtleInjuryInline,
-        TurtleTissueSampleInline,
-
-    )
     formfield_overrides = FORMFIELD_OVERRIDES
+
+    def get_inlines(self, request, obj):
+        if not obj:  # New instance, use different inline forms.
+            return (
+                TurtleMeasurementInline,
+                TurtleFlipperDamageInline,
+                TurtleInjuryInline,
+                TurtleTissueSampleInline,
+            )
+        else:
+            return (
+                TurtleMeasurementInline,
+                TurtleFlipperDamageInline,
+                TurtleInjuryInline,
+                TurtleTissueSampleInline,
+                TurtleTagObservationInline,
+                TurtlePitTagObservationInline,
+            )
 
     def turtle_link(self, obj):
         if obj.turtle:
