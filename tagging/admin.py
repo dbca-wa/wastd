@@ -311,7 +311,6 @@ class TurtleObservationAdmin(ModelAdmin):
         """
         obj.entered_by = request.user
         obj.save()
-        post_url_continue = reverse('admin:tagging_turtleobservation_add') + f'?turtle={obj.pk}'
         # Record tag observations for attached tags.
         for tag in obj.turtle.tags.all():
             if tag.is_attached():
