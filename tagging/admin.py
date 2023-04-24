@@ -241,6 +241,7 @@ class TurtleObservationAdmin(ModelAdmin):
                     'measurer_reporter',
                     'tagger',
                     'reporter',
+                    'status',
                     'alive',
                     'place',
                     'activity',
@@ -311,7 +312,19 @@ class TurtleObservationAdmin(ModelAdmin):
         obj.entered_by = request.user
         obj.save()
         post_url_continue = reverse('admin:tagging_turtleobservation_add') + f'?turtle={obj.pk}'
-        # TODO: for each tag present on the turtle, record a tag observation for it.
+        # Record tag observations for attached tags.
+        for tag in obj.turtle.tags.all():
+            if tag.is_attached():
+                TurtleTagObservation.objects.create(
+                    tag=tag,
+                    observation=obj,
+                )
+        for pit_tag in obj.turtle.pit_tags.all():
+            if pit_tag.is_attached():
+                TurtlePitTagObservation.objects.create(
+                    tag=pit_tag,
+                    observation=obj,
+                )
         return super().response_add(request, obj, post_url_continue)
 
 

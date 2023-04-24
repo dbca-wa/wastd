@@ -59,6 +59,7 @@ class TurtleObservationForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields['status'].label = 'Observation type'
         self.fields['alive'].required = True
         self.fields['measurer'].required = True
         self.fields['measurer_reporter'].required = True
