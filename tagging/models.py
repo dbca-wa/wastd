@@ -253,7 +253,7 @@ class TurtleObservation(models.Model):
 
     def __str__(self):
         if self.status:
-            return f'{self.pk} ({self.get_observed_awst().isoformat()}) {(self.status)}'
+            return f'{self.pk} ({self.get_observed_awst().isoformat()}, {self.status})'
         else:
             return f'{self.pk} ({self.get_observed_awst().isoformat()})'
 

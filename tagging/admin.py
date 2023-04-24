@@ -311,6 +311,7 @@ class TurtleObservationAdmin(ModelAdmin):
         """
         obj.entered_by = request.user
         obj.save()
+
         # Record tag observations for attached tags.
         for tag in obj.turtle.tags.all():
             if tag.is_attached():
@@ -324,7 +325,39 @@ class TurtleObservationAdmin(ModelAdmin):
                     tag=pit_tag,
                     observation=obj,
                 )
+
+        if '_addanother' in request.POST:
+            opts = self.model._meta
+            msg_dict = {
+                'name': opts.verbose_name,
+                'obj': format_html('<a href="{}">{}</a>', urlquote(request.path), obj),
+            }
+            msg = format_html(
+                _('The {name} “{obj}” was added successfully. You may add another {name} below.'),
+                **msg_dict
+            )
+            self.message_user(request, msg, messages.SUCCESS)
+            redirect_url = reverse('admin:tagging_turtleobservation_add') + f'?turtle={obj.turtle.pk}'
+            return HttpResponseRedirect(redirect_url)
+
         return super().response_add(request, obj, post_url_continue)
+
+    def response_change(self, request, obj):
+        if '_addanother' in request.POST:
+            opts = self.model._meta
+            msg_dict = {
+                'name': opts.verbose_name,
+                'obj': format_html('<a href="{}">{}</a>', urlquote(request.path), obj),
+            }
+            msg = format_html(
+                _('The {name} “{obj}” was changed successfully. You may add another {name} below.'),
+                **msg_dict
+            )
+            self.message_user(request, msg, messages.SUCCESS)
+            redirect_url = reverse('admin:tagging_turtleobservation_add') + f'?turtle={obj.turtle.pk}'
+            return HttpResponseRedirect(redirect_url)
+
+        return super().response_change(request, obj)
 
 
 class AssignedTurtleFilter(SimpleListFilter):
