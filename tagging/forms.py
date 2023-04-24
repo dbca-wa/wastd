@@ -171,8 +171,8 @@ class TurtleTagAddForm(TurtleTagForm):
 class TurtlePitTagForm(forms.ModelForm):
 
     class Meta:
-        fields = ('serial', 'status', 'return_date', 'return_condition', 'comments')
         model = TurtlePitTag
+        fields = ('serial', 'status', 'return_date', 'return_condition', 'comments')
 
     def clean_serial(self):
         """Only validate serial number uniqueness on creation of new tags.
