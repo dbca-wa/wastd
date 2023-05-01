@@ -7,6 +7,7 @@ from djgeojson.views import GeoJSONLayerView, TiledGeoJSONLayerView
 from rest_framework.authtoken import views as drf_authviews
 
 from wastd.router import router
+from wastd.router import urlpatterns as api_v2_urlpatterns
 from observations import views as wastd_views
 from observations.models import Area, AnimalEncounter
 
@@ -25,6 +26,7 @@ urlpatterns = [
     path("observations/", include(("observations.urls"), namespace="observations")),
     # API
     path("api/1/", include((router.urls, "api"), namespace="api")),
+    path('api/2/', include((api_v2_urlpatterns, "wastd"), namespace="api_v2")),
     path("api-auth/", include(("rest_framework.urls", "api-auth"), namespace="rest_framework")),
     path("api-token-auth/", drf_authviews.obtain_auth_token, name="api-auth"),
     # Djgeojson

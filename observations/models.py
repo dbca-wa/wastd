@@ -1770,13 +1770,11 @@ class Encounter(PolymorphicModel, UrlsMixin, geo_models.Model):
     @property
     def leaflet_title(self):
         """A string for Leaflet map marker titles. Cache me as field."""
-        return "{0} {1} {2}".format(
-            ""
-            if not self.when
-            else self.when,  # ,.astimezone(tz.tzlocal()).strftime("%Y-%m-%d %H:%M %Z"),
+        return "{} {} {}".format(
+            self.when.astimezone(tz.tzlocal()).strftime("%d-%b-%Y %H:%M:%S") if self.when else "",
             self.get_encounter_type_display(),
             self.name or "",
-        )
+        ).strip()
 
     @property
     def leaflet_icon(self):
