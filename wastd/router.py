@@ -3,13 +3,28 @@ from rest_framework.routers import DefaultRouter
 from users import api as users_api
 from observations import api as observations_api
 
-from observations.api_v2 import EncounterListResource, EncounterDetailResource
+from observations.api_v2 import (
+    AreaListResource,
+    AreaDetailResource,
+    EncounterListResource,
+    EncounterDetailResource,
+    SurveyListResource,
+    SurveyDetailResource,
+    SurveyMediaAttachmentListResource,
+    SurveyMediaAttachmentDetailResource,
+)
 
 
 # V2 API URL patterns
 urlpatterns = [
+    path('areas/', AreaListResource.as_view(), name='area_list_resource'),
+    path('areas/<int:pk>/', AreaDetailResource.as_view(), name='area_detail_resource'),
     path('encounters/', EncounterListResource.as_view(), name='encounter_list_resource'),
     path('encounters/<int:pk>/', EncounterDetailResource.as_view(), name='encouter_detail_resource'),
+    path('surveys/', SurveyListResource.as_view(), name='survey_list_resource'),
+    path('surveys/<int:pk>/', SurveyDetailResource.as_view(), name='survey_detail_resource'),
+    path('survey-media-attachments/', SurveyMediaAttachmentListResource.as_view(), name='survey_media_attachment_list_resource'),
+    path('survey-media-attachments/<int:pk>/', SurveyMediaAttachmentDetailResource.as_view(), name='survey_media_attachment_detail_resource'),
 ]
 
 # V1 API router
