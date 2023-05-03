@@ -11,7 +11,7 @@ from users.api import FastUserSerializer
 from observations import models
 
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("turtles")
 
 # ----------------------------------------------------------------------------#
 # Areas, Surveys
@@ -564,7 +564,6 @@ class ObservationSerializer(ModelSerializer):
                 source=self.initial_data["encounter_source"],
                 source_id=self.initial_data["encounter_source_id"],
             )
-        # import ipdb; ipdb.set_trace()
         # Gate check: we want to ensure that duplicate objects are not created.
         duplicates = self.Meta.model.objects.filter(
             source=self.initial_data["source"], source_id=self.initial_data["source_id"]

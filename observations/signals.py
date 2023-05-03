@@ -18,7 +18,7 @@ from .models import (
 from .utils import guess_site, guess_area, claim_encounters
 
 
-LOGGER = logging.getLogger("wastd")
+LOGGER = logging.getLogger("turtles")
 
 
 @receiver(post_save, sender=Campaign)

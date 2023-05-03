@@ -10,10 +10,10 @@ from django.utils.deprecation import MiddlewareMixin
 from django.utils.functional import SimpleLazyObject
 from django.contrib.auth.middleware import AuthenticationMiddleware, get_user
 
-
 from config.settings.common import ENABLE_AUTH2_GROUPS, LOCAL_USERGROUPS
 
-logger = logging.getLogger(__name__)
+
+LOGGER = logging.getLogger("turtles")
 
 
 def sync_usergroups(user, groups):
@@ -91,7 +91,7 @@ class SSOLoginMiddleware(MiddlewareMixin):
     def process_request(self, request):
         User = get_user_model()
 
-        # logger.debug(f"[SSOLoginMiddleware.process_request] found request META: {str(request.META)}")
+        # LOGGER.debug(f"[SSOLoginMiddleware.process_request] found request META: {str(request.META)}")
 
         if (
             (
@@ -167,7 +167,7 @@ class SSOLoginMiddleware(MiddlewareMixin):
                     internal = [settings.INTERNAL_EMAIL_SUFFIXES]
                 if any([attributemap["email"].lower().endswith(x) for x in internal]):
 
-                    logger.info(
+                    LOGGER.info(
                         f"[SSOLoginMiddleware.process_request] default permissions assigned to user {user.email}"
                     )
 
@@ -186,7 +186,7 @@ class SSOLoginMiddleware(MiddlewareMixin):
             # If the user is not in Group "data viewer", forbid any further access
             # https://github.com/dbca-wa/wastd/issues/384
             if "data viewer" not in [g.name for g in user.groups.all()]:
-                logger.warning(
+                LOGGER.warning(
                     f"[SSOLoginMiddleware.process_request] rejected user without data viewer permission: {user.email}"
                 )
 
