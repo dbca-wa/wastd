@@ -300,9 +300,6 @@ class QualityControlMixin(models.Model):
         Curated data is deemed trustworthy by a subject matter expert.
         Revoking curation flags data for requiring changes by an expert.
         """
-        import ipdb
-
-        ipdb.set_trace()
         return
 
     def can_reject(self):
