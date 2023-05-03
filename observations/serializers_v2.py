@@ -165,3 +165,23 @@ def encounter_serializer(obj) -> Dict[str, Any]:
 class EncounterSerializer(object):
     def serialize(encounter):
         return encounter_serializer(encounter)
+
+
+def media_attachment_serializer(obj) -> Dict[str, Any]:
+    return {
+        'type': 'Feature',
+        'properties': {
+            'id': obj.pk,
+            'source': obj.encounter.source,
+            'source_id': obj.encounter.source_id,
+            'encounter': encounter_serializer(obj.encounter),
+            'media_type': obj.get_media_type_display(),
+            'title': obj.title,
+            'attachment': settings.MEDIA_URL + obj.attachment.name,  # FIXME: absolute URL
+        },
+    }
+
+
+class MediaAttachmentSerializer(object):
+    def serialize(obj):
+        return media_attachment_serializer(obj)
