@@ -4,7 +4,7 @@ import os
 
 from observations import utils, models
 
-LOGGER = logging.getLogger("wastd")
+LOGGER = logging.getLogger("turtles")
 
 
 def update_names():

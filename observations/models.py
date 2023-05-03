@@ -52,7 +52,7 @@ from users.models import User, Organisation
 from . import lookups
 
 
-LOGGER = logging.getLogger("wastd")
+LOGGER = logging.getLogger("turtles")
 
 
 def encounter_media(instance, filename):

@@ -22,7 +22,7 @@ class Command(BaseCommand):
     help = 'Runs automated QA/QC checks and flags records for curation'
 
     def handle(self, *args, **options):
-        logger = logging.getLogger('wastd')
+        logger = logging.getLogger('turtles')
         logger.info('Running automated QA/QC checks and flagging records for curation')
         system_user = User.objects.get(pk=1)
 

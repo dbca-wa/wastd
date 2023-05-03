@@ -1,8 +1,7 @@
 import logging
-
 from .models import User
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger("turtles")
 
 
 def transfer_user(old, new):
@@ -13,7 +12,7 @@ def transfer_user(old, new):
     * It updates the new User.aliases with the username,
       name, and aliases of the old User.
     * It marks the old User profile as "inactive". (Should it delete? Implications for ETL and user mapping!)
-    * It sends logger.info messages.
+    * It sends LOGGER.info messages.
 
     Arguments:
 
@@ -30,7 +29,7 @@ def transfer_user(old, new):
             "Same user, nothing to do. "
             "Only two different user profiles can be merged."
         )
-        logger.info(msg)
+        LOGGER.info(msg)
         return msg
 
     # ------------------------------------------------------------------------#
@@ -185,7 +184,7 @@ def transfer_user(old, new):
         )
     )
 
-    logger.info(msg)
+    LOGGER.info(msg)
     return msg
 
 
@@ -194,7 +193,7 @@ def change_user_for_area(old, new, area):
 
     This function has side effects:
     * It updates all FK and M2M from one user to another for a subset of data.
-    * It sends logger.info messages.
+    * It sends LOGGER.info messages.
 
     Arguments:
 
@@ -216,12 +215,12 @@ def change_user_for_area(old, new, area):
             "If you wanted to transfer data from one to another user, "
             "choose two different users."
         )
-        logger.info(msg)
+        LOGGER.info(msg)
         return msg
 
     if not area:
         msg = "No area selected, nothing to do. " "A locality is required."
-        logger.info(msg)
+        LOGGER.info(msg)
         return msg
 
     # ------------------------------------------------------------------------#
@@ -282,5 +281,5 @@ def change_user_for_area(old, new, area):
         svy.team.add(new)
         svy.save()
 
-    logger.info(msg)
+    LOGGER.info(msg)
     return msg

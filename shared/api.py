@@ -10,7 +10,7 @@ from rest_framework.settings import api_settings
 from observations.models import Observation, Encounter
 from .models import QualityControlMixin
 
-LOGGER = logging.getLogger("wastd")
+LOGGER = logging.getLogger("turtles")
 
 
 class CustomCSVRenderer(CSVRenderer):
