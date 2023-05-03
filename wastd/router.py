@@ -13,10 +13,13 @@ from observations.api_v2 import (
     SurveyMediaAttachmentListResource,
     SurveyMediaAttachmentDetailResource,
 )
+from users.api_v2 import UserListResource, UserDetailResource
 
 
 # V2 API URL patterns
 urlpatterns = [
+    path('users/', UserListResource.as_view(), name='user_list_resource'),
+    path('users/<int:pk>/', UserDetailResource.as_view(), name='user_detail_resource'),
     path('areas/', AreaListResource.as_view(), name='area_list_resource'),
     path('areas/<int:pk>/', AreaDetailResource.as_view(), name='area_detail_resource'),
     path('encounters/', EncounterListResource.as_view(), name='encounter_list_resource'),
