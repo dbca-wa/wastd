@@ -4,12 +4,14 @@ from .models import (
     Area,
     Survey,
     SurveyMediaAttachment,
+    MediaAttachment,
 )
 from .serializers_v2 import (
     EncounterSerializer,
     AreaSerializer,
     SurveySerializer,
     SurveyMediaAttachmentSerializer,
+    MediaAttachmentSerializer,
 )
 
 
@@ -62,3 +64,13 @@ class SurveyMediaAttachmentListResource(ListResourceView):
 class SurveyMediaAttachmentDetailResource(DetailResourceView):
     model = SurveyMediaAttachment
     serializer = SurveyMediaAttachmentSerializer
+
+
+class MediaAttachmentListResource(ListResourceView):
+    model = MediaAttachment
+    serializer = MediaAttachmentSerializer
+
+
+class MediaAttachmentDetailResource(DetailResourceView):
+    model = MediaAttachment
+    serializer = MediaAttachmentSerializer

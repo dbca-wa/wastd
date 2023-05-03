@@ -12,6 +12,8 @@ from observations.api_v2 import (
     SurveyDetailResource,
     SurveyMediaAttachmentListResource,
     SurveyMediaAttachmentDetailResource,
+    MediaAttachmentListResource,
+    MediaAttachmentDetailResource,
 )
 from users.api_v2 import UserListResource, UserDetailResource
 
@@ -28,6 +30,8 @@ urlpatterns = [
     path('surveys/<int:pk>/', SurveyDetailResource.as_view(), name='survey_detail_resource'),
     path('survey-media-attachments/', SurveyMediaAttachmentListResource.as_view(), name='survey_media_attachment_list_resource'),
     path('survey-media-attachments/<int:pk>/', SurveyMediaAttachmentDetailResource.as_view(), name='survey_media_attachment_detail_resource'),
+    path('media-attachments/', MediaAttachmentListResource.as_view(), name='media_attachment_list_resource'),
+    path('media-attachments/<int:pk>/', MediaAttachmentDetailResource.as_view(), name='media_attachment_detail_resource'),
 ]
 
 # V1 API router
