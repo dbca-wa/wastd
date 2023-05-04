@@ -49,7 +49,7 @@ class Place(models.Model):
     comments = models.TextField(blank=True, null=True)
 
     class Meta:
-        ordering = ('name',)
+        ordering = ('location__name', 'name')
 
     def __str__(self):
         if self.rookery:
@@ -562,22 +562,22 @@ class TurtlePitTagObservation(models.Model):
 
 class TurtleSample(models.Model):
     TISSUE_TYPE_CHOICES = (
-        ('1', 'Blood'),
-        ('2', 'Skin'),
-        ('3', 'Muscle - Pectoral'),
-        ('4', 'Liver'),
-        ('5', 'Heart'),
-        ('6', 'Kidney'),
-        ('7', 'Gonad'),
-        ('8', 'Fat - depot storage'),
-        ('9', 'Biopsy - gen'),
-        ('B', 'Brain'),
         ('D', 'A-Tract contents'),
-        ('D2', 'Faecal matter'),
+        ('9', 'Biopsy - gen'),
+        ('1', 'Blood'),
+        ('B', 'Brain'),
         ('E', 'Epibiota'),
         ('EGGs', 'Eggs'),
+        ('8', 'Fat - depot storage'),
+        ('D2', 'Faecal matter'),
+        ('7', 'Gonad'),
+        ('5', 'Heart'),
         ('K', 'Keratin - Fnail'),
+        ('6', 'Kidney'),
+        ('4', 'Liver'),
+        ('3', 'Muscle - Pectoral'),
         ('S', 'Skeletal'),
+        ('2', 'Skin'),
         ('W', 'Whole animal'),
     )
     observation = models.ForeignKey(TurtleObservation, on_delete=models.PROTECT, related_name="samples")
