@@ -85,7 +85,6 @@ class Turtle(models.Model):
         ('F', 'Female'),
         ('M', 'Male'),
         ('U', 'Unknown'),
-        ('I', 'Indeterminate'),
     )
     STATUS_CHOICES = (
         ('A', 'Tag Turtles'),
@@ -106,7 +105,6 @@ class Turtle(models.Model):
     sex = models.CharField(max_length=1, choices=SEX_CHOICES)
     status = models.CharField(max_length=1, choices=STATUS_CHOICES, blank=True, null=True)
     name = models.CharField(max_length=128, blank=True, null=True)
-    # Query: is location a valid field for things that migrate and move around?
     location = models.ForeignKey(Location, models.PROTECT, related_name='turtles', blank=True, null=True)
     cause_of_death = models.CharField(max_length=2, choices=CAUSE_OF_DEATH_CHOICES, blank=True, null=True)
     re_entered_population = models.CharField(max_length=1, blank=True, null=True)
@@ -354,6 +352,14 @@ class TurtleTag(models.Model):
         else:
             return False
 
+    def get_newest_observation(self):
+        '''Returns the most-recent observation for this tag, or None.
+        '''
+        if self.observations.exists():
+            return self.observations.order_by('-observation__observed').first()
+        else:
+            return None
+
 
 class TurtlePitTag(models.Model):
     PIT_TAG_STATUS_CHOICES = (
@@ -372,7 +378,6 @@ class TurtlePitTag(models.Model):
         ('SAL', 'Salvaged'),
         ('U', 'Unused PIT'),
     )
-
     serial = models.CharField(max_length=64, unique=True)
     turtle = models.ForeignKey(Turtle, models.PROTECT, related_name='pit_tags', blank=True, null=True)
     issue_location = models.CharField(max_length=128, blank=True, null=True)
@@ -400,13 +405,21 @@ class TurtlePitTag(models.Model):
         else:
             super(TurtlePitTag, self).delete(*args, **kwargs)
 
-    def is_attached(self):
-        '''Returns True if the tag is attached to a turtle, based on the status value.
+    def is_functional(self):
+        '''Returns True if the tag is attached to a turtle and functional, based on the status value.
         '''
         if self.status in ['ATT', 'POOR']:
             return True
         else:
             return False
+
+    def get_newest_observation(self):
+        '''Returns the most-recent observation for this tag, or None.
+        '''
+        if self.observations.exists():
+            return self.observations.order_by('-observation__observed').first()
+        else:
+            return None
 
 
 class MeasurementType(models.Model):
