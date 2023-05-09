@@ -5,12 +5,6 @@ from django.utils import timezone
 from users.models import User
 
 
-SIDE_CHOICES = (
-    ('L', 'Left'),
-    ('R', 'Right'),
-)
-
-
 class TurtleSpecies(models.Model):
     scientific_name = models.CharField(max_length=128, unique=True)
     common_name = models.CharField(max_length=128, blank=True, null=True)
@@ -132,6 +126,14 @@ class Turtle(models.Model):
         for tag in self.pit_tags.all():
             tags.append(f"{str(tag)} (pit tag)")
         return ", ".join(tags)
+
+    def get_newest_observation(self):
+        '''Returns the most-recent observation for this turtle, or None.
+        '''
+        if self.turtleobservation_set.exists():
+            return self.turtleobservation_set.order_by('-observed').first()
+        else:
+            return None
 
 
 class TurtleObservation(models.Model):
@@ -315,6 +317,10 @@ class TurtleTag(models.Model):
         ('RMVD', 'Tag removed ex live turtle'),
         ('SAL', 'Salvage for reuse'),
         ('U', 'Unused tag'),
+    )
+    SIDE_CHOICES = (
+        ('L', 'Left'),
+        ('R', 'Right'),
     )
 
     serial = models.CharField(max_length=64, unique=True)

@@ -1,0 +1,75 @@
+{% extends "base_wastd.html" %}
+{% load crispy_forms_tags %}
+
+{% block extra_style %}
+{{ block.super }}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.css" integrity="sha512-bYPO5jmStZ9WI2602V2zaivdAnbAhtfzmxnEGh9RwtlI00I9s8ulGe4oBa5XxiC6tCITJH/QG70jswBhbLkxPw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+{% endblock extra_style %}
+
+{% block page_content_inner %}
+
+{% if turtle %}
+<h2>Tagged turtle ID {{ turtle.pk }} - add new observation</h2>
+{% else %}
+<h2>Add new tagged turtle and observation</h2>
+{% endif %}
+
+{% if form.errors %}
+<div class="alert alert-danger" role="alert">Please correct the error(s) below</div>
+{% endif %}
+
+{% crispy form %}
+{% endblock page_content_inner %}
+
+{% block extra_js %}
+{{ block.super }}
+{# django-select2 assets #}
+{{ form.media.js }}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js" integrity="sha512-AIOTidJAcHBH2G/oZv9viEGXRqDNmfdPVPYOYKGy3fti0xIplnlgMHUGfuNRzC6FkzIo0iIxgFnr9RikFxK+sw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script type="text/javascript">
+    $(function() {
+        // Configure Select2 widgets for user choice fields (uses element class ID).
+        $('.select-user-choice').select2({
+          minimumInputLength: 3,
+          // Reference: https://select2.org/data-sources/ajax
+          ajax: {
+            url: '/api/2/users/',
+            dataType: 'json',
+            delay: 250,
+            // Reference: https://select2.org/data-sources/ajax#request-parameters
+            data: function (params) {
+              return {q: params.term}
+            },
+            // Reference: https://select2.org/data-sources/ajax#transforming-response-data
+            processResults: function (data) {
+              var results = [];
+              data.features.forEach(feature => results.push({id: feature.properties.id, text: feature.properties.name}));
+              return {
+                results: results
+              };
+            }
+          }
+        });
+
+        // TODO: set initial data in the user select fields, if passed in.
+        /*
+        var recordedBySelect = $("#id_recorded_by");
+        $.ajax({
+            type: 'GET',
+            url: '/api/2/users/' + recordedBySelect.value
+        }).then(function(data) {
+            var option = new Option(data.properties.name, data.properties.id, true, true);
+            recordedBySelect.append(option).trigger('change')
+            recordedBySelect.trigger({
+                type: 'select2:select',
+                params: {data: data}
+            });
+        });
+        */
+
+        // Initialise date/time picker
+        // Reference: https://github.com/xdan/datetimepicker
+        $('#id_observed').datetimepicker({format: 'd-m-Y H:i'});
+    });
+</script>
+{% endblock extra_js %}
