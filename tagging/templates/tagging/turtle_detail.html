@@ -24,9 +24,9 @@
                 <i class="fa-solid fa-pencil"></i>
                 Change turtle details
             </a>
-            <a class="btn btn-primary" href="{% url 'admin:tagging_turtleobservation_add' %}?turtle={{ object.pk }}">
+            <a class="btn btn-primary" href="{% url 'tagging:turtleobservation_add' %}?turtle_id={{ object.pk }}">
                 <i class="fa-solid fa-plus"></i>
-                Record an observation
+                Add an observation
             </a>
             {% else %}
             <a class="btn btn-primary disabled" href="">
@@ -35,7 +35,7 @@
             </a>
             <a class="btn btn-primary disabled" href="">
                 <i class="fa-solid fa-plus"></i>
-                Record an observation
+                Add an observation
             </a>
             {% endif %}
         </span>
@@ -184,19 +184,17 @@
                     <th>Place</th>
                     <th>Nesting?</th>
                     <th>Activity</th>
-                    <th></th>
                 </tr>
             </thead>
             <tbody>
                 {% for obs in object.turtleobservation_set.all %}
                 <tr>
-                    <td><a href="{{ obs.get_absolute_url }}">{{ obs.get_observed_awst|date:"D, j M Y H:i" }}</a></td>
+                    <td><a href="{{ obs.get_absolute_url }}">{{ obs.get_observed_awst|date:"D, j M Y H:i" }}{% if obs.point %} <i class="fa-solid fa-location-pin"></i>{% endif %}</a></td>
                     <td>{{ obs.get_status_display }}</td>
                     <td>{{ obs.alive|yesno:"Yes,No,Unknown" }}</td>
                     <td>{{ obs.place.name|default_if_none:"" }}</td>
                     <td>{{ obs.nesting|yesno:"Yes,No,Unknown" }}</td>
                     <td>{{ obs.get_activity_display|default_if_none:"" }}</td>
-                    <td>{% if obs.point %}<i class="fa-solid fa-location-pin"></i>{% endif %}</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -220,16 +218,18 @@
 {% if observation_points %}
 {{ block.super }}
 <script type="text/javascript">
-    function map_init(map, options) {
-        {% include "shared/styles.js" %}
-        var observations_layer = L.geoJson();
-        {% for point in observation_points %}
-            point = {{ point|safe }};
-            observations_layer.addData(point);
-        {% endfor %}
-        observations_layer.addTo(map);
-        map.fitBounds(observations_layer.getBounds());
+function map_init(map, options) {
+    {% include "shared/styles.js" %}
+    function onEachFeature(feature, layer) {
+        if (feature.properties && feature.properties.label) {
+            layer.bindPopup(feature.properties.label);
+        }
     };
+    const obsFeatures = {{ observation_points|safe }};
+    const obsLayer = L.geoJSON(obsFeatures, {onEachFeature: onEachFeature});
+    obsLayer.addTo(map);
+    map.fitBounds(obsLayer.getBounds());
+};
 </script>
 {% endif %}
 {% endblock extra_js %}

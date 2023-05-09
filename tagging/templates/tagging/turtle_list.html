@@ -51,9 +51,9 @@
                 <th>Nesting/other group</th>
                 <th>Date entered</th>
                 <th>Name</th>
-                <th>Status</th>
                 <th>Observations</th>
-                <th>Cause of death</th>
+                <th>Most recent</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -66,9 +66,16 @@
                 <td>{{ obj.location.name }}</td>
                 <td>{{ obj.created|date:"j M Y" }}</td>
                 <td>{{ obj.name|default_if_none:"" }}</td>
-                <td>{{ obj.get_status_display|default_if_none:"" }}</td>
                 <td>{{ obj.turtleobservation_set.count }}</td>
-                <td>{{ obj.get_cause_of_death_display|default_if_none:"" }}</td>
+                <td>{{ obj.get_newest_observation.observed|date:"D, j M Y H:i"|default_if_none:"" }}</td>
+                <td>
+                <!-- FIXME: proper permissions check -->
+                {% if user.is_staff %}
+                <a class="btn btn-primary" href="{% url 'tagging:turtleobservation_add' %}?turtle_id={{ obj.pk }}">
+                    <i class="fa-regular fa-eye"></i>
+                </a>
+                {% endif %}
+                </td>
             </tr>
             {% endfor %}
         </tbody>

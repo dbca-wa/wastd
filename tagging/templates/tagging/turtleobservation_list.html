@@ -13,10 +13,26 @@
 {% block page_content_inner %}
 <!-- Search bar -->
 <div class="row">
-    <div class="col">
+    <div class="col-xs-12 col-sm-6">
         <form action="" method="get">
             <input id="search_field" type="text" class="form-control" name="q" placeholder="Search observations (ID, turtle ID, tag serial, etc.)" value="{{ query_string }}">
         </form>
+    </div>
+    <div class="col-xs-12 col-sm-6">
+        <span class="float-right">
+            <!-- FIXME: proper permissions check -->
+            {% if user.is_staff %}
+            <a class="btn btn-primary" href="{% url 'tagging:turtleobservation_add' %}">
+                <i class="fa-solid fa-plus"></i>
+                Add new turtle observation
+            </a>
+            {% else %}
+            <a class="btn btn-primary disabled" href="">
+                <i class="fa-solid fa-plus"></i>
+                Add new turtle observation
+            </a>
+            {% endif %}
+        </span>
     </div>
 </div>
 
@@ -38,26 +54,24 @@
         <thead>
             <tr>
                 <th>ID</th>
-                <th>Observation time</th>
+                <th>Observed at </th>
                 <th>Turtle</th>
                 <th>Alive</th>
                 <th>Place</th>
                 <th>Activity</th>
-                <th>Tagger</th>
-                <th></th>
+                <th>Tagged by</th>
             </tr>
         </thead>
         <tbody>
             {% for obj in object_list %}
             <tr>
                 <td>{{ obj.pk }}</td>
-                <td><a href="{{ obj.get_absolute_url }}">{{ obj.observed|date:"D, j M Y H:i" }}</a></td>
+                <td><a href="{{ obj.get_absolute_url }}">{{ obj.observed|date:"D, j M Y H:i" }}{% if obj.point %} <i class="fa-solid fa-location-pin"></i>{% endif %}</a></td>
                 <td><a href="{{ obj.turtle.get_absolute_url }}">{{ obj.turtle }}</a></td>
                 <td>{{ obj.alive|yesno:"Yes,No,Unknown" }}</td>
                 <td>{{ obj.place|default_if_none:"" }}</td>
                 <td>{{ obj.get_activity_display|default_if_none:"" }}</td>
                 <td>{{ obj.tagger.name|default_if_none:"" }}</td>
-                <td>{% if obj.point %}<i class="fa-solid fa-location-pin"></i>{% endif %}</td>
             </tr>
             {% endfor %}
         </tbody>

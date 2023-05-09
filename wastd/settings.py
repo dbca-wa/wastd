@@ -153,6 +153,7 @@ DATABASE_ROUTERS = ['wamtram.routers.WamtramRouter']
 
 # Internationalisation.
 USE_I18N = False
+USE_L10N = True
 USE_TZ = True
 TIME_ZONE = "Australia/Perth"
 LANGUAGE_CODE = "en-us"
@@ -172,8 +173,6 @@ DATETIME_INPUT_FORMATS = (
     "%d-%m-%Y %H:%M",
     "%d-%m-%y %H:%M",
 )
-# DATE_FORMAT = 'Y-m-d'
-# DATETIME_FORMAT = 'Y-m-d G:i:s T'
 AWST = ZoneInfo(TIME_ZONE)
 UTC = ZoneInfo("UTC")
 

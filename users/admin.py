@@ -20,12 +20,12 @@ class OrganisationAdmin(admin.ModelAdmin):
     # formfield_overrides = FORMFIELD_OVERRIDES
 
 
-class MyUserChangeForm(UserChangeForm):
+class UserChangeForm(UserChangeForm):
     class Meta(UserChangeForm.Meta):
         model = User
 
 
-class MyUserCreationForm(UserCreationForm):
+class UserCreationForm(UserCreationForm):
 
     error_message = UserCreationForm.error_messages.update(
         {"duplicate_username": "This username has already been taken."}
@@ -44,9 +44,9 @@ class MyUserCreationForm(UserCreationForm):
 
 
 @admin.register(User)
-class MyUserAdmin(AuthUserAdmin):
-    form = MyUserChangeForm
-    add_form = MyUserCreationForm
+class UserAdmin(AuthUserAdmin):
+    form = UserChangeForm
+    add_form = UserCreationForm
     fieldsets = (
         (
             "User Profile",
@@ -85,14 +85,14 @@ class MyUserAdmin(AuthUserAdmin):
         "alive",
     )
     search_fields = [
-        "username__icontains",
-        "name__icontains",
-        "nickname__icontains",
-        "aliases__icontains",
-        "role__icontains",
-        "affiliation__icontains",
-        "email__icontains",
-        "phone__icontains",
+        "email",
+        "username",
+        "name",
+        "nickname",
+        "aliases",
+        "role",
+        "affiliation",
+        "phone",
     ]
     readonly_fields = [
         "organisations",

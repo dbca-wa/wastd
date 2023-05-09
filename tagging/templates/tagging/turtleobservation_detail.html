@@ -129,7 +129,6 @@
             <tbody>
                 <tr>
                     <th>Tag</th>
-                    <th>Side</th>
                     <th>Position</th>
                     <th>Status</th>
                     <th>Barnacles?</th>
@@ -138,7 +137,6 @@
                 {% for obs in object.tag_observations.all %}
                 <tr>
                     <td>{{ obs.tag }}</td>
-                    <td>{{ obs.get_side_display|default_if_none:"" }}</td>
                     <td>{{ obs.position|default_if_none:"" }}</td>
                     <td>{{ obs.get_status_display|default_if_none:"" }}</td>
                     <td>{{ obs.barnacles|yesno:"Yes,No,Unknown" }}</td>
