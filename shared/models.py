@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.utils.safestring import mark_safe  # noqa
 from django.utils.translation import gettext_lazy as _
 from django_fsm import FSMField, transition
-from django_fsm_log.decorators import fsm_log_by
+from django_fsm_log.decorators import fsm_log_by, fsm_log_description
 import uuid
 
 
@@ -393,5 +393,122 @@ class QualityControlMixin(models.Model):
 
         Published data has been deemed fit for release by the data owner.
         Embargoed data is marked as curated, but not ready for release.
+        """
+        return
+
+
+class CurationMixin(models.Model):
+    """Mixin class for curation status levels with django-fsm transitions.
+    NOTE: this is a close-duplicate of QualityControlMixin, future task is to consolidate these.
+    """
+    CURATION_STATUS_NEW = "new"
+    CURATION_STATUS_IMPORTED = "imported"
+    CURATION_STATUS_MANUAL_INPUT = "manual input"
+    CURATION_STATUS_CURATED = "curated"
+    CURATION_STATUS_FLAGGED = "flagged"
+    CURATION_STATUS_REJECTED = "rejected"
+    CURATION_STATUS_CHOICES = (
+        (CURATION_STATUS_NEW, _("New")),
+        (CURATION_STATUS_IMPORTED, _("Imported")),
+        (CURATION_STATUS_MANUAL_INPUT, _("Manual input")),
+        (CURATION_STATUS_CURATED, _("Curated")),
+        (CURATION_STATUS_FLAGGED, _("Flagged")),
+        (CURATION_STATUS_REJECTED, _("Rejected")),
+    )
+    # Bootstrap CSS colour class for each curation status.
+    CURATION_STATUS_LABELS = {
+        CURATION_STATUS_NEW: "secondary",
+        CURATION_STATUS_IMPORTED: "secondary",
+        CURATION_STATUS_MANUAL_INPUT: "secondary",
+        CURATION_STATUS_CURATED: "success",
+        CURATION_STATUS_FLAGGED: "warning",
+        CURATION_STATUS_REJECTED: "danger",
+    }
+
+    curation_status = FSMField(default=CURATION_STATUS_NEW, choices=CURATION_STATUS_CHOICES)
+
+    class Meta:
+        abstract = True
+
+    @property
+    def status_colour(self):
+        return self.CURATION_STATUS_LABELS[self.curation_status]
+
+    def can_curate(self):
+        """Return true if this record can be accepted."""
+        return True
+
+    # New|Imported|Manual input|Flagged -> Curated
+    @fsm_log_by
+    @fsm_log_description
+    @transition(
+        field=curation_status,
+        source=[CURATION_STATUS_NEW, CURATION_STATUS_IMPORTED, CURATION_STATUS_MANUAL_INPUT, CURATION_STATUS_FLAGGED],
+        target=CURATION_STATUS_CURATED,
+        conditions=[can_curate],
+        custom=dict(
+            verbose="Curate as trustworthy",
+            explanation=("This record is deemed trustworthy."),
+            notify=True,
+            url_path="curate/",
+            badge="badge-success",
+        ),
+    )
+    def curate(self, by=None, description=None):
+        """Accept record as trustworthy.
+        Curated data is deemed trustworthy by a subject matter expert.
+        """
+        return
+
+    def can_flag(self):
+        """Return true if curated status can be revoked."""
+        return True
+
+    # New|Imported|Manual input|Curated -> Flagged
+    @fsm_log_by
+    @fsm_log_description
+    @transition(
+        field=curation_status,
+        source=[CURATION_STATUS_NEW, CURATION_STATUS_IMPORTED, CURATION_STATUS_MANUAL_INPUT, CURATION_STATUS_CURATED],
+        target=CURATION_STATUS_FLAGGED,
+        conditions=[can_flag],
+        custom=dict(
+            verbose="Flag as not trustworthy",
+            explanation=(
+                "This record cannot be true. This record requires review by a subject matter expert."
+            ),
+            notify=True,
+            url_path="flag/",
+            badge="badge-warning",
+        ),
+    )
+    def flag(self, by=None, description=None):
+        """Flag as requiring review by a subject matter expert.
+        """
+        return
+
+    def can_reject(self):
+        """Return true if the record can be rejected as entirely wrong.
+        """
+        return True
+
+    # New|Imported|Manual input|Flagged -> Rejected
+    @fsm_log_by
+    @fsm_log_description
+    @transition(
+        field=curation_status,
+        source=[CURATION_STATUS_NEW, CURATION_STATUS_IMPORTED, CURATION_STATUS_MANUAL_INPUT, CURATION_STATUS_FLAGGED],
+        target=CURATION_STATUS_REJECTED,
+        conditions=[can_reject],
+        custom=dict(
+            verbose="Reject as not trustworthy",
+            explanation=("This record is confirmed wrong and not usable."),
+            notify=True,
+            url_path="reject/",
+            badge="badge-danger",
+        ),
+    )
+    def reject(self, by=None, description=None):
+        """Confirm that a record is confirmed wrong and not usable.
         """
         return

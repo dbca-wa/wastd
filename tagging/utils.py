@@ -440,6 +440,7 @@ def import_wamtram(reload=True):
             o.date_convention = obs.date_convention
             o.status = obs.observation_status
             o.corrected_date = obs.corrected_date.date() if obs.corrected_date else None
+            o.curation_status = TurtleObservation.CURATION_STATUS_IMPORTED
             o.save()
         else:
             TurtleObservation.objects.create(
@@ -487,6 +488,7 @@ def import_wamtram(reload=True):
                 date_convention=obs.date_convention,
                 status=obs.observation_status,
                 corrected_date=obs.corrected_date.date() if obs.corrected_date else None,
+                curation_status=TurtleObservation.CURATION_STATUS_IMPORTED,
             )
         count += 1
         if count % 1000 == 0:

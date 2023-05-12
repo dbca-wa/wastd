@@ -1,5 +1,5 @@
 from django.contrib import messages
-from django.contrib.admin import register, ModelAdmin, TabularInline, SimpleListFilter
+from django.contrib.admin import register, TabularInline, SimpleListFilter
 from django.db.models import TextField
 from django.forms.widgets import TextInput
 from django.http import HttpResponseRedirect
@@ -7,6 +7,8 @@ from django.utils.html import format_html
 from django.urls import reverse
 from django.utils.html import mark_safe
 from django.utils.translation import gettext as _
+from fsm_admin.mixins import FSMTransitionMixin
+from reversion.admin import VersionAdmin
 from shared.admin import FORMFIELD_OVERRIDES
 from urllib.parse import quote as urlquote
 
@@ -38,7 +40,7 @@ from .models import (
 
 
 @register(TagOrder)
-class TagOrderAdmin(ModelAdmin):
+class TagOrderAdmin(VersionAdmin):
     date_hierarchy = 'order_date'
     list_display = ('order_number', 'order_date', 'tag_prefix', 'start_tag_number', 'end_tag_number', 'total_tags')
     list_filter = ('tag_prefix',)
@@ -96,7 +98,7 @@ class TurtleIdentificationInline(TabularInline):
 
 
 @register(Turtle)
-class TurtleAdmin(ModelAdmin):
+class TurtleAdmin(VersionAdmin):
     date_hierarchy = 'created'
     list_display = ('id', 'species', 'sex', 'status', 'location', 'created', 'name', 'cause_of_death')
     list_filter = ('species', 'sex', 'status', 'location', 'cause_of_death')
@@ -222,21 +224,24 @@ class TurtlePitTagObservationInline(TabularInline):
 
 
 @register(TurtleObservation)
-class TurtleObservationAdmin(ModelAdmin):
+class TurtleObservationAdmin(FSMTransitionMixin, VersionAdmin):
     date_hierarchy = 'observed'
     form = TurtleObservationForm
-    list_display = ('pk', 'turtle_link', 'observed', 'status', 'alive', 'place', 'activity')
-    list_filter = ('status', 'alive', 'place', 'condition')
+    list_display = ('pk', 'turtle_link', 'observed', 'status', 'alive', 'place', 'curation_status')
+    list_filter = ('status', 'alive', 'place', 'condition', 'curation_status')
     search_fields = ('pk', 'turtle__pk', 'turtle__tags__serial', 'turtle__pit_tags__serial')
     raw_id_fields = ('turtle', 'measurer', 'measurer_reporter', 'tagger', 'reporter')
     readonly_fields = ('created', 'entered_by')
+    fsm_field = ['curation_status']
     fieldsets = (
         (
             'Observation',
             {
                 'fields': (
+                    'data_sheet',
                     'turtle',
                     'observed',
+                    'recorded_by',
                     'measurer',
                     'measurer_reporter',
                     'tagger',
@@ -379,8 +384,7 @@ class AssignedTurtleFilter(SimpleListFilter):
 
 
 @register(TurtleTag)
-class TurtleTagAdmin(ModelAdmin):
-
+class TurtleTagAdmin(VersionAdmin):
     list_display = ('serial', 'turtle_link', 'issue_location', 'custodian', 'field_person', 'status', 'return_date')
     list_filter = ('status', AssignedTurtleFilter)
     raw_id_fields = ('turtle', 'custodian', 'field_person')
@@ -414,7 +418,7 @@ class TurtleTagAdmin(ModelAdmin):
 
 
 @register(TurtlePitTag)
-class TurtlePitTagAdmin(ModelAdmin):
+class TurtlePitTagAdmin(VersionAdmin):
     list_display = ('serial', 'turtle_link', 'issue_location', 'custodian', 'field_person', 'status', 'return_date', 'batch_number', 'box_number')
     list_filter = ('status', AssignedTurtleFilter)
     raw_id_fields = ('turtle', 'custodian', 'field_person')
@@ -449,7 +453,7 @@ class TurtlePitTagAdmin(ModelAdmin):
 
 
 @register(TurtleSample)
-class TurtleSampleAdmin(ModelAdmin):
+class TurtleSampleAdmin(VersionAdmin):
     date_hierarchy = 'sample_date'
     list_display = ('id', 'observation_link', 'turtle_link', 'tissue_type', 'label', 'sample_date')
     list_filter = ('tissue_type',)
