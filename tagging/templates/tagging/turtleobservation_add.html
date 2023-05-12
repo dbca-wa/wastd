@@ -25,22 +25,21 @@
 {{ block.super }}
 {# django-select2 assets #}
 {{ form.media.js }}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js" integrity="sha512-AIOTidJAcHBH2G/oZv9viEGXRqDNmfdPVPYOYKGy3fti0xIplnlgMHUGfuNRzC6FkzIo0iIxgFnr9RikFxK+sw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"
+    integrity="sha512-AIOTidJAcHBH2G/oZv9viEGXRqDNmfdPVPYOYKGy3fti0xIplnlgMHUGfuNRzC6FkzIo0iIxgFnr9RikFxK+sw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script type="text/javascript">
     $(function() {
-        // Configure Select2 widgets for user choice fields (uses element class ID).
         $('.select-user-choice').select2({
           minimumInputLength: 3,
-          // Reference: https://select2.org/data-sources/ajax
+          allowClear: true,
+          placeholder: '',
           ajax: {
             url: '/api/2/users/',
             dataType: 'json',
             delay: 250,
-            // Reference: https://select2.org/data-sources/ajax#request-parameters
             data: function (params) {
               return {q: params.term}
             },
-            // Reference: https://select2.org/data-sources/ajax#transforming-response-data
             processResults: function (data) {
               var results = [];
               data.features.forEach(feature => results.push({id: feature.properties.id, text: feature.properties.name}));
@@ -50,25 +49,6 @@
             }
           }
         });
-
-        // TODO: set initial data in the user select fields, if passed in.
-        /*
-        var recordedBySelect = $("#id_recorded_by");
-        $.ajax({
-            type: 'GET',
-            url: '/api/2/users/' + recordedBySelect.value
-        }).then(function(data) {
-            var option = new Option(data.properties.name, data.properties.id, true, true);
-            recordedBySelect.append(option).trigger('change')
-            recordedBySelect.trigger({
-                type: 'select2:select',
-                params: {data: data}
-            });
-        });
-        */
-
-        // Initialise date/time picker
-        // Reference: https://github.com/xdan/datetimepicker
         $('#id_observed').datetimepicker({format: 'd-m-Y H:i'});
     });
 </script>

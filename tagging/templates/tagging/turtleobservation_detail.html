@@ -15,6 +15,11 @@
 <div class="row">
     <div class="col">
         <h2>Turtle observation ID {{ object.pk }}</h2>
+        <p>
+        <span class="badge badge-{{ object.curation_status_colour|default:'secondary' }}">
+            Curation status: {{ object.get_curation_status_display }}
+        </span>
+        </p>
     </div>
     <div class="col-xs-12 col-sm-6">
         <span class="float-right">
@@ -47,11 +52,15 @@
                     <td><a href="{{ object.turtle.get_absolute_url }}">{{ object.turtle }}</a></td>
                 </tr>
                 <tr>
+                    <th>Recorded by</th>
+                    <td>{{ object.recorded_by.name|default_if_none:"" }}</td>
+                </tr>
+                <tr>
                     <th>Tagger</th>
                     <td>{{ object.tagger.name|default_if_none:"" }}</td>
                 </tr>
                 <tr>
-                    <th>Reporter</th>
+                    <th>Tagger reporter</th>
                     <td>{{ object.reporter.name|default_if_none:"" }}</td>
                 </tr>
                 <tr>
@@ -59,7 +68,7 @@
                     <td>{{ object.measurer.name|default_if_none:"" }}</td>
                 </tr>
                 <tr>
-                    <th>Measurer Reporter</th>
+                    <th>Measurer reporter</th>
                     <td>{{ object.measurer_reporter.name|default_if_none:"" }}</td>
                 </tr>
                 <tr>
@@ -281,14 +290,13 @@
         {% leaflet_map "detailmap" callback="window.map_init" %}
     </div>
 </div>
-{% endif %}
+{% endif %}<!-- observation_points -->
 
 <div class="row">
     <div class="col">
         <div class="alert alert-secondary">
-            <p><strong>Observation details</strong></p>
-            <p>Entered by: {{ object.entered_by.name|default_if_none:"" }}</p>
-            <p>Date entered: {{ object.created|date:"j-M-Y" }}</p>
+            <p>Input by: {{ object.entered_by.name|default_if_none:"" }}</p>
+            <p>Date input: {{ object.created|date:"j-M-Y" }}</p>
         </div>
     </div>
 </div>
@@ -298,16 +306,18 @@
 {% if observation_points %}
 {{ block.super }}
 <script type="text/javascript">
-    function map_init(map, options) {
-        {% include "shared/styles.js" %}
-        var observations_layer = L.geoJson();
-        {% for point in observation_points %}
-            point = {{ point|safe }};
-            observations_layer.addData(point);
-        {% endfor %}
-        observations_layer.addTo(map);
-        map.fitBounds(observations_layer.getBounds());
+function map_init(map, options) {
+    {% include "shared/styles.js" %}
+    function onEachFeature(feature, layer) {
+        if (feature.properties && feature.properties.label) {
+            layer.bindPopup(feature.properties.label);
+        }
     };
+    const obsFeatures = {{ observation_points|safe }};
+    const obsLayer = L.geoJSON(obsFeatures, {onEachFeature: onEachFeature});
+    obsLayer.addTo(map);
+    map.fitBounds(obsLayer.getBounds());
+};
 </script>
 {% endif %}
 {% endblock extra_js %}
