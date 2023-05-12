@@ -2,6 +2,7 @@ from django.conf import settings
 from django.contrib.gis.db import models
 from django.urls import reverse
 from django.utils import timezone
+from shared.models import CurationMixin
 from users.models import User
 
 
@@ -136,7 +137,7 @@ class Turtle(models.Model):
             return None
 
 
-class TurtleObservation(models.Model):
+class TurtleObservation(CurationMixin):
     CONDITION_CHOICES = (
         ('D', 'Carcass - decomposed'),
         ('F', 'Carcass - fresh'),
@@ -208,19 +209,22 @@ class TurtleObservation(models.Model):
 
     created = models.DateTimeField(default=timezone.now, editable=False)
     modified = models.DateTimeField(auto_now=True, editable=False)
-    entered_by = models.ForeignKey(User, models.PROTECT, related_name='turtleobservations_entered', blank=True, null=True)
+    entered_by = models.ForeignKey(
+        User, models.PROTECT, related_name='turtleobservations_entered', blank=True, null=True,
+        help_text='User who input the survey data to the database',
+    )
     turtle = models.ForeignKey(Turtle, models.PROTECT)
     observed = models.DateTimeField()
-    observation_date_old = models.DateField(blank=True, null=True)
-    date_convention = models.CharField(max_length=1, choices=DATE_CONVENTION_CHOICES)
-    status = models.CharField(max_length=128, choices=STATUS_CHOICES, blank=True, null=True)
-    alive = models.BooleanField(null=True)
+    status = models.CharField(max_length=128, choices=STATUS_CHOICES, verbose_name='observation status', blank=True, null=True)
+    recorded_by = models.ForeignKey(
+        User, models.PROTECT, related_name='turtleobservations_recorded', blank=True, null=True,
+        help_text='User who recorded the survey data in the field',
+    )
     measurer = models.ForeignKey(User, models.PROTECT, related_name='measurer', blank=True, null=True)
     measurer_reporter = models.ForeignKey(User, models.PROTECT, related_name='measurer_reporter', blank=True, null=True)
     tagger = models.ForeignKey(User, models.PROTECT, related_name='tagger', blank=True, null=True)
-    reporter = models.ForeignKey(User, models.PROTECT, related_name='reporter', blank=True, null=True)
+    reporter = models.ForeignKey(User, models.PROTECT, verbose_name='tagger reporter', related_name='reporter', blank=True, null=True)
     place = models.ForeignKey(Place, models.PROTECT, blank=True, null=True)
-    place_description = models.TextField(blank=True, null=True)
     point = models.PointField(srid=4326, blank=True, null=True)  # WGS 84
     activity = models.CharField(max_length=1, choices=ACTIVITY_CHOICES, blank=True, null=True)
     beach_position = models.CharField(max_length=1, choices=BEACH_POSITION_CHOICES, blank=True, null=True)
@@ -229,27 +233,36 @@ class TurtleObservation(models.Model):
     clutch_completed = models.CharField(max_length=1, choices=CLUTCH_COMPLETED_CHOICES, blank=True, null=True)
     number_of_eggs = models.IntegerField(blank=True, null=True)
     egg_count_method = models.CharField(max_length=3, choices=EGG_COUNT_METHOD_CHOICES, blank=True, null=True)
-    action_taken = models.TextField(blank=True, null=True)
     comments = models.TextField(blank=True, null=True)
-    original_observation_id = models.IntegerField(blank=True, null=True)
     entry_batch = models.ForeignKey(EntryBatch, models.PROTECT, blank=True, null=True)
-    comment_fromrecordedtagstable = models.TextField(blank=True, null=True)
-    scars_left = models.BooleanField(null=True)
-    scars_right = models.BooleanField(null=True)
-    transferid = models.IntegerField(blank=True, null=True)
-    mund = models.BooleanField(null=True)
     scars_left_scale_1 = models.BooleanField(null=True, help_text='Left flipper scale closest to body')
     scars_left_scale_2 = models.BooleanField(null=True, help_text='Left flipper scale 2nd from body')
     scars_left_scale_3 = models.BooleanField(null=True, help_text='Left flipper scale 3rd from body')
     scars_right_scale_1 = models.BooleanField(null=True, help_text='Right flipper scale closest to body')
     scars_right_scale_2 = models.BooleanField(null=True, help_text='Right flipper scale 2nd from body')
     scars_right_scale_3 = models.BooleanField(null=True, help_text='Right flipper scale 3rd from body')
+    data_sheet = models.FileField(
+        blank=True, null=True, max_length=255, upload_to="tagging/%Y/%m/%d",
+        help_text="Electronic copy of the field survey data sheet",
+    )
+    # Legacy fields (TBC)
+    alive = models.BooleanField(null=True)
+    date_convention = models.CharField(max_length=1, choices=DATE_CONVENTION_CHOICES)
+    observation_date_old = models.DateField(blank=True, null=True)
+    place_description = models.TextField(blank=True, null=True)
+    action_taken = models.TextField(blank=True, null=True)
+    original_observation_id = models.IntegerField(blank=True, null=True)
     cc_length_not_measured = models.BooleanField(null=True)
     cc_notch_length_not_measured = models.BooleanField(null=True)
     cc_width_not_measured = models.BooleanField(null=True)
     tagscarnotchecked = models.BooleanField(null=True)
     didnotcheckforinjury = models.BooleanField(null=True)
     corrected_date = models.DateField(blank=True, null=True)
+    comment_fromrecordedtagstable = models.TextField(blank=True, null=True)
+    scars_left = models.BooleanField(null=True)
+    scars_right = models.BooleanField(null=True)
+    transferid = models.IntegerField(blank=True, null=True)
+    mund = models.BooleanField(null=True)
 
     def __str__(self):
         if self.status:
