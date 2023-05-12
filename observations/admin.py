@@ -939,15 +939,10 @@ class SurveyAdmin(FSMTransitionMixin, VersionAdmin, ModelAdmin):
         "reporter__username",
     )
 
-    # change view
     form = s2form(Survey, attrs=S2ATTRS)
     formfield_overrides = FORMFIELD_OVERRIDES
-    fsm_field = [
-        "status",
-    ]
-    actions = [
-        "merge_user",
-    ]
+    fsm_field = ["status"]
+    actions = ["merge_user"]
     fieldsets = (
         (
             _("Device"),
