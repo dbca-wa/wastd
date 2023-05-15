@@ -473,8 +473,8 @@ class TurtleTagObservationAddForm(forms.Form):
                     Field('species', wrapper_class='form-group col-4'),
                 ),
                 Row(
-                    Field('longitude', wrapper_class='form-group col-4'),
                     Field('latitude', wrapper_class='form-group col-4'),
+                    Field('longitude', wrapper_class='form-group col-4'),
                     Field('sex', wrapper_class='form-group col-4'),
                 ),
                 Row(
