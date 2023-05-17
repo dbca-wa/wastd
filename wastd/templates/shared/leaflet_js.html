@@ -55,7 +55,6 @@ L.Control.ResetView.ICON = "url({% static 'leaflet/images/reset-view.png' %})";
 // L.Icon.Default.imagePath = "{% static "leaflet/images" %}/";
 
 
-/* Project JS */
 /*
  * Workaround for 1px lines appearing in some browsers due to
  * fractional transforms and resulting anti-aliasing.
@@ -81,16 +80,12 @@ L.Control.ResetView.ICON = "url({% static 'leaflet/images/reset-view.png' %})";
     });
 })()
 
-  /* Custom overlays, Geocoder */
-  window.addEventListener("map:init", function (event) {
+/* Custom overlays, Geocoder */
+window.addEventListener("map:init", function (event) {
     var map = event.detail.map;
     {% include 'shared/styles.js' %}
     /* Transparent overlay layers */
     var lc = map.layerscontrol;
-
-    /* lc.addOverlay(L.tileLayer.wms('https://spatial-beta.ala.org.au/geoserver/ALA/wms',
-     *   {layers: 'ALA:aus2', format: 'image/png', transparent: true}), 'Australia');
-     */
 
     $.getJSON("{% url 'sites-geojson' %}", function (data) {
         lc.addOverlay(L.geoJson(data, {style: polystyle, onEachFeature: oef}), 'WAStD Sites')
