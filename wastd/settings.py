@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     "django_select2",
     "easy_select2",
     "djgeojson",
+    "import_export",
     # Local apps
     "users",
     "observations",

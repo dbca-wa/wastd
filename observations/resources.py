@@ -12,6 +12,7 @@ from .models import (
 
 
 class SurveyResource(ModelResource):
+
     class Meta:
         model = Survey
         fields = [
@@ -92,6 +93,7 @@ class EncounterResource(ModelResource):
 
 
 class AnimalEncounterResource(ModelResource):
+
     class Meta:
         model = AnimalEncounter
         fields = [
@@ -198,6 +200,7 @@ class TurtleNestEncounterResource(EncounterResource):
 
 
 class LineTransectEncounterResource(ModelResource):
+
     class Meta:
         model = LineTransectEncounter
         fields = [

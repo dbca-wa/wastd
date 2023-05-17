@@ -9,10 +9,13 @@ from django.urls import reverse
 from django_select2.forms import ModelSelect2Widget
 from easy_select2 import select2_modelform as s2form
 from fsm_admin.mixins import FSMTransitionMixin
+from import_export.admin import ExportActionMixin
 from rest_framework.authtoken.admin import TokenAdmin
 from reversion.admin import VersionAdmin
 
-from observations.models import (
+from shared.admin import FORMFIELD_OVERRIDES, S2ATTRS, CustomStateLogInline
+from users.widgets import UserWidget
+from .models import (
     Campaign,
     CampaignMediaAttachment,
     AnimalEncounter,
@@ -42,9 +45,12 @@ from observations.models import (
     LightSourceObservation,
     LoggerObservation,
 )
-
-from shared.admin import FORMFIELD_OVERRIDES, S2ATTRS, CustomStateLogInline
-from users.widgets import UserWidget
+from .resources import (
+    SurveyResource,
+    AnimalEncounterResource,
+    TurtleNestEncounterResource,
+    LineTransectEncounterResource,
+)
 
 TokenAdmin.raw_id_fields = ("user",)
 
@@ -893,11 +899,9 @@ class CampaignMediaAttachmentInline(admin.TabularInline):
 
 
 @register(Survey)
-class SurveyAdmin(FSMTransitionMixin, VersionAdmin, ModelAdmin):
-    """Survey Admin."""
+class SurveyAdmin(ExportActionMixin, FSMTransitionMixin, VersionAdmin):
 
     # model = Survey
-    # change list
     date_hierarchy = "start_time"
     list_select_related = (
         "area",
@@ -943,6 +947,7 @@ class SurveyAdmin(FSMTransitionMixin, VersionAdmin, ModelAdmin):
     formfield_overrides = FORMFIELD_OVERRIDES
     fsm_field = ["status"]
     actions = ["merge_user"]
+    resource_classes = [SurveyResource]
     fieldsets = (
         (
             _("Device"),
@@ -1129,7 +1134,6 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
             if self.value():
                 return queryset.filter(status=self.value())
 
-    #change_list_filter_template = "admin/filter_listing.html"
     date_hierarchy = "when"
     list_filter = (
         #"campaign__owner",
@@ -1173,9 +1177,6 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
     )
     list_select_related = ("area", "site", "survey", "observer", "reporter", "campaign")
 
-    # -------------------------------------------------------------------------
-    # Change form
-    # select2 widgets for searchable dropdowns
     form = s2form(Encounter, attrs=S2ATTRS)
     formfield_overrides = FORMFIELD_OVERRIDES
     autocomplete_fields = ["area", "site", "survey", "campaign"]
@@ -1337,8 +1338,10 @@ reject_encounter.short_description = "Reject selected encounter records as unusa
 
 
 @register(AnimalEncounter)
-class AnimalEncounterAdmin(EncounterAdmin):
+class AnimalEncounterAdmin(ExportActionMixin, EncounterAdmin):
     actions = [curate_encounter, flag_encounter]
+    resource_classes = [AnimalEncounterResource]
+
     form = s2form(AnimalEncounter, attrs=S2ATTRS)
     list_display = (
         EncounterAdmin.FIRST_COLS
@@ -1512,7 +1515,7 @@ class AnimalEncounterAdmin(EncounterAdmin):
 
 
 @register(TurtleNestEncounter)
-class TurtleNestEncounterAdmin(EncounterAdmin):
+class TurtleNestEncounterAdmin(ExportActionMixin, EncounterAdmin):
 
     class TurtleNestEncounterTypeFilter(SimpleListFilter):
         title = 'Encounter type'
@@ -1597,6 +1600,7 @@ class TurtleNestEncounterAdmin(EncounterAdmin):
         LoggerObservationInline,
         CustomStateLogInline,
     ]
+    resource_classes = [TurtleNestEncounterResource]
 
     def get_queryset(self, request):
         return super().get_queryset(request).prefetch_related("observer", "reporter", "area", "site")
@@ -1621,8 +1625,7 @@ class TurtleNestEncounterAdmin(EncounterAdmin):
 
 
 @register(LineTransectEncounter)
-class LineTransectEncounterAdmin(EncounterAdmin):
-    """Admin for LineTransectEncounter."""
+class LineTransectEncounterAdmin(ExportActionMixin, EncounterAdmin):
 
     form = s2form(LineTransectEncounter, attrs=S2ATTRS)
     list_display = EncounterAdmin.FIRST_COLS + ("transect",) + EncounterAdmin.LAST_COLS
@@ -1647,6 +1650,7 @@ class LineTransectEncounterAdmin(EncounterAdmin):
         TurtleNestDisturbanceTallyObservationInline,
         CustomStateLogInline,
     ]
+    resource_classes = [LineTransectEncounterResource]
 
     def get_queryset(self, request):
         return (
