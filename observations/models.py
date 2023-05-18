@@ -2557,6 +2557,15 @@ class TurtleNestEncounter(Encounter):
     def card_template(self):
         return "observations/turtlenestencounter_card.html"
 
+    def get_nest_observation(self):
+        """A turtle nest encounter should be associated with 0-1 nest observation objects.
+        Returns the related turtle nest observation or None.
+        """
+        if self.observation_set.instance_of(TurtleNestObservation).exists():
+            return self.observation_set.instance_of(TurtleNestObservation).first()
+        else:
+            return None
+
 
 class LineTransectEncounter(Encounter):
     """Encounter with a line transect.
@@ -2827,6 +2836,17 @@ class Observation(PolymorphicModel, LegacySourceMixin, models.Model):
     def datetime(self):
         """The encounter's timestamp."""
         return self.encounter.when or ""
+
+    @property
+    def absolute_admin_url(self):
+        """Return the absolute admin change URL.
+        """
+        return reverse(
+            "admin:{0}_{1}_change".format(self._meta.app_label, self._meta.model_name),
+            args=[
+                self.pk,
+            ],
+        )
 
 
 class MediaAttachment(Observation):
@@ -3642,13 +3662,6 @@ class TurtleNestObservation(Observation):
         help_text=_("The total number of eggs laid as observed during tagging."),
     )
 
-    # start Miller fields
-    # no_emerged = models.PositiveIntegerField(
-    #     verbose_name=_("Emerged (E)"),
-    #     blank=True, null=True,
-    #     help_text=_("The number of hatchlings leaving or departed from nest."
-    #                 "Calculated from S - (L + D)."), )
-
     no_egg_shells = models.PositiveIntegerField(
         verbose_name=_("Egg shells (S)"),
         blank=True,
@@ -4243,10 +4256,64 @@ class TurtleHatchlingEmergenceOutlierObservation(Observation):
         )
 
 
-# TODO add CetaceanMorphometricObservation for cetacean strandings
-
-
 # Logger Observation models --------------------------------------------------#
+class LoggerObservation(Observation):
+    """A logger is observed during an Encounter."""
+
+    LOGGER_TYPE_DEFAULT = "temperature-logger"
+    LOGGER_TYPE_CHOICES = (
+        (LOGGER_TYPE_DEFAULT, "Temperature Logger"),
+        ("data-logger", "Data Logger"),
+        ("ctd-data-logger", "Conductivity, Temperature, Depth SR Data Logger"),
+    )
+
+    LOGGER_STATUS_DEFAULT = "resighted"
+    LOGGER_STATUS_NEW = "programmed"
+    LOGGER_STATUS_CHOICES = (
+        (LOGGER_STATUS_NEW, "programmed"),
+        ("posted", "posted to field team"),
+        ("deployed", "deployed in situ"),
+        ("resighted", "resighted in situ"),
+        ("retrieved", "retrieved in situ"),
+        ("downloaded", "downloaded"),
+    )
+
+    logger_type = models.CharField(
+        max_length=300,
+        default=LOGGER_TYPE_DEFAULT,
+        verbose_name=_("Type"),
+        choices=LOGGER_TYPE_CHOICES,
+        help_text=_("The logger type."),
+    )
+
+    deployment_status = models.CharField(
+        max_length=300,
+        default=LOGGER_STATUS_DEFAULT,
+        verbose_name=_("Status"),
+        choices=LOGGER_STATUS_CHOICES,
+        help_text=_("The logger life cycle status."),
+    )
+
+    logger_id = models.CharField(
+        max_length=1000,
+        blank=True,
+        null=True,
+        verbose_name=_("Logger ID"),
+        help_text=_("The ID of a logger must be unique within the tag type."),
+    )
+
+    comments = models.TextField(
+        verbose_name=_("Comment"),
+        blank=True,
+        null=True,
+        help_text=_("Comments"),
+    )
+
+    class Meta:
+        verbose_name = "Logger Observation"
+
+
+# Unused models (TBC)
 class TemperatureLoggerSettings(Observation):
     """Temperature Logger Settings."""
 
@@ -4371,59 +4438,3 @@ class TemperatureLoggerDeployment(Observation):
 
     def __str__(self):
         return "Logger at {0} mm depth".format(self.depth_mm)
-
-
-class LoggerObservation(Observation):
-    """A logger is observed during an Encounter."""
-
-    LOGGER_TYPE_DEFAULT = "temperature-logger"
-    LOGGER_TYPE_CHOICES = (
-        (LOGGER_TYPE_DEFAULT, "Temperature Logger"),
-        ("data-logger", "Data Logger"),
-        ("ctd-data-logger", "Conductivity, Temperature, Depth SR Data Logger"),
-    )
-
-    LOGGER_STATUS_DEFAULT = "resighted"
-    LOGGER_STATUS_NEW = "programmed"
-    LOGGER_STATUS_CHOICES = (
-        (LOGGER_STATUS_NEW, "programmed"),
-        ("posted", "posted to field team"),
-        ("deployed", "deployed in situ"),
-        ("resighted", "resighted in situ"),
-        ("retrieved", "retrieved in situ"),
-        ("downloaded", "downloaded"),
-    )
-
-    logger_type = models.CharField(
-        max_length=300,
-        default=LOGGER_TYPE_DEFAULT,
-        verbose_name=_("Type"),
-        choices=LOGGER_TYPE_CHOICES,
-        help_text=_("The logger type."),
-    )
-
-    deployment_status = models.CharField(
-        max_length=300,
-        default=LOGGER_STATUS_DEFAULT,
-        verbose_name=_("Status"),
-        choices=LOGGER_STATUS_CHOICES,
-        help_text=_("The logger life cycle status."),
-    )
-
-    logger_id = models.CharField(
-        max_length=1000,
-        blank=True,
-        null=True,
-        verbose_name=_("Logger ID"),
-        help_text=_("The ID of a logger must be unique within the tag type."),
-    )
-
-    comments = models.TextField(
-        verbose_name=_("Comment"),
-        blank=True,
-        null=True,
-        help_text=_("Comments"),
-    )
-
-    class Meta:
-        verbose_name = "Logger Observation"
