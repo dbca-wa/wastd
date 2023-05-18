@@ -1,6 +1,11 @@
 {% with original as o %}
 <i class="fa-solid fa-tags"></i>
-<a href="{{ o.history_url }}" target="_">
+<!-- FIXME: permissions check -->
+{% if user.is_staff %}
+<a href="{{ o.absolute_admin_url }}" target="_">
     {{ o.name }} ({{ o.get_status_display }})
 </a>
+{% else %}
+{{ o.name }} ({{ o.get_status_display }})
+{% endif %}
 {% endwith %}
