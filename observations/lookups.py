@@ -431,7 +431,7 @@ ACTIVITY_CHOICES = NA + NESTING_ACTIVITY_CHOICES + STRANDING_ACTIVITY_CHOICES
 # <option value="1">X* - Nesting: Laid</option></select>
 
 BEACH_POSITION_CHOICES = (
-    (NA_VALUE, "unknown habitat"),
+    (NA_VALUE, "Unknown habitat"),
     ("beach-below-high-water", "(B) beach below high water mark"),
     ("beach-above-high-water", "(A) beach above high water mark and dune"),
     ("beach-edge-of-vegetation", "(E) edge of vegetation"),
@@ -512,8 +512,8 @@ NEST_TYPE_CHOICES = (
 
 OBSERVATION_CHOICES = (
     (NA_VALUE, "NA"),
-    ("absent", "Confirmed absent"),
-    ("present", "Confirmed present"),
+    ("absent", "Absent"),
+    ("present", "Present"),
 )
 
 OBSERVATION_ICONS = {
