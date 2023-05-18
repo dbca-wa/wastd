@@ -139,50 +139,24 @@ class AnimalEncounterResource(ModelResource):
 
 class TurtleNestEncounterResource(EncounterResource):
 
-    def dehydrate_nest_type(self, encounter):
-        return encounter.get_nest_type_display()
-
-    def dehydrate_nest_age(self, encounter):
-        return encounter.get_nest_age_display()
-
-    def dehydrate_species(self, encounter):
-        return encounter.get_species_display()
-
-    def dehydrate_disturbance(self, encounter):
-        if encounter.disturbance == NA_VALUE:
-            return ''
-        else:
-            return encounter.get_disturbance_display()
-
-    def dehydrate_nest_tagged(self, encounter):
-        if encounter.nest_tagged == NA_VALUE:
-            return ''
-        else:
-            return encounter.get_nest_tagged_display()
-
-    def dehydrate_logger_found(self, encounter):
-        if encounter.logger_found == NA_VALUE:
-            return ''
-        else:
-            return encounter.get_logger_found_display()
-
-    def dehydrate_eggs_counted(self, encounter):
-        if encounter.eggs_counted == NA_VALUE:
-            return ''
-        else:
-            return encounter.get_eggs_counted_display()
-
-    def dehydrate_hatchlings_measured(self, encounter):
-        if encounter.hatchlings_measured == NA_VALUE:
-            return ''
-        else:
-            return encounter.get_hatchlings_measured_display()
-
-    def dehydrate_fan_angles_measured(self, encounter):
-        if encounter.fan_angles_measured == NA_VALUE:
-            return ''
-        else:
-            return encounter.get_fan_angles_measured_display()
+    # Construct fields that belong to child TurtleNestObservation objects.
+    eggs_laid = Field(column_name='Eggs laid?')
+    egg_count = Field(column_name='Eggs count')
+    no_egg_shells = Field(column_name='Egg shells count')
+    no_live_hatchlings = Field(column_name='Live hatchlings count')
+    no_dead_hatchlings = Field(column_name='Dead hatchlings count')
+    no_undeveloped_eggs = Field(column_name='Undeveloped eggs count')
+    no_unhatched_eggs = Field(column_name='Unhatched eggs (undeveloped) count')
+    no_unhatched_term = Field(column_name='Unhatched eggs (full term) count')
+    no_depredated_eggs = Field(column_name='Depredated eggs count')
+    nest_depth_top = Field()
+    nest_depth_bottom = Field()
+    sand_temp = Field()
+    air_temp = Field()
+    water_temp = Field()
+    egg_temp = Field()
+    nest_tag = Field()
+    logger = Field()
 
     class Meta:
         model = TurtleNestEncounter
@@ -196,7 +170,177 @@ class TurtleNestEncounterResource(EncounterResource):
             "eggs_counted",
             "hatchlings_measured",
             "fan_angles_measured",
+            "eggs_laid",
+            "egg_count",
+            "no_egg_shells",
+            "no_live_hatchlings",
+            "no_dead_hatchlings",
+            "no_undeveloped_eggs",
+            "no_unhatched_eggs",
+            "no_unhatched_term",
+            "no_depredated_eggs",
+            "nest_depth_top",
+            "nest_depth_bottom",
+            "sand_temp",
+            "air_temp",
+            "water_temp",
+            "egg_temp",
+            "nest_tag",
+            "logger",
         ]
+        export_order = EncounterResource.Meta.fields + [
+            "nest_type",
+            "nest_age",
+            "species",
+            "disturbance",
+            "nest_tagged",
+            "logger_found",
+            "eggs_counted",
+            "hatchlings_measured",
+            "fan_angles_measured",
+            "eggs_laid",
+            "egg_count",
+            "no_egg_shells",
+            "no_live_hatchlings",
+            "no_dead_hatchlings",
+            "no_undeveloped_eggs",
+            "no_unhatched_eggs",
+            "no_unhatched_term",
+            "no_depredated_eggs",
+            "nest_depth_top",
+            "nest_depth_bottom",
+            "sand_temp",
+            "air_temp",
+            "water_temp",
+            "egg_temp",
+            "nest_tag",
+            "logger",
+        ]
+
+    def get_child_nestobservation_output(self, nestobs, attr):
+        if nestobs is None:
+            return ''
+        attr = getattr(nestobs, attr)
+        return attr or ''
+
+    def dehydrate_nest_type(self, encounter):
+        return encounter.get_nest_type_display()
+
+    def dehydrate_nest_age(self, encounter):
+        return encounter.get_nest_age_display()
+
+    def dehydrate_species(self, encounter):
+        return encounter.get_species_display()
+
+    def dehydrate_disturbance(self, encounter):
+        if encounter.disturbance == NA_VALUE:
+            return ''
+        else:
+            return encounter.disturbance == 'present'
+
+    def dehydrate_nest_tagged(self, encounter):
+        if encounter.nest_tagged == NA_VALUE:
+            return ''
+        else:
+            return encounter.nest_tagged == 'present'
+
+    def dehydrate_logger_found(self, encounter):
+        if encounter.logger_found == NA_VALUE:
+            return ''
+        else:
+            return encounter.logger_found == 'present'
+
+    def dehydrate_eggs_counted(self, encounter):
+        if encounter.eggs_counted == NA_VALUE:
+            return ''
+        else:
+            return encounter.eggs_counted == 'present'
+
+    def dehydrate_hatchlings_measured(self, encounter):
+        if encounter.hatchlings_measured == NA_VALUE:
+            return ''
+        else:
+            return encounter.hatchlings_measured == 'present'
+
+    def dehydrate_fan_angles_measured(self, encounter):
+        if encounter.fan_angles_measured == NA_VALUE:
+            return ''
+        else:
+            return encounter.fan_angles_measured == 'present'
+
+    def dehydrate_eggs_laid(self, encounter):
+        obs = encounter.get_nest_observation()
+        return self.get_child_nestobservation_output(obs, 'eggs_laid')
+
+    def dehydrate_egg_count(self, encounter):
+        obs = encounter.get_nest_observation()
+        return self.get_child_nestobservation_output(obs, 'egg_count')
+
+    def dehydrate_no_egg_shells(self, encounter):
+        obs = encounter.get_nest_observation()
+        return self.get_child_nestobservation_output(obs, 'no_egg_shells')
+
+    def dehydrate_no_live_hatchlings(self, encounter):
+        obs = encounter.get_nest_observation()
+        return self.get_child_nestobservation_output(obs, 'no_live_hatchlings')
+
+    def dehydrate_no_dead_hatchlings(self, encounter):
+        obs = encounter.get_nest_observation()
+        return self.get_child_nestobservation_output(obs, 'no_live_hatchlings')
+
+    def dehydrate_no_undeveloped_eggs(self, encounter):
+        obs = encounter.get_nest_observation()
+        return self.get_child_nestobservation_output(obs, 'no_undeveloped_eggs')
+
+    def dehydrate_no_unhatched_eggs(self, encounter):
+        obs = encounter.get_nest_observation()
+        return self.get_child_nestobservation_output(obs, 'no_unhatched_eggs')
+
+    def dehydrate_no_unhatched_term(self, encounter):
+        obs = encounter.get_nest_observation()
+        return self.get_child_nestobservation_output(obs, 'no_unhatched_term')
+
+    def dehydrate_no_depredated_eggs(self, encounter):
+        obs = encounter.get_nest_observation()
+        return self.get_child_nestobservation_output(obs, 'no_depredated_eggs')
+
+    def dehydrate_no_nest_depth_top(self, encounter):
+        obs = encounter.get_nest_observation()
+        return self.get_child_nestobservation_output(obs, 'nest_depth_top')
+
+    def dehydrate_no_nest_depth_bottom(self, encounter):
+        obs = encounter.get_nest_observation()
+        return self.get_child_nestobservation_output(obs, 'nest_depth_bottom')
+
+    def dehydrate_sand_temp(self, encounter):
+        obs = encounter.get_nest_observation()
+        return self.get_child_nestobservation_output(obs, 'sand_temp')
+
+    def dehydrate_air_temp(self, encounter):
+        obs = encounter.get_nest_observation()
+        return self.get_child_nestobservation_output(obs, 'air_temp')
+
+    def dehydrate_water_temp(self, encounter):
+        obs = encounter.get_nest_observation()
+        return self.get_child_nestobservation_output(obs, 'water_temp')
+
+    def dehydrate_egg_temp(self, encounter):
+        obs = encounter.get_nest_observation()
+        return self.get_child_nestobservation_output(obs, 'egg_temp')
+
+    def dehydrate_nest_tag(self, encounter):
+        obs = encounter.get_nesttag_observation()
+        if obs:
+            return obs.name
+        else:
+            return ''
+
+    def dehydrate_logger(self, encounter):
+        obs = encounter.get_logger_observation()
+        if obs:
+            return str(obs)
+        else:
+            return ''
 
 
 class LineTransectEncounterResource(ModelResource):

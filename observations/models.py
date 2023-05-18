@@ -2566,6 +2566,24 @@ class TurtleNestEncounter(Encounter):
         else:
             return None
 
+    def get_nesttag_observation(self):
+        """A turtle nest encounter should be associated with 0-1 NestTagObservation objects.
+        Returns the related NestTagObservation or None.
+        """
+        if self.observation_set.instance_of(NestTagObservation).exists():
+            return self.observation_set.instance_of(NestTagObservation).first()
+        else:
+            return None
+
+    def get_logger_observation(self):
+        """A turtle nest encounter should be associated with 0-1 LoggerObservation objects.
+        Returns the related LoggerObservation or None.
+        """
+        if self.observation_set.instance_of(LoggerObservation).exists():
+            return self.observation_set.instance_of(LoggerObservation).first()
+        else:
+            return None
+
 
 class LineTransectEncounter(Encounter):
     """Encounter with a line transect.
@@ -2713,16 +2731,10 @@ class LoggerEncounter(Encounter):
         help_text=_("The ID of a logger must be unique within the tag type."),
     )
 
-    # comments = models.TextField(
-    #     verbose_name=_("Comment"),
-    #     blank=True, null=True,
-    #     help_text=_("Comments"), )
-
     class Meta:
         verbose_name = "Logger Encounter"
         verbose_name_plural = "Logger Encounters"
         get_latest_by = "when"
-        # base_manager_name = 'base_objects'  # fix delete bug
 
     def __str__(self):
         return "{0} {1} {2}".format(
@@ -3708,7 +3720,7 @@ class TurtleNestObservation(Observation):
         blank=True,
         null=True,
         help_text=_(
-            "The number of unhatched eggs with obvious, " "not yet full term, embryo."
+            "The number of unhatched eggs with obvious, not yet full term, embryo."
         ),
     )
 
@@ -3728,7 +3740,7 @@ class TurtleNestObservation(Observation):
         blank=True,
         null=True,
         help_text=_(
-            "The number of open, nearly complete shells containing " "egg residue."
+            "The number of open, nearly complete shells containing egg residue."
         ),
     )
 
@@ -4256,7 +4268,6 @@ class TurtleHatchlingEmergenceOutlierObservation(Observation):
         )
 
 
-# Logger Observation models --------------------------------------------------#
 class LoggerObservation(Observation):
     """A logger is observed during an Encounter."""
 
@@ -4311,6 +4322,12 @@ class LoggerObservation(Observation):
 
     class Meta:
         verbose_name = "Logger Observation"
+
+    def __str__(self):
+        if self.logger_id:
+            return f'{self.logger_id} ({self.get_logger_type_display()})'
+        else:
+            return f'{self.get_logger_type_display()}'
 
 
 # Unused models (TBC)
