@@ -1,4 +1,5 @@
 {% extends "observations/encounter_detail.html" %}
+{% load observations %}
 
 {% block heading %}
 {{ object.get_nest_type_display|capfirst }}, {{ object.get_nest_age_display }}, {{ object.get_species_display }}
@@ -86,3 +87,35 @@
     </td>
 </tr>
 {% endblock extra_encounter_details %}
+
+{% block observations %}
+{% if object.observation_set %}
+<div class="row" id="row-enc-media">
+    <div class="col-sm-12 col-md-8">
+        <h3>Observations</h3>
+        <table class="table table-striped table-bordered table-sm">
+            <tbody>
+                {% for obs in object.observation_set.all %}
+                <tr>
+                    <th>
+                        {% get_verbose_name obs %}
+                    </th>
+                    <td>
+                        <i class="fa-solid fa-tags"></i>
+                        <!-- FIXME: permissions check -->
+                        {% if user.is_staff %}
+                        <a href="{{ obs.absolute_admin_url }}" target="_">
+                            {{ obs.name }} ({{ obs.get_status_display }})
+                        </a>
+                        {% else %}
+                        {{ obs.name }} ({{ obs.get_status_display }})
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+{% endblock observations %}

@@ -133,6 +133,7 @@
 </div>
 
 <!-- Observations -->
+{% block observations %}
 {% if object.observation_set %}
 <div class="row" id="row-enc-media">
     <div class="col-sm-12 col-md-8">
@@ -154,8 +155,10 @@
     </div>
 </div>
 {% endif %}
+{% endblock observations %}
 
 <!-- Photos -->
+{% block photographs %}
 {% if object.photographs %}
 <div class="row" id="row-enc-media">
     <div class="col-12" id="col-enc-media">
@@ -173,6 +176,7 @@
     </div>
 </div><!-- .row#row-enc-media -->
 {% endif %}
+{% endblock photographs %}
 
 {% block tag_observation_cards %}{% endblock %}
 
