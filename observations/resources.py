@@ -149,6 +149,8 @@ class TurtleNestEncounterResource(EncounterResource):
     no_unhatched_eggs = Field(column_name='Unhatched eggs (undeveloped) count')
     no_unhatched_term = Field(column_name='Unhatched eggs (full term) count')
     no_depredated_eggs = Field(column_name='Depredated eggs count')
+    hatching_success = Field(column_name='Hatching success %')
+    emergence_success = Field(column_name='Emergence success %')
     nest_depth_top = Field()
     nest_depth_bottom = Field()
     sand_temp = Field()
@@ -179,6 +181,8 @@ class TurtleNestEncounterResource(EncounterResource):
             "no_unhatched_eggs",
             "no_unhatched_term",
             "no_depredated_eggs",
+            "hatching_success",
+            "emergence_success",
             "nest_depth_top",
             "nest_depth_bottom",
             "sand_temp",
@@ -207,6 +211,8 @@ class TurtleNestEncounterResource(EncounterResource):
             "no_unhatched_eggs",
             "no_unhatched_term",
             "no_depredated_eggs",
+            "hatching_success",
+            "emergence_success",
             "nest_depth_top",
             "nest_depth_bottom",
             "sand_temp",
@@ -303,6 +309,14 @@ class TurtleNestEncounterResource(EncounterResource):
     def dehydrate_no_depredated_eggs(self, encounter):
         obs = encounter.get_nest_observation()
         return self.get_child_nestobservation_output(obs, 'no_depredated_eggs')
+
+    def dehydrate_hatching_success(self, encounter):
+        obs = encounter.get_nest_observation()
+        return self.get_child_nestobservation_output(obs, 'hatching_success')
+
+    def dehydrate_emergence_success(self, encounter):
+        obs = encounter.get_nest_observation()
+        return self.get_child_nestobservation_output(obs, 'emergence_success')
 
     def dehydrate_no_nest_depth_top(self, encounter):
         obs = encounter.get_nest_observation()
