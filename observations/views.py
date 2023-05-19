@@ -9,10 +9,9 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View, TemplateView, ListView, CreateView, DetailView, UpdateView
 from django.views.generic.detail import SingleObjectMixin
 from django_fsm_log.models import StateLog
-from export_download.views import ResourceDownloadMixin
 from django_tables2 import RequestConfig, SingleTableView, tables
 
-from shared.views import ListViewBreadcrumbMixin, DetailViewBreadcrumbMixin
+from shared.views import ListViewBreadcrumbMixin, DetailViewBreadcrumbMixin, ResourceDownloadMixin
 from observations import admin
 from .filters import (
     SurveyBasicFilter,
@@ -86,6 +85,7 @@ class SurveyList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
     paginate_by = 20
     filter_class = SurveyBasicFilter
     resource_class = SurveyResource
+    resource_formats = ['csv', 'xlsx']
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -208,6 +208,7 @@ class EncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
     paginate_by = 20
     filter_class = EncounterFilter
     resource_class = EncounterResource
+    resource_formats = ['csv', 'xlsx']
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -301,6 +302,7 @@ class AnimalEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListVi
     paginate_by = 20
     filter_class = AnimalEncounterBasicFilter
     resource_class = AnimalEncounterResource
+    resource_formats = ['csv', 'xlsx']
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -424,6 +426,7 @@ class TurtleNestEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, Li
     paginate_by = 20
     filter_class = TurtleNestEncounterBasicFilter
     resource_class = TurtleNestEncounterResource
+    resource_formats = ['csv', 'xlsx']
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -464,20 +467,17 @@ class TurtleNestEncounterReject(EncounterReject):
     model = TurtleNestEncounter
 
 
-class LineTransectEncounterList(
-    ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView
-):
+class LineTransectEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
     model = LineTransectEncounter
     template_name = "default_list.html"
     paginate_by = 20
     filter_class = LineTransectEncounterFilter
     resource_class = LineTransectEncounterResource
+    resource_formats = ['csv', 'xlsx']
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["list_filter"] = LineTransectEncounterFilter(
-            self.request.GET, queryset=self.get_queryset()
-        )
+        context["list_filter"] = LineTransectEncounterFilter(self.request.GET, queryset=self.get_queryset())
         context["model_admin"] = admin.LineTransectEncounterAdmin
         return context
 
