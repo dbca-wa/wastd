@@ -2218,7 +2218,7 @@ class AnimalEncounter(Encounter):
         choices=lookups.OBSERVATION_CHOICES,
         default=lookups.NA_VALUE,
         help_text=_(
-            "Was the nesting interrupted? " "If so, specify disturbance in comments."
+            "Was the nesting interrupted? If so, specify disturbance in comments."
         ),
     )
 
@@ -2227,7 +2227,7 @@ class AnimalEncounter(Encounter):
         verbose_name=_("Laparoscopy conducted"),
         default=False,
         help_text=_(
-            "Was the animal's sex and maturity determined through " "laparoscopy?"
+            "Was the animal's sex and maturity determined through laparoscopy?"
         ),
     )
 
