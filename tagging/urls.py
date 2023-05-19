@@ -11,6 +11,4 @@ urlpatterns = [
     path("observations/", views.TurtleObservationList.as_view(), name="turtleobservation_list"),
     path("observations/<int:pk>/", views.TurtleObservationDetail.as_view(), name="turtleobservation_detail"),
     path("observations/add/", views.TurtleObservationAdd.as_view(), name="turtleobservation_add"),
-    # tags
-    # pit tags
 ]

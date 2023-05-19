@@ -98,7 +98,7 @@ class Turtle(models.Model):
     entered_by = models.ForeignKey(User, models.PROTECT, related_name='turtles_entered', blank=True, null=True)
     species = models.ForeignKey(TurtleSpecies, models.PROTECT, blank=True, null=True)
     sex = models.CharField(max_length=1, choices=SEX_CHOICES)
-    status = models.CharField(max_length=1, choices=STATUS_CHOICES, blank=True, null=True)
+    status = models.CharField(max_length=1, choices=STATUS_CHOICES, blank=True, null=True, help_text='The status of this turtle record')
     name = models.CharField(max_length=128, blank=True, null=True)
     location = models.ForeignKey(Location, models.PROTECT, related_name='turtles', blank=True, null=True)
     cause_of_death = models.CharField(max_length=2, choices=CAUSE_OF_DEATH_CHOICES, blank=True, null=True)
@@ -135,6 +135,12 @@ class Turtle(models.Model):
             return self.turtleobservation_set.order_by('-observed').first()
         else:
             return None
+
+    @property
+    def is_alive(self):
+        """If the turtle has a cause of death recorded, presume not alive.
+        """
+        return self.cause_of_death is None
 
 
 class TurtleObservation(CurationMixin):
