@@ -234,7 +234,8 @@ class AjaxUserChoiceField(forms.ChoiceField):
 
 
 class TurtleTagObservationAddForm(forms.Form):
-
+    """A bespoke form that reproduces the paper turtle tagging datasheet(s).
+    """
     SEX_CHOICES = (
         (None, ''),
         ('F', 'Female'),

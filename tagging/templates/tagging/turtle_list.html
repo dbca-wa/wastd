@@ -17,11 +17,6 @@
                 <i class="fa-solid fa-plus"></i>
                 Add new turtle
             </a>
-            {% else %}
-            <a class="btn btn-primary disabled" href="">
-                <i class="fa-solid fa-plus"></i>
-                Add new turtle
-            </a>
             {% endif %}
         </span>
     </div>
@@ -70,11 +65,9 @@
                 <td>{{ obj.get_newest_observation.observed|date:"D, j M Y H:i"|default_if_none:"" }}</td>
                 <td>
                 <!-- FIXME: proper permissions check -->
-                {% if user.is_staff %}
                 <a class="btn btn-primary" href="{% url 'tagging:turtleobservation_add' %}?turtle_id={{ obj.pk }}">
                     <i class="fa-regular fa-eye"></i>
                 </a>
-                {% endif %}
                 </td>
             </tr>
             {% endfor %}

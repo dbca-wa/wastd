@@ -22,22 +22,13 @@
             {% if user.is_staff %}
             <a class="btn btn-primary" href="{% url 'admin:tagging_turtle_change' object_id=object.pk %}">
                 <i class="fa-solid fa-pencil"></i>
-                Change turtle details
+                Curate turtle details
             </a>
+            {% endif %}
             <a class="btn btn-primary" href="{% url 'tagging:turtleobservation_add' %}?turtle_id={{ object.pk }}">
                 <i class="fa-solid fa-plus"></i>
                 Add an observation
             </a>
-            {% else %}
-            <a class="btn btn-primary disabled" href="">
-                <i class="fa-solid fa-pencil"></i>
-                Change turtle details
-            </a>
-            <a class="btn btn-primary disabled" href="">
-                <i class="fa-solid fa-plus"></i>
-                Add an observation
-            </a>
-            {% endif %}
         </span>
     </div>
 </div>
@@ -52,10 +43,6 @@
                 <tr>
                     <th>Sex</th>
                     <td>{{ object.get_sex_display|default_if_none:"Unknown" }}</td>
-                </tr>
-                <tr>
-                    <th>Status</th>
-                    <td>{{ object.get_status_display|default_if_none:"" }}</td>
                 </tr>
                 <tr>
                     <th>Nesting/other group</th>
