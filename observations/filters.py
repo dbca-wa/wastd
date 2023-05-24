@@ -1,3 +1,4 @@
+from django.conf import settings
 from django_filters import FilterSet
 from django_filters.filters import (
     DateFilter,
@@ -36,7 +37,12 @@ class SurveyFilter(FilterSet):
         label="Site",
         queryset=Area.objects.filter(area_type__in=[Area.AREATYPE_SITE]).order_by("name"),
     )
-    survey_date = DateFilter(field_name="start_time", lookup_expr="date", label="Exact survey date (YYYY-mm-dd)")
+    survey_date = DateFilter(
+        field_name="start_time",
+        lookup_expr="date",
+        label="Exact survey date",
+        input_formats=settings.DATE_INPUT_FORMATS,
+    )
 
     class Meta:
         model = Survey
@@ -71,11 +77,13 @@ class SurveyBasicFilter(FilterSet):
         field_name="start_time",
         lookup_expr="date__gte",
         label="Date from",
+        input_formats=settings.DATE_INPUT_FORMATS,
     )
     date_to = DateFilter(
         field_name="end_time",
         lookup_expr="date__lte",
         label="Date to",
+        input_formats=settings.DATE_INPUT_FORMATS,
     )
     user_reporter = ModelChoiceFilter(
         field_name="reporter",
@@ -113,7 +121,10 @@ class EncounterFilter(FilterSet):
         queryset=Area.objects.filter(area_type__in=[Area.AREATYPE_SITE]).order_by("name"),
     )
     encounter_date = DateFilter(
-        field_name="when", lookup_expr="date", label="Exact encounter date (YYYY-mm-dd)"
+        field_name="when",
+        lookup_expr="date",
+        label="Exact encounter date",
+        input_formats=settings.DATE_INPUT_FORMATS,
     )
     source = ChoiceFilter(field_name="source", choices=sorted(SOURCE_CHOICES), label="Data Source")
 
@@ -170,11 +181,13 @@ class AnimalEncounterBasicFilter(FilterSet):
         field_name="when",
         lookup_expr="date__gte",
         label="Date from",
+        input_formats=settings.DATE_INPUT_FORMATS,
     )
     date_to = DateFilter(
         field_name="when",
         lookup_expr="date__lte",
         label="Date to",
+        input_formats=settings.DATE_INPUT_FORMATS,
     )
     user_observer = ModelChoiceFilter(
         field_name="observer",
@@ -253,15 +266,18 @@ class TurtleNestEncounterFilter(EncounterFilter):
 
 
 class TurtleNestEncounterBasicFilter(FilterSet):
+
     date_from = DateFilter(
         field_name="when",
         lookup_expr="date__gte",
         label="Date from",
+        input_formats=settings.DATE_INPUT_FORMATS,
     )
     date_to = DateFilter(
         field_name="when",
         lookup_expr="date__lte",
         label="Date to",
+        input_formats=settings.DATE_INPUT_FORMATS,
     )
     user_observer = ModelChoiceFilter(
         field_name="observer",
