@@ -29,8 +29,7 @@ from dateutil.relativedelta import relativedelta
 
 import slugify
 from django.conf import settings
-from django.contrib.gis.db import models as geo_models
-from django.db import models
+from django.contrib.gis.db import models
 from django.db.models.fields import DurationField
 from django.template import loader
 from django.urls import reverse
@@ -76,7 +75,7 @@ def survey_media(instance, filename):
     return "survey/{0}/{1}".format(instance.survey.id, filename)
 
 
-class Area(geo_models.Model):
+class Area(models.Model):
     """An area with a polygonal extent.
 
     This model accommodates anything with a polygonal extent, providing:
@@ -141,7 +140,7 @@ class Area(geo_models.Model):
         ),
     )
 
-    centroid = geo_models.PointField(
+    centroid = models.PointField(
         srid=4326,
         editable=False,
         blank=True,
@@ -190,7 +189,7 @@ class Area(geo_models.Model):
         help_text=_("The cached HTML representation for display purposes."),
     )
 
-    geom = geo_models.PolygonField(
+    geom = models.PolygonField(
         srid=4326,
         verbose_name=_("Location"),
         help_text=_("The exact extent of the area as polygon in WGS84."),
@@ -212,7 +211,7 @@ class Area(geo_models.Model):
         super(Area, self).save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.area_type} {self.name}"
+        return f"{self.name} ({self.area_type})"
 
     @property
     def derived_centroid(self):
@@ -227,7 +226,7 @@ class Area(geo_models.Model):
     @property
     def get_popup(self):
         """Generate HTML popup content."""
-        t = loader.get_template("popup/{0}.html".format(self._meta.model_name))
+        t = loader.get_template("popup/{}.html".format(self._meta.model_name))
         c = dict(original=self)
         return mark_safe(t.render(c))
 
@@ -279,7 +278,7 @@ class Area(geo_models.Model):
         )
 
 
-class SiteVisitStartEnd(geo_models.Model):
+class SiteVisitStartEnd(models.Model):
     """A start or end point to a site visit."""
 
     source = models.CharField(
@@ -307,7 +306,7 @@ class SiteVisitStartEnd(geo_models.Model):
         help_text=_("Local time (no daylight savings), stored as UTC."),
     )
 
-    location = geo_models.PointField(
+    location = models.PointField(
         srid=4326,
         verbose_name=_("Location"),
         help_text=_("The observation location as point in WGS84"),
@@ -327,7 +326,7 @@ class SiteVisitStartEnd(geo_models.Model):
         return "Site visit start or end on {0}".format(self.datetime.isoformat())
 
 
-class Campaign(geo_models.Model):
+class Campaign(models.Model):
     """An endeavour of a team to a Locality within a defined time range.
 
     * Campaign are owned by an Organisation.
@@ -538,7 +537,7 @@ class CampaignMediaAttachment(models.Model):
         return force_text(self.attachment.file)
 
 
-class Survey(QualityControlMixin, UrlsMixin, geo_models.Model):
+class Survey(QualityControlMixin, UrlsMixin, models.Model):
     """A visit to one site by a team of field workers collecting data."""
 
     campaign = models.ForeignKey(
@@ -596,7 +595,7 @@ class Survey(QualityControlMixin, UrlsMixin, geo_models.Model):
         help_text=_("The surveyed site, if known."),
     )
 
-    transect = geo_models.LineStringField(
+    transect = models.LineStringField(
         srid=4326,
         blank=True,
         null=True,
@@ -621,7 +620,7 @@ class Survey(QualityControlMixin, UrlsMixin, geo_models.Model):
         ),
     )
 
-    start_location = geo_models.PointField(
+    start_location = models.PointField(
         srid=4326,
         blank=True,
         null=True,
@@ -684,7 +683,7 @@ class Survey(QualityControlMixin, UrlsMixin, geo_models.Model):
         ),
     )
 
-    end_location = geo_models.PointField(
+    end_location = models.PointField(
         srid=4326,
         blank=True,
         null=True,
@@ -988,7 +987,7 @@ def claim_end_points(survey_instance):
             )
 
 
-class SurveyEnd(geo_models.Model):
+class SurveyEnd(models.Model):
     """A visit to one site by a team of field workers collecting data."""
 
     source = models.CharField(
@@ -1037,7 +1036,7 @@ class SurveyEnd(geo_models.Model):
         help_text=_("The surveyed site, if known."),
     )
 
-    end_location = geo_models.PointField(
+    end_location = models.PointField(
         srid=4326,
         blank=True,
         null=True,
@@ -1176,7 +1175,7 @@ class SurveyMediaAttachment(LegacySourceMixin, models.Model):
 
 
 # Encounter models -----------------------------------------------------------#
-class Encounter(PolymorphicModel, UrlsMixin, geo_models.Model):
+class Encounter(PolymorphicModel, UrlsMixin, models.Model):
     """The base Encounter class.
 
     * When: Datetime of encounter, stored in UTC, entered and displayed in local
@@ -1352,7 +1351,7 @@ class Encounter(PolymorphicModel, UrlsMixin, geo_models.Model):
         ),
     )
 
-    where = geo_models.PointField(
+    where = models.PointField(
         srid=4326,
         verbose_name=_("Observed at"),
         help_text=_("The observation location as point in WGS84"),
@@ -2604,7 +2603,7 @@ class LineTransectEncounter(Encounter):
     * TurtleNestDisturbanceTallyObservation
     """
 
-    transect = geo_models.LineStringField(
+    transect = models.LineStringField(
         srid=4326,
         dim=2,
         verbose_name=_("Transect line"),
