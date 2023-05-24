@@ -13,32 +13,34 @@ from .models import (
 
 class SurveyResource(ModelResource):
 
+    is_production = Field()
+    source = Field()
+
     class Meta:
         model = Survey
         fields = [
-            "source",
-            "source_id",
-            "device_id",
-            "site",
-            "transect",
-            "reporter",
+            "id",
+            "area__name",
+            "site__name",
             "reporter__name",
             "start_location",
-            "start_location_accuracy_m",
             "start_time",
-            "start_photo",
             "start_comments",
-            "end_source_id",
-            "end_device_id",
             "end_location",
-            "end_location_accuracy_m",
             "end_time",
-            "end_photo",
-            "end_comments",
-            "production",
-            "team",
-            "label",
+            "is_production",
+            "source",
+            "source_id",
         ]
+
+    def get_export_order(self):
+        return self._meta.fields
+
+    def dehydrate_is_production(self, obj):
+        return obj.production
+
+    def dehydrate_source(self, obj):
+        return obj.get_source_display()
 
 
 class EncounterResource(ModelResource):
@@ -79,17 +81,9 @@ class EncounterResource(ModelResource):
             "reporter",
             "encounter_type",
         ]
-        export_order = [
-            "id",
-            "status",
-            "when",
-            "where",
-            "locality",
-            "site",
-            "observer",
-            "reporter",
-            "encounter_type",
-        ]
+
+    def get_export_order(self):
+        return self._meta.fields
 
 
 class AnimalEncounterResource(ModelResource):
@@ -192,36 +186,9 @@ class TurtleNestEncounterResource(EncounterResource):
             "nest_tag",
             "logger",
         ]
-        export_order = EncounterResource.Meta.fields + [
-            "nest_type",
-            "nest_age",
-            "species",
-            "disturbance",
-            "nest_tagged",
-            "logger_found",
-            "eggs_counted",
-            "hatchlings_measured",
-            "fan_angles_measured",
-            "eggs_laid",
-            "egg_count",
-            "no_egg_shells",
-            "no_live_hatchlings",
-            "no_dead_hatchlings",
-            "no_undeveloped_eggs",
-            "no_unhatched_eggs",
-            "no_unhatched_term",
-            "no_depredated_eggs",
-            "hatching_success",
-            "emergence_success",
-            "nest_depth_top",
-            "nest_depth_bottom",
-            "sand_temp",
-            "air_temp",
-            "water_temp",
-            "egg_temp",
-            "nest_tag",
-            "logger",
-        ]
+
+    def get_export_order(self):
+        return self._meta.fields
 
     def get_child_nestobservation_output(self, nestobs, attr):
         if nestobs is None:
