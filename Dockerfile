@@ -1,5 +1,5 @@
 # Prepare the base environment.
-FROM python:3.10.9-slim-bullseye as builder_base
+FROM python:3.10.9-slim-bullseye as builder_base_wastd
 MAINTAINER asi@dbca.wa.gov.au
 LABEL org.opencontainers.image.source https://github.com/dbca-wa/wastd
 
@@ -20,7 +20,7 @@ RUN curl -s https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
   && rm -rf /var/lib/apt/lists
 
 # Install Python libs using Poetry.
-FROM builder_base as python_libs
+FROM builder_base_wastd as python_libs_wastd
 WORKDIR /app
 ENV POETRY_VERSION=1.2.2
 RUN pip install --upgrade pip && pip install "poetry==$POETRY_VERSION"
@@ -29,7 +29,7 @@ RUN poetry config virtualenvs.create false \
   && poetry install --no-interaction --no-ansi --only main
 
 # Install the project.
-FROM python_libs
+FROM python_libs_wastd
 COPY gunicorn.py manage.py ./
 COPY observations ./observations
 COPY shared ./shared
