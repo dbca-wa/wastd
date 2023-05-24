@@ -14,7 +14,7 @@ from .models import (
 class SurveyResource(ModelResource):
 
     is_production = Field()
-    source = Field()
+    geometry = Field()
 
     class Meta:
         model = Survey
@@ -29,6 +29,8 @@ class SurveyResource(ModelResource):
             "end_location",
             "end_time",
             "is_production",
+            "geometry",
+            "label",
             "source",
             "source_id",
         ]
@@ -41,6 +43,15 @@ class SurveyResource(ModelResource):
 
     def dehydrate_source(self, obj):
         return obj.get_source_display()
+
+    def dehydrate_geometry(self, obj):
+        if obj.site:
+            return obj.site.geom.ewkt
+        else:
+            return ''
+
+    def dehydrate_label(self, obj):
+        return obj.make_label
 
 
 class EncounterResource(ModelResource):

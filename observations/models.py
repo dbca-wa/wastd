@@ -764,18 +764,12 @@ class Survey(QualityControlMixin, UrlsMixin, models.Model):
 
     @property
     def make_label(self):
-        return "Survey {0} of {1} from {2} {3} to {4}".format(
+        return "Survey {} of {} on {} from {} to {}".format(
             self.pk,
             "unknown site" if not self.site else self.site.name,
-            "na"
-            if not self.start_time
-            else self.start_time.astimezone(tz.tzlocal()).strftime("%Y-%m-%d "),
-            ""
-            if not self.start_time
-            else self.start_time.astimezone(tz.tzlocal()).strftime("%H:%M"),
-            ""
-            if not self.end_time
-            else self.end_time.astimezone(tz.tzlocal()).strftime("%H:%M %Z"),
+            "NA" if not self.start_time else self.start_time.astimezone(tz.tzlocal()).strftime("%d-%b-%Y"),
+            "" if not self.start_time else self.start_time.astimezone(tz.tzlocal()).strftime("%H:%M"),
+            "" if not self.end_time else self.end_time.astimezone(tz.tzlocal()).strftime("%H:%M %Z"),
         )
 
     def label_short(self):
