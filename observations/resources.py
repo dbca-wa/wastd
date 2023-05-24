@@ -60,24 +60,7 @@ class EncounterResource(ModelResource):
     site = Field(column_name='site')
     observer = Field(column_name='observer')
     reporter = Field(column_name='reporter')
-
-    def dehydrate_status(self, encounter):
-        return encounter.get_status_display()
-
-    def dehydrate_locality(self, encounter):
-        return encounter.area.name if encounter.area else ''
-
-    def dehydrate_site(self, encounter):
-        return encounter.site.name if encounter.site else ''
-
-    def dehydrate_observer(self, encounter):
-        return encounter.observer.name
-
-    def dehydrate_reporter(self, encounter):
-        return encounter.reporter.name
-
-    def dehydrate_encounter_type(self, encounter):
-        return encounter.get_encounter_type_display()
+    survey_id = Field()
 
     class Meta:
         model = Encounter
@@ -88,6 +71,8 @@ class EncounterResource(ModelResource):
             "where",
             "locality",
             "site",
+            "survey_id",
+            "survey",
             "observer",
             "reporter",
             "encounter_type",
@@ -95,6 +80,30 @@ class EncounterResource(ModelResource):
 
     def get_export_order(self):
         return self._meta.fields
+
+    def dehydrate_status(self, obj):
+        return obj.get_status_display()
+
+    def dehydrate_locality(self, obj):
+        return obj.area.name if obj.area else ''
+
+    def dehydrate_site(self, obj):
+        return obj.site.name if obj.site else ''
+
+    def dehydrate_survey_id(self, obj):
+        return obj.survey_id if obj.survey else ''
+
+    def dehydrate_survey(self, obj):
+        return obj.survey.make_label if obj.survey else ''
+
+    def dehydrate_observer(self, obj):
+        return obj.observer.name
+
+    def dehydrate_reporter(self, obj):
+        return obj.reporter.name
+
+    def dehydrate_encounter_type(self, obj):
+        return obj.get_encounter_type_display()
 
 
 class AnimalEncounterResource(ModelResource):
