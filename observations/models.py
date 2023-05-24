@@ -660,8 +660,7 @@ class Survey(QualityControlMixin, UrlsMixin, models.Model):
         blank=True,
         null=True,
         help_text=_(
-            "Describe any circumstances affecting data collection, "
-            "e.g. days without surveys."
+            "Describe any circumstances affecting data collection, e.g. days without surveys."
         ),
     )
 
