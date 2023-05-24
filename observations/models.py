@@ -1287,10 +1287,7 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         blank=True,
         on_delete=models.CASCADE,
         verbose_name=_("Campaign"),
-        help_text=_(
-            "The overarching Campaign instigating this Encounter "
-            "is automatically linked when a Campaign saved."
-        ),
+        help_text=_("The overarching Campaign instigating this Encounter is automatically linked when a Campaign saved."),
     )
 
     survey = models.ForeignKey(
@@ -1299,7 +1296,6 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         null=True,
         blank=True,
         verbose_name=_("Survey"),
-        # related_name='encounters', # clashes with Survey.encounters property
         help_text=_("The survey during which this encounter happened."),
     )
 
