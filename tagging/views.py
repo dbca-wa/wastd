@@ -244,10 +244,14 @@ class TurtleObservationAdd(LoginRequiredMixin, FormView):
             entered_by=self.request.user,
             turtle=turtle,
             recorded_by=User.objects.get(pk=data['recorded_by']),
+            measurer=User.objects.get(pk=data['measured_by']) if data['measured_by'] else None,
+            measurer_reporter=User.objects.get(pk=data['measurements_recorded_by']) if data['measurements_recorded_by'] else None,
+            tagger=User.objects.get(pk=data['tagged_by']) if data['tagged_by'] else None,
+            tagger_reporter=User.objects.get(pk=data['tags_recorded_by']) if data['tags_recorded_by'] else None,
             observed=data['observed'],
             place=data['place'],
             comments=data['comments'],
-            alive=True,
+            alive=True,  # FIXME: additional field on form required?
             curation_status=TurtleObservation.CURATION_STATUS_MANUAL_INPUT,
         )
         if data['longitude'] and data['latitude']:
