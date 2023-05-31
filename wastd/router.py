@@ -15,6 +15,12 @@ from observations.api_v2 import (
     MediaAttachmentListResource,
     MediaAttachmentDetailResource,
 )
+from tagging.api import (
+    TurtleTagListResource,
+    TurtleTagDetailResource,
+    TurtlePitTagListResource,
+    TurtlePitTagDetailResource,
+)
 from users.api_v2 import UserListResource, UserDetailResource
 
 
@@ -32,6 +38,10 @@ urlpatterns = [
     path('survey-media-attachments/<int:pk>/', SurveyMediaAttachmentDetailResource.as_view(), name='survey_media_attachment_detail_resource'),
     path('media-attachments/', MediaAttachmentListResource.as_view(), name='media_attachment_list_resource'),
     path('media-attachments/<int:pk>/', MediaAttachmentDetailResource.as_view(), name='media_attachment_detail_resource'),
+    path('turtle-tags/', TurtleTagListResource.as_view(), name='turtle_tag_list_resource'),
+    path('turtle-tags/<int:pk>/', TurtleTagDetailResource.as_view(), name='turtle_tag_detail_resource'),
+    path('turtle-pit-tags/', TurtlePitTagListResource.as_view(), name='turtle_pit_tag_list_resource'),
+    path('turtle-pit-tags/<int:pk>/', TurtlePitTagDetailResource.as_view(), name='turtle_pit_tag_detail_resource'),
 ]
 
 # V1 API router
