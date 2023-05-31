@@ -224,13 +224,17 @@ def import_wamtram(reload=True):
             entered_by = bobp
         else:
             entered_by = admin
+        if t.sex = 'I':
+            sex = 'U'  # Unknown
+        else:
+            sex = t.sex
 
         if Turtle.objects.filter(pk=t.turtle_id).exists() and reload:
             tu = Turtle.objects.get(pk=t.turtle_id)
             tu.created = t.date_entered if t.date_entered else timezone.now()
             tu.entered_by = entered_by
             tu.species = species
-            tu.sex = t.sex
+            tu.sex = sex
             tu.status = t.turtle_status.turtle_status if t.turtle_status else None
             tu.name = t.turtle_name
             tu.location = location
@@ -258,7 +262,7 @@ def import_wamtram(reload=True):
                 entry_batch=EntryBatch.objects.get(pk=t.entry_batch_id) if t.entry_batch_id else None,
                 mund_id=t.mund_id,
                 identification_confidence=t.identification_confidence,
-                sex=t.sex,
+                sex=sex,
             )
         count += 1
         if count % 1000 == 0:
