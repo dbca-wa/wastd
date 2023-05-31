@@ -377,9 +377,9 @@ def import_wamtram(reload=True):
         else:
             tagger = None
         if obs.reporter_person:
-            reporter = User.objects.get(name__iexact=obs.reporter_person.get_name(), is_active=True)
+            tagger_reporter = User.objects.get(name__iexact=obs.reporter_person.get_name(), is_active=True)
         else:
-            reporter = None
+            tagger_reporter = None
         if obs.place_code and Place.objects.filter(name=obs.place_code.place_name).count() == 1:
             place = Place.objects.get(name=obs.place_code.place_name)
         else:
@@ -406,7 +406,7 @@ def import_wamtram(reload=True):
             o.measurer = measurer
             o.measurer_reporter = measurer_reporter
             o.tagger = tagger
-            o.reporter = reporter
+            o.tagger_reporter = tagger_reporter
             o.place = place
             o.place_description = obs.place_description
             o.point = obs.get_point()
@@ -454,7 +454,7 @@ def import_wamtram(reload=True):
                 measurer=measurer,
                 measurer_reporter=measurer_reporter,
                 tagger=tagger,
-                reporter=reporter,
+                tagger_reporter=tagger_reporter,
                 place=place,
                 place_description=obs.place_description,
                 point=obs.get_point(),
