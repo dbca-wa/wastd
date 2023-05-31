@@ -230,7 +230,7 @@ class TurtleObservationAdmin(FSMTransitionMixin, VersionAdmin):
     list_display = ('pk', 'turtle_link', 'observed', 'status', 'alive', 'place', 'curation_status')
     list_filter = ('status', 'alive', 'place', 'condition', 'curation_status')
     search_fields = ('pk', 'turtle__pk', 'turtle__tags__serial', 'turtle__pit_tags__serial')
-    raw_id_fields = ('turtle', 'measurer', 'measurer_reporter', 'tagger', 'reporter')
+    raw_id_fields = ('turtle', 'measurer', 'measurer_reporter', 'tagger', 'tagger_reporter')
     readonly_fields = ('created', 'entered_by')
     fsm_field = ['curation_status']
     fieldsets = (
@@ -245,7 +245,7 @@ class TurtleObservationAdmin(FSMTransitionMixin, VersionAdmin):
                     'measurer',
                     'measurer_reporter',
                     'tagger',
-                    'reporter',
+                    'tagger_reporter',
                     'status',
                     'alive',
                     'place',

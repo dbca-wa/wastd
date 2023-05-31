@@ -229,7 +229,7 @@ class TurtleObservation(CurationMixin):
     measurer = models.ForeignKey(User, models.PROTECT, related_name='measurer', blank=True, null=True)
     measurer_reporter = models.ForeignKey(User, models.PROTECT, related_name='measurer_reporter', blank=True, null=True)
     tagger = models.ForeignKey(User, models.PROTECT, related_name='tagger', blank=True, null=True)
-    reporter = models.ForeignKey(User, models.PROTECT, verbose_name='tagger reporter', related_name='reporter', blank=True, null=True)
+    tagger_reporter = models.ForeignKey(User, models.PROTECT, related_name='tagger_reporter', blank=True, null=True)
     place = models.ForeignKey(Place, models.PROTECT, blank=True, null=True)
     point = models.PointField(srid=4326, blank=True, null=True)  # WGS 84
     activity = models.CharField(max_length=1, choices=ACTIVITY_CHOICES, blank=True, null=True)
