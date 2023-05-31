@@ -1,5 +1,5 @@
 from django.db.models import Q
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseBadRequest
 from django.utils.encoding import force_str
 from django.utils.text import smart_split
 from django.views.generic import ListView, DetailView
@@ -67,7 +67,18 @@ class ListResourceView(ListView):
     serializer = None
 
     def dispatch(self, request, *args, **kwargs):
-        # Handle user access authorisation in this method.
+        # Sanity-check request params.
+        if 'offset' in self.request.GET and self.request.GET['offset']:
+            try:
+                int(self.request.GET['offset'])
+            except:
+                return HttpResponseBadRequest()
+        if 'limit' in self.request.GET and self.request.GET['limit']:
+            try:
+                int(self.request.GET['limit'])
+            except:
+                return HttpResponseBadRequest()
+        # FIXME: handle user access authorisation in this method.
         return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
