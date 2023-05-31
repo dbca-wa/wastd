@@ -56,10 +56,8 @@
                 <th>ID</th>
                 <th>Observed at </th>
                 <th>Turtle</th>
-                <th>Alive</th>
                 <th>Place</th>
-                <th>Activity</th>
-                <th>Tagged by</th>
+                <th>Recorded by</th>
             </tr>
         </thead>
         <tbody>
@@ -68,10 +66,8 @@
                 <td>{{ obj.pk }}</td>
                 <td><a href="{{ obj.get_absolute_url }}">{{ obj.observed|date:"D, j M Y H:i" }}{% if obj.point %} <i class="fa-solid fa-location-pin"></i>{% endif %}</a></td>
                 <td><a href="{{ obj.turtle.get_absolute_url }}">{{ obj.turtle }}</a></td>
-                <td>{{ obj.alive|yesno:"Yes,No,Unknown" }}</td>
                 <td>{{ obj.place|default_if_none:"" }}</td>
-                <td>{{ obj.get_activity_display|default_if_none:"" }}</td>
-                <td>{{ obj.tagger.name|default_if_none:"" }}</td>
+                <td>{{ obj.recorded_by.name|default_if_none:"" }}</td>
             </tr>
             {% endfor %}
         </tbody>

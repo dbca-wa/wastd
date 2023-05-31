@@ -171,6 +171,8 @@ class TurtleObservationAdd(LoginRequiredMixin, FormView):
             initial['sex'] = turtle.sex
             initial['existing_turtle_id'] = turtle.pk
 
+            # NOTE: experiment to NOT prefill tags & pit tags in the form.
+            '''
             tags = TurtleTag.objects.filter(turtle=turtle)
             for tag in tags:
                 # Attached tags, left side
@@ -206,6 +208,7 @@ class TurtleObservationAdd(LoginRequiredMixin, FormView):
                     else:
                         initial['pit_tag_l'] = tag.serial
                         initial['pit_tag_l_new'] = 'n'
+            '''
 
         return initial
 
@@ -223,13 +226,7 @@ class TurtleObservationAdd(LoginRequiredMixin, FormView):
             return redirect("tagging:turtleobservation_list")
         return super().post(request, *args, **kwargs)
 
-    def form_invalid(self, form):
-        #print(form.data)
-        #print(self.request.FILES)
-        return super().form_invalid(form)
-
     def form_valid(self, form):
-        #print(form.cleaned_data)
         data = form.cleaned_data
 
         if data['existing_turtle_id']:  # Existing turtle
@@ -284,175 +281,201 @@ class TurtleObservationAdd(LoginRequiredMixin, FormView):
         else:
             tagged_by = None
 
-        # Each turtle tag in the form might be new or an existing one.
-        # Assume that validation has all happened prior
-        # Create each new one, then create a TurtleTagObservation for each one.
-        # Each tag might be new or an existing one.
+        # Make a list of existing turtle tags. If these aren't recorded during an observation,
+        # we will update their status to 'unknown if present'.
+        existing_tags = list(TurtleTag.objects.filter(turtle=turtle))
+
+        # Each turtle tag in the form will exist in the database already.
+        # Assume that validation has all happened prior.
+        # Update each tag, then create a TurtleTagObservation for each.
+        # Each tag might be newly-applied or an existing one.
 
         # L1 tag
-        if data['tag_l1'] and data['tag_l1_new'] == 'y':  # New tag.
-            tag = TurtleTag.objects.create(
-                serial=data['tag_l1'],
-                turtle=turtle,
-                field_person=tagged_by,
-                side='L',
+        if data['tag_l1']:
+            tag = TurtleTag.objects.get(pk=data['tag_l1'])
+            tag.turtle = turtle
+            tag.side = 'L'
+            if data['tag_l1_new'] == 'y':
+                tag.status = 'ATT'
+                tag.field_person = tagged_by
+                tag_new = True
+            else:
+                tag_new = False
+            tag.save()
+            # Record an observation.
+            TurtleTagObservation.objects.create(
+                tag=tag,
+                observation=observation,
+                status='A1' if tag_new else 'P_OK',
+                position=1,
+                barnacles=data['tag_l1_barnacles'] == 'y',
             )
-            tag_created = True
-        elif data['tag_l1'] and data['tag_l1_new'] == 'n':  # Existing tag.
-            tag = TurtleTag.objects.get(turtle=turtle, serial=data['tag_l1'])
-            tag_created = False
-        TurtleTagObservation.objects.create(
-            tag=tag,
-            observation=observation,
-            status='P_OK' if tag_created else 'A1',
-            position=1,
-            barnacles=data['tag_l1_barnacles'] == 'y',
-        )
-        # L2 tag
-        if data['tag_l2'] and data['tag_l2_new'] == 'y':  # New tag.
-            tag = TurtleTag.objects.create(
-                serial=data['tag_l2'],
-                turtle=turtle,
-                field_person=tagged_by,
-                side='L',
-            )
-            tag_created = True
-        elif data['tag_l2'] and data['tag_l2_new'] == 'n':  # Existing tag.
-            tag = TurtleTag.objects.get(turtle=turtle, serial=data['tag_l2'])
-            tag_created = False
-        TurtleTagObservation.objects.create(
-            tag=tag,
-            observation=observation,
-            status='P_OK' if tag_created else 'A1',
-            position=2,
-            barnacles=data['tag_l2_barnacles'] == 'y',
-        )
-        # L3 tag
-        if data['tag_l3'] and data['tag_l3_new'] == 'y':  # New tag.
-            tag = TurtleTag.objects.create(
-                serial=data['tag_l3'],
-                turtle=turtle,
-                field_person=tagged_by,
-                side='L',
-            )
-            tag_created = True
-        elif data['tag_l3'] and data['tag_l3_new'] == 'n':  # Existing tag.
-            tag = TurtleTag.objects.get(turtle=turtle, serial=data['tag_l3'])
-            tag_created = False
-        TurtleTagObservation.objects.create(
-            tag=tag,
-            observation=observation,
-            status='P_OK' if tag_created else 'A1',
-            position=3,
-            barnacles=data['tag_l3_barnacles'] == 'y',
-        )
+            # Remove from the list of pre-existing tags.
+            if tag in existing_tags:
+                existing_tags.remove(tag)
 
-        # R1 flipper tag
-        if data['tag_r1'] and data['tag_r1_new'] == 'y':  # New tag.
-            tag = TurtleTag.objects.create(
-                serial=data['tag_r1'],
-                turtle=turtle,
-                field_person=tagged_by,
-                side='R',
+        # L2 tag
+        if data['tag_l2']:
+            tag = TurtleTag.objects.get(pk=data['tag_l2'])
+            tag.turtle = turtle
+            tag.side = 'L'
+            if data['tag_l2_new'] == 'y':
+                tag.status = 'ATT'
+                tag.field_person = tagged_by
+                tag_new = True
+            else:
+                tag_new = False
+            tag.save()
+            # Record an observation.
+            TurtleTagObservation.objects.create(
+                tag=tag,
+                observation=observation,
+                status='A1' if tag_new else 'P_OK',
+                position=2,
+                barnacles=data['tag_l2_barnacles'] == 'y',
             )
-            tag_created = True
-        elif data['tag_r1'] and data['tag_r1_new'] == 'n':  # Existing tag.
-            tag = TurtleTag.objects.get(turtle=turtle, serial=data['tag_r1'])
-            tag_created = False
-        TurtleTagObservation.objects.create(
-            tag=tag,
-            observation=observation,
-            status='P_OK' if tag_created else 'A1',
-            position=1,
-            barnacles=data['tag_r1_barnacles'] == 'y',
-        )
-        # R2 flipper tag
-        if data['tag_r2'] and data['tag_r2_new'] == 'y':  # New tag.
-            tag = TurtleTag.objects.create(
-                serial=data['tag_r2'],
-                turtle=turtle,
-                field_person=tagged_by,
-                side='R',
+            # Remove from the list of pre-existing tags.
+            if tag in existing_tags:
+                existing_tags.remove(tag)
+
+        # L3 tag
+        if data['tag_l3']:
+            tag = TurtleTag.objects.get(pk=data['tag_l3'])
+            tag.turtle = turtle
+            tag.side = 'L'
+            if data['tag_l3_new'] == 'y':
+                tag.status = 'ATT'
+                tag.field_person = tagged_by
+                tag_new = True
+            else:
+                tag_new = False
+            tag.save()
+            # Record an observation.
+            TurtleTagObservation.objects.create(
+                tag=tag,
+                observation=observation,
+                status='A1' if tag_new else 'P_OK',
+                position=3,
+                barnacles=data['tag_l3_barnacles'] == 'y',
             )
-            tag_created = True
-        elif data['tag_r2'] and data['tag_r2_new'] == 'n':  # Existing tag.
-            tag = TurtleTag.objects.get(turtle=turtle, serial=data['tag_r2'])
-            tag_created = False
-        TurtleTagObservation.objects.create(
-            tag=tag,
-            observation=observation,
-            status='P_OK' if tag_created else 'A1',
-            position=2,
-            barnacles=data['tag_r2_barnacles'] == 'y',
-        )
-        # R3 flipper tag
-        if data['tag_r3'] and data['tag_r3_new'] == 'y':  # New tag.
-            tag = TurtleTag.objects.create(
-                serial=data['tag_r3'],
-                turtle=turtle,
-                field_person=tagged_by,
-                side='R',
+            # Remove from the list of pre-existing tags.
+            if tag in existing_tags:
+                existing_tags.remove(tag)
+
+        # R1 tag
+        if data['tag_r1']:
+            tag = TurtleTag.objects.get(pk=data['tag_r1'])
+            tag.turtle = turtle
+            tag.side = 'R'
+            if data['tag_r1_new'] == 'y':
+                tag.status = 'ATT'
+                tag.field_person = tagged_by
+                tag_new = True
+            else:
+                tag_new = False
+            tag.save()
+            # Record an observation.
+            TurtleTagObservation.objects.create(
+                tag=tag,
+                observation=observation,
+                status='A1' if tag_new else 'P_OK',
+                position=1,
+                barnacles=data['tag_r1_barnacles'] == 'y',
             )
-            tag_created = True
-        elif data['tag_r3'] and data['tag_r3_new'] == 'n':  # Existing tag.
-            tag = TurtleTag.objects.get(turtle=turtle, serial=data['tag_r3'])
-            tag_created = False
-        TurtleTagObservation.objects.create(
-            tag=tag,
-            observation=observation,
-            status='P_OK' if tag_created else 'A1',
-            position=3,
-            barnacles=data['tag_r3_barnacles'] == 'y',
-        )
+            # Remove from the list of pre-existing tags.
+            if tag in existing_tags:
+                existing_tags.remove(tag)
+
+        # R2 tag
+        if data['tag_r2']:
+            tag = TurtleTag.objects.get(pk=data['tag_r2'])
+            tag.turtle = turtle
+            tag.side = 'R'
+            if data['tag_r2_new'] == 'y':
+                tag.status = 'ATT'
+                tag.field_person = tagged_by
+                tag_new = True
+            else:
+                tag_new = False
+            tag.save()
+            # Record an observation.
+            TurtleTagObservation.objects.create(
+                tag=tag,
+                observation=observation,
+                status='A1' if tag_new else 'P_OK',
+                position=2,
+                barnacles=data['tag_r2_barnacles'] == 'y',
+            )
+            # Remove from the list of pre-existing tags.
+            if tag in existing_tags:
+                existing_tags.remove(tag)
+
+        # R3 tag
+        if data['tag_r3']:
+            tag = TurtleTag.objects.get(pk=data['tag_r3'])
+            tag.turtle = turtle
+            tag.side = 'R'
+            if data['tag_r3_new'] == 'y':
+                tag.status = 'ATT'
+                tag.field_person = tagged_by
+                tag_new = True
+            else:
+                tag_new = False
+            tag.save()
+            # Record an observation.
+            TurtleTagObservation.objects.create(
+                tag=tag,
+                observation=observation,
+                status='A1' if tag_new else 'P_OK',
+                position=3,
+                barnacles=data['tag_r3_barnacles'] == 'y',
+            )
+            # Remove from the list of pre-existing tags.
+            if tag in existing_tags:
+                existing_tags.remove(tag)
+
+        # For any pre-existing tags that weren't recorded on the form, set the status to 'unknown'.
+        for tag in existing_tags:
+            tag.status = 'QRY'
+            tag.save()
 
         # Left pit tag
-        if data['pit_tag_l'] and data['pit_tag_l_new'] == 'y':  # New tag.
-            pit_tag_created = True
-            # 'New' tag might already exist in the DB, unassigned.
-            if TurtlePitTag.objects.filter(serial=data['pit_tag_l'], turtle__isnull=True).exists():
-                pit_tag = TurtlePitTag.objects.get(serial=data['pit_tag_l'], turtle__isnull=True)
-                pit_tag.turtle = turtle
-                pit_tag.save()
+        if data['pit_tag_l']:
+            pit_tag = TurtlePitTag.objects.get(pk=data['pit_tag_l'])
+            pit_tag.turtle = turtle
+            if data['pit_tag_l_new'] == 'y':
+                pit_tag.field_person = tagged_by
+                pit_tag.status = 'ATT'
+                tag_new = True
             else:
-                pit_tag = TurtlePitTag.objects.create(
-                    serial=data['pit_tag_l'],
-                    turtle=turtle,
-                    field_person=tagged_by,
-                    side='L',
-                )
-        elif data['pit_tag_l'] and data['pit_tag_l_new'] == 'n':  # Existing tag.
-            pit_tag_created = False
-            pit_tag = TurtlePitTag.objects.get(turtle=turtle, serial=data['pit_tag_l'])
-        TurtlePitTagObservation.objects.create(
-            tag=pit_tag,
-            observation=observation,
-            status='A1' if pit_tag_created else 'P',
-            position='LF',
-        )
+                tag_new = False
+            pit_tag.save()
+            # Record an observation.
+            TurtlePitTagObservation.objects.create(
+                tag=pit_tag,
+                observation=observation,
+                status='A1' if tag_new else 'P',
+                position='LF',
+            )
+
         # Right pit tag
-        if data['pit_tag_r'] and data['pit_tag_r_new'] == 'y':  # New tag.
-            pit_tag_created = True
-            # 'New' tag might already exist in the DB, unassigned.
-            if TurtlePitTag.objects.filter(serial=data['pit_tag_r'], turtle__isnull=True).exists():
-                pit_tag = TurtlePitTag.objects.get(serial=data['pit_tag_r'], turtle__isnull=True)
-                pit_tag.turtle = turtle
-                pit_tag.save()
+        if data['pit_tag_r']:
+            pit_tag = TurtlePitTag.objects.get(pk=data['pit_tag_r'])
+            pit_tag.turtle = turtle
+            if data['pit_tag_r_new'] == 'y':
+                pit_tag.field_person = tagged_by
+                pit_tag.status = 'ATT'
+                tag_new = True
             else:
-                pit_tag = TurtlePitTag.objects.create(
-                    serial=data['pit_tag_r'],
-                    turtle=turtle,
-                    field_person=tagged_by,
-                    side='R',
-                )
-        elif data['pit_tag_r'] and data['pit_tag_r_new'] == 'n':  # Existing tag.
-            pit_tag_created = False
-            pit_tag = TurtlePitTag.objects.get(turtle=turtle, serial=data['pit_tag_r'])
-        TurtlePitTagObservation.objects.create(
-            tag=pit_tag,
-            observation=observation,
-            status='A1' if pit_tag_created else 'P',
-            position='RF',
-        )
+                tag_new = False
+            pit_tag.save()
+            # Record an observation.
+            TurtlePitTagObservation.objects.create(
+                tag=pit_tag,
+                observation=observation,
+                status='A1' if tag_new else 'P',
+                position='RF',
+            )
 
         # TurtleMeasurement
         ccl = MeasurementType.objects.get(short_desc='CCL')
