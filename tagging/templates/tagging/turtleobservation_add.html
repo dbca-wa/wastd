@@ -49,6 +49,49 @@
             }
           }
         });
+
+        $('.select-tag-choice').select2({
+          minimumInputLength: 3,
+          allowClear: true,
+          placeholder: '',
+          ajax: {
+            url: '/api/2/turtle-tags/',
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+              return {q: params.term, limit: 15}
+            },
+            processResults: function (data) {
+              var results = [];
+              data.features.forEach(feature => results.push({id: feature.properties.id, text: feature.properties.serial}));
+              return {
+                results: results
+              };
+            }
+          }
+        });
+
+        $('.select-pittag-choice').select2({
+          minimumInputLength: 3,
+          allowClear: true,
+          placeholder: '',
+          ajax: {
+            url: '/api/2/turtle-pit-tags/',
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+              return {q: params.term, limit: 15}
+            },
+            processResults: function (data) {
+              var results = [];
+              data.features.forEach(feature => results.push({id: feature.properties.id, text: feature.properties.serial}));
+              return {
+                results: results
+              };
+            }
+          }
+        });
+
         $('#id_observed').datetimepicker({format: 'd-m-Y H:i'});
     });
 </script>

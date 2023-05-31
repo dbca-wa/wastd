@@ -223,8 +223,8 @@ class Row(Div):
     css_class = 'row'
 
 
-class AjaxUserChoiceField(forms.ChoiceField):
-    """A basic empty ChoiceField intended to be populated via an Ajax call.
+class AjaxChoiceField(forms.ChoiceField):
+    """An empty ChoiceField intended to be populated via an Ajax call.
     """
     def valid_value(self, value):
         '''Provided value is always a valid choice, even when no choices are defined.
@@ -285,63 +285,57 @@ class TurtleTagObservationAddForm(forms.Form):
     species = forms.ModelChoiceField(TurtleSpecies.objects.all())
     observed = forms.DateTimeField(label='Observed at', input_formats=settings.DATETIME_INPUT_FORMATS)
     sex = forms.ChoiceField(choices=SEX_CHOICES)
-    recorded_by = AjaxUserChoiceField(help_text='User who recorded the survey data in the field')
+    recorded_by = AjaxChoiceField(help_text='User who recorded the survey data in the field')
     data_sheet = forms.FileField(required=False, help_text="Electronic copy of the field survey data sheet")
 
     flipper_tags_present = forms.ChoiceField(choices=CHECKED_CHOICES, help_text='Does this turtle have flipper tags present?')
-    tag_l1 = forms.CharField(required=False)
+    tag_l1 = AjaxChoiceField(required=False)
     tag_l1_new = forms.ChoiceField(choices=YES_NO_CHOICES, required=False)
-    #tag_l1_scale = forms.ChoiceField(choices=SCALE_CHOICES, required=False)
     tag_l1_barnacles = forms.ChoiceField(choices=YES_NO_CHOICES, required=False)
     tag_l1_secure = forms.ChoiceField(choices=YES_NO_CHOICES, required=False)
     tag_l1_scars = forms.ChoiceField(choices=YES_NO_CHOICES, required=False)
-    tag_l2 = forms.CharField(required=False)
+    tag_l2 = AjaxChoiceField(required=False)
     tag_l2_new = forms.ChoiceField(choices=YES_NO_CHOICES, required=False)
-    #tag_l2_scale = forms.ChoiceField(choices=SCALE_CHOICES, required=False)
     tag_l2_barnacles = forms.ChoiceField(choices=YES_NO_CHOICES, required=False)
     tag_l2_secure = forms.ChoiceField(choices=YES_NO_CHOICES, required=False)
     tag_l2_scars = forms.ChoiceField(choices=YES_NO_CHOICES, required=False)
-    tag_l3 = forms.CharField(required=False)
+    tag_l3 = AjaxChoiceField(required=False)
     tag_l3_new = forms.ChoiceField(choices=YES_NO_CHOICES, required=False)
-    #tag_l3_scale = forms.ChoiceField(choices=SCALE_CHOICES, required=False)
     tag_l3_barnacles = forms.ChoiceField(choices=YES_NO_CHOICES, required=False)
     tag_l3_secure = forms.ChoiceField(choices=YES_NO_CHOICES, required=False)
     tag_l3_scars = forms.ChoiceField(choices=YES_NO_CHOICES, required=False)
 
-    tag_r1 = forms.CharField(required=False)
+    tag_r1 = AjaxChoiceField(required=False)
     tag_r1_new = forms.ChoiceField(choices=YES_NO_CHOICES, required=False)
-    #tag_r1_scale = forms.ChoiceField(choices=SCALE_CHOICES, required=False)
     tag_r1_barnacles = forms.ChoiceField(choices=YES_NO_CHOICES, required=False)
     tag_r1_secure = forms.ChoiceField(choices=YES_NO_CHOICES, required=False)
     tag_r1_scars = forms.ChoiceField(choices=YES_NO_CHOICES, required=False)
-    tag_r2 = forms.CharField(required=False)
+    tag_r2 = AjaxChoiceField(required=False)
     tag_r2_new = forms.ChoiceField(choices=YES_NO_CHOICES, required=False)
-    #tag_r2_scale = forms.ChoiceField(choices=SCALE_CHOICES, required=False)
     tag_r2_barnacles = forms.ChoiceField(choices=YES_NO_CHOICES, required=False)
     tag_r2_secure = forms.ChoiceField(choices=YES_NO_CHOICES, required=False)
     tag_r2_scars = forms.ChoiceField(choices=YES_NO_CHOICES, required=False)
-    tag_r3 = forms.CharField(required=False)
+    tag_r3 = AjaxChoiceField(required=False)
     tag_r3_new = forms.ChoiceField(choices=YES_NO_CHOICES, required=False)
-    #tag_r3_scale = forms.ChoiceField(choices=SCALE_CHOICES, required=False)
     tag_r3_barnacles = forms.ChoiceField(choices=YES_NO_CHOICES, required=False)
     tag_r3_secure = forms.ChoiceField(choices=YES_NO_CHOICES, required=False)
     tag_r3_scars = forms.ChoiceField(choices=YES_NO_CHOICES, required=False)
 
     pit_tags_present = forms.ChoiceField(choices=CHECKED_CHOICES, help_text='Does this turtle have any pit tags present?')
-    pit_tag_l = forms.CharField(required=False)
+    pit_tag_l = AjaxChoiceField(required=False)
     pit_tag_l_new = forms.ChoiceField(choices=YES_NO_CHOICES, required=False)
-    pit_tag_r = forms.CharField(required=False)
+    pit_tag_r = AjaxChoiceField(required=False)
     pit_tag_r_new = forms.ChoiceField(choices=YES_NO_CHOICES, required=False)
 
-    tagged_by = AjaxUserChoiceField(required=False)
-    tags_recorded_by = AjaxUserChoiceField(required=False)
+    tagged_by = AjaxChoiceField(required=False)
+    tags_recorded_by = AjaxChoiceField(required=False)
 
     ccl_min = forms.IntegerField(required=False, label='CCL min (mm)')
     ccl_max = forms.IntegerField(required=False, label='CCL max (mm)')
     cc_width = forms.IntegerField(required=False, label='CC width (mm)')
     weight = forms.FloatField(required=False, label='Weight (kg)')
-    measured_by = AjaxUserChoiceField(required=False)
-    measurements_recorded_by = AjaxUserChoiceField(required=False)
+    measured_by = AjaxChoiceField(required=False)
+    measurements_recorded_by = AjaxChoiceField(required=False)
 
     nest_location = forms.ChoiceField(label='Nest location / beach position', choices=NEST_LOCATION_CHOICES, required=False)
     nesting_interrupted = forms.ChoiceField(label='Was the nesting process interruped?', choices=YES_NO_CHOICES, required=False)
@@ -380,7 +374,7 @@ class TurtleTagObservationAddForm(forms.Form):
         super().__init__(*args, **kwargs)
 
         # Rigmarole to preserve any data input to user choice fields across form reloads.
-        # Set the form field choice to be the previously-submitted user.
+        # Set the form field choice to be the previously-selected values.
         if 'data' in kwargs:
             if kwargs['data'].get('recorded_by', None):
                 user = User.objects.get(pk=kwargs['data']['recorded_by'])
@@ -397,16 +391,50 @@ class TurtleTagObservationAddForm(forms.Form):
             if kwargs['data'].get('measurements_recorded_by', None):
                 user = User.objects.get(pk=kwargs['data']['measurements_recorded_by'])
                 self.fields['measurements_recorded_by'].choices = [(user.pk, user.name)]
+            if kwargs['data'].get('tag_l1', None):
+                tag = TurtleTag.objects.get(pk=kwargs['data']['tag_l1'])
+                self.fields['tag_l1'].choices = [(tag.pk, tag.serial)]
+            if kwargs['data'].get('tag_l2', None):
+                tag = TurtleTag.objects.get(pk=kwargs['data']['tag_l2'])
+                self.fields['tag_l2'].choices = [(tag.pk, tag.serial)]
+            if kwargs['data'].get('tag_l3', None):
+                tag = TurtleTag.objects.get(pk=kwargs['data']['tag_l3'])
+                self.fields['tag_l3'].choices = [(tag.pk, tag.serial)]
+            if kwargs['data'].get('tag_r1', None):
+                tag = TurtleTag.objects.get(pk=kwargs['data']['tag_r1'])
+                self.fields['tag_r1'].choices = [(tag.pk, tag.serial)]
+            if kwargs['data'].get('tag_r2', None):
+                tag = TurtleTag.objects.get(pk=kwargs['data']['tag_r2'])
+                self.fields['tag_r2'].choices = [(tag.pk, tag.serial)]
+            if kwargs['data'].get('tag_r3', None):
+                tag = TurtleTag.objects.get(pk=kwargs['data']['tag_r3'])
+                self.fields['tag_r3'].choices = [(tag.pk, tag.serial)]
+            if kwargs['data'].get('pit_tag_l', None):
+                tag = TurtlePitTag.objects.get(pk=kwargs['data']['pit_tag_l'])
+                self.fields['pit_tag_l'].choices = [(tag.pk, tag.serial)]
+            if kwargs['data'].get('pit_tag_r', None):
+                tag = TurtlePitTag.objects.get(pk=kwargs['data']['pit_tag_r'])
+                self.fields['pit_tag_r'].choices = [(tag.pk, tag.serial)]
 
         self.helper = FormHelper()
         self.helper.form_method = 'POST'
         self.helper.attrs = {'novalidate': ''}  # Disable default in-browser form validation.
 
+        # Add some additional classes to widget, for JavaScript purposes.
         self.fields['recorded_by'].widget.attrs['class'] = 'select-user-choice'
         self.fields['tagged_by'].widget.attrs['class'] = 'select-user-choice'
         self.fields['tags_recorded_by'].widget.attrs['class'] = 'select-user-choice'
         self.fields['measured_by'].widget.attrs['class'] = 'select-user-choice'
         self.fields['measurements_recorded_by'].widget.attrs['class'] = 'select-user-choice'
+        self.fields['tag_l1'].widget.attrs['class'] = 'select-tag-choice'
+        self.fields['tag_l2'].widget.attrs['class'] = 'select-tag-choice'
+        self.fields['tag_l3'].widget.attrs['class'] = 'select-tag-choice'
+        self.fields['tag_r1'].widget.attrs['class'] = 'select-tag-choice'
+        self.fields['tag_r2'].widget.attrs['class'] = 'select-tag-choice'
+        self.fields['tag_r3'].widget.attrs['class'] = 'select-tag-choice'
+        self.fields['pit_tag_l'].widget.attrs['class'] = 'select-pittag-choice'
+        self.fields['pit_tag_r'].widget.attrs['class'] = 'select-pittag-choice'
+
         if turtle_id:
             self.fields['species'].disabled = True
             self.fields['sex'].disabled = True
@@ -415,37 +443,31 @@ class TurtleTagObservationAddForm(forms.Form):
         # Remove labels from some fields
         self.fields['tag_l1'].label = False
         self.fields['tag_l1_new'].label = False
-        #self.fields['tag_l1_scale'].label = False
         self.fields['tag_l1_barnacles'].label = False
         self.fields['tag_l1_secure'].label = False
         self.fields['tag_l1_scars'].label = False
         self.fields['tag_l2'].label = False
         self.fields['tag_l2_new'].label = False
-        #self.fields['tag_l2_scale'].label = False
         self.fields['tag_l2_barnacles'].label = False
         self.fields['tag_l2_secure'].label = False
         self.fields['tag_l2_scars'].label = False
         self.fields['tag_l3'].label = False
         self.fields['tag_l3_new'].label = False
-        #self.fields['tag_l3_scale'].label = False
         self.fields['tag_l3_barnacles'].label = False
         self.fields['tag_l3_secure'].label = False
         self.fields['tag_l3_scars'].label = False
         self.fields['tag_r1'].label = False
         self.fields['tag_r1_new'].label = False
-        #self.fields['tag_r1_scale'].label = False
         self.fields['tag_r1_barnacles'].label = False
         self.fields['tag_r1_secure'].label = False
         self.fields['tag_r1_scars'].label = False
         self.fields['tag_r2'].label = False
         self.fields['tag_r2_new'].label = False
-        #self.fields['tag_r2_scale'].label = False
         self.fields['tag_r2_barnacles'].label = False
         self.fields['tag_r2_secure'].label = False
         self.fields['tag_r2_scars'].label = False
         self.fields['tag_r3'].label = False
         self.fields['tag_r3_new'].label = False
-        #self.fields['tag_r3_scale'].label = False
         self.fields['tag_r3_barnacles'].label = False
         self.fields['tag_r3_secure'].label = False
         self.fields['tag_r3_scars'].label = False
@@ -498,7 +520,6 @@ class TurtleTagObservationAddForm(forms.Form):
                     HTML('<div class="col-2"></div>'),
                     HTML('<div class="col-5">Tag number</div>'),
                     HTML('<div class="col">New tag?</div>'),
-                    #HTML('<div class="col">Scale</div>'),
                     HTML('<div class="col">Barnacles?</div>'),
                     HTML('<div class="col">Secure fix?</div>'),
                     HTML('<div class="col">Tag scars?</div>'),
@@ -508,7 +529,6 @@ class TurtleTagObservationAddForm(forms.Form):
                     HTML('<div class="col-2">Left scale 1</div>'),
                     Field('tag_l1', wrapper_class='form-group col-5'),
                     Field('tag_l1_new', wrapper_class='form-group col'),
-                    #Field('tag_l1_scale', wrapper_class='form-group col'),
                     Field('tag_l1_barnacles', wrapper_class='form-group col'),
                     Field('tag_l1_secure', wrapper_class='form-group col'),
                     Field('tag_l1_scars', wrapper_class='form-group col'),
@@ -517,7 +537,6 @@ class TurtleTagObservationAddForm(forms.Form):
                     HTML('<div class="col-2">Left scale 2</div>'),
                     Field('tag_l2', wrapper_class='form-group col-5'),
                     Field('tag_l2_new', wrapper_class='form-group col'),
-                    #Field('tag_l2_scale', wrapper_class='form-group col'),
                     Field('tag_l2_barnacles', wrapper_class='form-group col'),
                     Field('tag_l2_secure', wrapper_class='form-group col'),
                     Field('tag_l2_scars', wrapper_class='form-group col'),
@@ -526,7 +545,6 @@ class TurtleTagObservationAddForm(forms.Form):
                     HTML('<div class="col-2">Left scale 3</div>'),
                     Field('tag_l3', wrapper_class='form-group col-5'),
                     Field('tag_l3_new', wrapper_class='form-group col'),
-                    #Field('tag_l3_scale', wrapper_class='form-group col'),
                     Field('tag_l3_barnacles', wrapper_class='form-group col'),
                     Field('tag_l3_secure', wrapper_class='form-group col'),
                     Field('tag_l3_scars', wrapper_class='form-group col'),
@@ -535,7 +553,6 @@ class TurtleTagObservationAddForm(forms.Form):
                     HTML('<div class="col-2">Right scale 1</div>'),
                     Field('tag_r1', wrapper_class='form-group col-5'),
                     Field('tag_r1_new', wrapper_class='form-group col'),
-                    #Field('tag_r1_scale', wrapper_class='form-group col'),
                     Field('tag_r1_barnacles', wrapper_class='form-group col'),
                     Field('tag_r1_secure', wrapper_class='form-group col'),
                     Field('tag_r1_scars', wrapper_class='form-group col'),
@@ -544,7 +561,6 @@ class TurtleTagObservationAddForm(forms.Form):
                     HTML('<div class="col-2">Right scale 2</div>'),
                     Field('tag_r2', wrapper_class='form-group col-5'),
                     Field('tag_r2_new', wrapper_class='form-group col'),
-                    #Field('tag_r2_scale', wrapper_class='form-group col'),
                     Field('tag_r2_barnacles', wrapper_class='form-group col'),
                     Field('tag_r2_secure', wrapper_class='form-group col'),
                     Field('tag_r2_scars', wrapper_class='form-group col'),
@@ -553,7 +569,6 @@ class TurtleTagObservationAddForm(forms.Form):
                     HTML('<div class="col-2">Right scale 3</div>'),
                     Field('tag_r3', wrapper_class='form-group col-5'),
                     Field('tag_r3_new', wrapper_class='form-group col'),
-                    #Field('tag_r3_scale', wrapper_class='form-group col'),
                     Field('tag_r3_barnacles', wrapper_class='form-group col'),
                     Field('tag_r3_secure', wrapper_class='form-group col'),
                     Field('tag_r3_scars', wrapper_class='form-group col'),
@@ -705,17 +720,15 @@ class TurtleTagObservationAddForm(forms.Form):
         return observed
 
     def clean_tag_l1(self):
-        # TODO: serial pattern validation.
         tag_l1 = self.cleaned_data['tag_l1']
         if tag_l1:
-            if TurtleTag.objects.filter(serial=tag_l1).exclude(turtle__isnull=True).exists():
-                tag = TurtleTag.objects.get(serial=tag_l1)
-                if self.cleaned_data['existing_turtle_id']:
-                    turtle = Turtle.objects.get(pk=self.cleaned_data.get('existing_turtle_id'))
-                else:
-                    turtle = None
-                if tag.turtle != turtle:
-                    self.add_error('tag_l1', f'Tag serial number {tag_l1} is already assigned to turtle {tag.turtle}')
+            tag = TurtleTag.objects.get(pk=tag_l1)
+            if self.cleaned_data['existing_turtle_id']:
+                existing_turtle = Turtle.objects.get(pk=self.cleaned_data.get('existing_turtle_id'))
+            else:
+                existing_turtle = None
+            if (existing_turtle and tag.turtle and tag.turtle != existing_turtle) or (not existing_turtle and tag.turtle):
+                self.add_error('tag_l1', f'Tag {tag.serial} is already assigned to turtle {tag.turtle}')
         return tag_l1
 
     def clean_tag_l1_new(self):
@@ -725,17 +738,15 @@ class TurtleTagObservationAddForm(forms.Form):
         return self.cleaned_data['tag_l1']
 
     def clean_tag_l2(self):
-        # TODO: serial pattern validation.
         tag_l2 = self.cleaned_data['tag_l2']
         if tag_l2:
-            if TurtleTag.objects.filter(serial=tag_l2).exclude(turtle__isnull=True).exists():
-                tag = TurtleTag.objects.get(serial=tag_l2)
-                if self.cleaned_data['existing_turtle_id']:
-                    turtle = Turtle.objects.get(pk=self.cleaned_data.get('existing_turtle_id'))
-                else:
-                    turtle = None
-                if tag.turtle != turtle:
-                    self.add_error('tag_l2', f'Tag serial number {tag_l2} is already assigned to turtle {tag.turtle}')
+            tag = TurtleTag.objects.get(pk=tag_l2)
+            if self.cleaned_data['existing_turtle_id']:
+                existing_turtle = Turtle.objects.get(pk=self.cleaned_data.get('existing_turtle_id'))
+            else:
+                existing_turtle = None
+            if (existing_turtle and tag.turtle and tag.turtle != existing_turtle) or (not existing_turtle and tag.turtle):
+                self.add_error('tag_l2', f'Tag {tag.serial} is already assigned to turtle {tag.turtle}')
         return tag_l2
 
     def clean_tag_l2_new(self):
@@ -745,17 +756,15 @@ class TurtleTagObservationAddForm(forms.Form):
         return self.cleaned_data['tag_l2']
 
     def clean_tag_l3(self):
-        # TODO: serial pattern validation.
         tag_l3 = self.cleaned_data['tag_l3']
         if tag_l3:
-            if TurtleTag.objects.filter(serial=tag_l3).exclude(turtle__isnull=True).exists():
-                tag = TurtleTag.objects.get(serial=tag_l3)
-                if self.cleaned_data['existing_turtle_id']:
-                    turtle = Turtle.objects.get(pk=self.cleaned_data.get('existing_turtle_id'))
-                else:
-                    turtle = None
-                if tag.turtle != turtle:
-                    self.add_error('tag_l3', f'Tag serial number {tag_l3} is already assigned to turtle {tag.turtle}')
+            tag = TurtleTag.objects.get(pk=tag_l3)
+            if self.cleaned_data['existing_turtle_id']:
+                existing_turtle = Turtle.objects.get(pk=self.cleaned_data.get('existing_turtle_id'))
+            else:
+                existing_turtle = None
+            if (existing_turtle and tag.turtle and tag.turtle != existing_turtle) or (not existing_turtle and tag.turtle):
+                self.add_error('tag_l3', f'Tag {tag.serial} is already assigned to turtle {tag.turtle}')
         return tag_l3
 
     def clean_tag_l3_new(self):
@@ -765,17 +774,15 @@ class TurtleTagObservationAddForm(forms.Form):
         return self.cleaned_data['tag_l3']
 
     def clean_tag_r1(self):
-        # TODO: serial pattern validation.
         tag_r1 = self.cleaned_data['tag_r1']
         if tag_r1:
-            if TurtleTag.objects.filter(serial=tag_r1).exclude(turtle__isnull=True).exists():
-                tag = TurtleTag.objects.get(serial=tag_r1)
-                if self.cleaned_data['existing_turtle_id']:
-                    turtle = Turtle.objects.get(pk=self.cleaned_data.get('existing_turtle_id'))
-                else:
-                    turtle = None
-                if tag.turtle != turtle:
-                    self.add_error('tag_r1', f'Tag serial number {tag_r1} is already assigned to turtle {tag.turtle}')
+            tag = TurtleTag.objects.get(pk=tag_r1)
+            if self.cleaned_data['existing_turtle_id']:
+                existing_turtle = Turtle.objects.get(pk=self.cleaned_data.get('existing_turtle_id'))
+            else:
+                existing_turtle = None
+            if (existing_turtle and tag.turtle and tag.turtle != existing_turtle) or (not existing_turtle and tag.turtle):
+                self.add_error('tag_r1', f'Tag {tag.serial} is already assigned to turtle {tag.turtle}')
         return tag_r1
 
     def clean_tag_r1_new(self):
@@ -785,17 +792,15 @@ class TurtleTagObservationAddForm(forms.Form):
         return self.cleaned_data['tag_r1']
 
     def clean_tag_r2(self):
-        # TODO: serial pattern validation.
         tag_r2 = self.cleaned_data['tag_r2']
         if tag_r2:
-            if TurtleTag.objects.filter(serial=tag_r2).exclude(turtle__isnull=True).exists():
-                tag = TurtleTag.objects.get(serial=tag_r2)
-                if self.cleaned_data['existing_turtle_id']:
-                    turtle = Turtle.objects.get(pk=self.cleaned_data.get('existing_turtle_id'))
-                else:
-                    turtle = None
-                if tag.turtle != turtle:
-                    self.add_error('tag_r2', f'Tag serial number {tag_r2} is already assigned to turtle {tag.turtle}')
+            tag = TurtleTag.objects.get(pk=tag_r2)
+            if self.cleaned_data['existing_turtle_id']:
+                existing_turtle = Turtle.objects.get(pk=self.cleaned_data.get('existing_turtle_id'))
+            else:
+                existing_turtle = None
+            if (existing_turtle and tag.turtle and tag.turtle != existing_turtle) or (not existing_turtle and tag.turtle):
+                self.add_error('tag_r2', f'Tag {tag.serial} is already assigned to turtle {tag.turtle}')
         return tag_r2
 
     def clean_tag_r2_new(self):
@@ -805,17 +810,15 @@ class TurtleTagObservationAddForm(forms.Form):
         return self.cleaned_data['tag_r2']
 
     def clean_tag_r3(self):
-        # TODO: serial pattern validation.
         tag_r3 = self.cleaned_data['tag_r3']
         if tag_r3:
-            if TurtleTag.objects.filter(serial=tag_r3).exclude(turtle__isnull=True).exists():
-                tag = TurtleTag.objects.get(serial=tag_r3)
-                if self.cleaned_data['existing_turtle_id']:
-                    turtle = Turtle.objects.get(pk=self.cleaned_data.get('existing_turtle_id'))
-                else:
-                    turtle = None
-                if tag.turtle != turtle:
-                    self.add_error('tag_r3', f'Tag serial number {tag_r3} is already assigned to turtle {tag.turtle}')
+            tag = TurtleTag.objects.get(pk=tag_r3)
+            if self.cleaned_data['existing_turtle_id']:
+                existing_turtle = Turtle.objects.get(pk=self.cleaned_data.get('existing_turtle_id'))
+            else:
+                existing_turtle = None
+            if (existing_turtle and tag.turtle and tag.turtle != existing_turtle) or (not existing_turtle and tag.turtle):
+                self.add_error('tag_r3', f'Tag {tag.serial} is already assigned to turtle {tag.turtle}')
         return tag_r3
 
     def clean_tag_r3_new(self):
@@ -825,17 +828,15 @@ class TurtleTagObservationAddForm(forms.Form):
         return self.cleaned_data['tag_r3']
 
     def clean_pit_tag_l(self):
-        # TODO: serial pattern validation.
         pit_tag_l = self.cleaned_data['pit_tag_l']
         if pit_tag_l:
-            if TurtleTag.objects.filter(serial=pit_tag_l).exclude(turtle__isnull=True).exists():
-                tag = TurtleTag.objects.get(serial=pit_tag_l)
-                if self.cleaned_data['existing_turtle_id']:
-                    turtle = Turtle.objects.get(pk=self.cleaned_data.get('existing_turtle_id'))
-                else:
-                    turtle = None
-                if tag.turtle != turtle:
-                    self.add_error('pit_tag_l', f'Tag serial number {pit_tag_l} is already assigned to turtle {tag.turtle}')
+            tag = TurtlePitTag.objects.get(pk=pit_tag_l)
+            if self.cleaned_data['existing_turtle_id']:
+                existing_turtle = Turtle.objects.get(pk=self.cleaned_data.get('existing_turtle_id'))
+            else:
+                existing_turtle = None
+            if (existing_turtle and tag.turtle and tag.turtle != existing_turtle) or (not existing_turtle and tag.turtle):
+                self.add_error('pit_tag_l', f'Pit tag {tag.serial} is already assigned to turtle {tag.turtle}')
         return pit_tag_l
 
     def clean_pit_tag_l_new(self):
@@ -845,17 +846,15 @@ class TurtleTagObservationAddForm(forms.Form):
         return self.cleaned_data['pit_tag_l']
 
     def clean_pit_tag_r(self):
-        # TODO: serial pattern validation.
         pit_tag_r = self.cleaned_data['pit_tag_r']
         if pit_tag_r:
-            if TurtleTag.objects.filter(serial=pit_tag_r).exclude(turtle__isnull=True).exists():
-                tag = TurtleTag.objects.get(serial=pit_tag_r)
-                if self.cleaned_data['existing_turtle_id']:
-                    turtle = Turtle.objects.get(pk=self.cleaned_data.get('existing_turtle_id'))
-                else:
-                    turtle = None
-                if tag.turtle != turtle:
-                    self.add_error('pit_tag_r', f'Tag serial number {pit_tag_r} is already assigned to turtle {tag.turtle}')
+            tag = TurtlePitTag.objects.get(pk=pit_tag_r)
+            if self.cleaned_data['existing_turtle_id']:
+                existing_turtle = Turtle.objects.get(pk=self.cleaned_data.get('existing_turtle_id'))
+            else:
+                existing_turtle = None
+            if (existing_turtle and tag.turtle and tag.turtle != existing_turtle) or (not existing_turtle and tag.turtle):
+                self.add_error('pit_tag_r', f'Pit tag {tag.serial} is already assigned to turtle {tag.turtle}')
         return pit_tag_r
 
     def clean_pit_tag_r_new(self):

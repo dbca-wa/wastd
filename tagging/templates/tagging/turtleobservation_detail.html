@@ -56,25 +56,27 @@
                     <td>{{ object.recorded_by.name|default_if_none:"" }}</td>
                 </tr>
                 <tr>
-                    <th>Tagger</th>
+                    <th>Tagged by</th>
                     <td>{{ object.tagger.name|default_if_none:"" }}</td>
                 </tr>
                 <tr>
-                    <th>Tagger reporter</th>
-                    <td>{{ object.reporter.name|default_if_none:"" }}</td>
+                    <th>Tags recorded by</th>
+                    <td>{{ object.tagger_reporter.name|default_if_none:"" }}</td>
                 </tr>
                 <tr>
-                    <th>Measurer</th>
+                    <th>Measured by</th>
                     <td>{{ object.measurer.name|default_if_none:"" }}</td>
                 </tr>
                 <tr>
-                    <th>Measurer reporter</th>
+                    <th>Measurements recorded by</th>
                     <td>{{ object.measurer_reporter.name|default_if_none:"" }}</td>
                 </tr>
+                {% comment %}
                 <tr>
                     <th>Action taken</th>
                     <td>{{ object.action_taken|default_if_none:"" }}</td>
                 </tr>
+                {% endcomment %}
                 <tr>
                     <th>Comments</th>
                     <td>{{ object.comments|default_if_none:"" }}</td>
@@ -121,10 +123,12 @@
                     <th>Beach position</th>
                     <td>{{ object.beach_position_code.description|default_if_none:"" }}</td>
                 </tr>
+                {% comment %}
                 <tr>
                     <th>Condition</th>
                     <td>{{ object.get_condition_display|default_if_none:"" }}</td>
                 </tr>
+                {% endcomment %}
             </tbody>
         </table>
     </div>
@@ -239,7 +243,7 @@
 <div class="row">
     <div class="col">
         <h3>Scars</h3>
-        <p>Tag scars not checked: {{ object.tagscarnotchecked|yesno:"Yes,No,Unknown" }}</p>
+        {#<p>Tag scars not checked: {{ object.tagscarnotchecked|yesno:"Yes,No,Unknown" }}</p>#}
         <table class="table table-striped table-bordered table-sm">
             <tbody>
                 <tr>
