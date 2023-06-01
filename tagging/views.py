@@ -241,6 +241,11 @@ class TurtleObservationAdd(LoginRequiredMixin, FormView):
             )
 
         # TurtleObservation
+        if self.request.POST.get("save-flag"):
+            curation_status = TurtleObservation.CURATION_STATUS_FLAGGED
+        else:
+            curation_status = TurtleObservation.CURATION_STATUS_MANUAL_INPUT
+
         observation = TurtleObservation(
             entered_by=self.request.user,
             turtle=turtle,
@@ -253,7 +258,7 @@ class TurtleObservationAdd(LoginRequiredMixin, FormView):
             place=data['place'],
             comments=data['comments'],
             alive=data['alive'] == 'y',
-            curation_status=TurtleObservation.CURATION_STATUS_MANUAL_INPUT,
+            curation_status=curation_status,
         )
         if data['longitude'] and data['latitude']:
             observation.point = Point(x=float(data['longitude']), y=float(data['latitude']), srid=4326)
