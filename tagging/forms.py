@@ -365,6 +365,7 @@ class TurtleTagObservationAddForm(forms.Form):
     comments = forms.CharField(widget=forms.Textarea, required=False)
 
     save_button = Submit('save', 'Save', css_class='btn-lg')
+    save_flag_button = Submit('save-flag', 'Save and flag for curation', css_class='btn-warning')
     cancel_button = Submit('cancel', 'Cancel', css_class='btn-secondary')
 
     def __init__(self, *args, **kwargs):
@@ -695,9 +696,13 @@ class TurtleTagObservationAddForm(forms.Form):
             Row(
                 Field('comments', wrapper_class='form-group col'),
             ),
+            Div(
+                HTML('<p>Where issues or questions exist relating to this observation, please record any relevant comments and select "Save and flag for curation".</p>'),
+            ),
 
             FormActions(
                 self.save_button,
+                self.save_flag_button,
                 self.cancel_button,
             ),
         )
