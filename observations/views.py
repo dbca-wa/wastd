@@ -76,7 +76,7 @@ def reconstruct_surveys_view(request):
 
 
 class MapView(TemplateView):
-    template_name = "map.html"
+    template_name = "observations/map.html"
 
 
 class SurveyList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):

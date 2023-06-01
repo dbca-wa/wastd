@@ -1,5 +1,5 @@
 {% extends "base_wastd.html" %}
-{% load static leaflet_tags geojson_tags crispy_forms_tags bootstrap4 bootstrap_pagination export_download %}
+{% load static bootstrap4 bootstrap_pagination export_download %}
 
 {% block extra_style %}
 {{ block.super }}
@@ -8,6 +8,9 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" integrity="sha512-nMNlpuaDPrqlEls3IX/Q56H36qvBASwb3ipuo3MxeWbsQB1881ox0cRv7UPTgBlriqoynt35KjEwgGUeUXIPnw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <link rel="stylesheet" href="{% static 'css/select2_bootstrap4.css' %}" />
 {% endblock %}
+
+{% block leaflet_style %}{% endblock %}
+{% block leaflet_js %}{% endblock %}
 
 {% block breadcrumbs %}
 {% include 'breadcrumbs.html' %}
