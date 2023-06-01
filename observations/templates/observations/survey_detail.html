@@ -21,14 +21,12 @@
 <div class="row" id="row-svy-detail">
     <div class="col">
         {% block subject_details %}
-        <span class="float-right">
-          {% block title_labels %}{% endblock title_labels %}
-          {% include "observations/survey_is_production.html" with survey=object %}
-          {% include "observations/survey_site_visit_start_end.html" with survey=object %}
-        </span>
         <h1>
             {% block heading %}{{ object.label_short }}{% endblock %}
         </h1>
+        {% block title_labels %}{% endblock title_labels %}
+        {% include "observations/survey_is_production.html" with survey=object %}
+        {% include "observations/survey_site_visit_start_end.html" with survey=object %}
         {% if request.user.is_staff %}
             <a href="{{ object.absolute_admin_url }}" title="Edit this survey in the data curation portal">
               <span class="badge badge-{{ object.status_colour|default:'secondary' }}">
@@ -71,7 +69,7 @@
                         Reported by
                     </th>
                     <td>
-                        <a href="{% url 'users:user-detail' pk=object.reporter.pk %}">{{ object.reporter.name }}</a>
+                        {{ object.reporter.name }}
                     </td>
                 </tr>
                 <tr>

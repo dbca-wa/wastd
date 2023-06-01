@@ -19,9 +19,9 @@
                 <i class="fa-solid fa-binoculars" title="Encounter type" aria-hidden="true"></i>
                 {{ object.get_encounter_type|capfirst }}
                 <i class="fa-solid fa-eye" title="Observed by" aria-hidden="true"></i>
-                <a href="{% url 'users:user-detail' pk=object.observer.pk %}">{{ object.observer.name }}</a>
+                {{ object.observer.name }}
                 <i class="fa-solid fa-tablet-screen-button" title="Reported by" aria-hidden="true"></i>
-                <a href="{% url 'users:user-detail' pk=object.reporter.pk %}">{{ object.reporter.name }}</a>
+                {{ object.reporter.name }}
                 {% if object.campaign %}
                 <i class="fa-solid fa-shield-halved" title="Owned by" aria-hidden="true"></i>
                 {{ object.campaign.owner }}

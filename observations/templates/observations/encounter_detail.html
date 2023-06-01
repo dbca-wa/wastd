@@ -27,19 +27,17 @@
         <h2>
             {% block heading %}{{ object }}{% endblock heading %}
         </h2>
-        <span class="float-right">
+        <div>
             <span class="badge badge-{{ object.status_colour|default:'secondary' }}">
               QA status: {{ object.get_status_display }}
             </span>
-        </span>
-        <!-- FIXME: permissions check -->
-        {% if request.user.is_staff %}
-        <div>
-            <!-- Display edit & QA transitions (if authorised) -->
+            {# FIXME: permissions check #}
+            {# Display edit & QA transitions (if authorised) #}
+            {% if request.user.is_staff %}
             {% include "observations/edit_qa.html" %}
+            {% endif %}
         </div>
         <br>
-        {% endif %}
         {% endblock subject_details %}
     </div>
 </div><!-- /.row#row-enc-detail -->
@@ -78,7 +76,7 @@
                         Observed by
                     </th>
                     <td>
-                        <a href="{% url 'users:user-detail' pk=object.observer.pk %}">{{ object.observer.name }}</a>
+                        {{ object.observer.name }}
                     </td>
                 </tr>
                 <tr>
@@ -86,7 +84,7 @@
                         Reported by
                     </th>
                     <td>
-                        <a href="{% url 'users:user-detail' pk=object.reporter.pk %}">{{ object.reporter.name }}</a>
+                        {{ object.reporter.name }}
                     </td>
                 </tr>
                 <tr>

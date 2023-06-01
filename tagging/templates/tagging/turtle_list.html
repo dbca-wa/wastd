@@ -12,17 +12,17 @@
             <input id="search_field" type="text" class="form-control" name="q" placeholder="Search turtles (ID, tags, name, etc.)" value="{{ query_string }}">
         </form>
     </div>
+    {% if user.is_staff %}
+    {# FIXME: proper permissions check #}
     <div class="col-xs-12 col-sm-6">
         <span class="float-right">
-            <!-- FIXME: proper permissions check -->
-            {% if user.is_staff %}
-            <a class="btn btn-primary" href="{% url 'admin:tagging_turtle_add' %}">
+            <a class="btn btn-primary" href="{% url 'admin:tagging_turtle_add' %}" title="Add new turtle">
                 <i class="fa-solid fa-plus"></i>
                 Add new turtle
             </a>
-            {% endif %}
         </span>
     </div>
+    {% endif %}
 </div>
 
 {% block pagination_row %}
@@ -68,7 +68,7 @@
                 <td>{{ obj.get_newest_observation.observed|date:"D, j M Y H:i"|default_if_none:"" }}</td>
                 <td>
                 <!-- FIXME: proper permissions check -->
-                <a class="btn btn-primary" href="{% url 'tagging:turtleobservation_add' %}?turtle_id={{ obj.pk }}">
+                <a class="btn btn-primary" href="{% url 'tagging:turtleobservation_add' %}?turtle_id={{ obj.pk }}" title="Add new observation">
                     <i class="fa-regular fa-eye"></i>
                 </a>
                 </td>
