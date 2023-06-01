@@ -1,7 +1,7 @@
 <div class="collapse navbar-collapse" id="navbarCollapse">
     <ul class="navbar-nav mr-auto">
         <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="/" id="nav-li-tagging" title="Taggin" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <a class="nav-link dropdown-toggle" href="/" id="nav-li-tagging" title="Tagging" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="fa-solid fa-table" aria-hidden="true"></i>
                 Tagging
             </a>
@@ -32,7 +32,7 @@
         </li>
 
         <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="/" id="nav-li-tracks" title="Turtle Nesting Census" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <a class="nav-link dropdown-toggle" href="/" id="nav-li-tracks" title="Tracks and Nests" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="fa-solid fa-table" aria-hidden="true"></i>
                 Tracks and Nests
             </a>
@@ -109,7 +109,7 @@
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="/"
                 id="nav-li-mwi"
-                title="Marine Wildlife Incidents"
+                title="Strandings"
                 data-toggle="dropdown"
                 aria-haspopup="true"
                 aria-expanded="false">
@@ -232,6 +232,8 @@
         </li>
         {% endif %}
 
+        {% comment %}
+        {# TODO: move this under 'My profile' #}
         <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="/"
             id="nav-li-analysts"
@@ -243,14 +245,6 @@
             Analysts
         </a>
         <div class="dropdown-menu" aria-labelledby="nav-li-analysts">
-            <!--
-            <a class="dropdown-item"
-                href="https://dbca-wa.github.io/wastd/index.html#document-data_consumers"
-                title="Manual" target="_blank" rel="noreferrer">
-                <i class="fa-solid fa-book" aria-hidden="true"></i>
-                <span class="align-left">Data Analysts' Manual</span>
-            </a>
-            -->
             <a class="dropdown-item" href="/api/1/" title="API" target="_blank" rel="noreferrer">
                 <i class="fa-solid fa-terminal" aria-hidden="true"></i>
                 <span class="align-left">RESTful API</span>
@@ -265,6 +259,7 @@
             {% endif %}
         </div>
         </li>
+        {% endcomment %}
 
         <!-- Curators menu -->
         {% if request.user.is_staff %}
@@ -280,14 +275,6 @@
                 Curators
             </a>
             <div class="dropdown-menu" aria-labelledby="nav-li-curators">
-                <!--
-                <a class="dropdown-item"
-                    href="https://dbca-wa.github.io/wastd/index.html#document-data_curators"
-                    title="Manual" target="_blank">
-                    <i class="fa-solid fa-book" aria-hidden="true"></i>
-                    Data Curators' Manual
-                </a>
-                -->
                 <a class="dropdown-item"
                     href="{% url 'admin:index' %}"
                     target="_blank"
