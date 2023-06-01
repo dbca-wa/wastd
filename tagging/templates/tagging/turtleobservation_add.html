@@ -59,7 +59,11 @@
             dataType: 'json',
             delay: 250,
             data: function (params) {
-              return {q: params.term, limit: 15}
+                return {
+                    q: params.term,
+                    {% if turtle %}existing_turtle_id: {{ turtle.pk }},{% endif %}
+                    limit: 15
+                }
             },
             processResults: function (data) {
               var results = [];
@@ -80,7 +84,11 @@
             dataType: 'json',
             delay: 250,
             data: function (params) {
-              return {q: params.term, limit: 15}
+                return {
+                    q: params.term,
+                    {% if turtle %}existing_turtle_id: {{ turtle.pk }},{% endif %}
+                    limit: 15
+                }
             },
             processResults: function (data) {
               var results = [];
