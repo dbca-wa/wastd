@@ -164,6 +164,7 @@ class TurtleObservationAdd(LoginRequiredMixin, FormView):
         """If the Turtle PK is passed in, set initial data in the form.
         """
         initial = super().get_initial()
+        initial['alive'] = 'y'
 
         if "turtle_id" in self.request.GET and self.request.GET["turtle_id"]:
             turtle = Turtle.objects.get(pk=self.request.GET["turtle_id"])
@@ -251,7 +252,7 @@ class TurtleObservationAdd(LoginRequiredMixin, FormView):
             observed=data['observed'],
             place=data['place'],
             comments=data['comments'],
-            alive=True,  # FIXME: additional field on form required?
+            alive=data['alive'] == 'y',
             curation_status=TurtleObservation.CURATION_STATUS_MANUAL_INPUT,
         )
         if data['longitude'] and data['latitude']:

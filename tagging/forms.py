@@ -286,7 +286,8 @@ class TurtleTagObservationAddForm(forms.Form):
     observed = forms.DateTimeField(label='Observed at', input_formats=settings.DATETIME_INPUT_FORMATS)
     sex = forms.ChoiceField(choices=SEX_CHOICES)
     recorded_by = AjaxChoiceField(help_text='User who recorded the survey data in the field')
-    data_sheet = forms.FileField(required=False, help_text="Electronic copy of the field survey data sheet")
+    data_sheet = forms.FileField(required=False, help_text='Electronic copy of the field survey data sheet')
+    alive = forms.ChoiceField(choices=YES_NO_CHOICES, help_text='The turtle was alive during observation')
 
     flipper_tags_present = forms.ChoiceField(choices=CHECKED_CHOICES, help_text='Does this turtle have flipper tags present?')
     tag_l1 = AjaxChoiceField(required=False)
@@ -486,6 +487,7 @@ class TurtleTagObservationAddForm(forms.Form):
         self.fields['damage_5_part'].label = False
         self.fields['damage_5_type'].label = False
 
+        # Form layout
         self.helper.layout = Layout(
             'existing_turtle_id',
 
@@ -503,6 +505,7 @@ class TurtleTagObservationAddForm(forms.Form):
                 Row(
                     Field('observed', wrapper_class='form-group col-4'),
                     Field('recorded_by', wrapper_class='form-group col-4'),
+                    Field('alive', wrapper_class='form-group col-4'),
                 ),
                 Row(
                     Field('data_sheet', wrapper_class='form-group col'),
