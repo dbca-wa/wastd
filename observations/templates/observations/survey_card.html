@@ -1,30 +1,31 @@
 {% load observations %}
 <div class="card bg-light mb-1">
   <div class="card-header{% if not object.production%} text-muted{% endif %}">
-    <span class="float-right">
-      {% block title_labels %}{% endblock title_labels %}
-      {% include "observations/survey_is_production.html" with survey=object %}
-      {% include "observations/survey_site_visit_start_end.html" with survey=object %}
-    </span>
+    <div>
+        <h5 class="card-title">
+          {{ object }}
+        </h5>
+    </div>
 
-    <h5 class="card-title">
-      {{ object }}
-    </h5>
-
-    <h6 class="card-title text-muted">
-      <i class="fa-solid fa-calendar-days" aria-hidden="true"></i>
-      {{ object.start_time|date:'d M Y' }} {{ object.start_time|time:'H:i' }} - {{ object.end_time|time:'H:i' }}
-      <i class="fa-solid fa-eye" title="Observed by" aria-hidden="true"></i>
-      <a href="{% url 'users:user-detail' pk=object.reporter.pk %}">{{ object.reporter.name }}</a>
-
-      <i class="fa-solid fa-table" title="Encounters linked: {{ object.encounter_set.count }}" aria-hidden="true"></i>
-      {{ object.encounter_set.count }}
-      <i class="fa-solid fa-layer-group" title="Duplicate surveys: {{ object.no_duplicates }}" aria-hidden="true"></i>
-      {{ object.no_duplicates }}
-
-      <i class="fa-solid fa-shield-halved" title="Owned by" aria-hidden="true"></i>
-      {% if object.campaign %} {{ object.campaign.owner }}{% else %}-{% endif %}
-    </h6>
+    <div>
+        <span class="float-right">
+          {% block title_labels %}{% endblock title_labels %}
+          {% include "observations/survey_is_production.html" with survey=object %}
+          {% include "observations/survey_site_visit_start_end.html" with survey=object %}
+        </span>
+        <h6 class="card-title text-muted" aria-hidden="true">
+          <i class="fa-solid fa-calendar-days" aria-hidden="true"></i>
+          {{ object.start_time|date:'d M Y' }} {{ object.start_time|time:'H:i' }} - {{ object.end_time|time:'H:i' }}
+          <i class="fa-solid fa-eye" title="Observed by" aria-hidden="true"></i>
+          {{ object.reporter.name }}
+          <i class="fa-solid fa-table" title="Encounters linked: {{ object.encounter_set.count }}" aria-hidden="true"></i>
+          {{ object.encounter_set.count }}
+          <i class="fa-solid fa-layer-group" title="Duplicate surveys: {{ object.no_duplicates }}" aria-hidden="true"></i>
+          {{ object.no_duplicates }}
+          <i class="fa-solid fa-shield-halved" title="Owned by" aria-hidden="true"></i>
+          {% if object.campaign %} {{ object.campaign.owner }}{% else %}-{% endif %}
+        </h6>
+    </div>
 
     <div>
         {% include "toggle_details.html" with object=object %}

@@ -21,22 +21,17 @@
         </span>
         </p>
     </div>
+    <!-- FIXME: proper permissions check -->
+    {% if user.is_staff %}
     <div class="col-xs-12 col-sm-6">
         <span class="float-right">
-            <!-- FIXME: proper permissions check -->
-            {% if user.is_staff %}
             <a class="btn btn-primary" href="{% url 'admin:tagging_turtleobservation_change' object_id=object.pk %}">
                 <i class="fa-solid fa-pencil"></i>
                 Change observation details
             </a>
-            {% else %}
-            <a class="btn btn-primary disabled" href="">
-                <i class="fa-solid fa-pencil"></i>
-                Change observation details
-            </a>
-            {% endif %}
         </span>
     </div>
+    {% endif %}
 </div>
 
 <div class="row">
