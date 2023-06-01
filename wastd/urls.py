@@ -8,7 +8,7 @@ from rest_framework.authtoken import views as drf_authviews
 
 from wastd.router import router
 from wastd.router import urlpatterns as api_v2_urlpatterns
-from observations import views as wastd_views
+from observations import views as observations_views
 from observations.models import Area, AnimalEncounter
 
 
@@ -36,11 +36,11 @@ urlpatterns = [
     path("sites.geojson", GeoJSONLayerView.as_view(model=Area, queryset=Area.objects.filter(area_type=Area.AREATYPE_SITE), properties=("leaflet_title", "as_html")), name="sites-geojson"),
     # Encounter as tiled GeoJSON
     path("data/<int:z>/<int:x>/<int:y>.geojson", TiledGeoJSONLayerView.as_view(model=AnimalEncounter, properties=("as_html", "leaflet_title", "leaflet_icon", "leaflet_colour"), geometry_field="where"), name="encounter-tiled-geojson"),
-    path("map/", wastd_views.MapView.as_view(), name="map"),
-    path("tasks/import-odka/", wastd_views.import_odka_view, name="import-odka"),
-    path("tasks/update-names/", wastd_views.update_names_view, name="update-names"),
-    path("tasks/resave-surveys/", wastd_views.resave_surveys_view, name="resave-surveys"),
-    path("tasks/reconstruct-surveys/", wastd_views.reconstruct_surveys_view, name="reconstruct-surveys"),
+    path("map/", observations_views.MapView.as_view(), name="map"),
+    path("tasks/import-odka/", observations_views.import_odka_view, name="import-odka"),
+    path("tasks/update-names/", observations_views.update_names_view, name="update-names"),
+    path("tasks/resave-surveys/", observations_views.resave_surveys_view, name="resave-surveys"),
+    path("tasks/reconstruct-surveys/", observations_views.reconstruct_surveys_view, name="reconstruct-surveys"),
     path("400/", defaults.bad_request, kwargs={"exception": Exception("Bad request")}),
     path("403/", defaults.permission_denied, kwargs={"exception": Exception("Permission denied")}),
     path("404/", defaults.page_not_found, kwargs={"exception": Exception("Page not found")}),
