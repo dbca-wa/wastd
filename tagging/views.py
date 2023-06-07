@@ -164,52 +164,12 @@ class TurtleObservationAdd(LoginRequiredMixin, FormView):
         """If the Turtle PK is passed in, set initial data in the form.
         """
         initial = super().get_initial()
-        initial['alive'] = 'y'
 
         if "turtle_id" in self.request.GET and self.request.GET["turtle_id"]:
             turtle = Turtle.objects.get(pk=self.request.GET["turtle_id"])
             initial['species'] = turtle.species
             initial['sex'] = turtle.sex
             initial['existing_turtle_id'] = turtle.pk
-
-            # NOTE: experiment to NOT prefill tags & pit tags in the form.
-            '''
-            tags = TurtleTag.objects.filter(turtle=turtle)
-            for tag in tags:
-                # Attached tags, left side
-                if tag.is_attached() and tag.side == 'L':
-                    initial['flipper_tags_present'] = 'y'
-                    # If we've set the first form tag, set the second instead.
-                    if 'tag_l1' in initial:
-                        initial['tag_l2'] = tag.serial
-                        initial['tag_l2_new'] = 'n'
-                    else:
-                        initial['tag_l1'] = tag.serial
-                        initial['tag_l1_new'] = 'n'
-                if tag.is_attached() and tag.side == 'R':
-                    initial['flipper_tags_present'] = 'y'
-                    # If we've set the first form tag, set the second instead.
-                    if 'tag_r1' in initial:
-                        initial['tag_r2'] = tag.serial
-                        initial['tag_r2_new'] = 'n'
-                    else:
-                        initial['tag_r1'] = tag.serial
-                        initial['tag_r1_new'] = 'n'
-
-            # Note that the pit tags data model doesn't currently save "left" or "right",
-            # so we just push them into the form in random order.
-            pit_tags = TurtlePitTag.objects.filter(turtle=turtle)
-            for tag in pit_tags:
-                initial['pit_tags_present'] = 'y'
-                if tag.is_functional():
-                    # If we've set the first form tag, set the second instead.
-                    if 'pit_tag_l' in initial:
-                        initial['pit_tag_r'] = tag.serial
-                        initial['pit_tag_r_new'] = 'n'
-                    else:
-                        initial['pit_tag_l'] = tag.serial
-                        initial['pit_tag_l_new'] = 'n'
-            '''
 
         return initial
 
@@ -251,13 +211,10 @@ class TurtleObservationAdd(LoginRequiredMixin, FormView):
             turtle=turtle,
             recorded_by=User.objects.get(pk=data['recorded_by']),
             measurer=User.objects.get(pk=data['measured_by']) if data['measured_by'] else None,
-            measurer_reporter=User.objects.get(pk=data['measurements_recorded_by']) if data['measurements_recorded_by'] else None,
             tagger=User.objects.get(pk=data['tagged_by']) if data['tagged_by'] else None,
-            tagger_reporter=User.objects.get(pk=data['tags_recorded_by']) if data['tags_recorded_by'] else None,
             observed=data['observed'],
             place=data['place'],
             comments=data['comments'],
-            alive=data['alive'] == 'y',
             curation_status=curation_status,
         )
         if data['longitude'] and data['latitude']:
@@ -512,9 +469,9 @@ class TurtleObservationAdd(LoginRequiredMixin, FormView):
 
         # TurtleSample
         if data['sample_1_type'] and data['sample_1_label']:
-            TurtleSample.objects.create(observation=observation, tissue_type=data['sample_1_type'], label=data['sample_1_label'])
+            TurtleSample.objects.create(observation=observation, tissue_type=data['sample_1_type'], label=data['sample_1_label'], comments=data['sample_1_taken_by'])
         if data['sample_2_type'] and data['sample_2_label']:
-            TurtleSample.objects.create(observation=observation, tissue_type=data['sample_2_type'], label=data['sample_2_label'])
+            TurtleSample.objects.create(observation=observation, tissue_type=data['sample_2_type'], label=data['sample_2_label'], comments=data['sample_2_taken_by'])
 
         messages.success(self.request, "Turtle observation {} has been created.".format(observation))
         return HttpResponseRedirect(observation.get_absolute_url())

@@ -46,8 +46,8 @@ DAMAGE_CHOICES = (
     ('2', 'Lost from nail - flipper'),
     ('3', 'Lost half - flipper'),
     ('4', 'Lost whole - flipper'),
-    ('5', 'Minor Wounds or cuts'),
-    ('6', 'Major Wounds or cuts'),
+    ('5', 'Minor wounds or cuts'),
+    ('6', 'Major wounds or cuts'),
     ('7', 'Deformity'),
 )
 
@@ -280,14 +280,13 @@ class TurtleTagObservationAddForm(forms.Form):
 
     existing_turtle_id = forms.IntegerField(initial=0, widget=forms.HiddenInput)
     place = forms.ModelChoiceField(Place.objects.all(), label='Location/beach', widget=Select2Widget)
-    latitude = forms.FloatField(required=False)
-    longitude = forms.FloatField(required=False)
+    latitude = forms.FloatField(required=False, help_text='WGS 84')
+    longitude = forms.FloatField(required=False, help_text='WGS 84')
     species = forms.ModelChoiceField(TurtleSpecies.objects.all())
-    observed = forms.DateTimeField(label='Observed at', input_formats=settings.DATETIME_INPUT_FORMATS)
+    observed = forms.DateTimeField(label='Calendar date & time', input_formats=settings.DATETIME_INPUT_FORMATS, help_text='AWST')
     sex = forms.ChoiceField(choices=SEX_CHOICES)
-    recorded_by = AjaxChoiceField(help_text='User who recorded the survey data in the field')
+    recorded_by = AjaxChoiceField(label='Data captured by', help_text='User who recorded the survey data in the field')
     data_sheet = forms.FileField(required=False, help_text='Electronic copy of the field survey data sheet')
-    alive = forms.ChoiceField(choices=YES_NO_CHOICES, help_text='The turtle was alive during observation')
 
     flipper_tags_present = forms.ChoiceField(choices=CHECKED_CHOICES, help_text='Does this turtle have flipper tags present?')
     tag_l1 = AjaxChoiceField(required=False)
@@ -329,16 +328,13 @@ class TurtleTagObservationAddForm(forms.Form):
     pit_tag_r_new = forms.ChoiceField(choices=YES_NO_CHOICES, required=False)
 
     tagged_by = AjaxChoiceField(required=False)
-    tags_recorded_by = AjaxChoiceField(required=False)
 
     ccl_min = forms.IntegerField(required=False, label='CCL min (mm)')
     ccl_max = forms.IntegerField(required=False, label='CCL max (mm)')
     cc_width = forms.IntegerField(required=False, label='CC width (mm)')
     weight = forms.FloatField(required=False, label='Weight (kg)')
     measured_by = AjaxChoiceField(required=False)
-    measurements_recorded_by = AjaxChoiceField(required=False)
 
-    nest_location = forms.ChoiceField(label='Nest location / beach position', choices=NEST_LOCATION_CHOICES, required=False)
     nesting_interrupted = forms.ChoiceField(label='Was the nesting process interruped?', choices=YES_NO_CHOICES, required=False)
     nested = forms.ChoiceField(label='Did the turtle lay?', choices=NESTED_CHOICES, required=False)
     egg_count = forms.IntegerField(required=False)
@@ -356,12 +352,13 @@ class TurtleTagObservationAddForm(forms.Form):
     damage_5_type = forms.ChoiceField(choices=DAMAGE_CHOICES, required=False)
 
     biopsy_no = forms.CharField(required=False)
-    satellite_tag_no = forms.CharField(required=False)
     photos = forms.ChoiceField(choices=YES_NO_CHOICES, required=False)
     sample_1_type = forms.ChoiceField(choices=SAMPLE_TYPE_CHOICES, required=False)
     sample_1_label = forms.CharField(required=False)
+    sample_1_taken_by = forms.CharField(required=False)
     sample_2_type = forms.ChoiceField(choices=SAMPLE_TYPE_CHOICES, required=False)
     sample_2_label = forms.CharField(required=False)
+    sample_2_taken_by = forms.CharField(required=False)
     comments = forms.CharField(widget=forms.Textarea, required=False)
 
     save_button = Submit('save', 'Save', css_class='btn-lg')
@@ -384,15 +381,9 @@ class TurtleTagObservationAddForm(forms.Form):
             if kwargs['data'].get('tagged_by', None):
                 user = User.objects.get(pk=kwargs['data']['tagged_by'])
                 self.fields['tagged_by'].choices = [(user.pk, user.name)]
-            if kwargs['data'].get('tags_recorded_by', None):
-                user = User.objects.get(pk=kwargs['data']['tags_recorded_by'])
-                self.fields['tags_recorded_by'].choices = [(user.pk, user.name)]
             if kwargs['data'].get('measured_by', None):
                 user = User.objects.get(pk=kwargs['data']['measured_by'])
                 self.fields['measured_by'].choices = [(user.pk, user.name)]
-            if kwargs['data'].get('measurements_recorded_by', None):
-                user = User.objects.get(pk=kwargs['data']['measurements_recorded_by'])
-                self.fields['measurements_recorded_by'].choices = [(user.pk, user.name)]
             if kwargs['data'].get('tag_l1', None):
                 tag = TurtleTag.objects.get(pk=kwargs['data']['tag_l1'])
                 self.fields['tag_l1'].choices = [(tag.pk, tag.serial)]
@@ -425,9 +416,7 @@ class TurtleTagObservationAddForm(forms.Form):
         # Add some additional classes to widget, for JavaScript purposes.
         self.fields['recorded_by'].widget.attrs['class'] = 'select-user-choice'
         self.fields['tagged_by'].widget.attrs['class'] = 'select-user-choice'
-        self.fields['tags_recorded_by'].widget.attrs['class'] = 'select-user-choice'
         self.fields['measured_by'].widget.attrs['class'] = 'select-user-choice'
-        self.fields['measurements_recorded_by'].widget.attrs['class'] = 'select-user-choice'
         self.fields['tag_l1'].widget.attrs['class'] = 'select-tag-choice'
         self.fields['tag_l2'].widget.attrs['class'] = 'select-tag-choice'
         self.fields['tag_l3'].widget.attrs['class'] = 'select-tag-choice'
@@ -506,7 +495,6 @@ class TurtleTagObservationAddForm(forms.Form):
                 Row(
                     Field('observed', wrapper_class='form-group col-4'),
                     Field('recorded_by', wrapper_class='form-group col-4'),
-                    Field('alive', wrapper_class='form-group col-4'),
                 ),
                 Row(
                     Field('data_sheet', wrapper_class='form-group col'),
@@ -525,7 +513,7 @@ class TurtleTagObservationAddForm(forms.Form):
                     HTML('<div class="col-5">Tag number</div>'),
                     HTML('<div class="col">New tag?</div>'),
                     HTML('<div class="col">Barnacles?</div>'),
-                    HTML('<div class="col">Secure fix?</div>'),
+                    HTML('<div class="col">Securely fixed?</div>'),
                     HTML('<div class="col">Tag scars?</div>'),
                     css_class='pb-2',
                 ),
@@ -598,7 +586,6 @@ class TurtleTagObservationAddForm(forms.Form):
                 ),
                 Row(
                     Field('tagged_by', wrapper_class='form-group col-4'),
-                    Field('tags_recorded_by', wrapper_class='form-group col-4'),
                 ),
                 css_class='border px-2',
             ),
@@ -614,7 +601,6 @@ class TurtleTagObservationAddForm(forms.Form):
                 Row(
                     Field('cc_width', wrapper_class='form-group col-4'),
                     Field('weight', wrapper_class='form-group col-4'),
-                    Field('measurements_recorded_by', wrapper_class='form-group col-4'),
                 ),
                 css_class='border px-2',
             ),
@@ -622,9 +608,6 @@ class TurtleTagObservationAddForm(forms.Form):
             HTML('<div class="my-3"><h5>Nesting</h5></div>'),
             Fieldset(
                 None,
-                Row(
-                    Field('nest_location', wrapper_class='form-group col-6'),
-                ),
                 Row(
                     Field('nesting_interrupted', wrapper_class='form-group col-6'),
                 ),
@@ -680,16 +663,17 @@ class TurtleTagObservationAddForm(forms.Form):
                 None,
                 Row(
                     Field('biopsy_no', wrapper_class='form-group col-4'),
-                    Field('satellite_tag_no', wrapper_class='form-group col-4'),
                     Field('photos', wrapper_class='form-group col-4')
                 ),
                 Row(
                     Field('sample_1_type', wrapper_class='form-group col-4'),
                     Field('sample_1_label', wrapper_class='form-group col-4'),
+                    Field('sample_1_taken_by', wrapper_class='form-group col-4'),
                 ),
                 Row(
                     Field('sample_2_type', wrapper_class='form-group col-4'),
                     Field('sample_2_label', wrapper_class='form-group col-4'),
+                    Field('sample_2_taken_by', wrapper_class='form-group col-4'),
                 ),
                 css_class='border px-2',
             ),
