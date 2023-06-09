@@ -217,6 +217,7 @@ class TurtleObservationAdd(LoginRequiredMixin, FormView):
             comments=data['comments'],
             curation_status=curation_status,
         )
+
         if data['longitude'] and data['latitude']:
             observation.point = Point(x=float(data['longitude']), y=float(data['latitude']), srid=4326)
         if data['tag_l1_scars'] == 'y':
@@ -231,6 +232,16 @@ class TurtleObservationAdd(LoginRequiredMixin, FormView):
             observation.scars_right_scale_2 = True
         if data['tag_r3_scars'] == 'y':
             observation.scars_right_scale_3 = True
+
+        if data['nesting_interrupted'] == 'y':
+            observation.nesting_interrupted = True
+        elif data['nesting_interrupted'] == 'n':
+            observation.nesting_interrupted = False
+        observation.nesting_interruption_cause = data['nesting_interruption_cause']
+        observation.nested = data['nested']
+        if data['egg_count']:
+            observation.number_of_eggs = data['egg_count']
+
         if 'data_sheet' in self.request.FILES:
             observation.data_sheet = self.request.FILES['data_sheet']
         # Calculate `status` based on any previous observations.
