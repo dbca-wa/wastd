@@ -212,6 +212,32 @@
 </div>
 
 <div class="row">
+    <div class="col-sm-12 col-md-6">
+        <h3>Nesting</h3>
+        <table class="table table-striped table-bordered table-sm">
+            <tbody>
+                <tr>
+                    <th>Did the turtle lay?</th>
+                    <td>{{ object.get_nested_display }}</td>
+                </tr>
+                <tr>
+                    <th>Egg count</th>
+                    <td>{{ object.number_of_eggs|default_if_none:"" }}</td>
+                </tr>
+                <tr>
+                    <th>Was the nesting process interrupted?</th>
+                    <td>{{ object.nesting_interrupted|yesno:"Yes,No" }}</td>
+                </tr>
+                <tr>
+                    <th>Nesting interruption cause</th>
+                    <td>{{ object.get_nesting_interruption_cause_display }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="row">
     <div class="col">
         <h3>Damage</h3>
         {% if object.damage.exists %}

@@ -231,30 +231,45 @@ class TurtleObservationAdmin(FSMTransitionMixin, VersionAdmin):
     list_filter = ('status', 'alive', 'place', 'condition', 'curation_status')
     search_fields = ('pk', 'turtle__pk', 'turtle__tags__serial', 'turtle__pit_tags__serial')
     raw_id_fields = ('turtle', 'measurer', 'measurer_reporter', 'tagger', 'tagger_reporter')
-    readonly_fields = ('created', 'entered_by')
+    readonly_fields = ('created', 'entered_by', 'curation_status')
     fsm_field = ['curation_status']
     fieldsets = (
+        (
+            'QA',
+            {
+                'fields': (
+                    'created',
+                    'entered_by',
+                    'curation_status',
+                ),
+                'classes': ('grp-collapse', 'grp-closed'),
+            },
+        ),
         (
             'Observation',
             {
                 'fields': (
-                    'data_sheet',
                     'turtle',
                     'observed',
                     'recorded_by',
                     'measurer',
-                    'measurer_reporter',
                     'tagger',
-                    'tagger_reporter',
                     'status',
-                    'alive',
                     'place',
-                    'activity',
-                    'beach_position',
-                    'clutch_completed',
-                    'number_of_eggs',
-                    'egg_count_method',
+                    'data_sheet',
                     'comments',
+                ),
+                'classes': ('grp-collapse', 'grp-open'),
+            },
+        ),
+        (
+            'Nesting',
+            {
+                'fields': (
+                    'nested',
+                    'number_of_eggs',
+                    'nesting_interrupted',
+                    'nesting_interruption_cause',
                 ),
                 'classes': ('grp-collapse', 'grp-open'),
             },

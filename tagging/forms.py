@@ -260,23 +260,12 @@ class TurtleTagObservationAddForm(forms.Form):
         ('3', '3'),
     )
     SAMPLE_TYPE_CHOICES = [(None, '')] + list(TurtleSample.TISSUE_TYPE_CHOICES)
-    NEST_LOCATION_CHOICES = (
-        (None, 'No nest'),
-        ('C', 'Below high water mark'),
-        ('B', 'At high water mark'),
-        ('A', 'Above high water mark'),
-        ('D', 'Edge of vegetation/slope'),
-        ('E', 'In vegetation/dune'),
-        ('?', 'Other'),
-    )
-    NESTED_CHOICES = (
+    NEST_INTERRUPT_CHOICES = [
         (None, ''),
-        ('yes', 'Yes, saw eggs'),
-        ('possible', "Possible, didn't see eggs"),
-        ('no-nest', 'No nest'),
-        ('uncertain', 'Uncertain'),
-        ('dnc', "Didn't check"),
-    )
+    ] + list(TurtleObservation.NEST_INTERRUPT_CHOICES)
+    NESTED_CHOICES = [
+        (None, ''),
+    ] + list(TurtleObservation.NESTED_CHOICES)
 
     existing_turtle_id = forms.IntegerField(initial=0, widget=forms.HiddenInput)
     place = forms.ModelChoiceField(Place.objects.all(), label='Location/beach', widget=Select2Widget)
@@ -336,6 +325,7 @@ class TurtleTagObservationAddForm(forms.Form):
     measured_by = AjaxChoiceField(required=False)
 
     nesting_interrupted = forms.ChoiceField(label='Was the nesting process interruped?', choices=YES_NO_CHOICES, required=False)
+    nesting_interruption_cause = forms.ChoiceField(choices=NEST_INTERRUPT_CHOICES, required=False)
     nested = forms.ChoiceField(label='Did the turtle lay?', choices=NESTED_CHOICES, required=False)
     egg_count = forms.IntegerField(required=False)
 
@@ -610,6 +600,7 @@ class TurtleTagObservationAddForm(forms.Form):
                 None,
                 Row(
                     Field('nesting_interrupted', wrapper_class='form-group col-6'),
+                    Field('nesting_interruption_cause', wrapper_class='form-group col-6'),
                 ),
                 Row(
                     Field('nested', wrapper_class='form-group col-6'),
