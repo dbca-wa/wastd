@@ -12,7 +12,12 @@ from django_fsm_log.models import StateLog
 from django_tables2 import RequestConfig, SingleTableView, tables
 
 from shared.views import ListViewBreadcrumbMixin, DetailViewBreadcrumbMixin, ResourceDownloadMixin
-from observations import admin
+from .admin import (
+    EncounterAdmin,
+    AnimalEncounterAdmin,
+    TurtleNestEncounterAdmin,
+    LineTransectEncounterAdmin,
+)
 from .filters import (
     SurveyBasicFilter,
     EncounterFilter,
@@ -215,7 +220,7 @@ class EncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
         context["list_filter"] = EncounterFilter(
             self.request.GET, queryset=self.get_queryset()
         )
-        context["model_admin"] = admin.EncounterAdmin
+        context["model_admin"] = EncounterAdmin
         context["page_title"] = f"{settings.SITE_CODE} | Encounters"
         return context
 
@@ -308,7 +313,7 @@ class AnimalEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListVi
         context = super().get_context_data(**kwargs)
         qs = self.get_queryset()
         context["list_filter"] = AnimalEncounterBasicFilter(self.request.GET, queryset=qs)
-        context["model_admin"] = admin.AnimalEncounterAdmin
+        context["model_admin"] = AnimalEncounterAdmin
         context["object_count"] = qs.count()
         context["page_title"] = f"{settings.SITE_CODE} | Animal encounters"
         return context
@@ -432,7 +437,7 @@ class TurtleNestEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, Li
         context = super().get_context_data(**kwargs)
         qs = self.get_queryset()
         context["list_filter"] = TurtleNestEncounterBasicFilter(self.request.GET, queryset=qs)
-        context["model_admin"] = admin.TurtleNestEncounterAdmin
+        context["model_admin"] = TurtleNestEncounterAdmin
         context["object_count"] = qs.count()
         context["page_title"] = f"{settings.SITE_CODE} | Turtle nest encounters"
         return context
@@ -478,7 +483,7 @@ class LineTransectEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["list_filter"] = LineTransectEncounterFilter(self.request.GET, queryset=self.get_queryset())
-        context["model_admin"] = admin.LineTransectEncounterAdmin
+        context["model_admin"] = LineTransectEncounterAdmin
         return context
 
     def get_queryset(self):
