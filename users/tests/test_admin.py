@@ -1,15 +1,14 @@
 from test_plus.test import TestCase
+from users.admin import UserCreationForm
 
-from ..admin import MyUserCreationForm
 
-
-class TestMyUserCreationForm(TestCase):
+class TestUserCreationForm(TestCase):
     def setUp(self):
         self.user = self.make_user()
 
     def test_clean_username_success(self):
         # Instantiate the form with a new username
-        form = MyUserCreationForm(
+        form = UserCreationForm(
             {
                 "username": "alamode",
                 "password1": "123456",
@@ -26,7 +25,7 @@ class TestMyUserCreationForm(TestCase):
 
     def test_clean_username_false(self):
         # Instantiate the form with the same username as self.user
-        form = MyUserCreationForm(
+        form = UserCreationForm(
             {
                 "username": self.user.username,
                 "password1": "123456",
