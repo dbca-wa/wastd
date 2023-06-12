@@ -88,7 +88,7 @@ class SurveyBasicFilter(FilterSet):
     user_reporter = ModelChoiceFilter(
         field_name="reporter",
         label="Reported by",
-        queryset=User.objects.active(),
+        queryset=User.objects.all(),
         # NOTE: we can't filter the queryset here due to a circular dependency that breaks Django migrations.
         #queryset = User.objects.filter(pk__in=set(Survey.objects.values_list("reporter", flat=True))).order_by("name")
     )
@@ -195,7 +195,7 @@ class AnimalEncounterBasicFilter(FilterSet):
         field_name="observer",
         label="Observed by",
         # NOTE: we can't filter the queryset here due to a circular dependency that breaks Django migrations.
-        queryset=User.objects.active(),
+        queryset=User.objects.all(),
     )
     user_reporter = ModelChoiceFilter(
         field_name="reporter",
@@ -286,12 +286,12 @@ class TurtleNestEncounterBasicFilter(FilterSet):
         field_name="observer",
         label="Observed by",
         # NOTE: we can't filter the queryset here due to a circular dependency that breaks Django migrations.
-        queryset=User.objects.active(),
+        queryset=User.objects.all(),
     )
     user_reporter = ModelChoiceFilter(
         field_name="reporter",
         label="Reported by",
-        queryset=User.objects.active(),
+        queryset=User.objects.all(),
     )
     encounter_type = ChoiceFilter(
         field_name="encounter_type",
