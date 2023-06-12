@@ -6,9 +6,11 @@ from django.test import TestCase
 from django.urls import reverse  # noqa
 from django.utils import timezone  # noqa
 
-from observations.models import (  # noqa
+from observations.lookups import (
     NA,
     TAXON_CHOICES_DEFAULT,
+)
+from observations.models import (  # noqa
     AnimalEncounter,
     Area,
     DispatchRecord,
