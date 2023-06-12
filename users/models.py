@@ -48,15 +48,6 @@ class Organisation(models.Model):
         return self.label
 
 
-class ActiveModelManager(models.Manager):
-
-    def active(self):
-        return self.filter(is_active=True)
-
-    def inactive(self):
-        return self.filter(is_active=False)
-
-
 class User(AbstractUser):
     """WAStD User.
 
@@ -114,8 +105,6 @@ class User(AbstractUser):
         default=True,
         help_text=_("Deceased users should not be attempted to be contacted."),
     )
-
-    objects = ActiveModelManager()
 
     class Meta:
         ordering = ["name", "username"]
