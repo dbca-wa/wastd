@@ -88,7 +88,9 @@ class SurveyBasicFilter(FilterSet):
     user_reporter = ModelChoiceFilter(
         field_name="reporter",
         label="Reported by",
-        queryset=User.objects.all(),
+        queryset=User.objects.active(),
+        # NOTE: we can't filter the queryset here due to a circular dependency that breaks Django migrations.
+        #queryset = User.objects.filter(pk__in=set(Survey.objects.values_list("reporter", flat=True))).order_by("name")
     )
     area = ModelChoiceFilter(
         label="Locality",
@@ -109,11 +111,6 @@ class SurveyBasicFilter(FilterSet):
             "site",
             "production",
         ]
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # NOTE: we need to instantiate the field queryset here to avoid a circular dependency that breaks Django migrations.
-        self.user_reporter.queryset = User.objects.filter(pk__in=set(Survey.objects.values_list("reporter", flat=True))).order_by("name")
 
 
 class EncounterFilter(FilterSet):
@@ -197,7 +194,8 @@ class AnimalEncounterBasicFilter(FilterSet):
     user_observer = ModelChoiceFilter(
         field_name="observer",
         label="Observed by",
-        queryset=User.objects.none(),
+        # NOTE: we can't filter the queryset here due to a circular dependency that breaks Django migrations.
+        queryset=User.objects.active(),
     )
     user_reporter = ModelChoiceFilter(
         field_name="reporter",
@@ -251,12 +249,6 @@ class AnimalEncounterBasicFilter(FilterSet):
             "checked_for_flipper_tags",
         ]
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # NOTE: we need to instantiate the field queryset here to avoid a circular dependency that breaks Django migrations.
-        self.user_observer.queryset = User.objects.filter(pk__in=set(Survey.objects.values_list("observer", flat=True))).order_by("name")
-        self.user_reporter.queryset = User.objects.filter(pk__in=set(Survey.objects.values_list("reporter", flat=True))).order_by("name")
-
 
 class TurtleNestEncounterFilter(EncounterFilter):
 
@@ -293,12 +285,13 @@ class TurtleNestEncounterBasicFilter(FilterSet):
     user_observer = ModelChoiceFilter(
         field_name="observer",
         label="Observed by",
-        queryset=User.objects.none(),
+        # NOTE: we can't filter the queryset here due to a circular dependency that breaks Django migrations.
+        queryset=User.objects.active(),
     )
     user_reporter = ModelChoiceFilter(
         field_name="reporter",
         label="Reported by",
-        queryset=User.objects.none(),
+        queryset=User.objects.active(),
     )
     encounter_type = ChoiceFilter(
         field_name="encounter_type",
@@ -360,12 +353,6 @@ class TurtleNestEncounterBasicFilter(FilterSet):
             "hatchlings_measured",
             "fan_angles_measured",
         ]
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # NOTE: we need to instantiate the field queryset here to avoid a circular dependency that breaks Django migrations.
-        self.user_observer.queryset = User.objects.filter(pk__in=set(Survey.objects.values_list("observer", flat=True))).order_by("name")
-        self.user_reporter.queryset = User.objects.filter(pk__in=set(Survey.objects.values_list("reporter", flat=True))).order_by("name")
 
 
 class LineTransectEncounterFilter(EncounterFilter):
