@@ -43,54 +43,52 @@
                     Browse all turtle track/nest encounters
                 </a>
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="{% url 'observations:turtlenestencounter-list' %}?disturbance=present"
+                <a class="dropdown-item" href="{% url 'observations:turtlenestencounter-list' %}?encounter_type=tracks&nest_type=false-crawl"
+                    title="Browse tracks without nests">
+                    <i class="fa-solid fa-table" aria-hidden="true"></i>
+                    Tracks without nests
+                </a>
+                <a class="dropdown-item" href="{% url 'observations:turtlenestencounter-list' %}?encounter_type=nest&disturbance=present"
                     title="Browse disturbed or predated nests">
                     <i class="fa-solid fa-table" aria-hidden="true"></i>
                     Disturbed nests
                 </a>
-                <a class="dropdown-item" href="{% url 'observations:turtlenestencounter-list' %}?nest_tagged=present"
+                <a class="dropdown-item" href="{% url 'observations:turtlenestencounter-list' %}?encounter_type=nest&nest_tagged=present"
                     title="Browse tagged nests">
                     <i class="fa-solid fa-table" aria-hidden="true"></i>
                     Tagged nests
                 </a>
-                <a class="dropdown-item" href="{% url 'observations:turtlenestencounter-list' %}?logger_found=present"
+                <a class="dropdown-item" href="{% url 'observations:turtlenestencounter-list' %}?encounter_type=nest&logger_found=present"
                     title="Browse turtle nest encounters where loggers were deployed or found">
                     <i class="fa-solid fa-table" aria-hidden="true"></i>
                     Nests with loggers
                 </a>
                 <a class="dropdown-item"
-                    href="{% url 'observations:turtlenestencounter-list' %}?eggs_counted=present"
+                    href="{% url 'observations:turtlenestencounter-list' %}?encounter_type=nest&eggs_counted=present"
                     title="Browse excavated nests">
                     <i class="fa-solid fa-table" aria-hidden="true"></i>
                     Excavated nests
                 </a>
                 <a class="dropdown-item"
-                    href="{% url 'observations:turtlenestencounter-list' %}?hatchlings_measured=present"
+                    href="{% url 'observations:turtlenestencounter-list' %}?encounter_type=nest&hatchlings_measured=present"
                     title="Browse excavated nests with hatchling morphometric measurements">
                     <i class="fa-solid fa-table" aria-hidden="true"></i>
                     Nests with live hatchlings
                 </a>
                 <a class="dropdown-item"
-                    href="{% url 'observations:turtlenestencounter-list' %}?fan_angles_measured=present"
+                    href="{% url 'observations:turtlenestencounter-list' %}?encounter_type=nest&fan_angles_measured=present"
                     title="Browse nests with fan angles">
                     <i class="fa-solid fa-table" aria-hidden="true"></i>
                     Nests with fan angles
                 </a>
-                <a class="dropdown-item" href="{% url 'observations:turtlenestencounter-list' %}?encounter_type=tracks"
-                    title="Browse tracks without nests">
-                    <i class="fa-solid fa-table" aria-hidden="true"></i>
-                    Tracks without nests
-                </a>
-                {% comment %}
-                <a class="dropdown-item"
-                    href="{% url 'observations:linetransectencounter-list' %}"
-                    title="Browse, filter and search track tallies">
-                    <i class="fa-solid fa-table" aria-hidden="true"></i>
-                    Track Tallies
-                </a>
-                {% endcomment %}
                 <div class="dropdown-divider"></div>
                 <h6 class="dropdown-header">QA shortlists</h6>
+                <a class="dropdown-item"
+                    href="{% url 'observations:turtlenestencounter-list' %}?status=flagged"
+                    title="Flagged records">
+                    <i class="fa-solid fa-table" aria-hidden="true"></i>
+                    Flagged records
+                </a>
                 <a class="dropdown-item"
                     href="{% url 'observations:turtlenestencounter-list' %}?species=cheloniidae-fam"
                     title="Review tracks with uncertain species ID">
