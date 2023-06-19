@@ -282,12 +282,14 @@
                 </a>
                 {% if request.user.is_superuser %}
                 <div class="dropdown-divider"></div>
+                {% comment %}
                 <a class="dropdown-item"
                     href="{% url 'import-odka' %}"
                     title="Import all ODKA forms">
                     <i class="fa-solid fa-repeat" aria-hidden="true"></i>
                     Import ODKA
                 </a>
+                {% endcomment %}
                 <a class="dropdown-item"
                     href="{% url 'reconstruct-surveys' %}"
                     title="Reconstruct missing surveys">
