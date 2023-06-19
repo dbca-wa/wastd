@@ -94,6 +94,48 @@ def claim_encounters(survey_instance):
         survey_instance.encounters.update(survey=survey_instance, site=survey_instance.site)
 
 
+def claim_end_points(survey_instance):
+    """Claim SurveyEnd.
+
+    The first SurveyEnd with the matching site,
+    and an end_time within six hours after start_time is used
+    to set corresponding end_location, end_time, end_comments,
+    end_photo and end_source_id.
+
+    Since the end point could be taken with a different device (e.g.
+    if primary device malfunctions), we will not filter down to
+    the same device_id.
+
+    If no SurveyEnd is found and no end_time is set, the end_time is set to
+    start_time plus six hours. This should allow the survey to claim its Encounters.
+
+    TODO we could be a bit cleverer and find the latest encounter on the same day and site.
+    """
+    se = SurveyEnd.objects.filter(
+        site=survey_instance.site,
+        # device_id=survey_instance.device_id,
+        end_time__gte=survey_instance.start_time,
+        end_time__lte=survey_instance.start_time + timedelta(hours=6),
+    ).first()
+    if se:
+        survey_instance.end_location = se.end_location
+        survey_instance.end_time = se.end_time
+        survey_instance.end_comments = se.end_comments
+        survey_instance.end_photo = se.end_photo
+        survey_instance.end_source_id = se.source_id
+        survey_instance.end_device_id = se.device_id
+    else:
+        if not survey_instance.end_time:
+            survey_instance.end_time = survey_instance.start_time + timedelta(hours=6)
+            survey_instance.end_comments = (
+                "[NEEDS QA][Missing SiteVisitEnd] Survey end guessed."
+            )
+            LOGGER.info(
+                "[Survey.claim_end_points] Missing SiteVisitEnd for Survey"
+                " {0}".format(survey_instance)
+            )
+
+
 def int_or_none(string):
     """Return the string as Integer or return None."""
     try:
