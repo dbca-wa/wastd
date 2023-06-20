@@ -2529,6 +2529,15 @@ class TurtleNestEncounter(Encounter):
         else:
             return None
 
+    def get_hatchling_emergence_observation(self):
+        """A turtle nest encounter should be associated with 0-1 TurtleHatchlingEmergenceObservation objects.
+        Returns the related TurtleHatchlingEmergenceObservation or None.
+        """
+        if self.observation_set.instance_of(TurtleHatchlingEmergenceObservation).exists():
+            return self.observation_set.instance_of(TurtleHatchlingEmergenceObservation).first()
+        else:
+            return None
+
 
 class LineTransectEncounter(Encounter):
     """Encounter with a line transect.
