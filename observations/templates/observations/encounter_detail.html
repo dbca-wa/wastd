@@ -109,6 +109,16 @@
                 </tr>
                 <tr>
                     <th>
+                        Site
+                    </th>
+                    <td>
+                        {% if object.survey %}
+                        {{ object.survey.site.name }}
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>
                         Comments
                     </th>
                     <td>

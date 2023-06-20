@@ -104,11 +104,9 @@
                         <i class="fa-solid fa-tags"></i>
                         <!-- FIXME: permissions check -->
                         {% if user.is_staff %}
-                        <a href="{{ obs.absolute_admin_url }}" target="_">
-                            {{ obs.name }} ({{ obs.get_status_display }})
-                        </a>
+                        <a href="{{ obs.absolute_admin_url }}" target="_">{{ obs }}</a>
                         {% else %}
-                        {{ obs.name }} ({{ obs.get_status_display }})
+                        {{ obs }}
                         {% endif %}
                     </td>
                 </tr>
