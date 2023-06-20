@@ -70,11 +70,6 @@ def survey_pre_save(
     if not instance.area:
         instance.area = guess_area(instance)
 
-    # Deprecated: Survey is now reconstructed during ETL before upload,
-    # not from SVS and SVE in WAStD any more
-    # if instance.status == Survey.STATUS_NEW and not instance.end_time:
-    #     claim_end_points(instance)
-
     if not instance.end_time:
         instance.end_time = instance.start_time + timedelta(hours=initial_duration_hrs)
         msg += (

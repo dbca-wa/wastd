@@ -288,6 +288,7 @@ BIOSYS_UN = os.environ.get("BIOSYS_UN", "user")
 BIOSYS_PW = os.environ.get("BIOSYS_PW", "pass")
 
 # ODKC
+# FIXME: check if the below may be deprecated.
 ODKA_URL = os.environ.get("ODKA_URL", "odk.url")
 ODKA_UN = os.environ.get("ODKA_UN", "user")
 ODKA_PW = os.environ.get("ODKA_PW", "pass")
