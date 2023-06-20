@@ -74,7 +74,8 @@ def resave_surveys_view(request):
 
 @csrf_exempt
 def reconstruct_surveys_view(request):
-    """Import all available ODK-Aggregate forms."""
+    """Construct any "missing" surveys. See utils.reconstruct_missing_surveys function.
+    """
     msg = reconstruct_surveys()
     messages.success(request, msg)
     return HttpResponseRedirect("/")
@@ -430,7 +431,9 @@ class TurtleNestEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, Li
     template_name = "default_list.html"
     paginate_by = 20
     filter_class = TurtleNestEncounterBasicFilter
-    resource_class = TurtleNestEncounterResource
+    resource_class = [
+        TurtleNestEncounterResource,
+    ]
     resource_formats = ['csv', 'xlsx']
 
     def get_context_data(self, **kwargs):
