@@ -1,9 +1,11 @@
+from django.conf import settings
 from django.db.models import Q
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.utils.encoding import force_str
 from django.utils.text import smart_split
 from django.views.generic import ListView, DetailView
 from functools import reduce
+import requests
 from urllib import parse
 
 
@@ -144,3 +146,40 @@ class DetailResourceView(DetailView):
         obj = self.get_object()
         data = self.serializer.serialize(obj)
         return JsonResponse(data, safe=False)
+
+
+def get_odk_auth_headers(url=None, email=None, password=None):
+    """Returns a dict containing authorization headers for ODK.
+    """
+    if not url:
+        url = settings.ODK_API_URL
+    if not email:
+        email = settings.ODK_API_EMAIL
+    if not password:
+        password = settings.ODK_API_PASSWORD
+
+    headers = {"Content-Type": "application/json"}
+    data = {
+        "email": email,
+        "password": password,
+    }
+    resp = requests.post(f"{url}/sessions", headers=headers, json=data)
+    resp.raise_for_status()
+    token = resp.json()["token"]
+    headers["Authorization"] = f"Bearer {token}"
+
+    return headers
+
+
+def get_odk_form_submissions(project_id, form_id, form_version, url=None, auth_headers=None):
+    """Returns all submissions to an ODK form, as JSON.
+    """
+    if not url:
+        url = settings.ODK_API_URL
+    if not auth_headers:
+        auth_headers = get_odk_auth_headers()
+
+    resp = requests.get(f"{url}/projects/{project_id}/forms/{form_id}/submissions", headers=auth_headers)
+    resp.raise_for_status()
+
+    return resp.json()

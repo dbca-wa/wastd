@@ -287,11 +287,10 @@ BIOSYS_TSC_URL = os.environ.get("BIOSYS_TSC", "biosys.url")
 BIOSYS_UN = os.environ.get("BIOSYS_UN", "user")
 BIOSYS_PW = os.environ.get("BIOSYS_PW", "pass")
 
-# ODKC
-# FIXME: check if the below may be deprecated.
-ODKA_URL = os.environ.get("ODKA_URL", "odk.url")
-ODKA_UN = os.environ.get("ODKA_UN", "user")
-ODKA_PW = os.environ.get("ODKA_PW", "pass")
+# ODK Central
+ODK_API_URL = os.environ.get("ODK_API_URL", "url")
+ODK_API_EMAIL = os.environ.get("ODK_API_EMAIL", "email")
+ODK_API_PASSWORD = os.environ.get("ODK_API_PASSWORD", "pass")
 
 # Leaflet map widgets
 LEAFLET_CONFIG = {
