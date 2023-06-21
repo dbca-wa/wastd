@@ -1,5 +1,5 @@
 # Prepare the base environment.
-FROM python:3.10.9-slim-bullseye as builder_base_wastd
+FROM python:3.10.10-slim-bullseye as builder_base_wastd
 MAINTAINER asi@dbca.wa.gov.au
 LABEL org.opencontainers.image.source https://github.com/dbca-wa/wastd
 
