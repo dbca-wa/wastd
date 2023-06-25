@@ -110,9 +110,6 @@ TEMPLATES = [
 
 # Use the customised User model
 AUTH_USER_MODEL = "users.User"
-BIOSYS_TSC_URL = os.environ.get("BIOSYS_TSC_URL", "")
-BIOSYS_UN = os.environ.get("BIOSYS_UN", "")
-BIOSYS_PW = os.environ.get("BIOSYS_PW", "")
 ADMIN_USER = os.environ.get("ADMIN_USER_ID", 1)
 ENABLE_AUTH2_GROUPS = os.environ.get("ENABLE_AUTH2_GROUPS", False)
 LOCAL_USERGROUPS = [
@@ -281,11 +278,6 @@ REST_FRAMEWORK = {
     "HTML_SELECT_CUTOFF": 100,
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
 }
-
-# Biosys
-BIOSYS_TSC_URL = os.environ.get("BIOSYS_TSC", "biosys.url")
-BIOSYS_UN = os.environ.get("BIOSYS_UN", "user")
-BIOSYS_PW = os.environ.get("BIOSYS_PW", "pass")
 
 # ODK Central
 ODK_API_URL = os.environ.get("ODK_API_URL", "url")
