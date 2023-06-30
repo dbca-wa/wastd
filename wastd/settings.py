@@ -283,6 +283,7 @@ REST_FRAMEWORK = {
 ODK_API_URL = os.environ.get("ODK_API_URL", "url")
 ODK_API_EMAIL = os.environ.get("ODK_API_EMAIL", "email")
 ODK_API_PASSWORD = os.environ.get("ODK_API_PASSWORD", "pass")
+ODK_API_PROJECTID = os.environ.get("ODK_API_PROJECTID", "-1")
 
 # Leaflet map widgets
 LEAFLET_CONFIG = {

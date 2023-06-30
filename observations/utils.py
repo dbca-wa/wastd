@@ -1,4 +1,3 @@
-"""Observation untilities."""
 import csv
 import io
 import json
@@ -256,9 +255,6 @@ def reconstruct_missing_surveys(buffer_mins=30):
     return None
 
 
-# -----------------------------------------------------------------------------#
-# Helpers for reconstruct_animal_names
-#
 def filter_tags_not_taken(tags):
     """Filter out tags that have already been taken."""
     return [tag for tag in tags if tag["taken"] is False]
@@ -3284,7 +3280,7 @@ def import_odk(datafile, flavour="odk-tt036", extradata=None, usercsv=None, mapp
 #
 
 
-def odka_forms(url=settings.ODKA_URL, un=settings.ODKA_UN, pw=settings.ODKA_PW):
+def odka_forms(url=settings.ODK_API_URL, un=settings.ODK_API_EMAIL, pw=settings.ODK_API_PASSWORD):
     """Return an OpenRosa xformsList XML response as list of dicts.
 
     See http://docs.opendatakit.org/openrosa-form-list/
@@ -3292,11 +3288,11 @@ def odka_forms(url=settings.ODKA_URL, un=settings.ODKA_UN, pw=settings.ODKA_PW):
     Arguments
 
     url The OpenRosa xformsList API endpoint of an ODK Aggregate instance,
-        default: the value of environment variable "ODKA_URL".
+        default: the value of environment variable "ODK_API_URL".
     un A username that exists on the ODK-A instance.
-        Default: the value of environment variable "ODKA_UN".
+        Default: the value of environment variable "ODK_API_EMAIL".
     pw The username's password.
-        Default: the value of environment variable "ODKA_PW".
+        Default: the value of environment variable "ODK_API_PASSWORD".
 
     Returns
     A list of dicts, each dict contains one xform:
@@ -3351,9 +3347,9 @@ def odka_forms(url=settings.ODKA_URL, un=settings.ODKA_UN, pw=settings.ODKA_PW):
 def odka_submission_ids(
     form_id,
     limit=10000,
-    url=settings.ODKA_URL,
-    un=settings.ODKA_UN,
-    pw=settings.ODKA_PW,
+    url=settings.ODK_API_URL,
+    un=settings.ODK_API_EMAIL,
+    pw=settings.ODK_API_PASSWORD,
     verbose=False,
 ):
     """Return a list of submission IDs for a given ODKA formID.
@@ -3368,11 +3364,11 @@ def odka_submission_ids(
         e.g. 'build_Site-Visit-End-0-1_1490756971'.
     limit The maximum number of submission IDs to retrieve, default: 1 000 000.
     url The OpenRosa xformsList API endpoint of an ODK Aggregate instance,
-        default: the value of environment variable "ODKA_URL".
+        default: the value of environment variable "ODK_API_URL".
     un A username that exists on the ODK-A instance.
-        Default: the value of environment variable "ODKA_UN".
+        Default: the value of environment variable "ODK_API_EMAIL".
     pw The username's password.
-        Default: the value of environment variable "ODKA_PW".
+        Default: the value of environment variable "ODK_API_PASSWORD".
 
 
     Returns
@@ -3448,9 +3444,9 @@ def odka_submission_ids(
 def odka_submission(
     form_id,
     submission_id,
-    url=settings.ODKA_URL,
-    un=settings.ODKA_UN,
-    pw=settings.ODKA_PW,
+    url=settings.ODK_API_URL,
+    un=settings.ODK_API_EMAIL,
+    pw=settings.ODK_API_PASSWORD,
     verbose=False,
 ):
     """Download one ODKA submission and return as dict.
@@ -3465,11 +3461,11 @@ def odka_submission(
         e.g. 'uuid:a9772680-b6f9-45c0-8ed4-189f5e722a6c'.
     limit The maximum number of submission IDs to retrieve, default: 10000.
     url The OpenRosa xformsList API endpoint of an ODK Aggregate instance,
-        default: the value of environment variable "ODKA_URL".
+        default: the value of environment variable "ODK_API_URL".
     un A username that exists on the ODK-A instance.
-        Default: the value of environment variable "ODKA_UN".
+        Default: the value of environment variable "ODK_API_EMAIL".
     pw The username's password.
-        Default: the value of environment variable "ODKA_PW".
+        Default: the value of environment variable "ODK_API_PASSWORD".
     verbose Whether to LOGGER.debug verbose log messages, default: False.
 
     Returns
@@ -3555,9 +3551,9 @@ def downloaded_data(form_id, path):
 def odka_submissions(
     form_id,
     path=".",
-    url=settings.ODKA_URL,
-    un=settings.ODKA_UN,
-    pw=settings.ODKA_PW,
+    url=settings.ODK_API_URL,
+    un=settings.ODK_API_EMAIL,
+    pw=settings.ODK_API_PASSWORD,
     verbose=False,
     append=True,
 ):
@@ -3568,11 +3564,11 @@ def odka_submissions(
     form_id An existing xform formID,
         e.g. 'build_Site-Visit-Start-0-1_1490753483'.
     url The OpenRosa xformsList API endpoint of an ODK Aggregate instance,
-        default: the value of environment variable "ODKA_URL".
+        default: the value of environment variable "ODK_API_URL".
     un A username that exists on the ODK-A instance.
-        Default: the value of environment variable "ODKA_UN".
+        Default: the value of environment variable "ODK_API_EMAIL".
     pw The username's password.
-        Default: the value of environment variable "ODKA_PW".
+        Default: the value of environment variable "ODK_API_PASSWORD".
     verbose Whether to LOGGER.debug verbose log messages, default: False.
     append Whether to retain already downloaded data and append new data, or
         to overwrite all already downloaded data and download all data again.
@@ -3615,9 +3611,9 @@ def odka_submissions(
 def save_odka(
     form_id,
     path=".",
-    url=settings.ODKA_URL,
-    un=settings.ODKA_UN,
-    pw=settings.ODKA_PW,
+    url=settings.ODK_API_URL,
+    un=settings.ODK_API_EMAIL,
+    pw=settings.ODK_API_PASSWORD,
     verbose=False,
     append=True,
 ):
@@ -3628,11 +3624,11 @@ def save_odka(
     form_id An existing form_id
     path A locally existing path, default: "."
     url The OpenRosa xformsList API endpoint of an ODK Aggregate instance,
-        default: the value of environment variable "ODKA_URL".
+        default: the value of environment variable "ODK_API_URL".
     un A username that exists on the ODK-A instance.
-        Default: the value of environment variable "ODKA_UN".
+        Default: the value of environment variable "ODK_API_EMAIL".
     pw The username's password.
-        Default: the value of environment variable "ODKA_PW".
+        Default: the value of environment variable "ODK_API_PASSWORD".
     verbose Whether to LOGGER.debug verbose log messages, default: False.
     append Whether to retain already downloaded data and append new data, or
         to overwrite all already downloaded data and download all data again.
@@ -3649,9 +3645,9 @@ def save_odka(
 
 def save_all_odka(
     path=".",
-    url=settings.ODKA_URL,
-    un=settings.ODKA_UN,
-    pw=settings.ODKA_PW,
+    url=settings.ODK_API_URL,
+    un=settings.ODK_API_EMAIL,
+    pw=settings.ODK_API_PASSWORD,
     verbose=False,
     append=True,
 ):
@@ -3661,11 +3657,11 @@ def save_all_odka(
 
     path A locally existing path, default: "."
     url The OpenRosa xformsList API endpoint of an ODK Aggregate instance,
-        default: the value of environment variable "ODKA_URL".
+        default: the value of environment variable "ODK_API_URL".
     un A username that exists on the ODK-A instance.
-        Default: the value of environment variable "ODKA_UN".
+        Default: the value of environment variable "ODK_API_EMAIL".
     pw The username's password.
-        Default: the value of environment variable "ODKA_PW".
+        Default: the value of environment variable "ODK_API_PASSWORD".
     verbose Whether to LOGGER.debug verbose log messages, default: False.
     append Whether to retain already downloaded data and append new data, or
         to overwrite all already downloaded data and download all data again.
@@ -3691,9 +3687,9 @@ def save_all_odka(
 def make_datapackage_json(
     xform,
     path=".",
-    url=settings.ODKA_URL,
-    un=settings.ODKA_UN,
-    pw=settings.ODKA_PW,
+    url=settings.ODK_API_URL,
+    un=settings.ODK_API_EMAIL,
+    pw=settings.ODK_API_PASSWORD,
     verbose=False,
     download_submissions=False,
     download_config=False,
@@ -3705,11 +3701,11 @@ def make_datapackage_json(
     xform An xform dict as produced by odka_forms()
     path The local path to the downloaded submission JSON as produced by save_odka()
     url The OpenRosa xformsList API endpoint of an ODK Aggregate instance,
-        default: the value of environment variable "ODKA_URL".
+        default: the value of environment variable "ODK_API_URL".
     un A username that exists on the ODK-A instance.
-        Default: the value of environment variable "ODKA_UN".
+        Default: the value of environment variable "ODK_API_EMAIL".
     pw The username's password.
-        Default: the value of environment variable "ODKA_PW".
+        Default: the value of environment variable "ODK_API_PASSWORD".
     verbose Whether to LOGGER.debug verbose log messages, default: False.
     download_submissions Whether to download submissions
     download_config Whether to write the returned config to a local file
