@@ -58,21 +58,21 @@ def encounter_media(instance, filename):
     """Return an upload file path for an encounter media attachment."""
     if not instance.encounter.id:
         instance.encounter.save()
-    return "encounter/{0}/{1}".format(instance.encounter.source_id, filename)
+    return "encounter/{}/{}".format(instance.encounter.source_id, filename)
 
 
 def campaign_media(instance, filename):
     """Return an upload file path for a campaign media attachment."""
     if not instance.campaign.id:
         instance.campaign.save()
-    return "campaign/{0}/{1}".format(instance.campaign.id, filename)
+    return "campaign/{}/{}".format(instance.campaign.id, filename)
 
 
 def survey_media(instance, filename):
     """Return an upload path for survey media."""
     if not instance.survey.id:
         instance.survey.save()
-    return "survey/{0}/{1}".format(instance.survey.id, filename)
+    return "survey/{}/{}".format(instance.survey.id, filename)
 
 
 class Area(models.Model):
@@ -487,11 +487,11 @@ class CampaignMediaAttachment(models.Model):
     """A media attachment to a Campaign."""
 
     MEDIA_TYPE_CHOICES = (
-        ("datasheet", _("Data sheet")),
-        ("journal", _("Field journal")),
-        ("communication", _("Communication record")),
-        ("photograph", _("Photograph")),
-        ("other", _("Other")),
+        ("datasheet", "Data sheet"),
+        ("journal", "Field journal"),
+        ("communication", "Communication record"),
+        ("photograph", "Photograph"),
+        ("other", "Other"),
     )
 
     campaign = models.ForeignKey(
@@ -1054,10 +1054,10 @@ class SurveyMediaAttachment(LegacySourceMixin, models.Model):
     """A media attachment to a Survey, e.g. start or end photos."""
 
     MEDIA_TYPE_CHOICES = (
-        ("data_sheet", _("Data sheet")),
-        ("communication", _("Communication record")),
-        ("photograph", _("Photograph")),
-        ("other", _("Other")),
+        ("data_sheet", "Data sheet"),
+        ("communication", "Communication record"),
+        ("photograph", "Photograph"),
+        ("other", "Other"),
     )
 
     survey = models.ForeignKey(
@@ -1213,14 +1213,14 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
     STATUS_REJECTED = "rejected"
 
     STATUS_CHOICES = (
-        (STATUS_NEW, _("New")),
-        (STATUS_IMPORTED, _("Imported")),
-        (STATUS_MANUAL_INPUT, _("Manual input")),
-        (STATUS_PROOFREAD, _("Proofread")),
-        (STATUS_CURATED, _("Curated")),
-        (STATUS_PUBLISHED, _("Published")),
-        (STATUS_FLAGGED, _("Flagged")),
-        (STATUS_REJECTED, _("Rejected")),
+        (STATUS_NEW, "New"),
+        (STATUS_IMPORTED, "Imported"),
+        (STATUS_MANUAL_INPUT, "Manual input"),
+        (STATUS_PROOFREAD, "Proofread"),
+        (STATUS_CURATED, "Curated"),
+        (STATUS_PUBLISHED, "Published"),
+        (STATUS_FLAGGED, "Flagged"),
+        (STATUS_REJECTED, "Rejected"),
     )
 
     STATUS_LABELS = {
@@ -1234,17 +1234,15 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         STATUS_REJECTED: "danger",
     }
 
-    status = FSMField(
-        default=STATUS_NEW, choices=STATUS_CHOICES, verbose_name=_("QA Status")
-    )
+    status = FSMField(default=STATUS_NEW, choices=STATUS_CHOICES, verbose_name="QA Status")
 
     campaign = models.ForeignKey(
         Campaign,
         null=True,
         blank=True,
         on_delete=models.CASCADE,
-        verbose_name=_("Campaign"),
-        help_text=_("The overarching Campaign instigating this Encounter is automatically linked when a Campaign saved."),
+        verbose_name="Campaign",
+        help_text="The overarching Campaign instigating this Encounter is automatically linked when a Campaign saved.",
     )
 
     survey = models.ForeignKey(
@@ -1252,8 +1250,8 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        verbose_name=_("Survey"),
-        help_text=_("The survey during which this encounter happened."),
+        verbose_name="Survey",
+        help_text="The survey during which this encounter happened.",
     )
 
     area = models.ForeignKey(
@@ -1261,9 +1259,9 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
-        verbose_name=_("Area"),
+        verbose_name="Area",
         related_name="encounter_area",
-        help_text=_("The general area this encounter took place in."),
+        help_text="The general area this encounter took place in.",
     )
 
     site = models.ForeignKey(
@@ -1271,62 +1269,53 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
-        verbose_name=_("Surveyed site"),
+        verbose_name="Surveyed site",
         related_name="encounter_site",
-        help_text=_("The surveyed site, if known."),
+        help_text="The surveyed site, if known.",
     )
 
     source = models.CharField(
         max_length=300,
         db_index=True,
-        verbose_name=_("Data Source"),
+        verbose_name="Data Source",
         default=lookups.SOURCE_DEFAULT,
         choices=lookups.SOURCE_CHOICES,
-        help_text=_("Where was this record captured initially?"),
+        help_text="Where was this record captured initially?",
     )
 
     source_id = models.CharField(
         max_length=1000,
         blank=True,
         null=True,
-        verbose_name=_("Source ID"),
-        help_text=_(
-            "The ID of the record in the original source, or "
-            "a newly allocated ID if left blank. Delete and save "
-            "to regenerate this ID."
-        ),
+        verbose_name="Source ID",
+        help_text="The ID of the record in the original source, or a newly allocated ID if left blank. Delete and save to regenerate this ID.",
     )
 
     where = models.PointField(
         srid=4326,
-        verbose_name=_("Observed at"),
-        help_text=_("The observation location as point in WGS84"),
+        verbose_name="Observed at",
+        help_text="The observation location as point in WGS84",
     )
 
     when = models.DateTimeField(
         db_index=True,
-        verbose_name=_("Observed on"),
-        help_text=_(
-            "The observation datetime, shown as local time "
-            "(no daylight savings), stored as UTC."
-        ),
+        verbose_name="Observed on",
+        help_text="The observation datetime, shown as local time (no daylight savings), stored as UTC.",
     )
 
     location_accuracy = models.CharField(
         max_length=300,
-        verbose_name=_("Location accuracy class (m)"),
+        verbose_name="Location accuracy class (m)",
         default=LOCATION_DEFAULT,
         choices=LOCATION_ACCURACY_CHOICES,
-        help_text=_(
-            "The source of the supplied location " "implies a rough location accuracy."
-        ),
+        help_text="The source of the supplied location " "implies a rough location accuracy.",
     )
 
     location_accuracy_m = models.FloatField(
-        verbose_name=_("Location accuracy (m)"),
+        verbose_name="Location accuracy (m)",
         null=True,
         blank=True,
-        help_text=_("The accuracy of the supplied location in metres, if given."),
+        help_text="The accuracy of the supplied location in metres, if given.",
     )
 
     name = models.CharField(
@@ -1334,52 +1323,44 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         editable=False,
         blank=True,
         null=True,
-        verbose_name=_("Encounter Subject Identifer"),
-        help_text=_(
-            "An automatically inferred read-only identifier for the encountered subject,"
-            " e.g. in the case of AnimalEncounters, the animal's earliest associated tag ID."
-            " Encounters with the same identifer are encounters of the same subject (e.g. the same turtle)."
-        ),
+        verbose_name="Encounter Subject Identifer",
+        help_text="""An automatically inferred read-only identifier for the encountered subject,
+        e.g. in the case of AnimalEncounters, the animal's earliest associated tag ID.
+        Encounters with the same identifer are encounters of the same subject (e.g. the same turtle).""",
     )
 
     observer = models.ForeignKey(
         User,
         on_delete=models.SET_DEFAULT,
         default=settings.ADMIN_USER,
-        verbose_name=_("Observed by"),
+        verbose_name="Observed by",
         related_name="encounters_observed",
-        help_text=_(
-            "The person who encountered the subject, and executed any measurements. "
-            "The observer is the source of measurement bias."
-        ),
+        help_text="The person who encountered the subject, and executed any measurements. The observer is the source of measurement bias.",
     )
 
     reporter = models.ForeignKey(
         User,
         on_delete=models.SET_DEFAULT,
         default=settings.ADMIN_USER,
-        verbose_name=_("Recorded by"),
+        verbose_name="Recorded by",
         related_name="encounters_reported",
-        help_text=_(
-            "The person who wrote the initial data sheet in the field. "
-            "The reporter is the source of handwriting and spelling errors. "
-        ),
+        help_text="The person who wrote the initial data sheet in the field. The reporter is the source of handwriting and spelling errors.",
     )
 
     as_html = models.TextField(
-        verbose_name=_("HTML representation"),
+        verbose_name="HTML representation",
         blank=True,
         null=True,
         editable=False,
-        help_text=_("The cached HTML representation for display purposes."),
+        help_text="The cached HTML representation for display purposes.",
     )
 
     as_latex = models.TextField(
-        verbose_name=_("Latex fragment"),
+        verbose_name="Latex fragment",
         blank=True,
         null=True,
         editable=False,
-        help_text=_("The cached Latex fragment for reporting purposes."),
+        help_text="The cached Latex fragment for reporting purposes.",
     )
 
     encounter_type = models.CharField(
@@ -1387,17 +1368,17 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         blank=True,
         null=True,
         editable=False,
-        verbose_name=_("Encounter type"),
+        verbose_name="Encounter type",
         default=ENCOUNTER_STRANDING,
         choices=ENCOUNTER_TYPES,
-        help_text=_("The primary concern of this encounter."),
+        help_text="The primary concern of this encounter.",
     )
 
     comments = models.TextField(
-        verbose_name=_("Comments"),
+        verbose_name="Comments",
         blank=True,
         null=True,
-        help_text=_("Comments"),
+        help_text="Comments",
     )
 
     class Meta:
@@ -2024,106 +2005,97 @@ class AnimalEncounter(Encounter):
 
     taxon = models.CharField(
         max_length=300,
-        verbose_name=_("Taxonomic group"),
+        verbose_name="Taxonomic group",
         choices=lookups.TAXON_CHOICES,
         default=lookups.TAXON_CHOICES_DEFAULT,
-        help_text=_("The taxonomic group of the animal."),
+        help_text="The taxonomic group of the animal.",
     )
 
     species = models.CharField(
         max_length=300,
-        verbose_name=_("Species"),
+        verbose_name="Species",
         choices=lookups.SPECIES_CHOICES,
         default=lookups.NA_VALUE,
-        help_text=_("The species of the animal."),
+        help_text="The species of the animal.",
     )
 
     sex = models.CharField(
         max_length=300,
-        verbose_name=_("Sex"),
+        verbose_name="Sex",
         choices=lookups.SEX_CHOICES,
         default=lookups.NA_VALUE,
-        help_text=_("The animal's sex."),
+        help_text="The animal's sex.",
     )
 
     maturity = models.CharField(
         max_length=300,
-        verbose_name=_("Maturity"),
+        verbose_name="Maturity",
         choices=lookups.MATURITY_CHOICES,
         default=lookups.NA_VALUE,
-        help_text=_("The animal's maturity."),
+        help_text="The animal's maturity.",
     )
 
     health = models.CharField(
         max_length=300,
-        verbose_name=_("Health status"),
+        verbose_name="Health status",
         choices=lookups.HEALTH_CHOICES,
         default=lookups.NA_VALUE,
-        help_text=_("The animal's physical health"),
+        help_text="The animal's physical health",
     )
 
     activity = models.CharField(
         max_length=300,
-        verbose_name=_("Activity"),
+        verbose_name="Activity",
         choices=lookups.ACTIVITY_CHOICES,
         default=lookups.NA_VALUE,
-        help_text=_("The animal's activity at the time of observation."),
+        help_text="The animal's activity at the time of observation.",
     )
 
     behaviour = models.TextField(
-        verbose_name=_("Condition and behaviour"),
+        verbose_name="Condition and behaviour",
         blank=True,
         null=True,
-        help_text=_("Notes on condition or behaviour."),
+        help_text="Notes on condition or behaviour.",
     )
 
     habitat = models.CharField(
         max_length=500,
-        verbose_name=_("Habitat"),
+        verbose_name="Habitat",
         choices=lookups.HABITAT_CHOICES,
         default=lookups.NA_VALUE,
-        help_text=_("The habitat in which the animal was encountered."),
+        help_text="The habitat in which the animal was encountered.",
     )
 
     sighting_status = models.CharField(
         max_length=300,
-        verbose_name=_("Sighting status"),
+        verbose_name="Sighting status",
         choices=lookups.SIGHTING_STATUS_CHOICES,
         default=lookups.NA_VALUE,
-        help_text=_(
-            "The status is inferred automatically based on whether"
-            " and where this animal was processed and identified last."
-        ),
+        help_text="The status is inferred automatically based on whether and where this animal was processed and identified last.",
     )
 
     sighting_status_reason = models.CharField(
         max_length=1000,
-        verbose_name=_("Sighting status reason"),
+        verbose_name="Sighting status reason",
         blank=True,
         null=True,
-        help_text=_("The rationale for the inferred sighting status."),
+        help_text="The rationale for the inferred sighting status.",
     )
 
     identifiers = models.TextField(
-        verbose_name=_("Identifiers"),
+        verbose_name="Identifiers",
         blank=True,
         null=True,
-        help_text=_(
-            "A space-separated list of all identifers ever recorded "
-            "as associated with this animal. This list includes identifiers "
-            "recorded only in earlier or later encounters."
-        ),
+        help_text="""A space-separated list of all identifers ever recorded as associated with this animal.
+        This list includes identifiers recorded only in earlier or later encounters.""",
     )
 
     datetime_of_last_sighting = models.DateTimeField(
-        verbose_name=_("Last seen on"),
+        verbose_name="Last seen on",
         blank=True,
         null=True,
-        help_text=_(
-            "The observation datetime of this animal's last sighting, "
-            "shown as local time (no daylight savings), stored as UTC. "
-            "Blank if the animal has never been seen before."
-        ),
+        help_text="""The observation datetime of this animal's last sighting, shown as local time
+        (no daylight savings), stored as UTC. Blank if the animal has never been seen before.""",
     )
 
     site_of_last_sighting = models.ForeignKey(
@@ -2132,8 +2104,8 @@ class AnimalEncounter(Encounter):
         blank=True,
         null=True,
         related_name="encounter_last_sighting",
-        verbose_name=_("Last seen at"),
-        help_text=_("The Site in which the animal was encountered last."),
+        verbose_name="Last seen at",
+        help_text="The Site in which the animal was encountered last.",
     )
 
     site_of_first_sighting = models.ForeignKey(
@@ -2142,78 +2114,74 @@ class AnimalEncounter(Encounter):
         blank=True,
         null=True,
         related_name="encounter_first_sighting",
-        verbose_name=_("First seen at"),
-        help_text=_("The Site in which the animal was encountered first."),
+        verbose_name="First seen at",
+        help_text="The Site in which the animal was encountered first.",
     )
 
     # ODK form Turtle Tagging > nest_observed_nesting_success
     nesting_event = models.CharField(  # TODO rename to nesting_success
         max_length=300,
-        verbose_name=_("Nesting success"),
+        verbose_name="Nesting success",
         choices=lookups.NESTING_SUCCESS_CHOICES,
         default=lookups.NA_VALUE,
-        help_text=_("What indication of nesting success was observed?"),
+        help_text="What indication of nesting success was observed?",
     )
 
     # Populated from Turtle Tagging > nest_nesting_disturbed
     # Behaviour:      Turtle Tagging > nesting_disturbance_cause
     nesting_disturbed = models.CharField(
         max_length=300,
-        verbose_name=_("Nesting disturbed"),
+        verbose_name="Nesting disturbed",
         choices=lookups.OBSERVATION_CHOICES,
         default=lookups.NA_VALUE,
-        help_text=_(
-            "Was the nesting interrupted? If so, specify disturbance in comments."
-        ),
+        help_text="Was the nesting interrupted? If so, specify disturbance in comments.",
     )
 
     laparoscopy = models.BooleanField(
         max_length=300,
-        verbose_name=_("Laparoscopy conducted"),
+        verbose_name="Laparoscopy conducted",
         default=False,
-        help_text=_(
-            "Was the animal's sex and maturity determined through laparoscopy?"
-        ),
+        help_text="Was the animal's sex and maturity determined through laparoscopy?",
     )
 
     checked_for_injuries = models.CharField(
         max_length=300,
-        verbose_name=_("Checked for injuries"),
+        verbose_name="Checked for injuries",
         choices=lookups.OBSERVATION_CHOICES,
         default=lookups.NA_VALUE,
-        help_text=_("Was the animal checked for injuries, were any found?"),
+        help_text="Was the animal checked for injuries, were any found?",
     )
 
     scanned_for_pit_tags = models.CharField(
         max_length=300,
-        verbose_name=_("Scanned for PIT tags"),
+        verbose_name="Scanned for PIT tags",
         choices=lookups.OBSERVATION_CHOICES,
         default=lookups.NA_VALUE,
-        help_text=_("Was the animal scanned for PIT tags, were any found?"),
+        help_text="Was the animal scanned for PIT tags, were any found?",
     )
 
     checked_for_flipper_tags = models.CharField(
         max_length=300,
-        verbose_name=_("Checked for flipper tags"),
+        verbose_name="Checked for flipper tags",
         choices=lookups.OBSERVATION_CHOICES,
         default=lookups.NA_VALUE,
-        help_text=_("Was the animal checked for flipper tags, were any found?"),
+        help_text="Was the animal checked for flipper tags, were any found?",
     )
 
     cause_of_death = models.CharField(
         max_length=300,
-        verbose_name=_("Cause of death"),
+        verbose_name="Cause of death",
         choices=lookups.CAUSE_OF_DEATH_CHOICES,
         default=lookups.NA_VALUE,
-        help_text=_("If dead, is the case of death known?"),
+        help_text="If dead, is the case of death known?",
     )
 
     cause_of_death_confidence = models.CharField(
         max_length=300,
-        verbose_name=_("Cause of death confidence"),
+        verbose_name="Cause of death confidence",
         choices=lookups.CONFIDENCE_CHOICES,
         default=lookups.NA_VALUE,
-        help_text=_("What is the cause of death, if known, based on?"),
+        help_text="What is the cause of death, if known, based on?",
     )
 
     class Meta:
@@ -2349,50 +2317,50 @@ class TurtleNestEncounter(Encounter):
 
     nest_age = models.CharField(
         max_length=300,
-        verbose_name=_("Age"),
+        verbose_name="Age",
         choices=lookups.NEST_AGE_CHOICES,
         default=lookups.NEST_AGE_DEFAULT,
-        help_text=_("The track or nest age."),
+        help_text="The track or nest age.",
     )
 
     nest_type = models.CharField(
         max_length=300,
-        verbose_name=_("Type"),
+        verbose_name="Type",
         choices=lookups.NEST_TYPE_CHOICES,
         default=lookups.NEST_TYPE_DEFAULT,
-        help_text=_("The track or nest type."),
+        help_text="The track or nest type.",
     )
 
     species = models.CharField(
         max_length=300,
-        verbose_name=_("Species"),
+        verbose_name="Species",
         choices=lookups.TURTLE_SPECIES_CHOICES,
         default=lookups.TURTLE_SPECIES_DEFAULT,
-        help_text=_("The species of the animal which created the track or nest."),
+        help_text="The species of the animal which created the track or nest.",
     )
 
     habitat = models.CharField(
         max_length=500,
-        verbose_name=_("Habitat"),
+        verbose_name="Habitat",
         choices=lookups.BEACH_POSITION_CHOICES,
         default=lookups.NA_VALUE,
-        help_text=_("The habitat in which the track or nest was encountered."),
+        help_text="The habitat in which the track or nest was encountered.",
     )
 
     disturbance = models.CharField(
         max_length=300,
-        verbose_name=_("Evidence of predation or disturbance"),
+        verbose_name="Evidence of predation or disturbance",
         choices=lookups.OBSERVATION_CHOICES,
         default=lookups.NA_VALUE,
-        help_text=_("Is there evidence of predation or other disturbance?"),
+        help_text="Is there evidence of predation or other disturbance?",
     )
 
     nest_tagged = models.CharField(
         max_length=300,
-        verbose_name=_("Nest tag present"),
+        verbose_name="Nest tag present",
         choices=lookups.OBSERVATION_CHOICES,
         default=lookups.NA_VALUE,
-        help_text=_("Was a nest tag applied, re-sighted, or otherwise encountered?"),
+        help_text="Was a nest tag applied, re-sighted, or otherwise encountered?",
     )
 
     logger_found = models.CharField(
