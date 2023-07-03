@@ -3777,11 +3777,6 @@ class TurtleTrackObservation(Observation):
         null=True,
         help_text="Distance with front flipper marks, measured in mm",
     )
-    tail_pokes = models.BooleanField(
-        blank=True,
-        null=True,
-        help_text="Are regular dips in the middle of the track present?",
-    )
     tail_pokes = models.CharField(
         blank=True,
         null=True,
