@@ -514,6 +514,8 @@ OBSERVATION_CHOICES = (
     (NA_VALUE, "NA"),
     ("absent", "Absent"),
     ("present", "Present"),
+    ("yes", "Yes"),
+    ("no", "No"),
 )
 
 OBSERVATION_ICONS = {
