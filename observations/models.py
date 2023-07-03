@@ -20,14 +20,9 @@ actions:
 * disposal actions
 
 """
-import itertools
-import logging
-import urllib
 from datetime import timedelta
 from dateutil import tz
 from dateutil.relativedelta import relativedelta
-
-import slugify
 from django.conf import settings
 from django.contrib.gis.db import models
 from django.db.models.fields import DurationField
@@ -39,8 +34,13 @@ from django.utils.translation import gettext_lazy as _
 from django_fsm import FSMField, transition
 from django_fsm_log.decorators import fsm_log_by, fsm_log_description
 from django_fsm_log.models import StateLog
+import itertools
+import logging
+from os import path
 from polymorphic.models import PolymorphicModel
 from rest_framework.reverse import reverse as rest_reverse
+import slugify
+import urllib
 
 from shared.models import (
     LegacySourceMixin,
@@ -91,13 +91,11 @@ class Area(models.Model):
     * northern extent: useful to sort by latitude
     * as html: an HTML map popup
     """
-
     AREATYPE_MPA = "MPA"
     AREATYPE_LOCALITY = "Locality"
     AREATYPE_SITE = "Site"
     AREATYPE_DBCA_REGION = "Region"
     AREATYPE_DBCA_DISTRICT = "District"
-
     AREATYPE_CHOICES = (
         (AREATYPE_MPA, "MPA"),
         (AREATYPE_LOCALITY, "Locality"),
@@ -108,91 +106,72 @@ class Area(models.Model):
 
     area_type = models.CharField(
         max_length=300,
-        verbose_name=_("Area type"),
+        verbose_name="Area type",
         default=AREATYPE_SITE,
         choices=AREATYPE_CHOICES,
-        help_text=_("The area type."),
+        help_text="The area type.",
     )
-
     name = models.CharField(
         max_length=1000,
-        verbose_name=_("Area Name"),
-        help_text=_("The name of the area."),
+        verbose_name="Area Name",
+        help_text="The name of the area.",
     )
-
     w2_location_code = models.CharField(
         max_length=100,
         blank=True,
         null=True,
-        verbose_name=_("W2 Location Code"),
-        help_text=_(
-            "The location code under which this area is known to the WAMTRAM turtle tagging database."
-        ),
+        verbose_name="W2 Location Code",
+        help_text="The location code under which this area is known to the WAMTRAM turtle tagging database.",
     )
-
     w2_place_code = models.CharField(
         max_length=100,
         blank=True,
         null=True,
-        verbose_name=_("W2 Place Code"),
-        help_text=_(
-            "The place code under which this area is known to the WAMTRAM turtle tagging database."
-        ),
+        verbose_name="W2 Place Code",
+        help_text="The place code under which this area is known to the WAMTRAM turtle tagging database.",
     )
-
     centroid = models.PointField(
         srid=4326,
         editable=False,
         blank=True,
         null=True,
-        verbose_name=_("Centroid"),
-        help_text=_("The centroid is a simplified presentation of the Area."),
+        verbose_name="Centroid",
+        help_text="The centroid is a simplified presentation of the Area.",
     )
-
     northern_extent = models.FloatField(
-        verbose_name=_("Northernmost latitude"),
+        verbose_name="Northernmost latitude",
         editable=False,
         blank=True,
         null=True,
-        help_text=_("The northernmost latitude serves to sort areas."),
+        help_text="The northernmost latitude serves to sort areas.",
     )
-
     length_surveyed_m = models.DecimalField(
         max_digits=10,
         decimal_places=0,
-        verbose_name=_("Surveyed length [m]"),
+        verbose_name="Surveyed length [m]",
         blank=True,
         null=True,
-        help_text=_(
-            "The length of meters covered by a survey of this area. "
-            "E.g., the meters of high water mark along a beach."
-        ),
+        help_text="The length of meters covered by a survey of this area. E.g., the meters of high water mark along a beach.",
     )
-
     length_survey_roundtrip_m = models.DecimalField(
         max_digits=10,
         decimal_places=0,
-        verbose_name=_("Survey roundtrip [m]"),
+        verbose_name="Survey roundtrip [m]",
         blank=True,
         null=True,
-        help_text=_(
-            "The total length of meters walked during an end to end "
-            "survey of this area."
-        ),
+        help_text="The total length of meters walked during an end to end survey of this area.",
     )
-
     as_html = models.TextField(
-        verbose_name=_("HTML representation"),
+        verbose_name="HTML representation",
         blank=True,
         null=True,
         editable=False,
-        help_text=_("The cached HTML representation for display purposes."),
+        help_text="The cached HTML representation for display purposes.",
     )
-
     geom = models.PolygonField(
         srid=4326,
-        verbose_name=_("Location"),
-        help_text=_("The exact extent of the area as polygon in WGS84."),
+        verbose_name="Location",
+        help_text="The exact extent of the area as polygon in WGS84.",
     )
 
     class Meta:
@@ -538,219 +517,170 @@ class CampaignMediaAttachment(models.Model):
 
 
 class Survey(QualityControlMixin, UrlsMixin, models.Model):
-    """A visit to one site by a team of field workers collecting data."""
-
+    """A visit to one site by a team of field workers collecting data.
+    """
     campaign = models.ForeignKey(
         Campaign,
         null=True,
         blank=True,
         on_delete=models.CASCADE,
-        verbose_name=_("Campaign"),
-        help_text=_(
-            "The overarching Campaign instigating this Survey "
-            "is automatically linked when a Campaign is saved."
-        ),
+        verbose_name="Campaign",
+        help_text="The overarching Campaign instigating this Survey is automatically linked when a Campaign is saved.",
     )
-
     source = models.CharField(
         max_length=300,
-        verbose_name=_("Data Source"),
+        verbose_name="Data Source",
         default=lookups.SOURCE_DEFAULT,
         choices=lookups.SOURCE_CHOICES,
-        help_text=_("Where was this record captured initially?"),
+        help_text="Where was this record captured initially?",
     )
-
     source_id = models.CharField(
         max_length=1000,
         blank=True,
         null=True,
-        verbose_name=_("Source ID"),
-        help_text=_("The ID of the start point in the original source."),
+        verbose_name="Source ID",
+        help_text="The ID of the start point in the original source.",
     )
-
     device_id = models.CharField(
         max_length=1000,
         blank=True,
         null=True,
-        verbose_name=_("Device ID"),
-        help_text=_("The ID of the recording device, if available."),
+        verbose_name="Device ID",
+        help_text="The ID of the recording device, if available.",
     )
-
     area = models.ForeignKey(
         Area,
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
-        verbose_name=_("Surveyed Area"),
+        verbose_name="Surveyed Area",
         related_name="survey_area",
-        help_text=_("The general area this survey took place in."),
+        help_text="The general area this survey took place in.",
     )
-
     site = models.ForeignKey(
         Area,
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
-        verbose_name=_("Surveyed Site"),
-        help_text=_("The surveyed site, if known."),
+        verbose_name="Surveyed Site",
+        help_text="The surveyed site, if known.",
     )
-
     transect = models.LineStringField(
         srid=4326,
         blank=True,
         null=True,
-        verbose_name=_("Transect line"),
-        help_text=_(
-            "The surveyed path as LineString in WGS84, optional."
-            " E.g. automatically captured by form Track Tally."
-        ),
+        verbose_name="Transect line",
+        help_text="The surveyed path as LineString in WGS84, optional. E.g. automatically captured by form Track Tally.",
     )
-
     reporter = models.ForeignKey(
         User,
         on_delete=models.SET_DEFAULT,
         default=settings.ADMIN_USER,
         related_name="reported_surveys",
-        verbose_name=_("Recorded by"),
+        verbose_name="Recorded by",
         blank=True,
         null=True,
-        help_text=_(
-            "The person who captured the start point, "
-            "ideally this person also recoreded the encounters and end point."
-        ),
+        help_text="The person who captured the start point, ideally this person also recoreded the encounters and end point.",
     )
-
     start_location = models.PointField(
         srid=4326,
         blank=True,
         null=True,
-        verbose_name=_("Survey start point"),
-        help_text=_("The start location as point in WGS84."),
+        verbose_name="Survey start point",
+        help_text="The start location as point in WGS84.",
     )
-
     start_location_accuracy_m = models.FloatField(
-        verbose_name=_("Start location accuracy (m)"),
+        verbose_name="Start location accuracy (m)",
         null=True,
         blank=True,
-        help_text=_("The accuracy of the supplied start location in metres, if given."),
+        help_text="The accuracy of the supplied start location in metres, if given.",
     )
-
     start_time = models.DateTimeField(
-        verbose_name=_("Survey start time"),
+        verbose_name="Survey start time",
         blank=True,
         null=True,
-        help_text=_(
-            "The datetime of entering the site, shown as local time "
-            "(no daylight savings), stored as UTC."
-            " The time of 'feet in the sand, start recording encounters'."
-        ),
+        help_text="""The datetime of entering the site, shown as local time (no daylight savings), stored as UTC.
+        The time of 'feet in the sand, start recording encounters'.""",
     )
-
     start_photo = models.FileField(
         upload_to=survey_media,
         blank=True,
         null=True,
         max_length=500,
-        verbose_name=_("Site photo start"),
-        help_text=_("Site conditions at start of survey."),
+        verbose_name="Site photo start",
+        help_text="Site conditions at start of survey.",
     )
-
     start_comments = models.TextField(
-        verbose_name=_("Comments at start"),
+        verbose_name="Comments at start",
         blank=True,
         null=True,
-        help_text=_(
-            "Describe any circumstances affecting data collection, e.g. days without surveys."
-        ),
+        help_text="Describe any circumstances affecting data collection, e.g. days without surveys.",
     )
-
     end_source_id = models.CharField(
         max_length=1000,
         blank=True,
         null=True,
-        verbose_name=_("Source ID of end point"),
-        help_text=_("The ID of the record in the original source."),
+        verbose_name="Source ID of end point",
+        help_text="The ID of the record in the original source.",
     )
-
     end_device_id = models.CharField(
         max_length=1000,
         blank=True,
         null=True,
-        verbose_name=_("End Device ID"),
-        help_text=_(
-            "The ID of the recording device which captured the end point, if available."
-        ),
+        verbose_name="End Device ID",
+        help_text="The ID of the recording device which captured the end point, if available.",
     )
-
     end_location = models.PointField(
         srid=4326,
         blank=True,
         null=True,
-        verbose_name=_("Survey end point"),
-        help_text=_("The end location as point in WGS84."),
+        verbose_name="Survey end point",
+        help_text="The end location as point in WGS84.",
     )
-
     end_location_accuracy_m = models.FloatField(
-        verbose_name=_("End location accuracy (m)"),
+        verbose_name="End location accuracy (m)",
         null=True,
         blank=True,
-        help_text=_("The accuracy of the supplied end location in metres, if given."),
+        help_text="The accuracy of the supplied end location in metres, if given.",
     )
-
     end_time = models.DateTimeField(
-        verbose_name=_("Survey end time"),
+        verbose_name="Survey end time",
         blank=True,
         null=True,
-        help_text=_(
-            "The datetime of leaving the site, shown as local time "
-            "(no daylight savings), stored as UTC."
-            " The time of 'feet in the sand, done recording encounters.'"
-        ),
+        help_text="""The datetime of leaving the site, shown as local time (no daylight savings), stored as UTC.
+        The time of 'feet in the sand, done recording encounters.'""",
     )
-
     end_photo = models.FileField(
         upload_to=campaign_media,
         blank=True,
         null=True,
         max_length=500,
-        verbose_name=_("Site photo end"),
-        help_text=_("Site conditions at end of survey."),
+        verbose_name="Site photo end",
+        help_text="Site conditions at end of survey.",
     )
-
     end_comments = models.TextField(
-        verbose_name=_("Comments at finish"),
+        verbose_name="Comments at finish",
         blank=True,
         null=True,
-        help_text=_(
-            "Describe any circumstances affecting data collection, "
-            "e.g. days without surveys."
-        ),
+        help_text="Describe any circumstances affecting data collection, e.g. days without surveys.",
     )
-
     production = models.BooleanField(
         default=True,
-        verbose_name=_("Production run"),
-        help_text=_(
-            "Whether the survey is a real (production) survey, or a training survey."
-        ),
+        verbose_name="Production run",
+        help_text="Whether the survey is a real (production) survey, or a training survey.",
     )
-
     team = models.ManyToManyField(
         User,
         blank=True,
         related_name="survey_team",
-        help_text=_(
-            "Additional field workers, apart from the reporter,"
-            " who assisted with data collection."
-        ),
+        help_text="Additional field workers, apart from the reporter, who assisted with data collection.",
     )
-
     label = models.CharField(
         blank=True,
         null=True,
         max_length=500,
-        verbose_name=_("Label"),
-        help_text=_("A human-readable, self-explanatory label."),
+        verbose_name="Label",
+        help_text="A human-readable, self-explanatory label.",
     )
 
     class Meta:
@@ -1308,7 +1238,7 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         verbose_name="Location accuracy class (m)",
         default=LOCATION_DEFAULT,
         choices=LOCATION_ACCURACY_CHOICES,
-        help_text="The source of the supplied location " "implies a rough location accuracy.",
+        help_text="The source of the supplied location implies a rough location accuracy.",
     )
 
     location_accuracy_m = models.FloatField(
@@ -2784,43 +2714,45 @@ class Observation(PolymorphicModel, LegacySourceMixin, models.Model):
 
 
 class MediaAttachment(Observation):
-    """A media attachment to an Encounter."""
-
+    """A media attachment to an Encounter.
+    """
     MEDIA_TYPE_CHOICES = (
-        ("data_sheet", _("Data sheet")),
-        ("communication", _("Communication record")),
-        ("photograph", _("Photograph")),
-        ("other", _("Other")),
+        ("data_sheet", "Data sheet"),
+        ("communication", "Communication record"),
+        ("photograph", "Photograph"),
+        ("other", "Other"),
     )
 
     media_type = models.CharField(
         max_length=300,
-        verbose_name=_("Attachment type"),
+        verbose_name="Attachment type",
         choices=MEDIA_TYPE_CHOICES,
         default="photograph",
-        help_text=_("What is the attached file about?"),
+        help_text="What is the attached file about?",
     )
 
     title = models.CharField(
         max_length=300,
-        verbose_name=_("Attachment name"),
+        verbose_name="Attachment name",
         blank=True,
         null=True,
-        help_text=_("Give the attachment a representative name"),
+        help_text="Give the attachment a representative name",
     )
 
     attachment = models.FileField(
         upload_to=encounter_media,
         max_length=500,
-        verbose_name=_("File attachment"),
-        help_text=_("Upload the file"),
+        verbose_name="File attachment",
+        help_text="Upload the file",
     )
 
     class Meta:
         verbose_name = "Media Attachment"
 
     def __str__(self):
-        return "Media {0} for {1}".format(self.pk, self.encounter.__str__())
+        return "Media attachment {} for encounter {}: {}, {}".format(
+            self.pk, self.encounter.pk, self.media_type, path.basename(self.attachment.name),
+        )
 
     @property
     def filepath(self):
@@ -3571,7 +3503,7 @@ class TurtleNestDisturbanceTallyObservation(Observation):
 
 
 class TurtleNestObservation(Observation):
-    """Turtle nest observations.
+    """Turtle nest observation
 
     This model supports data sheets for:
 
@@ -3583,137 +3515,105 @@ class TurtleNestObservation(Observation):
     Research and Management Techniques for the Conservation of Sea Turtles,
     IUCN Marine Turtle Specialist Group, 1999.
     """
-
     eggs_laid = models.BooleanField(
-        verbose_name=_("Did the turtle lay eggs?"),
+        verbose_name="Did the turtle lay eggs?",
         default=False,
     )
-
     egg_count = models.PositiveIntegerField(
-        verbose_name=_("Total number of eggs laid"),
+        verbose_name="Total number of eggs laid",
         blank=True,
         null=True,
-        help_text=_("The total number of eggs laid as observed during tagging."),
+        help_text="The total number of eggs laid as observed during tagging.",
     )
-
     no_egg_shells = models.PositiveIntegerField(
-        verbose_name=_("Egg shells (S)"),
+        verbose_name="Egg shells (S)",
         blank=True,
         null=True,
-        help_text=_(
-            "The number of empty shells counted which were "
-            "more than 50 percent complete."
-        ),
+        help_text="The number of empty shells counted which were more than 50 percent complete.",
     )
-
     no_live_hatchlings_neck_of_nest = models.PositiveIntegerField(
-        verbose_name=_("Live hatchlings in neck of nest"),
+        verbose_name="Live hatchlings in neck of nest",
         blank=True,
         null=True,
-        help_text=_("The number of live hatchlings in the neck of the nest."),
+        help_text="The number of live hatchlings in the neck of the nest.",
     )
-
     no_live_hatchlings = models.PositiveIntegerField(
-        verbose_name=_("Live hatchlings in nest (L)"),
+        verbose_name="Live hatchlings in nest (L)",
         blank=True,
         null=True,
-        help_text=_(
-            "The number of live hatchlings left among shells "
-            "excluding those in neck of nest."
-        ),
+        help_text="The number of live hatchlings left among shells excluding those in neck of nest.",
     )
-
     no_dead_hatchlings = models.PositiveIntegerField(
-        verbose_name=_("Dead hatchlings (D)"),
+        verbose_name="Dead hatchlings (D)",
         blank=True,
         null=True,
-        help_text=_("The number of dead hatchlings that have left" " their shells."),
+        help_text="The number of dead hatchlings that have left" " their shells.",
     )
-
     no_undeveloped_eggs = models.PositiveIntegerField(
-        verbose_name=_("Undeveloped eggs (UD)"),
+        verbose_name="Undeveloped eggs (UD)",
         blank=True,
         null=True,
-        help_text=_("The number of unhatched eggs with no obvious embryo."),
+        help_text="The number of unhatched eggs with no obvious embryo.",
     )
-
     no_unhatched_eggs = models.PositiveIntegerField(
-        verbose_name=_("Unhatched eggs (UH)"),
+        verbose_name="Unhatched eggs (UH)",
         blank=True,
         null=True,
-        help_text=_(
-            "The number of unhatched eggs with obvious, not yet full term, embryo."
-        ),
+        help_text="The number of unhatched eggs with obvious, not yet full term, embryo.",
     )
-
     no_unhatched_term = models.PositiveIntegerField(
-        verbose_name=_("Unhatched term (UHT)"),
+        verbose_name="Unhatched term (UHT)",
         blank=True,
         null=True,
-        help_text=_(
-            "The number of unhatched, apparently full term, embryo"
-            " in egg or pipped with small amount of external"
-            " yolk material."
-        ),
+        help_text="The number of unhatched, apparently full term, embryo in egg or pipped with small amount of external yolk material.",
     )
-
     no_depredated_eggs = models.PositiveIntegerField(
-        verbose_name=_("Depredated eggs (P)"),
+        verbose_name="Depredated eggs (P)",
         blank=True,
         null=True,
-        help_text=_(
-            "The number of open, nearly complete shells containing egg residue."
-        ),
+        help_text="The number of open, nearly complete shells containing egg residue.",
     )
-
-    # end Miller fields
     nest_depth_top = models.PositiveIntegerField(
-        verbose_name=_("Nest depth (top) mm"),
+        verbose_name="Nest depth (top) mm",
         blank=True,
         null=True,
-        help_text=_("The depth of sand above the eggs in mm."),
+        help_text="The depth of sand above the eggs in mm.",
     )
-
     nest_depth_bottom = models.PositiveIntegerField(
-        verbose_name=_("Nest depth (bottom) mm"),
+        verbose_name="Nest depth (bottom) mm",
         blank=True,
         null=True,
-        help_text=_("The depth of the lowest eggs in mm."),
+        help_text="The depth of the lowest eggs in mm.",
     )
-
     sand_temp = models.FloatField(
-        verbose_name=_("Sand temperature"),
+        verbose_name="Sand temperature",
         blank=True,
         null=True,
-        help_text=_("The sand temperature in degree Celsius."),
+        help_text="The sand temperature in degree Celsius.",
     )
-
     air_temp = models.FloatField(
-        verbose_name=_("Air temperature"),
+        verbose_name="Air temperature",
         blank=True,
         null=True,
-        help_text=_("The air temperature in degree Celsius."),
+        help_text="The air temperature in degree Celsius.",
     )
-
     water_temp = models.FloatField(
-        verbose_name=_("Water temperature"),
+        verbose_name="Water temperature",
         blank=True,
         null=True,
-        help_text=_("The water temperature in degree Celsius."),
+        help_text="The water temperature in degree Celsius.",
     )
-
     egg_temp = models.FloatField(
-        verbose_name=_("Egg temperature"),
+        verbose_name="Egg temperature",
         blank=True,
         null=True,
-        help_text=_("The egg temperature in degree Celsius."),
+        help_text="The egg temperature in degree Celsius.",
     )
-
     comments = models.TextField(
-        verbose_name=_("Comments"),
+        verbose_name="Comments",
         blank=True,
         null=True,
-        help_text=_("Any other comments or notes."),
+        help_text="Any other comments or notes.",
     )
 
     class Meta:
@@ -3816,41 +3716,72 @@ class TurtleNestDisturbanceObservation(Observation):
 
     disturbance_cause = models.CharField(
         max_length=300,
-        verbose_name=_("Disturbance cause"),
+        verbose_name="Disturbance cause",
         choices=lookups.NEST_DAMAGE_CHOICES,
-        help_text=_("The cause of the disturbance."),
+        help_text="The cause of the disturbance.",
     )
 
     disturbance_cause_confidence = models.CharField(
         max_length=300,
-        verbose_name=_("Disturbance cause choice confidence"),
+        verbose_name="Disturbance cause choice confidence",
         choices=lookups.CONFIDENCE_CHOICES,
         default=lookups.NA_VALUE,
-        help_text=_("What is the choice of disturbance cause based on?"),
+        help_text="What is the choice of disturbance cause based on?",
     )
 
     disturbance_severity = models.CharField(
         max_length=300,
-        verbose_name=_("Disturbance severity"),
+        verbose_name="Disturbance severity",
         choices=NEST_VIABILITY_CHOICES,
         default=lookups.NA_VALUE,
-        help_text=_("The impact of the disturbance on nest viability."),
+        help_text="The impact of the disturbance on nest viability.",
     )
 
     comments = models.TextField(
-        verbose_name=_("Comments"),
+        verbose_name="Comments",
         blank=True,
         null=True,
-        help_text=_("Any other comments or notes."),
+        help_text="Any other comments or notes.",
     )
 
     def __str__(self):
-        return "Nest Disturbance {0} {1}".format(
-            self.disturbance_cause, self.disturbance_severity
+        return "{}: Nest disturbance {} by {}".format(
+            self.pk, self.disturbance_severity, self.disturbance_cause
         )
 
     class Meta:
         verbose_name = "Turtle Nest Disturbance Observation"
+
+
+class TurtleTrackObservation(Observation):
+    """Observation measurements for measurements of the track of a (normally) unidentified
+    turtle species.
+    """
+    max_track_width_front = models.PositiveIntegerField(
+        blank=True,
+        null=True,
+        help_text="Maximum distance between sand touched by front flippers, measured in mm.",
+    )
+    max_track_width_rear = models.PositiveIntegerField(
+        blank=True,
+        null=True,
+        help_text="Maximum distance between sand touched by rear flippers, measured in mm.",
+    )
+    carapace_drag_width = models.PositiveIntegerField(
+        blank=True,
+        null=True,
+        help_text="Carapace drag width, measured in mm.",
+    )
+    step_length = models.PositiveIntegerField(
+        blank=True,
+        null=True,
+        help_text="Distance with front flipper marks, measured in mm",
+    )
+    tail_pokes = models.BooleanField(
+        blank=True,
+        null=True,
+        help_text="Are regular dips in the middle of the track present?",
+    )
 
 
 class PathToSea(models.Model):
