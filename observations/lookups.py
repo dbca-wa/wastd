@@ -612,3 +612,10 @@ TIME_ESTIMATE_CHOICES = (
     ("plusminus-2h", "Plusminus 2h of estimate"),
     ("plusminus-30m", "Correct to the hour"),
 )
+
+TAIL_POKE_CHOICES = (
+    ("absent", "Absent"),
+    ("occasional", "Occasional"),
+    ("regular", "Regular"),
+    ("na", "NA"),
+)

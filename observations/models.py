@@ -3782,6 +3782,13 @@ class TurtleTrackObservation(Observation):
         null=True,
         help_text="Are regular dips in the middle of the track present?",
     )
+    tail_pokes = models.CharField(
+        blank=True,
+        null=True,
+        max_length=300,
+        choices=lookups.TAIL_POKE_CHOICES,
+        help_text="Are regular dips in the middle of the track present?",
+    )
 
 
 class PathToSea(models.Model):
