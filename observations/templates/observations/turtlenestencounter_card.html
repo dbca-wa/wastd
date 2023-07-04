@@ -2,7 +2,7 @@
 {% load observations %}
 
 {% block title_row %}
-{{ object.get_nest_type_display|capfirst }}, {{ object.get_nest_age_display }}, {{ object.get_species_display }}
+{{ object.get_nest_type_display }}, {{ object.get_nest_age_display|lower }}, {{ object.get_species_display }}
 {% endblock %}
 
 {% block title_labels %}
