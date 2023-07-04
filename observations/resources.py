@@ -260,37 +260,37 @@ class TurtleNestEncounterResource(EncounterResource):
         if encounter.disturbance == NA_VALUE:
             return ''
         else:
-            return encounter.disturbance == 'present'
+            return encounter.disturbance in ['present', 'yes']
 
     def dehydrate_nest_tagged(self, encounter):
         if encounter.nest_tagged == NA_VALUE:
             return ''
         else:
-            return encounter.nest_tagged == 'present'
+            return encounter.nest_tagged in ['present', 'yes']
 
     def dehydrate_logger_found(self, encounter):
         if encounter.logger_found == NA_VALUE:
             return ''
         else:
-            return encounter.logger_found == 'present'
+            return encounter.logger_found in ['present', 'yes']
 
     def dehydrate_eggs_counted(self, encounter):
         if encounter.eggs_counted == NA_VALUE:
             return ''
         else:
-            return encounter.eggs_counted == 'present'
+            return encounter.eggs_counted in ['present', 'yes']
 
     def dehydrate_hatchlings_measured(self, encounter):
         if encounter.hatchlings_measured == NA_VALUE:
             return ''
         else:
-            return encounter.hatchlings_measured == 'present'
+            return encounter.hatchlings_measured in ['present', 'yes']
 
     def dehydrate_fan_angles_measured(self, encounter):
         if encounter.fan_angles_measured == NA_VALUE:
             return ''
         else:
-            return encounter.fan_angles_measured == 'present'
+            return encounter.fan_angles_measured in ['present', 'yes']
 
     def dehydrate_eggs_laid(self, encounter):
         obs = encounter.get_nest_observation()
@@ -336,11 +336,11 @@ class TurtleNestEncounterResource(EncounterResource):
         obs = encounter.get_nest_observation()
         return self.get_child_observation_output(obs, 'emergence_success')
 
-    def dehydrate_no_nest_depth_top(self, encounter):
+    def dehydrate_nest_depth_top(self, encounter):
         obs = encounter.get_nest_observation()
         return self.get_child_observation_output(obs, 'nest_depth_top')
 
-    def dehydrate_no_nest_depth_bottom(self, encounter):
+    def dehydrate_nest_depth_bottom(self, encounter):
         obs = encounter.get_nest_observation()
         return self.get_child_observation_output(obs, 'nest_depth_bottom')
 
