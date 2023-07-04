@@ -66,6 +66,8 @@ class EncounterResource(ModelResource):
         model = Encounter
         fields = [
             "id",
+            "source",
+            "source_id",
             "status",
             "when",
             "where",
