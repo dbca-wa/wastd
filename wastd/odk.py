@@ -2,8 +2,13 @@
 """
 from django.conf import settings
 from django.contrib.gis.geos import Point
+from django.core.files import File
 import requests
+from tempfile import TemporaryFile
 import xmltodict
+
+from observations.models import Encounter
+
 
 ODK_API_URL = settings.ODK_API_URL
 
@@ -45,8 +50,8 @@ def get_form(auth_headers, project_id, form_id,):
     return resp.json()
 
 
-def get_submissions(auth_headers, project_id, form_id, form_version):
-    """Returns all submissions to an ODK form, as JSON.
+def get_submissions_metadata(auth_headers, project_id, form_id):
+    """Returns metadata about all submissions to an ODK form, as JSON.
     """
     resp = requests.get(f"{ODK_API_URL}/projects/{project_id}/forms/{form_id}/submissions", headers=auth_headers)
     resp.raise_for_status()
@@ -64,22 +69,20 @@ def get_submission(auth_headers, project_id, form_id, instance_id):
     return data
 
 
-def get_form_submission_data(auth_headers, project_id, form_id, form_version=None):
-    """Returns all data for a form
+def get_form_submission_data(auth_headers, project_id, form_id, skip_existing=True):
+    """Returns submission data for an ODK form, as JSON. Skips records that have already been
+    imported, by default.
     """
-    # If form_version is None, find the current form version.
-    if not form_version:
-        # Use the current form version.
-        form = get_form(auth_headers, project_id, form_id)
-        form_version = form["version"]
+    # Get submission metadata for the form.
+    submissions_metadata = get_submissions_metadata(auth_headers, project_id, form_id)
 
-    # Get submissions for the form.
-    submissions = get_submissions(auth_headers, project_id, form_id, form_version)
-
-    # Get all individual submission data.
+    # Get individual submission data records.
     submission_data = []
-    for submission in submissions:
-        submission_data.append(get_submission(auth_headers, project_id, form_id, submission["instanceId"]))
+    for metadata in submissions_metadata:
+        if skip_existing:  # Check to see if record is already present in the local database.
+            if Encounter.objects.filter(source='odk', source_id=metadata["instanceId"]).exists():
+                continue
+        submission_data.append(get_submission(auth_headers, project_id, form_id, metadata["instanceId"]))
 
     return submission_data
 
@@ -92,3 +95,18 @@ def parse_geopoint(geopoint):
     """
     geopoint = [float(g) for g in geopoint.split()]
     return Point(geopoint[1], geopoint[0], srid=4326)
+
+
+def get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename):
+    """Download a single attachment for a given form submission and return it as a Django File object.
+    Reference: https://odkcentral.docs.apiary.io/#reference/submissions/attachments/downloading-an-attachment
+    """
+    resp = requests.get(f"{ODK_API_URL}/projects/{project_id}/forms/{form_id}/submissions/{instance_id}/attachments/{filename}", headers=auth_headers)
+    resp.raise_for_status()
+
+    # Response will be the attachment body.
+    tempfile = TemporaryFile()
+    tempfile.write(resp.content)  # Turn the downloaded content into a Python file.
+    file = File(tempfile, name=filename)  # Pass that to a Django File.
+
+    return file
