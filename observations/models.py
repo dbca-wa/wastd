@@ -2333,7 +2333,7 @@ class TurtleNestEncounter(Encounter):
         get_latest_by = "when"
 
     def __str__(self):
-        return f"{self.pk}: {self.get_nest_type_display()}, {self.get_nest_age_display()}, {self.get_species_display()}"
+        return f"{self.pk}: {self.get_nest_type_display()}, {self.get_nest_age_display().lower()}, {self.get_species_display()}"
 
     def get_encounter_type(self):
         if self.nest_type in ["successful-crawl", "nest", "hatched-nest"]:
@@ -2960,47 +2960,38 @@ class NestTagObservation(Observation):
 
     E.g.: WA1234_2017-12-31_M1
     """
-
     status = models.CharField(
         max_length=300,
-        verbose_name=_("Tag status"),
+        verbose_name="Tag status",
         choices=lookups.NEST_TAG_STATUS_CHOICES,
         default=lookups.TAG_STATUS_DEFAULT,
-        help_text=_("The status this tag was seen in, or brought into."),
+        help_text="The status this tag was seen in, or brought into.",
     )
-
     flipper_tag_id = models.CharField(
         max_length=1000,
         blank=True,
         null=True,
-        verbose_name=_("Flipper Tag ID"),
-        help_text=_(
-            "The primary flipper tag ID of the nesting turtle " "if available."
-        ),
+        verbose_name="Flipper Tag ID",
+        help_text="The primary flipper tag ID of the nesting turtle if available.",
     )
-
     date_nest_laid = models.DateField(
-        verbose_name=_("Date nest laid"),
+        verbose_name="Date nest laid",
         blank=True,
         null=True,
-        help_text=_("The calendar (not turtle) date of nest creation."),
+        help_text="The calendar (not turtle) date of nest creation.",
     )
-
     tag_label = models.CharField(
         max_length=1000,
         blank=True,
         null=True,
-        verbose_name=_("Tag Label"),
-        help_text=_(
-            "Any extra nest label if other two components are not " "available."
-        ),
+        verbose_name="Tag Label",
+        help_text="Any extra nest label if other two components are not available.",
     )
-
     comments = models.TextField(
-        verbose_name=_("Comments"),
+        verbose_name="Comments",
         blank=True,
         null=True,
-        help_text=_("Any other comments or notes."),
+        help_text="Any other comments or notes.",
     )
 
     class Meta:

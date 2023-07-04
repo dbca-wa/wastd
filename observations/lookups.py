@@ -586,30 +586,29 @@ DAMAGE_AGE_CHOICES = (
 
 NEST_DAMAGE_DEFAULT = "turtle"
 NEST_DAMAGE_CHOICES = (
-    (NEST_DAMAGE_DEFAULT, "(A)nother turtle"),
-    ("bandicoot", "(Ba)ndicoot predation"),
-    ("bird", "(Bi)rd predation"),
-    ("crab", "(Cr)ab predation"),
-    ("croc", "(Cr)oc predation"),
-    ("cyclone", "(Cy)clone disturbance"),
-    ("dingo", "(Di)ngo predation"),
-    ("dog", "(Do)g predation"),
-    ("cat", "(Ca)t predation"),
-    ("fox", "(F)ox predation"),
-    ("goanna", "(G)oanna predation"),
-    ("human", "(Hu)man"),
-    ("pig", "(P)ig predation"),
-    ("tide", "(Ti)dal disturbance"),
-    ("vehicle", "(V)ehicle damage"),
-    ("unknown", "(U)nknown"),
-    ("other", "(O)ther identifiable (see comments)"),
-    ("test", "Training or test record"),
+    (NEST_DAMAGE_DEFAULT, "Other turtle"),
+    ("bandicoot", "Bandicoot predation"),
+    ("bird", "Bird predation"),
+    ("crab", "Crab predation"),
+    ("croc", "Croc predation"),
+    ("cyclone", "Cyclone disturbance"),
+    ("dingo", "Dingo predation"),
+    ("dog", "Dog predation"),
+    ("cat", "Cat predation"),
+    ("fox", "Fox predation"),
+    ("goanna", "Goanna predation"),
+    ("human", "Human"),
+    ("pig", "Pig predation"),
+    ("tide", "Tidal disturbance"),
+    ("vehicle", "Vehicle damage"),
+    ("unknown", "Unknown"),
+    ("other", "Other identifiable (see comments)"),
 )
 
 TIME_ESTIMATE_CHOICES = (
     (NA_VALUE, "NA"),
     ("same-night", "Sometime that night"),
-    ("plusminus-2h", "Plusminus 2h of estimate"),
+    ("plusminus-2h", "Plus/minus 2h of estimate"),
     ("plusminus-30m", "Correct to the hour"),
 )
 
