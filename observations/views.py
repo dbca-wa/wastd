@@ -45,15 +45,7 @@ from .resources import (
     TurtleNestEncounterResource,
     LineTransectEncounterResource,
 )
-from .tasks import import_odka, update_names, reconstruct_surveys, resave_surveys
-
-
-@csrf_exempt
-def import_odka_view(request):
-    """Import all available ODK-Aggregate forms."""
-    msg = import_odka()
-    messages.success(request, msg)
-    return HttpResponseRedirect("/")
+from .tasks import update_names, reconstruct_surveys, resave_surveys
 
 
 @csrf_exempt
