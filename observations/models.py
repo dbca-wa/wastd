@@ -2418,15 +2418,6 @@ class TurtleNestEncounter(Encounter):
         else:
             return None
 
-    def get_logger_observation(self):
-        """A turtle nest encounter should be associated with 0-1 LoggerObservation objects.
-        Returns the related LoggerObservation or None.
-        """
-        if self.observation_set.instance_of(LoggerObservation).exists():
-            return self.observation_set.instance_of(LoggerObservation).first()
-        else:
-            return None
-
     def get_hatchling_emergence_observation(self):
         """A turtle nest encounter should be associated with 0-1 TurtleHatchlingEmergenceObservation objects.
         Returns the related TurtleHatchlingEmergenceObservation or None.
@@ -3965,15 +3956,6 @@ class TurtleHatchlingEmergenceObservation(Observation):
 
 
 class LightSourceObservation(Observation):
-    """
-    Dict of one or list of many
-    {
-      "light_source_photo": null,
-      "light_bearing_manual": "50.0000000000",
-      "light_source_type": "artificial"  "natural" CHOICES
-      "light_source_description": "Oil rig#5"
-    }
-    """
 
     bearing_light_degrees = models.FloatField(
         verbose_name=_("Bearing"),

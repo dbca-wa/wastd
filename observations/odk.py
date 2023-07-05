@@ -24,11 +24,11 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest"):
         1 TurtleNestEncounter
         0-1 TurtleNestObservation (egg count)
         0-1 TurtleTrackObservation (unidentified species track)
-        0+ TurtleNestDisturbanceObservation (disturbance/predation observations)
         0-1 NestTagObservation (nest tag seen/deployed)
+        0-1 TurtleHatchlingEmergenceObservation (fan angles, hatchling emergence time)
+        0+ TurtleNestDisturbanceObservation (disturbance/predation observations)
         0+ LoggerObservation (loggers seen/deployed)
         0+ HatchlingMorphometricObservation (hatchling measurements)
-        0-1 TurtleHatchlingEmergenceObservation (fan angles, hatchling emergence time)
         0+ TurtleHatchlingEmergenceOutlierObservation (outlier measurements measured in fan angles)
         0+ LightSourceObservation (measured in fan angles)
     """
