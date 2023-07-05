@@ -31,17 +31,6 @@ def campaign_post_save(sender, instance, *args, **kwargs):
     )
     LOGGER.info(msg)
 
-    # Version 2
-    # if instance.orphaned_surveys:
-    #     for s in instance.orphaned_surveys:
-    #         s.campaign = instance
-    #         s.save()
-
-    # if instance.orphaned_encounters:
-    #     for e in instance.orphaned_encounters:
-    #         e.campaign = instance
-    #         e.save()
-
 
 @receiver(pre_save, sender=Survey)
 def survey_pre_save(
