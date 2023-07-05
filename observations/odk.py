@@ -54,7 +54,6 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest"):
 
         # Confusingly, TurtleNestEncounter objects cover both nest, track and nest & nest encounters.
         encounter = TurtleNestEncounter(
-            # Encounter
             status='imported',
             source='odk',
             source_id=instance_id,
@@ -63,7 +62,6 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest"):
             observer=user,
             reporter=user,
             comments=f'Device ID {submission["device_id"]}',
-            # TurtleNestEncounter
             nest_age=submission['details']['nest_age'],
             nest_type=submission['details']['nest_type'],
             species=submission['details']['species'],
@@ -81,6 +79,10 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest"):
             encounter.logger_found = submission['nest']['logger_found']
             encounter.eggs_counted = submission['nest']['eggs_counted']
             encounter.hatchlings_measured = submission['nest']['hatchlings_measured']
+
+        # Try to determine the encounter site & area.
+        encounter.area = encounter.guess_area
+        encounter.site = encounter.guess_site
 
         encounter.save()
         print(f'Created TurtleNestEncounter: {encounter}')
