@@ -174,7 +174,6 @@ class TurtleNestEncounterResource(EncounterResource):
     water_temp = Field()
     egg_temp = Field()
     nest_tag = Field()
-    logger = Field()
 
     # Construct fields that belong to child TurtleHatchlingEmergenceObservation objects.
     bearing_to_water_degrees = Field()
@@ -222,7 +221,6 @@ class TurtleNestEncounterResource(EncounterResource):
             "water_temp",
             "egg_temp",
             "nest_tag",
-            "logger",
             "bearing_to_water_degrees",
             "bearing_leftmost_track_degrees",
             "bearing_rightmost_track_degrees",
@@ -366,13 +364,6 @@ class TurtleNestEncounterResource(EncounterResource):
         obs = encounter.get_nesttag_observation()
         if obs:
             return obs.name
-        else:
-            return ''
-
-    def dehydrate_logger(self, encounter):
-        obs = encounter.get_logger_observation()
-        if obs:
-            return str(obs)
         else:
             return ''
 
