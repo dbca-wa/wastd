@@ -280,35 +280,6 @@
                     <i class="fa-solid fa-flask" aria-hidden="true"></i>
                     Data curation portal
                 </a>
-                {% if request.user.is_superuser %}
-                <div class="dropdown-divider"></div>
-                {% comment %}
-                <a class="dropdown-item"
-                    href="{% url 'import-odka' %}"
-                    title="Import all ODKA forms">
-                    <i class="fa-solid fa-repeat" aria-hidden="true"></i>
-                    Import ODKA
-                </a>
-                {% endcomment %}
-                <a class="dropdown-item"
-                    href="{% url 'reconstruct-surveys' %}"
-                    title="Reconstruct missing surveys">
-                    <i class="fa-solid fa-repeat" aria-hidden="true"></i>
-                    Reconstruct missing surveys
-                </a>
-                <a class="dropdown-item"
-                    href="{% url 'resave-surveys' %}"
-                    title="Rebuild names for surveys, tagged animals, and loggers.">
-                    <i class="fa-solid fa-repeat" aria-hidden="true"></i>
-                    Re-save existing surveys
-                </a>
-                <a class="dropdown-item"
-                    href="{% url 'update-names' %}"
-                    title="Reconstruct animal encounter case histories.">
-                    <i class="fa-solid fa-repeat" aria-hidden="true"></i>
-                    Reconstruct animal case histories
-                </a>
-                {% endif %}
             </div>
         </li>
         {% endif %}
