@@ -1,7 +1,7 @@
 from datetime import datetime
 from dateutil import parser
 from django.conf import settings
-from wastd.odk import get_auth_headers, get_form_submission_data, parse_geopoint, get_submission_attachment
+from wastd.odk import get_auth_headers, get_form_submission_data, parse_geopoint, parse_geopoint_accuracy, get_submission_attachment
 from users.models import User
 from .models import (
     TurtleNestEncounter,
@@ -15,7 +15,10 @@ from .models import (
     TurtleHatchlingEmergenceOutlierObservation,
     LightSourceObservation,
     MediaAttachment,
+    Survey,
+    SurveyMediaAttachment,
 )
+from .utils import guess_area, guess_site
 
 
 def import_turtle_track_or_nest(form_id="turtle_track_or_nest"):
@@ -49,8 +52,10 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest"):
         if User.objects.filter(name__icontains=reporter).exists() and User.objects.filter(name__icontains=reporter).count() == 1:
             user = User.objects.get(name__icontains=reporter)
         else:  # Create a new user.
-            user = User.objects.create(name=reporter)
-            print("Created new user {user}")
+            username = reporter.lower().replace(' ', '_')
+            user = User.objects.create(name=reporter, username=username)
+            user.set_unusable_password()
+            print(f"Created new user {user}")
 
         # Confusingly, TurtleNestEncounter objects cover both nest, track and nest & nest encounters.
         encounter = TurtleNestEncounter(
@@ -445,3 +450,76 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest"):
                     )
                     photo.save()
                     print(f'Created MediaAttachment {photo}')
+
+
+def import_site_visit_start(form_id="site_visit_start"):
+    """Import submissions to the Site Visit Start ODK form.
+    Each submission should create one Survey.
+    """
+    print("Downloading auth headers")
+    auth_headers = get_auth_headers()
+    project_id = settings.ODK_API_PROJECTID
+    print("Downloading submission data")
+    submissions = get_form_submission_data(auth_headers, project_id, form_id)
+
+    for submission in submissions:
+        instance_id = submission['meta']['instanceID']
+        if Survey.objects.filter(source='odk', source_id=instance_id):
+            print(f"Skipped {instance_id}")
+            continue  # Skip records already imported.
+
+        # Try to match the reporter to an existing User. If not, create a new one.
+        reporter = submission['reporter'].strip()
+        if User.objects.filter(name__icontains=reporter).exists() and User.objects.filter(name__icontains=reporter).count() == 1:
+            user = User.objects.get(name__icontains=reporter)
+        else:  # Create a new user.
+            username = reporter.lower().replace(' ', '_')
+            user = User.objects.create(name=reporter, username=username)
+            user.set_unusable_password()
+            print(f"Created new user {user}")
+
+        visit = submission['site_visit']
+        survey = Survey(
+            status='imported',
+            source='odk',
+            source_id=instance_id,
+            device_id=submission['device_id'],
+            reporter=user,
+            start_location=parse_geopoint(visit['location']),
+            start_location_accuracy_m=parse_geopoint_accuracy(visit['location']),
+            start_time=parser.isoparse(submission['start_time']),
+            start_comments=visit['comments'],
+        )
+        survey.area = guess_area(survey)
+        survey.site = guess_site(survey)
+
+        # We need to save before we can modify the M2M field or set the label.
+        survey.save()
+        survey.label = survey.make_label
+        if visit['team']:
+            team = visit['team'].split(',')
+            for name in team:
+                name = name.strip()
+                if User.objects.filter(name__icontains=name).exists() and User.objects.filter(name__icontains=name).count() == 1:
+                    user = User.objects.get(name__icontains=name)
+                else:  # Create a new user.
+                    username = name.lower().replace(' ', '_')
+                    user = User.objects.create(name=name, username=username)
+                    user.set_unusable_password()
+                    print(f"Created new user {user}")
+                survey.team.add(user)
+
+        print(f'Created Survey {survey}')
+
+        if visit['site_conditions']:
+            filename = visit['site_conditions']
+            print(f"Downloading {filename}")
+            attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
+            photo = SurveyMediaAttachment(
+                survey=survey,
+                media_type='photograph',
+                title=f'Photo of site visit start {filename}',
+                attachment=attachment,
+            )
+            photo.save()
+            print(f'Created SurveyMediaAttachment {photo}')
