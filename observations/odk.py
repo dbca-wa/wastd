@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from dateutil import parser
 from django.conf import settings
 from wastd.odk import get_auth_headers, get_form_submission_data, parse_geopoint, parse_geopoint_accuracy, get_submission_attachment
@@ -17,6 +17,7 @@ from .models import (
     MediaAttachment,
     Survey,
     SurveyMediaAttachment,
+    Area,
 )
 from .utils import guess_area, guess_site
 
@@ -519,6 +520,74 @@ def import_site_visit_start(form_id="site_visit_start"):
                 survey=survey,
                 media_type='photograph',
                 title=f'Photo of site visit start {filename}',
+                attachment=attachment,
+            )
+            photo.save()
+            print(f'Created SurveyMediaAttachment {photo}')
+
+
+def import_site_visit_end(form_id="site_visit_end", duration_hr=8):
+    """Import submissions to the Site Visit End ODK form.
+    This differs from the functions above, in that it tries to match on an existing
+    Survey object and update its details.
+    """
+    print("Downloading auth headers")
+    auth_headers = get_auth_headers()
+    project_id = settings.ODK_API_PROJECTID
+    print("Downloading submission data")
+    submissions = get_form_submission_data(auth_headers, project_id, form_id)
+
+    for submission in submissions:
+        instance_id = submission['meta']['instanceID']
+        if Survey.objects.filter(source='odk', end_source_id=instance_id):
+            print(f"Skipped {instance_id}")
+            continue  # Skip records already imported.
+
+        # Try to match the reporter to an existing User. If no match, skip record.
+        reporter = submission['reporter'].strip()
+        if User.objects.filter(name__icontains=reporter).exists() and User.objects.filter(name__icontains=reporter).count() == 1:
+            user = User.objects.get(name__icontains=reporter)
+        else:
+            continue
+
+        visit = submission['site_visit']
+        location = parse_geopoint(visit['location'])
+        end_time = parser.isoparse(submission['end_time'])
+        start_time_earliest = end_time - timedelta(hours=duration_hr)
+        site = Area.objects.filter(area_type=Area.AREATYPE_SITE, geom__covers=location).first()
+        if not site:
+            #print("Unable to match a suitable site")
+            continue
+
+        # Try to match one (only) existing Survey object.
+        # Algorithm: filter Surveys in the same Site, having the same reporter, having
+        # start_time before end_time by no greater than 8 hours.
+        surveys = Survey.objects.filter(
+            reporter=user, site=site, start_time__lt=end_time, start_time__gte=start_time_earliest,
+        )
+        if surveys.count() != 1:
+            print(f"Unable to match a Survey (matched {surveys.count()})")
+            continue
+        else:
+            survey = surveys.first()
+
+        survey.end_source_id = instance_id
+        survey.end_location = location
+        survey.end_location_accuracy_m = parse_geopoint_accuracy(visit['location'])
+        survey.end_time = end_time
+        survey.end_comments = visit['comments']
+        survey.save()
+
+        print(f'Updated Survey {survey}')
+
+        if visit['site_conditions']:
+            filename = visit['site_conditions']
+            print(f"Downloading {filename}")
+            attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
+            photo = SurveyMediaAttachment(
+                survey=survey,
+                media_type='photograph',
+                title=f'Photo of site visit end {filename}',
                 attachment=attachment,
             )
             photo.save()

@@ -868,8 +868,8 @@ class Survey(QualityControlMixin, UrlsMixin, models.Model):
 
 
 class SurveyEnd(models.Model):
-    """A visit to one site by a team of field workers collecting data."""
-
+    """A visit to one site by a team of field workers collecting data.
+    """
     source = models.CharField(
         max_length=300,
         verbose_name=_("Data Source"),
