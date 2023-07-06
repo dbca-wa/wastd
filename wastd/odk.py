@@ -97,6 +97,14 @@ def parse_geopoint(geopoint):
     return Point(geopoint[1], geopoint[0], srid=4326)
 
 
+def parse_geopoint_accuracy(geopoint):
+    """Parse an ODK geopoint, which will be represented as a string in the format 'latitude longitude altitude accuracy'.
+    Returns the final element as a float, which is the accuracy.
+    """
+    geopoint = [float(g) for g in geopoint.split()]
+    return geopoint[-1]
+
+
 def get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename):
     """Download a single attachment for a given form submission and return it as a Django File object.
     Reference: https://odkcentral.docs.apiary.io/#reference/submissions/attachments/downloading-an-attachment
