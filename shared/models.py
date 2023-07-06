@@ -152,6 +152,8 @@ class QualityControlMixin(models.Model):
     """
 
     STATUS_NEW = "new"
+    STATUS_IMPORTED = "imported"
+    STATUS_MANUAL_INPUT = "manual input"
     STATUS_PROOFREAD = "proofread"
     STATUS_CURATED = "curated"
     STATUS_PUBLISHED = "published"
@@ -159,16 +161,20 @@ class QualityControlMixin(models.Model):
     STATUS_REJECTED = "rejected"
 
     STATUS_CHOICES = (
-        (STATUS_NEW, _("New")),
-        (STATUS_PROOFREAD, _("Proofread")),
-        (STATUS_CURATED, _("Curated")),
-        (STATUS_PUBLISHED, _("Published")),
-        (STATUS_FLAGGED, _("Flagged")),
-        (STATUS_REJECTED, _("Rejected")),
+        (STATUS_NEW, "New"),
+        (STATUS_IMPORTED, "Imported"),
+        (STATUS_MANUAL_INPUT, "Manual input"),
+        (STATUS_PROOFREAD, "Proofread"),
+        (STATUS_CURATED, "Curated"),
+        (STATUS_PUBLISHED, "Published"),
+        (STATUS_FLAGGED, "Flagged"),
+        (STATUS_REJECTED, "Rejected"),
     )
 
     STATUS_LABELS = {
         STATUS_NEW: "secondary",
+        STATUS_IMPORTED: "secondary",
+        STATUS_MANUAL_INPUT: "secondary",
         STATUS_PROOFREAD: "warning",
         STATUS_CURATED: "success",
         STATUS_PUBLISHED: "info",
@@ -176,13 +182,9 @@ class QualityControlMixin(models.Model):
         STATUS_REJECTED: "danger",
     }
 
-    status = FSMField(
-        default=STATUS_NEW, choices=STATUS_CHOICES, verbose_name=_("QA Status")
-    )
+    status = FSMField(default=STATUS_NEW, choices=STATUS_CHOICES, verbose_name="QA Status")
 
     class Meta:
-        """Class opts."""
-
         abstract = True
 
     @property
