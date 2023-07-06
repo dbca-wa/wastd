@@ -119,8 +119,8 @@
                         Team
                     </th>
                     <td>
-                        {% for user in object.team_set.all %}
-                        <div>{{ user }}</div>
+                        {% for user in object.team.all %}
+                        <div>{{ user.name }}</div>
                         {% endfor %}
                     </td>
                 </tr>
