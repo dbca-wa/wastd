@@ -88,8 +88,11 @@ def guess_area(survey_instance):
 
 
 def claim_encounters(survey_instance):
-    """Update Encounters within this Survey to reference survey=self."""
+    """Update Encounters within this Survey to reference survey=self.
+    """
     if survey_instance.encounters:
+        # Update the queryset of encounters covered by the survey site area, and
+        # within the start_time and end_time of the survey.
         survey_instance.encounters.update(survey=survey_instance, site=survey_instance.site)
 
 
@@ -112,7 +115,6 @@ def claim_end_points(survey_instance):
     """
     se = SurveyEnd.objects.filter(
         site=survey_instance.site,
-        # device_id=survey_instance.device_id,
         end_time__gte=survey_instance.start_time,
         end_time__lte=survey_instance.start_time + timedelta(hours=6),
     ).first()
@@ -130,8 +132,7 @@ def claim_end_points(survey_instance):
                 "[NEEDS QA][Missing SiteVisitEnd] Survey end guessed."
             )
             LOGGER.info(
-                "[Survey.claim_end_points] Missing SiteVisitEnd for Survey"
-                " {0}".format(survey_instance)
+                "[Survey.claim_end_points] Missing SiteVisitEnd for Survey {}".format(survey_instance)
             )
 
 
@@ -165,7 +166,8 @@ def turtle_season(datetime_obj):
 
 
 def set_site(sites, encounter):
-    """Set the site for an Encounter from a list of sites."""
+    """Set the site for an Encounter from a list of sites.
+    """
     encounter.site = sites.filter(geom__contains=encounter.where).first() or None
     encounter.save(update_fields=["site"])
     LOGGER.info("Found encounter {0} at site {1}".format(encounter, encounter.site))

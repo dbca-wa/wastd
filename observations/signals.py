@@ -33,9 +33,7 @@ def campaign_post_save(sender, instance, *args, **kwargs):
 
 
 @receiver(pre_save, sender=Survey)
-def survey_pre_save(
-    sender, instance, buffer_mins=30, initial_duration_hrs=6, *args, **kwargs
-):
+def survey_pre_save(sender, instance, buffer_mins=30, initial_duration_hrs=6, *args, **kwargs):
     """Survey pre-save: sanity check and data cleaning.
 
     If a start or end time are given as string, they are parsed into a native datetime object.
@@ -62,36 +60,28 @@ def survey_pre_save(
     if not instance.end_time:
         instance.end_time = instance.start_time + timedelta(hours=initial_duration_hrs)
         msg += (
-            "[survey_pre_save] End time was missing, "
+            "[signal.survey_pre_save] End time was missing, "
             "adjusted to {} hours after start time\n".format(initial_duration_hrs)
         )
 
     if instance.end_time < instance.start_time:
         instance.end_time = instance.start_time + timedelta(hours=initial_duration_hrs)
         msg += (
-            "[survey_pre_save] End time was before start time, "
+            "[signal.survey_pre_save] End time was before start time, "
             "adjusted to {} hours after start time\n".format(initial_duration_hrs)
         )
 
+    # If the survey end_time is exactly `initial_duration_hrs` after start_time,
+    # check to see if the survey has any encounters.
+    # If so, change the survey end_time to the time of the last encounter (`when`) plus `buffer_mins`.
     if instance.end_time == instance.start_time + timedelta(hours=initial_duration_hrs):
         et = instance.end_time
         if instance.encounters:
-            instance.end_time = instance.encounters.last().when + timedelta(
-                minutes=buffer_mins
-            )
+            instance.end_time = instance.encounters.last().when + timedelta(minutes=buffer_mins)
             msg += (
-                "[survey_pre_save] End time adjusted from {0} to {1}, "
-                "{2} minutes after last of {3} encounters."
+                "[signal.survey_pre_save] End time adjusted from {} to {}, "
+                "{} minutes after last of {} encounters."
             ).format(et, instance.end_time, buffer_mins, len(instance.encounters))
-        else:
-            instance.end_time = instance.start_time + timedelta(
-                hours=initial_duration_hrs
-            )
-            msg += (
-                "[survey_pre_save] End time adjusted from {0} to {1}, "
-                "{2} hours after the start of the survey. "
-                "No encounters found."
-            ).format(et, instance.end_time, initial_duration_hrs)
 
     if msg != "":
         instance.end_comments = (instance.end_comments or "") + msg
@@ -104,17 +94,20 @@ def survey_post_save(sender, instance, *args, **kwargs):
     """Survey: Claim encounters.
     """
     claim_encounters(instance)
-    LOGGER.info(f"{instance} claimed Encounters {instance.encounters}")
+    if instance.encounters:
+        LOGGER.info(f"[signal.survey_post_save] {instance} claimed Encounters {instance.encounters}")
+    else:
+        LOGGER.info(f"[signal.survey_post_save] {instance} claimed no Encounters")
 
 
 @receiver(pre_delete, sender=Encounter)
-def delete_observations(sender, instance, **kwargs):
+def encounter_pre_delete(sender, instance, **kwargs):
     """Delete Observations before deleting an Encounter.
 
     See https://github.com/django-polymorphic/django-polymorphic/issues/34
     """
     for observation in instance.observation_set.all():
-        LOGGER.info(f"Deleting {observation}")
+        LOGGER.info(f"[signal.encounter_pre_delete] Deleting {observation}")
         observation.delete()
 
 
