@@ -55,21 +55,20 @@ LOGGER = logging.getLogger("turtles")
 
 
 def encounter_media(instance, filename):
-    """Return an upload file path for an encounter media attachment."""
-    if not instance.encounter.id:
-        instance.encounter.save()
+    """Return an upload file path for an encounter media attachment.
+    """
     return "encounter/{}/{}".format(instance.encounter.source_id, filename)
 
 
 def campaign_media(instance, filename):
-    """Return an upload file path for a campaign media attachment."""
-    if not instance.campaign.id:
-        instance.campaign.save()
+    """Return an upload file path for a campaign media attachment.
+    """
     return "campaign/{}/{}".format(instance.campaign.id, filename)
 
 
 def survey_media(instance, filename):
-    """Return an upload path for survey media."""
+    """Return an upload path for survey media.
+    """
     if not instance.survey.id:
         instance.survey.save()
     return "survey/{}/{}".format(instance.survey.id, filename)
@@ -602,6 +601,7 @@ class Survey(QualityControlMixin, UrlsMixin, models.Model):
         help_text="""The datetime of entering the site, shown as local time (no daylight savings), stored as UTC.
         The time of 'feet in the sand, start recording encounters'.""",
     )
+    # NOTE: don't use this field, use SurveyMediaAttachment
     start_photo = models.FileField(
         upload_to=survey_media,
         blank=True,
@@ -726,22 +726,21 @@ class Survey(QualityControlMixin, UrlsMixin, models.Model):
     def encounters(self):
         """Return the QuerySet of all Encounters within this Survey unless it's a training run."""
         if not self.production:
-            LOGGER.info(
-                "[observations.models.survey.encounters] Not a production survey, skipping."
-            )
+            #LOGGER.info(
+            #    "[observations.models.survey.encounters] Not a production survey, skipping."
+            #)
             return None
         if not self.end_time:
-            LOGGER.info(
-                "[observations.models.survey.encounters] No end_time set, can't filter Encounters."
-            )
+            #LOGGER.info(
+            #    "[observations.models.survey.encounters] No end_time set, can't filter Encounters."
+            #)
             return None
         elif not self.site:
-            LOGGER.info(
-                "[observations.models.survey.encounters] No site set, can't filter Encounters."
-            )
+            #LOGGER.info(
+            #    "[observations.models.survey.encounters] No site set, can't filter Encounters."
+            #)
             return None
         else:
-            # https://docs.djangoproject.com/en/3.2/ref/contrib/gis/geoquerysets/#coveredby
             return Encounter.objects.filter(
                 where__coveredby=self.site.geom,
                 when__gte=self.start_time,
@@ -992,33 +991,35 @@ class SurveyMediaAttachment(LegacySourceMixin, models.Model):
 
     survey = models.ForeignKey(
         Survey,
-        on_delete=models.PROTECT,
-        verbose_name=_("Survey"),
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name="Survey",
         related_name="attachments",
-        help_text=("The Survey this attachment belongs to."),
+        help_text="The Survey this attachment belongs to.",
     )
 
     media_type = models.CharField(
         max_length=300,
-        verbose_name=_("Attachment type"),
+        verbose_name="Attachment type",
         choices=MEDIA_TYPE_CHOICES,
         default="photograph",
-        help_text=_("What is the attached file about?"),
+        help_text="What is the attached file about?",
     )
 
     title = models.CharField(
         max_length=300,
-        verbose_name=_("Attachment name"),
+        verbose_name="Attachment name",
         blank=True,
         null=True,
-        help_text=_("Give the attachment a representative name."),
+        help_text="Give the attachment a representative name.",
     )
 
     attachment = models.FileField(
         upload_to=survey_media,
         max_length=500,
-        verbose_name=_("File attachment"),
-        help_text=_("Upload the file."),
+        verbose_name="File attachment",
+        help_text="Upload the file.",
     )
 
     class Meta:
