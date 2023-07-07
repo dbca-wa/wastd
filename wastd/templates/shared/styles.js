@@ -30,7 +30,7 @@ function getMarkerColor(feature) {
     if (feature.properties.leaflet_colour) {
         return feature.properties.leaflet_colour
     } else {
-        return "red"
+        return "white"
     }
 }
 
@@ -47,116 +47,62 @@ function ptl(feature, latlng) {
         icon: getIcon(feature),
         iconColor: "white",
         markerColor: getMarkerColor(feature)
-        // prefix: 'fa',
-        // spin:false
     });
 
     return L.marker(latlng, { icon: icon });
-    //title: feature.properties.leaflet_title,
 }
 
 function ptl_svs(feature, latlng) {
     /* https://github.com/lvoogdt/Leaflet.awesome-markers */
     var icon = new L.AwesomeMarkers.icon({
-        icon: "fa fa-play",
-        iconColor: "green",
+        icon: "fa-solid fa-play",
+        //iconColor: "green",
         markerColor: "blue"
-        // prefix: 'fa',
-        // spin:false
     });
 
     return L.marker(latlng, { icon: icon });
-    //title: feature.properties.leaflet_title,
 }
 
 function ptl_sve(feature, latlng) {
     /* https://github.com/lvoogdt/Leaflet.awesome-markers */
     var icon = new L.AwesomeMarkers.icon({
-        icon: "fa fa-stop",
-        iconColor: "red",
+        icon: "fa-solid fa-stop",
+        //iconColor: "red",
         markerColor: "blue"
-        // prefix: 'fa',
-        // spin:false
     });
 
     return L.marker(latlng, { icon: icon });
-    //title: feature.properties.leaflet_title,
 }
 
 /* Actions taken on each feature: title, popup, info preview */
 function oef(feature, layer) {
-    layer.bindTooltip(feature.properties.label);
-    layer.bindPopup(feature.properties.as_html);
-    // layer.on({mouseover: highlightFeature, click: resetHighlight});
+  layer.bindTooltip(feature.properties.leaflet_title);
+  layer.bindPopup(feature.properties.label);
 }
 
 function oef_wideTT(feature, layer) {
-    layer.bindTooltip(feature.properties.label, {className: 'leaflet-tooltip-wide'});
-    layer.bindPopup(feature.properties.as_html);
-    // layer.on({mouseover: highlightFeature, click: resetHighlight});
+  layer.bindTooltip(feature.properties.label, {className: 'leaflet-tooltip-wide'});
+  layer.bindPopup(feature.properties.label);
 }
 
 /* Actions taken on each feature: title, popup, info preview */
 function oef_ll(feature, layer) {
-    layer.bindTooltip(feature.properties.leaflet_title);
-    layer.bindPopup(feature.properties.as_html);
-    // layer.on({mouseover: highlightFeature, click: resetHighlight});
+  layer.bindTooltip(feature.properties.leaflet_title);
+  layer.bindPopup(feature.properties.label);
 }
 
 function oef_llwideTT(feature, layer) {
-    layer.bindTooltip(feature.properties.leaflet_title, {className: 'leaflet-tooltip-wide'});
-    layer.bindPopup(feature.properties.as_html);
-    // layer.on({mouseover: highlightFeature, click: resetHighlight});
+  layer.bindTooltip(feature.properties.leaflet_title, {className: 'leaflet-tooltip-wide'});
+  layer.bindPopup(feature.properties.label);
 }
 
 /* Actions taken on each feature: title, popup, info preview */
 function oef_eoo(feature, layer) {
-    layer.bindTooltip("Extent of Occurrence");
-    // layer.bindPopup("Extent of Occurrence");
+  layer.bindTooltip("Extent of Occurrence");
 }
 
 /* Actions taken on each feature: title, popup, info preview */
 function oef_rel(feature, layer) {
-    layer.bindTooltip(feature.properties.label);
-    layer.bindPopup(feature.properties.as_html);
+  layer.bindTooltip(feature.properties.label);
+  layer.bindPopup(feature.properties.label);
 }
-
-/* Override default Marker, set colour, symbol; add mouse hover title */
-function ptlBioSys(feature, latlng) {
-    /* https://github.com/lvoogdt/Leaflet.awesome-markers */
-    var icon = new L.AwesomeMarkers.icon({ icon: 'database', markerColor: 'green' });
-    return L.marker(latlng, { icon: icon });
-}
-
-function oefBioSys(feature, layer) {
-    layer.bindPopup(
-        '<div class="row"><div class="mr-auto p-2"><h5>' + feature.properties.species_name + '</h5></div></div>' +
-        '<p><i class="fa-solid fa-calendar" aria-hidden="true"></i> ' + feature.properties.datetime + '</p>' +
-        '<p><a class="btn btn-secondary btn-sm" target="_" ' +
-        'href="https://biosys-uat.dbca.wa.gov.au/#/data/projects/61/datasets/' +
-        feature.properties.dataset + '/record/' + feature.id + '">' +
-        '<i class="fa-solid fa-pencil" aria-hidden="true"></i> Edit this record in BioSys</a></p>'
-    );
-    layer.bindTooltip(
-        'BioSys <br/><i class="fa-solid fa-calendar" aria-hidden="true"></i>' +
-        feature.properties.datetime
-    );
-}
-
-/* Turn a BioSys API record into a GeoJSON Feature. */
-function geoJSONify(json_record) {
-    return {
-        type: 'Feature',
-        id: json_record.id,
-        geometry: { type: 'Point', coordinates: json_record.geometry.coordinates },
-        properties: json_record
-    };
-}
-
-function geoJSONfc(gj_feature_array) {
-    return { "type": "FeatureCollection", "features": gj_feature_array.map(geoJSONify) }
-}
-
-/* Authentication headers for BioSys API. */
-var hdr = new Headers();
-hdr.append("Authorization", 'Basic ' + btoa('{{ settings.BIOSYS_UN }}:{{ settings.BIOSYS_PW }}'));

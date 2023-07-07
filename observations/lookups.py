@@ -519,16 +519,18 @@ OBSERVATION_CHOICES = (
 )
 
 OBSERVATION_ICONS = {
-    NA_VALUE: "fa fa-question-circle-o",
-    "absent": "fa fa-times",
-    "present": "fa fa-check",
+    NA_VALUE: "fa-regular fa-circle-question",
+    "absent": "fa-solid fa-xmark",
+    "present": "fa-solid fa-check",
+    "no": "fa-solid fa-xmark",
+    "yes": "fa-solid fa-check",
 }
 
 OBSERVATION_COLOURS = {
     NA_VALUE: "secondary",
     "": "secondary",
-    "absent": "dark",
     "present": "primary",
+    "absent": "dark",
     "yes": "primary",
     "no": "dark",
     False: "dark",

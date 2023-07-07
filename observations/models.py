@@ -866,6 +866,12 @@ class Survey(QualityControlMixin, UrlsMixin, models.Model):
         LOGGER.info(msg)
         return msg
 
+    @property
+    def leaflet_title(self):
+        """A title for leaflet map markers.
+        """
+        return self.__str__()
+
 
 class SurveyEnd(models.Model):
     """A visit to one site by a team of field workers collecting data.
@@ -1113,14 +1119,14 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
     )
 
     LEAFLET_ICON = {
-        ENCOUNTER_STRANDING: "exclamation-circle",
+        ENCOUNTER_STRANDING: "circle-exclamation",
         ENCOUNTER_TAGGING: "tags",
         ENCOUNTER_NEST: "home",
-        ENCOUNTER_TRACKS: "truck",
+        ENCOUNTER_TRACKS: "paw",
         ENCOUNTER_TAG: "cog",
-        ENCOUNTER_INWATER: "tint",
+        ENCOUNTER_INWATER: "water",
         ENCOUNTER_LOGGER: "tablet",
-        ENCOUNTER_OTHER: "question-circle",
+        ENCOUNTER_OTHER: "circle-question",
     }
 
     LEAFLET_COLOUR = {
