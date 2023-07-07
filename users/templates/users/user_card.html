@@ -19,7 +19,7 @@
             {% if request.user.is_staff %}
             <a href="{{ object.absolute_admin_url }}" title="Edit this user in the data curation portal">
               <span class="badge badge-{{ object.status_colour|default:'secondary' }}">
-                <i class="fa-solid fa-pencil text-success" aria-hidden="true"></i> Edit
+                <i class="fa-solid fa-pencil" aria-hidden="true"></i> Edit
               </span>
             </a>
             <a href="{% url 'users:user-merge-old' old_pk=object.pk %}" title="Merge this user profile into another one">
