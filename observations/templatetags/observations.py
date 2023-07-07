@@ -1,5 +1,4 @@
 from django import template
-from django.conf import settings
 from django.template.defaultfilters import stringfilter
 from django_fsm_log.models import StateLog
 import os
@@ -14,12 +13,6 @@ register = template.Library()
 @register.simple_tag
 def get_verbose_name(object):
     return object._meta.verbose_name
-
-
-@register.simple_tag
-def google_maps_apikey(*args, **kwargs):
-    """Return the settings key GOOGLE_MAPS_API_KEY."""
-    return settings.GOOGLE_MAPS_API_KEY
 
 
 @register.simple_tag
@@ -106,10 +99,3 @@ def obs_colour(observation_value):
 @register.filter
 def filename(value):
     return os.path.basename(value)
-
-
-# @register.filter
-# @stringfilter
-# def tex(string_value):
-#    """Convert a text or HTML string to tex."""
-#    return pypandoc.convert_text(string_value, 'tex', format='html')
