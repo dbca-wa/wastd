@@ -30,7 +30,7 @@
         {% if request.user.is_staff %}
             <a href="{{ object.absolute_admin_url }}" title="Edit this survey in the data curation portal">
               <span class="badge badge-{{ object.status_colour|default:'secondary' }}">
-                <i class="fa-solid fa-pencil text-success" aria-hidden="true"></i> Edit
+                <i class="fa-solid fa-pencil" aria-hidden="true"></i> Edit
               </span>
             </a>
             {% if not object.production %}
@@ -167,50 +167,50 @@
 {{ block.super }}
 <script type="text/javascript">
 function map_init(map, options) {
-  {% include 'shared/styles.js' %}
+  {% include "shared/styles.js" %}
 
-  $.getJSON("{% url 'sites-geojson' %}", function (data) {
-      L.geoJson(data, {style: polystyle, onEachFeature: oef}).addTo(map);
+  $.getJSON("{% url 'sites-geojson' %}", function(data) {
+      L.geoJson(data, {
+        style: polystyle,
+        onEachFeature: oef
+      }).addTo(map);
   });
 
   // Attach the endpoint to the map first.
-  var survey_end = L.geoJson(
-    {{ object|geojsonfeature:"as_html,label:end_location"|safe }},
-    { style: pointstyle, pointToLayer: ptl_sve, onEachFeature: oef }
-  );
+  // geojsonfeature reference:
+  // https://django-geojson.readthedocs.io/en/latest/views.html#geojson-template-filter
+  var survey_end = L.geoJson({{ object|geojsonfeature:"label,leaflet_title:end_location"|safe }}, {
+    style: pointstyle,
+    pointToLayer: ptl_sve,
+    onEachFeature: oef
+  });
   survey_end.addTo(map);
-  var survey_start = L.geoJson(
-    {{ object|geojsonfeature:"as_html,label:start_location"|safe }},
-    { style: pointstyle, pointToLayer: ptl_svs, onEachFeature: oef }
-  );
+
+  var survey_start = L.geoJson({{ object|geojsonfeature:"label,leaflet_title:start_location"|safe }}, {
+    style: pointstyle,
+    pointToLayer: ptl_svs,
+    onEachFeature: oef
+  });
   survey_start.addTo(map);
 
-  var enc_layer = L.geoJson(
-    {{ object.encounter_set.all|geojsonfeature:"as_html,leaflet_title,leaflet_icon,leaflet_colour:where"|safe }},
-    { style: pointstyle, pointToLayer: ptl, onEachFeature: oef_ll }
-  );
+  var enc_layer = L.geoJson({{ object.encounter_set.all|geojsonfeature:"leaflet_title,leaflet_icon,leaflet_colour:where"|safe }}, {
+    style: pointstyle,
+    pointToLayer: ptl,
+    onEachFeature: oef_ll
+  });
   enc_layer.addTo(map);
 
   var group = new L.featureGroup([
-      survey_start,
-      survey_end,
-      enc_layer,
+    survey_start,
+    survey_end,
+    enc_layer,
   ]);
   map.fitBounds(group.getBounds());
-
-  // var taxon_cluster_markers = L.markerClusterGroup();
-  // taxon_cluster_markers.addLayer(taxon_points);
-  // map.addLayer(taxon_cluster_markers);
-
-  /*
-   * BioSys Occurrences. Helpers see styles.js
-   */
 
   $(".zoom-map").click(function() {
     map.flyTo([this.dataset.lat, this.dataset.lon], 18, {animate: true});
   });
 
 };
-
 </script>
 {% endblock %}
