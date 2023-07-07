@@ -59,7 +59,7 @@
     <a class="btn btn-primary btn-block"
       href="{% url 'tagging:turtleobservation_list' %}"
       title="Browse, filter and search turtle tagging data">
-      Browse turtle observations »
+      Browse turtle tag observations »
     </a>
   <p>
   {# FIXME: permissions check #}
@@ -72,20 +72,6 @@
     </a>
   </p>
   {% endif %}
-  {% comment %}
-    <a class="btn btn-primary btn-block"
-       href="{% url 'observations:animalencounter-list' %}?encounter_type=tagging"
-       title="Browse, filter and search animal encounters">
-      Browse »
-    </a>
-    {% if request.user.is_staff %}
-    <a class="btn btn-success btn-block"
-       href="{% url 'admin:observations_animalencounter_changelist' %}?encounter_type=tagging"
-       title="Curate and QA animal encounters">
-      Curate »
-    </a>
-    {% endif %}
-  {% endcomment %}
 </div>
 
 <!-- Turtle Nests and Tracks column -->
@@ -106,7 +92,7 @@
   <p>
     <a class="btn btn-primary btn-block" href="{% url 'observations:turtlenestencounter-list' %}"
         title="Browse, filter and search Turtle Nest Encounters">
-      Browse »
+      Browse track & nest encounters »
     </a>
   </p>
   {% if request.user.is_staff %}
@@ -141,7 +127,7 @@
   <p>
     <a class="btn btn-primary btn-block" href="{% url 'observations:animalencounter-list' %}?encounter_type=stranding"
         title="List, filter, export Marine Wildlife Incidents">
-      Browse »
+      Browse marine wildlife incidents »
     </a>
   </p>
   {% if request.user.is_staff %}
@@ -153,21 +139,6 @@
     </a>
   </p>
   {% endif %}
-  {% comment %}
-  <p>
-    <a class="btn btn-primary btn-block" href=""
-        title="Get our app to report Marine Wildlife Incidents">
-      Report (via app) »
-    </a>
-  </p>
-  {% endcomment %}
-  <p>
-    <a class="btn btn-secondary btn-block" href="https://odkc.dbca.wa.gov.au/-/single/iz382G6wGcCrWcbmNae6odIgYiU7cns?st=eHL5vK$CtNzbOj9P7KQ5uDhDLWvVakNqwfbs9zSKIwOBVdIHEKW6eQ7dnDc52WNk"
-        title="Report a new Marine Wildlife Incident captured on paper.
-Please upgrade to use the app!">
-      Report (via web form) »
-    </a>
-  </p>
 </div>
 
 </div><!-- .row -->
