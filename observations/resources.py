@@ -310,7 +310,7 @@ class TurtleNestEncounterResource(EncounterResource):
 
     def dehydrate_no_dead_hatchlings(self, encounter):
         obs = encounter.get_nest_observation()
-        return self.get_child_observation_output(obs, 'no_live_hatchlings')
+        return self.get_child_observation_output(obs, 'no_dead_hatchlings')
 
     def dehydrate_no_undeveloped_eggs(self, encounter):
         obs = encounter.get_nest_observation()
