@@ -111,7 +111,7 @@
  <div class="col-lg-3 col-md-6 col-12">
   <img class="rounded-circle mx-auto d-block"
     src="{% static 'images/map_wa_square.png' %}"
-    alt="Map of Western Australia showing TSC data on ESRI imagery. Copyright background layers: ESRI."
+    alt="Map of Western Australia showing marine wildlife incidents data"
     width="140" height="140">
   <h2 class="text-center">Marine Wildlife Incidents</h2>
   <p>
@@ -125,7 +125,7 @@
     </a>
   </p>
   <p>
-    <a class="btn btn-primary btn-block" href="{% url 'observations:animalencounter-list' %}?encounter_type=stranding"
+    <a class="btn btn-primary btn-block" href="{% url 'observations:animalencounter-list' %}"
         title="List, filter, export Marine Wildlife Incidents">
       Browse marine wildlife incidents »
     </a>
@@ -133,7 +133,7 @@
   {% if request.user.is_staff %}
   <p>
     <a class="btn btn-success btn-block"
-       href="{% url 'admin:observations_animalencounter_changelist' %}?encounter_type=stranding"
+       href="{% url 'admin:observations_animalencounter_changelist' %}"
        title="Curate and QA marine wildlife incidents">
       Curate »
     </a>
