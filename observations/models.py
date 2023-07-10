@@ -2688,73 +2688,66 @@ class TagObservation(Observation):
     shared tag names. The earliest associated flipper tag name is used as the
     animal's name, and transferred onto all related TagObservations.
     """
-
     tag_type = models.CharField(
         max_length=300,
-        verbose_name=_("Tag type"),
+        verbose_name="Tag type",
         choices=lookups.TAG_TYPE_CHOICES,
         default="flipper-tag",
-        help_text=_("What kind of tag is it?"),
+        help_text="What kind of tag is it?",
     )
-
     tag_location = models.CharField(
         max_length=300,
-        verbose_name=_("Tag position"),
+        verbose_name="Tag position",
         choices=lookups.TURTLE_BODY_PART_CHOICES,
         default=lookups.BODY_PART_DEFAULT,
-        help_text=_("Where is the tag attached, or the sample taken from?"),
+        help_text="Where is the tag attached, or the sample taken from?",
     )
-
-    # tag_fix TODO
-
+    # TODO: rename to serial, tag_id, etc.
     name = models.CharField(
         max_length=1000,
-        verbose_name=_("Tag ID"),
-        help_text=_("The ID of a tag must be unique within the tag type."),
+        verbose_name="Tag ID",
+        help_text="The ID of a tag must be unique within the tag type.",
     )
-
     status = models.CharField(
         max_length=300,
-        verbose_name=_("Tag status"),
+        verbose_name="Tag status",
         choices=lookups.TAG_STATUS_CHOICES,
         default=lookups.TAG_STATUS_DEFAULT,
-        help_text=_("The status this tag was after the encounter."),
+        help_text="The status this tag was after the encounter.",
     )
-
     handler = models.ForeignKey(
         User,
         on_delete=models.SET_DEFAULT,
         default=settings.ADMIN_USER,
         blank=True,
         null=True,
-        verbose_name=_("Handled by"),
+        verbose_name="Handled by",
         related_name="tag_handler",
-        help_text=_("The person in physical contact with the tag or sample"),
+        help_text="The person in physical contact with the tag or sample",
     )
-
     recorder = models.ForeignKey(
         User,
         on_delete=models.SET_DEFAULT,
         default=settings.ADMIN_USER,
         blank=True,
         null=True,
-        verbose_name=_("Recorded by"),
+        verbose_name="Recorded by",
         related_name="tag_recorder",
-        help_text=_("The person who records the tag observation"),
+        help_text="The person who records the tag observation",
     )
-
     comments = models.TextField(
-        verbose_name=_("Comments"),
+        verbose_name="Comments",
         blank=True,
         null=True,
-        help_text=_("Any other comments or notes."),
+        help_text="Any other comments or notes.",
     )
 
     class Meta:
         verbose_name = "Turtle Tag Observation"
+        # unique_together = ("tag_type", "name")  # TODO
 
     def __str__(self):
-        return "{0} {1} {2} on {3}".format(
+        return "{} {} {} on {}".format(
             self.get_tag_type_display(),
             self.name,
             self.get_status_display(),
@@ -2769,8 +2762,6 @@ class TagObservation(Observation):
     @classmethod
     def encounter_histories(cls, tagname_list, without=[]):
         """Return the related encounters of all tag names.
-
-        TODO double-check performance
         """
         return [
             encounter
@@ -2786,7 +2777,8 @@ class TagObservation(Observation):
 
     @property
     def is_new(self):
-        """Return wheter the TagObservation is the first association with the animal."""
+        """Return whether the TagObservation is the first association with the animal.
+        """
         return self.status == lookups.TAG_STATUS_APPLIED_NEW
 
     @property
