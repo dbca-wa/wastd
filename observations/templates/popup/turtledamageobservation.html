@@ -1,5 +1,4 @@
 {% with original as o %}
 <i class="fa-solid fa-bandage"></i>
-{{ o.get_body_part_display|title }}: {{ o.get_damage_age_display }}
-{{ o.get_damage_type_display }} ({{ o.description }})
+{{ o.get_body_part_display|title }}: {{ o.get_damage_age_display|lower }} {{ o.get_damage_type_display|lower }}
 {% endwith %}
