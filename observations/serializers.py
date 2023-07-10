@@ -869,44 +869,6 @@ class TurtleNestDisturbanceTallyObservationSerializer(ObservationSerializer):
         )
 
 
-class TemperatureLoggerSettingsSerializer(ObservationSerializer):
-    class Meta:
-        model = models.TemperatureLoggerSettings
-        fields = (
-            "pk",
-            "source",
-            "source_id",
-            "encounter",
-            "logging_interval",
-            "recording_start",
-            "tested",
-        )
-
-
-class DispatchRecordSerializer(ObservationSerializer):
-    class Meta:
-        model = models.DispatchRecord
-        fields = ("pk", "source", "source_id", "encounter", "sent_to")
-
-
-class TemperatureLoggerDeploymentSerializer(ObservationSerializer):
-    class Meta:
-        model = models.TemperatureLoggerDeployment
-        fields = (
-            "pk",
-            "source",
-            "source_id",
-            "encounter",
-            "depth_mm",
-            "marker1_present",
-            "distance_to_marker1_mm",
-            "marker2_present",
-            "distance_to_marker2_mm",
-            "habitat",
-            "distance_to_vegetation_mm",
-        )
-
-
 class LoggerObservationSerializer(ObservationSerializer):
     class Meta:
         model = models.LoggerObservation

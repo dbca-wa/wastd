@@ -25,7 +25,6 @@ from dateutil import tz
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.contrib.gis.db import models
-from django.db.models.fields import DurationField
 from django.template import loader
 from django.urls import reverse
 from django.utils.encoding import force_text
@@ -3481,131 +3480,102 @@ class TurtleHatchlingEmergenceObservation(Observation):
     * Outliers present (if yes: TurtleHatchlingEmergenceOutlierObservation)
     * Light sources known and present (if yes: LightSourceObservation).
     """
-
-    # photo_hatchling_tracks_seawards # media
-    # photo_hatchling_tracks_relief # media
     bearing_to_water_degrees = models.FloatField(
-        verbose_name=_("Bearing to water"),
+        verbose_name="Bearing to water",
         blank=True,
         null=True,
-        help_text=_("Bearing captured with handheld compass."),
+        help_text="Bearing captured with handheld compass.",
     )
-
     bearing_leftmost_track_degrees = models.FloatField(
-        verbose_name=_("Leftmost track bearing of main fan"),
+        verbose_name="Leftmost track bearing of main fan",
         blank=True,
         null=True,
-        help_text=_(
-            "Excluding outlier tracks, 5m from nest or at HWM. Bearing captured with handheld compass."
-        ),
+        help_text="Excluding outlier tracks, 5m from nest or at HWM. Bearing captured with handheld compass.",
     )
-
     bearing_rightmost_track_degrees = models.FloatField(
-        verbose_name=_("Rightmost track bearing of main fan"),
+        verbose_name="Rightmost track bearing of main fan",
         blank=True,
         null=True,
-        help_text=_(
-            "Excluding outlier tracks, 5m from nest or at HWM. Bearing captured with handheld compass."
-        ),
+        help_text="Excluding outlier tracks, 5m from nest or at HWM. Bearing captured with handheld compass.",
     )
-
     no_tracks_main_group = models.PositiveIntegerField(
-        verbose_name=_("Number of tracks in main fan"),
+        verbose_name="Number of tracks in main fan",
         blank=True,
         null=True,
-        help_text=_("Exact count or best estimate."),
+        help_text="Exact count or best estimate.",
     )
-
     no_tracks_main_group_min = models.PositiveIntegerField(
-        verbose_name=_("Min number of tracks in main fan"),
+        verbose_name="Min number of tracks in main fan",
         blank=True,
         null=True,
-        help_text=_("Lowest estimate."),
+        help_text="Lowest estimate.",
     )
-
     no_tracks_main_group_max = models.PositiveIntegerField(
-        verbose_name=_("Max number of tracks in main fan"),
+        verbose_name="Max number of tracks in main fan",
         blank=True,
         null=True,
-        help_text=_("Highest estimate."),
+        help_text="Highest estimate.",
     )
-
     outlier_tracks_present = models.CharField(
         max_length=300,
-        verbose_name=_("Outlier tracks present"),
+        verbose_name="Outlier tracks present",
         choices=lookups.OBSERVATION_CHOICES,
         default=lookups.NA_VALUE,
-        help_text=_(""),
     )
-
     hatchling_path_to_sea = models.ManyToManyField(
         PathToSea, blank=True, related_name="path_to_sea"
     )
-
     path_to_sea_comments = models.TextField(
-        verbose_name=_("Hatchling path to sea comments"),
+        verbose_name="Hatchling path to sea comments",
         blank=True,
         null=True,
-        help_text=_("Any other comments or notes."),
+        help_text="Any other comments or notes.",
     )
-
     hatchling_emergence_time_known = models.CharField(
         max_length=300,
-        verbose_name=_("Hatchling emergence time known"),
+        verbose_name="Hatchling emergence time known",
         choices=(
             (lookups.NA_VALUE, "NA"),
             ("yes", "Yes"),
             ("no", "No"),
         ),
         default=lookups.NA_VALUE,
-        help_text=_("."),
-    )  # yes no
-
+    )
     cloud_cover_at_emergence_known = models.CharField(
         max_length=300,
-        verbose_name=_("Cloud cover at emergence known"),
+        verbose_name="Cloud cover at emergence known",
         choices=(
             (lookups.NA_VALUE, "NA"),
             ("yes", "Yes"),
             ("no", "No"),
         ),
         default=lookups.NA_VALUE,
-        help_text=_("."),
     )
-
     light_sources_present = models.CharField(
         max_length=300,
-        verbose_name=_("Light sources present during emergence"),
+        verbose_name="Light sources present during emergence",
         choices=lookups.OBSERVATION_CHOICES,
         default=lookups.NA_VALUE,
-        help_text=_(""),
     )
-
     hatchling_emergence_time = models.DateTimeField(
-        verbose_name=_("Hatchling emergence time"),
+        verbose_name="Hatchling emergence time",
         blank=True,
         null=True,
-        help_text=_(
-            "The estimated time of hatchling emergence, stored as UTC and "
-            "shown in local time."
-        ),
+        help_text="The estimated time of hatchling emergence, stored as UTC and shown in local time.",
     )
-
     hatchling_emergence_time_accuracy = models.CharField(
         max_length=300,
         blank=True,
         null=True,
-        verbose_name=_("Hatchling emergence time estimate accuracy"),
+        verbose_name="Hatchling emergence time estimate accuracy",
         choices=lookups.TIME_ESTIMATE_CHOICES,
         default=lookups.NA_VALUE,
-        help_text=_("."),
     )
-
     cloud_cover_at_emergence = models.PositiveIntegerField(
-        verbose_name=_("Cloud cover at emergence"),
+        verbose_name="Cloud cover at emergence",
         blank=True,
         null=True,
-        help_text=_("If known, in eights."),
+        help_text="If known, in eights.",
     )
 
     class Meta:
@@ -3625,31 +3595,29 @@ class TurtleHatchlingEmergenceObservation(Observation):
 
 
 class LightSourceObservation(Observation):
-
+    """The observation of a light source during the emergence of hatchlings from a turtle nest.
+    """
     bearing_light_degrees = models.FloatField(
-        verbose_name=_("Bearing"),
+        verbose_name="Bearing",
         blank=True,
         null=True,
-        help_text=_("Bearing captured with handheld compass."),
+        help_text="Bearing captured with handheld compass.",
     )
-
     light_source_type = models.CharField(
         max_length=300,
-        verbose_name=_("Light source type"),
+        verbose_name="Light source type",
         choices=(
             (lookups.NA_VALUE, "NA"),
             ("natural", "Natural"),
             ("artificial", "Artificial"),
         ),
         default=lookups.NA_VALUE,
-        help_text=_("."),
     )
-
     light_source_description = models.TextField(
-        verbose_name=_("Comments"),
+        verbose_name="Comments",
         blank=True,
         null=True,
-        help_text=_("Any other comments or notes."),
+        help_text="Any other comments or notes.",
     )
 
     class Meta:
@@ -3657,8 +3625,7 @@ class LightSourceObservation(Observation):
         verbose_name_plural = "Turtle Hatchling Light Source Observations (Fan Angles)"
 
     def __str__(self):
-        """The full name."""
-        return "Light Source {0} at {1} deg: {2}".format(
+        return "Light Source {} at {} deg: {}".format(
             self.get_light_source_type_display(),
             self.bearing_light_degrees,
             self.light_source_description or "",
@@ -3666,28 +3633,24 @@ class LightSourceObservation(Observation):
 
 
 class TurtleHatchlingEmergenceOutlierObservation(Observation):
-
+    """The observation of a hatchling emergence track outlier.
+    """
     bearing_outlier_track_degrees = models.FloatField(
-        verbose_name=_("Bearing"),
+        verbose_name="Bearing",
         blank=True,
         null=True,
-        help_text=_(
-            "Aim at track 5m from nest or high water mark. Bearing captured with handheld compass."
-        ),
+        help_text="Aim at track 5m from nest or high water mark. Bearing captured with handheld compass.",
     )
-
     outlier_group_size = models.PositiveIntegerField(
-        verbose_name=_("Number of tracks in outlier group"),
+        verbose_name="Number of tracks in outlier group",
         blank=True,
         null=True,
-        help_text=_(""),
     )
-
     outlier_track_comment = models.TextField(
-        verbose_name=_("Comments"),
+        verbose_name="Comments",
         blank=True,
         null=True,
-        help_text=_("Any other comments or notes."),
+        help_text="Any other comments or notes.",
     )
 
     class Meta:
@@ -3706,8 +3669,8 @@ class TurtleHatchlingEmergenceOutlierObservation(Observation):
 
 
 class LoggerObservation(Observation):
-    """A logger is observed during an Encounter."""
-
+    """A logger is observed during an Encounter.
+    """
     LOGGER_TYPE_DEFAULT = "temperature-logger"
     LOGGER_TYPE_CHOICES = (
         (LOGGER_TYPE_DEFAULT, "Temperature Logger"),
@@ -3729,32 +3692,29 @@ class LoggerObservation(Observation):
     logger_type = models.CharField(
         max_length=300,
         default=LOGGER_TYPE_DEFAULT,
-        verbose_name=_("Type"),
+        verbose_name="Type",
         choices=LOGGER_TYPE_CHOICES,
-        help_text=_("The logger type."),
+        help_text="The logger type.",
     )
-
     deployment_status = models.CharField(
         max_length=300,
         default=LOGGER_STATUS_DEFAULT,
-        verbose_name=_("Status"),
+        verbose_name="Status",
         choices=LOGGER_STATUS_CHOICES,
-        help_text=_("The logger life cycle status."),
+        help_text="The logger life cycle status.",
     )
-
     logger_id = models.CharField(
         max_length=1000,
         blank=True,
         null=True,
-        verbose_name=_("Logger ID"),
-        help_text=_("The ID of a logger must be unique within the tag type."),
+        verbose_name="Logger ID",
+        help_text="The ID of a logger must be unique within the tag type.",
     )
-
     comments = models.TextField(
-        verbose_name=_("Comment"),
+        verbose_name="Comment",
         blank=True,
         null=True,
-        help_text=_("Comments"),
+        help_text="Comments",
     )
 
     class Meta:
@@ -3765,130 +3725,3 @@ class LoggerObservation(Observation):
             return f'{self.logger_id} ({self.get_logger_type_display()})'
         else:
             return f'{self.get_logger_type_display()}'
-
-
-# Unused models (TBC)
-class TemperatureLoggerSettings(Observation):
-    """Temperature Logger Settings."""
-
-    logging_interval = DurationField(
-        verbose_name=_("Logging interval"),
-        blank=True,
-        null=True,
-        help_text=_(
-            "The time between individual readings as python timedelta "
-            "string. E.g, 1h is `01:00:00`; 1 day is `1 00:00:00`."
-        ),
-    )
-
-    recording_start = models.DateTimeField(
-        verbose_name=_("Recording start"),
-        blank=True,
-        null=True,
-        help_text=_(
-            "The preset start of recording, stored as UTC and " "shown in local time."
-        ),
-    )
-
-    tested = models.CharField(
-        max_length=300,
-        verbose_name=_("Tested"),
-        choices=lookups.OBSERVATION_CHOICES,
-        default=lookups.NA_VALUE,
-        help_text=_("Was the logger tested after programming?"),
-    )
-
-    class Meta:
-        verbose_name = "Temperature Logger Setting"
-
-    def __str__(self):
-        return "Sampling starting on {0} with rate {1}".format(
-            self.recording_start, self.logging_interval
-        )
-
-
-class DispatchRecord(Observation):
-    """A record of dispatching the subject of the encounter."""
-
-    sent_to = models.ForeignKey(
-        User,
-        on_delete=models.SET_DEFAULT,
-        default=settings.ADMIN_USER,
-        verbose_name=_("Sent to"),
-        related_name="receiver",
-        blank=True,
-        null=True,
-        help_text=_("The receiver of the dispatch."),
-    )
-
-    class Meta:
-        verbose_name = "Dispatch Record"
-
-    def __str__(self):
-        return "Sent on {0} to {1}".format(self.encounter.when, self.sent_to)
-
-
-class TemperatureLoggerDeployment(Observation):
-    """A record of deploying a temperature logger."""
-
-    depth_mm = models.PositiveIntegerField(
-        verbose_name=_("Logger depth (mm)"),
-        blank=True,
-        null=True,
-        help_text=_("The depth of the buried logger in mm."),
-    )
-
-    marker1_present = models.CharField(
-        max_length=300,
-        verbose_name=_("Marker 1 present"),
-        choices=lookups.OBSERVATION_CHOICES,
-        default=lookups.NA_VALUE,
-        help_text=_("Is the first marker in place?"),
-    )
-
-    distance_to_marker1_mm = models.PositiveIntegerField(
-        verbose_name=_("Distance to marker 1 (mm)"),
-        blank=True,
-        null=True,
-        help_text=_("The distance to the first marker in mm."),
-    )
-
-    marker2_present = models.CharField(
-        max_length=300,
-        verbose_name=_("Marker 2 present"),
-        choices=lookups.OBSERVATION_CHOICES,
-        default=lookups.NA_VALUE,
-        help_text=_("Is the second marker in place?"),
-    )
-
-    distance_to_marker2_mm = models.PositiveIntegerField(
-        verbose_name=_("Distance to marker 2 (mm)"),
-        blank=True,
-        null=True,
-        help_text=_("The distance to the second marker in mm."),
-    )
-
-    habitat = models.CharField(
-        max_length=500,
-        verbose_name=_("Habitat"),
-        choices=lookups.HABITAT_CHOICES,
-        default="na",
-        help_text=_("The habitat in which the nest was encountered."),
-    )
-
-    distance_to_vegetation_mm = models.PositiveIntegerField(
-        verbose_name=_("Distance to vegetation (mm)"),
-        blank=True,
-        null=True,
-        help_text=_(
-            "The distance to the beach-vegetation border in mm. "
-            "Positive values if logger is located on beach, "
-            "negative values if in vegetation."
-        ),
-    )
-
-    class Meta:
-        verbose_name = "Temperature Logger Deployment"
-
-    def __str__(self):
-        return "Logger at {0} mm depth".format(self.depth_mm)

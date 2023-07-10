@@ -13,7 +13,6 @@ from observations.lookups import (
 from observations.models import (  # noqa
     AnimalEncounter,
     Area,
-    DispatchRecord,
     DugongMorphometricObservation,
     Encounter,
     HatchlingMorphometricObservation,
@@ -23,8 +22,6 @@ from observations.models import (  # noqa
     NestTagObservation,
     Survey,
     TagObservation,
-    TemperatureLoggerDeployment,
-    TemperatureLoggerSettings,
     TrackTallyObservation,
     TurtleDamageObservation,
     TurtleMorphometricObservation,
@@ -155,11 +152,6 @@ class EncounterViewTests(TestCase):
     def encounter_list_loads(self):
         """Test "encounter_list" view."""
         response = self.client.get(reverse("encounter_list"))
-        self.assertEqual(response.status_code, 200)
-
-    def encounter_list_loads(self):
-        """Test "observations:animalencounter-list" view."""
-        response = self.client.get(reverse("observations:encounter-list"))
         self.assertEqual(response.status_code, 200)
 
     def encounter_detail_loads(self):
