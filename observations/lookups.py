@@ -20,58 +20,46 @@ SIGHTING_STATUS_CHOICES = (
 
 BODY_PART_DEFAULT = "whole"
 TURTLE_BODY_PART_CHOICES = (
-    ("head", "head"),
-    ("eyes", "eyes"),
-    ("neck", "neck"),
-    ("plastron", "plastron"),
-    ("carapace", "carapace"),
-    ("internals", "internals"),
-    ("cloaca", "cloaca"),
-    ("tail", "tail"),
-    ("flipper-front-left-1", "front left flipper, 1st scale from body"),
-    ("flipper-front-left-2", "front left flipper, 2nd scale from body"),
-    ("flipper-front-left-3", "front left flipper, 3rd scale from body"),
-    ("flipper-front-left", "front left flipper"),
-    ("flipper-front-right-1", "front right flipper, 1st scale from body"),
-    ("flipper-front-right-2", "front right flipper, 2nd scale from body"),
-    ("flipper-front-right-3", "front right flipper, 3rd scale from body"),
-    ("flipper-front-right", "front right flipper"),
-    ("flipper-rear-left", "rear left flipper"),
-    ("flipper-rear-right", "rear right flipper"),
-    ("shoulder-left", "left shoulder"),
-    ("shoulder-right", "right shoulder"),
-    (BODY_PART_DEFAULT, "whole turtle"),
+    ("head", "Head"),
+    ("eyes", "Eyes"),
+    ("neck", "Neck"),
+    ("plastron", "Plastron"),
+    ("carapace", "Carapace"),
+    ("internals", "Internal organs"),
+    ("cloaca", "Cloaca"),
+    ("tail", "Tail"),
+    ("flipper-front-left-1", "Front left flipper, 1st scale from body"),
+    ("flipper-front-left-2", "Front left flipper, 2nd scale from body"),
+    ("flipper-front-left-3", "Front left flipper, 3rd scale from body"),
+    ("flipper-front-left", "Front left flipper"),
+    ("flipper-front-right-1", "Front right flipper, 1st scale from body"),
+    ("flipper-front-right-2", "Front right flipper, 2nd scale from body"),
+    ("flipper-front-right-3", "Front right flipper, 3rd scale from body"),
+    ("flipper-front-right", "Front right flipper"),
+    ("flipper-rear-left", "Fear left flipper"),
+    ("flipper-rear-right", "Fear right flipper"),
+    ("shoulder-left", "Left shoulder"),
+    ("shoulder-right", "Right shoulder"),
+    (BODY_PART_DEFAULT, "Whole turtle"),
     ("other", "Other"),
 )
 
 TAG_TYPE_DEFAULT = "flipper-tag"
 TAG_TYPE_CHOICES = (
-    (TAG_TYPE_DEFAULT, "Flipper Tag"),
-    ("tag-scar", "Tag Scar"),
-    ("pit-tag", "PIT Tag"),
-    ("sat-tag", "Satellite Relay Data Logger"),  # SRDL
-    ("blood-sample", "Blood Sample"),
-    ("biopsy-sample", "Biopsy Sample"),
-    ("stomach-content-sample", "Stomach Content Sample"),
-    ("physical-sample", "Physical Sample"),
-    ("egg-sample", "Egg Sample"),
-    (
-        "qld-monel-a-flipper-tag",
-        "QLD Monel Series A flipper tag",
-    ),  # TRT_IDENTIFICATION_TYPES A
-    (
-        "qld-titanium-k-flipper-tag",
-        "QLD Titanium Series K flipper tag",
-    ),  # TRT_IDENTIFICATION_TYPES K
-    (
-        "qld-titanium-t-flipper-tag",
-        "QLD Titanium Series T flipper tag",
-    ),  # TRT_IDENTIFICATION_TYPES T
+    (TAG_TYPE_DEFAULT, "Flipper tag"),
+    ("tag-scar", "Tag scar"),
+    ("pit-tag", "PIT tag"),
+    ("sat-tag", "Satellite relay data logger"),  # SRDL
+    ("blood-sample", "Blood sample"),
+    ("biopsy-sample", "Biopsy sample"),
+    ("stomach-content-sample", "Stomach content sample"),
+    ("physical-sample", "Physical sample"),
+    ("egg-sample", "Egg sample"),
+    ("qld-monel-a-flipper-tag", "QLD Monel Series A flipper tag"),  # TRT_IDENTIFICATION_TYPES A
+    ("qld-titanium-k-flipper-tag", "QLD Titanium Series K flipper tag"),  # TRT_IDENTIFICATION_TYPES K
+    ("qld-titanium-t-flipper-tag", "QLD Titanium Series T flipper tag"),  # TRT_IDENTIFICATION_TYPES T
     ("acoustic-tag", "Acoustic tag"),  # Acoustic
-    (
-        "commonwealth-titanium-flipper-tag",
-        "Commonwealth titanium flipper tag (old db value)",
-    ),  # CA cmlth
+    ("commonwealth-titanium-flipper-tag", "Commonwealth titanium flipper tag (old db value)"),  # CA cmlth
     ("cmlth-titanium-flipper-tag", "Commonwealth titanium flipper tag"),  # CA cmlth
     ("cayman-juvenile-tag", "Cayman juvenile tag"),  # CT
     ("hawaii-inconel-flipper-tag", "Hawaii Inst Mar Biol Inconel tag"),  # I
@@ -80,14 +68,8 @@ TAG_TYPE_CHOICES = (
     ("narangebub-nickname", "Narangebup rehab informal name"),  # RREC
     ("aqwa-nickname", "AQWA informal name"),  # UWW, UnderWater World
     ("atlantis-nickname", "Atlantis informal name"),  # ATLANTIS
-    (
-        "wa-museum-reptile-registration-number",
-        "WA Museum Natural History Reptiles Catalogue Registration Number (old db value)",
-    ),  # WAMusR
-    (
-        "wam-reptile-registration-number",
-        "WA Museum Natural History Reptiles Catalogue Registration Number",
-    ),  # WAMusR
+    ("wa-museum-reptile-registration-number", "WA Museum Natural History Reptiles Catalogue Registration Number (old db value)"),  # WAMusR
+    ("wam-reptile-registration-number", "WA Museum Natural History Reptiles Catalogue Registration Number"),  # WAMusR
     ("genetic-tag", "Genetic ID sequence"),
     ("other", "Other"),
 )
@@ -95,19 +77,19 @@ TAG_TYPE_CHOICES = (
 TAG_STATUS_DEFAULT = "resighted"
 TAG_STATUS_APPLIED_NEW = "applied-new"
 TAG_STATUS_CHOICES = (  # TRT_TAG_STATES
-    ("ordered", "ordered from manufacturer"),
-    ("produced", "produced by manufacturer"),
-    ("delivered", "delivered to HQ"),
-    ("allocated", "allocated to field team"),
-    (TAG_STATUS_APPLIED_NEW, "applied new"),  # A1, AE
-    (TAG_STATUS_DEFAULT, "re-sighted associated with animal"),  # OX, P, P_OK, RQ, P_ED
-    ("reclinched", "re-sighted and reclinched on animal"),  # RC
-    ("removed", "taken off animal"),  # OO, R
-    ("found", "found detached"),
-    ("returned", "returned to HQ"),
-    ("decommissioned", "decommissioned"),
-    ("destroyed", "destroyed"),
-    ("observed", "observed in any other context, see comments"),
+    ("ordered", "Ordered from manufacturer"),
+    ("produced", "Produced by manufacturer"),
+    ("delivered", "Delivered to HQ"),
+    ("allocated", "Allocated to field team"),
+    (TAG_STATUS_APPLIED_NEW, "Applied new"),  # A1, AE
+    (TAG_STATUS_DEFAULT, "Re-sighted associated with animal"),  # OX, P, P_OK, RQ, P_ED
+    ("reclinched", "Re-sighted and reclinched on animal"),  # RC
+    ("removed", "Taken off animal"),  # OO, R
+    ("found", "Found detached"),
+    ("returned", "Returned to HQ"),
+    ("decommissioned", "Decommissioned"),
+    ("destroyed", "Destroyed"),
+    ("observed", "Observed in any other context, see comments"),
 )
 
 TAG_STATUS_RESIGHTED = ("resighted", "reclinched", "removed")
@@ -559,31 +541,31 @@ ACCURACY_CHOICES = (
 
 DAMAGE_TYPE_CHOICES = (
     # Amputations
-    ("tip-amputated", "tip amputation"),
-    ("amputated-from-nail", "amputation from nail"),
-    ("amputated-half", "half amputation"),
-    ("amputated-entirely", "entire amputation"),
+    ("tip-amputated", "Tip amputation"),
+    ("amputated-from-nail", "Amputation from nail"),
+    ("amputated-half", "Half amputation"),
+    ("amputated-entirely", "Entire amputation"),
     # Epiphytes and gross things
-    ("barnacles", "barnacles"),
-    ("algal-growth", "algal growth"),
-    ("tumor", "tumor"),
+    ("barnacles", "Barnacles"),
+    ("algal-growth", "Algal growth"),
+    ("tumor", "Tumor"),
     # Tags
-    ("tag-scar", "tag scar"),
-    ("tag-seen", "tag seen but not identified"),
+    ("tag-scar", "Tag scar"),
+    ("tag-seen", "Tag seen but not identified"),
     # Injuries
-    ("cuts", "cuts"),
-    ("boat-strike", "boat or propeller strike"),
-    ("entanglement", "entanglement"),
+    ("cuts", "Cuts"),
+    ("boat-strike", "Boat or propeller strike"),
+    ("entanglement", "Entanglement"),
     # Morphologic aberrations
-    ("deformity", "deformity"),
+    ("deformity", "Deformity"),
     # Catch-all
-    ("other", "other"),
+    ("other", "Other"),
 )
 
 DAMAGE_AGE_CHOICES = (
-    ("healed-entirely", "entirely healed"),
-    ("healed-partially", "partially healed"),
-    ("fresh", "fresh"),
+    ("healed-entirely", "Entirely healed"),
+    ("healed-partially", "Partially healed"),
+    ("fresh", "Fresh"),
 )
 
 NEST_DAMAGE_DEFAULT = "turtle"

@@ -1,8 +1,10 @@
 from datetime import datetime, timedelta
 from dateutil import parser
 from django.conf import settings
-from wastd.odk import get_auth_headers, get_form_submission_data, parse_geopoint, parse_geopoint_accuracy, get_submission_attachment
+import logging
 from users.models import User
+from wastd.odk import get_auth_headers, get_form_submission_data, parse_geopoint, parse_geopoint_accuracy, get_submission_attachment
+
 from .models import (
     TurtleNestEncounter,
     TurtleNestObservation,
@@ -18,11 +20,17 @@ from .models import (
     Survey,
     SurveyMediaAttachment,
     Area,
+    AnimalEncounter,
+    TurtleMorphometricObservation,
+    TurtleDamageObservation,
+    TagObservation,
 )
 from .utils import guess_area, guess_site
 
+LOGGER = logging.getLogger('turtles')
 
-def import_turtle_track_or_nest(form_id="turtle_track_or_nest"):
+
+def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=None):
     """Import submissions to the Turtle Track or Nest ODK form.
     Each submission should create:
         1 TurtleNestEncounter
@@ -36,16 +44,16 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest"):
         0+ TurtleHatchlingEmergenceOutlierObservation (outlier measurements measured in fan angles)
         0+ LightSourceObservation (measured in fan angles)
     """
-    print("Downloading auth headers")
-    auth_headers = get_auth_headers()
+    if not auth_headers:
+        LOGGER.info("Downloading auth headers")
+        auth_headers = get_auth_headers()
     project_id = settings.ODK_API_PROJECTID
-    print("Downloading submission data")
+    LOGGER.info(f"Downloading {form_id} submission data")
     submissions = get_form_submission_data(auth_headers, project_id, form_id)
 
     for submission in submissions:
         instance_id = submission['meta']['instanceID']
         if TurtleNestEncounter.objects.filter(source='odk', source_id=instance_id):
-            print(f"Skipped {instance_id}")
             continue  # Skip records already imported.
 
         # Try to match the reporter to an existing User. If not, create a new one.
@@ -56,7 +64,7 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest"):
             username = reporter.lower().replace(' ', '_')
             user = User.objects.create(name=reporter, username=username)
             user.set_unusable_password()
-            print(f"Created new user {user}")
+            LOGGER.info(f"Created new user {user}")
 
         # Confusingly, TurtleNestEncounter objects cover both nest, track and nest & nest encounters.
         encounter = TurtleNestEncounter(
@@ -91,7 +99,7 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest"):
         encounter.site = encounter.guess_site
 
         encounter.save()
-        print(f'Created TurtleNestEncounter: {encounter}')
+        LOGGER.info(f'Created TurtleNestEncounter: {encounter}')
 
         # TurtleNestObservation object
         if 'egg_count' in submission:
@@ -112,11 +120,11 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest"):
             nest_observation.egg_count = nest_observation.no_egg_shells + nest_observation.no_undeveloped_eggs + nest_observation.no_unhatched_eggs + nest_observation.no_unhatched_term
             nest_observation.eggs_laid = nest_observation.egg_count and nest_observation.egg_count > 0
             nest_observation.save()
-            print(f'Created TurtleNestObservation {nest_observation}')
+            LOGGER.info(f'Created TurtleNestObservation {nest_observation}')
 
             # Photo of eggs.
             filename = observation['photo_eggs']
-            print(f"Downloading {filename}")
+            LOGGER.info(f"Downloading {filename}")
             attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
             photo = MediaAttachment(
                 encounter=encounter,
@@ -125,7 +133,7 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest"):
                 attachment=attachment,
             )
             photo.save()
-            print(f'Created MediaAttachment {photo}')
+            LOGGER.info(f'Created MediaAttachment {photo}')
 
         # TurtleNestDisturbanceObservation objects
         if 'disturbance_observations' in submission:
@@ -139,11 +147,11 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest"):
                     comments=observation['comments'],
                 )
                 disturbance.save()
-                print(f'Created TurtleNestDisturbanceObservation: {disturbance}')
+                LOGGER.info(f'Created TurtleNestDisturbanceObservation: {disturbance}')
 
                 # All photos are associated with the parent Encounter, as another Observation subclass.
                 filename = observation['photo_disturbance']
-                print(f"Downloading {filename}")
+                LOGGER.info(f"Downloading {filename}")
                 attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
                 photo = MediaAttachment(
                     encounter=encounter,
@@ -152,14 +160,14 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest"):
                     attachment=attachment,
                 )
                 photo.save()
-                print(f'Created MediaAttachment {photo}')
+                LOGGER.info(f'Created MediaAttachment {photo}')
 
         # TurtleTrackObservation object.
         if 'track_photos' in submission:
             track_observation = submission['track_photos']
             if track_observation['photo_track_1']:
                 filename = track_observation['photo_track_1']
-                print(f"Downloading {filename}")
+                LOGGER.info(f"Downloading {filename}")
                 attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
                 photo = MediaAttachment(
                     encounter=encounter,
@@ -168,10 +176,10 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest"):
                     attachment=attachment,
                 )
                 photo.save()
-                print(f'Created MediaAttachment {photo}')
+                LOGGER.info(f'Created MediaAttachment {photo}')
             if track_observation['photo_track_2']:
                 filename = track_observation['photo_track_2']
-                print(f"Downloading {filename}")
+                LOGGER.info(f"Downloading {filename}")
                 attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
                 photo = MediaAttachment(
                     encounter=encounter,
@@ -180,7 +188,7 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest"):
                     attachment=attachment,
                 )
                 photo.save()
-                print(f'Created MediaAttachment {photo}')
+                LOGGER.info(f'Created MediaAttachment {photo}')
             if any([
                 track_observation['max_track_width_front'],
                 track_observation['max_track_width_rear'],
@@ -196,7 +204,7 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest"):
                     step_length=int(track_observation['step_length']) if track_observation['step_length'] else None,
                     tail_pokes=track_observation['tail_pokes'],
                 )
-                print(f'Created TurtleTrackObservation {track_observation}')
+                LOGGER.info(f'Created TurtleTrackObservation {track_observation}')
 
         # NestTagObservation object.
         if 'nest_tag' in submission:
@@ -209,11 +217,11 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest"):
                 comments=submission['nest_tag']['tag_comments'],
             )
             tag_observation.save()
-            print(f'Created NestTagObservation {tag_observation}')
+            LOGGER.info(f'Created NestTagObservation {tag_observation}')
             # Tag photo
             if submission['nest_tag']['photo_tag']:
                 filename = submission['nest_tag']['photo_tag']
-                print(f"Downloading {filename}")
+                LOGGER.info(f"Downloading {filename}")
                 attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
                 photo = MediaAttachment(
                     encounter=encounter,
@@ -222,51 +230,29 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest"):
                     attachment=attachment,
                 )
                 photo.save()
-                print(f'Created MediaAttachment {photo}')
+                LOGGER.info(f'Created MediaAttachment {photo}')
 
         # LoggerObservation objects
         if 'loggers' in submission:
             loggers = submission['loggers']['logger_details']
             # Might be a list or a single object :|
-            if isinstance(loggers, list):
-                for logger in loggers:
-                    logger_observation = LoggerObservation(
-                        encounter=encounter,
-                        logger_type=logger['logger_type'],
-                        deployment_status=logger['logger_status'],
-                        logger_id=logger['logger_id'],
-                        comments=logger['logger_comments'],
-                    )
-                    logger_observation.save()
-                    print(f'Created LoggerObservation: {logger_observation}')
+            if not isinstance(loggers, list):
+                loggers = list(loggers)
 
-                    if logger['photo_logger']:
-                        filename = logger['photo_logger']
-                        print(f'Downloading {filename}')
-                        attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
-                        photo = MediaAttachment(
-                            encounter=encounter,
-                            media_type='photograph',
-                            title=f'Photo of logger {filename}',
-                            attachment=attachment,
-                        )
-                        photo.save()
-                        print(f'Created MediaAttachment {photo}')
-            else:
-                # Address `loggers` as an object, instead of iterating on it.
+            for logger in loggers:
                 logger_observation = LoggerObservation(
                     encounter=encounter,
-                    logger_type=loggers['logger_type'],
-                    deployment_status=loggers['logger_status'],
-                    logger_id=loggers['logger_id'],
-                    comments=loggers['logger_comments'],
+                    logger_type=logger['logger_type'],
+                    deployment_status=logger['logger_status'],
+                    logger_id=logger['logger_id'],
+                    comments=logger['logger_comments'],
                 )
                 logger_observation.save()
-                print(f'Created LoggerObservation: {logger_observation}')
+                LOGGER.info(f'Created LoggerObservation: {logger_observation}')
 
-                if loggers['photo_logger']:
-                    filename = loggers['photo_logger']
-                    print(f'Downloading {filename}')
+                if logger['photo_logger']:
+                    filename = logger['photo_logger']
+                    LOGGER.info(f'Downloading {filename}')
                     attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
                     photo = MediaAttachment(
                         encounter=encounter,
@@ -275,32 +261,24 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest"):
                         attachment=attachment,
                     )
                     photo.save()
-                    print(f'Created MediaAttachment {photo}')
+                    LOGGER.info(f'Created MediaAttachment {photo}')
 
         # HatchlingMorphometricObservation objects
         if 'hatchling_measurements' in submission:
             hatchlings = submission['hatchling_measurements']['hatchling_measurement']
             # Might be a list or a single object :|
-            if isinstance(hatchlings, list):
-                for hatchling in hatchlings:
-                    hatchling_measurement = HatchlingMorphometricObservation(
-                        encounter=encounter,
-                        straight_carapace_length_mm=int(hatchling['straight_carapace_length_mm']) if hatchling['straight_carapace_length_mm'] else None,
-                        straight_carapace_width_mm=int(hatchling['straight_carapace_width_mm']) if hatchling['straight_carapace_width_mm'] else None,
-                        body_weight_g=int(hatchling['body_weight_g']) if hatchling['body_weight_g'] else None,
-                    )
-                    hatchling_measurement.save()
-                    print(f'Created HatchlingMorphometricObservation: {hatchling_measurement}')
-            else:
-                # Address `hatchlings` as an object, instead of iterating on it.
+            if not isinstance(hatchlings, list):
+                hatchlings = list(hatchlings)
+
+            for hatchling in hatchlings:
                 hatchling_measurement = HatchlingMorphometricObservation(
                     encounter=encounter,
-                    straight_carapace_length_mm=int(hatchlings['straight_carapace_length_mm']) if hatchlings['straight_carapace_length_mm'] else None,
-                    straight_carapace_width_mm=int(hatchlings['straight_carapace_width_mm']) if hatchlings['straight_carapace_width_mm'] else None,
-                    body_weight_g=int(hatchlings['body_weight_g']) if hatchlings['body_weight_g'] else None,
+                    straight_carapace_length_mm=int(hatchling['straight_carapace_length_mm']) if hatchling['straight_carapace_length_mm'] else None,
+                    straight_carapace_width_mm=int(hatchling['straight_carapace_width_mm']) if hatchling['straight_carapace_width_mm'] else None,
+                    body_weight_g=int(hatchling['body_weight_g']) if hatchling['body_weight_g'] else None,
                 )
                 hatchling_measurement.save()
-                print(f'Created HatchlingMorphometricObservation: {hatchling_measurement}')
+                LOGGER.info(f'Created HatchlingMorphometricObservation: {hatchling_measurement}')
 
         # TurtleHatchlingEmergenceObservation objects
         if 'fan_angles' in submission:
@@ -308,7 +286,7 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest"):
 
             # Seawards photo
             filename = fan['photo_hatchling_tracks_seawards']
-            print(f'Downloading {filename}')
+            LOGGER.info(f'Downloading {filename}')
             attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
             photo = MediaAttachment(
                 encounter=encounter,
@@ -317,11 +295,11 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest"):
                 attachment=attachment,
             )
             photo.save()
-            print(f'Created MediaAttachment {photo}')
+            LOGGER.info(f'Created MediaAttachment {photo}')
 
             # Relief photo
             filename = fan['photo_hatchling_tracks_relief']
-            print(f'Downloading {filename}')
+            LOGGER.info(f'Downloading {filename}')
             attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
             photo = MediaAttachment(
                 encounter=encounter,
@@ -330,7 +308,7 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest"):
                 attachment=attachment,
             )
             photo.save()
-            print(f'Created MediaAttachment {photo}')
+            LOGGER.info(f'Created MediaAttachment {photo}')
 
             emergence_obs = TurtleHatchlingEmergenceObservation(
                 encounter=encounter,
@@ -354,45 +332,26 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest"):
 
             # TODO: path to sea record.
             emergence_obs.save()
-            print(f'Created TurtleHatchlingEmergenceObservation {emergence_obs}')
+            LOGGER.info(f'Created TurtleHatchlingEmergenceObservation {emergence_obs}')
 
             if 'outlier_tracks' in submission:
                 # Might be a list or a single object :|
                 outliers = submission['outlier_tracks']['outlier_track']
                 if isinstance(outliers, list):
-                    for outlier in outliers:
-                        outlier_obs = TurtleHatchlingEmergenceOutlierObservation(
-                            encounter=encounter,
-                            bearing_outlier_track_degrees=int(outlier['outlier_track_bearing_manual']) if outlier['outlier_track_bearing_manual'] else None,
-                            outlier_group_size=int(outlier['outlier_group_size']) if outlier['outlier_group_size'] else None,
-                            outlier_track_comment=outlier['outlier_track_comment'],
-                        )
-                        outlier_obs.save()
-                        print(f'Created TurtleHatchlingEmergenceOutlierObservation {outlier_obs}')
-                        # Outlier photo
-                        filename = outlier['outlier_track_photo']
-                        print(f'Downloading {filename}')
-                        attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
-                        photo = MediaAttachment(
-                            encounter=encounter,
-                            media_type='photograph',
-                            title=f'Outlier track of fan angles {filename}',
-                            attachment=attachment,
-                        )
-                        photo.save()
-                        print(f'Created MediaAttachment {photo}')
-                else:
+                    outliers = list(outliers)
+
+                for outlier in outliers:
                     outlier_obs = TurtleHatchlingEmergenceOutlierObservation(
                         encounter=encounter,
-                        bearing_outlier_track_degrees=int(outliers['outlier_track_bearing_manual']) if outliers['outlier_track_bearing_manual'] else None,
-                        outlier_group_size=int(outliers['outlier_group_size']) if outliers['outlier_group_size'] else None,
-                        outlier_track_comment=outliers['outlier_track_comment'],
+                        bearing_outlier_track_degrees=int(outlier['outlier_track_bearing_manual']) if outlier['outlier_track_bearing_manual'] else None,
+                        outlier_group_size=int(outlier['outlier_group_size']) if outlier['outlier_group_size'] else None,
+                        outlier_track_comment=outlier['outlier_track_comment'],
                     )
                     outlier_obs.save()
-                    print(f'Created TurtleHatchlingEmergenceOutlierObservation {outlier_obs}')
+                    LOGGER.info(f'Created TurtleHatchlingEmergenceOutlierObservation {outlier_obs}')
                     # Outlier photo
-                    filename = outliers['outlier_track_photo']
-                    print(f'Downloading {filename}')
+                    filename = outlier['outlier_track_photo']
+                    LOGGER.info(f'Downloading {filename}')
                     attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
                     photo = MediaAttachment(
                         encounter=encounter,
@@ -401,47 +360,27 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest"):
                         attachment=attachment,
                     )
                     photo.save()
-                    print(f'Created MediaAttachment {photo}')
+                    LOGGER.info(f'Created MediaAttachment {photo}')
 
             if 'light_sources' in submission:
                 # Might be a list or a single object :|
                 light_sources = submission['light_sources']['light_source']
-                if isinstance(light_sources, list):
-                    for source in light_sources:
-                        source_obs = LightSourceObservation(
-                            encounter=encounter,
-                            bearing_light_degrees=int(source['light_bearing_manual']) if source['light_bearing_manual'] else None,
-                            light_source_type=source['light_source_type'],
-                            light_source_description=source['light_source_description'],
-                        )
-                        source_obs.save()
-                        print(f'Created LightSourceObservation {source_obs}')
+                if not isinstance(light_sources, list):
+                    light_sources = list(light_sources)
 
-                        # Light source photo
-                        filename = source['light_source_photo']
-                        print(f'Downloading {filename}')
-                        attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
-                        photo = MediaAttachment(
-                            encounter=encounter,
-                            media_type='photograph',
-                            title=f'Light source photo {filename}',
-                            attachment=attachment,
-                        )
-                        photo.save()
-                        print(f'Created MediaAttachment {photo}')
-                else:
+                for source in light_sources:
                     source_obs = LightSourceObservation(
                         encounter=encounter,
-                        bearing_light_degrees=int(light_sources['light_bearing_manual']) if light_sources['light_bearing_manual'] else None,
-                        light_source_type=light_sources['light_source_type'],
-                        light_source_description=light_sources['light_source_description'],
+                        bearing_light_degrees=int(source['light_bearing_manual']) if source['light_bearing_manual'] else None,
+                        light_source_type=source['light_source_type'],
+                        light_source_description=source['light_source_description'],
                     )
                     source_obs.save()
-                    print(f'Created LightSourceObservation {source_obs}')
+                    LOGGER.info(f'Created LightSourceObservation {source_obs}')
 
                     # Light source photo
-                    filename = light_sources['light_source_photo']
-                    print(f'Downloading {filename}')
+                    filename = source['light_source_photo']
+                    LOGGER.info(f'Downloading {filename}')
                     attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
                     photo = MediaAttachment(
                         encounter=encounter,
@@ -450,23 +389,23 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest"):
                         attachment=attachment,
                     )
                     photo.save()
-                    print(f'Created MediaAttachment {photo}')
+                    LOGGER.info(f'Created MediaAttachment {photo}')
 
 
-def import_site_visit_start(form_id="site_visit_start"):
+def import_site_visit_start(form_id="site_visit_start", auth_headers=None):
     """Import submissions to the Site Visit Start ODK form.
     Each submission should create one Survey.
     """
-    print("Downloading auth headers")
-    auth_headers = get_auth_headers()
+    if not auth_headers:
+        LOGGER.info("Downloading auth headers")
+        auth_headers = get_auth_headers()
     project_id = settings.ODK_API_PROJECTID
-    print("Downloading submission data")
+    LOGGER.info(f"Downloading {form_id} submission data")
     submissions = get_form_submission_data(auth_headers, project_id, form_id)
 
     for submission in submissions:
         instance_id = submission['meta']['instanceID']
         if Survey.objects.filter(source='odk', source_id=instance_id):
-            print(f"Skipped {instance_id}")
             continue  # Skip records already imported.
 
         # Try to match the reporter to an existing User. If not, create a new one.
@@ -477,7 +416,7 @@ def import_site_visit_start(form_id="site_visit_start"):
             username = reporter.lower().replace(' ', '_')
             user = User.objects.create(name=reporter, username=username)
             user.set_unusable_password()
-            print(f"Created new user {user}")
+            LOGGER.info(f"Created new user {user}")
 
         visit = submission['site_visit']
         survey = Survey(
@@ -507,14 +446,14 @@ def import_site_visit_start(form_id="site_visit_start"):
                     username = name.lower().replace(' ', '_')
                     user = User.objects.create(name=name, username=username)
                     user.set_unusable_password()
-                    print(f"Created new user {user}")
+                    LOGGER.info(f"Created new user {user}")
                 survey.team.add(user)
 
-        print(f'Created Survey {survey}')
+        LOGGER.info(f'Created Survey {survey}')
 
         if visit['site_conditions']:
             filename = visit['site_conditions']
-            print(f"Downloading {filename}")
+            LOGGER.info(f"Downloading {filename}")
             attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
             photo = SurveyMediaAttachment(
                 survey=survey,
@@ -523,24 +462,24 @@ def import_site_visit_start(form_id="site_visit_start"):
                 attachment=attachment,
             )
             photo.save()
-            print(f'Created SurveyMediaAttachment {photo}')
+            LOGGER.info(f'Created SurveyMediaAttachment {photo}')
 
 
-def import_site_visit_end(form_id="site_visit_end", duration_hr=8):
+def import_site_visit_end(form_id="site_visit_end", duration_hr=8, auth_headers=None):
     """Import submissions to the Site Visit End ODK form.
     This differs from the functions above, in that it tries to match on an existing
     Survey object and update its details.
     """
-    print("Downloading auth headers")
-    auth_headers = get_auth_headers()
+    if not auth_headers:
+        LOGGER.info("Downloading auth headers")
+        auth_headers = get_auth_headers()
     project_id = settings.ODK_API_PROJECTID
-    print("Downloading submission data")
+    LOGGER.info(f"Downloading {form_id} submission data")
     submissions = get_form_submission_data(auth_headers, project_id, form_id)
 
     for submission in submissions:
         instance_id = submission['meta']['instanceID']
         if Survey.objects.filter(source='odk', end_source_id=instance_id):
-            print(f"Skipped {instance_id}")
             continue  # Skip records already imported.
 
         # Try to match the reporter to an existing User. If no match, skip record.
@@ -556,7 +495,7 @@ def import_site_visit_end(form_id="site_visit_end", duration_hr=8):
         start_time_earliest = end_time - timedelta(hours=duration_hr)
         site = Area.objects.filter(area_type=Area.AREATYPE_SITE, geom__covers=location).first()
         if not site:
-            #print("Unable to match a suitable site")
+            #LOGGER.info("Unable to match a suitable site")
             continue
 
         # Try to match one (only) existing Survey object.
@@ -566,7 +505,7 @@ def import_site_visit_end(form_id="site_visit_end", duration_hr=8):
             reporter=user, site=site, start_time__lt=end_time, start_time__gte=start_time_earliest,
         )
         if surveys.count() != 1:
-            print(f"Unable to match a Survey (matched {surveys.count()})")
+            LOGGER.info(f"Unable to match a Survey (matched {surveys.count()})")
             continue
         else:
             survey = surveys.first()
@@ -578,11 +517,11 @@ def import_site_visit_end(form_id="site_visit_end", duration_hr=8):
         survey.end_comments = visit['comments']
         survey.save()
 
-        print(f'Updated Survey {survey}')
+        LOGGER.info(f'Updated Survey {survey}')
 
         if visit['site_conditions']:
             filename = visit['site_conditions']
-            print(f"Downloading {filename}")
+            LOGGER.info(f"Downloading {filename}")
             attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
             photo = SurveyMediaAttachment(
                 survey=survey,
@@ -591,4 +530,268 @@ def import_site_visit_end(form_id="site_visit_end", duration_hr=8):
                 attachment=attachment,
             )
             photo.save()
-            print(f'Created SurveyMediaAttachment {photo}')
+            LOGGER.info(f'Created SurveyMediaAttachment {photo}')
+
+
+def import_marine_wildlife_incident(form_id="marine_wildlife_incident", auth_headers=None):
+    """Import submissions to the Marine Wildlife Incident ODK form.
+    Each submission should create:
+        1 AnimalEncounter
+        0-1 TurtleMorphometricObservation
+        0+ TurtleDamageObservation
+        0+ TagObservation
+    """
+    if not auth_headers:
+        LOGGER.info("Downloading auth headers")
+        auth_headers = get_auth_headers()
+    project_id = settings.ODK_API_PROJECTID
+    LOGGER.info(f"Downloading {form_id} submission data")
+    submissions = get_form_submission_data(auth_headers, project_id, form_id)
+
+    for submission in submissions:
+        instance_id = submission['meta']['instanceID']
+        if AnimalEncounter.objects.filter(source='odk', source_id=instance_id):
+            continue  # Skip records already imported.
+
+        # Try to match the reporter to an existing User. If not, create a new one.
+        reporter = submission['reporter'].strip()
+        if User.objects.filter(name__icontains=reporter).exists() and User.objects.filter(name__icontains=reporter).count() == 1:
+            user = User.objects.get(name__icontains=reporter)
+        else:  # Create a new user.
+            username = reporter.lower().replace(' ', '_')
+            user = User.objects.create(name=reporter, username=username)
+            user.set_unusable_password()
+            LOGGER.info(f"Created new user {user}")
+
+        site_visit = submission['site_visit']
+        encounter = AnimalEncounter(
+            status='imported',
+            source='odk',
+            source_id=instance_id,
+            where=parse_geopoint(site_visit['observed_at']),
+            when=parser.isoparse(site_visit['incident_time']),
+            observer=user,
+            reporter=user,
+            comments='',
+            habitat=site_visit['habitat'],
+        )
+        if site_visit['observed_at_manual']:
+            encounter.where = parse_geopoint(site_visit['observed_at_manual'])
+        if site_visit['location_comment']:
+            encounter.comments += site_visit['location_comment'] + '\n'
+        if submission['animal_fate']['animal_fate_comment']:
+            encounter.comments += submission['animal_fate']['animal_fate_comment']
+
+        details = submission['details']
+        encounter.taxon = details['taxon']
+        encounter.species = details['species']
+        encounter.sex = details['sex']
+        encounter.maturity = details['maturity']
+
+        status = submission['status']
+        encounter.health = status['health']
+        encounter.activity = status['activity']
+        encounter.behaviour = status['behaviour']
+
+        death = submission['death']
+        encounter.cause_of_death = death['cause_of_death']
+        encounter.cause_of_death_confidence = death['cause_of_death_confidence']
+
+        checks = submission['checks']
+        encounter.checked_for_injuries = checks['checked_for_injuries']
+        encounter.scanned_for_pit_tags = checks['scanned_for_pit_tags']
+        encounter.checked_for_flipper_tags = checks['checked_for_flipper_tags']
+
+        encounter.save()
+        LOGGER.info(f'Created AnimalEncounter: {encounter}')
+
+        # All photo uploads.
+        if submission['site_visit']['photo_habitat']:
+            filename = submission['site_visit']['photo_habitat']
+            LOGGER.info(f'Downloading {filename}')
+            attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
+            photo = MediaAttachment(
+                encounter=encounter,
+                media_type='photograph',
+                title=f'Habitate photo {filename}',
+                attachment=attachment,
+            )
+            photo.save()
+            LOGGER.info(f'Created MediaAttachment {photo}')
+
+        if submission['photos_turtle']['photo_carapace_top']:
+            filename = submission['photos_turtle']['photo_carapace_top']
+            LOGGER.info(f'Downloading {filename}')
+            attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
+            photo = MediaAttachment(
+                encounter=encounter,
+                media_type='photograph',
+                title=f'Carapace photo {filename}',
+                attachment=attachment,
+            )
+            photo.save()
+            LOGGER.info(f'Created MediaAttachment {photo}')
+
+        if submission['photos_turtle']['photo_head_top']:
+            filename = submission['photos_turtle']['photo_head_top']
+            LOGGER.info(f'Downloading {filename}')
+            attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
+            photo = MediaAttachment(
+                encounter=encounter,
+                media_type='photograph',
+                title=f'Head top photo {filename}',
+                attachment=attachment,
+            )
+            photo.save()
+            LOGGER.info(f'Created MediaAttachment {photo}')
+
+        if submission['photos_turtle']['photo_head_side']:
+            filename = submission['photos_turtle']['photo_head_side']
+            LOGGER.info(f'Downloading {filename}')
+            attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
+            photo = MediaAttachment(
+                encounter=encounter,
+                media_type='photograph',
+                title=f'Head side photo {filename}',
+                attachment=attachment,
+            )
+            photo.save()
+            LOGGER.info(f'Created MediaAttachment {photo}')
+
+        if submission['photos_turtle']['photo_head_front']:
+            filename = submission['photos_turtle']['photo_head_front']
+            LOGGER.info(f'Downloading {filename}')
+            attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
+            photo = MediaAttachment(
+                encounter=encounter,
+                media_type='photograph',
+                title=f'Head front photo {filename}',
+                attachment=attachment,
+            )
+            photo.save()
+            LOGGER.info(f'Created MediaAttachment {photo}')
+
+        if submission['habitat_photos']['photo_habitat_1']:
+            filename = submission['habitat_photos']['photo_habitat_1']
+            LOGGER.info(f'Downloading {filename}')
+            attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
+            photo = MediaAttachment(
+                encounter=encounter,
+                media_type='photograph',
+                title=f'Scene photo {filename}',
+                attachment=attachment,
+            )
+            photo.save()
+            LOGGER.info(f'Created MediaAttachment {photo}')
+
+        if submission['habitat_photos']['photo_habitat_2']:
+            filename = submission['habitat_photos']['photo_habitat_2']
+            LOGGER.info(f'Downloading {filename}')
+            attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
+            photo = MediaAttachment(
+                encounter=encounter,
+                media_type='photograph',
+                title=f'Scene photo {filename}',
+                attachment=attachment,
+            )
+            photo.save()
+            LOGGER.info(f'Created MediaAttachment {photo}')
+
+        if submission['habitat_photos']['photo_habitat_3']:
+            filename = submission['habitat_photos']['photo_habitat_3']
+            LOGGER.info(f'Downloading {filename}')
+            attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
+            photo = MediaAttachment(
+                encounter=encounter,
+                media_type='photograph',
+                title=f'Scene photo {filename}',
+                attachment=attachment,
+            )
+            photo.save()
+            LOGGER.info(f'Created MediaAttachment {photo}')
+
+        # TurtleDamageObservation
+        if 'damage_observations' in submission:
+            damage_observations = submission['damage_observations']['damage_observation']
+            # Might be a list or a single object :|
+            if not isinstance(damage_observations, list):
+                damage_observations = list(damage_observations)
+
+            for obs in damage_observations:
+                damage_observation = TurtleDamageObservation(
+                    encounter=encounter,
+                    body_part=obs['body_part'],
+                    damage_type=obs['damage_type'],
+                    damage_age=obs['damage_age'],
+                    description=obs['description'],
+                )
+                damage_observation.save()
+                LOGGER.info(f'Created TurtleDamageObservation: {damage_observation}')
+
+                if obs['photo_damage']:
+                    filename = obs['photo_damage']
+                    LOGGER.info(f'Downloading {filename}')
+                    attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
+                    photo = MediaAttachment(
+                        encounter=encounter,
+                        media_type='photograph',
+                        title=f'Animal damage photo {filename}',
+                        attachment=attachment,
+                    )
+                    photo.save()
+                    LOGGER.info(f'Created MediaAttachment {photo}')
+
+        # TagObservation
+        if 'tag_observations' in submission:
+            tag_observations = submission['tag_observations']['tag_observation']
+            # Might be a list or a single object :|
+            if not isinstance(tag_observations, list):
+                tag_observations = list(tag_observations)
+
+            for obs in tag_observations:
+                tag_observation = TagObservation(
+                    encounter=encounter,
+                    tag_type=obs['tag_type'],
+                    tag_location=obs['tag_location'],
+                    name=obs['tag_id'],
+                    status=obs['tag_status'],
+                    recorder=user,
+                    comments=obs['tag_comment'],
+                )
+                tag_observation.save()
+                LOGGER.info(f'Created TagObservation: {tag_observation}')
+
+                if obs['tag_photo']:
+                    filename = obs['tag_photo']
+                    LOGGER.info(f'Downloading {filename}')
+                    attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
+                    photo = MediaAttachment(
+                        encounter=encounter,
+                        media_type='photograph',
+                        title=f'Tag photo {filename}',
+                        attachment=attachment,
+                    )
+                    photo.save()
+                    LOGGER.info(f'Created MediaAttachment {photo}')
+
+        # TurtleMorphometricObservation
+        morph = submission['morphometrics']
+        if any([
+            morph['curved_carapace_length_mm'],
+            morph['curved_carapace_width_mm'],
+            morph['tail_length_carapace_mm'],
+            morph['maximum_head_width_mm'],
+        ]):
+            morphometric_obs = TurtleMorphometricObservation(
+                encounter=encounter,
+                curved_carapace_length_mm=morph['curved_carapace_length_mm'],
+                curved_carapace_length_accuracy=morph['curved_carapace_length_accuracy'],
+                curved_carapace_width_mm=morph['curved_carapace_width_mm'],
+                curved_carapace_width_accuracy=morph['curved_carapace_width_accuracy'],
+                tail_length_carapace_mm=morph['tail_length_carapace_mm'],
+                tail_length_carapace_accuracy=morph['tail_length_carapace_accuracy'],
+                maximum_head_width_mm=morph['maximum_head_width_mm'],
+                maximum_head_width_accuracy=morph['maximum_head_width_accuracy'],
+            )
+            morphometric_obs.save()
+            LOGGER.info(f'Created TurtleMorphometricObservation: {morphometric_obs}')

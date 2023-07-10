@@ -1090,7 +1090,6 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
     Changes to the QA status, as wells as versions of the data are logged to
     preserve the data lineage.
     """
-
     LOCATION_DEFAULT = "1000"
     LOCATION_ACCURACY_CHOICES = (
         ("10", _("GPS reading at exact location (10 m)")),
@@ -1172,7 +1171,6 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
     }
 
     status = FSMField(default=STATUS_NEW, choices=STATUS_CHOICES, verbose_name="QA Status")
-
     campaign = models.ForeignKey(
         Campaign,
         null=True,
@@ -1181,7 +1179,6 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         verbose_name="Campaign",
         help_text="The overarching Campaign instigating this Encounter is automatically linked when a Campaign saved.",
     )
-
     survey = models.ForeignKey(
         Survey,
         on_delete=models.SET_NULL,
@@ -1190,7 +1187,6 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         verbose_name="Survey",
         help_text="The survey during which this encounter happened.",
     )
-
     area = models.ForeignKey(
         Area,  # Always an Area of type 'Locality'.
         on_delete=models.SET_NULL,
@@ -1200,7 +1196,6 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         related_name="encounter_area",
         help_text="The general area this encounter took place in.",
     )
-
     site = models.ForeignKey(
         Area,  # Always an Area of type 'Site'.
         on_delete=models.SET_NULL,
@@ -1210,7 +1205,6 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         related_name="encounter_site",
         help_text="The surveyed site, if known.",
     )
-
     source = models.CharField(
         max_length=300,
         db_index=True,
@@ -1219,7 +1213,6 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         choices=lookups.SOURCE_CHOICES,
         help_text="Where was this record captured initially?",
     )
-
     source_id = models.CharField(
         max_length=1000,
         blank=True,
@@ -1227,19 +1220,16 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         verbose_name="Source ID",
         help_text="The ID of the record in the original source, or a newly allocated ID if left blank. Delete and save to regenerate this ID.",
     )
-
     where = models.PointField(
         srid=4326,
         verbose_name="Observed at",
         help_text="The observation location as point in WGS84",
     )
-
     when = models.DateTimeField(
         db_index=True,
         verbose_name="Observed on",
         help_text="The observation datetime, shown as local time (no daylight savings), stored as UTC.",
     )
-
     location_accuracy = models.CharField(
         max_length=300,
         verbose_name="Location accuracy class (m)",
@@ -1247,14 +1237,12 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         choices=LOCATION_ACCURACY_CHOICES,
         help_text="The source of the supplied location implies a rough location accuracy.",
     )
-
     location_accuracy_m = models.FloatField(
         verbose_name="Location accuracy (m)",
         null=True,
         blank=True,
         help_text="The accuracy of the supplied location in metres, if given.",
     )
-
     name = models.CharField(
         max_length=1000,
         editable=False,
@@ -1265,7 +1253,6 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         e.g. in the case of AnimalEncounters, the animal's earliest associated tag ID.
         Encounters with the same identifer are encounters of the same subject (e.g. the same turtle).""",
     )
-
     observer = models.ForeignKey(
         User,
         on_delete=models.SET_DEFAULT,
@@ -1274,7 +1261,6 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         related_name="encounters_observed",
         help_text="The person who encountered the subject, and executed any measurements. The observer is the source of measurement bias.",
     )
-
     reporter = models.ForeignKey(
         User,
         on_delete=models.SET_DEFAULT,
@@ -1283,7 +1269,6 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         related_name="encounters_reported",
         help_text="The person who wrote the initial data sheet in the field. The reporter is the source of handwriting and spelling errors.",
     )
-
     as_html = models.TextField(
         verbose_name="HTML representation",
         blank=True,
@@ -1291,7 +1276,6 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         editable=False,
         help_text="The cached HTML representation for display purposes.",
     )
-
     as_latex = models.TextField(
         verbose_name="Latex fragment",
         blank=True,
@@ -1299,7 +1283,6 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         editable=False,
         help_text="The cached Latex fragment for reporting purposes.",
     )
-
     encounter_type = models.CharField(
         max_length=300,
         blank=True,
@@ -1310,7 +1293,6 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         choices=ENCOUNTER_TYPES,
         help_text="The primary concern of this encounter.",
     )
-
     comments = models.TextField(
         verbose_name="Comments",
         blank=True,
@@ -1797,10 +1779,7 @@ class AnimalEncounter(Encounter):
     * activity (choices)
     * behaviour (free text)
     * habitat (choices)
-
-    Turtle Strandings are encounters of turtles
     """
-
     taxon = models.CharField(
         max_length=300,
         verbose_name="Taxonomic group",
@@ -1808,7 +1787,6 @@ class AnimalEncounter(Encounter):
         default=lookups.TAXON_CHOICES_DEFAULT,
         help_text="The taxonomic group of the animal.",
     )
-
     species = models.CharField(
         max_length=300,
         verbose_name="Species",
@@ -1816,7 +1794,6 @@ class AnimalEncounter(Encounter):
         default=lookups.NA_VALUE,
         help_text="The species of the animal.",
     )
-
     sex = models.CharField(
         max_length=300,
         verbose_name="Sex",
@@ -1824,7 +1801,6 @@ class AnimalEncounter(Encounter):
         default=lookups.NA_VALUE,
         help_text="The animal's sex.",
     )
-
     maturity = models.CharField(
         max_length=300,
         verbose_name="Maturity",
@@ -1832,7 +1808,6 @@ class AnimalEncounter(Encounter):
         default=lookups.NA_VALUE,
         help_text="The animal's maturity.",
     )
-
     health = models.CharField(
         max_length=300,
         verbose_name="Health status",
@@ -1840,7 +1815,6 @@ class AnimalEncounter(Encounter):
         default=lookups.NA_VALUE,
         help_text="The animal's physical health",
     )
-
     activity = models.CharField(
         max_length=300,
         verbose_name="Activity",
@@ -1848,14 +1822,12 @@ class AnimalEncounter(Encounter):
         default=lookups.NA_VALUE,
         help_text="The animal's activity at the time of observation.",
     )
-
     behaviour = models.TextField(
         verbose_name="Condition and behaviour",
         blank=True,
         null=True,
         help_text="Notes on condition or behaviour.",
     )
-
     habitat = models.CharField(
         max_length=500,
         verbose_name="Habitat",
@@ -1863,7 +1835,6 @@ class AnimalEncounter(Encounter):
         default=lookups.NA_VALUE,
         help_text="The habitat in which the animal was encountered.",
     )
-
     sighting_status = models.CharField(
         max_length=300,
         verbose_name="Sighting status",
@@ -1871,7 +1842,6 @@ class AnimalEncounter(Encounter):
         default=lookups.NA_VALUE,
         help_text="The status is inferred automatically based on whether and where this animal was processed and identified last.",
     )
-
     sighting_status_reason = models.CharField(
         max_length=1000,
         verbose_name="Sighting status reason",
@@ -1879,7 +1849,6 @@ class AnimalEncounter(Encounter):
         null=True,
         help_text="The rationale for the inferred sighting status.",
     )
-
     identifiers = models.TextField(
         verbose_name="Identifiers",
         blank=True,
@@ -1887,7 +1856,6 @@ class AnimalEncounter(Encounter):
         help_text="""A space-separated list of all identifers ever recorded as associated with this animal.
         This list includes identifiers recorded only in earlier or later encounters.""",
     )
-
     datetime_of_last_sighting = models.DateTimeField(
         verbose_name="Last seen on",
         blank=True,
@@ -1895,7 +1863,6 @@ class AnimalEncounter(Encounter):
         help_text="""The observation datetime of this animal's last sighting, shown as local time
         (no daylight savings), stored as UTC. Blank if the animal has never been seen before.""",
     )
-
     site_of_last_sighting = models.ForeignKey(
         Area,
         on_delete=models.SET_NULL,
@@ -1905,7 +1872,6 @@ class AnimalEncounter(Encounter):
         verbose_name="Last seen at",
         help_text="The Site in which the animal was encountered last.",
     )
-
     site_of_first_sighting = models.ForeignKey(
         Area,
         on_delete=models.SET_NULL,
@@ -1915,7 +1881,6 @@ class AnimalEncounter(Encounter):
         verbose_name="First seen at",
         help_text="The Site in which the animal was encountered first.",
     )
-
     # ODK form Turtle Tagging > nest_observed_nesting_success
     nesting_event = models.CharField(  # TODO rename to nesting_success
         max_length=300,
@@ -1924,9 +1889,6 @@ class AnimalEncounter(Encounter):
         default=lookups.NA_VALUE,
         help_text="What indication of nesting success was observed?",
     )
-
-    # Populated from Turtle Tagging > nest_nesting_disturbed
-    # Behaviour:      Turtle Tagging > nesting_disturbance_cause
     nesting_disturbed = models.CharField(
         max_length=300,
         verbose_name="Nesting disturbed",
@@ -1934,14 +1896,12 @@ class AnimalEncounter(Encounter):
         default=lookups.NA_VALUE,
         help_text="Was the nesting interrupted? If so, specify disturbance in comments.",
     )
-
     laparoscopy = models.BooleanField(
         max_length=300,
         verbose_name="Laparoscopy conducted",
         default=False,
         help_text="Was the animal's sex and maturity determined through laparoscopy?",
     )
-
     checked_for_injuries = models.CharField(
         max_length=300,
         verbose_name="Checked for injuries",
@@ -1949,7 +1909,6 @@ class AnimalEncounter(Encounter):
         default=lookups.NA_VALUE,
         help_text="Was the animal checked for injuries, were any found?",
     )
-
     scanned_for_pit_tags = models.CharField(
         max_length=300,
         verbose_name="Scanned for PIT tags",
@@ -1957,7 +1916,6 @@ class AnimalEncounter(Encounter):
         default=lookups.NA_VALUE,
         help_text="Was the animal scanned for PIT tags, were any found?",
     )
-
     checked_for_flipper_tags = models.CharField(
         max_length=300,
         verbose_name="Checked for flipper tags",
@@ -1965,7 +1923,6 @@ class AnimalEncounter(Encounter):
         default=lookups.NA_VALUE,
         help_text="Was the animal checked for flipper tags, were any found?",
     )
-
     cause_of_death = models.CharField(
         max_length=300,
         verbose_name="Cause of death",
@@ -1973,7 +1930,6 @@ class AnimalEncounter(Encounter):
         default=lookups.NA_VALUE,
         help_text="If dead, is the case of death known?",
     )
-
     cause_of_death_confidence = models.CharField(
         max_length=300,
         verbose_name="Cause of death confidence",
@@ -2508,13 +2464,13 @@ class Observation(PolymorphicModel, LegacySourceMixin, models.Model):
     encounter = models.ForeignKey(
         Encounter,
         on_delete=models.CASCADE,
-        verbose_name=_("Encounter"),
+        verbose_name="Encounter",
         related_name="observations",
-        help_text=("The Encounter during which the observation was made"),
+        help_text="The Encounter during which the observation was made",
     )
 
     def __str__(self):
-        return f"Obs {self.pk} for {self.encounter}"
+        return f"Observation {self.pk} for {self.encounter}"
 
     @property
     def point(self):
@@ -2903,206 +2859,179 @@ class ManagementAction(Observation):
 
 
 class TurtleMorphometricObservation(Observation):
-    """Morphometric measurements of a turtle."""
-
+    """Morphometric measurements of a turtle.
+    """
     curved_carapace_length_mm = models.PositiveIntegerField(
-        verbose_name=_("Curved carapace length max (mm)"),
+        verbose_name="Curved carapace length max (mm)",
         blank=True,
         null=True,
-        help_text=_("The curved carapace length (max) in millimetres."),
+        help_text="The curved carapace length (max) in millimetres.",
     )
-
     curved_carapace_length_accuracy = models.CharField(
         max_length=300,
         blank=True,
         null=True,
         choices=lookups.ACCURACY_CHOICES,
-        verbose_name=_("Curved carapace length (max) accuracy"),
-        help_text=_("The expected measurement accuracy."),
+        verbose_name="Curved carapace length (max) accuracy",
+        help_text="The expected measurement accuracy.",
     )
-
     curved_carapace_length_min_mm = models.PositiveIntegerField(
-        verbose_name=_("Curved carapace length min (mm)"),
+        verbose_name="Curved carapace length min (mm)",
         blank=True,
         null=True,
-        help_text=_("The curved carapace length (min) in millimetres."),
+        help_text="The curved carapace length (min) in millimetres.",
     )
-
     curved_carapace_length_min_accuracy = models.CharField(
         max_length=300,
         blank=True,
         null=True,
         choices=lookups.ACCURACY_CHOICES,
-        verbose_name=_("Curved carapace length accuracy"),
-        help_text=_("The expected measurement accuracy."),
+        verbose_name="Curved carapace length accuracy",
+        help_text="The expected measurement accuracy.",
     )
-
     straight_carapace_length_mm = models.PositiveIntegerField(
         blank=True,
         null=True,
-        verbose_name=_("Straight carapace length (mm)"),
-        help_text=_("The straight carapace length in millimetres."),
+        verbose_name="Straight carapace length (mm)",
+        help_text="The straight carapace length in millimetres.",
     )
-
     straight_carapace_length_accuracy = models.CharField(
         max_length=300,
         blank=True,
         null=True,
         choices=lookups.ACCURACY_CHOICES,
-        verbose_name=_("Straight carapace length accuracy"),
-        help_text=_("The expected measurement accuracy."),
+        verbose_name="Straight carapace length accuracy",
+        help_text="The expected measurement accuracy.",
     )
-
     curved_carapace_width_mm = models.PositiveIntegerField(
         blank=True,
         null=True,
-        verbose_name=_("Curved carapace width (mm)"),
-        help_text=_("Curved carapace width in millimetres."),
+        verbose_name="Curved carapace width (mm)",
+        help_text="Curved carapace width in millimetres.",
     )
-
     curved_carapace_width_accuracy = models.CharField(
         max_length=300,
         blank=True,
         null=True,
         choices=lookups.ACCURACY_CHOICES,
-        verbose_name=_("Curved carapace width (mm)"),
-        help_text=_("The expected measurement accuracy."),
+        verbose_name="Curved carapace width (mm)",
+        help_text="The expected measurement accuracy.",
     )
-
     tail_length_carapace_mm = models.PositiveIntegerField(
         blank=True,
         null=True,
-        verbose_name=_("Tail length from carapace (mm)"),
-        help_text=_(
-            "The tail length in millimetres, " "measured from carapace to tip."
-        ),
+        verbose_name="Tail length from carapace (mm)",
+        help_text="The tail length in millimetres, measured from carapace to tip.",
     )
-
     tail_length_carapace_accuracy = models.CharField(
         max_length=300,
         blank=True,
         null=True,
         choices=lookups.ACCURACY_CHOICES,
-        verbose_name=_("Tail length from carapace accuracy"),
-        help_text=_("The expected measurement accuracy."),
+        verbose_name="Tail length from carapace accuracy",
+        help_text="The expected measurement accuracy.",
     )
-
     tail_length_vent_mm = models.PositiveIntegerField(
         blank=True,
         null=True,
-        verbose_name=_("Tail length from vent (mm)"),
-        help_text=_("The tail length in millimetres, " "measured from vent to tip."),
+        verbose_name="Tail length from vent (mm)",
+        help_text="The tail length in millimetres, measured from vent to tip.",
     )
-
     tail_length_vent_accuracy = models.CharField(
         max_length=300,
         blank=True,
         null=True,
         choices=lookups.ACCURACY_CHOICES,
-        verbose_name=_("Tail Length Accuracy"),
-        help_text=_("The expected measurement accuracy."),
+        verbose_name="Tail Length Accuracy",
+        help_text="The expected measurement accuracy.",
     )
-
     tail_length_plastron_mm = models.PositiveIntegerField(
         blank=True,
         null=True,
-        verbose_name=_("Tail length from plastron (mm)"),
-        help_text=_(
-            "The tail length in millimetres, " "measured from plastron to tip."
-        ),
+        verbose_name="Tail length from plastron (mm)",
+        help_text="The tail length in millimetres, measured from plastron to tip.",
     )
-
     tail_length_plastron_accuracy = models.CharField(
         max_length=300,
         blank=True,
         null=True,
         choices=lookups.ACCURACY_CHOICES,
-        verbose_name=_("Tail length from plastron accuracy"),
-        help_text=_("The expected measurement accuracy."),
+        verbose_name="Tail length from plastron accuracy",
+        help_text="The expected measurement accuracy.",
     )
-
     maximum_head_width_mm = models.PositiveIntegerField(
         blank=True,
         null=True,
-        verbose_name=_("Maximum head width (mm)"),
-        help_text=_("The maximum head width in millimetres."),
+        verbose_name="Maximum head width (mm)",
+        help_text="The maximum head width in millimetres.",
     )
-
     maximum_head_width_accuracy = models.CharField(
         max_length=300,
         blank=True,
         null=True,
         choices=lookups.ACCURACY_CHOICES,
-        verbose_name=_("Maximum head width accuracy"),
-        help_text=_("The expected measurement accuracy."),
+        verbose_name="Maximum head width accuracy",
+        help_text="The expected measurement accuracy.",
     )
-
     maximum_head_length_mm = models.PositiveIntegerField(
         blank=True,
         null=True,
-        verbose_name=_("Maximum head length (mm)"),
-        help_text=_("The maximum head length in millimetres."),
+        verbose_name="Maximum head length (mm)",
+        help_text="The maximum head length in millimetres.",
     )
-
     maximum_head_length_accuracy = models.CharField(
         max_length=300,
         blank=True,
         null=True,
         choices=lookups.ACCURACY_CHOICES,
-        verbose_name=_("Maximum head length accuracy"),
-        help_text=_("The expected measurement accuracy."),
+        verbose_name="Maximum head length accuracy",
+        help_text="The expected measurement accuracy.",
     )
-
     body_depth_mm = models.PositiveIntegerField(
         blank=True,
         null=True,
-        verbose_name=_("Body depth (mm)"),
-        help_text=_("The body depth, plastron to carapace, in millimetres."),
+        verbose_name="Body depth (mm)",
+        help_text="The body depth, plastron to carapace, in millimetres.",
     )
-
     body_depth_accuracy = models.CharField(
         max_length=300,
         blank=True,
         null=True,
         choices=lookups.ACCURACY_CHOICES,
-        verbose_name=_("Body depth accuracy"),
-        help_text=_("The expected measurement accuracy."),
+        verbose_name="Body depth accuracy",
+        help_text="The expected measurement accuracy.",
     )
-
     body_weight_g = models.PositiveIntegerField(
         blank=True,
         null=True,
-        verbose_name=_("Body weight (g)"),
-        help_text=_("The body weight in grams (1000 g = 1kg)."),
+        verbose_name="Body weight (g)",
+        help_text="The body weight in grams (1000 g = 1kg).",
     )
-
     body_weight_accuracy = models.CharField(
         max_length=300,
         blank=True,
         null=True,
         choices=lookups.ACCURACY_CHOICES,
-        verbose_name=_("Body weight accuracy"),
-        help_text=_("The expected measurement accuracy."),
+        verbose_name="Body weight accuracy",
+        help_text="The expected measurement accuracy.",
     )
-
     handler = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
         related_name="morphometric_handler",
-        verbose_name=_("Measured by"),
-        help_text=_("The person conducting the measurements."),
+        verbose_name="Measured by",
+        help_text="The person conducting the measurements.",
     )
-
     recorder = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
         related_name="morphometric_recorder",
-        verbose_name=_("Recorded by"),
-        help_text=_("The person recording the measurements."),
+        verbose_name="Recorded by",
+        help_text="The person recording the measurements.",
     )
 
     class Meta:
@@ -3202,44 +3131,41 @@ class DugongMorphometricObservation(Observation):
 
 
 class TurtleDamageObservation(Observation):
-    """Observation of turtle damages or injuries."""
-
+    """Observations of turtle damage or injuries.
+    """
     body_part = models.CharField(
         max_length=300,
         default="whole-turtle",
-        verbose_name=_("Affected body part"),
+        verbose_name="Affected body part",
         choices=lookups.TURTLE_BODY_PART_CHOICES,
-        help_text=_("The body part affected by the observed damage."),
+        help_text="The body part affected by the observed damage.",
     )
-
     damage_type = models.CharField(
         max_length=300,
         default="minor-trauma",
-        verbose_name=_("Damage type"),
+        verbose_name="Damage type",
         choices=lookups.DAMAGE_TYPE_CHOICES,
-        help_text=_("The type of the damage."),
+        help_text="The type of the damage.",
     )
-
     damage_age = models.CharField(
         max_length=300,
         default="healed-entirely",
-        verbose_name=_("Damage age"),
+        verbose_name="Damage age",
         choices=lookups.DAMAGE_AGE_CHOICES,
-        help_text=_("The age of the damage."),
+        help_text="The age of the damage.",
     )
-
     description = models.TextField(
-        verbose_name=_("Description"),
+        verbose_name="Description",
         blank=True,
         null=True,
-        help_text=_("A description of the damage."),
+        help_text="A description of the damage.",
     )
 
     class Meta:
         verbose_name = "Turtle Damage Observation"
 
     def __str__(self):
-        return "{0}: {1} {2}".format(
+        return "{}: {} {}".format(
             self.get_body_part_display(),
             self.get_damage_age_display(),
             self.get_damage_type_display(),
