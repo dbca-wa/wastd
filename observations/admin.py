@@ -20,7 +20,6 @@ from .models import (
     CampaignMediaAttachment,
     AnimalEncounter,
     Area,
-    DispatchRecord,
     DugongMorphometricObservation,
     Encounter,
     HatchlingMorphometricObservation,
@@ -31,8 +30,6 @@ from .models import (
     Survey,
     SurveyMediaAttachment,
     TagObservation,
-    TemperatureLoggerDeployment,
-    TemperatureLoggerSettings,
     TrackTallyObservation,
     TurtleDamageObservation,
     TurtleMorphometricObservation,
@@ -189,30 +186,6 @@ class LightSourceObservationObservationInline(admin.TabularInline):
 
     extra = 0
     model = LightSourceObservation
-    classes = ("grp-collapse grp-open",)
-
-
-class TemperatureLoggerSettingsInline(admin.TabularInline):
-    """Admin for TemperatureLoggerSettings."""
-
-    extra = 0
-    model = TemperatureLoggerSettings
-    classes = ("grp-collapse grp-open",)
-
-
-class DispatchRecordInline(admin.TabularInline):
-    """Admin for DispatchRecord."""
-
-    extra = 0
-    model = DispatchRecord
-    classes = ("grp-collapse grp-open",)
-
-
-class TemperatureLoggerDeploymentInline(admin.TabularInline):
-    """Admin for TemperatureLoggerDeployment."""
-
-    extra = 0
-    model = TemperatureLoggerDeployment
     classes = ("grp-collapse grp-open",)
 
 
