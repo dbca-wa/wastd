@@ -108,7 +108,7 @@ TAXON_CHOICES_DEFAULT = "Cheloniidae"
 TAXON_CHOICES = NA + (
     (TAXON_CHOICES_DEFAULT, "Marine turtles"),
     ("Cetacea", "Whales and Dolphins"),
-    ("Pinnipedia", "Pinnipeds"),
+    ("Pinnipedia", "Seals"),
     ("Sirenia", "Dugongs"),
     ("Elasmobranchii", "Sharks and Rays"),
     ("Hydrophiinae", "Sea snakes and kraits"),
@@ -155,20 +155,14 @@ CETACEAN_SPECIES_CHOICES = (
     ("balaenoptera-borealis", "Balaenoptera borealis (Sei whale)"),
     ("balaenoptera-edeni", "Balaenoptera edeni (Bryde's whale)"),
     ("balaenoptera-musculus", "Balaenoptera musculus (Blue whale)"),
-    (
-        "balaenoptera-musculus-brevicauda",
-        "Balaenoptera musculus brevicauda (Pygmy blue whale)",
-    ),
+    ("balaenoptera-musculus-brevicauda", "Balaenoptera musculus brevicauda (Pygmy blue whale)"),
     ("balaenoptera-physalus", "Balaenoptera physalus (Fin whale)"),
     ("balaenoptera-omurai", "Balaenoptera omurai (Omura's whale)"),
     ("balaenoptera-sp", "Balaenoptera sp. (Unidentified Balaenoptera)"),
     ("caperea-marginata", "Caperea marginata (Pygmy Right Whale)"),
     ("eubalaena-australis", "Eubalaena australis (Southern right whale)"),
     ("feresa-attenuata", "Feresa attenuata (Pygmy killer whale)"),
-    (
-        "globicephala-macrorhynchus",
-        "Globicephala macrorhynchus (Short-finned pilot whale)",
-    ),
+    ("globicephala-macrorhynchus", "Globicephala macrorhynchus (Short-finned pilot whale)"),
     ("globicephala-melas", "Globicephala melas (Long-finned pilot whale)"),
     ("globicephala-sp", "Globicephala sp. (Unidentified pilot whale)"),
     ("indopacetus-pacificus", "Indopacetus pacificus (Longman's beaked whale)"),
@@ -239,32 +233,32 @@ SPECIES_CHOICES = (
 
 SEX_CHOICES = (
     (NA_VALUE, "NA sex"),
-    ("unknown", "unknown sex"),
-    ("male", "male"),
-    ("female", "female"),
-    ("intersex", "hermaphrodite or intersex"),
+    ("unknown", "Unknown sex"),
+    ("male", "Male"),
+    ("female", "Female"),
+    ("intersex", "Hermaphrodite or intersex"),
 )
 
 TURTLE_MATURITY_CHOICES = (
-    ("hatchling", "hatchling"),
-    ("post-hatchling", "post-hatchling"),
-    ("juvenile", "juvenile"),
-    ("pre-pubsecent-immature", "pre-pubsecent immature"),
-    ("pubsecent-immature", "pubsecent immature"),
-    ("sub-adult", "sub-adult"),
-    ("adult-measured", "adult (status determined from carapace and tail measurements)"),
+    ("hatchling", "Hatchling"),
+    ("post-hatchling", "Post-hatchling"),
+    ("juvenile", "Juvenile"),
+    ("pre-pubsecent-immature", "Pre-pubsecent immature"),
+    ("pubsecent-immature", "Pubsecent immature"),
+    ("sub-adult", "Sub-adult"),
+    ("adult-measured", "Adult (status determined from carapace and tail measurements)"),
 )
 
 MAMMAL_MATURITY_CHOICES = (
-    ("unweaned", "unweaned immature"),
-    ("weaned", "weaned immature"),
+    ("unweaned", "Unweaned immature"),
+    ("weaned", "Weaned immature"),
 )
 
 MATURITY_CHOICES = (
-    ((NA_VALUE, "unknown maturity"),)
+    ((NA_VALUE, "Unknown maturity"),)
     + TURTLE_MATURITY_CHOICES
     + MAMMAL_MATURITY_CHOICES
-    + (("adult", "adult"),)
+    + (("adult", "Adult"),)
 )
 
 HEALTH_D1 = "alive-then-died"
@@ -286,16 +280,6 @@ HEALTH_CHOICES = (
     (HEALTH_D6, "D6 (dead, disarticulated)"),
     ("other", "Other"),
 )
-
-# StrandNet: same as above
-# some health status options are confused with management actions
-# (disposal, rehab, euth), cause of death
-#
-# <option value="16">DA - Rescued after disorientation inland by artificial lighting</option>
-# <option value="22">DK - Killed for research</option>
-# <option value="1">DL - Alive and left to natural processes. Not rescued</option>
-# <option value="23">DU - Live but subsequently euthanased</option>
-# <option value="2">DZ - Alive and rescued</option></select>
 
 CAUSE_OF_DEATH_CHOICES = NA + (
     ("indeterminate-decomposed", "Indeterminate due to decomposition"),
@@ -334,120 +318,67 @@ CONFIDENCE_CHOICES = NA + (
 )
 
 NESTING_ACTIVITY_CHOICES = (
-    ("arriving", "arriving on beach"),
-    ("approaching", "approaching nesting site"),
-    ("digging-body-pit", "digging body pit"),
-    ("excavating-egg-chamber", "excavating egg chamber"),
-    ("laying-eggs", "laying eggs"),
-    ("filling-in-egg-chamber", "filling in egg chamber"),
-    ("filling-in-nest", "filling in nest"),
-    ("camouflaging-nest", "camouflaging nest"),
-    ("returning-to-water", "returning to water"),
-    ("general-breeding-activity", "general breeding activity"),
+    ("arriving", "Arriving on beach"),
+    ("approaching", "Approaching nesting site"),
+    ("digging-body-pit", "Digging body pit"),
+    ("excavating-egg-chamber", "Excavating egg chamber"),
+    ("laying-eggs", "Laying eggs"),
+    ("filling-in-egg-chamber", "Filling in egg chamber"),
+    ("filling-in-nest", "Filling in nest"),
+    ("camouflaging-nest", "Camouflaging nest"),
+    ("returning-to-water", "Returning to water"),
+    ("general-breeding-activity", "General breeding activity"),
 )
 
 STRANDING_ACTIVITY_CHOICES = (
-    ("floating", "floating (dead, sick, unable to dive, drifting in water)"),
-    ("beach-washed", "beach washed (dead, sick or stranded on beach/coast)"),
-    ("beach-jumped", "beach jumped"),
-    ("carcass-tagged-released", "carcass tagged and released"),
-    ("carcass-inland", "carcass or butchered remains found removed from coast"),
-    ("captivity", "in captivity"),
-    ("non-breeding", "non-breeding activity (swimming, sleeping, feeding, etc.)"),
-    ("other", "other activity"),
+    ("floating", "Floating (dead, sick, unable to dive, drifting in water)"),
+    ("beach-washed", "Beach washed (dead, sick or stranded on beach/coast)"),
+    ("beach-jumped", "Beach jumped"),
+    ("carcass-tagged-released", "Carcass tagged and released"),
+    ("carcass-inland", "Carcass or butchered remains found removed from coast"),
+    ("captivity", "In captivity"),
+    ("non-breeding", "Non-breeding activity (swimming, sleeping, feeding, etc.)"),
+    ("other", "Other activity"),
 )
 
 ACTIVITY_CHOICES = NA + NESTING_ACTIVITY_CHOICES + STRANDING_ACTIVITY_CHOICES
-# primary activity
-# <option value="20">? - Unspecified</option>
-# <option value="1">B - B - to be determined)</option>
-# <option value="2">B? - B? - to be determined)</option>
-# <option value="3">BE - BE - to be determined</option>
-# <option value="4">BF - Floating (dead, sick, unable to dive, drifting in water)</option>
-# <option value="5">BJ - Beach Jumped</option>
-# <option value="7">BR - Carcass or butchered remains found removed from coast</option>
-# <option value="6">BW - Beach washed (dead, sick or stranded on beach/coast)</option>
-# <option value="8">C - Courting</option>
-# <option value="21">CT - Carcass tagged and released to test stranding recovery and water currents.</option>
-# <option value="9">J - In captivity</option>
-# <option value="10">N - Nesting and internesting</option>
-# <option value="11">P - Predated (killed)</option>
-# <option value="12">PC - Predated by crocodile (killed)</option>
-# <option value="13">PD - Predated by dog or dingo (killed)</option>
-# <option value="14">PF - Predated by fish (killed)</option>
-# <option value="15">PR - Predated by raptor (killed)</option>
-# <option value="16">PS - Predated by shark (killed)</option>
-# <option value="17">R - Released</option>
-# <option value="18">S - General non-breeding activity (swimming, sleeping, feeding, ...)</option>
-# <option value="19">Z - Tag found not attached to animal</option></select>
-# # secondary activity
-# <option value="30">? - ? - to be determined</option>
-# <option value="2">BJ - Non-Nesting: Beach jumped</option>
-# <option value="3">BW - Non-Nesting: Beach washed</option>
-# <option value="75">CT - Carcass tagged and released to test stranding recovery and water currents.</option>
-# <option value="31">F? - F? - to be determined</option>
-# <option value="10">FC - Fisheries: Fishing - captured in arrowhead fish trap</option>
-# <option value="11">FD - Fisheries: Sucked/picked up by dredge</option>
-# <option value="36">FG - Fisheries: Captured with gaff from boat</option>
-# <option value="35">FI - Fisheries: Crabbing - trapped inside a crab pot</option>
-# <option value="12">FL - Fisheries: Fishing - hooked by fishing line; included SCP shark-hooks</option>
-# <option value="13">FN - Fisheries: Fishing - captured by netting</option>
-# <option value="14">FP - Fisheries: Tangled in float-line to crab-pot, anchor line, trace to shark-hook, etc</option>
-# <option value="15">FS - Fisheries: Fishing - speared, or captured by a diver attaching a line to the animal</option>
-# <option value="16">FT - Fisheries: Fishing - trawling</option>
-# <option value="17">FZ - Fisheries: Trapped in ghost-net</option>
-# <option value="32">L - L - to be determined</option>
-# <option value="56">NJ - Non-Nesting: Rodeo - night time</option>
-# <option value="55">NS - Non-Nesting: SCUBA/snorkelling - night time</option>
-# <option value="6">P - Non-Nesting: Observed but not captured</option>
-# <option value="57">PA - Non-Nesting: Observation from aerial survey</option>
-# <option value="58">PI - Non-Nesting: Image recorded during underwater video monitoring</option>
-# <option value="4">RJ - Non-Nesting: Rodeo - day time</option>
-# <option value="5">S - Non-Nesting: SCUBA/snorkelling - day time</option>
-# <option value="33">T - T - to be determined</option>
-# <option value="20">TA - Trapped: Trapped by land reclaimation</option>
-# <option value="21">TE - Trapped: Trapped in electricity power plant water intake system</option>
-# <option value="59">TS - Non-Nesting: Located by satellite telemetry</option>
-# <option value="22">TT - Trapped: Trapped in creek at low tide</option>
-# <option value="34">X - X - to be determined</option>
-# <option value="1">X* - Nesting: Laid</option></select>
 
 BEACH_POSITION_CHOICES = (
     (NA_VALUE, "Unknown habitat"),
-    ("beach-below-high-water", "(B) beach below high water mark"),
-    ("beach-above-high-water", "(A) beach above high water mark and dune"),
-    ("beach-edge-of-vegetation", "(E) edge of vegetation"),
-    ("in-dune-vegetation", "(V) inside vegetation"),
+    ("beach-below-high-water", "Beach below high water mark"),
+    ("beach-above-high-water", "Beach above high water mark and dune"),
+    ("beach-edge-of-vegetation", "Edge of vegetation"),
+    ("in-dune-vegetation", "Inside vegetation"),
 )
 
 HABITAT_CHOICES = BEACH_POSITION_CHOICES + (
-    ("beach", "beach (below vegetation line)"),
-    ("bays-estuaries", "bays, estuaries and other enclosed shallow soft sediments"),
-    ("dune", "dune"),
-    ("dune-constructed-hard-substrate", "dune, constructed hard substrate (concrete slabs, timber floors, helipad)"),
-    ("dune-grass-area", "dune, grass area"),
-    ("dune-compacted-path", "dune, hard compacted areas (road ways, paths)"),
-    ("dune-rubble", "dune, rubble, usually coral"),
-    ("dune-bare-sand", "dune, bare sand area"),
-    ("dune-beneath-vegetation", "dune, beneath tree or shrub"),
-    ("slope-front-dune", "dune, front slope"),
-    ("sand-flats", "sand flats"),
-    ("slope-grass", "slope, grass area"),
-    ("slope-bare-sand", "slope, bare sand area"),
-    ("slope-beneath-vegetation", "slope, beneath tree or shrub"),
-    ("below-mean-spring-high-water-mark", "below the mean spring high water line or current level of inundation (old db value)"),
-    ("below-mshwm", "below the mean spring high water line or current level of inundation"),
-    ("lagoon-patch-reef", "lagoon, patch reef"),
-    ("lagoon-open-sand", "lagoon, open sand areas"),
-    ("mangroves", "mangroves"),
-    ("reef-coral", "coral reef"),
-    ("reef-crest-front-slope", "reef crest (dries at low water) and front reef slope areas"),
-    ("reef-flat", "reef flat, dries at low tide"),
-    ("reef-seagrass-flats", "coral reef with seagrass flats"),
-    ("reef-rocky", "rocky reef"),
-    ("open-water", "open water"),
-    ("harbour", "harbour"),
-    ("boat-ramp", "boat ramp"),
+    ("beach", "Beach (below vegetation line)"),
+    ("bays-estuaries", "Bays, estuaries and other enclosed shallow soft sediments"),
+    ("dune", "Dune"),
+    ("dune-constructed-hard-substrate", "Dune, constructed hard substrate (concrete slabs, timber floors, helipad)"),
+    ("dune-grass-area", "Dune, grass area"),
+    ("dune-compacted-path", "Dune, hard compacted areas (road ways, paths)"),
+    ("dune-rubble", "Dune, rubble, usually coral"),
+    ("dune-bare-sand", "Dune, bare sand area"),
+    ("dune-beneath-vegetation", "Dune, beneath tree or shrub"),
+    ("slope-front-dune", "Dune, front slope"),
+    ("sand-flats", "Sand flats"),
+    ("slope-grass", "Slope, grass area"),
+    ("slope-bare-sand", "Slope, bare sand area"),
+    ("slope-beneath-vegetation", "Slope, beneath tree or shrub"),
+    ("below-mean-spring-high-water-mark", "Below the mean spring high water line or current level of inundation (old db value)"),
+    ("below-mshwm", "Below the mean spring high water line or current level of inundation"),
+    ("lagoon-patch-reef", "Lagoon, patch reef"),
+    ("lagoon-open-sand", "Lagoon, open sand areas"),
+    ("mangroves", "Mangroves"),
+    ("reef-coral", "Coral reef"),
+    ("reef-crest-front-slope", "Reef crest (dries at low water) and front reef slope areas"),
+    ("reef-flat", "Reef flat, dries at low tide"),
+    ("reef-seagrass-flats", "Coral reef with seagrass flats"),
+    ("reef-rocky", "Rocky reef"),
+    ("open-water", "Open water"),
+    ("harbour", "Harbour"),
+    ("boat-ramp", "Boat ramp"),
 )
 
 HABITAT_WATER = (
