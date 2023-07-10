@@ -20,7 +20,6 @@ class AdminDashboard(Dashboard):
                     modules.AppList(
                         "Encounters",
                         models=(
-                            "observations.models.Encounter",
                             "observations.models.AnimalEncounter",
                             "observations.models.TurtleNestEncounter",
                         ),
@@ -37,8 +36,8 @@ class AdminDashboard(Dashboard):
                     modules.AppList(
                         "User access management",
                         models=(
-                            "users.*",
-                            "django.contrib.*",
+                            "users.models.User",
+                            "users.models.Organisation",
                         ),
                     ),
                 ],
