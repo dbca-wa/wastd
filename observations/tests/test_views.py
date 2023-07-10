@@ -18,7 +18,6 @@ from observations.models import (  # noqa
     Encounter,
     HatchlingMorphometricObservation,
     LineTransectEncounter,
-    LoggerEncounter,
     ManagementAction,
     MediaAttachment,
     NestTagObservation,
