@@ -59,7 +59,6 @@ router.register("encounters-fast", observations_api.FastEncounterViewSet, basena
 router.register("encounters-src", observations_api.SourceIdEncounterViewSet, basename="encounters_src")
 router.register("animal-encounters", observations_api.AnimalEncounterViewSet)
 router.register("turtle-nest-encounters", observations_api.TurtleNestEncounterViewSet)
-#router.register("logger-encounters", observations_api.LoggerEncounterViewSet)
 router.register("line-transect-encounters", observations_api.LineTransectEncounterViewSet)
 
 # General Observations

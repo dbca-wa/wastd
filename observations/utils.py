@@ -619,7 +619,6 @@ def allocate_animal_names():
         for a in AnimalEncounter.objects.all()
         if a.is_new_capture
     ]
-    # le = [a.save() for a in LoggerEncounter.objects.all()]
     return [ss, ae]
 
 
@@ -1323,66 +1322,6 @@ def handle_hatchlingmorphometricobs(d, e):
     LOGGER.info("  Hatchling Obs {0}: {1}".format(action, dd))
 
 
-# We use handle_odka_loggerobservation instead.
-# def handle_loggerenc(d, e, m=None):
-#     """Get or create a LoggerEncounter with photo and nest tag obs.
-
-#     If the related TurtleNestEncounter e has a NestTagObservation, an idential
-#     NTO will be created for the LoggerEncounter. This will allow to traverse
-#     the list of NestTagObservations by name to link related AnimalEncounters
-#     (when labelling a nest during a tagging), TurtleNestEncounters (when
-#     excavating a hatched nest) and LoggerEncounters (when retrieving loggers
-#     from the excavated, tagged nest).
-
-#     Arguments
-
-#     d A dictionary like
-#         {
-#             "logger_id": "S1235",
-#             "photo_logger": {
-#                 "filename": "1485913441063.jpg",
-#                 "type": "image/jpeg",
-#                 "url": "https://dpaw-data.appspot.com/view/binaryData?blobKey=..."
-#             }
-#         }
-#     e The related TurtleNestEncounter (must exist)
-#     """
-#     LOGGER.debug("  Creating LoggerObservation...")
-#     dd, created = LoggerObservation.objects.get_or_create(
-#         encounter=e,
-#         source=2,
-#         source_id="{0}-{1}".format(e.source_id, d["logger_id"]))
-
-#     # dd.logger_type = LoggerObservation.LOGGER_TYPE_DEFAULT, # TODO from form
-#     # dd.deployment_status = LoggerObservation.LOGGER_STATUS_DEFAULT,
-#     # TODO from ToN 1.2 logger_status: applied-new > deployed; rest is identical
-#     dd.logger_id = d["logger_id"]
-#     dd.comments = d["comments"] if "comments" in d else ""
-
-#     dd.save()
-#     action = "created" if created else "updated"
-#     LOGGER.debug("  LoggerEncounter {0}: {1}".format(action, dd))
-
-#     if "photo_logger" in d and d["photo_logger"]:
-#         handle_media_attachment_odka(
-#             e, m, d["photo_logger"], title="Logger ID {0}".format(d["logger_id"]))
-
-#     # # If e has NestTagObservation, replicate NTO on LoggerEncounter
-#     # if e.observation_set.instance_of(NestTagObservation).exists():
-#     #     LOGGER.debug("  TurtleNestEncounter has nest tag, replicating nest tag observation on LoggerEncounter...")
-#     #     nto = e.observation_set.instance_of(NestTagObservation).first()
-#     #     NestTagObservation.objects.get_or_create(
-#     #         encounter=e,
-#     #         status=nto.status,
-#     #         flipper_tag_id=nto.flipper_tag_id,
-#     #         date_nest_laid=nto.date_nest_laid,
-#     #         tag_label=nto.tag_label,
-#     #     )
-#     #     nto.save()
-#     #     action = "created" if created else "updated"
-#     #     LOGGER.info("  NestTag Observation {0} for {1}".format(action, nto))
-
-
 def handle_turtlenestdisttallyobs(d, e, m=None):
     """Get or create a TurtleNestDisturbanceObservation.
 
@@ -1490,11 +1429,6 @@ def import_one_record_tt034(r, m):
         if len(r["hatchling_measurements"]) > 0
     ]
 
-    # LoggerEncounter retrieved HOBO logger
-    # [handle_loggerenc(lg, e, m)
-    # for lg in r["logger_details"]
-    # if len(r["logger_details"]) > 0]
-
     LOGGER.info(" Saved {0}\n".format(e))
     e.save()
     return e
@@ -1580,11 +1514,6 @@ def import_one_record_tt036(r, m):
         for ho in r["hatchling_measurements"]
         if len(r["hatchling_measurements"]) > 0
     ]
-
-    # LoggerEncounter retrieved HOBO logger
-    # [handle_loggerenc(lg, e, m)
-    # for lg in r["logger_details"]
-    # if len(r["logger_details"]) > 0]
 
     LOGGER.info(" Saved {0}\n".format(e))
     e.save()
