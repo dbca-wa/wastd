@@ -4,18 +4,3 @@
 {% block title_row %}
 {{ object.get_nest_type_display }}, {{ object.get_nest_age_display|lower }}, {{ object.get_species_display }}
 {% endblock %}
-
-{% block title_labels %}
-<span class="badge badge-{{ object.disturbance|obs_colour }}"
-  title="Disturbance or predation: {{ object.get_disturbance_display }}">dist</span>
-<span class="badge badge-{{ object.nest_tagged|obs_colour }}"
-  title="Nest tag: {{ object.get_nest_tagged_display }}">tag</span>
-<span class="badge badge-{{ object.logger_found|obs_colour }}"
-  title="Logger: {{ object.get_logger_found_display }}">log</span>
-<span class="badge badge-{{ object.eggs_counted|obs_colour }}"
-  title="Nest excavation: {{ object.get_eggs_counted_display }}">eggs</span>
-<span class="badge badge-{{ object.hatchlings_measured|obs_colour }}"
-  title="Hatchlings measured: {{ object.get_hatchlings_measured_display }}">hatch</span>
-<span class="badge badge-{{ object.fan_angles_measured|obs_colour }}"
-  title="Fan angles: {{ object.get_fan_angles_measured_display }}">fan</span>
-{% endblock %}

@@ -2,17 +2,15 @@
 <div class="card bg-light mb-1">
     <div class="card-header">
         <div>
-            <span class="float-right">{% block title_labels %}{% endblock %}</span>
+            <span class="float-right badge badge-{{ object.status_colour|default:'secondary' }}">
+                QA status: {{ object.get_status_display }}
+            </span>
             <h5 class="card-title">
                 {% block title_row %}{{ object }}{% endblock %}
             </h5>
+            {% block title_labels %}{% endblock %}
         </div>
         <div>
-            <span class="float-right">
-                <span class="badge badge-{{ object.status_colour|default:'secondary' }}">
-                    QA status: {{ object.get_status_display }}
-                </span>
-            </span>
             <h6 class="card-title text-muted" aria-hidden="true">
                 <i class="fa-solid fa-calendar-days" title="When" aria-hidden="true"></i>
                 {{ object.when|date:'d M Y H:i' }}
@@ -20,12 +18,8 @@
                 {{ object.get_encounter_type|capfirst }}
                 <i class="fa-solid fa-eye" title="Observed by" aria-hidden="true"></i>
                 {{ object.observer.name }}
-                <i class="fa-solid fa-tablet-screen-button" title="Reported by" aria-hidden="true"></i>
-                {{ object.reporter.name }}
-                {% if object.campaign %}
-                <i class="fa-solid fa-shield-halved" title="Owned by" aria-hidden="true"></i>
-                {{ object.campaign.owner }}
-                {% endif %}
+                <i class="fa-solid fa-map"></i>
+                {{ object.site.name }}
             </h6>
         </div>
         <div>

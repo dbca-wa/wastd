@@ -21,22 +21,19 @@
 <div class="row" id="row-enc-detail">
     <div class="col">
         {% block subject_details %}
-        <span class="float-right">
-            {% block title_labels %}{% endblock %}
-        </span>
+        <span class="float-right badge badge-{{ object.status_colour|default:'secondary' }}">
+            QA status: {{ object.get_status_display }}
+            </span>
         <h2>
             {% block heading %}{{ object }}{% endblock heading %}
         </h2>
+        {% if request.user.is_staff %}
         <div>
-            <span class="badge badge-{{ object.status_colour|default:'secondary' }}">
-              QA status: {{ object.get_status_display }}
-            </span>
             {# FIXME: permissions check #}
             {# Display edit & QA transitions (if authorised) #}
-            {% if request.user.is_staff %}
             {% include "observations/edit_qa.html" %}
-            {% endif %}
         </div>
+        {% endif %}
         <br>
         {% endblock subject_details %}
     </div>
