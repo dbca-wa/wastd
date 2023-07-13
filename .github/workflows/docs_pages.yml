@@ -1,0 +1,46 @@
+name: "Build docs pages"
+on:
+  push:
+    branches: [master]
+    tags: ['*']
+  pull_request:
+    branches: [master]
+
+jobs:
+  build-docs:
+    name: Build docs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.10'
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+          installer-parallel: true
+      - name: Load cached venv
+        uses: actions/cache@v2
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+      - name: Install project
+        run: poetry install --no-interaction
+      - name: Build documentation
+        run: |
+          mkdir gh-pages
+          touch gh-pages/.nojekyll
+          poetry run sphinx-build -b html docs _build
+          cp -r _build/* gh-pages/
+      - name: Deploy documentation
+        if: ${{ github.event_name == 'push' }}
+        uses: JamesIves/github-pages-deploy-action@4.4.3
+        with:
+          branch: gh-pages
+          folder: gh-pages
