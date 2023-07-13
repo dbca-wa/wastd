@@ -2,24 +2,9 @@
 WAStD - WA Sea Turtle and Strandings Database
 =====================================================================
 
-.. image:: https://github.com/dbca-wa/wastd/actions/workflows/docker.yml/badge.svg
-     :target: https://github.com/dbca-wa/wastd/actions/workflows/docker.yml
-     :alt: Docker
-.. image:: https://github.com/dbca-wa/wastd/workflows/CodeQL/badge.svg?branch=master
-     :target: https://github.com/dbca-wa/wastd/actions
-     :alt: CodeQL
-.. image:: https://github.com/dbca-wa/wastd/workflows/DjangoCI/badge.svg?branch=master
-     :target: https://github.com/dbca-wa/wastd/actions
-     :alt: DjangoCI
-.. image:: https://coveralls.io/repos/github/dbca-wa/wastd/badge.svg?branch=master
-     :target: https://coveralls.io/github/dbca-wa/wastd?branch=master
-     :alt: Test coverage
 .. image:: https://img.shields.io/badge/License-MIT-green.svg
      :target: https://opensource.org/licenses/MIT
      :alt: MIT License
-.. image:: https://img.shields.io/github/issues/dbca-wa/wastd
-     :target: https://github.com/dbca-wa/wastd/issues/
-     :alt: GitHub issues
 
 ========
 Overview
@@ -29,18 +14,11 @@ WAStD is a data warehouse for:
 
 * Turtle strandings in WA, as reported to the
   Department of Biodiversity, Conservation and Attractions, WA.
-* Dugong and sea snake strandings in WA.
 * Turtle nesting census, which counts nests and tracks on mornings after nesting nights
   (can involve nests, tracks, predation, nest tags, temperature loggers, egg excavations,
   hatchling measurements, hatchling emergence track measurements, light pollution observations).
 * Temperature logger asset management.
 * Turtle tagging observations.
-
-WAStD is built scalable enough to accommodate other, related, data:
-
-* Cetacean (whales and dolphins) and pinniped (seals and sea lions) strandings.
-  While an integration is technically possible, the current point of truth for these
-  strandings is a different in-house database at DBCA with its own response protocols.
 
 WAStD offers as main functionalities:
 
@@ -51,7 +29,6 @@ WAStD offers as main functionalities:
   they can search, filter and export the raw data, but not change or delete them.
 * A RESTful API that allows authenticated users to create, update, and download
   the data.
-
 
 WAStD integrates in the Departmental information landscape as follows:
 
@@ -65,10 +42,6 @@ WAStD integrates in the Departmental information landscape as follows:
   departmental data warehouses, once these become the point of truth for the data.
 * Departmental data consumers can use the R package `wastdr <https://dbca-wa.github.io/wastdr/>`_ to access
   data directly from the WAStD API. ``wastdr`` provides working examples and extensive documentation.
-
-Departmental business related to turtle strandings:
-
-Documented at https://confluence.dpaw.wa.gov.au/display/MSIM/Legacy+systems
 
 If any of the legacy systems were to experience an acute business risk -- e.g.
 data being siloed in outdated software,
@@ -114,25 +87,18 @@ What is where
 * `WAStD <https://wastd.dbca.wa.gov.au/>`_ - DBCA staff login
 * `WAStD data curation portal <https://wastd.dbca.wa.gov.au/>`_ > Curators > Data Curation Portal - privileged DBCA staff
 * `WAStD docs <https://wastd.dbca.wa.gov.au/>`_ > Manual - public
-* `Turtle Monitoring Program Coordinator docs - <https://dbcawa.atlassian.net/wiki/spaces/TG/pages/16974134/Turtle+Program+Collaborations>`_ - DBCA and external authorised users
-* `2021 Reports <https://dpaw.sharepoint.com/sites/theturtles/Shared%20Documents/Forms/AllItems.aspx?viewid=b34c0a22%2Da086%2D4a61%2D9506%2D1e8b66ceccd0&id=%2Fsites%2Ftheturtles%2FShared%20Documents%2F10%20Turtle%20data%20exports>`_ - daily added reports, data exports, and QA products - DBCA staff login
 * `Turtle Nesting metadata on data catalogue <https://data.dbca.wa.gov.au/dataset/turtle-tracks>`_ - pending update. DBCA intranet.
 * `Turtle Tagging metadata on data catalogue <https://data.dbca.wa.gov.au/dataset/wa-marine-turtle-tagging-database-wamtram-2>`_ - pending update. DBCA intranet.
 
 .. toctree::
    :maxdepth: 3
 
-   third_party_access
-   data_collection/data_collection_admin
-   data_collection/data_collection_training
-   data_collection/data_collection_development
-   data_collection/thevenard.rst
    data_entry
    data_qa
    data_consumers
    business_analysts
-   maintainers
    developers
+   third_party_access
 
 =======================
 Technical documentation
