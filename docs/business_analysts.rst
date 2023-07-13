@@ -6,7 +6,6 @@ This chapter draws the big picture of the turtle data ecosystem
 by presenting business, functional and stakeholders' requirements as readable
 use cases and describing existing implementations.
 
-
 We apply IBM's `simple pattern for requirements analysis
 <https://www.ibm.com/developerworks/architecture/library/ar-analpat/ar-analpat-pdf.pdf>`_
 to structure the problem space into business processes (stranding, tagging, and
@@ -725,7 +724,6 @@ will solve the following problems:
 * REQ At any point in time we need to know precise location and holder of tags, which
   may change every night during tagging season.
 
-
 If the solution would allow data entry in random order
 `REQ #58 <https://github.com/parksandwildlife/biosys-turtles/issues/58>`_, and
 let curators later fix any remaining issues, this would solve the following problems:
@@ -735,8 +733,6 @@ let curators later fix any remaining issues, this would solve the following prob
 * W2 assumes all datasheets are available for data entry before the next tagging
   night, and enforces data entry in chronological order. This is seen as a limitation.
 
-
-
 `REQ #59 <https://github.com/parksandwildlife/biosys-turtles/issues/59>`_
 Limitations impacting digital data collection on gas plants:
 
@@ -744,7 +740,6 @@ Limitations impacting digital data collection on gas plants:
 * All electronic devices must be certified for fire / spark safety.
 * Varanus Is would work with tablets.
 * Barrow Is is too hectic for tablets.
-
 
 * `REQ #11 <https://github.com/parksandwildlife/biosys-turtles/issues/11>`_
   Pend do not need to know turtle history when tagging, they treat every turtle
@@ -798,8 +793,6 @@ Analysis workflow for Analyst of Barrow Is tagging data:
 * Data: tagging data, hatching success separately, tracks.
 * Analyst creates time blocks within season and looks at each animal's recapture
   history between time blocks.
-
-
 
 * `REQ #11 <https://github.com/parksandwildlife/biosys-turtles/issues/11>`_
   The analyst needs full animal history of each encountered animal, even if
@@ -856,7 +849,6 @@ REQ WAMTRAM requirement to DPaW for Animal ethics:
 * any tag applied-new or re-clinched,
 * biopsy taken if not already in flipper-tagged
 
-
 Interim solution: ETL to WAStD
 ------------------------------
 The task of extraction, transformation and loading (ETL) of tagging data is
@@ -903,7 +895,6 @@ process.
 Insight can be generated initially from WAMTRAM 2's CSV snapshots, and later on
 source the data from the WAStD API.
 
-
 Use case: Turtle Tagging digital data capture
 ---------------------------------------------
 
@@ -926,7 +917,6 @@ Tagging is currently handled in WAMTRAM 2.
 
 To replace WAMTRAM 2, digital / paper-based data capture as well as a central
 data warehouse such as BioSys or WAStD are required.
-
 
 .. _business-process-turtle-tracks:
 
@@ -970,7 +960,6 @@ CSV and GeoJSON files, and uploads them to the NTP
 `dataset <http://internal-data.dpaw.wa.gov.au/dataset/ningaloo-turtle-program-data>`_.
 
 The workbook can be extended to also upload the data into WAStD's API.
-
 
 IT process Aerial imagery track count
 -------------------------------------
@@ -1074,9 +1063,6 @@ The NTP Coordinator and the Ningaloo Marine Park Coodinator (MPC) create data
 products (figures and tables) and write, or contribute, to several recurring
 reports.
 
-
-
-
 From MPC and NTP Coordinator:
 
 * `REQ #7 <https://github.com/parksandwildlife/biosys-turtles/issues/7>`_
@@ -1112,13 +1098,11 @@ Known required analytical products:
 * spatial distribution, patterns, change of patterns (temporal patterns)
 * modelling: optimal monitoring from beginning / peak / end of hatching
 
-
 Non-functional requirements
 ===========================
 
 This section documents lessons learnt during the requirements analysis, design
 and development of WAStD and anecdotal wisdom of colleagues and data custodians.
-
 
 Senior data custodians are gold mines of business knowledge
 -----------------------------------------------------------
@@ -1285,14 +1269,12 @@ REQ Reporting framework procedures must be provided with sufficient
 documentation, training resources, and ongoing support to allow efficient
 engagement of turtle group members with data analysis and reporting.
 
-
-===========================
 How it's made - the process
 ===========================
 Listen - look - touch - understand - build - repeat.
 
 Listen
-======
+------
 Listen to stakeholders to clarify past, present and future of:
 
 * scope and growth of scope
@@ -1311,7 +1293,7 @@ Writing down the above will evolve into the project's documentation, including
 requirements analysis, technical documentation, user-level manuals, and training material.
 
 Look
-====
+----
 Look at examples of all production data. Review data sheets with stakeholders.
 Does all data serve QA or generated insight? What's missing, what's unnecessary?
 
@@ -1319,7 +1301,7 @@ The combined understanding of production data will evolve into a data model, bas
 on a good understanding of involved product life cycles and user roles.
 
 Touch
-=====
+-----
 Create live documents (workbooks) loading and inspecting production data
 for each legacy system.
 Describe and document legacy data in the workbooks.
@@ -1328,7 +1310,7 @@ Clean and transform legacy data, store snapshots in a central place (data catalo
 These workbooks will evolve into ETL scripts for data in legacy systems.
 
 Understand
-==========
+----------
 Build insight from the sanitised legacy data as raw versions of every product
 identified by the stakeholders.
 
@@ -1336,7 +1318,8 @@ Review often with stakeholders to confirm relevance, validity, and evolve the
 data product to optimise insight for data consumers.
 
 Build
-=====
+-----
+
 Build systems to handle, store, document, process data.
 
 Be modular and agile enough to evolve the systems into production systems.
@@ -1345,13 +1328,13 @@ Deploy systems in production mode to allow stakeholder interaction and to battle
 deployment and recovery protocols.
 
 Repeat
-======
+------
+
 Build features end-to-end, optimize architecture rather than implementation.
 Keep iterations small and consult stakeholders.
 
 Verify the necessity of a feature through a product utilising it, and verify the
 product's validity (and the correctnenss of data processing) with stakeholders.
-
 
 Paradigms
 =========
@@ -1365,9 +1348,3 @@ Paradigms
     * to detect real-world problems,
     * to battle-test implementation approaches,
     * to evolve working solutions into correct, then comprehensive solutions
-
-
-=====================
-Reproducible Research
-=====================
-TODO section on RR.

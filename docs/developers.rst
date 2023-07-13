@@ -108,7 +108,6 @@ samples etc.).
   :undoc-members:
   :show-inheritance:
 
-
 Admin
 =====
 We're using a nicely styled admin to let trained data entry operators and
@@ -130,7 +129,6 @@ API
 ===
 The API is intended for programmatic access to data, mainly to batch-import
 and batch-export.
-
 
 .. :mod:`wastd.api` Module
 .. ---------------------------------------
@@ -179,10 +177,10 @@ Remaining modules of the observations package are documented here.
   :undoc-members:
   :show-inheritance:
 
-
 ===================================
 Project delivery: ticking the boxes
 ===================================
+
 This chapter closes the development circle by pairing functional requirements with
 corresponding functional, unit and view tests.
 The tests are documented inline with the requirements they cover; the documentation
@@ -208,8 +206,6 @@ Tests are structured into:
     * Permissions: which role can see / do what when?
     * Conditions: what needs to be done and present before a step can be executed?
     * Consequences: what will happen if I hit this button?
-
-
 
 WA Strandings and WA Sea Turtles
 ================================

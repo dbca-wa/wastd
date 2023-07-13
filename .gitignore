@@ -49,8 +49,9 @@ tests/.hitch
 # Staticfiles
 staticfiles/
 
-# Sphix docs
+# Sphinx docs
 docs/_build/
+_build/
 
 # coveralls settings
 .coveralls.yml
