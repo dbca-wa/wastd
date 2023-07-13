@@ -46,3 +46,13 @@ Run console commands manually:
 To build a new Docker image from the `Dockerfile`:
 
     docker image build -t ghcr.io/dbca-wa/wastd .
+
+# Docs
+
+To build docs locally:
+
+    poetry run sphinx-build -b html docs _build
+
+To serve them:
+
+    poetry run python -m http.server --directory _build 8080
