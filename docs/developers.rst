@@ -1,4 +1,5 @@
 .. _dev-docs:
+
 ***********************
 Developer documentation
 ***********************
@@ -17,6 +18,7 @@ In this chapter, we will discuss:
 
 
 .. _design-smells:
+
 Design smells
 =============
 Let's start this chapter with early design decisions that could be refactored to be improved.
@@ -24,7 +26,7 @@ Let's start this chapter with early design decisions that could be refactored to
 Unique identifiers
 ------------------
 Fields with unique identifiers are called ``name``. The word ``name`` is overloaded.
-The mixin class :ref:`shared.models.CodeLabelDescriptionMixin`_ brings three fields:
+The mixin class ``shared.models.CodeLabelDescriptionMixin`` brings three fields:
 
 * code  - a unique, short, URL-safe short code
 * label - a human-readable label
@@ -35,19 +37,20 @@ Smell: inconsistent use of "name", "label", for unique identifiers across the co
 Legacy sources
 --------------
 Two competing ways of tracking an upstream point of truth:
-:ref:`shared.models.LegacySourceMixin`_ and per model ChoiceField lookups.
+``shared.models.LegacySourceMixin`` and per model ChoiceField lookups.
 The underlying value is either a SmallInt (quick lookups, but incomrehensive to the user), or a short string.
 
-Smell: refactor to use :ref:`shared.models.LegacySourceMixin`_. Mind that R package wastdr and ETL pipelines need to be updated too.
+Smell: refactor to use ``shared.models.LegacySourceMixin``. Mind that R package wastdr and ETL pipelines need to be updated too.
 
 Hard-coded lookups
 ------------------
 Hard-coding lookups prevents data corruption by over-eager admin users.
 Since we have much higher code churn than data model churn, these lookups are easy enough to maintain.
 
-Smell: where to define lookup dicts - currently mixed in ``wastd.observations.models`` at both top level and model level.
+Smell: where to define lookup dicts - currently mixed in ``observations.models`` at both top level and model level.
 
 .. _extend-app:
+
 Extending the application
 =========================
 
@@ -73,6 +76,7 @@ WAStD can add new instances of ``Observation``.
 
 
 .. _data-model:
+
 Data model
 ==========
 WAStD is designed to handle biological
@@ -100,13 +104,8 @@ samples etc.).
 .. image:: datamodel.png
      :alt: WAStD data model
 
-:mod:`wastd.observations.models` Module
+`observations.models` Module
 ---------------------------------------
-
-.. automodule:: wastd.observations.models
-  :members:
-  :undoc-members:
-  :show-inheritance:
 
 Admin
 =====
@@ -116,66 +115,26 @@ curators add and update data.
 Also, data analysts can search, filter, and export data from here.
 
 
-:mod:`wastd.observations.admin` Module
+`observations.admin` Module
 ---------------------------------------
-
-.. automodule:: wastd.observations.admin
-  :members:
-  :undoc-members:
-  :show-inheritance:
-
 
 API
 ===
 The API is intended for programmatic access to data, mainly to batch-import
 and batch-export.
 
-.. :mod:`wastd.api` Module
-.. ---------------------------------------
-
-.. .. automodule:: wastd.api
-..     :members:
-..     :undoc-members:
-..     :show-inheritance:
-
-
 The rest
 ========
 This concludes the documentation of the key features.
 The following sections document the remaining modules for completeness' sake.
 
-:mod:`wastd.users` app
+`users` app
 ----------------------
 WAStD's custom user package, courtesy of pydanny's django project template.
 
-:mod:`wastd.users.admin` Module
----------------------------------------
-
-.. automodule:: wastd.users.admin
-  :members:
-  :undoc-members:
-  :show-inheritance:
-
-:mod:`wastd.users.views` Module
----------------------------------------
-
-.. automodule:: wastd.users.views
-  :members:
-  :undoc-members:
-  :show-inheritance:
-
-
-:mod:`wastd.observations` app
+`observations` app
 -----------------------------
 Remaining modules of the observations package are documented here.
-
-:mod:`wastd.observations.views` Module
----------------------------------------
-
-.. automodule:: wastd.observations.views
-  :members:
-  :undoc-members:
-  :show-inheritance:
 
 ===================================
 Project delivery: ticking the boxes
@@ -212,16 +171,8 @@ WA Strandings and WA Sea Turtles
 
 Observations
 ------------
-:mod:`wastd.observations.tests` Module
-
-.. automodule:: wastd.observations.tests
-  :members:
-  :undoc-members:
+`observations.tests` Module
 
 Users
 -----
-:mod:`wastd.users.tests` Module
-
-.. automodule:: wastd.users.tests
-  :members:
-  :undoc-members:
+`users.tests` Module
