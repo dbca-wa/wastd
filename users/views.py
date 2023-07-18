@@ -10,14 +10,13 @@ from django.views.generic import (
     FormView,
 )
 from django.http import HttpResponseRedirect
+from observations.models import Area
+from wastd.utils import Breadcrumb, BreadcrumbContextMixin, ListViewBreadcrumbMixin, DetailViewBreadcrumbMixin, ResourceDownloadMixin
 
 from .models import User
 from .forms import UserMergeForm, TransferForm
 from .filters import UserFilter
 from .utils import transfer_user, change_user_for_area
-from observations.models import Area
-from shared.views import ListViewBreadcrumbMixin, DetailViewBreadcrumbMixin, BreadcrumbContextMixin, ResourceDownloadMixin
-from shared.utils import Breadcrumb
 
 
 class UserListView(ListViewBreadcrumbMixin, ResourceDownloadMixin, LoginRequiredMixin, ListView):

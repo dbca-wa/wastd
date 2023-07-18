@@ -2,8 +2,8 @@ from django.conf import settings
 from django.contrib.gis.db import models
 from django.urls import reverse
 from django.utils import timezone
-from shared.models import CurationMixin
 from users.models import User
+from wastd.utils import CurationMixin
 
 
 class TurtleSpecies(models.Model):

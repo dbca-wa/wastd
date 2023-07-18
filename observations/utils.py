@@ -18,7 +18,7 @@ from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.core.files import File
 from django.utils.dateparse import parse_datetime
 from requests.auth import HTTPDigestAuth
-from shared.utils import sanitize_tag_label
+from wastd.utils import sanitize_tag_label
 
 from .models import (
     Area,

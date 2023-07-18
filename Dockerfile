@@ -32,7 +32,6 @@ RUN poetry config virtualenvs.create false \
 FROM python_libs_wastd
 COPY gunicorn.py manage.py ./
 COPY observations ./observations
-COPY shared ./shared
 COPY users ./users
 COPY wastd ./wastd
 COPY wamtram ./wamtram

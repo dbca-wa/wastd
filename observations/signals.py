@@ -4,7 +4,7 @@ from django.db.models.signals import post_save, pre_delete, pre_save
 from django.dispatch import receiver
 import logging
 
-from shared.utils import sanitize_tag_label
+from wastd.utils import sanitize_tag_label
 from .models import (
     Campaign,
     Survey,

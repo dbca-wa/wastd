@@ -7,8 +7,8 @@ from django_filters.filters import (
     MultipleChoiceFilter,
     ModelChoiceFilter,
 )
-from shared.filters import FILTER_OVERRIDES
 from users.models import User
+from wastd.utils import FILTER_OVERRIDES
 from .models import (
     Area,
     Survey,

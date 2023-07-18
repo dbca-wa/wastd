@@ -7,9 +7,8 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.views.generic import ListView, DetailView, FormView
 import json
-from shared.utils import Breadcrumb
 from users.models import User
-from wastd.utils import search_filter
+from wastd.utils import search_filter, Breadcrumb
 
 from .models import (
     Turtle,
