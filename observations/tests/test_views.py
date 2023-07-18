@@ -13,7 +13,6 @@ from observations.lookups import (
 from observations.models import (  # noqa
     AnimalEncounter,
     Area,
-    DugongMorphometricObservation,
     Encounter,
     HatchlingMorphometricObservation,
     LineTransectEncounter,

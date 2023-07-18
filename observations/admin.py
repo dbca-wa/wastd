@@ -19,7 +19,6 @@ from .models import (
     Campaign,
     AnimalEncounter,
     Area,
-    DugongMorphometricObservation,
     Encounter,
     HatchlingMorphometricObservation,
     LineTransectEncounter,
@@ -105,14 +104,6 @@ class HatchlingMorphometricObservationInline(admin.TabularInline):
 
     extra = 0
     model = HatchlingMorphometricObservation
-    classes = ("grp-collapse grp-open",)
-
-
-class DugongMorphometricObservationInline(admin.TabularInline):
-    """Admin for DugongMorphometricObservation."""
-
-    extra = 0
-    model = DugongMorphometricObservation
     classes = ("grp-collapse grp-open",)
 
 
@@ -1412,7 +1403,6 @@ class AnimalEncounterAdmin(ExportActionMixin, EncounterAdmin):
         TagObservationInline,
         TurtleDamageObservationInline,
         TurtleMorphometricObservationInline,
-        DugongMorphometricObservationInline,
         TurtleNestObservationInline,
         NestTagObservationInline,
         ManagementActionInline,
