@@ -3,6 +3,20 @@
 This project is the Department of Biodiversity, Conservation and Attractions
 Sea Turtles Database corporate application.
 
+# Project layout / description
+
+- `wastd`: the core Django project directory, containing common settings, configuration and templates.
+- `observations`: the primary data model for the project, defining the `Encounter` and `Observation` models and subclasses.
+- `users`: an extension of the Django `contrib.auth.models.User` class, customised for this project.
+- `wamtram`: auto-generated model classes to provide readonly ORM utility for the legacy WAMTRAM database.
+- `tagging`: an "interim" application to save data from the WAMTRAM database locally, prior to a future refactor of that data model into the `observations` application.
+
+The intent is for this project to replace the WAMTRAM legacy project and to act as the repository for
+turtle tagging data. The `wamtram` application was created to ease access to the legacy database, and
+the `tagging` application was created as an interim step to refactoring the legacy data into the
+Encounter/Observation model defined in the `observations` application. It is expected that `wamtram` will
+be removed after data migration, and that `tagging` will be removed after the data is refactored.
+
 # Installation
 
 The recommended way to set up this project for development is using
@@ -21,7 +35,7 @@ Manage new or updating project dependencies with Poetry also, like so:
 
 # Environment variables
 
-This project uses **django-confy** to set environment variables (in a `.env` file).
+This project uses **python-dotenv** to set environment variables (in a `.env` file).
 The following variables are required for the project to run:
 
     DATABASE_URL="postgis://USER:PASSWORD@HOST:5432/DATABASE_NAME"
@@ -49,10 +63,10 @@ To build a new Docker image from the `Dockerfile`:
 
 # Docs
 
-To build docs locally:
+Use `sphinx-build` build docs locally:
 
     poetry run sphinx-build -b html docs _build
 
-To serve them:
+Use `http.server` serve them:
 
     poetry run python -m http.server --directory _build 8080
