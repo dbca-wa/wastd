@@ -882,21 +882,3 @@ class LoggerObservationSerializer(ObservationSerializer):
             "logger_id",
             "comments",
         )
-
-
-class DugongMorphometricObservationSerializer(ObservationSerializer):
-
-    encounter = AnimalEncounterSerializer(read_only=True)
-
-    class Meta:
-        model = models.DugongMorphometricObservation
-        fields = (
-            "pk",
-            "source",
-            "source_id",
-            "encounter",
-            "body_length_mm",
-            "body_girth_mm",
-            "tail_fluke_width_mm",
-            "tusks_found",
-        )

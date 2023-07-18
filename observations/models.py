@@ -2612,10 +2612,10 @@ class ManagementAction(Observation):
     """
 
     management_actions = models.TextField(
-        verbose_name=_("Management Actions"),
+        verbose_name="Management Actions",
         blank=True,
         null=True,
-        help_text=_("Managment actions taken. Keep updating as appropriate."),
+        help_text="Managment actions taken. Keep updating as appropriate.",
     )
 
     comments = models.TextField(
@@ -2629,7 +2629,7 @@ class ManagementAction(Observation):
         verbose_name = "Management Action"
 
     def __str__(self):
-        return "Management Action {0} of {1}".format(self.pk, self.encounter.__str__())
+        return "Management Action {} of {}".format(self.pk, self.encounter)
 
 
 class TurtleMorphometricObservation(Observation):
@@ -2855,52 +2855,6 @@ class HatchlingMorphometricObservation(Observation):
             self.straight_carapace_length_mm,
             self.straight_carapace_width_mm,
             self.body_weight_g,
-        )
-
-
-class DugongMorphometricObservation(Observation):
-    """Morphometric measurements of a Dugong at an AnimalEncounter."""
-
-    body_length_mm = models.PositiveIntegerField(
-        blank=True,
-        null=True,
-        verbose_name=_("Body length (mm)"),
-        help_text=_("The body length in millimetres."),
-    )
-
-    body_girth_mm = models.PositiveIntegerField(
-        blank=True,
-        null=True,
-        verbose_name=_("Body girth (mm)"),
-        help_text=_("The body girth at the widest point in millimetres."),
-    )
-
-    tail_fluke_width_mm = models.PositiveIntegerField(
-        blank=True,
-        null=True,
-        verbose_name=_("Tail fluke width (mm)"),
-        help_text=_("The tail fluke width in millimetres."),
-    )
-
-    tusks_found = models.CharField(
-        max_length=300,
-        verbose_name=_("Tusks found"),
-        choices=lookups.OBSERVATION_CHOICES,
-        default=lookups.NA_VALUE,
-        help_text=_("Did the animal have tusks?"),
-    )
-
-    class Meta:
-        verbose_name = "Dugong Morphometric Observation"
-
-    def __str__(self):
-        tpl = "{0} {1} Hatchling SCL {2} mm, SCW {3} mm, Wt {4} g"
-        return tpl.format(
-            self.pk,
-            self.encounter.species,
-            self.body_length_mm,
-            self.body_girth_mm,
-            self.tail_fluke_width_mm,
         )
 
 
