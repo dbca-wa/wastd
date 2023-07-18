@@ -4,8 +4,7 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.urls import reverse
-from django.utils import timezone  # noqa
-from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 from phonenumber_field.modelfields import PhoneNumberField
 from rest_framework.authtoken.models import Token
 
@@ -21,23 +20,23 @@ class Organisation(models.Model):
     code = models.SlugField(
         max_length=500,
         unique=True,
-        verbose_name=_("Code"),
-        help_text=_("A unique, url-safe code."),
+        verbose_name="Code",
+        help_text="A unique, url-safe code.",
     )
 
     label = models.CharField(
         blank=True,
         null=True,
         max_length=500,
-        verbose_name=_("Label"),
-        help_text=_("A human-readable, self-explanatory label."),
+        verbose_name="Label",
+        help_text="A human-readable, self-explanatory label.",
     )
 
     description = models.TextField(
         blank=True,
         null=True,
-        verbose_name=_("Description"),
-        help_text=_("A comprehensive description."),
+        verbose_name="Description",
+        help_text="A comprehensive description.",
     )
 
     class Meta:
@@ -49,61 +48,45 @@ class Organisation(models.Model):
 
 
 class User(AbstractUser):
-    """WAStD User.
-
-    Mixins are not imported from shared.models to avoid circular import.
+    """Customised User class.
     """
 
     # First Name and Last Name do not cover name patterns around the globe.
-    name = models.CharField(_("Name of User"), blank=True, max_length=255)
-
-    nickname = models.CharField(_("Preferred name"), blank=True, max_length=255)
-
+    name = models.CharField("Name of User", blank=True, max_length=255)
+    nickname = models.CharField("Preferred name", blank=True, max_length=255)
     aliases = models.TextField(
-        _("Aliases of User"),
+        "Aliases of User",
         blank=True,
-        help_text=_(
-            "Any names this user is known as in other "
-            "databases and data collection forms. "
-            "Separate names by comma."
-        ),
+        help_text="Any names this user is known as in other databases and data collection forms. Separate names by comma.",
     )
-
     role = models.TextField(
-        _("Role of User"), blank=True, null=True, help_text=_("The role of the user.")
+        "Role of User", blank=True, null=True, help_text="The role of the user."
     )
 
     affiliation = models.TextField(
-        _("Affiliation"),
+        "Affiliation",
         blank=True,
-        help_text=_("The organisational affiliation of the user as free text."),
+        help_text="The organisational affiliation of the user as free text.",
     )
 
     organisations = models.ManyToManyField(
         Organisation,
         related_name="members",
         blank=True,
-        help_text=_(
-            "The organisational affiliation is used to control data visibility and access. "
-            "A user can be a member of several Organisations."
-        ),
+        help_text="The organisational affiliation is used to control data visibility and access. A user can be a member of several Organisations.",
     )
 
     phone = PhoneNumberField(
-        verbose_name=_("Phone Number"),
+        verbose_name="Phone Number",
         blank=True,
         null=True,
-        help_text=_(
-            "The primary contact number including national prefix, "
-            "e.g. +61 412 345 678. "
-            "Spaces are accepted but will be removed on saving."
-        ),
+        help_text="The primary contact number including national prefix, e.g. +61 412 345 678. Spaces are accepted but will be removed on saving.",
     )
 
     alive = models.BooleanField(
-        verbose_name=_("Alive"),
+        verbose_name="Alive",
         default=True,
-        help_text=_("Deceased users should not be attempted to be contacted."),
+        help_text="Deceased users should not be attempted to be contacted.",
     )
 
     class Meta:

@@ -2,12 +2,8 @@ from django_filters.rest_framework import DateFilter
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework_filters import FilterSet
-from shared.api import (
-    MyGeoJsonPagination,
-    BatchUpsertViewSet,
-    ObservationBatchUpsertViewSet,
-)
 from observations import models, serializers
+from wastd.utils import MyGeoJsonPagination
 
 try:
     from .utils import symlink_resources

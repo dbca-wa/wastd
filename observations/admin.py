@@ -13,7 +13,7 @@ from import_export.admin import ExportActionMixin
 from rest_framework.authtoken.admin import TokenAdmin
 from reversion.admin import VersionAdmin
 
-from shared.admin import FORMFIELD_OVERRIDES, S2ATTRS, CustomStateLogInline
+from wastd.utils import FORMFIELD_OVERRIDES, S2ATTRS, CustomStateLogInline
 from users.widgets import UserWidget
 from .models import (
     Campaign,

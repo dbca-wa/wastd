@@ -10,8 +10,8 @@ from django.views.generic import View, TemplateView, ListView, CreateView, Detai
 from django.views.generic.detail import SingleObjectMixin
 from django_fsm_log.models import StateLog
 from django_tables2 import RequestConfig, SingleTableView, tables
+from wastd.utils import ListViewBreadcrumbMixin, DetailViewBreadcrumbMixin, ResourceDownloadMixin
 
-from shared.views import ListViewBreadcrumbMixin, DetailViewBreadcrumbMixin, ResourceDownloadMixin
 from .admin import (
     EncounterAdmin,
     AnimalEncounterAdmin,

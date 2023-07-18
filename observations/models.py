@@ -33,14 +33,9 @@ from rest_framework.reverse import reverse as rest_reverse
 import slugify
 import urllib
 
-from shared.models import (
-    LegacySourceMixin,
-    QualityControlMixin,
-    UrlsMixin,
-)
+from wastd.utils import LegacySourceMixin, QualityControlMixin, UrlsMixin
 from users.models import User, Organisation
 from . import lookups
-
 
 LOGGER = logging.getLogger("turtles")
 

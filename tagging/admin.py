@@ -9,9 +9,9 @@ from django.utils.html import mark_safe
 from django.utils.translation import gettext as _
 from fsm_admin.mixins import FSMTransitionMixin
 from reversion.admin import VersionAdmin
-from shared.admin import FORMFIELD_OVERRIDES
 from urllib.parse import quote as urlquote
 
+from wastd.utils import FORMFIELD_OVERRIDES
 from .forms import (
     TurtleAddForm,
     TurtleChangeForm,
