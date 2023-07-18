@@ -3,22 +3,15 @@
 These models support opportunistic encounters with stranded, dead, injured,
 nesting turtles and possibly other wildlife, such as cetaceans and pinnipeds.
 
-Species use a local name list, but should lookup a webservice.
-This Observation is generic for all species. Other Models can FK this Model
-to add species-specific measurements.
+An Encounter (or subclass) is an event where a person records some information
+about a thing in the physical world. An Encounter is the generic base class,
+and a subclass may be specific to a defined category of thing (e.g. the
+TurtleNestEncounter class is specific to records about turtle nests and tracks).
 
-Observer name / address / phone / email is captured through the observer being
-a system user.
-
-The combination of species and health determines subsequent measurements and
-actions:
-
-* [turtle, dugong, cetacean] damage observation
-* [turtle, dugong, cetacean] distinguishing features
-* [taxon] morphometrics
-* [flipper, pit, sat] tag observation
-* disposal actions
-
+An Encounter can have zero or more Observations associated with it. An Observation
+(or subclass) is used to record an observation that was taken during the encounter
+event (e.g. one encounter with a nesting turtle might result in observations about
+the turtle's morphometrics, physical damage, and nesting success).
 """
 from datetime import timedelta
 from dateutil import tz
@@ -61,6 +54,7 @@ def encounter_media(instance, filename):
 
 def campaign_media(instance, filename):
     """Return an upload file path for a campaign media attachment.
+    Deprecated method, but required for migrations.
     """
     return "campaign/{}/{}".format(instance.campaign.id, filename)
 
@@ -255,54 +249,6 @@ class Area(models.Model):
         )
 
 
-class SiteVisitStartEnd(models.Model):
-    """A start or end point to a site visit."""
-
-    source = models.CharField(
-        max_length=300,
-        verbose_name=_("Data Source"),
-        default=lookups.SOURCE_DEFAULT,
-        choices=lookups.SOURCE_CHOICES,
-        help_text=_("Where was this record captured initially?"),
-    )
-
-    source_id = models.CharField(
-        max_length=1000,
-        blank=True,
-        null=True,
-        verbose_name=_("Source ID"),
-        help_text=_(
-            "The ID of the record in the original source, or "
-            "a newly allocated ID if left blank. Delete and save "
-            "to regenerate this ID."
-        ),
-    )
-
-    datetime = models.DateTimeField(
-        verbose_name=_("Observation time"),
-        help_text=_("Local time (no daylight savings), stored as UTC."),
-    )
-
-    location = models.PointField(
-        srid=4326,
-        verbose_name=_("Location"),
-        help_text=_("The observation location as point in WGS84"),
-    )
-
-    type = models.CharField(
-        max_length=300,
-        verbose_name=_("Type"),
-        choices=(("start", "start"), ("end", "end")),
-        default="start",
-        help_text=_("Start of end of site visit?"),
-    )
-
-    # media attachment
-
-    def __str__(self):
-        return "Site visit start or end on {0}".format(self.datetime.isoformat())
-
-
 class Campaign(models.Model):
     """An endeavour of a team to a Locality within a defined time range.
 
@@ -460,60 +406,6 @@ class Campaign(models.Model):
         LOGGER.info("Adopted {0} surveys and {1} encounters.".format(no_svy, no_enc))
 
 
-class CampaignMediaAttachment(models.Model):
-    """A media attachment to a Campaign."""
-
-    MEDIA_TYPE_CHOICES = (
-        ("datasheet", "Data sheet"),
-        ("journal", "Field journal"),
-        ("communication", "Communication record"),
-        ("photograph", "Photograph"),
-        ("other", "Other"),
-    )
-
-    campaign = models.ForeignKey(
-        Campaign,
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        verbose_name=_("Campaign"),
-        help_text=_("The linked Campaign."),
-    )
-
-    media_type = models.CharField(
-        max_length=300,
-        verbose_name=_("Attachment type"),
-        choices=MEDIA_TYPE_CHOICES,
-        default="datasheet",
-        help_text=_("What is the attached file about?"),
-    )
-
-    title = models.CharField(
-        max_length=300,
-        verbose_name=_("Attachment name"),
-        blank=True,
-        null=True,
-        help_text=_("Give the attachment a representative name"),
-    )
-
-    attachment = models.FileField(
-        upload_to=campaign_media,
-        max_length=500,
-        verbose_name=_("File attachment"),
-        help_text=_("Upload the file"),
-    )
-
-    def __str__(self):
-        return "Attachment {0} {1} for {2}".format(
-            self.pk, self.title, self.campaign.__str__()
-        )
-
-    @property
-    def filepath(self):
-        """Path to file."""
-        return force_text(self.attachment.file)
-
-
 class Survey(QualityControlMixin, UrlsMixin, models.Model):
     """A visit to one site by a team of field workers collecting data.
     """
@@ -650,7 +542,7 @@ class Survey(QualityControlMixin, UrlsMixin, models.Model):
         The time of 'feet in the sand, done recording encounters.'""",
     )
     end_photo = models.FileField(
-        upload_to=campaign_media,
+        upload_to=survey_media,
         blank=True,
         null=True,
         max_length=500,

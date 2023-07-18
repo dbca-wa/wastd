@@ -28,7 +28,6 @@ from .models import (
     TurtleDamageObservation,
     AnimalEncounter,
     MediaAttachment,
-    CampaignMediaAttachment,
     TurtleNestDisturbanceObservation,
     TurtleNestObservation,
     NestTagObservation,
@@ -913,7 +912,6 @@ def handle_photo(p, e, title="Track", enc=True):
     e The related encounter (must exist)
     title The attachment's title (default: "Track")
     enc Whether to use Encounter / MediaAttachment (true, default) or
-        Campaign / CampaignMediaAttachment
     """
     # Does the file exist locally?
     LOGGER.debug(
@@ -939,18 +937,6 @@ def handle_photo(p, e, title="Track", enc=True):
                         action = "updated"
                     else:
                         m = MediaAttachment(encounter=e, title=title)
-                        action = "Created"
-                else:
-                    # Does the MediaAttachment exist already?
-                    if CampaignMediaAttachment.objects.filter(
-                        campaign=e, title=title
-                    ).exists():
-                        m = CampaignMediaAttachment.objects.filter(
-                            campaign=e, title=title
-                        )[0]
-                        action = "updated"
-                    else:
-                        m = CampaignMediaAttachment(campaign=e, title=title)
                         action = "Created"
 
                 # Update the file
