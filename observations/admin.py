@@ -17,7 +17,6 @@ from shared.admin import FORMFIELD_OVERRIDES, S2ATTRS, CustomStateLogInline
 from users.widgets import UserWidget
 from .models import (
     Campaign,
-    CampaignMediaAttachment,
     AnimalEncounter,
     Area,
     DugongMorphometricObservation,
@@ -862,15 +861,6 @@ class LoggerObservationAdmin(ObservationAdminMixin):
         )
 
 
-class CampaignMediaAttachmentInline(admin.TabularInline):
-    """TabularInlineAdmin for CampaignMediaAttachment."""
-
-    extra = 0
-    model = CampaignMediaAttachment
-    classes = ("grp-collapse grp-open",)
-    formfield_overrides = FORMFIELD_OVERRIDES
-
-
 @register(Survey)
 class SurveyAdmin(ExportActionMixin, FSMTransitionMixin, VersionAdmin):
 
@@ -1050,9 +1040,6 @@ class CampaignAdmin(ModelAdmin):
     )
     date_hierarchy = "start_time"
     form = s2form(Campaign, attrs=S2ATTRS)
-    inlines = [
-        CampaignMediaAttachmentInline,
-    ]
 
     def get_queryset(self, request):
         """Speed up Admin change_list through prefetch_related."""
@@ -1062,8 +1049,6 @@ class CampaignAdmin(ModelAdmin):
             .prefetch_related(
                 "destination",
                 "owner",
-                #'campaignmediaattachment_set',
-                #'viewers'
             )
         )
 
