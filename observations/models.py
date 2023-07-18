@@ -22,7 +22,6 @@ from django.template import loader
 from django.urls import reverse
 from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
-from django.utils.translation import gettext_lazy as _
 from django_fsm import FSMField, transition
 from django_fsm_log.decorators import fsm_log_by, fsm_log_description
 from django_fsm_log.models import StateLog
@@ -255,49 +254,35 @@ class Campaign(models.Model):
     * Campaign are owned by an Organisation.
     * Campaign own all Surveys and Encounters within its area and time range.
     * Campaign can nominate other Organisations as viewers of their data.
-
-    High level specs: https://github.com/dbca-wa/biosys-turtles/issues/81
     """
-
     destination = models.ForeignKey(
         Area,
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
         related_name="campaigns",
-        verbose_name=_("Destination"),
-        help_text=_("The surveyed Locality."),
+        verbose_name="Destination",
+        help_text="The surveyed Locality.",
     )
-
     start_time = models.DateTimeField(
-        verbose_name=_("Campaign start"),
+        verbose_name="Campaign start",
         blank=True,
         null=True,
-        help_text=_(
-            "The Campaign start, shown as local time "
-            "(no daylight savings), stored as UTC."
-        ),
+        help_text="The Campaign start, shown as local time (no daylight savings), stored as UTC.",
     )
-
     end_time = models.DateTimeField(
-        verbose_name=_("Campaign end"),
+        verbose_name="Campaign end",
         blank=True,
         null=True,
-        help_text=_(
-            "The Campaign end, shown as local time "
-            "(no daylight savings), stored as UTC."
-        ),
+        help_text="The Campaign end, shown as local time (no daylight savings), stored as UTC.",
     )
-
     comments = models.TextField(
-        verbose_name=_("Comments"),
+        verbose_name="Comments",
         blank=True,
         null=True,
-        help_text=_("Comments about the Campaign."),
+        help_text="Comments about the Campaign.",
     )
-
     team = models.ManyToManyField(User, blank=True, related_name="campaign_team")
-
     owner = models.ForeignKey(
         Organisation,
         on_delete=models.SET_NULL,
@@ -305,19 +290,14 @@ class Campaign(models.Model):
         blank=True,
         null=True,
         related_name="campaigns",
-        verbose_name=_("Owner"),
-        help_text=_(
-            "The organisation that ran this Campaign owns all records (Surveys and Encounters)."
-        ),
+        verbose_name="Owner",
+        help_text="The organisation that ran this Campaign owns all records (Surveys and Encounters).",
     )
-
     viewers = models.ManyToManyField(
         Organisation,
         related_name="shared_campaigns",
         blank=True,
-        help_text=_(
-            "The nominated organisations are able to view the Campaign's records."
-        ),
+        help_text="The nominated organisations are able to view the Campaign's records.",
     )
 
     class Meta:
@@ -769,84 +749,66 @@ class SurveyEnd(models.Model):
     """
     source = models.CharField(
         max_length=300,
-        verbose_name=_("Data Source"),
+        verbose_name="Data Source",
         default=lookups.SOURCE_DEFAULT,
         choices=lookups.SOURCE_CHOICES,
-        help_text=_("Where was this record captured initially?"),
+        help_text="Where was this record captured initially?",
     )
-
     source_id = models.CharField(
         max_length=1000,
         blank=True,
         null=True,
-        verbose_name=_("Source ID"),
-        help_text=_("The ID of the start point in the original source."),
+        verbose_name="Source ID",
+        help_text="The ID of the start point in the original source.",
     )
-
     device_id = models.CharField(
         max_length=1000,
         blank=True,
         null=True,
-        verbose_name=_("Device ID"),
-        help_text=_("The ID of the recording device, if available."),
+        verbose_name="Device ID",
+        help_text="The ID of the recording device, if available.",
     )
-
     reporter = models.ForeignKey(
         User,
         on_delete=models.SET_DEFAULT,
         default=settings.ADMIN_USER,
-        verbose_name=_("Recorded by"),
+        verbose_name="Recorded by",
         blank=True,
         null=True,
-        help_text=_(
-            "The person who captured the start point, "
-            "ideally this person also recoreded the encounters and end point."
-        ),
+        help_text="The person who captured the start point, ideally this person also recoreded the encounters and end point.",
     )
-
     site = models.ForeignKey(
         Area,
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
-        verbose_name=_("Surveyed site"),
-        help_text=_("The surveyed site, if known."),
+        verbose_name="Surveyed site",
+        help_text="The surveyed site, if known.",
     )
-
     end_location = models.PointField(
         srid=4326,
         blank=True,
         null=True,
-        verbose_name=_("Survey end point"),
-        help_text=_("The end location as point in WGS84."),
+        verbose_name="Survey end point",
+        help_text="The end location as point in WGS84.",
     )
-
     end_time = models.DateTimeField(
-        verbose_name=_("Survey end time"),
+        verbose_name="Survey end time",
         blank=True,
         null=True,
-        help_text=_(
-            "The datetime of leaving the site, shown as local time "
-            "(no daylight savings), stored as UTC."
-            " The time of 'feet in the sand, done recording encounters.'"
-        ),
+        help_text="The datetime of leaving the site, shown as local time (no daylight savings), stored as UTC. The time of 'feet in the sand, done recording encounters.'",
     )
-
     end_photo = models.FileField(
         upload_to=survey_media,
         max_length=500,
-        verbose_name=_("Site photo end"),
-        help_text=_("Site conditions at end of survey."),
+        verbose_name="Site photo end",
+        help_text="Site conditions at end of survey.",
     )
-
     end_comments = models.TextField(
-        verbose_name=_("Comments at finish"),
+        verbose_name="Comments at finish",
         blank=True,
         null=True,
-        help_text=_(
-            "Describe any circumstances affecting data collection, "
-            "e.g. days without surveys."
-        ),
+        help_text="Describe any circumstances affecting data collection, e.g. days without surveys.",
     )
 
     class Meta:
@@ -983,9 +945,9 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
     """
     LOCATION_DEFAULT = "1000"
     LOCATION_ACCURACY_CHOICES = (
-        ("10", _("GPS reading at exact location (10 m)")),
-        (LOCATION_DEFAULT, _("Site centroid or place name (1 km)")),
-        ("10000", _("Rough estimate (10 km)")),
+        ("10", "GPS reading at exact location (10 m)"),
+        (LOCATION_DEFAULT, "Site centroid or place name (1 km)"),
+        ("10000", "Rough estimate (10 km)"),
     )
 
     ENCOUNTER_STRANDING = "stranding"
@@ -1959,7 +1921,6 @@ class TurtleNestEncounter(Encounter):
     * predated (nest and eggs destroyed by predator)
     * hatched (eggs hatched)
     """
-
     nest_age = models.CharField(
         max_length=300,
         verbose_name="Age",
@@ -1967,7 +1928,6 @@ class TurtleNestEncounter(Encounter):
         default=lookups.NEST_AGE_DEFAULT,
         help_text="The track or nest age.",
     )
-
     nest_type = models.CharField(
         max_length=300,
         verbose_name="Type",
@@ -1975,7 +1935,6 @@ class TurtleNestEncounter(Encounter):
         default=lookups.NEST_TYPE_DEFAULT,
         help_text="The track or nest type.",
     )
-
     species = models.CharField(
         max_length=300,
         verbose_name="Species",
@@ -1983,7 +1942,6 @@ class TurtleNestEncounter(Encounter):
         default=lookups.TURTLE_SPECIES_DEFAULT,
         help_text="The species of the animal which created the track or nest.",
     )
-
     habitat = models.CharField(
         max_length=500,
         verbose_name="Habitat",
@@ -1991,7 +1949,6 @@ class TurtleNestEncounter(Encounter):
         default=lookups.NA_VALUE,
         help_text="The habitat in which the track or nest was encountered.",
     )
-
     disturbance = models.CharField(
         max_length=300,
         verbose_name="Evidence of predation or disturbance",
@@ -1999,7 +1956,6 @@ class TurtleNestEncounter(Encounter):
         default=lookups.NA_VALUE,
         help_text="Is there evidence of predation or other disturbance?",
     )
-
     nest_tagged = models.CharField(
         max_length=300,
         verbose_name="Nest tag present",
@@ -2007,39 +1963,33 @@ class TurtleNestEncounter(Encounter):
         default=lookups.NA_VALUE,
         help_text="Was a nest tag applied, re-sighted, or otherwise encountered?",
     )
-
     logger_found = models.CharField(
         max_length=300,
-        verbose_name=_("Logger present"),
+        verbose_name="Logger present",
         choices=lookups.OBSERVATION_CHOICES,
         default=lookups.NA_VALUE,
-        help_text=_("Was a data logger deployed, retrieved, or otherwise encountered?"),
+        help_text="Was a data logger deployed, retrieved, or otherwise encountered?",
     )
-
     eggs_counted = models.CharField(
         max_length=300,
-        verbose_name=_("Nest excavated and eggs counted"),
+        verbose_name="Nest excavated and eggs counted",
         choices=lookups.OBSERVATION_CHOICES,
         default=lookups.NA_VALUE,
-        help_text=_("Was the nest excavated and were turtle eggs counted?"),
+        help_text="Was the nest excavated and were turtle eggs counted?",
     )
-
     hatchlings_measured = models.CharField(
         max_length=300,
-        verbose_name=_("Hatchlings measured"),
+        verbose_name="Hatchlings measured",
         choices=lookups.OBSERVATION_CHOICES,
         default=lookups.NA_VALUE,
-        help_text=_(
-            "Were turtle hatchlings encountered and their morphometrics measured?"
-        ),
+        help_text="Were turtle hatchlings encountered and their morphometrics measured?",
     )
-
     fan_angles_measured = models.CharField(
         max_length=300,
-        verbose_name=_("Hatchling emergence recorded"),
+        verbose_name="Hatchling emergence recorded",
         choices=lookups.OBSERVATION_CHOICES,
         default=lookups.NA_VALUE,
-        help_text=_("Were hatchling emergence track fan angles recorded?"),
+        help_text="Were hatchling emergence track fan angles recorded?",
     )
 
     class Meta:
@@ -2165,8 +2115,8 @@ class LineTransectEncounter(Encounter):
     transect = models.LineStringField(
         srid=4326,
         dim=2,
-        verbose_name=_("Transect line"),
-        help_text=_("The line transect as LineString in WGS84"),
+        verbose_name="Transect line",
+        help_text="The line transect as LineString in WGS84",
     )
 
     class Meta:
@@ -2619,10 +2569,10 @@ class ManagementAction(Observation):
     )
 
     comments = models.TextField(
-        verbose_name=_("Comments"),
+        verbose_name="Comments",
         blank=True,
         null=True,
-        help_text=_("Any other comments or notes."),
+        help_text="Any other comments or notes.",
     )
 
     class Meta:
@@ -2822,27 +2772,25 @@ class TurtleMorphometricObservation(Observation):
 
 
 class HatchlingMorphometricObservation(Observation):
-    """Morphometric measurements of a hatchling at a TurtleNestEncounter."""
-
+    """Morphometric measurements of a hatchling at a TurtleNestEncounter.
+    """
     straight_carapace_length_mm = models.PositiveIntegerField(
         blank=True,
         null=True,
-        verbose_name=_("Straight carapace length (mm)"),
-        help_text=_("The straight carapace length in millimetres."),
+        verbose_name="Straight carapace length (mm)",
+        help_text="The straight carapace length in millimetres.",
     )
-
     straight_carapace_width_mm = models.PositiveIntegerField(
         blank=True,
         null=True,
-        verbose_name=_("Straight carapace width (mm)"),
-        help_text=_("The straight carapace width in millimetres."),
+        verbose_name="Straight carapace width (mm)",
+        help_text="The straight carapace width in millimetres.",
     )
-
     body_weight_g = models.PositiveIntegerField(
         blank=True,
         null=True,
-        verbose_name=_("Body weight (g)"),
-        help_text=_("The body weight in grams (1000 g = 1kg)."),
+        verbose_name="Body weight (g)",
+        help_text="The body weight in grams (1000 g = 1kg).",
     )
 
     class Meta:
@@ -2901,37 +2849,34 @@ class TurtleDamageObservation(Observation):
 
 
 class TrackTallyObservation(Observation):
-    """Observation of turtle track tallies and signs of predation."""
-
+    """Observation of turtle track tallies and signs of predation.
+    """
     species = models.CharField(
         max_length=300,
-        verbose_name=_("Species"),
+        verbose_name="Species",
         choices=lookups.TURTLE_SPECIES_CHOICES,
         default=lookups.TURTLE_SPECIES_DEFAULT,
-        help_text=_("The species of the animal causing the track."),
+        help_text="The species of the animal causing the track.",
     )
-
     nest_age = models.CharField(
         max_length=300,
-        verbose_name=_("Age"),
+        verbose_name="Age",
         choices=lookups.NEST_AGE_CHOICES,
         default=lookups.NEST_AGE_DEFAULT,
-        help_text=_("The track or nest age."),
+        help_text="The track or nest age.",
     )
-
     nest_type = models.CharField(
         max_length=300,
-        verbose_name=_("Type"),
+        verbose_name="Type",
         choices=lookups.NEST_TYPE_CHOICES,
         default=lookups.NEST_TYPE_DEFAULT,
-        help_text=_("The track or nest type."),
+        help_text="The track or nest type.",
     )
-
     tally = models.PositiveIntegerField(
-        verbose_name=_("Tally"),
+        verbose_name="Tally",
         blank=True,
         null=True,
-        help_text=_("The sum of encountered tracks."),
+        help_text="The sum of encountered tracks.",
     )
 
     class Meta:
@@ -2943,43 +2888,39 @@ class TrackTallyObservation(Observation):
 
 
 class TurtleNestDisturbanceTallyObservation(Observation):
-    """Observation of turtle track tallies and signs of predation."""
-
+    """Observation of turtle track tallies and signs of predation.
+    """
     species = models.CharField(
         max_length=300,
-        verbose_name=_("Species"),
+        verbose_name="Species",
         choices=lookups.TURTLE_SPECIES_CHOICES,
         default=lookups.TURTLE_SPECIES_DEFAULT,
-        help_text=_("The species of the nesting animal."),
+        help_text="The species of the nesting animal.",
     )
-
     disturbance_cause = models.CharField(
         max_length=300,
-        verbose_name=_("Disturbance cause"),
+        verbose_name="Disturbance cause",
         choices=lookups.NEST_DAMAGE_CHOICES,
         default=lookups.NEST_DAMAGE_DEFAULT,
-        help_text=_("The cause of the disturbance."),
+        help_text="The cause of the disturbance.",
     )
-
     no_nests_disturbed = models.PositiveIntegerField(
-        verbose_name=_("Tally of nests disturbed"),
+        verbose_name="Tally of nests disturbed",
         blank=True,
         null=True,
-        help_text=_("The sum of damaged nests."),
+        help_text="The sum of damaged nests.",
     )
-
     no_tracks_encountered = models.PositiveIntegerField(
-        verbose_name=_("Tally of disturbance signs"),
+        verbose_name="Tally of disturbance signs",
         blank=True,
         null=True,
-        help_text=_("The sum of signs, e.g. predator tracks."),
+        help_text="The sum of signs, e.g. predator tracks.",
     )
-
     comments = models.TextField(
-        verbose_name=_("Comments"),
+        verbose_name="Comments",
         blank=True,
         null=True,
-        help_text=_("Any other comments or notes."),
+        help_text="Any other comments or notes.",
     )
 
     class Meta:
@@ -3281,28 +3222,27 @@ class TurtleTrackObservation(Observation):
 
 
 class PathToSea(models.Model):
-    """A Mixin providing code, label and description."""
-
+    """A Mixin providing code, label and description.
+    """
     code = models.SlugField(
         max_length=500,
         unique=True,
-        verbose_name=_("Code"),
-        help_text=_("A unique, url-safe code."),
+        verbose_name="Code",
+        help_text="A unique, url-safe code.",
     )
-
     label = models.CharField(
         blank=True,
         null=True,
         max_length=500,
-        verbose_name=_("Label"),
-        help_text=_("A human-readable, self-explanatory label."),
+        verbose_name="Label",
+        help_text="A human-readable, self-explanatory label.",
     )
 
     description = models.TextField(
         blank=True,
         null=True,
-        verbose_name=_("Description"),
-        help_text=_("A comprehensive description."),
+        verbose_name="Description",
+        help_text="A comprehensive description.",
     )
 
     class Meta:
@@ -3311,7 +3251,6 @@ class PathToSea(models.Model):
         ]
 
     def __str__(self):
-        """The full name."""
         return self.label
 
 
