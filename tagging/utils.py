@@ -224,7 +224,7 @@ def import_wamtram(reload=True):
             entered_by = bobp
         else:
             entered_by = admin
-        if t.sex = 'I':
+        if t.sex == 'I':
             sex = 'U'  # Unknown
         else:
             sex = t.sex

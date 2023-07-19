@@ -1469,11 +1469,6 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         TODO replace with reconstruct_animal_names logic
         """
         return None
-        # TODO less dirty
-        try:
-            return [enc.name for enc in self.related_encounters if enc.is_new_capture][0]
-        except BaseException:
-            return None
 
     def set_name_in_related_encounters(self, name):
         """Set the animal name in all related AnimalEncounters."""
