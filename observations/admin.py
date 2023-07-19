@@ -52,15 +52,17 @@ TokenAdmin.raw_id_fields = ("user",)
 
 class AreaFilter(RelatedFieldListFilter):
     def field_choices(self, field, request, model_admin):
+        ordering = self.field_admin_ordering(field, request, model_admin)
         return field.get_choices(
-            include_blank=False, limit_choices_to={"area_type": Area.AREATYPE_LOCALITY}
+            include_blank=False, limit_choices_to={"area_type": Area.AREATYPE_LOCALITY}, ordering=ordering
         )
 
 
 class SiteFilter(RelatedFieldListFilter):
     def field_choices(self, field, request, model_admin):
+        ordering = self.field_admin_ordering(field, request, model_admin)
         return field.get_choices(
-            include_blank=False, limit_choices_to={"area_type": Area.AREATYPE_SITE}
+            include_blank=False, limit_choices_to={"area_type": Area.AREATYPE_SITE}, ordering=ordering
         )
 
 
@@ -882,7 +884,6 @@ class SurveyAdmin(ExportActionMixin, FSMTransitionMixin, VersionAdmin):
         "campaign__owner",
         ("area", AreaFilter),
         ("site", SiteFilter),
-        # ('owner', CampaignFilter),
         "reporter",
         "status",
         "production",

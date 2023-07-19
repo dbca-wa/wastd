@@ -2946,7 +2946,7 @@ def get_odk_wastd_mapping():
 # -----------------------------------------------------------------------------#
 # Main import call
 #
-def import_odk(datafile, flavour="odk-tt036", extradata=None, usercsv=None, mapping=None):
+def import_odk(datafile, flavour="odk-tt036", usercsv=None, mapping=None):
     """Import ODK data.
 
     Arguments
@@ -2955,8 +2955,6 @@ def import_odk(datafile, flavour="odk-tt036", extradata=None, usercsv=None, mapp
     flavour The ODK form with version
 
     flavour A string indicating the type of input, see examples.
-
-    extradata A second datafile (tags for WAMTRAM)
 
     usercsv A CSV file with columns "name" and "PERSON_ID"
 

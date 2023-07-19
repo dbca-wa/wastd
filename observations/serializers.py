@@ -180,12 +180,12 @@ class SurveyMediaAttachmentSerializer(ModelSerializer):
                 return duplicates.first()
             else:
                 # Passed-in data matches >1 existing instance, so raise a validation error.
-                return duplicates.first()
                 logger.warning(
                     "{}: existing duplicate(s) with {} ".format(
                         self.Meta.model._meta.label, str(**self.validated_data)
                     )
                 )
+                return duplicates.first()
         else:
             # Create the new, unique instance.
             return self.Meta.model.objects.create(**self.validated_data)
