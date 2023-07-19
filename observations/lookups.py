@@ -96,8 +96,8 @@ TAG_STATUS_RESIGHTED = ("resighted", "reclinched", "removed")
 TAG_STATUS_ON_ANIMAL = (TAG_STATUS_APPLIED_NEW, TAG_STATUS_RESIGHTED)
 
 NEST_TAG_STATUS_CHOICES = (
-    (TAG_STATUS_APPLIED_NEW, "applied new"),
-    (TAG_STATUS_DEFAULT, "re-sighted associated with nest"),
+    (TAG_STATUS_APPLIED_NEW, "Applied new"),
+    (TAG_STATUS_DEFAULT, "Re-sighted associated with nest"),
 )
 
 
