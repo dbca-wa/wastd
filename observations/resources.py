@@ -191,6 +191,12 @@ class TurtleNestEncounterResource(EncounterResource):
     cloud_cover_at_emergence_known = Field()
     cloud_cover_at_emergence = Field()
 
+    # Construct fields that belong to child NestTagObservation objects
+    nest_tag_status = Field()
+    flipper_tag_id = Field()
+    date_nest_laid = Field()
+    tag_label = Field()
+
     class Meta:
         model = TurtleNestEncounter
         fields = EncounterResource.Meta.fields + [
@@ -235,6 +241,10 @@ class TurtleNestEncounterResource(EncounterResource):
             "hatchling_emergence_time_accuracy",
             "cloud_cover_at_emergence_known",
             "cloud_cover_at_emergence",
+            "nest_tag_status",
+            "flipper_tag_id",
+            "date_nest_laid",
+            "tag_label",
         ]
 
     def get_export_order(self):
@@ -462,6 +472,34 @@ class TurtleNestEncounterResource(EncounterResource):
         obs = encounter.get_hatchling_emergence_observation()
         if obs:
             return self.get_child_observation_output(obs, 'cloud_cover_at_emergence')
+        else:
+            return ''
+
+    def dehydrate_nest_tag_status(self, encounter):
+        obs = encounter.get_nesttag_observation()
+        if obs:
+            return obs.get_status_display()
+        else:
+            return ''
+
+    def dehydrate_flipper_tag_id(self, encounter):
+        obs = encounter.get_nesttag_observation()
+        if obs:
+            return obs.flipper_tag_id
+        else:
+            return ''
+
+    def dehydrate_date_nest_laid(self, encounter):
+        obs = encounter.get_nesttag_observation()
+        if obs and obs.date_nest_laid:
+            return obs.date_nest_laid.strftime("%Y-%m-%d")
+        else:
+            return ''
+
+    def dehydrate_tag_label(self, encounter):
+        obs = encounter.get_nesttag_observation()
+        if obs:
+            return obs.tag_label or ''
         else:
             return ''
 
