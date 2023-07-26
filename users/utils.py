@@ -138,6 +138,8 @@ def transfer_user(old, new):
 
     # Role is too messy to deduplicate
     if old.role and old.role != "":
+        if not new.role:
+            new.role = ""
         new.role += old.role
 
     if not new.affiliation and old.affiliation and old.affiliation != "":
@@ -154,6 +156,8 @@ def transfer_user(old, new):
     # ------------------------------------------------------------------------#
     # Mark the old user profile as inactive
     old.is_active = False
+    old.is_staff = False
+    old.is_superuser = False
     old.aliases = ""
     old.role = ""
     old.affiliation = ""
