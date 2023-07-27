@@ -21,6 +21,7 @@
             <input id="search_field" type="text" class="form-control" name="q" placeholder="Search observations (ID, turtle ID, tag serial, etc.)" value="{{ query_string }}">
         </form>
     </div>
+    {% comment %}
     <div class="col-xs-12 col-sm-6">
         <span class="float-right">
             <!-- FIXME: proper permissions check -->
@@ -37,6 +38,7 @@
             {% endif %}
         </span>
     </div>
+    {% endcomment %}
 </div>
 
 {% block pagination_row %}
