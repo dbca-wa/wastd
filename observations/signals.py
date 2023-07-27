@@ -24,9 +24,8 @@ LOGGER = logging.getLogger("turtles")
 @receiver(post_save, sender=Campaign)
 def campaign_post_save(sender, instance, *args, **kwargs):
     """Campaign: Claim Surveys and Encounters."""
-    # Version 1
     instance.adopt_all_surveys_and_encounters()
-    msg = "Campaign {0} has adopted {1} surveys and {2} encounters.".format(
+    msg = "Campaign {} has adopted {} surveys and {} encounters.".format(
         instance, instance.surveys.count(), instance.encounters.count()
     )
     LOGGER.info(msg)
@@ -96,8 +95,6 @@ def survey_post_save(sender, instance, *args, **kwargs):
     claim_encounters(instance)
     if instance.encounters:
         LOGGER.info(f"[signal.survey_post_save] {instance} claimed Encounters {instance.encounters}")
-    else:
-        LOGGER.info(f"[signal.survey_post_save] {instance} claimed no Encounters")
 
 
 @receiver(pre_delete, sender=Encounter)
