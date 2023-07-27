@@ -21,6 +21,7 @@
         </span>
         </p>
     </div>
+    {% comment %}
     <!-- FIXME: proper permissions check -->
     {% if user.is_staff %}
     <div class="col-xs-12 col-sm-6">
@@ -32,6 +33,7 @@
         </span>
     </div>
     {% endif %}
+    {% endcomment %}
 </div>
 
 <div class="row">

@@ -12,6 +12,7 @@
             <input id="search_field" type="text" class="form-control" name="q" placeholder="Search turtles (ID, tags, name, etc.)" value="{{ query_string }}">
         </form>
     </div>
+    {% comment %}
     {% if user.is_staff %}
     {# FIXME: proper permissions check #}
     <div class="col-xs-12 col-sm-6">
@@ -23,6 +24,7 @@
         </span>
     </div>
     {% endif %}
+    {% endcomment %}
 </div>
 
 {% block pagination_row %}
@@ -51,7 +53,7 @@
                 <th>Name</th>
                 <th>Observations</th>
                 <th>Most recent obs.</th>
-                <th></th>
+                {#<th></th>#}
             </tr>
         </thead>
         <tbody>
@@ -66,12 +68,14 @@
                 <td>{{ obj.name|default_if_none:"" }}</td>
                 <td>{{ obj.turtleobservation_set.count }}</td>
                 <td>{{ obj.get_newest_observation.observed|date:"D, j M Y H:i"|default_if_none:"" }}</td>
+                {% comment %}
                 <td>
                 <!-- FIXME: proper permissions check -->
                 <a class="btn btn-primary" href="{% url 'tagging:turtleobservation_add' %}?turtle_id={{ obj.pk }}" title="Add new observation">
                     <i class="fa-regular fa-eye"></i>
                 </a>
                 </td>
+                {% endcomment %}
             </tr>
             {% endfor %}
         </tbody>

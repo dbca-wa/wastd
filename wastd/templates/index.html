@@ -17,6 +17,7 @@
 {% block page_content_inner %}
 <div class="row">
 
+{% comment %}
 <!-- Data Dashboard column -->
 <div class="col-lg-3 col-md-6 col-12">
   <img class="rounded-circle mx-auto d-block"
@@ -38,9 +39,39 @@
     </a>
   </p>
 </div>
+{% endcomment %}
+
+<!-- Turtle Nests and Tracks column -->
+<div class="col-sm">
+  <img class="rounded-circle mx-auto d-block"
+    src="{% static 'images/turtle_track.jpg' %}"
+    alt="Green turtle track at Thevenard Island. Photo: Florian Mayer, DBCA."
+    width="140" height="140">
+  <h2 class="text-center">Turtle Tracks and Nests</h2>
+  <p>
+    Browse and search turtle tracks and nests
+    including disturbance, predation, nest excavations,
+    hatchling morphometrics, fan angles, and light disturbance.
+  </p>
+  <p>
+    <a class="btn btn-primary btn-block" href="{% url 'observations:turtlenestencounter-list' %}"
+        title="Browse, filter and search Turtle Nest Encounters">
+      Browse track & nest encounters »
+    </a>
+  </p>
+  {% if request.user.is_staff %}
+  <p>
+    <a class="btn btn-success btn-block"
+       href="{% url 'admin:observations_turtlenestencounter_changelist' %}"
+       title="Curate and QA animal encounters">
+      Curate »
+    </a>
+  </p>
+  {% endif %}
+</div>
 
 <!-- Turtle Tagging column -->
-<div class="col-lg-3 col-md-6 col-12">
+<div class="col-sm">
   <img class="rounded-circle mx-auto d-block"
     src="{% static 'images/flatback_red.jpg' %}"
     alt="Flatback turtle at Thevenard Island. Photo: Florian Mayer, DBCA."
@@ -62,6 +93,7 @@
       Browse turtle tag observations »
     </a>
   <p>
+  {% comment %}
   {# FIXME: permissions check #}
   {% if request.user.is_staff %}
   <p>
@@ -72,43 +104,11 @@
     </a>
   </p>
   {% endif %}
-</div>
-
-<!-- Turtle Nests and Tracks column -->
-<div class="col-lg-3 col-md-6 col-12">
-  <img class="rounded-circle mx-auto d-block"
-    src="{% static 'images/turtle_track.jpg' %}"
-    alt="Green turtle track at Thevenard Island. Photo: Florian Mayer, DBCA."
-    width="140" height="140">
-  <h2 class="text-center">Turtle Tracks and Nests</h2>
-  <p>
-    Browse and search turtle tracks and nests
-    including disturbance, predation, nest excavations,
-    hatchling morphometrics, fan angles, and light disturbance.
-  </p>
-  <p>
-    Find shortcuts to more filters under "Tracks and Nests".
-  </p>
-  <p>
-    <a class="btn btn-primary btn-block" href="{% url 'observations:turtlenestencounter-list' %}"
-        title="Browse, filter and search Turtle Nest Encounters">
-      Browse track & nest encounters »
-    </a>
-  </p>
-  {% if request.user.is_staff %}
-  <p>
-    <a class="btn btn-success btn-block"
-       href="{% url 'admin:observations_turtlenestencounter_changelist' %}"
-       title="Curate and QA animal encounters">
-      Curate »
-    </a>
-  </p>
-  {% endif %}
-
+  {% endcomment %}
 </div>
 
 <!-- Marine Wildlife Incidents column -->
- <div class="col-lg-3 col-md-6 col-12">
+<div class="col-sm">
   <img class="rounded-circle mx-auto d-block"
     src="{% static 'images/map_wa_square.png' %}"
     alt="Map of Western Australia showing marine wildlife incidents data"
