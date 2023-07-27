@@ -44,22 +44,23 @@ class AdminDashboard(Dashboard):
             )
         )
 
-        self.children.append(
-            modules.Group(
-                "Animal Tagging",
-                column=3,
-                children=[
-                    modules.AppList(
-                        "Turtle tagging records",
-                        models=(
-                            "tagging.models.Turtle",
-                            "tagging.models.TurtleObservation",
-                            "tagging.models.TurtleTag",
-                            "tagging.models.TurtlePitTag",
-                            "tagging.models.TagOrder",
-                            "tagging.models.TurtleSample",
-                        )
-                    )
-                ],
-            )
-        )
+        # Temporarily comment out tagging models.
+        #self.children.append(
+        #    modules.Group(
+        #        "Animal Tagging",
+        #        column=3,
+        #        children=[
+        #            modules.AppList(
+        #                "Turtle tagging records",
+        #                models=(
+        #                    "tagging.models.Turtle",
+        #                    "tagging.models.TurtleObservation",
+        #                    "tagging.models.TurtleTag",
+        #                    "tagging.models.TurtlePitTag",
+        #                    "tagging.models.TagOrder",
+        #                    "tagging.models.TurtleSample",
+        #                )
+        #            )
+        #        ],
+        #    )
+        #)

@@ -39,7 +39,7 @@ from .models import (
 )
 
 
-@register(TagOrder)
+#@register(TagOrder)
 class TagOrderAdmin(VersionAdmin):
     date_hierarchy = 'order_date'
     list_display = ('order_number', 'order_date', 'tag_prefix', 'start_tag_number', 'end_tag_number', 'total_tags')
@@ -97,7 +97,7 @@ class TurtleIdentificationInline(TabularInline):
     verbose_name_plural = 'other identification records'
 
 
-@register(Turtle)
+#@register(Turtle)
 class TurtleAdmin(VersionAdmin):
     date_hierarchy = 'created'
     list_display = ('id', 'species', 'sex', 'status', 'location', 'created', 'name', 'cause_of_death')
@@ -223,7 +223,7 @@ class TurtlePitTagObservationInline(TabularInline):
         return False
 
 
-@register(TurtleObservation)
+#@register(TurtleObservation)
 class TurtleObservationAdmin(FSMTransitionMixin, VersionAdmin):
     date_hierarchy = 'observed'
     form = TurtleObservationForm
@@ -398,7 +398,7 @@ class AssignedTurtleFilter(SimpleListFilter):
                 return queryset.filter(turtle__isnull=False)
 
 
-@register(TurtleTag)
+#@register(TurtleTag)
 class TurtleTagAdmin(VersionAdmin):
     list_display = ('serial', 'turtle_link', 'issue_location', 'custodian', 'field_person', 'status', 'return_date')
     list_filter = ('status', AssignedTurtleFilter)
@@ -432,7 +432,7 @@ class TurtleTagAdmin(VersionAdmin):
         obj.delete(permanent=True)
 
 
-@register(TurtlePitTag)
+#@register(TurtlePitTag)
 class TurtlePitTagAdmin(VersionAdmin):
     list_display = ('serial', 'turtle_link', 'issue_location', 'custodian', 'field_person', 'status', 'return_date', 'batch_number', 'box_number')
     list_filter = ('status', AssignedTurtleFilter)
@@ -467,7 +467,7 @@ class TurtlePitTagAdmin(VersionAdmin):
         obj.delete(permanent=True)
 
 
-@register(TurtleSample)
+#@register(TurtleSample)
 class TurtleSampleAdmin(VersionAdmin):
     date_hierarchy = 'sample_date'
     list_display = ('id', 'observation_link', 'turtle_link', 'tissue_type', 'label', 'sample_date')
