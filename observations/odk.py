@@ -56,15 +56,19 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=Non
         if TurtleNestEncounter.objects.filter(source='odk', source_id=instance_id):
             continue  # Skip records already imported.
 
-        # Try to match the reporter to an existing User. If not, create a new one.
-        reporter = submission['reporter'].strip()
-        if User.objects.filter(name__icontains=reporter).exists() and User.objects.filter(name__icontains=reporter).count() == 1:
-            user = User.objects.get(name__icontains=reporter)
-        else:  # Create a new user.
-            username = reporter.lower().replace(' ', '_')
-            user = User.objects.create(name=reporter, username=username)
-            user.set_unusable_password()
-            LOGGER.info(f"Created new user {user}")
+        # Try to match the reporter to an existing user. If not, create a new one.
+        reporter = submission['reporter']
+        if reporter:
+            reporter = reporter.strip()
+            if User.objects.filter(name__icontains=reporter).exists() and User.objects.filter(name__icontains=reporter).count() == 1:
+                user = User.objects.get(name__icontains=reporter)
+            else:  # Create a new user.
+                username = reporter.lower().replace(' ', '_')
+                user = User.objects.create(name=reporter, username=username)
+                user.set_unusable_password()
+                LOGGER.info(f"Created new user {user}")
+        else:  # The form has been submitted without a user name recorded.
+            user = User.objects.get_or_create(name='Unknown user', username='unknown_user')[0]
 
         # Confusingly, TurtleNestEncounter objects cover both nest, track and nest & nest encounters.
         encounter = TurtleNestEncounter(
@@ -137,7 +141,12 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=Non
 
         # TurtleNestDisturbanceObservation objects
         if 'disturbance_observations' in submission:
-            observations = submission['disturbance_observations']['disturbance_observation']
+            # Might be a list or a single object :|
+            if not isinstance(submission['disturbance_observations']['disturbance_observation'], list):
+                observations = [submission['disturbance_observations']['disturbance_observation']]
+            else:
+                observations = submission['disturbance_observations']['disturbance_observation']
+
             for observation in observations:
                 disturbance = TurtleNestDisturbanceObservation(
                     encounter=encounter,
