@@ -60,10 +60,13 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=Non
         reporter = submission['reporter']
         if reporter:
             reporter = reporter.strip()
-            if User.objects.filter(name__icontains=reporter).exists() and User.objects.filter(name__icontains=reporter).count() == 1:
-                user = User.objects.get(name__icontains=reporter)
+            if User.objects.filter(name__iequals=reporter).exists() and User.objects.filter(name__iequals=reporter).count() == 1:
+                user = User.objects.get(name__iequals=reporter)
             else:  # Create a new user.
                 username = reporter.lower().replace(' ', '_')
+                # Ensure username uniqueness.
+                while User.objects.filter(username=username).exists():
+                    username += '_'  # Keep appending an underscore character.
                 user = User.objects.create(name=reporter, username=username)
                 user.set_unusable_password()
                 LOGGER.info(f"Created new user {user}")
