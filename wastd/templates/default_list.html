@@ -1,0 +1,95 @@
+{% extends "base_wastd.html" %}
+{% load static bootstrap4 bootstrap_pagination export_download %}
+
+{% block extra_style %}
+{{ block.super }}
+{{ list_filter.form.media.css }}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" integrity="sha256-siyOpF/pBWUPgIcQi17TLBkjvNgNQArcmwJB8YvkAgg=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" integrity="sha512-nMNlpuaDPrqlEls3IX/Q56H36qvBASwb3ipuo3MxeWbsQB1881ox0cRv7UPTgBlriqoynt35KjEwgGUeUXIPnw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link rel="stylesheet" href="{% static 'css/select2_bootstrap4.css' %}" />
+{% endblock %}
+
+{% block leaflet_style %}{% endblock %}
+{% block leaflet_js %}{% endblock %}
+
+{% block breadcrumbs %}
+{% include 'breadcrumbs.html' %}
+{% endblock breadcrumbs %}
+
+{% block page_content_inner %}
+
+{% block pagination_row %}
+<div class="row" id="pagination-row">
+    <div class="col">
+    {% if object_list %}
+        <span class="float-right">{% resource_download_menu %}</span>
+        {% if object_count %}<div>Found {{ object_count }} records</div>{% endif %}
+        {% if page_obj.has_other_pages %}<div>{% bootstrap_paginate page_obj range=10 show_prev_next="true" show_first_last="true" %}</div>{% endif %}
+    {% endif %}
+    </div>
+</div>
+{% endblock pagination_row %}
+
+<div class="row" id="data-row">
+
+  <!-- Data -->
+  <div id="cards-column" class="col-lg-9 col-md-8 col-sm-6 col-12">
+      {% if object_list %}
+          {% for object in object_list %}
+              {% include object.card_template %}
+          {% endfor %}
+      {% else %}
+          No records found
+      {% endif %}
+  </div><!-- /#cards-column -->
+
+  <!-- Search -->
+  <div id="filters-column" class="col-lg-3 col-md-4 col-sm-6 col-12">
+    <form method="get">
+      <div class="row-fluid">
+      <button
+        class="btn btn-primary my-2 my-sm-0 btn-block"
+        title="Filter fesults by below criteria." type="submit">
+        Filter results
+      </button>
+        {% bootstrap_form list_filter.form %}
+      </div>
+      <button
+        class="btn btn-primary my-2 my-sm-0 btn-block"
+        title="Filter results by above criteria." type="submit">
+        Filter results
+      </button>
+    </form>
+  </div><!-- /#filters-column -->
+
+</div><!-- /#data-row-->
+
+{% block pagination_row_bottom %}
+<div class="row">
+    <div class="col">
+        {% if page_obj.has_other_pages %}<div>{% bootstrap_paginate page_obj range=10 show_prev_next="true" show_first_last="true" %}</div>{% endif %}
+    </div>
+</div>
+{% endblock pagination_row_bottom %}
+
+{% endblock page_content_inner %}
+
+{% block extra_js %}
+{{ block.super }}
+{{ list_filter.form.media.js }}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha256-bqVeqGdJ7h/lYPq6xrPv/YGzMEb6dNxlfiTUHSgRCp8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js" integrity="sha512-2ImtlRlf2VVmiGZsjm9bEyhjGW4dU7B6TNwh/hx/iSByxNENtj3WVE6o/9Lj4TJeVXPi4bnOIMXFIJJAeufa0A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script type="text/javascript">
+    // Document ready events:
+    $(function() {
+        // Initialise datepicker widgets (id starts with id_date_*)
+        $('[id^=id_date_]').datepicker({
+            format: 'dd/mm/yyyy',
+            autoclose: true,
+            todayHighlight: true
+        });
+        // Init select2 widgets (id start swith id_user_*)
+        $('[id^=id_user_]').select2();
+    });
+</script>
+{% endblock %}

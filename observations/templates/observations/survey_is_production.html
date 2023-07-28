@@ -1,0 +1,8 @@
+<!-- Production -->
+<span class="badge badge-{% if survey.production %}primary{% else %}secondary{% endif %}" title="{% if survey.production %}Production survey, included in analysis, will claim encounters when saved.{% else %}Training survey, excluded from analysis, will not claim encounters when saved.{% endif %}">
+    {% if survey.production %}
+    <i class="fa-solid fa-ribbon" aria-hidden="true"></i> Production
+    {% else %}
+    <i class="fa-solid fa-ban" aria-hidden="true"></i> Training
+    {% endif %}
+</span>

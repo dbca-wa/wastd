@@ -1,0 +1,66 @@
+name: "Run unit tests"
+
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  run_tests:
+    name: Run Django Tests
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgis://postgres:postgres@localhost:5432/postgres
+    services:
+      postgres:
+        image: postgis/postgis:13-3.1-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: --mount type=tmpfs,destination=/var/lib/postgresql/data --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+        id: checkout-repo
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        id: setup-python
+        with:
+          python-version: '3.10'
+      - name: Install GDAL
+        id: install-gdal
+        run: |
+          sudo apt-add-repository ppa:ubuntugis/ubuntugis-unstable
+          sudo apt-get update
+          sudo apt-get install gdal-bin libgdal-dev
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+          installer-parallel: true
+      - name: Load cached venv
+        id: cached-poetry-dependencies
+        uses: actions/cache@v2
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+      - name: Install cached dependencies
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        run: poetry install --no-interaction --no-root
+      - name: Install project
+        run: poetry install --no-interaction
+      - name: Run DB migrations
+        run: |
+          source .venv/bin/activate
+          python manage.py migrate
+      - name: Run tests
+        run: |
+          source .venv/bin/activate
+          python manage.py collectstatic
+          python manage.py test --noinput --failfast -v2

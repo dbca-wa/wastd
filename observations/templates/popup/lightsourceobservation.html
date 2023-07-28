@@ -1,0 +1,5 @@
+{% with original as o %}
+<i class="fa-regular fa-compass"></i>
+{{ o.get_light_source_type_display }} at {{ o.light_bearing_manual }} deg: {{ o.light_source_description }}
+{% endwith %}
+

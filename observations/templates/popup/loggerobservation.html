@@ -1,0 +1,4 @@
+{% with original as o %}
+<i class="fa-solid fa-mobile-retro"></i>
+{{ o.get_logger_type_display }} ({{ o.get_deployment_status_display }}) {{ o.logger_id }}
+{% endwith %}

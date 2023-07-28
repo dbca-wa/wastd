@@ -1,0 +1,6 @@
+{% extends "observations/encounter_card.html" %}
+{% load observations %}
+
+{% block title_row %}
+{{ object.get_nest_type_display }}, {{ object.get_nest_age_display|lower }}, {{ object.get_species_display }}
+{% endblock %}

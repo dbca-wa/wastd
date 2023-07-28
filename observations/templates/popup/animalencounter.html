@@ -1,0 +1,43 @@
+{% extends 'popup/encounter.html' %}
+{% load observations %}
+{% with original as o %}
+{% block title %}
+    {% if o.species != "na" %}{{ o.get_species_display }}{% else %}Animal Encounter{% endif %}
+{% endblock %}
+{% block headlines %}
+    <!-- Animal overview -->
+    <div class="row">
+        <i class="fa-solid fa-heart-pulse"></i>
+        {{ o.get_health_display }} {{ o.get_maturity_display }}
+        {{ o.get_sex_display }} on {{ o.get_habitat_display }}
+    </div>
+{% endblock %}
+{% block encounterdetails %}
+    <!-- Checked for... -->
+    <div class="row">
+        <i class="fa-solid fa-bandage"></i>
+        Damage {{ o.checked_for_injuries }}
+    </div>
+    <div class="row">
+        <i class="fa-solid fa-tags"></i>
+        PIT tags {{ o.scanned_for_pit_tags }}
+    </div>
+    <div class="row">
+        <i class="fa-solid fa-tags"></i>
+        Flipper tags {{ o.checked_for_flipper_tags }}
+    </div>
+    {% if o.behaviour %}
+    <div class="row">
+        <i class="fa-solid fa-comment"></i>
+        {{ o.behaviour|safe }}
+    </div>
+    {% endif %}
+    {% if o.cause_of_death != "na" %}
+    <div class="row">
+        <i class="fa-solid fa-cross"></i>
+        {{ o.get_cause_of_death_display }}
+        ({{ o.get_cause_of_death_confidence_display }})
+    </div>
+    {% endif %}
+{% endblock %}
+{% endwith %}

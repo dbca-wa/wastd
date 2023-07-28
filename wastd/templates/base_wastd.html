@@ -1,0 +1,82 @@
+{% extends "webtemplate_dbca/base_b4.html" %}
+{% load static leaflet_tags observations bootstrap4 %}
+
+{# HEAD #}
+{% block extra_style %}
+{{ block.super }}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
+  integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<style>
+.footer {
+    background-color: #f5f5f5;
+}
+</style>
+{% block leaflet_style %}
+{% include 'shared/leaflet_css.html' %}
+{% endblock leaflet_style %}
+{% endblock extra_style %}
+
+{% block favicon %}
+<link rel="apple-touch-icon" sizes="180x180" href="{% static 'apple-touch-icon.png' %}">
+<link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon-32x32.png' %}">
+<link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon-16x16.png' %}">
+<link rel="manifest" href="{% static 'site.webmanifest' %}">
+{% endblock favicon %}
+
+{% block extra_head %}
+{% block wastd_jquery %}
+{# Non-slimmed version of jQuery include at the top of each page, to stop 3rd-party JS libraries complaining. #}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+{% endblock wastd_jquery %}
+{% block leaflet_js %}
+{% include 'shared/leaflet_js.html' %}
+{% endblock leaflet_js %}
+{% endblock extra_head %}
+
+{# BODY #}
+{# Make the top navbar collapse at a larger width, because we have more menu items #}
+{% block navbar_class %}navbar navbar-expand-xl fixed-top navbar-dark bg-dark{% endblock navbar_class %}
+
+{% block navbar_button %}
+<button class="{% block navbar_button_class %}navbar-toggler{% endblock %}" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+</button>
+{% endblock navbar_button %}
+
+{% block navbar_links %}
+{% include 'navbar.html' %}
+{% endblock navbar_links %}
+
+{% block page_content %}
+
+{% block breadcrumbs %}
+{% include 'breadcrumbs.html' %}
+{% endblock %}
+
+<div class="container-fluid">
+    {% bootstrap_messages %}
+    {% block page_content_inner %}{% endblock %}
+</div><!-- /.container-fluid -->
+
+{% endblock page_content %}
+
+{% block page_footer %}
+<footer class="footer mt-auto py-3">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm">
+                <small>
+                Version: {{ APPLICATION_VERSION_NO }}
+                </small>
+            </div>
+            <div class="col-sm">
+                <small class="float-right">&copy; Department of Biodiversity, Conservation and Attractions</small>
+            </div>
+        </div>
+    </div>
+</footer>
+{% endblock page_footer %}
+
+{% block jquery_version %}{% endblock jquery_version %}
+
+{% block extra_js %}{% endblock %}

@@ -1,0 +1,110 @@
+{% load observations %}
+<div class="card bg-light mb-1">
+  <div class="card-header{% if not object.production%} text-muted{% endif %}">
+    <div>
+        <h5 class="card-title">
+          {{ object }}
+        </h5>
+    </div>
+
+    <div>
+        <span class="float-right">
+          {% block title_labels %}{% endblock title_labels %}
+          {% include "observations/survey_is_production.html" with survey=object %}
+          {% include "observations/survey_site_visit_start_end.html" with survey=object %}
+        </span>
+        <h6 class="card-title text-muted" aria-hidden="true">
+          <i class="fa-solid fa-calendar-days" aria-hidden="true"></i>
+          {{ object.start_time|date:'d M Y' }} {{ object.start_time|time:'H:i' }} - {{ object.end_time|time:'H:i' }}
+          <i class="fa-solid fa-eye" title="Observed by" aria-hidden="true"></i>
+          {{ object.reporter.name }}
+          <i class="fa-solid fa-table" title="Encounters linked: {{ object.encounter_set.count }}" aria-hidden="true"></i>
+          {{ object.encounter_set.count }}
+          <i class="fa-solid fa-layer-group" title="Duplicate surveys: {{ object.no_duplicates }}" aria-hidden="true"></i>
+          {{ object.no_duplicates }}
+          <i class="fa-solid fa-shield-halved" title="Owned by" aria-hidden="true"></i>
+          {% if object.campaign %} {{ object.campaign.owner }}{% else %}-{% endif %}
+        </h6>
+    </div>
+
+    <div>
+        {% include "toggle_details.html" with object=object %}
+        <a href="{{ object.get_absolute_url }}" title="Open record {{ object.pk }}">
+          <span class="badge badge-{{ object.status_colour|default:'secondary' }}">
+            <i class="fa-regular fa-folder-open" aria-hidden="true"></i> Open
+          </span>
+        </a>
+        {% if request.user.is_staff %}
+        <a href="{{ object.absolute_admin_url }}" title="Edit this survey in the data curation portal">
+          <span class="badge badge-{{ object.status_colour|default:'secondary' }}">
+            <i class="fa-solid fa-pencil" aria-hidden="true"></i> Edit
+          </span>
+        </a>
+        {% if not object.production %}
+        {% include "observations/survey_make_production.html" with survey=object %}
+        {% endif %}
+        {% endif %}
+    </div>
+  </div>
+
+  <div class="collapse" id="details{{ object.id }}">
+  <div class="card-body">
+    <div class="card-text">
+      <i class="fa-regular fa-message" title="Start comments" aria-hidden="true"></i>
+      {{ object.start_comments | default:"-" }}
+    </div>
+    <div class="card-text">
+      <i class="fa-regular fa-message" title="End comments" aria-hidden="true"></i>
+      {{ object.end_comments | default:"-" }}
+    </div>
+
+    <div class="card-text ml-3">
+    {% for user in object.team_set.all %}
+      {{ user }}&nbsp;
+    {% endfor %}
+    </div>
+
+    {% for svy in object.duplicate_surveys.all %}
+      <div>
+      <i class="fa-solid fa-layer-group" title="Duplicate survey" aria-hidden="true"></i>
+      Duplicate Survey: {{ svy }}
+      {{ svy.encounter_set.count }}
+      </div>
+    {% endfor %}
+
+    <div class="card-columns mt-2">
+      {% if object.start_photo %}
+      <div class="card shadow-lg">
+        <img src="{{ object.start_photo.attachment.url }}"
+          class="card-img-top" alt="Photo: Site conditions at survey start">
+        <div class="card-body">
+          <p class="card-text">Site conditions at survey start</p>
+        </div>
+      </div>
+      {% endif %}
+      {% if object.end_photo %}
+      <div class="card shadow-lg">
+        <img src="{{ object.end_photo.attachment.url }}"
+          class="card-img-top" alt="Photo: Site conditions at survey end">
+        <div class="card-body">
+          <p class="card-text">Site conditions at survey end</p>
+        </div>
+      </div>
+      {% endif %}
+      {% if object.attachments %}
+      {% for a in object.attachments.all %}
+      <div class="card shadow-lg">
+        <img src="{% if a.attachment %}{{ a.attachment.url }}{% endif %}"
+          class="card-img-top" alt="{{ a.title }}">
+        <div class="card-body">
+          <p class="card-text">{{ a.title }}</p>
+        </div>
+      </div>
+      {% endfor %}
+      {% endif %}
+
+    </div>
+  </div>
+
+  </div><!-- /#details -->
+</div><!-- /.card -->

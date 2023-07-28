@@ -1,0 +1,43 @@
+{% extends "base_wastd.html" %}
+{% load crispy_forms_tags %}
+
+{% block page_content_inner %}
+<div class="row">
+    <div class="col-sm-12 col-md-8">
+        <h2>{{ title }}</h2>
+        <table class="table table-striped table-bordered table-sm">
+            <tbody>
+                <tr>
+                    <th>Species</th>
+                    <td>{{ object.species.common_name }}</td>
+                </tr>
+                <tr>
+                    <th>Sex</th>
+                    <td>{{ object.get_sex_display|default_if_none:"Unknown" }}</td>
+                </tr>
+                <tr>
+                    <th>Status</th>
+                    <td>{{ object.status.description|default_if_none:"" }}</td>
+                </tr>
+                <tr>
+                    <th>Nesting/other group</th>
+                    <td>{{ object.location.name|default_if_none:"" }}</td>
+                </tr>
+                <tr>
+                    <th>Date entered</th>
+                    <td>{{ object.created|date:"j-M-Y" }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col">
+        <h4>{{ tag_type }}</h4>
+        {% crispy tag_formset %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}{% endblock %}

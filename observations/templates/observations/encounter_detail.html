@@ -1,0 +1,237 @@
+{% extends "base_wastd.html" %}
+{% load leaflet_tags geojson_tags static observations %}
+
+{% block extra_style %}
+{{ block.super }}
+<style>
+.leaflet-popup, .leaflet-popup-content-wrapper, .leaflet-popup-content {
+    width: 350px; /* narrower popup */
+    padding: -10px;  /* fix close button position */
+}
+.leaflet-tooltip { width: 300px; word-wrap: break-word; }
+</style>
+{% endblock %}
+
+{% block breadcrumbs %}
+{% include 'breadcrumbs.html' %}
+{% endblock breadcrumbs %}
+
+{% block page_content_inner %}
+<!-- Subject details -->
+<div class="row" id="row-enc-detail">
+    <div class="col">
+        {% block subject_details %}
+        <span class="float-right badge badge-{{ object.status_colour|default:'secondary' }}">
+            QA status: {{ object.get_status_display }}
+            </span>
+        <h2>
+            {% block heading %}{{ object }}{% endblock heading %}
+        </h2>
+        {% if request.user.is_staff %}
+        <div>
+            {# FIXME: permissions check #}
+            {# Display edit & QA transitions (if authorised) #}
+            {% include "observations/edit_qa.html" %}
+        </div>
+        {% endif %}
+        <br>
+        {% endblock subject_details %}
+    </div>
+</div><!-- /.row#row-enc-detail -->
+
+<div class="row">
+    {% block observation_details %}
+    <div class="col-sm-12 col-md-8">
+        <table class="table table-striped table-bordered table-sm">
+            <tbody>
+                <tr>
+                    <th>
+                        ID
+                    </th>
+                    <td>
+                        {{ object.pk }}
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        When
+                    </th>
+                    <td>
+                        {{ object.when|date:"r" }}
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Encounter type
+                    </th>
+                    <td>
+                        {{ object.get_encounter_type|capfirst }}
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Observed by
+                    </th>
+                    <td>
+                        {{ object.observer.name }}
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Reported by
+                    </th>
+                    <td>
+                        {{ object.reporter.name }}
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Campaign
+                    </th>
+                    <td>
+                        {% if object.campaign %}
+                        <a href="{{ object.campaign.get_absolute_url }}">{{ object.campaign }}</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Survey
+                    </th>
+                    <td>
+                        {% if object.survey %}
+                        <a href="{{ object.survey.get_absolute_url }}">{{ object.survey }}</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Site
+                    </th>
+                    <td>
+                        {% if object.survey %}
+                        {{ object.survey.site.name }}
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Comments
+                    </th>
+                    <td>
+                        {% if object.comments %}
+                        {{ object.comments }}
+                        {% endif %}
+                    </td>
+                </tr>
+                {% block extra_encounter_details %}{% endblock %}
+            </tbody>
+        </table>
+    </div>
+    {% endblock observation_details %}
+
+    {% block observation_map %}
+    <div class="col-sm-12 col-md-4">
+        {% leaflet_map "detailmap" callback="window.map_init" %}
+    </div>
+    {% endblock observation_map %}
+</div>
+
+<!-- Observations -->
+{% block observations %}
+{% if object.observation_set %}
+<div class="row" id="row-enc-media">
+    <div class="col-sm-12 col-md-8">
+        <h3>Observations</h3>
+        <table class="table table-striped table-bordered table-sm">
+            <tbody>
+                {% for obs in object.observation_set.all %}
+                <tr>
+                    <th>
+                        {% get_verbose_name obs %}
+                    </th>
+                    <td>
+                        {{ obs.as_html|safe }}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+{% endblock observations %}
+
+<!-- Photos -->
+{% block photographs %}
+{% if object.photographs %}
+<div class="row" id="row-enc-media">
+    <div class="col-12" id="col-enc-media">
+        <h3>Photographs</h3>
+        <div class="card-columns mt-2">
+            {% for a in object.photographs %}
+            <div class="card shadow-lg">
+                <img src="{{ a.attachment.url }}" class="card-img-top" alt="{{ a.title }}">
+                <div class="card-body">
+                    <p class="card-text">{{ a.title }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div><!-- .row#row-enc-media -->
+{% endif %}
+{% endblock photographs %}
+
+{% block tag_observation_cards %}{% endblock %}
+
+{% block state_logs %}
+<!-- FIXME: permissions check -->
+{% if state_logs and request.user.is_staff %}
+<div class="row">
+    <div class="col-sm-12 col-md-8">
+        <h3>QA/QC logs</h3>
+        <table class="table table-striped table-bordered table-sm">
+            <thead>
+                <th>Timestamp</th>
+                <th>User</th>
+                <th>Status</th>
+                <th>Description</th>
+            </thead>
+            <tbody>
+                {% for log in state_logs %}
+                <tr>
+                    <td>{{ log.timestamp }}</td>
+                    <td>{{ log.by.name }}</td>
+                    <td>{{ log.state|capfirst }}</td>
+                    <td>{{ log.description }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+{% endblock state_logs %}
+
+{% endblock page_content_inner %}
+
+{% block extra_js %}
+{{ block.super }}
+<script type="text/javascript">
+    function map_init(map, options) {
+      {% include 'shared/styles.js' %}
+      $.getJSON("{% url 'sites-geojson' %}", function (data) {
+          L.geoJson(data, {style: polystyle, onEachFeature: oef}).addTo(map);
+      });
+      /* Data loading */
+      var enc_layer = L.geoJson(
+        // On the detail view, don't show a popup for the map icon.
+        {{ object|geojsonfeature:"leaflet_icon,leaflet_colour:where"|safe }},
+        { style: pointstyle, pointToLayer: ptl }
+      );
+      enc_layer.addTo(map);
+      map.fitBounds(enc_layer.getBounds());
+    };
+</script>
+{% endblock extra_js %}

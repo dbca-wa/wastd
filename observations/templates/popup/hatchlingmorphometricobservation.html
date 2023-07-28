@@ -1,0 +1,14 @@
+{% with original as o %}
+<i class="fa-solid fa-ruler-combined"></i>
+{% if o.straight_carapace_length_mm %}
+SCL {{ o.straight_carapace_length_mm }} mm
+{% endif %}
+
+{% if o.straight_carapace_width_mm %}
+SCW {{ o.straight_carapace_width_mm }} mm
+{% endif %}
+
+{% if o.body_weight_g %}
+Wt {{ o.body_weight_g }} mm
+{% endif %}
+{% endwith %}

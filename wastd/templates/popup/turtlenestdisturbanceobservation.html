@@ -1,8 +1,0 @@
-{% with original as o %}
-<div class="row">
-    <span class="oi oi-flash"></span>&nbsp;
-    {{ o.get_disturbance_cause_display }}
-    ({{ o.get_disturbance_cause_confidence_display }})
-    {{ o.get_disturbance_severity_display }} {{ o.comments }}
-</div>
-{% endwith %}

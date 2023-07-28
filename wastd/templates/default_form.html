@@ -1,0 +1,58 @@
+{% extends "base_wastd.html" %}
+{% load static crispy_forms_tags bootstrap4 %}
+
+{% block extra_style %}
+{{ block.super }}
+{{ form.media.css }}
+{% endblock %}
+
+{% block extra_head %}
+{# Select2 widgets need jQuery to be loaded at the top of the template, so we move it here. #}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+{% endblock extra_head %}
+
+{% block breadcrumbs %}
+{% include 'breadcrumbs.html' %}
+{% endblock breadcrumbs %}
+
+{% block page_content_inner %}
+<div class="row">
+    <div class="col col-12 mb-3">
+        <div class="card card-lg shadow-lg">
+            <div class="card-body">
+                <!-- The main form -->
+                <div class="mb-3"><!-- Margin after submit button -->
+                {% crispy form form.helper %}
+                </div>
+
+                <!-- One formset, optional -->
+                {% if formset %}
+                <div class="card card-lg shadow-lg">
+                    <div class="card-body">
+                    {% crispy formset formset_helper %}
+                    </div><!-- .card-body -->
+                </div><!-- .card -->
+                {% endif %}
+
+                <!-- Many formsets, optional -->
+                {% if formset_list %}
+                {% for fs in formset_list  %}
+                <div class="card card-lg shadow-lg">
+                    <div class="card-body">
+                    {% crispy formset formset_helper %}
+                    </div><!-- .card-body -->
+                </div><!-- .card -->
+                {% endfor %}
+                {% endif %}
+            </div><!-- .card-body -->
+        </div><!-- .card -->
+    </div><!-- .col -->
+</div><!-- .row -->
+{% endblock page_content_inner %}
+
+{% block jquery_version %}{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+{{ form.media.js }}
+{% endblock extra_js %}
