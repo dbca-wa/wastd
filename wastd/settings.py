@@ -15,7 +15,7 @@ if not DEBUG:
     ALLOWED_HOSTS = os.environ.get("ALLOWED_DOMAINS", "").split(",")
 else:
     ALLOWED_HOSTS = ["*"]
-INTERNAL_IPS = ["127.0.0.1", "::1", "localhost"]
+INTERNAL_IPS = ["127.0.0.1", "::1"]
 ROOT_URLCONF = "wastd.urls"
 WSGI_APPLICATION = "wastd.wsgi.application"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
@@ -126,7 +126,7 @@ LOGIN_REDIRECT_URL = '/'
 SITE_NAME = os.environ.get("SITE_NAME", "Turtles Database")
 SITE_TITLE = os.environ.get("SITE_TITLE", "Turtles Database")
 SITE_CODE = os.environ.get("SITE_CODE", "Turtles")
-WASTD_RELEASE = "0.70.0"
+VERSION_NO = "1.0.0"
 
 
 # Database configuration
@@ -301,7 +301,6 @@ LEAFLET_CONFIG = {
         "fullscreen": {"auto-include": True},
         "markercluster": {"auto-include": True},
         "tilelayer": {
-            # 'js': 'js/TileLayer.GeoJSON.min.js',
             "auto-include": True
         },
     },
@@ -318,33 +317,6 @@ LEAFLET_CONFIG = {
             "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
             {
                 "attribution": '&copy; <a href="//www.openstreetmap.org/copyright">OpenStreetMap</a>'
-            },
-        ),
-        (
-            "Dirk Hartog mode",
-            "//stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.{ext}",
-            {
-                "attribution": 'Map tiles by <a href="//stamen.com">Stamen Design</a>, <a href="//creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',  # noqa
-                "subdomains": "abcd",
-                "minZoom": 1,
-                "maxZoom": 16,
-                "ext": "png",
-            },
-        ),
-        (
-            "Light pollution",
-            "//map1.vis.earthdata.nasa.gov/wmts-webmerc/VIIRS_CityLights_2012/default/{time}/{tilematrixset}{maxZoom}/{z}/{y}/{x}.{format}",  # noqa
-            {
-                "attribution": 'Imagery provided by services from the Global Imagery Browse Services (GIBS), operated by the NASA/GSFC/Earth Science Data and Information System (<a href="https://earthdata.nasa.gov">ESDIS</a>) with funding provided by NASA/HQ.',  # noqa
-                "bounds": [
-                    [-85.0511287776, -179.999999975],
-                    [85.0511287776, 179.999999975],
-                ],
-                "minZoom": 1,
-                "maxZoom": 8,
-                "format": "jpg",
-                "time": "",
-                "tilematrixset": "GoogleMapsCompatible_Level",
             },
         ),
     ],

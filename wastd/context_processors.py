@@ -2,18 +2,12 @@ from django.conf import settings
 
 
 def template_context(request):
-    """Pass extra context variables to every template."""
+    """Pass extra context variables to every template. Used by webtemplate-dbca base template.
+    """
     context = {
-        "SITE_NAME": settings.SITE_NAME,
-        "SITE_TITLE": settings.SITE_TITLE,
-        "SITE_CODE": settings.SITE_CODE,
-        "WASTD_RELEASE": settings.WASTD_RELEASE,
-        "LEAFLET_CONFIG": settings.LEAFLET_CONFIG,
-        'page_title': settings.SITE_TITLE,
-        'page_description': 'Western Australian Sea Turtle and Strandings Database (WAStD)',
-        'site_title': settings.SITE_TITLE,
-        'site_acronym': settings.SITE_CODE,
-        'application_version_no': settings.WASTD_RELEASE,
+        "page_title": settings.SITE_TITLE,
+        "site_title": settings.SITE_TITLE,
+        "site_acronym": settings.SITE_CODE,
+        "APPLICATION_VERSION_NO": settings.VERSION_NO,
     }
-    context.update(settings.STATIC_CONTEXT_VARS)
     return context
