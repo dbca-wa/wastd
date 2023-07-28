@@ -12,7 +12,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 DEBUG = os.environ.get("DEBUG", False) == "True"
 SECRET_KEY = os.environ.get("SECRET_KEY", "PlaceholderSecretKey")
 if not DEBUG:
-    ALLOWED_HOSTS = os.environ.get("ALLOWED_DOMAINS", "").split(",")
+    ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(",")
 else:
     ALLOWED_HOSTS = ["*"]
 INTERNAL_IPS = ["127.0.0.1", "::1"]
