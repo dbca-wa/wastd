@@ -16,10 +16,10 @@ from .admin import (
     LineTransectEncounterAdmin,
 )
 from .filters import (
-    SurveyBasicFilter,
+    SurveyFilter,
     EncounterFilter,
-    AnimalEncounterBasicFilter,
-    TurtleNestEncounterBasicFilter,
+    AnimalEncounterFilter,
+    TurtleNestEncounterFilter,
     LineTransectEncounterFilter,
 )
 from .models import (
@@ -47,20 +47,20 @@ class SurveyList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
     model = Survey
     template_name = "default_list.html"
     paginate_by = 20
-    filter_class = SurveyBasicFilter
+    filter_class = SurveyFilter
     resource_class = SurveyResource
     resource_formats = ['csv', 'xlsx']
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["list_filter"] = SurveyBasicFilter(self.request.GET, queryset=self.get_queryset())
+        context["list_filter"] = SurveyFilter(self.request.GET, queryset=self.get_queryset())
         context["object_count"] = self.get_queryset().count()
         context["page_title"] = f"{settings.SITE_CODE} | Surveys"
         return context
 
     def get_queryset(self):
         qs = super().get_queryset().prefetch_related("reporter", "site", "encounter_set", "campaign").order_by("-start_time")
-        return SurveyBasicFilter(self.request.GET, queryset=qs).qs
+        return SurveyFilter(self.request.GET, queryset=qs).qs
 
 
 class SurveyDetail(DetailViewBreadcrumbMixin, DetailView):
@@ -186,14 +186,14 @@ class AnimalEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListVi
     model = AnimalEncounter
     template_name = "default_list.html"
     paginate_by = 20
-    filter_class = AnimalEncounterBasicFilter
+    filter_class = AnimalEncounterFilter
     resource_class = AnimalEncounterResource
-    resource_formats = ['csv', 'xlsx']
+    resource_formats = ["csv", "xlsx"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         qs = self.get_queryset()
-        context["list_filter"] = AnimalEncounterBasicFilter(self.request.GET, queryset=qs)
+        context["list_filter"] = AnimalEncounterFilter(self.request.GET, queryset=qs)
         context["model_admin"] = AnimalEncounterAdmin
         context["object_count"] = qs.count()
         context["page_title"] = f"{settings.SITE_CODE} | Animal encounters"
@@ -213,7 +213,7 @@ class AnimalEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListVi
             )
             .order_by("-when")
         )
-        return AnimalEncounterBasicFilter(self.request.GET, queryset=qs).qs
+        return AnimalEncounterFilter(self.request.GET, queryset=qs).qs
 
 
 class AnimalEncounterDetail(DetailViewBreadcrumbMixin, DetailView):
@@ -244,7 +244,7 @@ class TurtleNestEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, Li
     model = TurtleNestEncounter
     template_name = "default_list.html"
     paginate_by = 20
-    filter_class = TurtleNestEncounterBasicFilter
+    filter_class = TurtleNestEncounterFilter
     resource_class = [
         TurtleNestEncounterResource,
     ]
@@ -253,7 +253,7 @@ class TurtleNestEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, Li
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         qs = self.get_queryset()
-        context["list_filter"] = TurtleNestEncounterBasicFilter(self.request.GET, queryset=qs)
+        context["list_filter"] = TurtleNestEncounterFilter(self.request.GET, queryset=qs)
         context["model_admin"] = TurtleNestEncounterAdmin
         context["object_count"] = qs.count()
         context["page_title"] = f"{settings.SITE_CODE} | Turtle nest encounters"
@@ -262,7 +262,7 @@ class TurtleNestEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, Li
     def get_queryset(self):
         # FIXME: filtering via permissions model.
         qs = super().get_queryset().prefetch_related("observer", "reporter", "area", "site").order_by("-when")
-        return TurtleNestEncounterBasicFilter(self.request.GET, queryset=qs).qs
+        return TurtleNestEncounterFilter(self.request.GET, queryset=qs).qs
 
 
 class TurtleNestEncounterDetail(DetailViewBreadcrumbMixin, DetailView):
