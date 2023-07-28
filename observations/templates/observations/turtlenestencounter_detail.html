@@ -1,0 +1,119 @@
+{% extends "observations/encounter_detail.html" %}
+{% load observations %}
+
+{% block heading %}
+{{ object.get_nest_type_display|capfirst }}, {{ object.get_nest_age_display|lower }}, {{ object.get_species_display }}
+{% endblock %}
+
+{% block extra_encounter_details %}
+<tr>
+    <th>
+        Age
+    </th>
+    <td>
+        {{ object.get_nest_age_display|capfirst }}
+    </td>
+</tr>
+<tr>
+    <th>
+        Type
+    </th>
+    <td>
+        {{ object.get_nest_type_display|capfirst }}
+    </td>
+</tr>
+<tr>
+    <th>
+        Species
+    </th>
+    <td>
+        {{ object.get_species_display }}
+    </td>
+</tr>
+<tr>
+    <th>
+        Habitat
+    </th>
+    <td>
+        {{ object.get_habitat_display|capfirst }}
+    </td>
+</tr>
+<tr>
+    <th>
+        Evidence of predation or other disturbance?
+    </th>
+    <td>
+        {{ object.get_disturbance_display }}
+    </td>
+</tr>
+<tr>
+    <th>
+        Nest tag
+    </th>
+    <td>
+        {{ object.get_nest_tagged_display }}
+    </td>
+</tr>
+<tr>
+    <th>
+        Logger found
+    </th>
+    <td>
+        {{ object.get_logger_found_display }}
+    </td>
+</tr>
+<tr>
+    <th>
+        Eggs counted
+    </th>
+    <td>
+        {{ object.get_eggs_counted_display }}
+    </td>
+</tr>
+<tr>
+    <th>
+        Hatchlings measured
+    </th>
+    <td>
+        {{ object.get_hatchlings_measured_display }}
+    </td>
+</tr>
+<tr>
+    <th>
+        Hatchling emergence recorded
+    </th>
+    <td>
+        {{ object.get_fan_angles_measured_display }}
+    </td>
+</tr>
+{% endblock extra_encounter_details %}
+
+{% block observations %}
+{% if object.observation_set %}
+<div class="row" id="row-enc-media">
+    <div class="col-sm-12 col-md-8">
+        <h3>Observations</h3>
+        <table class="table table-striped table-bordered table-sm">
+            <tbody>
+                {% for obs in object.observation_set.all %}
+                <tr>
+                    <th>
+                        {% get_verbose_name obs %}
+                    </th>
+                    <td>
+                        <i class="fa-solid fa-tags"></i>
+                        <!-- FIXME: permissions check -->
+                        {% if user.is_staff %}
+                        <a href="{{ obs.absolute_admin_url }}" target="_">{{ obs }}</a>
+                        {% else %}
+                        {{ obs }}
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+{% endblock observations %}

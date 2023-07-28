@@ -1,8 +1,0 @@
-{% with original as o %}
-<div class="row">
-    <a href="{{ o.history_url }}" target="_">
-    <span class="oi oi-tags"></span>&nbsp;
-    {{ o.get_logger_type_display }} ({{ o.get_deployment_status_display }}) {{ o.logger_id }} {{ o.comments }}
-    </a>
-</div>
-{% endwith %}

@@ -1,0 +1,59 @@
+{% extends "base_wastd.html" %}
+
+{% block breadcrumbs %}
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a href="{% url 'home' %}">Home</a>
+      </li>
+      <li class="breadcrumb-item">
+        <a href="{% url 'users:user-list' %}">Users</a>
+      </li>
+      <li class="breadcrumb-item active">
+        <a href="">{{ object }}</a>
+      </li>
+    </ol>
+  </nav>
+{% endblock breadcrumbs %}
+
+{% block title %}User: {{ object.username }}{% endblock %}
+
+{% block page_content_inner %}
+  <div class="row" id="obj-detail-main">
+    <div class="col-12 col-sm-12 col-md-6 col-lg-8">
+      {% include object.card_template %}
+    </div><!-- .col -->
+  </div><!-- .row#id="obj-detail-main" -->
+
+  <!-- Nav tabs -->
+  <ul class="nav nav-pills" id="tab-svy" role="tablist">
+    <li class="nav-item">
+      <a class="nav-link active" id="survey-tab" data-toggle="tab" href="#svy-tab" role="tab" aria-controls="svy-tab" aria-selected="true">Surveys (first 100)</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="encounter-reported-tab" data-toggle="tab" href="#enc-rep-tab" role="tab" aria-controls="enc-tab" aria-selected="false">Encounters (first 100)</a>
+    </li>
+  </ul>
+
+  <!-- Tab panes -->
+  <div class="tab-content">
+    <div class="tab-pane active" id="svy-tab" role="tabpanel" aria-labelledby="survey-tab">
+      <div class="row mt-2" id="row-svy">
+        <div class="col-12" id="col-svy">
+          {% for svy in surveys %}
+          {% include svy.card_template with object=svy %}
+          {% endfor %}
+        </div><!-- /.col-svy -->
+      </div><!-- /.row-svy -->
+    </div>
+    <div class="tab-pane" id="enc-rep-tab" role="tabpanel" aria-labelledby="encounter-reported-tab">
+      <div class="row mt-2" id="row-enc-rep">
+        <div class="col-12" id="col-enc-rep">
+          {% for enc in encounters %}
+          {% include enc.card_template with object=enc %}
+          {% endfor %}
+        </div><!-- /.col-enc -->
+      </div><!-- /.row-enc -->
+    </div>
+  </div>
+{% endblock page_content_inner %}

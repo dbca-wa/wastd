@@ -1,0 +1,94 @@
+{% load observations %}
+<div class="card bg-light mb-1">
+    <div class="card-header">
+        <span class="float-right">
+            {% block title_labels %}{% endblock title_labels %}
+            {% if object.is_active %}
+            <span class="badge badge-success" title="Active user profile">Active</span>
+            {% else %}
+            <span class="badge badge-danger" title="Inactive user profile marked as duplicate or deleted">Inactive</span>
+            {% endif %}
+        </span>
+
+        <h5 class="card-title{% if not object.is_active %} text-muted{% endif %}">
+            {{ object }}
+        </h5>
+
+        <div>
+            {% include "toggle_details.html" with object=object %}
+            {% if request.user.is_staff %}
+            <a href="{{ object.absolute_admin_url }}" title="Edit this user in the data curation portal">
+              <span class="badge badge-{{ object.status_colour|default:'secondary' }}">
+                <i class="fa-solid fa-pencil" aria-hidden="true"></i> Edit
+              </span>
+            </a>
+            <a href="{% url 'users:user-merge-old' old_pk=object.pk %}" title="Merge this user profile into another one">
+              <span class="badge badge-warning">
+                <i class="fa-solid fa-user-plus" aria-hidden="true"></i>
+                Merge
+              </span>
+            </a>
+            {% endif %}
+        </div>
+  </div>
+
+  <div class="{% if collapse_details == True %}collapse{% else %}{% endif %}" id="details{{ object.id }}">
+  <div class="card-body">
+    <div class="card-text">
+      <i class="fa-solid fa-user" title="Aliases" aria-hidden="true"></i> {{ object.aliases|default:"-" }}
+    </div>
+    <div class="card-text">
+      <i class="fa-regular fa-message" title="Role" aria-hidden="true"></i>
+    </div>
+    <div class="card-text">
+      <i class="fa-solid fa-briefcase" title="Organisations" aria-hidden="true"></i> {{ object.organisation_set.all|default:"-" }}
+    </div>
+    <div class="card-text">
+      <i class="fa-solid fa-briefcase" title="Affiliation" aria-hidden="true"></i> {{ object.affiliation|default:"-" }}
+    </div>
+    <div class="card-text">
+      <i class="fa-solid fa-envelope" aria-hidden="true"></i> {{ object.email|default:"-" }}
+    </div>
+    <div class="card-text">
+      <i class="fa-solid fa-phone" aria-hidden="true"></i> {{ object.phone|default:"-" }}
+    </div>
+
+    <div class="card-text">
+        {% if object == request.user %}
+        <a class="btn btn-primary btn-sm" href="{{ object.absolute_admin_url }}">Update my Profile</a>
+        {% endif %}
+      </div>
+
+      {% if object == request.user %}
+      <!-- API auth -->
+      <div class="card-text">
+          <h4>Accessing data from R</h4>
+          <p>Add to your ~/.Renviron:</p>
+          <pre>
+WASTDR_API_URL="{{ request.scheme }}://{{ request.get_host }}/api/1/"
+WASTDR_API_TOKEN="Token {{ request.user.apitoken }}"
+          </pre>
+          <p>See <a href="https://dbca-wa.github.io/wastdr/index.html">the wastdr package documentation</a> for working examples.</p>
+
+          <h4>Accessing data from Python</h4>
+          <pre>
+import requests
+url = '{{ request.scheme }}://{{ request.get_host }}/api/1/animal-encounters/'
+headers = {"Authorization": "Token {{ request.user.apitoken }}"}
+j = requests.get(url + "?format=json", headers=headers).json()
+d = requests.get(url + "?format=csv", headers=headers).content
+          </pre>
+
+          <h4>Accessing data from the command line</h4>
+          <pre>
+curl {{ request.scheme }}://{{ request.get_host }}/api/1/animal-encounters/?format=json -H 'Authorization: Token {{ request.user.apitoken }}'
+          </pre>
+
+      </div><!-- /.row "-->
+      <!-- End API auth -->
+      {% endif %}
+
+  </div><!-- /.card-body -->
+
+  </div><!-- /#details{{ object.id }} -->
+</div><!-- /.card -->

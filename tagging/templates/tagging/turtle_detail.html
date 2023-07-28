@@ -1,0 +1,224 @@
+{% extends "base_wastd.html" %}
+{% load leaflet_tags %}
+
+{% block breadcrumbs %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'tagging:turtle_list' %}">Tagged turtles</a></li>
+        <li class="breadcrumb-item active">{{ object.pk }}</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block page_content_inner %}
+<div class="row">
+    <div class="col-xs-12 col-sm-6">
+        <h2>Tagged turtle ID {{ object.pk }}</h2>
+    </div>
+    {% comment %}
+    <div class="col-xs-12 col-sm-6">
+        <span class="float-right">
+            <!-- FIXME: proper permissions check -->
+            {% if user.is_staff %}
+            <a class="btn btn-primary" href="{% url 'admin:tagging_turtle_change' object_id=object.pk %}">
+                <i class="fa-solid fa-pencil"></i>
+                Curate turtle details
+            </a>
+            {% endif %}
+            <a class="btn btn-primary" href="{% url 'tagging:turtleobservation_add' %}?turtle_id={{ object.pk }}">
+                <i class="fa-solid fa-plus"></i>
+                Add an observation
+            </a>
+        </span>
+    </div>
+    {% endcomment %}
+</div>
+<div class="row">
+    <div class="col-sm-12 col-md-8">
+        <table class="table table-striped table-bordered table-sm">
+            <tbody>
+                <tr>
+                    <th>Species</th>
+                    <td>{{ object.species.common_name }}</td>
+                </tr>
+                <tr>
+                    <th>Sex</th>
+                    <td>{{ object.get_sex_display|default_if_none:"Unknown" }}</td>
+                </tr>
+                <tr>
+                    <th>Nesting/other group</th>
+                    <td>{{ object.location.name|default_if_none:"" }}</td>
+                </tr>
+                <tr>
+                    <th>Date entered</th>
+                    <td>{{ object.created|date:"j-M-Y" }}</td>
+                </tr>
+                <tr>
+                    <th>Entered by</th>
+                    <td>{{ object.entered_by.name|default_if_none:"" }}</td>
+                </tr>
+                <tr>
+                    <th>Name</th>
+                    <td>{{ object.name|default_if_none:"" }}</td>
+                </tr>
+                <tr>
+                    <th>Cause of death</th>
+                    <td>{{ object.get_cause_of_death_display|default_if_none:"" }}</td>
+                </tr>
+                <tr>
+                    <th>Comments</th>
+                    <td>{{ object.comments|default_if_none:"" }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col">
+        <h3>Tags</h3>
+    </div>
+</div>
+{% if object.tags.count %}
+<div class="row">
+    <div class="col">
+        <table class="table table-striped table-bordered table-sm">
+            <thead>
+                <tr>
+                    <th>Tag serial</th>
+                    <th>Side</th>
+                    <th>Status</th>
+                    <th>Return date</th>
+                    <th>Return condition</th>
+                    <th>Comments</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tag in object.tags.all %}
+                <tr>
+                    <td>{{ tag.serial }}</td>
+                    <td>{{ tag.get_side_display|default_if_none:"" }}</td>
+                    <td>{{ tag.get_status_display|default_if_none:"" }}</td>
+                    <td>{{ tag.return_date|date:"j-M-Y" }}</td>
+                    <td>{{ tag.return_condition|default_if_none:"" }}</td>
+                    <td>{{ tag.comments|default_if_none:"" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% else %}
+<p>None recorded</p>
+{% endif %}
+
+<div class="row">
+    <div class="col">
+        <h3>Pit tags</h3>
+    </div>
+    {% comment %}
+    <div class="col">
+        <span class="float-right">
+            {# FIXME: permissions check #}
+            <a class="btn btn-primary" href="{% url 'tagging:turtle_pit_tags_update' pk=object.pk %}">
+                <i class="fa-solid fa-pencil"></i>
+                Update pit tags
+            </a>
+        </span>
+    </div>
+    {% endcomment %}
+</div>
+{% if object.pit_tags.count %}
+<div class="row">
+    <div class="col">
+        <table class="table table-striped table-bordered table-sm">
+            <thead>
+                <tr>
+                    <th>Tag serial</th>
+                    <th>Status</th>
+                    <th>Return date</th>
+                    <th>Return condition</th>
+                    <th>Comments</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pit_tag in object.pit_tags.all %}
+                <tr>
+                    <td>{{ pit_tag.serial }}</td>
+                    <td>{{ pit_tag.get_status_display|default_if_none:"" }}</td>
+                    <td>{{ pit_tag.return_date|date:"j-M-Y" }}</td>
+                    <td>{{ pit_tag.return_condition|default_if_none:"" }}</td>
+                    <td>{{ pit_tag.comments|default_if_none:"" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% else %}
+<p>None recorded</p>
+{% endif %}
+
+<h3>Observations</h3>
+{% if object.turtleobservation_set.exists %}
+<div class="row">
+    <div class="col">
+        <table class="table table-striped table-bordered table-sm">
+            <thead>
+                <tr>
+                    <th>Date & time</th>
+                    <th>Observation</th>
+                    <th>Alive?</th>
+                    <th>Place</th>
+                    <th>Nesting?</th>
+                    <th>Activity</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for obs in object.turtleobservation_set.all %}
+                <tr>
+                    <td><a href="{{ obs.get_absolute_url }}">{{ obs.get_observed_awst|date:"D, j M Y H:i" }}{% if obs.point %} <i class="fa-solid fa-location-pin"></i>{% endif %}</a></td>
+                    <td>{{ obs.get_status_display }}</td>
+                    <td>{{ obs.alive|yesno:"Yes,No,Unknown" }}</td>
+                    <td>{{ obs.place.name|default_if_none:"" }}</td>
+                    <td>{{ obs.nesting|yesno:"Yes,No,Unknown" }}</td>
+                    <td>{{ obs.get_activity_display|default_if_none:"" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% if observation_points %}
+<div class="row">
+    <div class="col">
+    {% leaflet_map "detailmap" callback="window.map_init" %}
+    </div>
+</div>
+{% endif %}<!-- observation_points -->
+{% else %}
+<p>None recorded</p>
+{% endif %}<!-- object.turtleobservation_set.exists -->
+
+{% endblock page_content_inner %}
+
+{% block extra_js %}
+{% if observation_points %}
+{{ block.super }}
+<script type="text/javascript">
+function map_init(map, options) {
+    {% include "shared/styles.js" %}
+    function onEachFeature(feature, layer) {
+        if (feature.properties && feature.properties.label) {
+            layer.bindPopup(feature.properties.label);
+        }
+    };
+    const obsFeatures = {{ observation_points|safe }};
+    const obsLayer = L.geoJSON(obsFeatures, {onEachFeature: onEachFeature});
+    obsLayer.addTo(map);
+    map.fitBounds(obsLayer.getBounds());
+};
+</script>
+{% endif %}
+{% endblock extra_js %}

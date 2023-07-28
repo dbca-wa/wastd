@@ -1,0 +1,14 @@
+<!-- Edit in admin if authorised -->
+{% if request.user.is_staff %}
+<a href="{{ object.absolute_admin_url }}" title="Edit and QA this record in the data curation portal">
+  <span class="badge badge-{{ object.status_colour|default:'secondary' }}">
+    <i class="fa-solid fa-pencil" aria-hidden="true"></i>
+    {% if label %}Edit{% endif %}
+    [QA status: {{ object.get_status_display }}]
+  </span>
+</a>
+{% else %}
+<span class="badge badge-{{ object.status_colour|default:'secondary' }}">
+  [QA status: {{ object.get_status_display }}]
+</span>
+{% endif %}

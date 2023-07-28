@@ -1,0 +1,14 @@
+{% if object.can_change %}
+<a href="{{ object.absolute_admin_url }}" title="Edit this record in the data curation portal">
+    <span class="badge badge-secondary }}">
+        <i class="fa-solid fa-pencil" aria-hidden="true"></i> Edit
+    </span>
+</a>
+{% endif %}
+{% for transition in object.get_available_status_transitions %}
+<a href="{{ object.get_absolute_url }}{{ transition.custom.url_path }}" title="{{ transition.custom.verbose }}">
+    <span class="badge {{ transition.custom.badge }}">
+        <i class="fa-solid fa-pencil" aria-hidden="true"></i> {{ transition.custom.verbose }}
+    </span>
+</a>
+{% endfor %}

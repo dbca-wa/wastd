@@ -1,0 +1,10 @@
+{% extends "admin/change_form.html" %}
+
+{% block object-tools-items %}
+    {% if not is_popup %}
+    <li>
+        <a class="grp-add-link grp-state-focus" href="{% url 'admin:tagging_turtleobservation_add' %}?turtle={{ object_id }}">Add an observation</a>
+    </li>
+    {% endif %}
+    {{ block.super }}
+{% endblock %}

@@ -1,0 +1,25 @@
+<!-- View details -->
+{% if not hide_details %}
+<a href="{{ object.get_absolute_url }}"
+  class="mr-2 text-primary"
+  title="View {{ object }}.">
+  <i class="fa-solid fa-eye" aria-hidden="true"></i>
+  {% if label %}View{% endif %}
+</a>
+{% endif %}
+<!-- Edit details -->
+<a href="{{ object.update_url }}"
+  class="mr-2 text-primary"
+  title="Edit {{ object }}.">
+  <i class="fa-solid fa-pencil" aria-hidden="true"></i>
+  {% if label %}Edit{% endif %}
+</a>
+<!-- Edit details (admin) -->
+{% if request.user.is_staff %}
+<a href="{{ object.absolute_admin_url }}"
+  class="mr-2 text-success"
+  title="As data curator, you may edit {{ object }} through the data curation portal.">
+  <i class="fa-solid fa-pencil" aria-hidden="true"></i>
+  {% if label %}Edit{% endif %}
+</a>
+{% endif %}
