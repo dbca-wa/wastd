@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Business Analysts &#8212; wastd 0.70.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Developer documentation" href="developers.html" />
+    <link rel="prev" title="Data consumers" href="data_consumers.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="business-analysts">
+<h1>Business Analysts<a class="headerlink" href="#business-analysts" title="Permalink to this heading">¶</a></h1>
+<p>This chapter draws the big picture of the turtle data ecosystem
+by presenting business, functional and stakeholders’ requirements as readable
+use cases and describing existing implementations.</p>
+<p>We apply IBM’s <a class="reference external" href="https://www.ibm.com/developerworks/architecture/library/ar-analpat/ar-analpat-pdf.pdf">simple pattern for requirements analysis</a>
+to structure the problem space into business processes (stranding, tagging, and
+track/nest count) and IT processes (for each business process: data collection,
+capture, proofreading and curation, query, export and data analysis).
+Legacy systems and their ties to the current implementation (WAStD) are discussed as well.</p>
+<section id="glossary">
+<h2>Glossary<a class="headerlink" href="#glossary" title="Permalink to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><strong>Data collection</strong> refers to the collection of information gained from an
+observation onto a paper datasheet.</p></li>
+<li><p><strong>Data capture</strong> refers to <strong>data entry</strong>, the process of entering information
+either from a datasheet or from a direct observation into an electronic form.</p></li>
+<li><p>A <strong>data record</strong> is one data point, e.g. one observation, in a digital
+system, e.g. in a database. A data record is often kept as one row in a table.</p></li>
+<li><p><strong>Data QA</strong> refers to the various stages of ensuring that data records are as
+true and reliable as possible. Data QA includes proofreading and what we call
+curation.</p></li>
+<li><p><strong>Proofreading</strong> is the process of comparing the primary data source, e.g.
+a hand-written datasheet or an email, to the digital record to eliminate
+typographical errors, mis-readings, and overall to make sure that the record
+represents the observer’s intent as closely as possible.</p></li>
+<li><p><strong>Curation</strong> is the process of validating and possibly updating records against
+subject matter expertise.</p></li>
+</ul>
+</section>
+<section id="aims">
+<h2>Aims<a class="headerlink" href="#aims" title="Permalink to this heading">¶</a></h2>
+<p>NdS OA AF 3: “Establish efficient Information Management systems.”</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/14">Develop systems for the compilation, management and long-term storage of datasets
+and their metadata related to sea turtles and their habitats</a></p></li>
+<li><p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/15">Develop a stranding information database</a></p></li>
+<li><p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/16">Improve current marine turtle database to ensure functionality across user
+groups for tagged turtles, beach surveys and other information</a></p></li>
+<li><p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/17">Develop project management systems (projects, scientific papers, reports, plans)
+that complement existing corporate systems</a></p></li>
+</ul>
+</section>
+<section id="overview-turtle-monitoring">
+<h2>Overview - Turtle monitoring<a class="headerlink" href="#overview-turtle-monitoring" title="Permalink to this heading">¶</a></h2>
+<p>This section provides a quick overview of turtle monitoring activities along the
+life cycle of a turtle.</p>
+<a class="reference external image-reference" href="https://www.lucidchart.com/publicSegments/view/8c466bd4-bd12-4bf0-890e-9ad372d7bec4/image.png"><img alt="Turtle life cycle" src="https://www.lucidchart.com/publicSegments/view/8c466bd4-bd12-4bf0-890e-9ad372d7bec4/image.png" /></a>
+<p>Here, a simplified turtle life cycle  is shown together with data captured along it.
+Note that duration and frequency of individual stages may differ between turtle species.
+E.g., leatherbacks do not nest at all in WA, but are encountered occasionally.</p>
+<p>The three main areas of monitoring work are:</p>
+<ul class="simple">
+<li><p>Tagging of nesting female turtles (during nesting season, on nesting beach, directly after nesting or nesting attempt) - “tagging”</p></li>
+<li><p>Track and nest count (during nesting season, on nesting beach, on morning after nesting) - “tracks”</p></li>
+<li><p>Marine wildlife incidents involving turtles (any place, any time) - “strandings”</p></li>
+</ul>
+</section>
+<section id="overview-data-management">
+<h2>Overview - Data management<a class="headerlink" href="#overview-data-management" title="Permalink to this heading">¶</a></h2>
+<p>This section gives a brief overview of the information management ecosystem
+(“the system” referring to current implementation, or “the solution” referring
+to ideal solution) described in this chapter.</p>
+<section id="data-management-roles">
+<span id="dm-roles"></span><h3>Data management roles<a class="headerlink" href="#data-management-roles" title="Permalink to this heading">¶</a></h3>
+<a class="reference external image-reference" href="https://www.lucidchart.com/publicSegments/view/c1ac7e17-c178-462d-8aab-1de6458b11bc/image.png"><img alt="Turtle program data management roles" src="https://www.lucidchart.com/publicSegments/view/c1ac7e17-c178-462d-8aab-1de6458b11bc/image.png" /></a>
+<p>Stakeholders interact with the system in different roles:</p>
+<ul class="simple">
+<li><p>data collection</p></li>
+<li><p>data entry</p></li>
+<li><p>data QA (proofreading and curation)</p></li>
+<li><p>data query and export</p></li>
+<li><p>data analysis</p></li>
+<li><p>knowledge inference and advice</p></li>
+</ul>
+<p>A person can occupy none, one or several roles. Each role has a different set of
+requirements and goals.</p>
+</section>
+<section id="turtle-business-processes-current-state">
+<span id="dm-overview"></span><h3>Turtle business processes current state<a class="headerlink" href="#turtle-business-processes-current-state" title="Permalink to this heading">¶</a></h3>
+<a class="reference external image-reference" href="https://www.lucidchart.com/publicSegments/view/5561395b-f450-4f21-b670-acbddb540c97/image.png"><img alt="Turtle data management overview - current state" src="https://www.lucidchart.com/publicSegments/view/5561395b-f450-4f21-b670-acbddb540c97/image.png" /></a>
+<p>Each data stream on the left hand side will be discussed below in more detail.</p>
+</section>
+<section id="turtle-business-processes-ideal-state">
+<span id="dm-ideal-system"></span><h3>Turtle business processes ideal state<a class="headerlink" href="#turtle-business-processes-ideal-state" title="Permalink to this heading">¶</a></h3>
+<a class="reference external image-reference" href="https://www.lucidchart.com/publicSegments/view/dbd47e49-d636-4d90-b455-3edb3dbe455f/image.png"><img alt="Turtle information management system overview" src="https://www.lucidchart.com/publicSegments/view/dbd47e49-d636-4d90-b455-3edb3dbe455f/image.png" /></a>
+<p>This diagram shows a simlified ideal system architecture.
+Each core data stream is implemented in the Turtle Information Management System (TIMS).
+TIMS interacts with the data repository BioSys through the BioSys API.
+Other core systems also have an API.
+The APIs are accessible through an Enterprise Service Bus (ESB).
+An ESB is like a phone network between APIs: Applications interact with data
+repositories through the ESB, like humans can talk to each other on the phone.
+Requirements to TIMS will be largely shared by all data streams.</p>
+</section>
+<section id="it-processes-along-the-data-life-cycle">
+<span id="dm-data-entry"></span><h3>IT processes along the Data life cycle<a class="headerlink" href="#it-processes-along-the-data-life-cycle" title="Permalink to this heading">¶</a></h3>
+<a class="reference external image-reference" href="https://www.lucidchart.com/publicSegments/view/e903e543-e5b9-4b4e-b05f-035772f5bb36/image.png"><img alt="Turtle data flow, ideal state" src="https://www.lucidchart.com/publicSegments/view/e903e543-e5b9-4b4e-b05f-035772f5bb36/image.png" /></a>
+<p>Each data stream goes through parts of this process:</p>
+<ul class="simple">
+<li><p>Collecting data: capturing an observation onto a datasheet</p></li>
+<li><p>Scanning &amp; filing datasheets</p></li>
+<li><p>Converting digital data formats to standard formats</p></li>
+<li><p>Capturing data: Entering data from datasheets into an online system, or entering
+observations directly into digital forms</p></li>
+<li><p>Importing records from one digital system into another</p></li>
+<li><p>Proofreading entered data against paper datasheets</p></li>
+<li><p>Curating data with subject matter expertise</p></li>
+<li><p>Marking data as embargoed or ready to release</p></li>
+<li><p>Querying / exporting data</p></li>
+<li><p>Analysing, visualising, modelling data</p></li>
+<li><p>Inferring knowledge</p></li>
+</ul>
+</section>
+</section>
+<section id="business-process-turtle-strandings">
+<h2>Business Process Turtle Strandings<a class="headerlink" href="#business-process-turtle-strandings" title="Permalink to this heading">¶</a></h2>
+<p>This business process was the first information management challenge to solve,
+and has led to the design and development of WAStD in its current form.</p>
+<p>To illustrate the design process, the background is discussed in greater detail here.</p>
+<section id="problem">
+<h3>Problem<a class="headerlink" href="#problem" title="Permalink to this heading">¶</a></h3>
+<p>Reports of turtle strandings exist as hard copy (paper, photos, datasheets),
+electronic files (scanned datasheets, emails, photos), in databases
+(Turtle Tagging DB WAMTRAM2), and in regional offices.</p>
+<p>For ministerial inquiries on turtle strandings, there is no timely, defensible,
+reproducible, and accessible insight available.
+Monitoring and research questions suffer the same problem.</p>
+<p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/18">REQ #18</a>
+Insight on turtle strandings must be available in a timely, defensible,
+reproducible and accessible manner.</p>
+</section>
+<section id="task">
+<h3>Task<a class="headerlink" href="#task" title="Permalink to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Improve the information pipeline from databased, stranded animal to
+ministerial / managerial inquiry, so that timely, defensible, reproducible,
+and accessible insight is available.</p></li>
+<li><p>Digitise and curate the backlog of old stranding reports, while retaining
+full data lineage.</p></li>
+</ul>
+</section>
+<section id="constraints">
+<h3>Constraints<a class="headerlink" href="#constraints" title="Permalink to this heading">¶</a></h3>
+<p>The solution architecture must consider the following contraints:</p>
+<ul class="simple">
+<li><p>Biosys aims to deliver similar functionality, but not within the required time.</p></li>
+<li><p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/47">REQ #47</a>
+The interim solution shall be either disposable (to be re-implemented in BioSys),
+re-usable (to be integrated in BioSys), or scalable (to become a part of BioSys).</p></li>
+<li><p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/5)">REQ #5</a>
+The solution shall be SOE, follow OIM’s standards and integrate into their
+infrastructure ecosystem.</p></li>
+<li><p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/7">REQ #7</a>
+Double handling of data entry shall be avoided - do it once, and do it
+properly (complete, correct, consistent).</p></li>
+<li><p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/6">REQ #6</a>
+There must be a standardised, accessible way to import and export all data
+into and out of the solution.</p></li>
+<li><p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/8">REQ #8</a>
+The solution shall be compatible on a raw data level with Queensland’s
+StrandNet, Parks &amp; Wildlife’s Turtle Tagging database WAMTRAM 2,
+and the Ningaloo Turtle Program’s track count database.</p></li>
+</ul>
+</section>
+<section id="current-implementation">
+<h3>Current implementation<a class="headerlink" href="#current-implementation" title="Permalink to this heading">¶</a></h3>
+<section id="turtle-strandings">
+<h4>Turtle Strandings<a class="headerlink" href="#turtle-strandings" title="Permalink to this heading">¶</a></h4>
+<ul class="simple">
+<li><p>The data flow is shown in <a class="reference internal" href="#dm-data-entry"><span class="std std-ref">IT processes along the Data life cycle</span></a>.</p></li>
+<li><p>Stranding paper forms are being updated (SFo and FM, Nov 2016 - Mar 2017).</p></li>
+<li><p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/23">REQ #23</a>
+An updated incident response workflow for marine wildlife incidents is in
+development (May 2017, KimO).
+The affiliated Murdoch Vet (EY Dec 2016) has her own requirements.</p></li>
+<li><p>A digital data capture form caters for turtle strandings (can be extended to others)
+and is in beta testing (not officially released yet).</p></li>
+<li><p>WAStD allows data entry from legacy paper forms, as well as data export and query.</p></li>
+<li><p><a class="reference external" href="http://rpubs.com/florian_mayer/strandings">Live workbooks</a>
+can query, analyse and visualise data from WAStD via its API.</p></li>
+</ul>
+<p>The following figure details the data flow for turtle strandings:</p>
+<a class="reference external image-reference" href="https://www.lucidchart.com/publicSegments/view/792bc100-204d-41ff-8bd4-84a26d604fd8/image.png"><img alt="Turtle strandings data management: current implementation" src="https://www.lucidchart.com/publicSegments/view/792bc100-204d-41ff-8bd4-84a26d604fd8/image.png" /></a>
+</section>
+<section id="cetacean-strandings">
+<h4>Cetacean strandings<a class="headerlink" href="#cetacean-strandings" title="Permalink to this heading">¶</a></h4>
+<p>Nature Conservation kept a Filemaker Pro database of Cetacean strandings.
+The database custodian has retired after extended leave.</p>
+<p>It shall be noted that the custodian of the legacy turtle tagging database
+WAMTRAM 2 understood correctly that strandings of tagged turtles are a vital
+part of their life history – as they are used in mark-capture-recapture analysis –
+and aimed to include the strandings process into the database;
+however, this process was not completely implemented and is not fully operational.</p>
+<p>The following figure shows current implementation and possible transition of
+Cetacean stranding data management.</p>
+<a class="reference external image-reference" href="https://www.lucidchart.com/publicSegments/view/516fb077-229c-4110-9c6a-f60a14f9fe61/image.png"><img alt="Cetacean strandings data management: current implementation and transition process" src="https://www.lucidchart.com/publicSegments/view/516fb077-229c-4110-9c6a-f60a14f9fe61/image.png" /></a>
+</section>
+</section>
+<section id="it-process-stranding-incident-report">
+<h3>IT process Stranding incident report<a class="headerlink" href="#it-process-stranding-incident-report" title="Permalink to this heading">¶</a></h3>
+<p>A ranger or other departmental field worker responds to a stranding incident.
+The stranding (using a mobile data collection app) is reported to HQ,
+and further actions are taken as per latest instructions (to be updated).</p>
+<p>The current paper-based process involves paper-based stranding report forms,
+scanning, emailing, manually entering and proofreading.
+It feeds into the workflow documented at <a class="reference internal" href="data_entry.html#itp-stranding-curation"><span class="std std-ref">Turtle Strandings</span></a>.</p>
+<p>A new digital reporting process is in beta-testing, ready to incorporate other
+taxonomic groups of strandings and documented at <span class="xref std std-ref">itp-stranding-report</span>.</p>
+<p>An updated workflow for turtle strandings is being distributed to field offices
+at the time of writing (Jan 2017), but requires further updates to include
+other priority taxa (cetaceans, pinnipeds, dugong, sea snakes etc.).</p>
+<p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/19">REQ #19</a>
+Data should, where feasible, be “born digitally” to minimize the costly and
+error-prone crossing of the analog-digital barrier.</p>
+<p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/21">REQ #21</a>
+The incident responder shall be able to capture the data offline, with the
+necessary reference at hand (species ID guides, relevant data from the central
+database, “next steps” flow chart), using cheap and readily available
+technology (e.g. tablets or smart phones), and be able to auto-upload the data
+once online (office WiFi or mobile reception) without manual effort.</p>
+<p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/22">REQ #22</a>
+The digital data capture tool shall record location and time automatically.</p>
+<p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/20">REQ #20</a>
+The incident responder shall be provided with a comprehensive, easy to follow,
+work flow (as flow chart printout, handbook, or in a digital format).</p>
+<p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/23">REQ #23</a>
+There shall be one centralised wildlife incident response contact within DPaW,
+which shall direct the incidents to the respective responders both within and
+external to the Department.</p>
+</section>
+<section id="it-process-stranding-data-curation">
+<h3>IT process Stranding data curation<a class="headerlink" href="#it-process-stranding-data-curation" title="Permalink to this heading">¶</a></h3>
+<p>Data curation requires at least four steps
+(<a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/26">REQ #26</a>):</p>
+<ul class="simple">
+<li><p>A data entry operator digitises legacy data from emails, old paper-based
+stranding reports and other, unstructured information.
+<a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/25">REQ #25</a></p></li>
+<li><p>A second data entry operator proof-reads the digitised records.</p></li>
+<li><p>A qualified curator with good business knowledge of turtle ecology reviews the
+records.</p></li>
+<li><p>A manager with data publication permission flags records as ready for public
+release, or embargoes the data.</p></li>
+</ul>
+<p>Detailed instructions for each role are documented at
+<a class="reference internal" href="data_entry.html#itp-stranding-curation"><span class="std std-ref">Turtle Strandings</span></a>.</p>
+</section>
+<section id="it-process-stranding-data-analysis">
+<h3>IT process Stranding data analysis<a class="headerlink" href="#it-process-stranding-data-analysis" title="Permalink to this heading">¶</a></h3>
+<p>As documented at <a class="reference internal" href="#usecase-stranding-ministerial-inquiry"><span class="std std-ref">Use case: Ministerial inquiry, annual report, strategic advice</span></a>, the current
+implementation serves several analytical requirements:</p>
+<ul class="simple">
+<li><p>A ministerial inquiry seeks a summary of “how many, which species, where, when”.</p></li>
+<li><p>A manager seeks to inform management decisions.</p></li>
+<li><p>A researcher seeks to infer knowledge about ecological processes, their change
+over space and time, and possible drivers.</p></li>
+</ul>
+<p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/43">REQ #43</a>
+<a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/31">REQ #31</a>
+Data consumers shall be able to query, filter and export the raw data.
+Data access shall be restricted role-based, so that sensitive data is accessible
+only to trusted and authorised data consumers.
+The system shall default data restrictions to be suitable for the general audience.</p>
+</section>
+<section id="use-case-ministerial-inquiry-annual-report-strategic-advice">
+<span id="usecase-stranding-ministerial-inquiry"></span><h3>Use case: Ministerial inquiry, annual report, strategic advice<a class="headerlink" href="#use-case-ministerial-inquiry-annual-report-strategic-advice" title="Permalink to this heading">¶</a></h3>
+<p>This section discusses requirements of each stakeholder role involved in</p>
+<ul class="simple">
+<li><p>the response to a ministerial inquiry,</p></li>
+<li><p>annual reporting for a steering committee,</p></li>
+<li><p>strategic advice to a policy officer,</p></li>
+</ul>
+<p>and demonstrates the current implementation in WAStD.</p>
+<p>The data life cycle in this particular case is shown below.</p>
+<a class="reference external image-reference" href="https://www.lucidchart.com/publicSegments/view/ff4a25e1-8efc-4936-baec-5dbe54ac7204/image.png"><img alt="Stranding data life cycle" src="https://www.lucidchart.com/publicSegments/view/ff4a25e1-8efc-4936-baec-5dbe54ac7204/image.png" /></a>
+<p>The following use case traces the data life cycle back to front to keep the
+narrative engaging.</p>
+<section id="minister-steering-committee-policy-officer">
+<h4>Minister, steering committee, policy officer<a class="headerlink" href="#minister-steering-committee-policy-officer" title="Permalink to this heading">¶</a></h4>
+<p>The minister sends an inquiry to the Department.</p>
+<p>The Turtle Monitoring Program’s steering committee requires semi-annual reports
+on turtle population metrics like mortality (strandings) or nesting (tagging and
+track counts).</p>
+<p>A policy officer needs to relate infrastructure developments (e.g. new boat ramps)
+or management actions (e.g. boating exclusion zones) with turtle population metrics
+(e.g. number of boat strikes).</p>
+<p>There haven’t been any ministerial inquiries about turtle strandings yet,
+but we assume they could ask e.g.:
+(see also <a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/43">REQ #43</a>)</p>
+<ul class="simple">
+<li><p>How many <a class="reference external" href="https://strandings.dpaw.wa.gov.au/admin/observations/animalencounter/?cause_of_death__exact=boat-strike&amp;taxon__exact=Cheloniidae">boat strikes to turtles</a> have been recorded?</p></li>
+<li><p>How many turtle strandings happened <a class="reference external" href="https://strandings.dpaw.wa.gov.au/admin/observations/animalencounter/?encounter_type__exact=stranding&amp;taxon__exact=Cheloniidae&amp;when__year=2016">in 2016</a>?</p></li>
+<li><p>How many turtle strandings happened within the <a class="reference external" href="https://strandings.dpaw.wa.gov.au/admin/observations/animalencounter/?encounter_type__exact=stranding&amp;taxon__exact=Cheloniidae&amp;where=3">80 Mile Beach MPA</a>?</p></li>
+</ul>
+<p>These examples show only a few out of many possible combinations of search filters.
+All results can be exported to spreadsheets for further analysis.
+The same results can also be generated through the API for consumption by software.
+See <a class="reference internal" href="data_consumers.html#data-consumers-api"><span class="std std-ref">For machines: API</span></a> for working examples.</p>
+</section>
+<section id="manager">
+<h4>Manager<a class="headerlink" href="#manager" title="Permalink to this heading">¶</a></h4>
+<p>The manager requires timely and defensible insight</p>
+<ul class="simple">
+<li><p>to answer a ministerial inquiry,</p></li>
+<li><p>to fulfil reporting obligations e.g. to a steering committee, or</p></li>
+<li><p>to provide data-driven, strategic advice for management interventions or plans.</p></li>
+</ul>
+<p>Insight could be required as
+(see also <a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/43">REQ #43</a>):</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://strandings.dpaw.wa.gov.au/admin/observations/animalencounter/">data</a>
+(spreadsheet - “List all incidents of &lt;species&gt; within &lt;region&gt; and &lt;date range&gt;”),</p></li>
+<li><p><a class="reference external" href="https://strandings.dpaw.wa.gov.au/admin/observations/animalencounter/">summarised numbers</a>
+(spreadsheet totals - “How many &lt;species&gt; within &lt;region&gt; suffered incidents?”),</p></li>
+<li><p><a class="reference external" href="http://rpubs.com/florian_mayer/wastd-mark">analytical output</a>
+(probability of correlations - “Did the new boat ramp
+significantly increase the number of boat strikes to &lt;species&gt;?”),</p></li>
+<li><p><a class="reference external" href="https://strandings.dpaw.wa.gov.au/">geographic distribution</a>
+(maps - “Where did the strandings happen?”).</p></li>
+<li><p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/18">REQ #18</a>
+Insight should be available as <strong>timely</strong> as possible, minimizing human bottlenecks.</p></li>
+<li><p>Insight should be <strong>accessible</strong>, in that managers should be able to
+retrieve answers to common questions themselves.</p></li>
+<li><p>Insight should be <strong>defensible</strong>, in that the processing steps of both data
+<a class="reference external" href="https://strandings.dpaw.wa.gov.au/admin/observations/animalencounter/10/change/">QA</a>
+(audit trail of QA operations)
+and <a class="reference external" href="http://rpubs.com/florian_mayer/tracks">analysis</a> are well documented,
+providing a fully transparent data lineage from datasheet to generated insight.</p></li>
+<li><p>Insight should be <strong>reproducible</strong>, in that other people with limited
+technical or statistical expertise can
+<a class="reference external" href="http://rpubs.com/florian_mayer/tracks">reproduce the analysis</a>
+from the archived inputs.</p></li>
+</ul>
+<p>Real-world example of Cetacean stranding questions
+(see also <a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/43">REQ #43</a>):</p>
+<ul class="simple">
+<li><p>incidents with mortality</p></li>
+<li><p>incidents with entanglement (ensuing mortality or not)</p></li>
+<li><p>other non-entanglement incidents</p></li>
+<li><p>strandings (ensuing mortality or not)</p></li>
+<li><p>mortalities in cetacean stranding db are cases with “cause of death” not “na”</p></li>
+</ul>
+</section>
+<section id="analyst">
+<h4>Analyst<a class="headerlink" href="#analyst" title="Permalink to this heading">¶</a></h4>
+<p>The analyst’s role is to bridge the gap between raw data and non-trivial questions
+through advanced statistical analysis and visualisation.
+<a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/48">REQ #48</a></p>
+<ul class="simple">
+<li><p>To do so, the analyst needs
+<a class="reference external" href="https://strandings.dpaw.wa.gov.au/api/1/">universal access</a>
+to machine-readable, trustworthy data.</p></li>
+<li><p>The data needs to be complete, consistent and correct.</p></li>
+<li><p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/39">REQ # 39</a>
+The analyst needs to hit the ground running with
+<a class="reference external" href="https://strandings.dpaw.wa.gov.au/users/FlorianM/">working examples</a>
+of loading the data from the machine-readable access point into the most common
+<a class="reference external" href="https://github.com/parksandwildlife/wastdr">analytical frameworks</a>.</p></li>
+<li><p>There should be sufficient documentation (<a class="reference internal" href="data_consumers.html#data-consumers"><span class="std std-ref">Data consumers</span></a>)
+to allow statistically trained analysts to efficiently consume data without
+technical knowledge of the system they are stored in.
+(See your own WAStD profile for code examples including your own API token).</p></li>
+<li><p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/6">REQ #6</a>
+Access needs to be following standard protocols and formats,
+be entirely independent of both the systems it is stored in,
+as well as independent of the software packages it is analysed with.</p></li>
+</ul>
+</section>
+<section id="data-curator-3-subject-matter-expert">
+<h4>Data curator 3: Subject matter expert<a class="headerlink" href="#data-curator-3-subject-matter-expert" title="Permalink to this heading">¶</a></h4>
+<p>Subject matter experts acting as data curators need to validate the records,
+e.g. confirm species identification. This increases <strong>correctness</strong> of the data.</p>
+<ul class="simple">
+<li><p>Data curators need convenient, unrestricted access to the data.</p></li>
+<li><p>Data needs to indicate its curation status.</p></li>
+<li><p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/26">REQ #26</a>
+Data needs to retain its lineage by retaining its editing and status history.</p></li>
+<li><p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/55">REQ #55</a>
+Each human decision by the subject matter expert should be translated into an
+automatic test or filter that flags similar records for review. This feedback
+process aims to distil the subject matter expertise into formal rules.</p></li>
+</ul>
+</section>
+<section id="data-curator-2-proofreader">
+<h4>Data curator 2: Proofreader<a class="headerlink" href="#data-curator-2-proofreader" title="Permalink to this heading">¶</a></h4>
+<p>Digitising data sheets is an error-prone operation. Sorting vague information into
+the available categories requires some informed decisions, based on guidelines.
+Proofreading will help fighting typos and misunderstandings between datasheet
+and database, therefore increasing <strong>consistency</strong>.</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/25">REQ #25</a>
+<a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/42">REQ #42</a>
+The proofreader needs original datasheets, communication records and supplemental
+images accessible close to the data entry/QA forms, ideally displaying in their
+web browser without needing to be downloaded and opened in proprietary software.</p></li>
+</ul>
+</section>
+<section id="data-curator-1-data-entry-operator">
+<h4>Data curator 1: Data entry operator<a class="headerlink" href="#data-curator-1-data-entry-operator" title="Permalink to this heading">¶</a></h4>
+<p>The data entry operator digitises information from datasheets, emails and photographs,
+reconstructs missing information, and transforms files into standard compliant formats.
+By doing so, the data entry operator increases <strong>accessibility</strong> and <strong>completeness</strong> of data.</p>
+<ul class="simple">
+<li><p>The electronic data entry form should follow the data sheets to facilitate data entry.</p></li>
+<li><p>There should be clear, unambiguous instructions on
+<a class="reference external" href="http://wastd.readthedocs.io/data_curators.html">data entry</a>.</p></li>
+<li><p>The instructions must be able to evolve with new edge cases requiring supervisor input.</p></li>
+<li><p>Electronic data entry forms should provide input validation for formats, not content.</p></li>
+<li><p>The data portal should accept all formally correct data (<a class="reference internal" href="developers.html#data-model"><span class="std std-ref">Data model</span></a>),
+but allow to identify and fix impossible or questionable records.</p></li>
+<li><p>The system should flag impossible or questionable records.</p></li>
+</ul>
+</section>
+<section id="data-collector-ranger-regional-staff">
+<h4>Data collector: Ranger, regional staff<a class="headerlink" href="#data-collector-ranger-regional-staff" title="Permalink to this heading">¶</a></h4>
+<p>The departmental data collector (e.g. a ranger) responds to a stranding report
+from the general public, or discovers a stranded animal themselves.</p>
+<ul class="simple">
+<li><p>The data collector needs clear and up to date procedures, and easily useable,
+up to date (<a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/40">REQ #40</a>)
+datasheets.</p></li>
+<li><p>Paper is cheap, bad information is costly. Taking the correct pictures in correct
+angles and lighting, as well as taking and processing samples, or preserving
+the carcass for a subsequent necropsy correctly is time-critical and cannot be
+repeated later.
+<a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/56">REQ #56</a>
+Instructions to take the right measurements, samples and photographs must be
+available to the data collector.</p></li>
+<li><p>Datasheets need to capture complete, consistent and correct data, while avoiding
+capturing unnecessary detail.</p></li>
+<li><p>Datasheets should provide enough guidance to the data collector on providing the
+desired data formats and precision.</p></li>
+</ul>
+<p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/25">REQ #25</a>
+The data collector could reduce the workload on core staff by entering the datasheet
+themselves, if the data portal had data entry forms with restricted access.
+These forms are different to the curation forms - more streamlined for data entry.</p>
+</section>
+<section id="primary-reporter-general-public">
+<h4>Primary reporter: General public<a class="headerlink" href="#primary-reporter-general-public" title="Permalink to this heading">¶</a></h4>
+<p>A member of the public encounters stranded, entangled, or injured wildlife.
+Members of the general public reporting a stranding need to know how to react -
+whom to call, which data to collect (e.g. geo-referenced phone pictures).
+Depending on the urgency, the member of the public will:</p>
+<ul class="simple">
+<li><p>alert DPaW immediately, so a ranger can attend the incident;</p></li>
+<li><p>notify DPaW later (e.g. if remote and offline);</p></li>
+<li><p>do nothing.</p></li>
+</ul>
+<p>Depending on the efficiency of the notification pathway, the incident information
+will find its way to the data entry operator in several ways:</p>
+<ul class="simple">
+<li><p>A DPaW ranger attends the incident fills in the correct datasheet, scans and
+emails it to the correct internal contact.</p></li>
+<li><p>A DPaW staff member reports an incident which is too remote or too old to
+attend to the correct internal contact.</p></li>
+<li><p>The report from the member of the public finds its way through detours to the
+correct internal contact.</p></li>
+</ul>
+<p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/57">REQ #57</a>
+Primary reporters would be pleased to hear how their actions contributed to an
+increased understanding, and ultimately the conservation of the stranded species.
+This could happen in the form of a “thank you” email with an excerpt of the
+final stranding record.</p>
+<p>Example: TOs returning tags after harvesting a tagged turtle usually get sent
+a reward like branded t-shirts or baseball caps by Marine Science to show their
+appreciation.</p>
+</section>
+</section>
+<section id="gap-analysis">
+<h3>Gap analysis<a class="headerlink" href="#gap-analysis" title="Permalink to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Front-line staff are not yet trained in using WAStD.</p></li>
+<li><p>Paper forms are not phased out yet.</p></li>
+<li><p>The digital data capture app in its current implementation still requires a few
+manual steps by the application maintainer to import data into WAStD. This process
+is not yet fully automated and does not yet happen in real-time.</p></li>
+<li><p>The WAStD API is, although operational, not yet fully optimised.</p></li>
+<li><p>Not all possible data products are implemented yet (e.g. as self-service
+dashboards).</p></li>
+<li><p>Members of the public who report strandings have not yet web access to “their”
+strandings and related data (e.g. the life history of a stranded, tagged turtle).</p></li>
+</ul>
+</section>
+</section>
+<section id="business-process-turtle-tagging">
+<h2>Business Process Turtle Tagging<a class="headerlink" href="#business-process-turtle-tagging" title="Permalink to this heading">¶</a></h2>
+<section id="it-process-turtle-tag-asset-management">
+<h3>IT process Turtle tag asset management<a class="headerlink" href="#it-process-turtle-tag-asset-management" title="Permalink to this heading">¶</a></h3>
+<p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/milestone/8">Milestone Turtle Tagging</a></p>
+<p>Tags have a life cycle, characterised by interactions with humans and animals:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/9">#9 create tag status list</a></p></li>
+<li><p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/3">#3 LC diagram tag</a></p></li>
+</ul>
+<p>Use cases along the life cycle of a tag, also mentioned in
+<a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/10">REQ #10</a>:</p>
+<ul class="simple">
+<li><p>Order tag (typically in batches) with running ID e.g. WB1500 - WB3500</p></li>
+<li><p>Record tag batches as ordered, produced, delivered (how much detail is required?),
+allocated to field team (important)</p></li>
+<li><p>Query: how many tags have we ordered?</p></li>
+<li><p>Query: what’s the next available tag number?</p></li>
+<li><p>Query: which tags are available to hand out to field teams?</p></li>
+<li><p>Query: when do we have to re-order?</p></li>
+<li><p>Query: which tags are in possession of field team x?</p></li>
+<li><p>Query: where is tag y, who is in possession or tag y?</p></li>
+<li><p>Field teams report tags as “applied new”, “re-clinched” or “re-sighted”
+when tagging animals through digital or paper field data forms</p></li>
+<li><p>Tag returns from TOs after harvest</p></li>
+<li><p>Tags can be found on stranded animals, returned to HQ</p></li>
+<li><p>Tags are never re-applied to different animals but destroyed and recorded as such</p></li>
+</ul>
+</section>
+<section id="it-process-turtle-tagging-field-data-collection">
+<h3>IT process Turtle tagging field data collection<a class="headerlink" href="#it-process-turtle-tagging-field-data-collection" title="Permalink to this heading">¶</a></h3>
+<p>Ideal process:</p>
+<a class="reference external image-reference" href="https://www.lucidchart.com/publicSegments/view/b577a3d7-4314-4421-8752-1299e852ea74/image.png"><img alt="Tagging data life cycle (ideal)" src="https://www.lucidchart.com/publicSegments/view/b577a3d7-4314-4421-8752-1299e852ea74/image.png" /></a>
+<p>Currently, data is collected on paper forms, and then fed into the legacy system
+WAMTRAM 2 (see below).</p>
+<p>Digital data capture, if done well, could help to reduce the workload of the
+field workers, field supervisors, and data custodians, while improving data quality
+by reducing the number of time-consuming and error-prone steps.
+See <span class="xref std std-ref">cost-benefit-analysis-digital-data-capture</span>.</p>
+<p>Digital data capture of tagging-related data happens under time pressure
+and in harsh conditions (night, low light, operator fatigue, beach, sand, heat,
+humidity). The workflow is non-linear, as the tagged, biopsied, restrained,
+therefore stressed, but also very powerful turtle does not always follow the
+field protocol in sequence.
+The technology currently used for digital data capture of strandings and tracks
+is not flexible enough to provide a viable tagging data capture form.</p>
+<p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/12">REQ #12</a>
+The solution for a digital turtle tagging field data capture app must be
+optimised for harsh environmental conditions and low light, as well as
+the non-linear and  opportunistic nature of tagging data capture.</p>
+<p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/11">REQ #11</a>
+The solution shall carry the complete backlog of tagging records to provide
+the field workers with real-time insight about last sighting and in general all
+data relating to the encountered turtle (if already tagged), utilised tags,
+samples, data loggers and all other uniquely identifiable involved entities.</p>
+<p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/28">REQ #28</a>
+The solution shall allow daily syncing between multiple field data capture
+devices while still in the field.</p>
+<p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/29">REQ #29</a>
+The solution shall be able to toggle interface features and functionality
+between field data capture, field data curation, data upload, central data
+curation and other roles.
+The solution shall be responsive to different device display widths.</p>
+<p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/13">REQ #13</a>
+The solution shall provide data entry from paper datasheets (similar to
+W2 field data collection database) as well as direct digital data capture
+(similar to track count app).</p>
+</section>
+<section id="it-process-turtle-tagging-data-curation-field-and-office">
+<h3>IT process Turtle tagging data curation (field and office)<a class="headerlink" href="#it-process-turtle-tagging-data-curation-field-and-office" title="Permalink to this heading">¶</a></h3>
+<p>Tagging data captured in the field is particularly error-prone due to the
+stressful circumstances of the field work.</p>
+<p>Currently, a first round of data curation occurs during data entry of paper data
+forms into the WAMTRAM field database on the morning after a tagging night, when
+memory of any possible irregularity is still fresh.
+Anecdotal use cases are reported at <span class="xref std std-ref">lessons-learnt-paper-based-data-capture</span>.</p>
+</section>
+<section id="it-process-turtle-tagging-data-analysis">
+<h3>IT process Turtle tagging data analysis<a class="headerlink" href="#it-process-turtle-tagging-data-analysis" title="Permalink to this heading">¶</a></h3>
+<p>Tagged turtles are useful for mark-capture-recapture analysis.
+Stranded tagged turtles are part of this scope.</p>
+<p><a class="reference internal" href="data_consumers.html#data-analysis-animal-life-cycle"><span class="std std-ref">Animal life cycle</span></a> illustrates M-C-R analysis.</p>
+<p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/35">REQ #35</a>
+The system should maintain the location and processing status of physical
+samples (biopsy, histology, etc.) taken from a tagged (or stranded) turtle.</p>
+<p>Use cases:</p>
+<ul class="simple">
+<li><p>Where is sample S1234 at the moment? Who is in possession of the sample? How
+can I contact them?</p></li>
+<li><p>Has the sample been analysed? Where is the data?</p></li>
+<li><p>Is there any tissue left from that sample to analyse? How much?</p></li>
+</ul>
+<p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/37">REQ #37</a>
+The solution should allow adding new groups of measurements as required.
+E.g., blood samples may return e.g. 30 defined biochemical measurements per turtle.
+The solution should have a way to add those defined fields explicitly, so that
+the data can be accessed in a structured way. This paves the way for queries
+like “what is the mean / SD / min / max blood sugar level for flatback turtles”.</p>
+<p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/6">REQ #5</a>
+The analysts need timely access to the data. The data should be in standardised
+formats.</p>
+<p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/39">REQ #39</a>
+Data analysts should be given working examples on how to access the data.
+E.g., the R package <a class="reference external" href="https://github.com/parksandwildlife/wastdr">wastdr</a>
+provides convenience wrappers around the WAStD API, plus working examples and
+example data.</p>
+<p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/31">REQ #31</a>
+Data analysts, like all other stakeholders, require role based access to the data
+they are supposed to access, and preventing them from accessing data they are not
+supposed to see.</p>
+</section>
+<section id="legacy-system-wamtram-2">
+<h3>Legacy system: WAMTRAM 2<a class="headerlink" href="#legacy-system-wamtram-2" title="Permalink to this heading">¶</a></h3>
+<p>The basic data flow for the current production turtle tagging system WAMTRAM 2
+is shown in the following diagram and explained below.</p>
+<a class="reference external image-reference" href="https://www.lucidchart.com/publicSegments/view/7b08f661-15d3-411b-8931-d22317f75ee9/image.png"><img alt="Tagging data life cycle (current)" src="https://www.lucidchart.com/publicSegments/view/7b08f661-15d3-411b-8931-d22317f75ee9/image.png" /></a>
+<ul class="simple">
+<li><p>Data backend is an MS SQL Server 2012 database on <code class="docutils literal notranslate"><span class="pre">kens-mssql-001-prod</span></code>.</p></li>
+<li><p>Curator Bob Prince administrates data through an MS Access admin front-end.</p></li>
+<li><p>For each field team, Bob uses the admin frontend to export the
+entire current database into a data collection database.</p></li>
+<li><p>Field teams receive a data collection database backend (MS Access mdb)
+plus data collection frontend (MS Access mde) which allows data entry,
+does rudimentary data validation, and allows looking up existing data (e.g.
+tag history, turtle history).</p></li>
+<li><p>Penv get 2-3k taggings each year from Barrow and Munda.
+This is far more than DPaW themselves tag.</p></li>
+<li><p>Field teams return the data collection backend, which Bob imports into W2.</p></li>
+<li><p>If W2 reports import errors, Bob changes field data using his subject
+matter expertise and scans of original data sheets (if available) to resolve
+typos and incorrectly entered data. Bob frequently has to contact the field
+teams in order to reconcile conflicting data.</p></li>
+<li><p>Once import validation passes, WAMTRAM ingests the new data batch.</p></li>
+<li><p>W2 requires data to be entered in chronological order or else it throws errors.</p></li>
+<li><p>Flipper tag procurement happens through DPaW as custodians of tag names
+(e.g. “WA1234”).</p></li>
+<li><p>W2 disallows team 2 to enter tags allocated to team 1, even if team 1’s turtles
+migrate to team 2’s tagging area.</p></li>
+<li><p>Deployment <a class="reference external" href="https://confluence.dpaw.wa.gov.au/display/sd/MSP%20Turtle%20Tagging%20DB">Documentation</a>
+is restricted to WAMTRAM 2 maintainers.</p></li>
+</ul>
+<p>A tag asset management system as per
+<a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/35">REQ #35</a>
+will solve the following problems:</p>
+<ul class="simple">
+<li><p>Taggers need to know from existing tags to which tagging area the tag was
+assigned to.</p></li>
+<li><p>REQ Flipper and PIT tag asset management: need to know location and beach they
+are assigned to. This allows to QA typos in datasheets by narrowing down
+possible lists of tag names.</p></li>
+<li><p>REQ At any point in time we need to know precise location and holder of tags, which
+may change every night during tagging season.</p></li>
+</ul>
+<p>If the solution would allow data entry in random order
+<a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/58">REQ #58</a>, and
+let curators later fix any remaining issues, this would solve the following problems:</p>
+<ul class="simple">
+<li><p>W2 is missing the option to enter a resighted turtle if the original tagging
+is not already recorded or imported.</p></li>
+<li><p>W2 assumes all datasheets are available for data entry before the next tagging
+night, and enforces data entry in chronological order. This is seen as a limitation.</p></li>
+</ul>
+<p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/59">REQ #59</a>
+Limitations impacting digital data collection on gas plants:</p>
+<ul class="simple">
+<li><p>Electronic devices are only recently permitted on Barrow Is.</p></li>
+<li><p>All electronic devices must be certified for fire / spark safety.</p></li>
+<li><p>Varanus Is would work with tablets.</p></li>
+<li><p>Barrow Is is too hectic for tablets.</p></li>
+<li><p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/11">REQ #11</a>
+Pend do not need to know turtle history when tagging, they treat every turtle
+similarly.</p></li>
+</ul>
+<p>Stakeholder requirements to maintain WAMTRAM 2:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/60">REQ #60</a>
+There should be a SOP on defining activities that are available to enter
+(toggle “display observation” on activity).</p></li>
+<li><p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/61">REQ #61</a>
+W2 does not export observer name, only observer number.</p></li>
+</ul>
+<p>Other stakeholder feedback on WAMTRAM2:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/62">REQ #62</a>
+W2 field data entry database report Observations is useless.</p></li>
+<li><p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/63">REQ #63</a>
+W2 beach names contain duplicates: Munda main beach = Cowrie beach
+W2 beaches should be de-duplicated and have a bounding box / poly.</p></li>
+<li><p><cite>REQ #64 &lt;https://github.com/parksandwildlife/biosys-turtles/issues/64&gt;</cite> _
+If entering a re-sighting in W2 field db, operators should not immediately
+see existing tag names. It is too easy to perpetuate an incorrect tag name.
+Data entry operator should be able to flag historic records as
+“suggested edit: WA12341 should be WA12347”, but not actually change them.</p></li>
+<li><p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/65">REQ #65</a>
+The system should keep digital copies of original datasheets with records.</p></li>
+<li><p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/66">REQ #66</a>
+The Dept should demand datasheets to be returned as part of tagging license.
+Pend does not mind returning datasheets as they scan it anyways.
+There could be resistance from industry partners  to return datasheets.</p></li>
+<li><p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/45">REQ #45</a>
+W2 does not record surveys, so surveys without sightings (true absence) are
+not recorded.</p></li>
+<li><p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/67">REQ #67</a>
+Penv: data collection, entry, QA, analysis should be repeatable, standardised
+by DPaW.</p></li>
+<li><p>Penv want to capture data through tablets where feasible, otherwise on paper.</p></li>
+<li><p>Penv’s PW designed the W2 tagging datasheet with W2 developer BR, revision 2017
+by DPaW.</p></li>
+<li><p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/68">REQ #68</a>
+W2 should add license number to batch of tags,
+compliance check: who tags without license?</p></li>
+</ul>
+<p>Analysis workflow for Analyst of Barrow Is tagging data:</p>
+<ul class="simple">
+<li><p>Contractor (PENV) send workbook with raw data to analyst in April.</p></li>
+<li><p>Contractor sends temp logger data when retrieved (end of May).</p></li>
+<li><p>Analyst produces report for consumer (CHEV).</p></li>
+<li><p>Data: tagging data, hatching success separately, tracks.</p></li>
+<li><p>Analyst creates time blocks within season and looks at each animal’s recapture
+history between time blocks.</p></li>
+<li><p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/11">REQ #11</a>
+The analyst needs full animal history of each encountered animal, even if
+some previous encounters were collected by other groups (e.g. by DpaW on THV)</p></li>
+<li><p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/28">REQ #28</a>
+Data needs to be synced between devices daily during data capture, and
+to master db if online.</p></li>
+<li><p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/36">REQ #36</a>
+The analyst wants to make model available, accessible, and reproducible as a
+workbook, but this is client’s decision (CHEV).
+The analysis needs to be re-run if existing data (incl previous seasons) changes.
+This requires the analysis to be reproducible.</p></li>
+</ul>
+<p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/26">REQ #26</a>
+Data lineage:</p>
+<ul class="simple">
+<li><p>Analyst has to spend lots of time with data QA and chasing up central custodian’s
+QA decisions (deletions, renaming of tags with typos), which is not billable</p></li>
+<li><p>Raw data contains edits and deletions from central curation activity (BP), so
+data don’t necessarily sum up, and baseline changes minimally</p></li>
+<li><p>Analyst cannot easily detect or understand these changes, but gets criticism
+from consumer (CHEV).</p></li>
+<li><p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/26">REQ #26</a>
+Data lineage must be preserved to explain discrepancies.</p></li>
+<li><p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/69">REQ #69</a>
+The analyst needs to be able to easily detect changes in tallies of empirical
+data, e.g. implemented as QA gatecheck</p></li>
+</ul>
+<p>Capture survey metadata, include covariates:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/45">REQ #45</a>
+analyst needs to know sampling effort (surveys) even if no data collected
+The analyst also needs covariates (weather, wind, sun, disturbance, predator
+presence, sun angle, tide, beach geomorph, geology, sand moisture content,
+beach slope, location on beach relative to HWM and vegetation)</p></li>
+<li><p>ca 3 levels of wind strength would be sufficient from a modelling perspective</p></li>
+<li><p>Covariates can help model detection process of track / nest</p></li>
+</ul>
+<p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/62">REQ #62</a>
+Output:
+* LTMMTP Chevron 2015: reports on metrics from tagging
+* need “new turtle”, “remigrant”
+* need “has tag scars”</p>
+<p>REQ WAMTRAM requirement to DPaW for Animal ethics:</p>
+<ul class="simple">
+<li><p>The number of turtles per species:</p></li>
+<li><p>basic handling: sighted and measured, not tagged or biopsied</p></li>
+<li><p>other study: sat tag</p></li>
+<li><p>other method on conscious animal:</p></li>
+<li><p>any tag applied-new or re-clinched,</p></li>
+<li><p>biopsy taken if not already in flipper-tagged</p></li>
+</ul>
+</section>
+<section id="interim-solution-etl-to-wastd">
+<h3>Interim solution: ETL to WAStD<a class="headerlink" href="#interim-solution-etl-to-wastd" title="Permalink to this heading">¶</a></h3>
+<p>The task of extraction, transformation and loading (ETL) of tagging data is
+automated and documented in an RMarkdown workbook
+<a class="reference external" href="https://github.com/parksandwildlife/turtle-scripts/blob/master/wamtram/wamtram_etl.Rmd">Tagging ETL</a>.
+The workbook is under version control in the repository
+<a class="reference external" href="https://github.com/parksandwildlife/turtle-scripts/">Turtle Scripts</a>.</p>
+<p>Based on WAMTRAM 1 developer Simon Woodman’s technical documentation, the
+workbook aims:</p>
+<ul class="simple">
+<li><p>to document WAMTRAM 2 data model and business logic,</p></li>
+<li><p>to extract data into CSV snapshots, and upload them to Parks and Wildlife’s
+internal data catalogue, and</p></li>
+<li><p>to transform and load data into WAStD using WAStD’s API</p></li>
+</ul>
+<p>Loading data into, and analysing data from WAStD assumes:</p>
+<ul class="simple">
+<li><p>WAMTRAM 2 remains point of truth and curation interface for data until data
+are collected/entered directly into WAStD or other new system;</p></li>
+<li><p>Loading data into WAStD is repeatable without creating duplicates;</p></li>
+<li><p>WAStD will contain a full representation of WAMTRAM’s data and will be able to
+deliver the same insight.</p></li>
+</ul>
+</section>
+<section id="long-term-solution-new-data-entry-tool">
+<h3>Long term solution: New data entry tool<a class="headerlink" href="#long-term-solution-new-data-entry-tool" title="Permalink to this heading">¶</a></h3>
+<p>To retire WAMTRAM 2, the following is required:</p>
+<ul class="simple">
+<li><p>WAMTRAM to WAStD ETL is complete and correct.</p></li>
+<li><p>A new electronic data entry tool, likely a progressive web app, is created
+to both collect data in the field, curate data on “the morning after”, and
+to digitise data sheets.</p></li>
+<li><p>WAStD to implement all sanity checks and QA operations of WAMTRAM 2.</p></li>
+</ul>
+</section>
+<section id="insight-from-tagging-data">
+<h3>Insight from tagging data<a class="headerlink" href="#insight-from-tagging-data" title="Permalink to this heading">¶</a></h3>
+<p>It is important to create insight from the raw data early on in the process of
+understanding, extracting and cleaning WAMTRAM 2 data.</p>
+<p>This helps to update and complete the data model based on analytical requirements,
+as well as delivering insight in incremental steps, rather than at the end of the
+process.</p>
+<p>Insight can be generated initially from WAMTRAM 2’s CSV snapshots, and later on
+source the data from the WAStD API.</p>
+</section>
+<section id="use-case-turtle-tagging-digital-data-capture">
+<h3>Use case: Turtle Tagging digital data capture<a class="headerlink" href="#use-case-turtle-tagging-digital-data-capture" title="Permalink to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>preparation before field trip while online</p></li>
+<li><p>field data capture (during tagging)</p></li>
+<li><p>field data curation (morning after)</p></li>
+<li><p>syncing field data capture devices</p></li>
+<li><p>submitting data after field trip</p></li>
+<li><p>accessing merged data</p></li>
+</ul>
+</section>
+<section id="use-case-inquiry-about-tagged-turtle">
+<h3>Use case: Inquiry about tagged turtle<a class="headerlink" href="#use-case-inquiry-about-tagged-turtle" title="Permalink to this heading">¶</a></h3>
+<p>See chapter <a class="reference internal" href="data_consumers.html#data-consumers"><span class="std std-ref">Data consumers</span></a> on how to get to a
+<a class="reference external" href="https://strandings.dpaw.wa.gov.au/api/1/tag-observations/?tag_type=flipper-tag&amp;name=WA67541">Tag history</a>
+or an <a class="reference external" href="https://strandings.dpaw.wa.gov.au/api/1/animal-encounters/?name=WA67541">animal history</a>.</p>
+</section>
+<section id="id21">
+<h3>Gap analysis<a class="headerlink" href="#id21" title="Permalink to this heading">¶</a></h3>
+<p>Tagging is currently handled in WAMTRAM 2.</p>
+<p>To replace WAMTRAM 2, digital / paper-based data capture as well as a central
+data warehouse such as BioSys or WAStD are required.</p>
+</section>
+</section>
+<section id="business-process-turtle-tracks">
+<span id="id22"></span><h2>Business Process Turtle Tracks<a class="headerlink" href="#business-process-turtle-tracks" title="Permalink to this heading">¶</a></h2>
+<p>Turtle tracks are evidence of nesting activity. Tracks and taggings together
+form a complete picture of a nesting beach.</p>
+<section id="it-process-turtle-track-and-nest-count">
+<h3>IT process Turtle track and nest count<a class="headerlink" href="#it-process-turtle-track-and-nest-count" title="Permalink to this heading">¶</a></h3>
+<a class="reference external image-reference" href="https://www.lucidchart.com/publicSegments/view/b301ca6f-0489-4a2c-b36c-87220419b8dc/image.png"><img alt="Track and nest count data life cycle (ideal)" src="https://www.lucidchart.com/publicSegments/view/b301ca6f-0489-4a2c-b36c-87220419b8dc/image.png" /></a>
+<a class="reference external image-reference" href="https://www.lucidchart.com/publicSegments/view/d7ff2850-5ffc-4ccf-838e-d217ee39eca4/image.png"><img alt="Mobile data collection" src="https://www.lucidchart.com/publicSegments/view/d7ff2850-5ffc-4ccf-838e-d217ee39eca4/image.png" /></a>
+<p>See <span class="xref std std-ref">data-capture-tracks</span> for the current implementation of
+digital data capture of tracks and nests,
+which is curretly in production use by the core Turtle team, and in beta testing
+at Cable Beach and the Karratha office.</p>
+<p>The mobile data collection form implements the following workflow:</p>
+<a class="reference external image-reference" href="https://www.lucidchart.com/publicSegments/view/b0a9c41e-9578-4396-a009-a01721757c98/image.png"><img alt="Form &quot;Track or treat&quot; workflow" src="https://www.lucidchart.com/publicSegments/view/b0a9c41e-9578-4396-a009-a01721757c98/image.png" /></a>
+</section>
+<section id="it-process-turtle-track-and-nest-data-curation">
+<h3>IT process Turtle track and nest data curation<a class="headerlink" href="#it-process-turtle-track-and-nest-data-curation" title="Permalink to this heading">¶</a></h3>
+<p>The same processes as described in turtle strandings apply to tracks and nest data.</p>
+</section>
+<section id="it-process-legacy-data-etl">
+<h3>IT process Legacy data ETL<a class="headerlink" href="#it-process-legacy-data-etl" title="Permalink to this heading">¶</a></h3>
+<p>The Ningaloo ETL RMarkdown workbook
+(<a class="reference external" href="https://github.com/parksandwildlife/turtle-scripts/blob/master/ningaloo/ningaloo_etl.Rmd">source</a>)
+extracts data from the NTP database snapshot on the internal data catalogue into
+CSV and GeoJSON files, and uploads them to the NTP
+<a class="reference external" href="http://internal-data.dpaw.wa.gov.au/dataset/ningaloo-turtle-program-data">dataset</a>.</p>
+<p>The workbook can be extended to also upload the data into WAStD’s API.</p>
+</section>
+<section id="it-process-aerial-imagery-track-count">
+<h3>IT process Aerial imagery track count<a class="headerlink" href="#it-process-aerial-imagery-track-count" title="Permalink to this heading">¶</a></h3>
+<p>Aerial imagery was captured of all turtle nesting beaches:</p>
+<ul class="simple">
+<li><p>Survey Nov 2014: Kimberley</p></li>
+<li><p>Survey Nov 2016: Pilbara</p></li>
+</ul>
+<p>It is assumed that this imagery captures the overwhelming majority of turtle nesting
+beaches, and that no significant nesting sites were missed.</p>
+<p>Current process:</p>
+<ul class="simple">
+<li><p>Mosaics from aerial data is inspected in Quantum GIS (v. 2.18) by core turtle staff.</p></li>
+<li><p>Each visible track is captured using a copy of a template shapefile with
+associated style, which provides a popup form in line with the digital track
+count app, but highly streamlined for this process, so that the lowest possible
+user interaction is required per track.</p></li>
+<li><p>The shapefile can be imported to WAStD through a data ingestion script</p></li>
+</ul>
+<p>Methodology and data ingestion in development. Currently: fresh tracks, success
+not assessed, at high tide. Only species is assessed if evident.</p>
+<p>UI mockup: view mosaic, clicking each track (protocol: on high water mark)
+opens dialog with buttons for each species
+choice, clicking any species choice saves feature and closes dialog.
+Auto-set “observed by” and “recorded by” to current user’s DPaW username.</p>
+<p>Data shall be ingested to WAStD. Ingestion should be scripted, but does not need
+to be real time, as these surveys happen too seldomly.</p>
+<p>How to handle multiple analysis of same beach? This would be useful for analysis
+of observer bias.</p>
+</section>
+<section id="it-process-turtle-track-and-nest-count-analysis">
+<h3>IT process Turtle track and nest count analysis<a class="headerlink" href="#it-process-turtle-track-and-nest-count-analysis" title="Permalink to this heading">¶</a></h3>
+<p>Fundamentally, the same process as in turtle stranding analysis applies.</p>
+<p>As a first working example, production data from 2016, captured digitally with the new
+mobile data capture app, are shown <a class="reference external" href="http://rpubs.com/florian_mayer/tracks">here</a>.</p>
+<p>As a second example, the RMarkdown workbook
+<a class="reference external" href="internal-data.dpaw.wa.gov.au/dataset/ningaloo-turtle-program-data/resource/422c91ca-7673-432f-911a-449d3dc2e35a">Ningaloo spatial modelling</a>,
+runs a few exemplary analyses on the NTP data snapshots as extracted by the
+Ningaloo ETL workbook. It can be expanded to include any desired analysis or
+summary of the NTP data.</p>
+<p>More analyses are required and scheduled for implementation, e.g.:</p>
+<ul class="simple">
+<li><p>Spatio-temporal distribution, patterns and variation of patterns of tracks</p></li>
+<li><p>Nesting success at Thevenard Is as ratio of successful over total nesting
+crawls (tracks with, without, unsure, not assessed if nest) on a beach</p></li>
+<li><p>Hatching success as ratio of hatched over total eggs in a nest</p></li>
+<li><p>Control charts of track / nest abundance over time to detect significant changes</p></li>
+<li><p>Significance of nesting beaches</p></li>
+<li><p>Control charts of nesting seasons to detect significant shifts in nesting timing</p></li>
+<li><p>Disturbance and predation: quantity, spatial and temporal distribution,
+patterns and variation of patterns</p></li>
+<li><p>Impact of experimental design and survey effort on measured abundance</p></li>
+<li><p>Modelling to get point estimates of nesting effort (what else?) for a given
+time and place</p></li>
+</ul>
+</section>
+<section id="legacy-system-ningaloo-track-count-database">
+<h3>Legacy system: Ningaloo Track count database<a class="headerlink" href="#legacy-system-ningaloo-track-count-database" title="Permalink to this heading">¶</a></h3>
+<p>Links:</p>
+<ul class="simple">
+<li><p>Ningaloo Turtle Program
+<a class="reference external" href="internal-data.dpaw.wa.gov.au/dataset/ningaloo-turtle-program-data">data snapshot</a>
+on the internal data catalogue</p></li>
+<li><p>Ningaloo Turtle Program <a class="reference external" href="http://www.ningalooturtles.org.au/">homepage</a></p></li>
+<li><p><a class="reference external" href="https://github.com/parksandwildlife/turtle-scripts/">Code repository</a></p></li>
+</ul>
+<a class="reference external image-reference" href="https://www.lucidchart.com/publicSegments/view/f64d33a0-bcf4-4dd5-80c6-3204f1925aed/image.png"><img alt="Ningaloo turtle program data management" src="https://www.lucidchart.com/publicSegments/view/f64d33a0-bcf4-4dd5-80c6-3204f1925aed/image.png" /></a>
+<p>The Ningaloo Turtle Program (NTP) database consists of an MS Access database
+and frontend. Volunteers conduct track count surveys, enter data, and curate
+the database.</p>
+</section>
+<section id="use-case-track-data-collection">
+<h3>Use case: Track data collection<a class="headerlink" href="#use-case-track-data-collection" title="Permalink to this heading">¶</a></h3>
+<p>The current implementation is shown in the figure above.</p>
+<p>Volunteers are trained by the NTP Coordinator and, following the NTP field manual,
+collect turtle track data on paper data forms. Geolocation is collected on
+GPS and digital cameras.</p>
+<p>The data collection methodology captures tracks with nest individually, but
+tracks without nests are only tallied. Predation is only recorded qualitatively.</p>
+<p>Other Volunteers digitise the paper forms, GPS and camera into the NTP Access db.
+This process is error-prone and resource-intensive.</p>
+<p>The NTP Coodinator QAs the data, but does not have the time resources to
+comprehensively proofread and compare data sheets vs entered data.</p>
+<p>The NTP Coordinator exports data on demand.</p>
+<p>The NTP Coordinator and the Ningaloo Marine Park Coodinator (MPC) create data
+products (figures and tables) and write, or contribute, to several recurring
+reports.</p>
+<p>From MPC and NTP Coordinator:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/7">REQ #7</a>
+Minimise data entry, a/d barrier crossings, handling steps, reduce double
+handling at data entry, prefer digital data capture.</p></li>
+<li><p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/70">REQ #70</a>
+Internet speed is very slow in Exmouth. Online transactions have to be async
+or minimised.</p></li>
+<li><p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/71">REQ #71</a>
+The system must be able to record at new surveyed sites and times,
+opportunistic sightings, independent of pre-configured exp design.</p></li>
+<li><p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/30">REQ #30</a>
+MPC and NTP Coordinator need access to other places’ turtle data.</p></li>
+<li><p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/72">REQ #72</a>
+REQ need data in one place.</p></li>
+<li><p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/33">REQ #33</a>
+REQ Need clear data sharing policies, licences.</p></li>
+<li><p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/73">REQ #73</a>
+REQ All data should be as open as possible after mitigating data sensitivities.</p></li>
+<li><p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/74">REQ #74</a>
+Coordinator NTP: digital capture would be preferred if data is compatible and
+legacy data can be migrated.
+NTP database is outdated and requires upgrade, no local capability
+available to maintain / upgrade.
+Have the analysis script automated in a literate programming paradigm.</p></li>
+</ul>
+</section>
+<section id="use-case-track-data-analysis">
+<h3>Use case: Track data analysis<a class="headerlink" href="#use-case-track-data-analysis" title="Permalink to this heading">¶</a></h3>
+<p>Known required analytical products:</p>
+<ul class="simple">
+<li><p>nesting success</p></li>
+<li><p>hatching / emergence success</p></li>
+<li><p>spatial distribution, patterns, change of patterns (temporal patterns)</p></li>
+<li><p>modelling: optimal monitoring from beginning / peak / end of hatching</p></li>
+</ul>
+</section>
+</section>
+<section id="non-functional-requirements">
+<h2>Non-functional requirements<a class="headerlink" href="#non-functional-requirements" title="Permalink to this heading">¶</a></h2>
+<p>This section documents lessons learnt during the requirements analysis, design
+and development of WAStD and anecdotal wisdom of colleagues and data custodians.</p>
+<section id="senior-data-custodians-are-gold-mines-of-business-knowledge">
+<h3>Senior data custodians are gold mines of business knowledge<a class="headerlink" href="#senior-data-custodians-are-gold-mines-of-business-knowledge" title="Permalink to this heading">¶</a></h3>
+<p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/75">REQ #75</a>
+Extracting their experience and intuition, and solidifying their knowledge into
+written documentation takes months to years. Retirement, budget cuts and personal
+circumstances can cut this available time short.</p>
+<p>All custodians and colleagues with deep knowledge of related legacy systems
+shall be consulted, their suggestions shall be incorporated into the systems
+philosophy and design, and they should sign off on the requirements analysis.</p>
+</section>
+<section id="volunteers-multiply-value-six-fold">
+<h3>Volunteers multiply value six-fold<a class="headerlink" href="#volunteers-multiply-value-six-fold" title="Permalink to this heading">¶</a></h3>
+<p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/57">REQ #57</a>
+For each dollar the Department spends in the field, volunteers contribute about
+six dollars in value. Sending them feedback and showing appreciation helps to
+uphold motivation levels and retain this free work force.</p>
+<p>The system shall allow the display, export and emailing of the contributions
+of each person to the value chain of data.</p>
+</section>
+<section id="a-picture-is-worth-a-thousand-badly-drawn-schematics">
+<h3>A picture is worth a thousand badly drawn schematics<a class="headerlink" href="#a-picture-is-worth-a-thousand-badly-drawn-schematics" title="Permalink to this heading">¶</a></h3>
+<p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/76">REQ #76</a>
+Pictures are cheap to take but expensive not to take.
+Experts can tell nearly all details of a stranded animal from good pictures.
+Often the initial guess of the first respondent is overruled by expert advice
+based on photographs later.
+Datasheets can be wrong, photos are more objective.
+Datasheets should provide a list of desired photographic perspectives and angles,
+and a list of details to capture close up.</p>
+<p>Data collection shall prompt the user to take photos where feasible to augment
+their judgement in the field.</p>
+<p>The system shall allow attaching any file (datasheet scans, photographs,
+email threads) to any record.</p>
+<p>The system shall allow proof-readers and curators to easily compare attached
+media with entered data for a given record.</p>
+</section>
+<section id="data-entry-is-worth-every-drop-of-sweat-spent-on-forms-procedure-and-documentation">
+<h3>Data entry is worth every drop of sweat spent on forms, procedure and documentation<a class="headerlink" href="#data-entry-is-worth-every-drop-of-sweat-spent-on-forms-procedure-and-documentation" title="Permalink to this heading">¶</a></h3>
+<p>Data entry is a messy process, adding much value to data. Many decisions have to
+be made to transform a stranding report into a full stranding record.
+Data is only trustworthy if the full data lineage is retained.
+Data curation goes through several stages, each adding value (entry, proofreading,
+subject matter expertise).</p>
+<p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/69">REQ #69</a>
+REQ The system shall keep an audit trail of well-defined QA steps.</p>
+<p>Data curation takes a long time - ca 30 min per stranding record.
+Most time is spent transforming original files into standard formats,
+e.g. extracting communication records and images from emails, merging
+communication records into plain text files, editing out irrelevant information,
+converting and resizing images.
+This is an important step towards accessibility, as this information must be
+accessible through web browsers which are limited to open file formats.
+Therefore, resources spent in making information accessible in future-proof formats
+is repaid multiple times through its repeated use.</p>
+<p>We anticipate the following data entry work load for our .5 FTE Technical Officer:</p>
+<ul class="simple">
+<li><p>3 months of eletronic stranding reports</p></li>
+<li><p>6 months of paper stranding reports</p></li>
+<li><p>unknown quantity, probably months, of reports in regional offices</p></li>
+</ul>
+<p>Data entry can be assisted through additional work force, or by creating data entry
+forms for end users (currrently not implemented).</p>
+<p>Proofreading and curation will take other operators a shorter, but still
+considerable time. This extra effort has to be provided, and is a data quality
+issue, independent of implementation (WAStD or BioSys).
+Proofreading and curation requires trained core staff and cannot be outsourced.</p>
+<p>REQ The business owner shall provide sufficient staff time and resources for
+documentation, training, data entry, proofreading and curation.</p>
+<p>The turtle monitoring program will periodically re-evaluate projects, delivery,
+priorities, and even the target outcomes. This will cause requirements at the
+level discussed here to evolve and change over time.</p>
+<p>REQ The solution architecture shall allow an evolution of components and functionality.</p>
+<p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/54">REQ #54</a>
+REQ The solution technology must be supported by DPaW OIM.
+REQ The solution technology must be within the skill range of the primary maintainer (FM).</p>
+<p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/77">REQ #77</a>
+REQ (SFo) WAStD surveys should allow attachments (datasheets containing multiple
+records so we avoid duplicate attachments to individual records) as well as
+comments (e.g. climatic / environmental conditions or systematic errors in
+methodology impacting data capture / validity / changing assumptions,
+e.g. tracks blown away before capture leading to undersampling).</p>
+<p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/78">REQ #78</a>
+REQ The solution shall be open source under an open license.</p>
+<p><a class="reference external" href="https://github.com/parksandwildlife/biosys-turtles/issues/79">REQ #79</a>
+REQ All requirements shall be translated completely into functional requirements,
+and have 100% test coverage.
+REQ The solution shall, if the technology allows, implement continuous
+integration and testing as well as continuous deployment.</p>
+</section>
+<section id="requirements-of-the-turtle-group">
+<h3>Requirements of the Turtle group<a class="headerlink" href="#requirements-of-the-turtle-group" title="Permalink to this heading">¶</a></h3>
+<p>REQ The group requires basic training in R, reproducible reporting, version control.</p>
+<p>REQ The data entry operator (TO) should be trained to be a trainer for others.</p>
+<p>REQ With data entry coming more and more from digital sources, the data entry
+operator should migrate from a data entry, typist role towards a QA operator.</p>
+<p>REQ The turtle group needs a dedicated scientific programmer, or at least
+dedicated time of the Information Manager (FM) for scientific programming.</p>
+<p>REQ Media collected during field work should be re-usable for media and reporting:</p>
+<ul class="simple">
+<li><p>sound bits</p></li>
+<li><p>good pictures with appropriate license for re-use</p></li>
+<li><p>short statements for general public</p></li>
+<li><p>media opportunities like upcoming field trips</p></li>
+<li><p>presenting an easy to understand data summary</p></li>
+</ul>
+<p>The above listed outputs are available early in the process, but required far
+later in the process.
+In other words, by the time we need them it’s too late to collect them.</p>
+<p>“Sane management underpinned by robust science”</p>
+</section>
+</section>
+<section id="business-process-annual-reporting">
+<h2>Business Process Annual Reporting<a class="headerlink" href="#business-process-annual-reporting" title="Permalink to this heading">¶</a></h2>
+<section id="it-process-data-analysis-and-visualisation">
+<h3>IT process data analysis and visualisation<a class="headerlink" href="#it-process-data-analysis-and-visualisation" title="Permalink to this heading">¶</a></h3>
+<p>REQ DA and DV must be automated and reproducible. Data must be pulled from the
+point of truth (database), and a snapshot of the data used in the analysis must,
+together with the analytical script, be uploaded to the internal data catalogue.</p>
+<p>REQ Data products (e.g. figures and maps), utilised data (snapshots), and scripts
+must be discoverable and accessible, and well documented with metadata.</p>
+<p>REQ The turtle group must be trained, and willing to be trained, in the use of
+the chosen analytical procedures.</p>
+<p>REQ Analytical procedures shall require as little effort to re-run (with current
+data) from the operator (turtle group members) as possible.</p>
+<p>REQ Analytical procedures must be provided with sufficient documentation,
+training resources, and ongoing support to allow efficient engagement
+of turtle group members with data analysis and reporting.</p>
+</section>
+<section id="it-process-reporting">
+<h3>IT process reporting<a class="headerlink" href="#it-process-reporting" title="Permalink to this heading">¶</a></h3>
+<p>REQ Reporting must be collaboratively authored, version-controlled, data-driven
+and provide a clear separation of structure, content and layout.</p>
+<p>REQ The turtle group must be trained in the use of the chosen reporting framework.</p>
+<p>REQ Reporting framework procedures must be provided with sufficient
+documentation, training resources, and ongoing support to allow efficient
+engagement of turtle group members with data analysis and reporting.</p>
+</section>
+</section>
+<section id="how-it-s-made-the-process">
+<h2>How it’s made - the process<a class="headerlink" href="#how-it-s-made-the-process" title="Permalink to this heading">¶</a></h2>
+<p>Listen - look - touch - understand - build - repeat.</p>
+<section id="listen">
+<h3>Listen<a class="headerlink" href="#listen" title="Permalink to this heading">¶</a></h3>
+<p>Listen to stakeholders to clarify past, present and future of:</p>
+<ul class="simple">
+<li><p>scope and growth of scope</p></li>
+<li><p>data in: data sheets</p></li>
+<li><p>work flows: manuals, instructions, communication</p></li>
+<li><p>insight out: products</p></li>
+</ul>
+<p>Ask:</p>
+<ul class="simple">
+<li><p>If we can handle all data from data sheets and produce all products, what
+data haven’t we touched?</p></li>
+<li><p>Who needs to be involved, when and how?</p></li>
+<li><p>Who needs to be trained, how often, who trains the trainers?</p></li>
+</ul>
+<p>Writing down the above will evolve into the project’s documentation, including
+requirements analysis, technical documentation, user-level manuals, and training material.</p>
+</section>
+<section id="look">
+<h3>Look<a class="headerlink" href="#look" title="Permalink to this heading">¶</a></h3>
+<p>Look at examples of all production data. Review data sheets with stakeholders.
+Does all data serve QA or generated insight? What’s missing, what’s unnecessary?</p>
+<p>The combined understanding of production data will evolve into a data model, based
+on a good understanding of involved product life cycles and user roles.</p>
+</section>
+<section id="touch">
+<h3>Touch<a class="headerlink" href="#touch" title="Permalink to this heading">¶</a></h3>
+<p>Create live documents (workbooks) loading and inspecting production data
+for each legacy system.
+Describe and document legacy data in the workbooks.
+Clean and transform legacy data, store snapshots in a central place (data catalogue).</p>
+<p>These workbooks will evolve into ETL scripts for data in legacy systems.</p>
+</section>
+<section id="understand">
+<h3>Understand<a class="headerlink" href="#understand" title="Permalink to this heading">¶</a></h3>
+<p>Build insight from the sanitised legacy data as raw versions of every product
+identified by the stakeholders.</p>
+<p>Review often with stakeholders to confirm relevance, validity, and evolve the
+data product to optimise insight for data consumers.</p>
+</section>
+<section id="build">
+<h3>Build<a class="headerlink" href="#build" title="Permalink to this heading">¶</a></h3>
+<p>Build systems to handle, store, document, process data.</p>
+<p>Be modular and agile enough to evolve the systems into production systems.</p>
+<p>Deploy systems in production mode to allow stakeholder interaction and to battle-test
+deployment and recovery protocols.</p>
+</section>
+<section id="repeat">
+<h3>Repeat<a class="headerlink" href="#repeat" title="Permalink to this heading">¶</a></h3>
+<p>Build features end-to-end, optimize architecture rather than implementation.
+Keep iterations small and consult stakeholders.</p>
+<p>Verify the necessity of a feature through a product utilising it, and verify the
+product’s validity (and the correctnenss of data processing) with stakeholders.</p>
+</section>
+</section>
+<section id="paradigms">
+<h2>Paradigms<a class="headerlink" href="#paradigms" title="Permalink to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>do it, then</p></li>
+<li><p>do it right, then</p></li>
+<li><p>do it better.</p></li>
+<li><p>Build end-to-end pipelines in small iterations (agile)</p></li>
+<li><dl class="simple">
+<dt>Use production data</dt><dd><ul>
+<li><p>to detect real-world problems,</p></li>
+<li><p>to battle-test implementation approaches,</p></li>
+<li><p>to evolve working solutions into correct, then comprehensive solutions</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">wastd</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="data_entry.html">Data entry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_qa.html">Data QA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_consumers.html">Data consumers</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Business Analysts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#glossary">Glossary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#aims">Aims</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#overview-turtle-monitoring">Overview - Turtle monitoring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#overview-data-management">Overview - Data management</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#data-management-roles">Data management roles</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#turtle-business-processes-current-state">Turtle business processes current state</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#turtle-business-processes-ideal-state">Turtle business processes ideal state</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#it-processes-along-the-data-life-cycle">IT processes along the Data life cycle</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#business-process-turtle-strandings">Business Process Turtle Strandings</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#problem">Problem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#task">Task</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#constraints">Constraints</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#current-implementation">Current implementation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#it-process-stranding-incident-report">IT process Stranding incident report</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#it-process-stranding-data-curation">IT process Stranding data curation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#it-process-stranding-data-analysis">IT process Stranding data analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#use-case-ministerial-inquiry-annual-report-strategic-advice">Use case: Ministerial inquiry, annual report, strategic advice</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gap-analysis">Gap analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#business-process-turtle-tagging">Business Process Turtle Tagging</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#it-process-turtle-tag-asset-management">IT process Turtle tag asset management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#it-process-turtle-tagging-field-data-collection">IT process Turtle tagging field data collection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#it-process-turtle-tagging-data-curation-field-and-office">IT process Turtle tagging data curation (field and office)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#it-process-turtle-tagging-data-analysis">IT process Turtle tagging data analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#legacy-system-wamtram-2">Legacy system: WAMTRAM 2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#interim-solution-etl-to-wastd">Interim solution: ETL to WAStD</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#long-term-solution-new-data-entry-tool">Long term solution: New data entry tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#insight-from-tagging-data">Insight from tagging data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#use-case-turtle-tagging-digital-data-capture">Use case: Turtle Tagging digital data capture</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#use-case-inquiry-about-tagged-turtle">Use case: Inquiry about tagged turtle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id21">Gap analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#business-process-turtle-tracks">Business Process Turtle Tracks</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#it-process-turtle-track-and-nest-count">IT process Turtle track and nest count</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#it-process-turtle-track-and-nest-data-curation">IT process Turtle track and nest data curation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#it-process-legacy-data-etl">IT process Legacy data ETL</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#it-process-aerial-imagery-track-count">IT process Aerial imagery track count</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#it-process-turtle-track-and-nest-count-analysis">IT process Turtle track and nest count analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#legacy-system-ningaloo-track-count-database">Legacy system: Ningaloo Track count database</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#use-case-track-data-collection">Use case: Track data collection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#use-case-track-data-analysis">Use case: Track data analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#non-functional-requirements">Non-functional requirements</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#senior-data-custodians-are-gold-mines-of-business-knowledge">Senior data custodians are gold mines of business knowledge</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#volunteers-multiply-value-six-fold">Volunteers multiply value six-fold</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#a-picture-is-worth-a-thousand-badly-drawn-schematics">A picture is worth a thousand badly drawn schematics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#data-entry-is-worth-every-drop-of-sweat-spent-on-forms-procedure-and-documentation">Data entry is worth every drop of sweat spent on forms, procedure and documentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#requirements-of-the-turtle-group">Requirements of the Turtle group</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#business-process-annual-reporting">Business Process Annual Reporting</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#it-process-data-analysis-and-visualisation">IT process data analysis and visualisation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#it-process-reporting">IT process reporting</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#how-it-s-made-the-process">How it’s made - the process</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#listen">Listen</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#look">Look</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#touch">Touch</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#understand">Understand</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#build">Build</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#repeat">Repeat</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#paradigms">Paradigms</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="developers.html">Developer documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="third_party_access.html">Third party access</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="data_consumers.html" title="previous chapter">Data consumers</a></li>
+      <li>Next: <a href="developers.html" title="next chapter">Developer documentation</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, Florian Mayer, Ashley Felton.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.0.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+      |
+      <a href="_sources/business_analysts.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Data entry &#8212; wastd 0.70.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Data QA" href="data_qa.html" />
+    <link rel="prev" title="WAStD - WA Sea Turtle and Strandings Database" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="data-entry">
+<span id="id1"></span><h1>Data entry<a class="headerlink" href="#data-entry" title="Permalink to this heading">¶</a></h1>
+<p>This chapter addresses data curators, who enter, proofread and curate data from sources like paper datasheets and email.</p>
+<p>WAStD’s data model is built around the concept of an AnimalEncounter, which is
+the physical encounter of an observer an an animal at one point in time and space,
+during which different kinds of observations and measurements are made.
+The kind of observations depend on the species and health/behaviour of the
+animal - e.g. “dead and not doing much else” is a Stranding Observation
+(morphometrics, tags, photos, damage, disposal, biopsy, necropsy),
+while “alive and nesting” is a Tagging Observation (morphometrics, tags, photos,
+damage, nest, eggs).</p>
+<p>TSC’s data model is built around an extended concept of AreaEncounter, which is
+the physical encounter of an observer with individuals of a species (mainly animals or plants)
+or an ecological community (threatened, priority, or neither) at a location.
+The extent occupied by the species or community can be described either as a point
+(animal location) or polygon (community boundary or plant population).
+The encounter can incur any range of additional observations of the species or community,
+the location, or the surroundings.</p>
+<p>The following sections will instruct data curators how to enter data from
+supported data sources into WAStD.</p>
+<section id="campaigns">
+<span id="itp-campaigns"></span><h2>Campaigns<a class="headerlink" href="#campaigns" title="Permalink to this heading">¶</a></h2>
+<p>The bulk of data is captured in electronic forms using ODK and imported into WAStD on an automated schedule.</p>
+<p>To allocate data ownership and visibility to users of participating organisations,
+Surveys and Encounters are associated with an overarching Campaign.</p>
+<p>A Campaign represents a contiguous set of Surveys instigated by one Organisation (DBCA or external partners).</p>
+<p>Campaigns have to be created manually in WAStD as follows:</p>
+<section id="find-campaign-corner-dates">
+<h3>Find Campaign corner dates<a class="headerlink" href="#find-campaign-corner-dates" title="Permalink to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>In the Turtle Data Dashboard, find the “Surveys” tab.</p></li>
+<li><p>Select a Locality. This is the Campaign destination.</p></li>
+<li><p>In the “Surveys” tab, review the calendar heatmap and the season overview.</p></li>
+<li><p>Find the first and last dates of each contiguous set of Surveys.</p>
+<ul>
+<li><p>E.g., for summer nesters (most of NWS shelf), the Campaigns will run in Oct - Dec and return Jan - Feb.</p></li>
+<li><p>If no other Organisation has conducted Surveys in the Christmas break, you can use something like 1 Oct to 1 Mar as corner dates.</p></li>
+<li><p>Any targeted trips, e.g. winter nesters in Aug, become their own Campaign.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="create-a-campaign">
+<h3>Create a Campaign<a class="headerlink" href="#create-a-campaign" title="Permalink to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>In the WAStD Data Curation Portal, under “Places, Campaigns, Surveys”, find Campaigns.</p></li>
+<li><p>Create a new Campaign by either of:</p>
+<ul>
+<li><p>From the “Site Administration” overview, click on the &lt;kbd&gt;+&lt;/kbd&gt; button, or</p></li>
+<li><p>From the Campaign list view, click “Add Campaign”, or</p></li>
+<li><p>From a Campaign detail view, click “Save and add another” (warning this will take a few minutes).</p></li>
+</ul>
+</li>
+<li><p>Enter mandatory details:</p>
+<ul>
+<li><p>Destination: Locality.</p></li>
+<li><p>Campaign start and end: Corner dates, can be buffered by a day to ensure complete overlap. Set time to 00:00.</p></li>
+<li><p>Owner: The Organisation that created the Campaign.</p></li>
+<li><p>Viewers: The list of organisations that are allowed to see the Campaign.</p></li>
+</ul>
+</li>
+<li><p>Enter optional details:</p>
+<ul>
+<li><p>Team: If available, you can add the list of volunteers to the Campaign. This can help matching observer names to WAStD Users.</p></li>
+<li><p>Media attachments: If available, the scanned PDFs of datasheets, any available documentation relevant to data, volunteer lists, etc.</p></li>
+</ul>
+</li>
+<li><p>Save the Campaign. This will take a few minutes while the Campaign adopts all Surveys and Encounters within.</p></li>
+</ul>
+</section>
+</section>
+<section id="turtle-tracks-or-nests">
+<span id="itp-tracks-curation"></span><h2>Turtle Tracks or Nests<a class="headerlink" href="#turtle-tracks-or-nests" title="Permalink to this heading">¶</a></h2>
+<p>If data is not captured via the digital forms, it is still possible to enter data manually.</p>
+<p>With data curator access, open the <a class="reference external" href="https://wastd.dbca.wa.gov.au/admin/">Data curation portal</a>
+and <a class="reference external" href="https://wastd.dbca.wa.gov.au/admin/observations/turtlenestencounter/add/">add a new TurtleNestEncounter</a>.</p>
+<section id="section-encounter">
+<h3>Section “Encounter”<a class="headerlink" href="#section-encounter" title="Permalink to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Area: ignore, will be chosen based on location</p></li>
+<li><p>Surveyed site: ignore, will be chosen based on location</p></li>
+<li><p>Survey: ignore, will be reconstructed on data import from digital forms</p></li>
+<li><p>Observed at (location): this is a hacky way to enter given coordinates in WGS84.</p>
+<ul>
+<li><p>Click place marker icon (hover text: “Draw a marker”), then click anywhere on the map.</p></li>
+<li><p>The text field “Geometry” will show the valid GeoJSON geometry for the chosen location.</p></li>
+<li><p>Replace those (arbitrary) coordinates with the given coordinates from the datasheet.</p></li>
+</ul>
+</li>
+<li><p>Location accuracy: Select as appropriate, e.g. GPS (10m)</p></li>
+<li><p>Observed on: use calendar and time widgets to select time of observation. Enter local time (AWST = GMT+08).</p></li>
+<li><p>Measured by:</p>
+<ul>
+<li><p>Type data collector’s name and select from auto-complete.</p></li>
+<li><p>If name not in auto-complete, click on the “Lookup” icon (magnifying glass symbol) to pop open the list of users.</p></li>
+<li><p>Search user, or add user as required, then select by clicking on username. This closes the user list popup and populates the form field.</p></li>
+</ul>
+</li>
+<li><p>Recorded by: same as measured by.</p></li>
+<li><p>Data source: Direct entry or paper datasheet.</p></li>
+<li><p>Source ID: leave blank.</p></li>
+</ul>
+</section>
+<section id="section-nest">
+<h3>Section “Nest”<a class="headerlink" href="#section-nest" title="Permalink to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Enter data as per datasheet, then hit “Save and continue editing”.</p></li>
+<li><p>Note that source ID is now set, reflecting the data entered above.</p></li>
+<li><p>Review the “observed at” location and correct if necessary. Hand-written GPS coordinates are often wrong.</p></li>
+</ul>
+</section>
+<section id="section-media-attachments">
+<h3>Section “Media Attachments”<a class="headerlink" href="#section-media-attachments" title="Permalink to this heading">¶</a></h3>
+<p>“Add another” and upload the scanned datasheet (as PDF). “Save and continue editing”.</p>
+</section>
+<section id="other-sections">
+<h3>Other sections<a class="headerlink" href="#other-sections" title="Permalink to this heading">¶</a></h3>
+<p>Add as required. “Save and continue editing”.</p>
+</section>
+</section>
+<section id="backfill-tracks-from-paper-track-tally">
+<span id="itp-tracks-backfill"></span><h2>Backfill Tracks from Paper (Track Tally)<a class="headerlink" href="#backfill-tracks-from-paper-track-tally" title="Permalink to this heading">¶</a></h2>
+<p>Some field trips were confused between capturing data on paper or digitally.
+These may have paper records of tracks which need to be backfilled into WAStD.</p>
+<p>Since the paper datasheets did not record coordinates for individual tracks,
+we consider missed tracks during tagging and morning tracks from after tagging as one TrackTally
+and backfill these Track Tallies as LineTransectEncounters with TrackTallyObservations and MediaAttachments in WAStD.</p>
+<p>Protocol:</p>
+<section id="scan-paper-datasheets">
+<h3>Scan paper datasheets<a class="headerlink" href="#scan-paper-datasheets" title="Permalink to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Find paper records for one day. These might contain:</p>
+<ul>
+<li><p>Track count datasheets for missed tracks during night tagging.</p></li>
+<li><p>Track count datasheets for morning surveys (missed tracks after night tagging).</p></li>
+<li><p>Datasheets for night tagging - ignored here as we only backfill tracks.</p></li>
+</ul>
+</li>
+<li><p>Determine whether the paper record has already been entered (digitally or typed in by hand):</p>
+<ul>
+<li><p>Review plain Encounters for that night at that location, e.g.
+<a class="reference external" href="https://wastd.dbca.wa.gov.au/admin/observations/encounter/?area__id__exact=143&amp;when__year=2017">Encounters at Delambre in 2017</a> shows only December records from 2017-12-09 onwards.</p></li>
+<li><p>Review Surveys, e.g. <a class="reference external" href="https://wastd.dbca.wa.gov.au/admin/observations/survey/?area__id__exact=143&amp;start_time__year=2017">Surveys DEL 2017</a></p></li>
+</ul>
+</li>
+<li><p>If you are sure that no data has been entered yet, continue and scan all paper datasheets:</p>
+<ul>
+<li><p>Sort Track counts first, tagging sheets last in each day’s batch of datasheets.</p></li>
+<li><p>Using the printer/scanner’s batch input slot, scan all datasheets back and front for that day into a single PDF.</p></li>
+<li><p>Once transferred to your local computer, rename the PDFs as <code class="docutils literal notranslate"><span class="pre">YYYY-MM-DD_datasheets.pdf</span></code>.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="summarise-tracks-into-tracktallies">
+<h3>Summarise Tracks into TrackTallies<a class="headerlink" href="#summarise-tracks-into-tracktallies" title="Permalink to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>With the TrackTally paper datasheet in hand or on screen,
+fill in a new TrackTally paper datasheet by going through the original datasheets.</p>
+<ul>
+<li><p>Mark the sheet clearly as “Summary of original datasheets”.</p></li>
+<li><p>This step will be the most time-intensive and error-prone step in the process.</p></li>
+<li><p>Take the time and diligence to make sure the individual tracks are correctly tallied up.</p></li>
+<li><p>Be aware that some tracks on the original paper datasheets are marked up as tallies of several tracks,
+or are annotated on the side.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="create-wastd-linetransectencounters-from-tracktallies">
+<h3>Create WAStD LineTransectEncounters from TrackTallies<a class="headerlink" href="#create-wastd-linetransectencounters-from-tracktallies" title="Permalink to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Next, backfill the TrackTally as a
+<a class="reference external" href="https://wastd.dbca.wa.gov.au/admin/observations/linetransectencounter/add/">new LineTransectEncounter</a>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">Area</span></code> (Locality), <code class="docutils literal notranslate"><span class="pre">Site</span></code>, <code class="docutils literal notranslate"><span class="pre">Survey</span></code>: leave blank, they will be auto-filled.
+Locality and Site will be inferred from the Transect. The Survey will be reconstructed later and linked automatically.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Observed</span> <span class="pre">at</span></code>: select one point within the surveyed site.
+E.g. for Delambre <code class="docutils literal notranslate"><span class="pre">{&quot;type&quot;:&quot;Point&quot;,&quot;coordinates&quot;:[117.07911,-20.460469]}</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Location</span> <span class="pre">accuracy</span></code>: GPS.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Loc</span> <span class="pre">accuracy</span> <span class="pre">in</span> <span class="pre">metres</span></code>: 10.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Observed</span> <span class="pre">on</span></code>: click current date, then change the date (by then in correct formatting) to the desired date. Use calendar date.
+E.g. for the virtual TrackTally after the night of 27-28/11/2017, it’s the calendar date of the morning after, 28/11/2017.
+E.g. <code class="docutils literal notranslate"><span class="pre">28/11/2017</span></code> with time <code class="docutils literal notranslate"><span class="pre">06:00</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Observed</span> <span class="pre">by</span></code>: Use the field leader’s name.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Data</span> <span class="pre">source</span></code>: leave at “Direct entry”.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Source</span> <span class="pre">ID</span></code>: leave blank, will be auto-filled.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Transect</span> <span class="pre">line</span></code>: Capture one good track tally geotrace and re-use in other LTE. In layers, turn on WAStD Sites.
+Draw a line along the surveyed coastline staying on the sandy bits as far as possible.
+E.g. for Delambre: <code class="docutils literal notranslate"><span class="pre">{&quot;type&quot;:&quot;LineString&quot;,&quot;coordinates&quot;:[[117.079024,-20.460389],[117.077157,-20.463284],[117.074883,-20.46646],[117.072737,-20.461113],[117.072179,-20.458439],[117.071943,-20.457072]]}</span></code></p></li>
+<li><p>You can <code class="docutils literal notranslate"><span class="pre">Save</span> <span class="pre">and</span> <span class="pre">continue</span> <span class="pre">editing</span></code> whenever you want, but only really need to do so once at the end.</p></li>
+<li><dl class="simple">
+<dt>Add the number of required TrackTallyObservations, one for each tally number,</dt><dd><p>via <code class="docutils literal notranslate"><span class="pre">Add</span> <span class="pre">another</span> <span class="pre">Turtle</span> <span class="pre">Track</span> <span class="pre">Tally</span> <span class="pre">Observation</span></code>.</p>
+</dd>
+</dl>
+</li>
+<li><p>For each TrackTallyObservation, fill in the following fields:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">Data</span> <span class="pre">source</span></code>: Leave at <code class="docutils literal notranslate"><span class="pre">Direct</span> <span class="pre">entry</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Source</span> <span class="pre">ID</span></code>: Leave the auto-generated ID, but append a running number, e.g. <code class="docutils literal notranslate"><span class="pre">1</span></code>, <code class="docutils literal notranslate"><span class="pre">2</span></code>, <code class="docutils literal notranslate"><span class="pre">3</span></code>, etc. to create unique IDs.
+The system generates the same ID for multiple TrackTallyObservations if added without a <code class="docutils literal notranslate"><span class="pre">Save</span> <span class="pre">and</span> <span class="pre">continue</span> <span class="pre">editing</span></code>.
+Since we only need a unique ID, but don’t enforce format or length, we can simply add a running number to generate a unique ID.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Species</span></code>: set as required.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Age</span></code>: Fresh for tracks with and without nest, or Old for hatched nests and anything without a track.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Type</span></code>: either <code class="docutils literal notranslate"><span class="pre">track</span> <span class="pre">with</span> <span class="pre">nest</span></code> or <code class="docutils literal notranslate"><span class="pre">track</span> <span class="pre">without</span> <span class="pre">nest</span></code>, <code class="docutils literal notranslate"><span class="pre">hatched</span> <span class="pre">nest</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Tally</span></code>: number of tracks for given species and track type.</p></li>
+</ul>
+</li>
+<li><p>Hit <code class="docutils literal notranslate"><span class="pre">Save</span> <span class="pre">and</span> <span class="pre">continue</span> <span class="pre">editing</span></code> and review the record.</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">Area</span></code> and <code class="docutils literal notranslate"><span class="pre">Site</span></code> should be set now.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Survey</span></code> can still be blank. We will reconstruct them later.</p></li>
+<li><p>The maps should show <code class="docutils literal notranslate"><span class="pre">Observed</span> <span class="pre">at</span></code> point and <code class="docutils literal notranslate"><span class="pre">Transect</span> <span class="pre">line</span></code> at correct sites.</p></li>
+<li><p>The datasheet photo should preview in the MediaAttachments; filename and content should match the <code class="docutils literal notranslate"><span class="pre">Observed</span> <span class="pre">on</span></code> date and TrackTallies.</p></li>
+</ul>
+</li>
+<li><p>When done backfilling this TrackTally, hit <code class="docutils literal notranslate"><span class="pre">Save</span> <span class="pre">and</span> <span class="pre">add</span> <span class="pre">another</span></code> to add another TrackTally.</p></li>
+<li><p>When done backfilling all TrackTallies, as admin run “Curators &gt; Reconstruct missing surveys” from the WAStD front page.
+This will reconstruct surveys and link the TrackTallies (LineTransectEncounters) to its respective survey.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+<section id="turtle-strandings">
+<span id="itp-stranding-curation"></span><h2>Turtle Strandings<a class="headerlink" href="#turtle-strandings" title="Permalink to this heading">¶</a></h2>
+<p>Digitising a stranding record consists of five steps:</p>
+<ul class="simple">
+<li><p>Converting legacy files,</p></li>
+<li><p>creating the minimal Stranding record in WAStD, resulting in an auto-generated
+record identifier (record ID),</p></li>
+<li><p>renaming legacy files and the containing folder according to WAStD’s record ID,</p></li>
+<li><p>uploading the files to WAStD, and</p></li>
+<li><p>extracting remaining information from the files into WAStD.</p></li>
+</ul>
+<section id="convert-legacy-files">
+<h3>Convert legacy files<a class="headerlink" href="#convert-legacy-files" title="Permalink to this heading">¶</a></h3>
+<p>Reports of Turtle Strandings typically arrive as a mixture of files, which
+include:</p>
+<ul class="simple">
+<li><p>scanned data sheets,</p></li>
+<li><p>emails,</p></li>
+<li><p>photos.</p></li>
+</ul>
+<p>Convert all original files to non-proprietary formats, such as PDF, images,
+or plain text, separating duplicate information into a subfolder “duplicates”.</p>
+<section id="emails">
+<h4>Emails<a class="headerlink" href="#emails" title="Permalink to this heading">¶</a></h4>
+<ul class="simple">
+<li><p>Emails saved as Outlook <em>.msg</em>: open with Outlook (requires Windows OS),
+save attachments (data sheet, images) separately, then save email as plain text.</p></li>
+<li><p>Multiple emails: merge messages chronologically into one text file per email
+thread and redact content as follows:</p></li>
+<li><p>Delete footers unless they contain contact information</p></li>
+<li><p>Replace clearly off topic and personal sentences with <code class="docutils literal notranslate"><span class="pre">[...]</span></code>. If in doubt, retain.</p></li>
+<li><p>Delete blank lines within emails.</p></li>
+<li><p>Insert three blank lines between emails.</p></li>
+</ul>
+</section>
+<section id="printed-documents">
+<h4>Printed documents<a class="headerlink" href="#printed-documents" title="Permalink to this heading">¶</a></h4>
+<ul class="simple">
+<li><p>Paper forms: scan to PDF, make sure the quality is readable enough.</p></li>
+<li><p>Printed photos: scan to jpg, one file per photo.</p></li>
+</ul>
+</section>
+<section id="electronic-documents">
+<h4>Electronic documents<a class="headerlink" href="#electronic-documents" title="Permalink to this heading">¶</a></h4>
+<ul class="simple">
+<li><p>All documents need to be saved as txt (if plain text is sufficient) or PDF (if
+formatting is important).</p></li>
+<li><p>Save photos embedded in MS Word documents separately as jpg.</p></li>
+</ul>
+</section>
+<section id="photographs">
+<h4>Photographs<a class="headerlink" href="#photographs" title="Permalink to this heading">¶</a></h4>
+<ul class="simple">
+<li><p>Switch on geotagging before taking phone pictures to include a GPS stamp in the
+image file metadata.</p></li>
+<li><p>Images: jpg are preferred.</p></li>
+<li><p>Resolution: Files larger than 1 MB should be resized to below 1 MB per image.</p></li>
+</ul>
+<p><strong>Geek tip</strong> To shrink images in Ubuntu, open terminal in folder and run on
+<strong>copies</strong> of the large images with appropriate values for <code class="docutils literal notranslate"><span class="pre">resize</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mogrify</span> <span class="o">-</span><span class="n">resize</span> <span class="mi">30</span><span class="o">%</span> <span class="o">*.</span><span class="n">jpg</span>
+</pre></div>
+</div>
+<p>After this process, there should be present:</p>
+<ul class="simple">
+<li><p>One PDF of the strandings data sheet,</p></li>
+<li><p>one text file containing all communication (emails),</p></li>
+<li><p>all images separately,</p></li>
+<li><p>all other documents as PDF,</p></li>
+<li><p>legacy versions in subfolder “duplicates”.</p></li>
+</ul>
+</section>
+</section>
+<section id="wastd-minimal-record-and-identifier">
+<h3>WAStD minimal record and identifier<a class="headerlink" href="#wastd-minimal-record-and-identifier" title="Permalink to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Create a <a class="reference external" href="https://strandings.dpaw.wa.gov.au/admin/observations/animalencounter/add/">new AnimalEncounter</a>.</p></li>
+<li><p><strong>Observed at</strong> refers to the location of the encounter with the animal.</p></li>
+<li><p>If written coordinates are supplied, click anywhere on map and enter given
+coordinates into the text field underneath the map widget.
+If locality names are supplied, look them up (e.g. pick
+“Place names” from the map widget’s layer selector) and pick an
+approximate location on the location widget.</p></li>
+<li><p>Location precision: give your best estimate for the error inherent to the source of the location.</p></li>
+<li><p>Observer, reporter: Create users (if not existing) for observer and reporter.
+Use <code class="docutils literal notranslate"><span class="pre">firstname_lastname</span></code> as the username, assign a dummy password
+(they will never login using the password, only via DPaW SSO),
+and enter at least the full name and email - more if available.</p></li>
+</ul>
+<p>Hit “Save and continue editing”. This is the <strong>minimal Encounter record</strong>.</p>
+<p>Fill in, as supplied, the fields in the “Animal” section and save.
+This is the <strong>minimal stranding record</strong>.</p>
+<p>WAStD will auto-generate an ID for the record from the metadata (
+encounter date, lon, lat, animal health, maturity, and species) and populate
+the <em>source ID</em> field with it.
+This ID will be the link between paper forms, digital files and WAStD records.</p>
+<p>Example source ID: <code class="docutils literal notranslate"><span class="pre">2016-09-02-13-30-00-113-7242-22-496-dead-edible-adult-male-corolla-corolla-wa1234</span></code></p>
+<p>In the edge case of multiple strandings of animals of the same species, maturity
+and health, this auto-generated source ID will not be unique, and WAStD will
+show an error.
+In this case, make the source ID unique by appending a running number (e.g. <code class="docutils literal notranslate"><span class="pre">-1</span></code>).</p>
+</section>
+<section id="rename-legacy-files-using-wastd-record-identifier">
+<h3>Rename legacy files using WAStD record identifier<a class="headerlink" href="#rename-legacy-files-using-wastd-record-identifier" title="Permalink to this heading">¶</a></h3>
+<p>Now that we have a source ID, turn to the files for a moment.</p>
+<p>Store the original files (scanned data sheets, pictures, emails)
+in a new folder in a backed up location using WAStD’s auto-generated source ID
+to facilitate discoverability across storage media.
+Rename each file with the source ID a prefix, plus a simple descriptive title, e.g.:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">M:/turtles/strandings/2016-09-02-13-30-00-113-7242-22-496-dead-edible-adult-male-corolla-corolla-wa1234/</span></code>,
+containing:</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">2016-09-02-13-30-00-113-7242-22-496-dead-edible-adult-male-corolla-corolla-wa1234_datasheet.pdf</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">2016-09-02-13-30-00-113-7242-22-496-dead-edible-adult-male-corolla-corolla-wa1234_emails.txt</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">2016-09-02-13-30-00-113-7242-22-496-dead-edible-adult-male-corolla-corolla-wa1234_total_lateral.jpg</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">2016-09-02-13-30-00-113-7242-22-496-dead-edible-adult-male-corolla-corolla-wa1234_total_dorsal.jpg</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">2016-09-02-13-30-00-113-7242-22-496-dead-edible-adult-male-corolla-corolla-wa1234_head.jpg</span></code></p></li>
+</ul>
+<p>This naming convention will ensure that each file can be associated with the
+corresponding record in WAStD even without the context of being attached to a
+WAStD record, or being located in an appropriately named folder.</p>
+</section>
+<section id="upload-files">
+<h3>Upload files<a class="headerlink" href="#upload-files" title="Permalink to this heading">¶</a></h3>
+<p>It is very important to rename the files <strong>before</strong> uploading them, in order to
+preserve the new filename (containing the source ID) in the uploaded file name.</p>
+<p>This is important, as downloaded files will only be identified by their filename.
+If the filename does not uniquely link back to the online record, e.g. by
+containing the source ID, the user risks losing its context.</p>
+<p>Back in WAStD, attach all files - data sheet scan, communication records,
+photographs - as Media Attachments to the Encounter, preferrably in this order.
+Pick a descriptive, but short title for the files - the title will be displayed
+in map popups, e.g.:</p>
+<ul class="simple">
+<li><p>datasheet</p></li>
+<li><p>emails</p></li>
+<li><p>photo total side</p></li>
+<li><p>photo total top</p></li>
+<li><p>photo head side</p></li>
+</ul>
+</section>
+<section id="information-extraction">
+<h3>Information extraction<a class="headerlink" href="#information-extraction" title="Permalink to this heading">¶</a></h3>
+<p>Add subsequent sections if relevant information is given in the original
+data sheet or communication records:</p>
+<ul class="simple">
+<li><p>Tag Observations</p></li>
+<li><p>Turtle Damage Observation</p></li>
+<li><p>Turtle Morphometric Observations</p></li>
+<li><p>Management Actions (e.g. disposal, samples sent)</p></li>
+</ul>
+<p>Turtle Damage Observations also cater for tag scars and tags that were seen,
+but not identified (e.g. the animal had to leave before the operator could read
+the tag).</p>
+<p>Tag Observations support the following identifying tags or “things with an ID”:</p>
+<ul class="simple">
+<li><p>Flipper Tag</p></li>
+<li><p>PIT Tag</p></li>
+<li><p>Satellite Tag</p></li>
+<li><p>Data logger</p></li>
+<li><p>Temperature logger</p></li>
+<li><p>Blood Sample</p></li>
+<li><p>Biopsy Sample</p></li>
+<li><p>Egg Sample</p></li>
+<li><p>Physical Sample</p></li>
+<li><p>Other</p></li>
+</ul>
+</section>
+<section id="turtle-morphometric-observations">
+<h3>Turtle Morphometric Observations<a class="headerlink" href="#turtle-morphometric-observations" title="Permalink to this heading">¶</a></h3>
+<p>The measurement accuracy is set based on informed guesses:</p>
+<ul class="simple">
+<li><p>If the datasheet was filled in by a trained vet or core turtle staff, it’s to
+the nearest 1mm.</p></li>
+<li><p>If the datasheet specifies “measured”, it’s to the nearest 5mm.</p></li>
+<li><p>If the datasheet specifies “estimated”, it’s to the nearest value closest to
+10% of the measurement.</p></li>
+</ul>
+<p>Tab Observations and Turtle Morphometric Observations have optional fields to
+capture the “handler” and the “recorder”, where the handler is the person
+physically handling the tag or conducting the measurements, and the recorder
+the person who writes the data sheet.
+It is important to retain this information, as both activities bring their own
+source of errors, which are often linked to the person’s respective training or
+handwriting.</p>
+<p>After adding these data to the Encounter, save the Encounter (twice to update
+the map popup) and refresh WAStD’s home page to see a summary as popup on the
+Encounter’s place marker.</p>
+</section>
+<section id="updating-an-existing-stranding-record">
+<h3>Updating an existing stranding record<a class="headerlink" href="#updating-an-existing-stranding-record" title="Permalink to this heading">¶</a></h3>
+<p>Place the new files into the new case folders (named after WAStD’s source ID for
+that record) following above defined file standards. Prefix the filenames with
+the source ID, then upload them to the corresponding record in WAStD.</p>
+<p>Extract new information from the new files into WAStD, updating the AnimalEncounter
+and related Observations as required.</p>
+<p>If the inputs for the source ID change, delete the source ID, save the AnimalEncounter
+to generate a new, correct source ID, then update the case folder name with
+the new source ID. Lastly, rename and reupload all files to propagate the new source ID
+into filenames and file URLs.
+This extra step is extremely important to keep shared identifiers on files and
+electronic records in sync.</p>
+</section>
+<section id="outcome">
+<h3>Outcome<a class="headerlink" href="#outcome" title="Permalink to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>Point of truth</strong> is the record in WAStD, which is the most comprehensive and most
+accessible source of information related to a stranding.</p></li>
+<li><p>All information in WAStD that came from files requires these files to be
+in standard formats, following the source ID naming convention, and be uploaded
+precicely in the same version that is in the case folder.</p></li>
+</ul>
+</section>
+</section>
+<section id="cetacean-strandings">
+<h2>Cetacean Strandings<a class="headerlink" href="#cetacean-strandings" title="Permalink to this heading">¶</a></h2>
+<p>The data currently lives in another departmental Strandings database.</p>
+<p>Cetacean Stranding data (if they were entered into WAStD):</p>
+<ul class="simple">
+<li><p>Create a <a class="reference external" href="https://strandings.dpaw.wa.gov.au/admin/observations/animalencounter/add/">new AnimalEncounter</a>.</p></li>
+<li><p>Media Attachments following instructions above</p></li>
+<li><p>CetaceanMorphometricObservation (TODO)</p></li>
+<li><p>CetaceanDagameObservation (TODO)</p></li>
+</ul>
+</section>
+<section id="turtle-tagging">
+<h2>Turtle Tagging<a class="headerlink" href="#turtle-tagging" title="Permalink to this heading">¶</a></h2>
+<p>The production data currently live in WAMTRAM 2. Migration is underway.</p>
+<p>Turtle Tagging data:</p>
+<ul class="simple">
+<li><p>Create a <a class="reference external" href="https://strandings.dpaw.wa.gov.au/admin/observations/animalencounter/add/">new AnimalEncounter</a>.</p></li>
+<li><p>Tag Observations: For each flipper, PIT and satellite tag; plus for each sample taken.</p></li>
+<li><p>Media Attachments: photos, data sheet.</p></li>
+<li><p>Distinguishing Feature Observation</p></li>
+<li><p>Turtle Damage Observation</p></li>
+<li><p>Turtle Morphometric Observations</p></li>
+<li><p>Turtle Nest Observations</p></li>
+<li><p>Management Actions</p></li>
+</ul>
+</section>
+<section id="tag-returns">
+<h2>Tag returns<a class="headerlink" href="#tag-returns" title="Permalink to this heading">¶</a></h2>
+<p>When TOs harvest and eat a tagged turtle, they return the tags to the Department.</p>
+<p>Tag Return data:</p>
+<ul class="simple">
+<li><p>Create a <a class="reference external" href="https://strandings.dpaw.wa.gov.au/admin/observations/encounter/add/">new Encounter</a>.</p></li>
+<li><p>Add a TagObservation for the returned tag.</p></li>
+</ul>
+<p>If the person returning the tag is not a departmental staff member, send them
+a “thank you” email including the known history of the animal.</p>
+</section>
+<section id="turtle-tracks">
+<h2>Turtle Tracks<a class="headerlink" href="#turtle-tracks" title="Permalink to this heading">¶</a></h2>
+<p>Turtle Track Tally data in WAStD:</p>
+<ul class="simple">
+<li><p>Create a <a class="reference external" href="https://strandings.dpaw.wa.gov.au/admin/observations/encounter/add/">new (simple) Encounter</a>.</p></li>
+<li><p>Add a TrackTallyObservation for tallied numbers of tracks, nests etc.</p></li>
+</ul>
+<p>For each nest with a GPS location:</p>
+<ul class="simple">
+<li><p>Create a <a class="reference external" href="https://strandings.dpaw.wa.gov.au/admin/observations/turtlenestencounter/add/">new Turtle Nest Encounter</a>.</p></li>
+<li><p>Add a Turtle nest observation for the respective track or nest.</p></li>
+<li><p>The fields and available options mirror the datasheet.</p></li>
+<li><p>Add MediaAttachments for each photo.</p></li>
+</ul>
+<p><strong>Note</strong> Data collected with mobile apps are ingested automatically.</p>
+</section>
+<section id="temperature-loggers">
+<h2>Temperature Loggers<a class="headerlink" href="#temperature-loggers" title="Permalink to this heading">¶</a></h2>
+<p>The following life cycle stages are supported for Hobo Temperature Loggers:</p>
+<ul class="simple">
+<li><p>programmed (with settings “start date” and “logging interval”)</p></li>
+<li><p>dispatched (sent to a recipient)</p></li>
+<li><p>deployed, resighted, or retrieved (following datasheet)</p></li>
+<li><p>downloaded (with attached data files)</p></li>
+</ul>
+<p>Create a <a class="reference external" href="https://strandings.dpaw.wa.gov.au/admin/observations/loggerencounter/add/">new LoggerEncounter</a>:</p>
+<ul class="simple">
+<li><p>Observed at: location of encounter, even if programmed, dispatched or downloaded.</p></li>
+<li><p>Source ID: keep empty, will auto-generate on save.</p></li>
+<li><p>Type: Temperature Logger.</p></li>
+<li><p>Status: the life cycle status as per list above.</p></li>
+<li><p>Logger ID: serial number as per sticker on logger.</p></li>
+<li><p>If logger was programmed, add one “Temperature logger settings” section.</p></li>
+<li><p>If logger was dispatched, add one “Dispatch record” section.</p></li>
+<li><p>If logger was deployed, resighted, or retrieved, add one “Temperature logger deployment” section.</p></li>
+<li><p>If logger was downloaded, add one Media attachment for each downloaded file and attach the file.</p></li>
+</ul>
+</section>
+<section id="data-upload-from-odk">
+<h2>Data upload from ODK<a class="headerlink" href="#data-upload-from-odk" title="Permalink to this heading">¶</a></h2>
+<p>WAStD still supports the import of electronically captured data from ODK Aggregate.</p>
+<p>All electronically captured data from the newer ODK Central are imported in a scripted
+and automated process using the R package <a class="reference external" href="https://github.com/dbca-wa/etlTurtleNesting">etlTurtleNesting</a>.
+All data flow through the WAStD API.</p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">wastd</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Data entry</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#campaigns">Campaigns</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#find-campaign-corner-dates">Find Campaign corner dates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#create-a-campaign">Create a Campaign</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#turtle-tracks-or-nests">Turtle Tracks or Nests</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#section-encounter">Section “Encounter”</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#section-nest">Section “Nest”</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#section-media-attachments">Section “Media Attachments”</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#other-sections">Other sections</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#backfill-tracks-from-paper-track-tally">Backfill Tracks from Paper (Track Tally)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#scan-paper-datasheets">Scan paper datasheets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#summarise-tracks-into-tracktallies">Summarise Tracks into TrackTallies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#create-wastd-linetransectencounters-from-tracktallies">Create WAStD LineTransectEncounters from TrackTallies</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#turtle-strandings">Turtle Strandings</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#convert-legacy-files">Convert legacy files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#wastd-minimal-record-and-identifier">WAStD minimal record and identifier</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rename-legacy-files-using-wastd-record-identifier">Rename legacy files using WAStD record identifier</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#upload-files">Upload files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#information-extraction">Information extraction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#turtle-morphometric-observations">Turtle Morphometric Observations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#updating-an-existing-stranding-record">Updating an existing stranding record</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#outcome">Outcome</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#cetacean-strandings">Cetacean Strandings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#turtle-tagging">Turtle Tagging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#tag-returns">Tag returns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#turtle-tracks">Turtle Tracks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#temperature-loggers">Temperature Loggers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data-upload-from-odk">Data upload from ODK</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="data_qa.html">Data QA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_consumers.html">Data consumers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="business_analysts.html">Business Analysts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers.html">Developer documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="third_party_access.html">Third party access</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">WAStD - WA Sea Turtle and Strandings Database</a></li>
+      <li>Next: <a href="data_qa.html" title="next chapter">Data QA</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, Florian Mayer, Ashley Felton.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.0.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+      |
+      <a href="_sources/data_entry.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Data consumers &#8212; wastd 0.70.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Business Analysts" href="business_analysts.html" />
+    <link rel="prev" title="Data QA" href="data_qa.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="data-consumers">
+<span id="id1"></span><h1>Data consumers<a class="headerlink" href="#data-consumers" title="Permalink to this heading">¶</a></h1>
+<p>This chapter addresses data consumers.</p>
+<p>There are four principal ways to access data and derived data products from WAStD:</p>
+<ul class="simple">
+<li><p>Data export from GUI: filter to taste, hit “CSV” or “XLS” on the top right.</p></li>
+<li><p>Data export from Data Curation Portal: filter to location and date, select all, bottom left menu “export to CSV”, export.</p></li>
+<li><p>Data export from API: see wastdr vignette <a class="reference external" href="https://dbca-wa.github.io/wastdr/articles/access.html">Accessing WAStD Data</a>.</p></li>
+<li><p>Automated reporting: Latest date-stamped <a class="reference external" href="https://dpaw.sharepoint.com/sites/theturtles/Shared%20Documents/Forms/AllItems.aspx?viewid=b34c0a22%2Da086%2D4a61%2D9506%2D1e8b66ceccd0&amp;id=%2Fsites%2Ftheturtles%2FShared%20Documents%2F10%20Turtle%20data%20exports">folder on SharePoint</a> or as shared with you through MS Teams.</p></li>
+</ul>
+<p>Additional data export pathways for admins:
+* Shell: Rancher &gt; pod &gt; shell &gt; fab shell &gt; iPython session.
+* Database: Rancher &gt; pod &gt; shell &gt; ./manage.py db_shell &gt; psql session.</p>
+<p>The main avenue for data consumers are the value-added and well documented reports.
+The reports contain an up to date explanation of all exported data products, as well as maps and summary tables.
+Most of the insights and summaries a data consumer might want will be in the reports.</p>
+<p>The remainder of this page is the older documentation, pending an update of links.</p>
+<section id="for-humans-gui">
+<h2>For humans: GUI<a class="headerlink" href="#for-humans-gui" title="Permalink to this heading">¶</a></h2>
+<p>This section documents the graphical user interface (GUI).</p>
+<p>The GUI aims to give easy to digest insight to managers with
+defined questions, and to allow the query and export of data.</p>
+<section id="map">
+<h3>Map<a class="headerlink" href="#map" title="Permalink to this heading">¶</a></h3>
+<p><strong>Getting there</strong> <a class="reference external" href="https://wastd.dbca.wa.gov.au/">https://wastd.dbca.wa.gov.au/</a></p>
+<p><strong>Accessible to</strong> all DBCA staff</p>
+<p>WAStD’s homepage displays (currently all) records on a map.</p>
+<p>Encounters of any kind are displayed as place markers.
+Click on any record to see a popup with a summary and links to view- more details.</p>
+<p>The “edit” button indicates the record’s QA status and allows data entry operators
+to view and update details.</p>
+<p>Named animals displayed a link (e.g. <code class="docutils literal notranslate"><span class="pre">WA1234</span></code>) to their known life history,
+which consists of all recorded encounters with this animal.</p>
+<p>Furthermore, each tag on the animal features a link to a list to the full tag
+history.</p>
+</section>
+<section id="data">
+<h3>Data<a class="headerlink" href="#data" title="Permalink to this heading">¶</a></h3>
+<p><strong>Getting there</strong> <a class="reference external" href="https://wastd.dpaw.wa.gov.au/animal-encounters/">https://wastd.dpaw.wa.gov.au/animal-encounters/</a> or click on “Data”</p>
+<p><strong>Accessible to</strong> all DBCA staff</p>
+<p>The “Data” tab offers the capacity to filter and view data.
+Currently, this part is in devlopment and does not offer all commodities yet.</p>
+</section>
+<section id="data-curation-portal">
+<h3>Data Curation Portal<a class="headerlink" href="#data-curation-portal" title="Permalink to this heading">¶</a></h3>
+<p><strong>Getting there</strong> <a class="reference external" href="https://wastd.dpaw.wa.gov.au/admin/">https://wastd.dpaw.wa.gov.au/admin/</a> or click on “Data Curation Portal”</p>
+<p><strong>Accessible to</strong> authorised Parks &amp; Wildlife staff of group “data entry”</p>
+<p>Authorised users (those belonging to WAStD’s “data entry” User group)
+can access the Data Curation Portal interface under the “Data Curators” tab.</p>
+<p>Strandings and tagging encounters are located under
+<a class="reference external" href="https://wastd.dpaw.wa.gov.au/admin/observations/animalencounter/">Animal Encounters</a>.</p>
+<p>Many questions can be answered with a simple combination of filter criteria, e.g.:</p>
+<p>Examples:
+* AnimalEncounters <a class="reference external" href="https://wastd.dbca.wa.gov.au/admin/observations/animalencounter/">https://wastd.dbca.wa.gov.au/admin/observations/animalencounter/</a>
+* Filter to Locality and date
+* E.g. AE at Caravan Park <a class="reference external" href="https://wastd.dbca.wa.gov.au/admin/observations/animalencounter/?area__id__exact=142">https://wastd.dbca.wa.gov.au/admin/observations/animalencounter/?area__id__exact=142</a>
+* Encounters added before areas/sites were changed/added need to be re-saved to pick up the area/site they’re now in
+* How many strandings were there in 2015? Select year 2015 in the date facet (top</p>
+<blockquote>
+<div><p>left), and “Observation type” stranding in the Filter dropdown (top right).
+<a class="reference external" href="https://wastd.dpaw.wa.gov.au/admin/observations/animalencounter/?encounter_type__exact=stranding&amp;when__year=2016">https://wastd.dpaw.wa.gov.au/admin/observations/animalencounter/?encounter_type__exact=stranding&amp;when__year=2016</a></p>
+</div></blockquote>
+<ul class="simple">
+<li><p>How many strandings were suspected boat strikes?
+<a class="reference external" href="https://wastd.dpaw.wa.gov.au/admin/observations/animalencounter/?cause_of_death__exact=boat-strike&amp;encounter_type__exact=stranding">https://wastd.dpaw.wa.gov.au/admin/observations/animalencounter/?cause_of_death__exact=boat-strike&amp;encounter_type__exact=stranding</a></p></li>
+<li><p>How many Flatback turtles were stranded in 2016?
+<a class="reference external" href="https://wastd.dpaw.wa.gov.au/admin/observations/animalencounter/?encounter_type__exact=stranding&amp;species__exact=Natator+depressus&amp;when__year=2016">https://wastd.dpaw.wa.gov.au/admin/observations/animalencounter/?encounter_type__exact=stranding&amp;species__exact=Natator+depressus&amp;when__year=2016</a></p></li>
+</ul>
+<p>Download filtered list of enc/AE/TNE etc:
+* Select all (if more filtered than the initial 100 records that fit on one page, hit “Select all XXX records”)
+* Bottom menu: export to CSV &gt; Go
+* Settings: see &lt;<a class="reference external" href="https://django-adminactions.readthedocs.io/en/latest/actions.html#export-as-csv">https://django-adminactions.readthedocs.io/en/latest/actions.html#export-as-csv</a>&gt;.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Alternative: Export to XLS, Header yes, Use display (whether to export human-readable displayed labels or URL-safe database values).</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="api-preview">
+<h3>API preview<a class="headerlink" href="#api-preview" title="Permalink to this heading">¶</a></h3>
+<p><strong>Getting there</strong> <a class="reference external" href="https://wastd.dpaw.wa.gov.au/api/1/">https://wastd.dpaw.wa.gov.au/api/1/</a> or click on “API”</p>
+<p><strong>Accessible to</strong> DBCA intranet</p>
+<p>Data analysts will likely want to cut out the manual filter and download process described
+above, and consume (filtered) data programmatically. This can be done with the API.
+WAStD’s API features a human-readable preview with the same filters as the “backstage”
+admin interface. This facilitates a user-friendly, trial-and-error way of quickly
+building the desired API query. To learn more about the API, read on.</p>
+</section>
+</section>
+<section id="for-machines-api">
+<span id="data-consumers-api"></span><h2>For machines: API<a class="headerlink" href="#for-machines-api" title="Permalink to this heading">¶</a></h2>
+<p><strong>Note</strong> This section is being re-written, as the API is being fine-tuned.</p>
+<p>This section will document the application programming interface (API).</p>
+<p>The API aims to serve programmers to batch-upload data,
+and to serve analysts to query and read data from analytical
+frameworks like R or Python.</p>
+<p>Talking points:</p>
+<ul class="simple">
+<li><p>django-rest-framework</p></li>
+<li><p>API docs</p></li>
+<li><p>coreapi and its command line interface</p></li>
+<li><p>authentication</p></li>
+</ul>
+<p>Working examples:</p>
+<ul class="simple">
+<li><p>Reading all Animal Observations into a data.frame in R</p></li>
+<li><p>Uploading one Animal Observation from R and Python</p></li>
+</ul>
+<p>See the R package <a class="reference external" href="https://dbca-wa.github.io/wastdr/">wastdr</a> for working examples.</p>
+</section>
+<section id="data-analysis">
+<h2>Data Analysis<a class="headerlink" href="#data-analysis" title="Permalink to this heading">¶</a></h2>
+<section id="tag-life-cycle">
+<h3>Tag life cycle<a class="headerlink" href="#tag-life-cycle" title="Permalink to this heading">¶</a></h3>
+<p>The life cycle of one tag (e.g. a flipper tag) is captured through recorded
+encounters along its life cycle stages:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>https://strandings-test.dpaw.wa.gov.au/api/1/tag-observations/?tag_type=flipper-tag&amp;name=WA96394
+</pre></div>
+</div>
+</section>
+<section id="animal-life-cycle">
+<span id="data-analysis-animal-life-cycle"></span><h3>Animal life cycle<a class="headerlink" href="#animal-life-cycle" title="Permalink to this heading">¶</a></h3>
+<p>An animal’s identity can be reconstructed from overlapping sightings of a set of tags.
+The following table demonstrates the connection between encounters and tag
+observations. Tag orders, nesting / tagging encounters, stranding observations
+and tag returns (and possibly encounters from other occations) form the complete
+picture of one animal and all related identifying tags.</p>
+<p>As an important difference to the existing WAMTRAM tagging database, the life
+cycle of tags and animals is reconstructed from <em>reports of observations</em>.</p>
+<p>Thus, all data about one animal could look like this:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Encounters</p></th>
+<th class="head"><p>Occasion</p></th>
+<th class="head"><p>Tag WA001</p></th>
+<th class="head"><p>Tag WA002</p></th>
+<th class="head"><p>Tag WA003</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Encounter        7</p></td>
+<td><p>order</p></td>
+<td><p>ordered</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Encounter        8</p></td>
+<td><p>order</p></td>
+<td></td>
+<td><p>ordered</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Encounter        9</p></td>
+<td><p>order</p></td>
+<td></td>
+<td></td>
+<td><p>ordered</p></td>
+</tr>
+<tr class="row-odd"><td><p>AnimalEncounter 11</p></td>
+<td><p>nesting</p></td>
+<td><p>attached</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>AnimalEncounter 12</p></td>
+<td><p>nesting</p></td>
+<td><p>recaptured</p></td>
+<td><p>attached</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>AnimalEncounter 13</p></td>
+<td><p>nesting</p></td>
+<td><p>tag scar</p></td>
+<td><p>recaptured</p></td>
+<td><p>attached</p></td>
+</tr>
+<tr class="row-even"><td><p>AnimalEncounter 14</p></td>
+<td><p>nesting</p></td>
+<td><p>tag scar</p></td>
+<td><p>not observed</p></td>
+<td><p>recaptured</p></td>
+</tr>
+<tr class="row-odd"><td><p>AnimalEncounter 15</p></td>
+<td><p>stranding</p></td>
+<td><p>tag scar</p></td>
+<td><p>recaptured</p></td>
+<td><p>removed from dead animal</p></td>
+</tr>
+<tr class="row-even"><td><p>Encounter       16</p></td>
+<td><p>return</p></td>
+<td></td>
+<td></td>
+<td><p>returned</p></td>
+</tr>
+</tbody>
+</table>
+<p>WAStD will reconstruct the fact that these encounters happened with the same
+animal from shared tags (following rows) and their tag history (following columns).</p>
+<p>The first ever applied flipper tag name will be used as the animal’s name, and
+saved on each encounter. This allows to quickly retrieve or search encounters
+of a particular animal.</p>
+<p>Pressing “Update Names” will reconstruct names for all animals.</p>
+<p>Three simple lines of R code will consume Animal Encounters from the WAStD API
+and transform them into the format required for e.g. program MARK.
+A working example is published <a class="reference external" href="http://rpubs.com/florian_mayer/wastd-mark">here</a>.</p>
+</section>
+<section id="re-visiting-existing-points">
+<h3>Re-visiting existing points<a class="headerlink" href="#re-visiting-existing-points" title="Permalink to this heading">¶</a></h3>
+<p>This is the rough-and-ready process to re-visit existing encounters, e.g. tagged nests.</p>
+<p>Before we start, let’s clarify some terms:</p>
+<p>Let’s call your <strong>home directory</strong> (Windows - read <a class="reference external" href="https://en.wikipedia.org/wiki/Home_directory">Windows home directory</a>) or <strong>home folder</strong> (Linux) <code class="docutils literal notranslate"><span class="pre">HOME</span></code>.</p>
+<p>If you install Dropbox, it will create a directory/folder in your <code class="docutils literal notranslate"><span class="pre">HOME</span></code>. We’ll refer to this path <code class="docutils literal notranslate"><span class="pre">HOME/Dropbox</span></code>.</p>
+<ul class="simple">
+<li><p>Install the app <a class="reference external" href="https://play.google.com/store/apps/dev?id=9214118068832022925&amp;hl=en">MapIt</a> to a tablet.</p></li>
+<li><p>Install the app <a class="reference external" href="https://play.google.com/store/apps/details?id=com.dropbox.android&amp;hl=en">Dropbox</a>
+to the same tablet and login with your account.</p></li>
+<li><p>Open MapIt and visit all areas of interest to cache the offline maps.</p></li>
+</ul>
+<p>On a desktop computer or on the tablet:</p>
+<ul class="simple">
+<li><p>Download the data from WAStD: e.g. Tracks and nests at Cable Beach Broome:
+Save <a class="reference external" href="https://wastd.dpaw.wa.gov.au/api/1/turtle-nest-encounters/?area=19&amp;format=json">https://wastd.dpaw.wa.gov.au/api/1/turtle-nest-encounters/?area=19&amp;format=json</a>
+as a file called <code class="docutils literal notranslate"><span class="pre">nests.geojson</span></code>.
+If you have WAStD open in your browser (and are authenticated), the API should not ask for authentication.</p></li>
+<li><p>Create the subfolders <code class="docutils literal notranslate"><span class="pre">HOME/Dropbox/Apps/MapIt</span></code> and move <code class="docutils literal notranslate"><span class="pre">nests.geojson</span></code> there.</p></li>
+<li><p>The file <strong>must</strong> now be in <code class="docutils literal notranslate"><span class="pre">HOME/Dropbox/Apps/MapIt/nests.geojson</span></code></p></li>
+<li><p>The file <strong>must</strong> have the file extension <code class="docutils literal notranslate"><span class="pre">.geojson</span></code> (not <code class="docutils literal notranslate"><span class="pre">.json</span></code> as WAStD saves).</p></li>
+<li><p>The filename (<code class="docutils literal notranslate"><span class="pre">nests</span></code>) is arbitrary.</p></li>
+<li><p>Let Dropbox sync the file to the cloud, then you’ll see a green tick indicating that the file is synced to your Dropbox cloud storage.</p></li>
+</ul>
+<p>On your tablet:</p>
+<ul class="simple">
+<li><p>Open Dropbox while online. You should find <code class="docutils literal notranslate"><span class="pre">Apps/MapIt/nests.geojson</span></code> in your Dropbox app when synced from the Dropbox cloud storage to your tablet’s local Dropbox folder.</p></li>
+<li><p>Open MapIt on your tablet while online.</p></li>
+<li><p>Menu (cheeseburger icon top left) &gt;
+Manage layers &gt;
+Add layer (icon with red plus sign on bottom right) &gt;
+Name the layer as you like (“Nests” or so).</p></li>
+<li><p>Tap on the new layer (“Nests”),
+then the “add data” icon (down arrow icon top right),
+tap “Dropbox”,
+tap “Geojson files” to expand the files,
+tap on the <code class="docutils literal notranslate"><span class="pre">nests.geojson</span></code> file saved from WAStD.</p></li>
+<li><p>Use back arrow to go back from the “add layers” screen to MapIt’s main map screen.</p></li>
+</ul>
+<p>Now the map (the areas you have visited while online at the respective zoom level)
+should be saved for offline use, and the layer “Nests” should show turtle tracks and nests.
+Nest tags are shown as labels on the map where given.
+The map has a live mode where it follows the current position.</p>
+<p>To re-run the process with fresher data:</p>
+<ul class="simple">
+<li><p>Download the data again and save over the file <code class="docutils literal notranslate"><span class="pre">Dropbox/Apps/MapIt/nests.geojson</span></code>. You can do this directly on the tablet.</p></li>
+<li><p>On the tablet, open MapIt, Manage layers, select the “Nests” layer, in options (three vertical dots top right) select “clear” and confirm to remove existing records from the layer, then “import” the fresher data from Dropbox again.</p></li>
+</ul>
+</section>
+<section id="accessing-the-data-in-gis">
+<h3>Accessing the data in GIS<a class="headerlink" href="#accessing-the-data-in-gis" title="Permalink to this heading">¶</a></h3>
+<p>Selected tables and views of WAStD are published through a GeoServer run by the Office for Information Management, DBCA.
+The KMI GeoServer’s website <a class="reference external" href="https://kmi.dbca.wa.gov.au/geoserver/web/">https://kmi.dbca.wa.gov.au/geoserver/web/</a>
+sits behind DBCA’s SSO, the endpoints support basicauth (username / password).</p>
+<p>You can open the endpoints as listed on the KMI’s website in any standard-compliant GIS like <a class="reference external" href="https://qgis.org/en/site/">Quantum GIS</a>
+or vendor-locked GIS like ESRI ArcGIS.</p>
+<p>KMI offers in addition to WAStD’s layers a range of all spatial DBCA datasets (CDDP and others) as well as datasets from other agencies (BOM, Landgate and others).</p>
+<p>To view WAStD’s data offline, the spatial API endpoints offer GeoJSON FeatureCollections (format “json”) which can be viewed
+directly in standard-compliant GIS like Quantum GIS, and can be exported into vendor-specific formats (e.g. shapefile for ESRI products).</p>
+<section id="open-wastd-tsc-data-in-qgis-3-0-1">
+<h4>Open WAStD/TSC data in QGIS 3.0.1<a class="headerlink" href="#open-wastd-tsc-data-in-qgis-3-0-1" title="Permalink to this heading">¶</a></h4>
+<ul class="simple">
+<li><p>Layer &gt; Add Layer &gt; WFS</p></li>
+<li><p>Create a new connection with settings:
+* Name KMI (or as you please)
+* URL <code class="docutils literal notranslate"><span class="pre">https://kmi.dbca.wa.gov.au/geoserver/ows</span></code>
+* Authentication: Create configuration with your DBCA username and password, protect with master password
+* WFS options: Version 2 is buggy, use version 1</p></li>
+<li><p>Connect</p></li>
+<li><p>Search for <code class="docutils literal notranslate"><span class="pre">wastd</span></code> to finc WAStD/TSC data layers</p></li>
+<li><p>Select and Add layers</p></li>
+<li><p>Adjust layer style and save style to file</p></li>
+<li><p>Save project (contains layers and styles)</p></li>
+</ul>
+<p>Add other layers as WFS or WMS (choose jpeg for faster rendering) as suitable. Warning: WMS layers slow down project startup.</p>
+<p>See the <a class="reference external" href="https://docs.qgis.org/">QGIS docs</a> on how to
+<a class="reference external" href="https://docs.qgis.org/testing/en/docs/training_manual/online_resources/index.html">load a web mapping (WFS, WMS) layer</a>.</p>
+</section>
+</section>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">wastd</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="data_entry.html">Data entry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_qa.html">Data QA</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Data consumers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#for-humans-gui">For humans: GUI</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#map">Map</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#data">Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#data-curation-portal">Data Curation Portal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#api-preview">API preview</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#for-machines-api">For machines: API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data-analysis">Data Analysis</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#tag-life-cycle">Tag life cycle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#animal-life-cycle">Animal life cycle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#re-visiting-existing-points">Re-visiting existing points</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#accessing-the-data-in-gis">Accessing the data in GIS</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="business_analysts.html">Business Analysts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers.html">Developer documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="third_party_access.html">Third party access</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="data_qa.html" title="previous chapter">Data QA</a></li>
+      <li>Next: <a href="business_analysts.html" title="next chapter">Business Analysts</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, Florian Mayer, Ashley Felton.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.0.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+      |
+      <a href="_sources/data_consumers.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
