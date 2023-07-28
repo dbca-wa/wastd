@@ -62,7 +62,7 @@ class CampaignViewSet(ModelViewSet):
     model = models.Campaign
 
 
-class SurveyFilter(FilterSet):
+class SurveyAPIFilter(FilterSet):
     """Survey Filter. All filter methods available on all fields except location and team.
 
     # Dates
@@ -102,7 +102,7 @@ class SurveyViewSet(ModelViewSet):
         "reporter", "area", "site", "team"
     )
     serializer_class = serializers.SurveySerializer
-    filter_class = SurveyFilter
+    filter_class = SurveyAPIFilter
     pagination_class = MyGeoJsonPagination  # provides top level features
     model = models.Survey
 
@@ -362,7 +362,7 @@ class SourceIdEncounterViewSet(ModelViewSet):
         pass
 
 
-class AnimalEncounterFilter(FilterSet):
+class AnimalEncounterAPIFilter(FilterSet):
     when = DateFilter()
 
     class Meta:
@@ -453,7 +453,7 @@ class AnimalEncounterViewSet(ModelViewSet):
         "site_of_last_sighting",
     )
     serializer_class = serializers.AnimalEncounterSerializer
-    filter_class = AnimalEncounterFilter
+    filter_class = AnimalEncounterAPIFilter
     search_fields = (
         "name",
         "source_id",
@@ -467,7 +467,7 @@ class AnimalEncounterViewSet(ModelViewSet):
         symlink_resources(t_dir, data)
 
 
-class TurtleNestEncounterFilter(FilterSet):
+class TurtleNestEncounterAPIFilter(FilterSet):
     when = DateFilter()
 
     class Meta:
@@ -579,7 +579,7 @@ class TurtleNestEncounterViewSet(ModelViewSet):
         "observer", "reporter", "survey", "site", "area", "survey__reporter"
     )
     serializer_class = serializers.TurtleNestEncounterSerializer
-    filter_class = TurtleNestEncounterFilter
+    filter_class = TurtleNestEncounterAPIFilter
     pagination_class = MyGeoJsonPagination
     model = models.TurtleNestEncounter
 

@@ -2,9 +2,7 @@ from django.conf import settings
 from django_filters import FilterSet
 from django_filters.filters import (
     DateFilter,
-    BooleanFilter,
     ChoiceFilter,
-    MultipleChoiceFilter,
     ModelChoiceFilter,
 )
 from users.models import User
@@ -20,59 +18,12 @@ from .models import (
 from .lookups import (
     HEALTH_CHOICES,
     SOURCE_CHOICES,
-    ACTIVITY_CHOICES,
     SPECIES_CHOICES,
     TURTLE_SPECIES_CHOICES,
 )
 
 
 class SurveyFilter(FilterSet):
-    no_start = BooleanFilter(label="Start Point reconstructed", field_name="source_id", lookup_expr="isnull")
-    no_end = BooleanFilter(label="End Point reconstructed", field_name="end_source_id", lookup_expr="isnull")
-    area = ModelChoiceFilter(
-        label="Locality",
-        queryset=Area.objects.filter(area_type__in=[Area.AREATYPE_LOCALITY]).order_by("name"),
-    )
-    site = ModelChoiceFilter(
-        label="Site",
-        queryset=Area.objects.filter(area_type__in=[Area.AREATYPE_SITE]).order_by("name"),
-    )
-    survey_date = DateFilter(
-        field_name="start_time",
-        lookup_expr="date",
-        label="Exact survey date",
-        input_formats=settings.DATE_INPUT_FORMATS,
-    )
-
-    class Meta:
-        model = Survey
-        filter_overrides = FILTER_OVERRIDES
-        fields = [
-            "campaign__owner",
-            "area",
-            "site",
-            "no_start",
-            "no_end",
-            "production",
-            "source",
-            "source_id",
-            "device_id",
-            "reporter",
-            "start_location",
-            "start_location_accuracy_m",
-            "start_time",
-            "start_comments",
-            "end_source_id",
-            "end_device_id",
-            "end_location",
-            "end_location_accuracy_m",
-            "end_time",
-            "end_comments",
-            "transect",
-        ]
-
-
-class SurveyBasicFilter(FilterSet):
     date_from = DateFilter(
         field_name="start_time",
         lookup_expr="date__gte",
@@ -146,39 +97,7 @@ class EncounterFilter(FilterSet):
         ]
 
 
-class AnimalEncounterFilter(EncounterFilter):
-    health = MultipleChoiceFilter(choices=sorted(HEALTH_CHOICES))
-    activity = ChoiceFilter(field_name="activity", choices=sorted(ACTIVITY_CHOICES))
-    species = ChoiceFilter(field_name="species", choices=sorted(SPECIES_CHOICES))
-
-    class Meta(EncounterFilter.Meta):
-
-        model = AnimalEncounter
-        fields = EncounterFilter._meta.fields + [
-            "identifiers",
-            "taxon",
-            "species",
-            "sex",
-            "maturity",
-            "health",
-            "activity",
-            "habitat",
-            "sighting_status",
-            "sighting_status_reason",
-            "datetime_of_last_sighting",
-            "site_of_first_sighting",
-            "site_of_last_sighting",
-            "nesting_event",
-            "nesting_disturbed",
-            "laparoscopy",
-            "checked_for_injuries",
-            "scanned_for_pit_tags",
-            "checked_for_flipper_tags",
-            "cause_of_death",
-        ]
-
-
-class AnimalEncounterBasicFilter(FilterSet):
+class AnimalEncounterFilter(FilterSet):
     date_from = DateFilter(
         field_name="when",
         lookup_expr="date__gte",
@@ -250,25 +169,7 @@ class AnimalEncounterBasicFilter(FilterSet):
         ]
 
 
-class TurtleNestEncounterFilter(EncounterFilter):
-
-    class Meta(EncounterFilter.Meta):
-        model = TurtleNestEncounter
-        fields = EncounterFilter._meta.fields + [
-            "species",
-            "nest_type",
-            "nest_age",
-            "habitat",
-            "disturbance",
-            "nest_tagged",
-            "logger_found",
-            "eggs_counted",
-            "hatchlings_measured",
-            "fan_angles_measured",
-        ]
-
-
-class TurtleNestEncounterBasicFilter(FilterSet):
+class TurtleNestEncounterFilter(FilterSet):
 
     date_from = DateFilter(
         field_name="when",
