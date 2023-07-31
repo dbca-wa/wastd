@@ -296,7 +296,7 @@ def import_wamtram(reload=False):
 
             for ti in TrtIdentification.objects.filter():
                 TurtleIdentification.objects.get_or_create(
-                    turtle=tu,
+                    turtle_id=tu.pk,
                     identification_type=ti.identification_type.identification_type,
                     identifier=ti.identifier,
                     comments=ti.comments,
