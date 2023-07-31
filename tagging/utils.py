@@ -297,9 +297,9 @@ def import_wamtram(reload=False):
             for ti in TrtIdentification.objects.filter():
                 TurtleIdentification.objects.get_or_create(
                     turtle=tu,
-                    identification_type=t.identification_type.identification_type,
-                    identifier=t.identifier,
-                    comments=t.comments,
+                    identification_type=ti.identification_type.identification_type,
+                    identifier=ti.identifier,
+                    comments=ti.comments,
                 )
 
             count += 1
