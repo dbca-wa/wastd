@@ -569,21 +569,27 @@ def import_wamtram(reload=False):
 
             for m in TrtMeasurements.objects.filter(observation=obs):
                 mtype = MeasurementType.objects.get(short_desc=m.measurement_type.measurement_type)
-                TurtleMeasurement.objects.get_or_create(
-                    observation=o,
-                    measurement_type=mtype,
-                    value=m.measurement_value,
-                    comments=m.comments,
-                )
+                try:
+                    TurtleMeasurement.objects.get_or_create(
+                        observation=o,
+                        measurement_type=mtype,
+                        value=m.measurement_value,
+                        comments=m.comments,
+                    )
+                except:
+                    pass  # Pass on exception.
 
             for d in TrtDamage.objects.filter(observation=obs):
-                TurtleDamage.objects.get_or_create(
-                    observation=o,
-                    body_part=d.body_part_id,
-                    damage=d.damage_code_id,
-                    cause=d.damage_cause_code_id,
-                    comments=d.comments,
-                )
+                try:
+                    TurtleDamage.objects.get_or_create(
+                        observation=o,
+                        body_part=d.body_part_id,
+                        damage=d.damage_code_id,
+                        cause=d.damage_cause_code_id,
+                        comments=d.comments,
+                    )
+                except:
+                    pass  # Pass on exception.
 
             for t in TrtRecordedTags.objects.filter(observation_id=obs.pk):
                 try:
@@ -597,7 +603,7 @@ def import_wamtram(reload=False):
                         comments=t.comments,
                     )
                 except:
-                    pass
+                    pass  # Pass on exception.
 
             for t in TrtRecordedPitTags.objects.filter(observation_id=obs.pk):
                 try:
@@ -611,23 +617,26 @@ def import_wamtram(reload=False):
                         comments=t.comments,
                     )
                 except:
-                    pass
+                    pass  # Pass on exception.
 
             for t in TrtSamples.objects.filter(observation_id=obs.pk):
-                TurtleSample.objects.get_or_create(
-                    observation=o,
-                    tissue_type=t.tissue_type.tissue_type,
-                    label=t.sample_label,
-                    sample_date=t.sample_date.date() if t.sample_date else None,
-                    arsenic=t.arsenic,
-                    selenium=t.selenium,
-                    zinc=t.zinc,
-                    cadmium=t.cadmium,
-                    copper=t.copper,
-                    lead=t.lead,
-                    mercury=t.mercury,
-                    comments=t.comments,
-                )
+                try:
+                    TurtleSample.objects.get_or_create(
+                        observation=o,
+                        tissue_type=t.tissue_type.tissue_type,
+                        label=t.sample_label,
+                        sample_date=t.sample_date.date() if t.sample_date else None,
+                        arsenic=t.arsenic,
+                        selenium=t.selenium,
+                        zinc=t.zinc,
+                        cadmium=t.cadmium,
+                        copper=t.copper,
+                        lead=t.lead,
+                        mercury=t.mercury,
+                        comments=t.comments,
+                    )
+                except:
+                    pass  # Pass on exception.
 
             count += 1
             if count % 1000 == 0:
