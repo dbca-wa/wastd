@@ -107,12 +107,12 @@ def import_wamtram(reload=False):
     )
     for sp in TRT_SPECIES_MAP.values():
         TurtleSpecies.objects.get_or_create(**sp)
-    print(f"Object count: {TurtleSpecies.objects.count()}")
+    print(f"TurtleSpecies object count: {TurtleSpecies.objects.count()}")
 
     print("Importing locations")
     for loc in TRT_LOCATION_MAP.values():
         Location.objects.get_or_create(**loc)
-    print(f"Object count: {Location.objects.count()}")
+    print(f"Location object count: {Location.objects.count()}")
 
     print("Importing places")
     for pl in TrtPlaces.objects.all():
@@ -128,7 +128,7 @@ def import_wamtram(reload=False):
                 point=pl.get_point(),
                 comments=pl.comments,
             )
-    print(f"Object count: {Place.objects.count()}")
+    print(f"Place object count: {Place.objects.count()}")
 
     print("Importing measurement types")
     for t in TrtMeasurementTypes.objects.all():
@@ -140,7 +140,7 @@ def import_wamtram(reload=False):
             maximum_value=t.maximum_value,
             comments=t.comments,
         )
-    print(f"Object count: {MeasurementType.objects.count()}")
+    print(f"MeasurementType object count: {MeasurementType.objects.count()}")
 
     print("Importing persons")
     for p in TrtPersons.objects.all():
@@ -157,7 +157,7 @@ def import_wamtram(reload=False):
             )
         elif User.objects.filter(name__iexact=name.lower(), is_active=True).count() > 1:
             print(f"POSSIBLE DUPLICATE USER: {p}")
-    print(f"Object count: {User.objects.count()}")
+    print(f"User object count: {User.objects.count()}")
 
     print("Importing entry batches")
     for b in TrtEntryBatches.objects.all():
@@ -191,7 +191,7 @@ def import_wamtram(reload=False):
                 comments=b.comments,
                 pr_date_convention=b.pr_date_convention,
             )
-    print(f"Object count: {EntryBatch.objects.count()}")
+    print(f"EntryBatch object count: {EntryBatch.objects.count()}")
 
     print("Importing tag orders")
     for o in TrtTagOrders.objects.all():
@@ -223,7 +223,7 @@ def import_wamtram(reload=False):
                 paid_by=o.paid_by,
                 comments=o.comments,
             )
-    print(f"Object count: {TagOrder.objects.count()}")
+    print(f"TagOrder object count: {TagOrder.objects.count()}")
 
     print("Importing turtles")
     count = 0
@@ -292,20 +292,20 @@ def import_wamtram(reload=False):
                     mund_id=t.mund_id,
                     identification_confidence=t.identification_confidence,
                     sex=sex,
-                )
+                )[0]
 
-            for ti in TrtIdentification.objects.filter():
+            for ti in TrtIdentification.objects.filter(turtle=t):
                 TurtleIdentification.objects.get_or_create(
-                    turtle=tu,
-                    identification_type=t.identification_type.identification_type,
-                    identifier=t.identifier,
-                    comments=t.comments,
+                    turtle_id=tu.pk,
+                    identification_type=ti.identification_type.identification_type,
+                    identifier=ti.identifier,
+                    comments=ti.comments,
                 )
 
             count += 1
             if count % 1000 == 0:
                 print(f"{count} imported")
-    print(f"Object count: {Turtle.objects.count()}")
+    print(f"Turtle object count: {Turtle.objects.count()}")
     print(f"TurtleIdentification object count: {TurtleIdentification.objects.count()}")
 
     print("Importing tags")
@@ -365,7 +365,7 @@ def import_wamtram(reload=False):
             count += 1
             if count % 1000 == 0:
                 print(f"{count} imported")
-    print(f"Object count: {TurtleTag.objects.count()}")
+    print(f"TurtleTag object count: {TurtleTag.objects.count()}")
 
     print("Importing pit tags")
     count = 0
@@ -425,7 +425,7 @@ def import_wamtram(reload=False):
             count += 1
             if count % 1000 == 0:
                 print(f"{count} imported")
-    print(f"Object count: {TurtlePitTag.objects.count()}")
+    print(f"TurtlePitTag object count: {TurtlePitTag.objects.count()}")
 
     print("Importing observations")
     count = 0
@@ -569,21 +569,27 @@ def import_wamtram(reload=False):
 
             for m in TrtMeasurements.objects.filter(observation=obs):
                 mtype = MeasurementType.objects.get(short_desc=m.measurement_type.measurement_type)
-                TurtleMeasurement.objects.get_or_create(
-                    observation=o,
-                    measurement_type=mtype,
-                    value=m.measurement_value,
-                    comments=m.comments,
-                )
+                try:
+                    TurtleMeasurement.objects.get_or_create(
+                        observation=o,
+                        measurement_type=mtype,
+                        value=m.measurement_value,
+                        comments=m.comments,
+                    )
+                except:
+                    pass  # Pass on exception.
 
             for d in TrtDamage.objects.filter(observation=obs):
-                TurtleDamage.objects.get_or_create(
-                    observation=o,
-                    body_part=d.body_part_id,
-                    damage=d.damage_code_id,
-                    cause=d.damage_cause_code_id,
-                    comments=d.comments,
-                )
+                try:
+                    TurtleDamage.objects.get_or_create(
+                        observation=o,
+                        body_part=d.body_part_id,
+                        damage=d.damage_code_id,
+                        cause=d.damage_cause_code_id,
+                        comments=d.comments,
+                    )
+                except:
+                    pass  # Pass on exception.
 
             for t in TrtRecordedTags.objects.filter(observation_id=obs.pk):
                 try:
@@ -597,7 +603,7 @@ def import_wamtram(reload=False):
                         comments=t.comments,
                     )
                 except:
-                    pass
+                    pass  # Pass on exception.
 
             for t in TrtRecordedPitTags.objects.filter(observation_id=obs.pk):
                 try:
@@ -611,29 +617,32 @@ def import_wamtram(reload=False):
                         comments=t.comments,
                     )
                 except:
-                    pass
+                    pass  # Pass on exception.
 
             for t in TrtSamples.objects.filter(observation_id=obs.pk):
-                TurtleSample.objects.get_or_create(
-                    observation=o,
-                    tissue_type=t.tissue_type.tissue_type,
-                    label=t.sample_label,
-                    sample_date=t.sample_date.date() if t.sample_date else None,
-                    arsenic=t.arsenic,
-                    selenium=t.selenium,
-                    zinc=t.zinc,
-                    cadmium=t.cadmium,
-                    copper=t.copper,
-                    lead=t.lead,
-                    mercury=t.mercury,
-                    comments=t.comments,
-                )
+                try:
+                    TurtleSample.objects.get_or_create(
+                        observation=o,
+                        tissue_type=t.tissue_type.tissue_type,
+                        label=t.sample_label,
+                        sample_date=t.sample_date.date() if t.sample_date else None,
+                        arsenic=t.arsenic,
+                        selenium=t.selenium,
+                        zinc=t.zinc,
+                        cadmium=t.cadmium,
+                        copper=t.copper,
+                        lead=t.lead,
+                        mercury=t.mercury,
+                        comments=t.comments,
+                    )
+                except:
+                    pass  # Pass on exception.
 
             count += 1
             if count % 1000 == 0:
                 print(f"{count} imported")
 
-    print(f"Object count: {TurtleObservation.objects.count()}")
+    print(f"TurtleObservation object count: {TurtleObservation.objects.count()}")
     print(f"TurtleMeasurement object count: {TurtleMeasurement.objects.count()}")
     print(f"TurtleDamage object count: {TurtleDamage.objects.count()}")
     print(f"TurtleTagObservation object count: {TurtleTagObservation.objects.count()}")
