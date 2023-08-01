@@ -7,11 +7,15 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            '--no-reload',
-            action='store_false',
-            help='Skip import of existing WAMTRAM records',
+            '--reload',
+            action='store_true',
+            help='Re-import existing WAMTRAM records',
             dest='reload',
         )
 
     def handle(self, *args, **options):
-        import_wamtram(reload=options['reload'])
+        reload = False
+        if 'reload' in options:
+            reload = options['reload']
+
+        import_wamtram(reload=reload)
