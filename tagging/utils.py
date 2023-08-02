@@ -1,5 +1,6 @@
 from django.db.models import Max
 from django.utils import timezone
+import logging
 from wamtram.models import (
     TrtPlaces,
     TrtPersons,
@@ -38,6 +39,7 @@ from .models import (
 )
 
 
+LOGGER = logging.getLogger("turtles")
 TRT_SPECIES_MAP = {
     'FB': {'scientific_name': 'Natator depressus', 'common_name': 'Flatback Turtle', 'old_species_code': 'F', 'hide_dataentry': False},
     'GN': {'scientific_name': 'Chelonia mydas', 'common_name': 'Green Turtle', 'old_species_code': 'G', 'hide_dataentry': False},
@@ -101,20 +103,20 @@ def import_wamtram(reload=False):
     """
     admin = User.objects.get(pk=1)
 
-    print("Importing species")
+    LOGGER.info("Importing species")
     TurtleSpecies.objects.get_or_create(
         scientific_name='Unknown', common_name='Not recorded - uncertain', old_species_code=None, hide_dataentry=False
     )
     for sp in TRT_SPECIES_MAP.values():
         TurtleSpecies.objects.get_or_create(**sp)
-    print(f"TurtleSpecies object count: {TurtleSpecies.objects.count()}")
+    LOGGER.info(f"TurtleSpecies object count: {TurtleSpecies.objects.count()}")
 
-    print("Importing locations")
+    LOGGER.info("Importing locations")
     for loc in TRT_LOCATION_MAP.values():
         Location.objects.get_or_create(**loc)
-    print(f"Location object count: {Location.objects.count()}")
+    LOGGER.info(f"Location object count: {Location.objects.count()}")
 
-    print("Importing places")
+    LOGGER.info("Importing places")
     for pl in TrtPlaces.objects.all():
         if not Place.objects.filter(name=pl.place_name).exists():
             # First, match the newly-created Location obj.
@@ -128,9 +130,9 @@ def import_wamtram(reload=False):
                 point=pl.get_point(),
                 comments=pl.comments,
             )
-    print(f"Place object count: {Place.objects.count()}")
+    LOGGER.info(f"Place object count: {Place.objects.count()}")
 
-    print("Importing measurement types")
+    LOGGER.info("Importing measurement types")
     for t in TrtMeasurementTypes.objects.all():
         MeasurementType.objects.get_or_create(
             short_desc=t.measurement_type,
@@ -140,9 +142,9 @@ def import_wamtram(reload=False):
             maximum_value=t.maximum_value,
             comments=t.comments,
         )
-    print(f"MeasurementType object count: {MeasurementType.objects.count()}")
+    LOGGER.info(f"MeasurementType object count: {MeasurementType.objects.count()}")
 
-    print("Importing persons")
+    LOGGER.info("Importing persons")
     for p in TrtPersons.objects.all():
         name = p.get_name()
         if not User.objects.filter(name__iexact=name.lower(), is_active=True).exists():
@@ -156,10 +158,10 @@ def import_wamtram(reload=False):
                 role=" ".join([p.specialty if p.specialty else "", p.comments if p.comments else ""]).strip(),
             )
         elif User.objects.filter(name__iexact=name.lower(), is_active=True).count() > 1:
-            print(f"POSSIBLE DUPLICATE USER: {p}")
-    print(f"User object count: {User.objects.count()}")
+            LOGGER.info(f"POSSIBLE DUPLICATE USER: {p}")
+    LOGGER.info(f"User object count: {User.objects.count()}")
 
-    print("Importing entry batches")
+    LOGGER.info("Importing entry batches")
     for b in TrtEntryBatches.objects.all():
         if b.entered_person_id:
             try:
@@ -191,9 +193,9 @@ def import_wamtram(reload=False):
                 comments=b.comments,
                 pr_date_convention=b.pr_date_convention,
             )
-    print(f"EntryBatch object count: {EntryBatch.objects.count()}")
+    LOGGER.info(f"EntryBatch object count: {EntryBatch.objects.count()}")
 
-    print("Importing tag orders")
+    LOGGER.info("Importing tag orders")
     for o in TrtTagOrders.objects.all():
         if TagOrder.objects.filter(pk=o.tag_order_id).exists():
             if reload:
@@ -223,15 +225,15 @@ def import_wamtram(reload=False):
                 paid_by=o.paid_by,
                 comments=o.comments,
             )
-    print(f"TagOrder object count: {TagOrder.objects.count()}")
+    LOGGER.info(f"TagOrder object count: {TagOrder.objects.count()}")
 
-    print("Importing turtles")
+    LOGGER.info("Importing turtles")
     count = 0
     bobp = User.objects.get(username='bobp')
     turtle_ids = TrtTurtles.objects.values_list('turtle_id', flat=True)
 
     for id in turtle_ids:
-        # Last-path skip existing records, no reload.
+        # Fast-path skip existing records, no reload.
         if Turtle.objects.filter(pk=id).exists() and not reload:
             continue
         else:
@@ -304,17 +306,17 @@ def import_wamtram(reload=False):
 
             count += 1
             if count % 1000 == 0:
-                print(f"{count} imported")
-    print(f"Turtle object count: {Turtle.objects.count()}")
-    print(f"TurtleIdentification object count: {TurtleIdentification.objects.count()}")
+                LOGGER.info(f"{count} imported")
+    LOGGER.info(f"Turtle object count: {Turtle.objects.count()}")
+    LOGGER.info(f"TurtleIdentification object count: {TurtleIdentification.objects.count()}")
 
-    print("Importing tags")
+    LOGGER.info("Importing tags")
     count = 0
     tag_serials = TrtTags.objects.values_list('tag_id', flat=True)
     tag_serials = [(t.replace(" ", "").strip(), t) for t in tag_serials]
 
     for serials in tag_serials:
-        # Last-path skip existing records, no reload.
+        # Fast-path skip existing records, no reload.
         if TurtleTag.objects.filter(serial=serials[0]).exists() and not reload:
             continue
         else:
@@ -364,16 +366,16 @@ def import_wamtram(reload=False):
                 )
             count += 1
             if count % 1000 == 0:
-                print(f"{count} imported")
-    print(f"TurtleTag object count: {TurtleTag.objects.count()}")
+                LOGGER.info(f"{count} imported")
+    LOGGER.info(f"TurtleTag object count: {TurtleTag.objects.count()}")
 
-    print("Importing pit tags")
+    LOGGER.info("Importing pit tags")
     count = 0
     tag_serials = TrtPitTags.objects.values_list('pit_tag_id', flat=True)
     tag_serials = [(t.replace(" ", "").strip(), t) for t in tag_serials]
 
     for serials in tag_serials:
-        # Last-path skip existing records, no reload.
+        # Fast-path skip existing records, no reload.
         if TurtlePitTag.objects.filter(serial=serials[0]).exists() and not reload:
             continue
         else:
@@ -424,15 +426,15 @@ def import_wamtram(reload=False):
                 )
             count += 1
             if count % 1000 == 0:
-                print(f"{count} imported")
-    print(f"TurtlePitTag object count: {TurtlePitTag.objects.count()}")
+                LOGGER.info(f"{count} imported")
+    LOGGER.info(f"TurtlePitTag object count: {TurtlePitTag.objects.count()}")
 
-    print("Importing observations")
+    LOGGER.info("Importing observations")
     count = 0
     turtle_observation_ids = TrtObservations.objects.values_list('observation_id', flat=True)
 
     for id in turtle_observation_ids:
-        # Last-path skip existing records, no reload.
+        # Fast-path skip existing records, no reload.
         if TurtleObservation.objects.filter(pk=id).exists() and not reload:
             continue
         else:
@@ -640,24 +642,24 @@ def import_wamtram(reload=False):
 
             count += 1
             if count % 1000 == 0:
-                print(f"{count} imported")
+                LOGGER.info(f"{count} imported")
 
-    print(f"TurtleObservation object count: {TurtleObservation.objects.count()}")
-    print(f"TurtleMeasurement object count: {TurtleMeasurement.objects.count()}")
-    print(f"TurtleDamage object count: {TurtleDamage.objects.count()}")
-    print(f"TurtleTagObservation object count: {TurtleTagObservation.objects.count()}")
-    print(f"TurtlePitTagObservation object count: {TurtlePitTagObservation.objects.count()}")
-    print(f"TurtleSample object count: {TurtleSample.objects.count()}")
+    LOGGER.info(f"TurtleObservation object count: {TurtleObservation.objects.count()}")
+    LOGGER.info(f"TurtleMeasurement object count: {TurtleMeasurement.objects.count()}")
+    LOGGER.info(f"TurtleDamage object count: {TurtleDamage.objects.count()}")
+    LOGGER.info(f"TurtleTagObservation object count: {TurtleTagObservation.objects.count()}")
+    LOGGER.info(f"TurtlePitTagObservation object count: {TurtlePitTagObservation.objects.count()}")
+    LOGGER.info(f"TurtleSample object count: {TurtleSample.objects.count()}")
 
-    print("Complete")
-    print("Set sequence values for: EntryBatch, TagOrder, Turtle, TurtleObservation")
+    LOGGER.info("Complete")
+    LOGGER.info("Set sequence values for: EntryBatch, TagOrder, Turtle, TurtleObservation")
     entrybatch_id_max = EntryBatch.objects.aggregate(Max('pk'))['pk__max']
-    print(f"SELECT setval('tagging_entrybatch_id_seq', {entrybatch_id_max}, true);")
+    LOGGER.info(f"SELECT setval('tagging_entrybatch_id_seq', {entrybatch_id_max}, true);")
     tagorder_id_max = TagOrder.objects.aggregate(Max('pk'))['pk__max']
-    print(f"SELECT setval('tagging_tagorder_id_seq', {tagorder_id_max}, true);")
+    LOGGER.info(f"SELECT setval('tagging_tagorder_id_seq', {tagorder_id_max}, true);")
     turtle_id_max = Turtle.objects.aggregate(Max('pk'))['pk__max']
-    print(f"SELECT setval('tagging_turtle_id_seq', {turtle_id_max}, true);")
+    LOGGER.info(f"SELECT setval('tagging_turtle_id_seq', {turtle_id_max}, true);")
     turtleobservation_id_max = TurtleObservation.objects.aggregate(Max('pk'))['pk__max']
-    print(f"SELECT setval('tagging_turtleobservation_id_seq', {turtleobservation_id_max}, true);")
+    LOGGER.info(f"SELECT setval('tagging_turtleobservation_id_seq', {turtleobservation_id_max}, true);")
     ident_id_max = TurtleIdentification.objects.aggregate(Max('pk'))['pk__max']
-    print(f"SELECT setval('tagging_turtleidentification_id_seq', {ident_id_max}, true);")
+    LOGGER.info(f"SELECT setval('tagging_turtleidentification_id_seq', {ident_id_max}, true);")
