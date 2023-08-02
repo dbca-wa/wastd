@@ -39,7 +39,7 @@ class SurveyFilter(FilterSet):
     user_reporter = ModelChoiceFilter(
         field_name="reporter",
         label="Reported by",
-        queryset=User.objects.all(),
+        queryset=User.objects.filter(is_active=True).order_by("name"),
         # NOTE: we can't filter the queryset here due to a circular dependency that breaks Django migrations.
         #queryset = User.objects.filter(pk__in=set(Survey.objects.values_list("reporter", flat=True))).order_by("name")
     )
@@ -113,14 +113,14 @@ class AnimalEncounterFilter(FilterSet):
     user_observer = ModelChoiceFilter(
         field_name="observer",
         label="Observed by",
-        # NOTE: we can't filter the queryset here due to a circular dependency that breaks Django migrations.
-        queryset=User.objects.all(),
+        #queryset=User.objects.all(),
+        queryset=User.objects.filter(is_active=True).order_by("name"),
     )
-    user_reporter = ModelChoiceFilter(
-        field_name="reporter",
-        label="Reported by",
-        queryset=User.objects.none(),
-    )
+    #user_reporter = ModelChoiceFilter(
+    #    field_name="reporter",
+    #    label="Reported by",
+    #    queryset=User.objects.none(),
+    #)
     encounter_type = ChoiceFilter(
         field_name="encounter_type",
         choices=(
@@ -128,7 +128,7 @@ class AnimalEncounterFilter(FilterSet):
             #(Encounter.ENCOUNTER_LOGGER, "Logger"),
             #(Encounter.ENCOUNTER_OTHER, "Other"),
             (Encounter.ENCOUNTER_STRANDING, "Stranding"),
-            (Encounter.ENCOUNTER_TAGGING, "Tagging"),
+            #(Encounter.ENCOUNTER_TAGGING, "Tagging"),
             #(Encounter.ENCOUNTER_TAG, "Tag Management"),
         ),
     )
@@ -146,6 +146,7 @@ class AnimalEncounterFilter(FilterSet):
         field_name="status",
         choices=(
             (Encounter.STATUS_NEW, "New"),
+            (Encounter.STATUS_IMPORTED, "Imported"),
             (Encounter.STATUS_CURATED, "Curated"),
             (Encounter.STATUS_FLAGGED, "Flagged"),
         ),
@@ -159,7 +160,7 @@ class AnimalEncounterFilter(FilterSet):
             "date_from",
             "date_to",
             "user_observer",
-            "user_reporter",
+            #"user_reporter",
             "encounter_type",
             "area",  # Locality
             "site",
@@ -186,14 +187,14 @@ class TurtleNestEncounterFilter(FilterSet):
     user_observer = ModelChoiceFilter(
         field_name="observer",
         label="Observed by",
-        # NOTE: we can't filter the queryset here due to a circular dependency that breaks Django migrations.
-        queryset=User.objects.all(),
+        #queryset=User.objects.all(),
+        queryset=User.objects.filter(is_active=True).order_by("name"),
     )
-    user_reporter = ModelChoiceFilter(
-        field_name="reporter",
-        label="Reported by",
-        queryset=User.objects.all(),
-    )
+    #user_reporter = ModelChoiceFilter(
+    #    field_name="reporter",
+    #    label="Reported by",
+    #    queryset=User.objects.all(),
+    #)
     encounter_type = ChoiceFilter(
         field_name="encounter_type",
         choices=(
@@ -227,6 +228,7 @@ class TurtleNestEncounterFilter(FilterSet):
         field_name="status",
         choices=(
             (Encounter.STATUS_NEW, "New"),
+            (Encounter.STATUS_IMPORTED, "Imported"),
             (Encounter.STATUS_CURATED, "Curated"),
             (Encounter.STATUS_FLAGGED, "Flagged"),
         ),
@@ -240,7 +242,7 @@ class TurtleNestEncounterFilter(FilterSet):
             "date_from",
             "date_to",
             "user_observer",
-            "user_reporter",
+            #"user_reporter",
             "encounter_type",
             "nest_type",
             "nest_age",
