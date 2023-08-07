@@ -2,10 +2,5 @@
 {% load observations %}
 
 {% block title_row %}
-{{ object.get_health_display|title }}
-{{ object.get_maturity_display }}
-{{ object.get_species_display }}
-{% if object.sighting_status != 'na' %}
-{{ object.get_sighting_status_display }}
-{% endif %}
+{{ object.get_card_title }}
 {% endblock title_row %}
