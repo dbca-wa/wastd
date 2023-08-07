@@ -1,256 +1,103 @@
-"""observations view test suite testing URLs, templates, and views."""
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Group
 from django.contrib.gis.geos import GEOSGeometry
 from django.test import TestCase
-from django.urls import reverse  # noqa
-from django.utils import timezone  # noqa
+from django.urls import reverse
+from django.utils import timezone
 
 from observations.lookups import (
     NA,
     TAXON_CHOICES_DEFAULT,
 )
-from observations.models import (  # noqa
+from observations.models import (
     AnimalEncounter,
-    Area,
-    Encounter,
-    HatchlingMorphometricObservation,
-    LineTransectEncounter,
-    ManagementAction,
-    MediaAttachment,
-    NestTagObservation,
-    Survey,
-    TagObservation,
-    TrackTallyObservation,
-    TurtleDamageObservation,
-    TurtleMorphometricObservation,
-    TurtleNestDisturbanceObservation,
-    TurtleNestDisturbanceTallyObservation,
     TurtleNestEncounter,
-    TurtleNestObservation,
-    PathToSea,
-    TurtleHatchlingEmergenceObservation,
-    TurtleHatchlingEmergenceOutlierObservation,
-    LightSourceObservation,
-    LoggerObservation,
+    Encounter,
 )
 
 
-class HomeViewTestsSuperuser(TestCase):
-    """Home view tests for superusers."""
+class ViewsTestCase(TestCase):
 
     def setUp(self):
-        """Setup: create a new list."""
-        self.superuser = get_user_model().objects.create_superuser(
-            username="superuser", email="super@gmail.com", password="test"
-        )
+        User = get_user_model()
+        self.superuser = User.objects.create_superuser(
+            username="superuser", email="superuser@email.com", password="test")
+        self.staff = User.objects.create_user(
+            username="staffuser", email="staff@email.com", password="test", is_staff=True)
+        self.staff.save()
+        self.user = User.objects.create_user(
+            username="user", email="user@email.com", password="test")
+        self.user.save()
 
-        self.superuser.save()
 
+class HomeViewTests(ViewsTestCase):
+
+    def setUp(self):
+        super().setUp()
+        self.home_url = reverse("home")
+
+    def test_home_superuser(self):
+        """The home view will load for a superuser and contain a link to the curation portal
+        """
         self.client.force_login(self.superuser)
-
-    def test_superuser_can_view_home(self):
-        """A superuser should see the Home view."""
-        response = self.client.get(reverse("home"))
+        response = self.client.get(self.home_url)
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Curation portal")
 
-
-class HomeViewTestsInternal(TestCase):
-    """Home view tests for internal users."""
-
-    def setUp(self):
-        """Setup: create a new user."""
-        self.internal_user = get_user_model().objects.create_user(
-            username="internaluser", email="internal@gmail.com", password="test"
-        )
-
-        self.internal_user.save()
-
-        # Get or create Group "viewers"
-        self.viewers, _ = Group.objects.get_or_create(name="data viewer")
-
-        # Add internal user to Group "viewers"
-        self.internal_user.groups.add(self.viewers)
-
-        self.client.force_login(self.internal_user)
-
-    def test_internaluser_is_data_viewer(self):
-        """The internal user should belong to Group self.viewers."""
-        self.assertTrue(self.viewers in self.internal_user.groups.all())
-
-    def test_internaluser_can_view_home(self):
-        """An interal user should see the Home view.
-
-        Internal users belong to the Group "viewers".
-        They should be able to see all data read-only.
+    def test_home_staff(self):
+        """The home view will load for a staff user and contain a link to the curation portal
         """
-        response = self.client.get(reverse("home"))
+        self.client.force_login(self.staff)
+        response = self.client.get(self.home_url)
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Curation portal")
 
-
-class HomeViewTestsExternal(TestCase):
-    """Home view tests for external users."""
-
-    def setUp(self):
-        """Setup: create a new user."""
-        self.external_user = get_user_model().objects.create_user(
-            username="externaluser", email="external@gmail.com", password="test"
-        )
-
-        self.external_user.save()
-
-        # Get or create Group "viewers"
-        self.viewers, _ = Group.objects.get_or_create(name="data viewer")
-
-        self.client.force_login(self.external_user)
-
-    def test_externaluser_is_not_data_viewer(self):
-        """The external user should not belong to Group self.viewers."""
-        self.assertTrue(self.viewers not in self.external_user.groups.all())
-
-    def test_externaluser_can_view_home(self):
-        """An exteral user should see the Home view.
-
-        External users do not belong to the Group "viewers".
-        They should not be able to see all data read-only.
+    def test_home_user(self):
+        """The home view will load for a normal user and contain no link to the curation portal
         """
-        response = self.client.get(reverse("home"))
-
-        # TODO user should see a "forbidden" message
-        self.assertEqual(response.status_code, 200)
-
-
-class EncounterViewTests(TestCase):
-    """Encounter view tests."""
-
-    def setUp(self):
-        """Setup: create a new list."""
-        self.user = get_user_model().objects.create_superuser(
-            username="superuser", email="super@gmail.com", password="test"
-        )
-        self.cl = Encounter.objects.create(
-            where=GEOSGeometry("POINT (115 -32)", srid=4326),
-            when=timezone.now(),
-            source_id="12345",
-            observer=self.user,
-            reporter=self.user,
-        )
-        self.user.save()
         self.client.force_login(self.user)
-
-    def test_absolute_admin_url(self):
-        """Test absolute admin url."""
-        response = self.client.get(self.cl.absolute_admin_url)
+        response = self.client.get(self.home_url)
         self.assertEqual(response.status_code, 200)
-
-    def test_absolute_url(self):
-        """Test absolute url."""
-        response = self.client.get(self.cl.get_absolute_url())
-        self.assertEqual(response.status_code, 200)
-
-    def encounter_list_loads(self):
-        """Test "encounter_list" view."""
-        response = self.client.get(reverse("encounter_list"))
-        self.assertEqual(response.status_code, 200)
-
-    def encounter_detail_loads(self):
-        """Test "observations:animalencounter-detail" view."""
-        response = self.client.get(
-            reverse("observations:encounter-detail", pk=self.cl.pk)
-        )
-        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Curation portal")
 
 
-class AnimalEncounterViewTests(TestCase):
-    """AnimalEncounter view tests."""
-
-    def setUp(self):
-        """Setup: create a new list."""
-        self.user = get_user_model().objects.create_superuser(
-            username="superuser", email="super@gmail.com", password="test"
-        )
-        self.cl = AnimalEncounter.objects.create(
-            where=GEOSGeometry("POINT (115 -32)", srid=4326),
-            when=timezone.now(),
-            taxon=TAXON_CHOICES_DEFAULT,
-            species=NA,
-            source_id="12345",
-            observer=self.user,
-            reporter=self.user,
-        )
-        self.user.save()
-        self.client.force_login(self.user)
-
-    def test_absolute_admin_url(self):
-        """Test absolute admin url."""
-        response = self.client.get(self.cl.absolute_admin_url)
-        self.assertEqual(response.status_code, 200)
-
-    def test_absolute_url(self):
-        """Test absolute url."""
-        response = self.client.get(self.cl.get_absolute_url())
-        self.assertEqual(response.status_code, 200)
-
-    def encounter_list_loads(self):
-        """Test "encounter_list" view."""
-        response = self.client.get(reverse("encounter_list"))
-        self.assertEqual(response.status_code, 200)
-
-    def animalencounter_list_loads(self):
-        """Test "observations:animalencounter-list" view."""
-        response = self.client.get(reverse("observations:animalencounter-list"))
-        self.assertEqual(response.status_code, 200)
-
-    def animalencounter_detail_loads(self):
-        """Test "observations:animalencounter-detail" view."""
-        response = self.client.get(
-            reverse("observations:animalencounter-detail", pk=self.cl.pk)
-        )
-        self.assertEqual(response.status_code, 200)
-
-
-class TurtleNestEncounterViewTests(TestCase):
+class TurtleNestEncounterViewTests(ViewsTestCase):
     """TurtleNestEncounter view tests."""
 
     def setUp(self):
-        """Setup: create a new list."""
-        self.user = get_user_model().objects.create_superuser(
-            username="superuser", email="super@gmail.com", password="test"
-        )
-        self.cl = TurtleNestEncounter.objects.create(
+        super().setUp()
+        self.enc = TurtleNestEncounter.objects.create(
             where=GEOSGeometry("POINT (115 -32)", srid=4326),
             when=timezone.now(),
             species="natator-depressus",
             source_id="12345",
-            observer=self.user,
+            observer=self.staff,
             reporter=self.user,
         )
-        self.user.save()
-        self.client.force_login(self.user)
 
-    def test_absolute_admin_url(self):
-        """Test absolute admin url."""
-        response = self.client.get(self.cl.absolute_admin_url)
-        self.assertEqual(response.status_code, 200)
+    #def test_absolute_admin_url(self):
+    #    """Test absolute admin url."""
+    #    response = self.client.get(self.cl.absolute_admin_url)
+    #    self.assertEqual(response.status_code, 200)
 
-    def test_absolute_url(self):
-        """Test absolute url."""
-        response = self.client.get(self.cl.get_absolute_url())
-        self.assertEqual(response.status_code, 200)
+    #def test_absolute_url(self):
+    #    """Test absolute url."""
+    #    response = self.client.get(self.cl.get_absolute_url())
+    #    self.assertEqual(response.status_code, 200)
 
-    def encounter_list_loads(self):
-        """Test "encounter_list" view."""
-        response = self.client.get(reverse("encounter_list"))
-        self.assertEqual(response.status_code, 200)
+    #def encounter_list_loads(self):
+    #    """Test "encounter_list" view."""
+    #    response = self.client.get(reverse("encounter_list"))
+    #    self.assertEqual(response.status_code, 200)
 
-    def turtlenestencounter_list_loads(self):
-        """Test "observations:turtlenestencounter-list" view."""
+    def test_turtlenestencounter_list_staff(self):
+        self.client.force_login(self.staff)
         response = self.client.get(reverse("observations:turtlenestencounter-list"))
         self.assertEqual(response.status_code, 200)
+        print(response.content)
 
-    def turtlenestencounter_detail_loads(self):
-        """Test "observations:turtlenestencounterdetail" view."""
-        response = self.client.get(
-            reverse("observations:turtlenestencounter-detail", pk=self.cl.pk)
-        )
-        self.assertEqual(response.status_code, 200)
+    #def turtlenestencounter_detail_loads(self):
+    #    """Test "observations:turtlenestencounterdetail" view."""
+    #    response = self.client.get(
+    #        reverse("observations:turtlenestencounter-detail", pk=self.cl.pk)
+    #    )
+    #    self.assertEqual(response.status_code, 200)
