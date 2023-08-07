@@ -1568,13 +1568,9 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
 
     @property
     def photographs(self):
-        """Return the URLs of all attached photograph or none."""
-        try:
-            return list(
-                self.observation_set.instance_of(MediaAttachment)
-            )
-        except BaseException:
-            return None
+        """Return a queryset of all attached photographs.
+        """
+        return MediaAttachment.objects.filter(encounter=self, media_type="photograph")
 
 
 class AnimalEncounter(Encounter):
