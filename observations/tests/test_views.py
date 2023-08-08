@@ -7,7 +7,7 @@ from django.utils import timezone
 from observations.models import (
     Encounter,
     AnimalEncounter,
-    #TurtleNestEncounter,
+    TurtleNestEncounter,
 )
 
 
@@ -36,6 +36,30 @@ class ViewsTestCase(TestCase):
             name="Normal user",
         )
         self.user.save()
+        self.enc = Encounter.objects.create(
+            where=GEOSGeometry("POINT (115 -32)", srid=4326),
+            when=timezone.now(),
+            source_id="12345",
+            observer=self.staff,
+            reporter=self.user,
+        )
+        self.stranding = AnimalEncounter.objects.create(
+            where=GEOSGeometry("POINT (115 -32)", srid=4326),
+            when=timezone.now(),
+            source_id="82930495",
+            observer=self.staff,
+            reporter=self.user,
+            species="cheloniidae-fam",
+        )
+        self.nest = TurtleNestEncounter.objects.create(
+            where=GEOSGeometry("POINT (115 -32)", srid=4326),
+            when=timezone.now(),
+            source_id="abc-123",
+            observer=self.staff,
+            reporter=self.user,
+            species="cheloniidae-fam",
+            nest_type="nest",
+        )
 
 
 class HomeViewTests(ViewsTestCase):
@@ -66,21 +90,6 @@ class EncounterViewTests(ViewsTestCase):
 
     def setUp(self):
         super().setUp()
-        self.enc = Encounter.objects.create(
-            where=GEOSGeometry("POINT (115 -32)", srid=4326),
-            when=timezone.now(),
-            source_id="12345",
-            observer=self.staff,
-            reporter=self.user,
-        )
-        self.stranding = AnimalEncounter.objects.create(
-            where=GEOSGeometry("POINT (115 -32)", srid=4326),
-            when=timezone.now(),
-            source_id="82930495",
-            observer=self.staff,
-            reporter=self.user,
-            species="cheloniidae-fam",
-        )
         self.list_url = reverse("observations:encounter-list")
         self.detail_url = reverse("observations:encounter-detail", kwargs={"pk": self.enc.pk})
         self.list_url_stranding = reverse("observations:animalencounter-list")

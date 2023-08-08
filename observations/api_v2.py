@@ -1,6 +1,8 @@
 from wastd.utils import ListResourceView, DetailResourceView
 from .models import (
     Encounter,
+    AnimalEncounter,
+    TurtleNestEncounter,
     Area,
     Survey,
     SurveyMediaAttachment,
@@ -12,6 +14,8 @@ from .serializers_v2 import (
     SurveySerializer,
     SurveyMediaAttachmentSerializer,
     MediaAttachmentSerializer,
+    AnimalEncounterSerializer,
+    TurtleNestEncounterSerializer,
 )
 
 
@@ -21,7 +25,7 @@ class EncounterListResource(ListResourceView):
 
     def get_queryset(self):
         # FIXME: permissions checking per object.
-        return Encounter.objects.all(
+        return self.model.objects.all(
         ).prefetch_related(
             'observer',
             'reporter',
@@ -34,6 +38,26 @@ class EncounterListResource(ListResourceView):
 class EncounterDetailResource(DetailResourceView):
     model = Encounter
     serializer = EncounterSerializer
+
+
+class AnimalEncounterListResource(EncounterListResource):
+    model = AnimalEncounter
+    serializer = AnimalEncounterSerializer
+
+
+class AnimalEncounterDetailResource(EncounterDetailResource):
+    model = AnimalEncounter
+    serializer = AnimalEncounterSerializer
+
+
+class TurtleNestEncounterListResource(EncounterListResource):
+    model = TurtleNestEncounter
+    serializer = TurtleNestEncounterSerializer
+
+
+class TurtleNestEncounterDetailResource(EncounterDetailResource):
+    model = TurtleNestEncounter
+    serializer = TurtleNestEncounterSerializer
 
 
 class AreaListResource(ListResourceView):
