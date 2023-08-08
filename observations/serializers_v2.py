@@ -4,6 +4,9 @@ from typing import Dict, Any
 from users.serializers import user_serializer_basic
 
 
+TZ = timezone.get_current_timezone()
+
+
 def area_serializer_basic(obj) -> Dict[str, Any]:
     return {
         'id': obj.pk,
@@ -50,8 +53,8 @@ def survey_serializer_basic(obj) -> Dict[str, Any]:
         'id': obj.pk,
         'area': area_serializer_basic(obj.area) if obj.area else None,
         'site': area_serializer_basic(obj.site) if obj.site else None,
-        'start_time': obj.start_time.astimezone(timezone.get_current_timezone()).isoformat(),
-        'end_time': obj.end_time.astimezone(timezone.get_current_timezone()).isoformat(),
+        'start_time': obj.start_time.astimezone(TZ).isoformat(),
+        'end_time': obj.end_time.astimezone(TZ).isoformat(),
         'start_comments': obj.start_comments,
         'end_comments': obj.end_comments,
         'reporter': user_serializer_basic(obj.reporter) if obj.reporter else None,
@@ -85,13 +88,13 @@ def survey_serializer(obj) -> Dict[str, Any]:
             'source_id': obj.source_id,
             'device_id': obj.device_id,
             'start_location_accuracy_m': obj.start_location_accuracy_m,
-            'start_time': obj.start_time.astimezone(timezone.get_current_timezone()).isoformat(),
+            'start_time': obj.start_time.astimezone(TZ).isoformat(),
             'start_comments': obj.start_comments,
             'end_source_id': obj.end_source_id,
             'end_device_id': obj.end_device_id,
             'end_location': None,  # TODO
             'end_location_accuracy_m': obj.end_location_accuracy_m,
-            'end_time': obj.end_time.astimezone(timezone.get_current_timezone()).isoformat(),
+            'end_time': obj.end_time.astimezone(TZ).isoformat(),
             'end_comments': obj.end_comments,
             'production': obj.production,
             'label': obj.label,
@@ -144,7 +147,7 @@ def encounter_serializer(obj) -> Dict[str, Any]:
             'source_id': obj.source_id,
             'encounter_type': obj.encounter_type,
             'status': obj.status,
-            'when': obj.when.astimezone(timezone.get_current_timezone()).isoformat(),
+            'when': obj.when.astimezone(TZ).isoformat(),
             'latitude': obj.where.y if obj.where else None,
             'longitude': obj.where.x if obj.where else None,
             'crs': obj.where.srid if obj.where else None,
@@ -165,6 +168,68 @@ def encounter_serializer(obj) -> Dict[str, Any]:
 class EncounterSerializer(object):
     def serialize(encounter):
         return encounter_serializer(encounter)
+
+
+def animalencounter_serializer(obj) -> Dict[str, Any]:
+    d = {
+        'taxon': obj.get_taxon_display(),
+        'species': obj.get_species_display(),
+        'sex': obj.get_sex_display(),
+        'maturity': obj.get_maturity_display(),
+        'health': obj.get_health_display(),
+        'activity': obj.get_activity_display(),
+        'behaviour': obj.behaviour,
+        'habitat': obj.get_habitat_display(),
+        'sighting_status': obj.get_sighting_status_display(),
+        'sighting_status_reason': obj.sighting_status_reason,
+        'identifiers': obj.identifiers,
+        'datetime_of_last_sighting': obj.datetime_of_last_sighting.astimezone(TZ).isoformat() if obj.datetime_of_last_sighting else None,
+        'site_of_last_sighting': area_serializer_basic(obj.site_of_last_sighting) if obj.site_of_last_sighting else None,
+        'site_of_first_sighting': area_serializer_basic(obj.site_of_first_sighting) if obj.site_of_first_sighting else None,
+        'nesting_event': obj.get_nesting_event_display(),
+        'nesting_disturbed': obj.get_nesting_disturbed_display(),
+        'laparoscopy': obj.laparoscopy,
+        'checked_for_injuries': obj.get_checked_for_injuries_display(),
+        'scanned_for_pit_tags': obj.get_scanned_for_pit_tags_display(),
+        'checked_for_flipper_tags': obj.get_checked_for_flipper_tags_display(),
+        'cause_of_death': obj.get_cause_of_death_display(),
+        'cause_of_death_confidence': obj.get_cause_of_death_confidence_display(),
+    }
+    obj = encounter_serializer(obj)
+    # Extend the serialised object.
+    obj['properties'].update(d)
+
+    return obj
+
+
+class AnimalEncounterSerializer(object):
+    def serialize(encounter):
+        return animalencounter_serializer(encounter)
+
+
+def turtlenestencounter_serializer(obj) -> Dict[str, Any]:
+    d = {
+        'nest_age': obj.get_nest_age_display(),
+        'nest_type': obj.get_nest_type_display(),
+        'species': obj.get_species_display(),
+        'habitat': obj.get_habitat_display(),
+        'disturbance': obj.get_disturbance_display(),
+        'nest_tagged': obj.get_nest_tagged_display(),
+        'logger_found': obj.get_logger_found_display(),
+        'eggs_counted': obj.get_eggs_counted_display(),
+        'hatchlings_measured': obj.get_hatchlings_measured_display(),
+        'fan_angles_measured': obj.get_fan_angles_measured_display(),
+    }
+    obj = encounter_serializer(obj)
+    # Extend the serialised object.
+    obj['properties'].update(d)
+
+    return obj
+
+
+class TurtleNestEncounterSerializer(object):
+    def serialize(encounter):
+        return turtlenestencounter_serializer(encounter)
 
 
 def media_attachment_serializer(obj) -> Dict[str, Any]:
