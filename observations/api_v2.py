@@ -1,21 +1,23 @@
 from wastd.utils import ListResourceView, DetailResourceView
 from .models import (
-    Encounter,
-    AnimalEncounter,
-    TurtleNestEncounter,
     Area,
     Survey,
     SurveyMediaAttachment,
+    Encounter,
+    AnimalEncounter,
+    TurtleNestEncounter,
     MediaAttachment,
+    TurtleNestObservation,
 )
 from .serializers_v2 import (
-    EncounterSerializer,
     AreaSerializer,
     SurveySerializer,
     SurveyMediaAttachmentSerializer,
-    MediaAttachmentSerializer,
+    EncounterSerializer,
     AnimalEncounterSerializer,
     TurtleNestEncounterSerializer,
+    MediaAttachmentSerializer,
+    TurtleNestObservationSerializer
 )
 
 
@@ -98,3 +100,13 @@ class MediaAttachmentListResource(ListResourceView):
 class MediaAttachmentDetailResource(DetailResourceView):
     model = MediaAttachment
     serializer = MediaAttachmentSerializer
+
+
+class TurtleNestObservationListResource(ListResourceView):
+    model = TurtleNestObservation
+    serializer = TurtleNestObservationSerializer
+
+
+class TurtleNestObservationDetailResource(DetailResourceView):
+    model = TurtleNestObservation
+    serializer = TurtleNestObservationSerializer
