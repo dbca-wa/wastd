@@ -1,3 +1,4 @@
+from django.http import HttpResponseBadRequest
 from wastd.utils import ListResourceView, DetailResourceView
 from .models import (
     Area,
@@ -8,6 +9,7 @@ from .models import (
     TurtleNestEncounter,
     MediaAttachment,
     TurtleNestObservation,
+    TurtleHatchlingEmergenceObservation,
 )
 from .serializers_v2 import (
     AreaSerializer,
@@ -17,8 +19,39 @@ from .serializers_v2 import (
     AnimalEncounterSerializer,
     TurtleNestEncounterSerializer,
     MediaAttachmentSerializer,
-    TurtleNestObservationSerializer
+    TurtleNestObservationSerializer,
+    TurtleHatchlingEmergenceObservationSerializer,
 )
+
+
+class AreaListResource(ListResourceView):
+    model = Area
+    serializer = AreaSerializer
+
+
+class AreaDetailResource(DetailResourceView):
+    model = Area
+    serializer = AreaSerializer
+
+
+class SurveyListResource(ListResourceView):
+    model = Survey
+    serializer = SurveySerializer
+
+
+class SurveyDetailResource(DetailResourceView):
+    model = Survey
+    serializer = SurveySerializer
+
+
+class SurveyMediaAttachmentListResource(ListResourceView):
+    model = SurveyMediaAttachment
+    serializer = SurveyMediaAttachmentSerializer
+
+
+class SurveyMediaAttachmentDetailResource(DetailResourceView):
+    model = SurveyMediaAttachment
+    serializer = SurveyMediaAttachmentSerializer
 
 
 class EncounterListResource(ListResourceView):
@@ -62,37 +95,26 @@ class TurtleNestEncounterDetailResource(EncounterDetailResource):
     serializer = TurtleNestEncounterSerializer
 
 
-class AreaListResource(ListResourceView):
-    model = Area
-    serializer = AreaSerializer
+class ObservationListResource(ListResourceView):
+
+    def dispatch(self, request, *args, **kwargs):
+        if 'encounter_id' in request.GET and request.GET['encounter_id']:
+            try:
+                int(request.GET['encounter_id'])
+            except:
+                return HttpResponseBadRequest()
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        if 'encounter_id' in self.request.GET and self.request.GET['encounter_id']:
+            queryset = queryset.filter(encounter__pk=int(self.request.GET['encounter_id']))
+
+        return queryset
 
 
-class AreaDetailResource(DetailResourceView):
-    model = Area
-    serializer = AreaSerializer
-
-
-class SurveyListResource(ListResourceView):
-    model = Survey
-    serializer = SurveySerializer
-
-
-class SurveyDetailResource(DetailResourceView):
-    model = Survey
-    serializer = SurveySerializer
-
-
-class SurveyMediaAttachmentListResource(ListResourceView):
-    model = SurveyMediaAttachment
-    serializer = SurveyMediaAttachmentSerializer
-
-
-class SurveyMediaAttachmentDetailResource(DetailResourceView):
-    model = SurveyMediaAttachment
-    serializer = SurveyMediaAttachmentSerializer
-
-
-class MediaAttachmentListResource(ListResourceView):
+class MediaAttachmentListResource(ObservationListResource):
     model = MediaAttachment
     serializer = MediaAttachmentSerializer
 
@@ -102,7 +124,7 @@ class MediaAttachmentDetailResource(DetailResourceView):
     serializer = MediaAttachmentSerializer
 
 
-class TurtleNestObservationListResource(ListResourceView):
+class TurtleNestObservationListResource(ObservationListResource):
     model = TurtleNestObservation
     serializer = TurtleNestObservationSerializer
 
@@ -110,3 +132,13 @@ class TurtleNestObservationListResource(ListResourceView):
 class TurtleNestObservationDetailResource(DetailResourceView):
     model = TurtleNestObservation
     serializer = TurtleNestObservationSerializer
+
+
+class TurtleHatchlingEmergenceObservationListResource(ObservationListResource):
+    model = TurtleHatchlingEmergenceObservation
+    serializer = TurtleHatchlingEmergenceObservationSerializer
+
+
+class TurtleHatchlingEmergenceObservationDetailResource(DetailResourceView):
+    model = TurtleHatchlingEmergenceObservation
+    serializer = TurtleHatchlingEmergenceObservationSerializer

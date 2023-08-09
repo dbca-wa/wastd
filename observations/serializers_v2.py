@@ -237,9 +237,9 @@ def observation_serializer(obj) -> Dict[str, Any]:
         'type': 'Feature',
         'properties': {
             'id': obj.pk,
+            'encounter_id': obj.encounter.pk,
             'source': obj.source,
             'source_id': obj.source_id,
-            'encounter_id': obj.encounter.pk,
         },
     }
 
@@ -292,3 +292,32 @@ def turtle_nest_observation_serializer(obj) -> Dict[str, Any]:
 class TurtleNestObservationSerializer(object):
     def serialize(obj):
         return turtle_nest_observation_serializer(obj)
+
+
+def turtle_hatchling_emergence_observation_serializer(obj) -> Dict[str, Any]:
+    d = {
+        'bearing_to_water_degrees': obj.bearing_to_water_degrees,
+        'bearing_leftmost_track_degrees': obj.bearing_leftmost_track_degrees,
+        'bearing_rightmost_track_degrees': obj.bearing_rightmost_track_degrees,
+        'no_tracks_main_group': obj.no_tracks_main_group,
+        'no_tracks_main_group_min': obj.no_tracks_main_group_min,
+        'no_tracks_main_group_max': obj.no_tracks_main_group_max,
+        'outlier_tracks_present': obj.get_outlier_tracks_present_display(),
+        'path_to_sea_comments': obj.path_to_sea_comments,
+        'hatchling_emergence_time_known': obj.get_hatchling_emergence_time_known_display(),
+        'cloud_cover_at_emergence_known': obj.get_cloud_cover_at_emergence_known_display(),
+        'light_sources_present': obj.get_light_sources_present_display(),
+        'hatchling_emergence_time': obj.hatchling_emergence_time.astimezone(TZ).isoformat() if obj.hatchling_emergence_time else None,
+        'hatchling_emergence_time_accuracy': obj.hatchling_emergence_time_accuracy,
+        'cloud_cover_at_emergence': obj.cloud_cover_at_emergence,
+    }
+    obj = observation_serializer(obj)
+    # Extend the serialised object.
+    obj['properties'].update(d)
+
+    return obj
+
+
+class TurtleHatchlingEmergenceObservationSerializer(object):
+    def serialize(obj):
+        return turtle_hatchling_emergence_observation_serializer(obj)
