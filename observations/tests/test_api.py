@@ -37,6 +37,14 @@ class ApiTests(ViewsTestCase):
         response = self.client.get(list_url)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.nest.source_id)
+        self.assertContains(response, self.track.source_id)
+
+    def test_turtlenestencounter_api_list_filter(self):
+        list_url = reverse("api_v2:turtle_nest_encounter_list_resource")
+        response = self.client.get(list_url, {"nest_type": "nest"})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.nest.source_id)
+        self.assertNotContains(response, self.track.source_id)
 
     def test_turtlenestencounter_detail(self):
         detail_url = reverse("api_v2:turtle_nest_encounter_detail_resource", kwargs={"pk": self.nest.pk})
@@ -85,3 +93,24 @@ class ApiTests(ViewsTestCase):
         response = self.client.get(detail_url)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.nest_tag_observation.source_id)
+
+    def test_turtlenestdisturbanceobservation_api_list(self):
+        list_url = reverse("api_v2:turtle_nest_disturbance_observation_list_resource")
+        response = self.client.get(list_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.disturbance1.source_id)
+        self.assertContains(response, self.disturbance2.source_id)
+
+    def test_turtlenestdisturbanceobservation_api_list_filter(self):
+        list_url = reverse("api_v2:turtle_nest_disturbance_observation_list_resource")
+        response = self.client.get(list_url, {"encounter_id": self.nest.pk})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.disturbance1.source_id)
+        self.assertNotContains(response, self.disturbance2.source_id)
+
+    def test_turtlenestdisturbanceobservation_detail(self):
+        detail_url = reverse("api_v2:turtle_nest_disturbance_observation_detail_resource", kwargs={"pk": self.disturbance1.pk})
+        response = self.client.get(detail_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.disturbance1.source_id)
+        self.assertNotContains(response, self.disturbance2.source_id)

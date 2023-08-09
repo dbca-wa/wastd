@@ -341,3 +341,22 @@ def nest_tag_observation_serializer(obj) -> Dict[str, Any]:
 class NestTagObservationSerializer(object):
     def serialize(obj):
         return nest_tag_observation_serializer(obj)
+
+
+def turtle_nest_disturbance_observation_serializer(obj) -> Dict[str, Any]:
+    d = {
+        'disturbance_cause': obj.get_disturbance_cause_display(),
+        'disturbance_cause_confidence': obj.get_disturbance_cause_confidence_display(),
+        'disturbance_severity': obj.get_disturbance_severity_display(),
+        'comments': obj.comments,
+    }
+    obj = observation_serializer(obj)
+    # Extend the serialised object.
+    obj['properties'].update(d)
+
+    return obj
+
+
+class TurtleNestDisturbanceObservationSerializer(object):
+    def serialize(obj):
+        return turtle_nest_disturbance_observation_serializer(obj)

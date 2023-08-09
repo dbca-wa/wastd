@@ -12,6 +12,7 @@ from observations.models import (
     TurtleNestObservation,
     TurtleHatchlingEmergenceObservation,
     NestTagObservation,
+    TurtleNestDisturbanceObservation,
 )
 
 
@@ -60,8 +61,16 @@ class ViewsTestCase(TestCase):
             when=timezone.now(),
             observer=self.staff,
             reporter=self.user,
-            species="cheloniidae-fam",
+            species="natator-depressus",
             nest_type="nest",
+        )
+        self.track = TurtleNestEncounter.objects.create(
+            where=GEOSGeometry("POINT (115 -32)", srid=4326),
+            when=timezone.now(),
+            observer=self.staff,
+            reporter=self.user,
+            species="cheloniidae-fam",
+            nest_type="track",
         )
         self.nest_observation = TurtleNestObservation.objects.create(
             encounter=self.nest,
@@ -72,6 +81,12 @@ class ViewsTestCase(TestCase):
         )
         self.nest_tag_observation = NestTagObservation.objects.create(
             encounter=self.nest,
+        )
+        self.disturbance1 = TurtleNestDisturbanceObservation.objects.create(
+            encounter=self.nest,
+        )
+        self.disturbance2 = TurtleNestDisturbanceObservation.objects.create(
+            encounter=self.track,
         )
 
 

@@ -11,6 +11,7 @@ from .models import (
     TurtleNestObservation,
     TurtleHatchlingEmergenceObservation,
     NestTagObservation,
+    TurtleNestDisturbanceObservation,
 )
 from .serializers_v2 import (
     AreaSerializer,
@@ -23,6 +24,7 @@ from .serializers_v2 import (
     TurtleNestObservationSerializer,
     TurtleHatchlingEmergenceObservationSerializer,
     NestTagObservationSerializer,
+    TurtleNestDisturbanceObservationSerializer
 )
 
 
@@ -91,6 +93,16 @@ class TurtleNestEncounterListResource(EncounterListResource):
     model = TurtleNestEncounter
     serializer = TurtleNestEncounterSerializer
 
+    def get_queryset(self):
+        # Filtering options.
+        queryset = super().get_queryset()
+        if 'nest_type' in self.request.GET and self.request.GET['nest_type']:
+            queryset = queryset.filter(nest_type=self.request.GET['nest_type'])
+        if 'species' in self.request.GET and self.request.GET['species']:
+            queryset = queryset.filter(nest_type=self.request.GET['species'])
+
+        return queryset
+
 
 class TurtleNestEncounterDetailResource(EncounterDetailResource):
     model = TurtleNestEncounter
@@ -154,3 +166,13 @@ class NestTagObservationListResource(ObservationListResource):
 class NestTagObservationDetailResource(DetailResourceView):
     model = NestTagObservation
     serializer = NestTagObservationSerializer
+
+
+class TurtleNestDisturbanceObservationListResource(ObservationListResource):
+    model = TurtleNestDisturbanceObservation
+    serializer = TurtleNestDisturbanceObservationSerializer
+
+
+class TurtleNestDisturbanceObservationDetailResource(DetailResourceView):
+    model = TurtleNestDisturbanceObservation
+    serializer = TurtleNestDisturbanceObservationSerializer
