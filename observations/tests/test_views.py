@@ -11,6 +11,7 @@ from observations.models import (
     TurtleNestEncounter,
     TurtleNestObservation,
     TurtleHatchlingEmergenceObservation,
+    NestTagObservation,
 )
 
 
@@ -67,6 +68,9 @@ class ViewsTestCase(TestCase):
             comments="Test data",
         )
         self.emergence_observation = TurtleHatchlingEmergenceObservation.objects.create(
+            encounter=self.nest,
+        )
+        self.nest_tag_observation = NestTagObservation.objects.create(
             encounter=self.nest,
         )
 

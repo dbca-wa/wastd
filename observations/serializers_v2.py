@@ -321,3 +321,23 @@ def turtle_hatchling_emergence_observation_serializer(obj) -> Dict[str, Any]:
 class TurtleHatchlingEmergenceObservationSerializer(object):
     def serialize(obj):
         return turtle_hatchling_emergence_observation_serializer(obj)
+
+
+def nest_tag_observation_serializer(obj) -> Dict[str, Any]:
+    d = {
+        'status': obj.get_status_display(),
+        'flipper_tag_id': obj.flipper_tag_id,
+        'date_nest_laid': obj.date_nest_laid.isoformat() if obj.date_nest_laid else None,
+        'tag_label': obj.tag_label,
+        'comments': obj.comments,
+    }
+    obj = observation_serializer(obj)
+    # Extend the serialised object.
+    obj['properties'].update(d)
+
+    return obj
+
+
+class NestTagObservationSerializer(object):
+    def serialize(obj):
+        return nest_tag_observation_serializer(obj)

@@ -50,8 +50,38 @@ class ApiTests(ViewsTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.nest_observation.source_id)
 
+    def test_turtlenestobservation_api_list_filter(self):
+        list_url = reverse("api_v2:turtle_nest_observation_list_resource")
+        response = self.client.get(list_url, {"encounter_id": self.nest.pk})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.nest_observation.source_id)
+
     def test_turtlenestobservation_detail(self):
         detail_url = reverse("api_v2:turtle_nest_observation_detail_resource", kwargs={"pk": self.nest_observation.pk})
         response = self.client.get(detail_url)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.nest_observation.source_id)
+
+    def test_turtlehatchlingemergenceobservation_api_list(self):
+        list_url = reverse("api_v2:turtle_hatchling_emergence_observation_list_resource")
+        response = self.client.get(list_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.emergence_observation.source_id)
+
+    def test_turtlehatchlingemergenceobservation_detail(self):
+        detail_url = reverse("api_v2:turtle_hatchling_emergence_observation_detail_resource", kwargs={"pk": self.emergence_observation.pk})
+        response = self.client.get(detail_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.emergence_observation.source_id)
+
+    def test_nesttagobservation_api_list(self):
+        list_url = reverse("api_v2:nest_tag_observation_list_resource")
+        response = self.client.get(list_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.nest_tag_observation.source_id)
+
+    def test_nesttagobservation_detail(self):
+        detail_url = reverse("api_v2:nest_tag_observation_detail_resource", kwargs={"pk": self.nest_tag_observation.pk})
+        response = self.client.get(detail_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.nest_tag_observation.source_id)
