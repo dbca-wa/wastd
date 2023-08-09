@@ -10,6 +10,7 @@ from observations.models import (
     AnimalEncounter,
     TurtleNestEncounter,
     TurtleNestObservation,
+    TurtleHatchlingEmergenceObservation,
 )
 
 
@@ -64,6 +65,9 @@ class ViewsTestCase(TestCase):
         self.nest_observation = TurtleNestObservation.objects.create(
             encounter=self.nest,
             comments="Test data",
+        )
+        self.emergence_observation = TurtleHatchlingEmergenceObservation.objects.create(
+            encounter=self.nest,
         )
 
 

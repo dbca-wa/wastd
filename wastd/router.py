@@ -20,6 +20,8 @@ from observations.api_v2 import (
     MediaAttachmentDetailResource,
     TurtleNestObservationListResource,
     TurtleNestObservationDetailResource,
+    TurtleHatchlingEmergenceObservationListResource,
+    TurtleHatchlingEmergenceObservationDetailResource,
 )
 from tagging.api import (
     TurtleTagListResource,
@@ -50,6 +52,8 @@ urlpatterns = [
     path('media-attachments/<int:pk>/', MediaAttachmentDetailResource.as_view(), name='media_attachment_detail_resource'),
     path('turtle-nest-observations/', TurtleNestObservationListResource.as_view(), name='turtle_nest_observation_list_resource'),
     path('turtle-nest-observations/<int:pk>/', TurtleNestObservationDetailResource.as_view(), name='turtle_nest_observation_detail_resource'),
+    path('turtle-hatchling-emergence-observations/', TurtleHatchlingEmergenceObservationListResource.as_view(), name='turtle_hatching_emergence_observation_list_resource'),
+    path('turtle-hatchling-emergence-observations/<int:pk>/', TurtleHatchlingEmergenceObservationDetailResource.as_view(), name='turtle_hatching_emergence_observation_detail_resource'),
     path('turtle-tags/', TurtleTagListResource.as_view(), name='turtle_tag_list_resource'),
     path('turtle-tags/<int:pk>/', TurtleTagDetailResource.as_view(), name='turtle_tag_detail_resource'),
     path('turtle-pit-tags/', TurtlePitTagListResource.as_view(), name='turtle_pit_tag_list_resource'),
