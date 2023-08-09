@@ -10,6 +10,7 @@ from .models import (
     MediaAttachment,
     TurtleNestObservation,
     TurtleHatchlingEmergenceObservation,
+    NestTagObservation,
 )
 from .serializers_v2 import (
     AreaSerializer,
@@ -21,6 +22,7 @@ from .serializers_v2 import (
     MediaAttachmentSerializer,
     TurtleNestObservationSerializer,
     TurtleHatchlingEmergenceObservationSerializer,
+    NestTagObservationSerializer,
 )
 
 
@@ -142,3 +144,13 @@ class TurtleHatchlingEmergenceObservationListResource(ObservationListResource):
 class TurtleHatchlingEmergenceObservationDetailResource(DetailResourceView):
     model = TurtleHatchlingEmergenceObservation
     serializer = TurtleHatchlingEmergenceObservationSerializer
+
+
+class NestTagObservationListResource(ObservationListResource):
+    model = NestTagObservation
+    serializer = NestTagObservationSerializer
+
+
+class NestTagObservationDetailResource(DetailResourceView):
+    model = NestTagObservation
+    serializer = NestTagObservationSerializer
