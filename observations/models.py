@@ -3180,39 +3180,6 @@ class TurtleTrackObservation(Observation):
     )
 
 
-class PathToSea(models.Model):
-    """A Mixin providing code, label and description.
-    """
-    code = models.SlugField(
-        max_length=500,
-        unique=True,
-        verbose_name="Code",
-        help_text="A unique, url-safe code.",
-    )
-    label = models.CharField(
-        blank=True,
-        null=True,
-        max_length=500,
-        verbose_name="Label",
-        help_text="A human-readable, self-explanatory label.",
-    )
-
-    description = models.TextField(
-        blank=True,
-        null=True,
-        verbose_name="Description",
-        help_text="A comprehensive description.",
-    )
-
-    class Meta:
-        ordering = [
-            "code",
-        ]
-
-    def __str__(self):
-        return self.label
-
-
 class TurtleHatchlingEmergenceObservation(Observation):
     """Turtle hatchling emergence observation.
 
@@ -3265,9 +3232,6 @@ class TurtleHatchlingEmergenceObservation(Observation):
         verbose_name="Outlier tracks present",
         choices=lookups.OBSERVATION_CHOICES,
         default=lookups.NA_VALUE,
-    )
-    hatchling_path_to_sea = models.ManyToManyField(
-        PathToSea, blank=True, related_name="path_to_sea"
     )
     path_to_sea_comments = models.TextField(
         verbose_name="Hatchling path to sea comments",
