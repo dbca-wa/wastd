@@ -3,11 +3,13 @@ from django.contrib.gis.geos import GEOSGeometry
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
+from uuid import uuid4
 
 from observations.models import (
     Encounter,
     AnimalEncounter,
     TurtleNestEncounter,
+    TurtleNestObservation,
 )
 
 
@@ -39,14 +41,14 @@ class ViewsTestCase(TestCase):
         self.enc = Encounter.objects.create(
             where=GEOSGeometry("POINT (115 -32)", srid=4326),
             when=timezone.now(),
-            source_id="12345",
+            source_id=uuid4(),
             observer=self.staff,
             reporter=self.user,
         )
         self.stranding = AnimalEncounter.objects.create(
             where=GEOSGeometry("POINT (115 -32)", srid=4326),
             when=timezone.now(),
-            source_id="82930495",
+            source_id=uuid4(),
             observer=self.staff,
             reporter=self.user,
             species="cheloniidae-fam",
@@ -54,11 +56,14 @@ class ViewsTestCase(TestCase):
         self.nest = TurtleNestEncounter.objects.create(
             where=GEOSGeometry("POINT (115 -32)", srid=4326),
             when=timezone.now(),
-            source_id="abc-123",
             observer=self.staff,
             reporter=self.user,
             species="cheloniidae-fam",
             nest_type="nest",
+        )
+        self.nest_observation = TurtleNestObservation.objects.create(
+            encounter=self.nest,
+            comments="Test data",
         )
 
 

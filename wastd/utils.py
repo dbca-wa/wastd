@@ -401,7 +401,6 @@ class LegacySourceMixin(models.Model):
     This is useful to make a data import repeatable by identifying which records
     to overwrite.
     """
-
     SOURCE_MANUAL_ENTRY = 0
     SOURCE_PAPER_DATASHEET = 1
     SOURCE_DIGITAL_CAPTURE_ODK = 2

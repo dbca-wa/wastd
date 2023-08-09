@@ -232,21 +232,63 @@ class TurtleNestEncounterSerializer(object):
         return turtlenestencounter_serializer(encounter)
 
 
-def media_attachment_serializer(obj) -> Dict[str, Any]:
+def observation_serializer(obj) -> Dict[str, Any]:
     return {
         'type': 'Feature',
         'properties': {
             'id': obj.pk,
-            'source': obj.encounter.source,
-            'source_id': obj.encounter.source_id,
-            'encounter': encounter_serializer(obj.encounter),
-            'media_type': obj.get_media_type_display(),
-            'title': obj.title,
-            'attachment': settings.MEDIA_URL + obj.attachment.name,  # FIXME: absolute URL
+            'source': obj.source,
+            'source_id': obj.source_id,
+            'encounter_id': obj.encounter.pk,
         },
     }
+
+
+def media_attachment_serializer(obj) -> Dict[str, Any]:
+    d = {
+        'media_type': obj.get_media_type_display(),
+        'title': obj.title,
+        'attachment': settings.MEDIA_URL + obj.attachment.name,
+    }
+    obj = observation_serializer(obj)
+    # Extend the serialised object.
+    obj['properties'].update(d)
+
+    return obj
 
 
 class MediaAttachmentSerializer(object):
     def serialize(obj):
         return media_attachment_serializer(obj)
+
+
+def turtle_nest_observation_serializer(obj) -> Dict[str, Any]:
+    d = {
+        'eggs_laid': obj.eggs_laid,
+        'egg_count': obj.egg_count,
+        'no_egg_shells': obj.no_egg_shells,
+        'no_live_hatchlings_neck_of_nest': obj.no_live_hatchlings_neck_of_nest,
+        'no_live_hatchlings': obj.no_live_hatchlings,
+        'no_dead_hatchlings': obj.no_dead_hatchlings,
+        'no_undeveloped_eggs': obj.no_undeveloped_eggs,
+        'no_unhatched_eggs': obj.no_unhatched_eggs,
+        'no_unhatched_term': obj.no_unhatched_term,
+        'no_depredated_eggs': obj.no_depredated_eggs,
+        'nest_depth_top': obj.nest_depth_top,
+        'nest_depth_bottom': obj.nest_depth_bottom,
+        'sand_temp': obj.sand_temp,
+        'air_temp': obj.air_temp,
+        'water_temp': obj.water_temp,
+        'egg_temp': obj.egg_temp,
+        'comments': obj.comments,
+    }
+    obj = observation_serializer(obj)
+    # Extend the serialised object.
+    obj['properties'].update(d)
+
+    return obj
+
+
+class TurtleNestObservationSerializer(object):
+    def serialize(obj):
+        return turtle_nest_observation_serializer(obj)
