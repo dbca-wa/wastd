@@ -13,6 +13,10 @@ from observations.models import (
     TurtleHatchlingEmergenceObservation,
     NestTagObservation,
     TurtleNestDisturbanceObservation,
+    LoggerObservation,
+    HatchlingMorphometricObservation,
+    TurtleHatchlingEmergenceOutlierObservation,
+    LightSourceObservation,
 )
 
 
@@ -87,6 +91,18 @@ class ViewsTestCase(TestCase):
         )
         self.disturbance2 = TurtleNestDisturbanceObservation.objects.create(
             encounter=self.track,
+        )
+        self.logger = LoggerObservation.objects.create(
+            encounter=self.nest,
+        )
+        self.hatchling = HatchlingMorphometricObservation.objects.create(
+            encounter=self.nest,
+        )
+        self.outlier = TurtleHatchlingEmergenceOutlierObservation.objects.create(
+            encounter=self.nest,
+        )
+        self.light_source = LightSourceObservation.objects.create(
+            encounter=self.nest,
         )
 
 

@@ -360,3 +360,76 @@ def turtle_nest_disturbance_observation_serializer(obj) -> Dict[str, Any]:
 class TurtleNestDisturbanceObservationSerializer(object):
     def serialize(obj):
         return turtle_nest_disturbance_observation_serializer(obj)
+
+
+def logger_observation_serializer(obj) -> Dict[str, Any]:
+    d = {
+        'logger_type': obj.get_logger_type_display(),
+        'deployment_status': obj.get_deployment_status_display(),
+        'logger_id': obj.logger_id,
+        'comments': obj.comments,
+    }
+    obj = observation_serializer(obj)
+    # Extend the serialised object.
+    obj['properties'].update(d)
+
+    return obj
+
+
+class LoggerObservationSerializer(object):
+    def serialize(obj):
+        return logger_observation_serializer(obj)
+
+
+def hatchling_morphometric_observation_serializer(obj) -> Dict[str, Any]:
+    d = {
+        'straight_carapace_length_mm': obj.straight_carapace_length_mm,
+        'straight_carapace_width_mm': obj.straight_carapace_width_mm,
+        'body_weight_g': obj.body_weight_g,
+    }
+    obj = observation_serializer(obj)
+    # Extend the serialised object.
+    obj['properties'].update(d)
+
+    return obj
+
+
+class HatchlingMorphometricObservationSerializer(object):
+    def serialize(obj):
+        return hatchling_morphometric_observation_serializer(obj)
+
+
+def turtle_hatchling_emergence_outlier_observation_serializer(obj) -> Dict[str, Any]:
+    d = {
+        'bearing_outlier_track_degrees': obj.bearing_outlier_track_degrees,
+        'outlier_group_size': obj.outlier_group_size,
+        'outlier_track_comment': obj.outlier_track_comment,
+    }
+    obj = observation_serializer(obj)
+    # Extend the serialised object.
+    obj['properties'].update(d)
+
+    return obj
+
+
+class TurtleHatchlingEmergenceOutlierObservationSerializer(object):
+    def serialize(obj):
+        return turtle_hatchling_emergence_outlier_observation_serializer(obj)
+
+
+def light_source_observation_serializer(obj) -> Dict[str, Any]:
+    d = {
+        'bearing_light_degrees': obj.bearing_light_degrees,
+        'light_source_type': obj.get_light_source_type_display(),
+        'light_source_description': obj.light_source_description,
+    }
+    obj = observation_serializer(obj)
+    # Extend the serialised object.
+    obj['properties'].update(d)
+
+    return obj
+
+
+class LightSourceObservationSerializer(object):
+    def serialize(obj):
+        return light_source_observation_serializer(obj)
