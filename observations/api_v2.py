@@ -12,6 +12,10 @@ from .models import (
     TurtleHatchlingEmergenceObservation,
     NestTagObservation,
     TurtleNestDisturbanceObservation,
+    LoggerObservation,
+    HatchlingMorphometricObservation,
+    TurtleHatchlingEmergenceOutlierObservation,
+    LightSourceObservation,
 )
 from .serializers_v2 import (
     AreaSerializer,
@@ -24,7 +28,11 @@ from .serializers_v2 import (
     TurtleNestObservationSerializer,
     TurtleHatchlingEmergenceObservationSerializer,
     NestTagObservationSerializer,
-    TurtleNestDisturbanceObservationSerializer
+    TurtleNestDisturbanceObservationSerializer,
+    LoggerObservationSerializer,
+    HatchlingMorphometricObservationSerializer,
+    TurtleHatchlingEmergenceOutlierObservationSerializer,
+    LightSourceObservationSerializer,
 )
 
 
@@ -176,3 +184,43 @@ class TurtleNestDisturbanceObservationListResource(ObservationListResource):
 class TurtleNestDisturbanceObservationDetailResource(DetailResourceView):
     model = TurtleNestDisturbanceObservation
     serializer = TurtleNestDisturbanceObservationSerializer
+
+
+class LoggerObservationListResource(ObservationListResource):
+    model = LoggerObservation
+    serializer = LoggerObservationSerializer
+
+
+class LoggerObservationDetailResource(DetailResourceView):
+    model = LoggerObservation
+    serializer = LoggerObservationSerializer
+
+
+class HatchlingMorphometricObservationListResource(ObservationListResource):
+    model = HatchlingMorphometricObservation
+    serializer = HatchlingMorphometricObservationSerializer
+
+
+class HatchlingMorphometricObservationDetailResource(DetailResourceView):
+    model = HatchlingMorphometricObservation
+    serializer = HatchlingMorphometricObservationSerializer
+
+
+class TurtleHatchlingEmergenceOutlierObservationListResource(ObservationListResource):
+    model = TurtleHatchlingEmergenceOutlierObservation
+    serializer = TurtleHatchlingEmergenceOutlierObservationSerializer
+
+
+class TurtleHatchlingEmergenceOutlierObservationDetailResource(DetailResourceView):
+    model = TurtleHatchlingEmergenceOutlierObservation
+    serializer = TurtleHatchlingEmergenceOutlierObservationSerializer
+
+
+class LightSourceObservationListResource(ObservationListResource):
+    model = LightSourceObservation
+    serializer = LightSourceObservationSerializer
+
+
+class LightSourceObservationDetailResource(DetailResourceView):
+    model = LightSourceObservation
+    serializer = LightSourceObservationSerializer
