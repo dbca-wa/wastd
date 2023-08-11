@@ -1,4 +1,7 @@
 from django.http import HttpResponse, HttpResponseServerError
+import logging
+
+LOGGER = logging.getLogger('turtles')
 
 
 class HealthCheckMiddleware(object):
