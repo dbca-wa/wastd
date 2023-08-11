@@ -8,7 +8,7 @@ SOURCE_CHOICES = (
     ("ntp-broome", "NTP Access DB Broome"),
     ("cet", "Cetacean strandings DB"),
     ("pin", "Pinniped strandings DB"),
-    ("reconstructed", "Reconstructed by WAStD"),
+    ("reconstructed", "Reconstructed automatically"),
 )
 
 SIGHTING_STATUS_CHOICES = (

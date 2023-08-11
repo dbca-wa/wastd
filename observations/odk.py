@@ -507,7 +507,7 @@ def import_site_visit_end(form_id="site_visit_end", duration_hr=8, auth_headers=
         start_time_earliest = end_time - timedelta(hours=duration_hr)
         site = Area.objects.filter(area_type=Area.AREATYPE_SITE, geom__covers=location).first()
         if not site:
-            #LOGGER.info("Unable to match a suitable site")
+            LOGGER.info(f"Unable to match a suitable site for submission located at {location.wkt}")
             continue
 
         # Try to match one (only) existing Survey object.
@@ -517,7 +517,7 @@ def import_site_visit_end(form_id="site_visit_end", duration_hr=8, auth_headers=
             reporter=user, site=site, start_time__lt=end_time, start_time__gte=start_time_earliest,
         )
         if surveys.count() != 1:
-            LOGGER.info(f"Unable to match a Survey (matched {surveys.count()})")
+            LOGGER.info(f"Unable to match a single Survey (matched {surveys.count()})")
             continue
         else:
             survey = surveys.first()
