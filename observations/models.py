@@ -202,11 +202,9 @@ class Area(models.Model):
 
     @property
     def absolute_admin_url(self):
-        """Return the absolute admin change URL."""
-        return reverse(
-            "admin:{0}_{1}_change".format(self._meta.app_label, self._meta.model_name),
-            args=[self.pk],
-        )
+        """Return the absolute admin change URL.
+        """
+        return reverse("admin:{}_{}_change".format(self._meta.app_label, self._meta.model_name), args=[self.pk])
 
     @property
     def all_encounters_url(self):
@@ -579,11 +577,9 @@ class Survey(QualityControlMixin, UrlsMixin, models.Model):
 
     @property
     def absolute_admin_url(self):
-        """Return the absolute admin change URL."""
-        return reverse(
-            "admin:{0}_{1}_change".format(self._meta.app_label, self._meta.model_name),
-            args=[self.pk],
-        )
+        """Return the absolute admin change URL.
+        """
+        return reverse("admin:{}_{}_change".format(self._meta.app_label, self._meta.model_name), args=[self.pk])
 
     def card_template(self):
         return "observations/survey_card.html"
@@ -1137,7 +1133,7 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         null=True,
         editable=False,
         verbose_name="Encounter type",
-        default=ENCOUNTER_STRANDING,
+        default=ENCOUNTER_OTHER,
         choices=ENCOUNTER_TYPES,
         help_text="The primary concern of this encounter.",
     )
@@ -1272,13 +1268,9 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
 
     @property
     def absolute_admin_url(self):
-        """Return the absolute admin change URL."""
-        return reverse(
-            "admin:{0}_{1}_change".format(self._meta.app_label, self._meta.model_name),
-            args=[
-                self.pk,
-            ],
-        )
+        """Return the absolute admin change URL.
+        """
+        return reverse("admin:{}_{}_change".format(self._meta.app_label, self._meta.model_name), args=[self.pk])
 
     def make_rest_listurl(self, format="json"):
         """Return the API list URL in given format (default: JSON).
@@ -1417,30 +1409,6 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         """
         return (self.when - relativedelta(months=6)).year
 
-    # def save(self, *args, **kwargs):
-    #     """Cache expensive properties.
-
-    #     The popup content changes when fields change, and is expensive to build.
-    #     As it is required ofen and under performance-critical circumstances -
-    #     populating the home screen with lots of popups - is is re-calculated
-    #     whenever the contents change (on save) rather when it is required for
-    #     display.
-
-    #     The source ID will be auto-generated from ``short_name`` (if not set)
-    #     but is not guaranteed to be unique.
-    #     The User will be prompted to provide a unique source ID if necessary,
-    #     e.g. by appending a running number.
-    #     The source ID can be re-created by deleting it and re-saving the object.
-
-    #     The encounter type is inferred from the type of attached Observations.
-    #     This logic is overridden in subclasses.
-
-    #     The name is calculated from a complex lookup across associated TagObservations.
-    #     """
-
-    #     super(Encounter, self).save(*args, **kwargs)
-
-    # Name -------------------------------------------------------------------#
     @property
     def guess_site(self):
         """Return the first Area containing the start_location or None."""
@@ -1600,13 +1568,9 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
 
     @property
     def photographs(self):
-        """Return the URLs of all attached photograph or none."""
-        try:
-            return list(
-                self.observation_set.instance_of(MediaAttachment)
-            )
-        except BaseException:
-            return None
+        """Return a queryset of all attached photographs.
+        """
+        return MediaAttachment.objects.filter(encounter=self, media_type="photograph")
 
 
 class AnimalEncounter(Encounter):
@@ -1788,7 +1752,7 @@ class AnimalEncounter(Encounter):
         # base_manager_name = 'base_objects'  # fix delete bug
 
     def __str__(self):
-        tpl = "AnimalEncounter {0} on {1} by {2} of {3}, {4} {5} {6} on {7}"
+        tpl = "AnimalEncounter {} on {} by {} of {}, {} {} {} on {}"
         return tpl.format(
             self.pk,
             self.when.astimezone(tz.tzlocal()).strftime("%Y-%m-%d %H:%M %Z"),
@@ -1890,6 +1854,16 @@ class AnimalEncounter(Encounter):
 
     def get_absolute_url(self):
         return reverse("observations:animalencounter-detail", kwargs={"pk": self.pk})
+
+    def get_card_title(self):
+        title = "{} {} {}".format(
+            self.get_health_display(),
+            self.get_maturity_display().lower(),
+            self.get_species_display(),
+        )
+        if self.sighting_status != "na":
+            title += " {self.get_sighting_status_display()}"
+        return title
 
     def card_template(self):
         return "observations/animalencounter_card.html"
@@ -2234,12 +2208,7 @@ class Observation(PolymorphicModel, LegacySourceMixin, models.Model):
     def absolute_admin_url(self):
         """Return the absolute admin change URL.
         """
-        return reverse(
-            "admin:{0}_{1}_change".format(self._meta.app_label, self._meta.model_name),
-            args=[
-                self.pk,
-            ],
-        )
+        return reverse("admin:{}_{}_change".format(self._meta.app_label, self._meta.model_name), args=[self.pk])
 
 
 class MediaAttachment(Observation):
@@ -3211,39 +3180,6 @@ class TurtleTrackObservation(Observation):
     )
 
 
-class PathToSea(models.Model):
-    """A Mixin providing code, label and description.
-    """
-    code = models.SlugField(
-        max_length=500,
-        unique=True,
-        verbose_name="Code",
-        help_text="A unique, url-safe code.",
-    )
-    label = models.CharField(
-        blank=True,
-        null=True,
-        max_length=500,
-        verbose_name="Label",
-        help_text="A human-readable, self-explanatory label.",
-    )
-
-    description = models.TextField(
-        blank=True,
-        null=True,
-        verbose_name="Description",
-        help_text="A comprehensive description.",
-    )
-
-    class Meta:
-        ordering = [
-            "code",
-        ]
-
-    def __str__(self):
-        return self.label
-
-
 class TurtleHatchlingEmergenceObservation(Observation):
     """Turtle hatchling emergence observation.
 
@@ -3296,9 +3232,6 @@ class TurtleHatchlingEmergenceObservation(Observation):
         verbose_name="Outlier tracks present",
         choices=lookups.OBSERVATION_CHOICES,
         default=lookups.NA_VALUE,
-    )
-    hatchling_path_to_sea = models.ManyToManyField(
-        PathToSea, blank=True, related_name="path_to_sea"
     )
     path_to_sea_comments = models.TextField(
         verbose_name="Hatchling path to sea comments",

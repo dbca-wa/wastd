@@ -9,8 +9,9 @@ class UserListResource(ListResourceView):
     serializer = UserSerializer
 
     def dispatch(self, request, *args, **kwargs):
+        # FIXME: proper permissions checking.
         if not request.user.is_superuser:
-            return HttpResponseNotFound("Not found")
+            return HttpResponseNotFound()
         return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
@@ -28,6 +29,7 @@ class UserDetailResource(DetailResourceView):
     serializer = UserSerializer
 
     def dispatch(self, request, *args, **kwargs):
+        # FIXME: proper permissions checking.
         if not request.user.is_superuser:
-            return HttpResponseNotFound("Not found")
+            return HttpResponseNotFound()
         return super().dispatch(request, *args, **kwargs)
