@@ -1,5 +1,5 @@
 # Prepare the base environment.
-FROM python:3.10.10-slim-bullseye as builder_base_wastd
+FROM python:3.10.12-slim-bookworm as builder_base_wastd
 MAINTAINER asi@dbca.wa.gov.au
 LABEL org.opencontainers.image.source https://github.com/dbca-wa/wastd
 
@@ -22,7 +22,7 @@ RUN curl -s https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
 # Install Python libs using Poetry.
 FROM builder_base_wastd as python_libs_wastd
 WORKDIR /app
-ENV POETRY_VERSION=1.2.2
+ENV POETRY_VERSION=1.5.1
 RUN pip install --upgrade pip && pip install "poetry==$POETRY_VERSION"
 COPY poetry.lock pyproject.toml /app/
 RUN poetry config virtualenvs.create false \
@@ -37,6 +37,7 @@ COPY wastd ./wastd
 COPY wamtram ./wamtram
 COPY tagging ./tagging
 RUN python manage.py collectstatic --noinput
+
 # Run the application as the www-data user.
 USER www-data
 EXPOSE 8080
