@@ -5,12 +5,6 @@ from rest_framework_filters import FilterSet
 from observations import models, serializers
 from wastd.utils import MyGeoJsonPagination
 
-try:
-    from .utils import symlink_resources
-except BaseException:
-    # Docker image build migrate falls over this import
-    pass
-
 
 class AreaFilter(FilterSet):
     class Meta:
@@ -303,10 +297,6 @@ class EncounterViewSet(ModelViewSet):
     filter_class = EncounterFilter
     model = models.Encounter
 
-    def pre_latex(self, t_dir, data):
-        """Symlink photographs to temp dir for use by latex template."""
-        symlink_resources(t_dir, data)
-
 
 class FastEncounterViewSet(ModelViewSet):
     """A minimal Encounter viewset.
@@ -326,13 +316,8 @@ class FastEncounterViewSet(ModelViewSet):
     )
 
     bbox_filter_field = "where"
-    # bbox_filter_include_overlapping = True
     pagination_class = MyGeoJsonPagination
     filter_class = FastEncounterFilter
-
-    def pre_latex(self, t_dir, data):
-        """Symlink photographs to temp dir for use by latex template."""
-        pass
 
 
 class SourceIdEncounterViewSet(ModelViewSet):
@@ -353,13 +338,8 @@ class SourceIdEncounterViewSet(ModelViewSet):
     )
 
     bbox_filter_field = "where"
-    # bbox_filter_include_overlapping = True
     pagination_class = MyGeoJsonPagination
     filter_class = FastEncounterFilter
-
-    def pre_latex(self, t_dir, data):
-        """Symlink photographs to temp dir for use by latex template."""
-        pass
 
 
 class AnimalEncounterAPIFilter(FilterSet):
@@ -461,10 +441,6 @@ class AnimalEncounterViewSet(ModelViewSet):
     )
     pagination_class = MyGeoJsonPagination
     model = models.AnimalEncounter
-
-    def pre_latex(self, t_dir, data):
-        """Symlink photographs to temp dir for use by latex template."""
-        symlink_resources(t_dir, data)
 
 
 class TurtleNestEncounterAPIFilter(FilterSet):
@@ -583,10 +559,6 @@ class TurtleNestEncounterViewSet(ModelViewSet):
     pagination_class = MyGeoJsonPagination
     model = models.TurtleNestEncounter
 
-    def pre_latex(self, t_dir, data):
-        """Symlink photographs to temp dir for use by latex template."""
-        symlink_resources(t_dir, data)
-
 
 class LineTransectEncounterViewSet(ModelViewSet):
     queryset = models.LineTransectEncounter.objects.all().prefetch_related(
@@ -614,10 +586,6 @@ class LineTransectEncounterViewSet(ModelViewSet):
     )
     pagination_class = MyGeoJsonPagination
     model = models.LineTransectEncounter
-
-    def pre_latex(self, t_dir, data):
-        """Symlink photographs to temp dir for use by latex template."""
-        symlink_resources(t_dir, data)
 
 
 class ObservationViewSet(ModelViewSet):
