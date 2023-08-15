@@ -30,7 +30,7 @@ import logging
 from os import path
 from polymorphic.models import PolymorphicModel
 from rest_framework.reverse import reverse as rest_reverse
-import slugify
+from slugify import slugify
 import urllib
 
 from wastd.utils import LegacySourceMixin, QualityControlMixin, UrlsMixin
@@ -1376,7 +1376,7 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         The short_name could be non-unique for encounters of multiple stranded
         animals of the same species and deadness.
         """
-        return slugify.slugify(
+        return slugify(
             "-".join(
                 [
                     self.when.astimezone(tz.tzlocal()).strftime("%Y-%m-%d %H:%M %Z"),
@@ -1433,8 +1433,6 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
     @property
     def inferred_name(self):
         """Return the inferred name from related new capture if existing.
-
-        TODO replace with reconstruct_animal_names logic
         """
         return None
 
@@ -1815,7 +1813,7 @@ class AnimalEncounter(Encounter):
         ]
         if self.name is not None:
             nameparts.append(self.name)
-        return slugify.slugify("-".join(nameparts))
+        return slugify("-".join(nameparts))
 
     @property
     def latitude(self):
@@ -1994,7 +1992,7 @@ class TurtleNestEncounter(Encounter):
         ]
         if self.name is not None:
             nameparts.append(self.name)
-        return slugify.slugify("-".join(nameparts))
+        return slugify("-".join(nameparts))
 
     @property
     def latitude(self):
@@ -2126,7 +2124,7 @@ class LineTransectEncounter(Encounter):
         ]
         if self.name is not None:
             nameparts.append(self.name)
-        return slugify.slugify("-".join(nameparts))
+        return slugify("-".join(nameparts))
 
     @property
     def latitude(self):
