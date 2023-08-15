@@ -122,6 +122,7 @@ def encounter_pre_save(sender, instance, *args, **kwargs):
     * encounter_type: Always from instance.get_encounter_type()
     * as_html /as_latex: Always set from get_popup() and get_latex()
     """
+    # If the encounter doesn't have a source_id
     if not instance.source_id:
         instance.source_id = instance.short_name
     # This is slow, use set_name() instead in bulk

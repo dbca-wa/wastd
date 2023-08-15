@@ -73,7 +73,7 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=Non
         else:  # The form has been submitted without a user name recorded.
             user = User.objects.get_or_create(name='Unknown user', username='unknown_user')[0]
 
-        # Confusingly, TurtleNestEncounter objects cover both nest, track and nest & nest encounters.
+        # Confusingly, TurtleNestEncounter objects cover nest, track and nest & track encounters.
         encounter = TurtleNestEncounter(
             status='imported',
             source='odk',
