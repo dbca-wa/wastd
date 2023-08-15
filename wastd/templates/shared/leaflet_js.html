@@ -52,7 +52,6 @@
 {% include "leaflet/_leaflet_draw_i18n.js" %}
 L.Control.ResetView.TITLE = "Reset view";
 L.Control.ResetView.ICON = "url({% static 'leaflet/images/reset-view.png' %})";
-// L.Icon.Default.imagePath = "{% static "leaflet/images" %}/";
 
 
 /*
@@ -61,14 +60,6 @@ L.Control.ResetView.ICON = "url({% static 'leaflet/images/reset-view.png' %})";
  * https://github.com/Leaflet/Leaflet/issues/3575
  */
 (function(){
-    // L.Icon.Default.imagePath = '/static/leaflet/images/';
-    // delete L.Icon.Default.prototype._getIconUrl
-    // L.Icon.Default.mergeOptions({
-    //   iconRetinaUrl: "/static/leaflet/images/marker-icon-2x.png",
-    //   iconUrl: "/static/leaflet/images/marker-icon.png",
-    //   shadowUrl: "/static/leaflet/images/marker-shadow.png"
-    // })
-
     var originalInitTile = L.GridLayer.prototype._initTile
     L.GridLayer.include({
         _initTile: function (tile) {
@@ -88,7 +79,7 @@ window.addEventListener("map:init", function (event) {
     var lc = map.layerscontrol;
 
     $.getJSON("{% url 'sites-geojson' %}", function (data) {
-        lc.addOverlay(L.geoJson(data, {style: polystyle, onEachFeature: oef}), 'WAStD Sites')
+        lc.addOverlay(L.geoJson(data, {style: polystyle, onEachFeature: oef}), 'Turtles DB sites')
     });
 
     // FIXME: Switch to using WMTS.
@@ -105,14 +96,9 @@ window.addEventListener("map:init", function (event) {
     lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:unallocated_crown_land')), 'Unallocated Crown Land');
     lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('landgate:DBCA-022')), 'DBCA Region Boundaries');
     lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('landgate:DBCA-023')), 'DBCA District Boundaries');
-    lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('landgate:LGATE-233')), 'LGA Boundaries');
-    lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:ibra_wa_subregions')), 'IBRA WA Regions');
+    lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('public:lgas_public')), 'LGA Boundaries');
+    lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:ibra_australia')), 'IBRA WA Regions');
     lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:dpaw_fire_history')), 'P&W Fire History');
-    //lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:road_centrelines')), 'Road Centrelines');
-    //lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:cadastre')), 'Cadastre');
-    //lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:remnant_vegetation')), 'Remnant Vegetation');
-    //lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:dra')), 'Forest Disease Risk');
-    //lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:threatened_fauna')), 'Threatened Fauna');
     lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:threatened_priority_flora')), 'Threatened and Priority Flora');
     lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:tec_sites_buffered')), 'Threatened Community Sites buffered');
     lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:scientific_study_sites')), 'Scientific Study Sites');

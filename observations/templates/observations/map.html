@@ -24,51 +24,18 @@
 {% block extra_js %}
 {{ block.super }}
 <script type="text/javascript">
-function map_init(map, options) {
-    {% include 'shared/styles.js' %}
-
-    /* Data loading */
-    var markers = L.markerClusterGroup();
-    var gj_markers = L.geoJson(
-        {{ object_list|geojsonfeature:'as_html,leaflet_title,leaflet_icon,leaflet_colour:where'|safe }},
-        // {clipTiles: true, unique: getUnique},
-        {style: pointstyle, pointToLayer: ptl, onEachFeature: oef_ll}
-        );
-    markers.addLayer(gj_markers);
-    map.addLayer(markers);
-
-    /*
-     * Option 2: GeoJSON view
-     * The quick and dirty way to dump all (whoa) data into one layer
-     * https://github.com/makinacorpus/django-geojson#geojson-layer-view
-     * We'll use this method to load area polygons.
-     */
-    $.getJSON("{% url 'localities-geojson' %}", function (data) {
-        L.geoJson(data, {style: polystyle, onEachFeature: oef}).addTo(map);
-    });
-
-    // fetch(
-    //   "{% url 'areas-geojson' %}"
-    // ).then(
-    //   function(response){return response.json();}
-    // ).then(
-    //   function(data){L.geoJson(data, {style: polystyle, onEachFeature: oef}).addTo(map);}
-    // )
-
-    /*
-     * Option 3: Tiled GeoJSON      ...because we can, baby
-     * Most performant solution
-     * https://github.com/glenrobertson/leaflet-tilelayer-geojson/
-     * TODO filters or clustering
-     * getUnique returns grouping variable (using feature.id disables grouping)
-     * ptl overrides default marker with AwesomeMarker
-     * oef binds popup to marker
-     */
-    // var geojsonTileLayer = new L.TileLayer.GeoJSON(
-    //     'data/{z}/{x}/{y}.geojson',
-    //     {clipTiles: true, unique: getUnique},
-    //     {style: style, pointToLayer: ptl, onEachFeature: oef}
-    // ).addTo(map);
-}
+    const oef = function(feature, layer) {
+      layer.bindTooltip(feature.properties.leaflet_title);
+    }
+    const polystyle = {
+        "color": "#0009ff",
+        "weight": 1,
+        "opacity": 0.65
+    };
+    function map_init(map, options) {
+        $.getJSON("{% url 'localities-geojson' %}", function (data) {
+            L.geoJson(data, {style: polystyle, onEachFeature: oef}).addTo(map);
+        });
+    }
 </script>
 {% endblock %}
