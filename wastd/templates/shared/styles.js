@@ -77,7 +77,7 @@ function ptl_sve(feature, latlng) {
 /* Actions taken on each feature: title, popup, info preview */
 function oef(feature, layer) {
   layer.bindTooltip(feature.properties.leaflet_title);
-  layer.bindPopup(feature.properties.label);
+  //layer.bindPopup(feature.properties.label);
 }
 
 function oef_wideTT(feature, layer) {
