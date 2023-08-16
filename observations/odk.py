@@ -62,8 +62,8 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=Non
         reporter = submission['reporter']
         if reporter:
             reporter = reporter.strip()
-            if User.objects.filter(name__iequals=reporter).exists() and User.objects.filter(name__iequals=reporter).count() == 1:
-                user = User.objects.get(name__iequals=reporter)
+            if User.objects.filter(name__iexact=reporter).exists() and User.objects.filter(name__iexact=reporter).count() == 1:
+                user = User.objects.get(name__iexact=reporter)
             else:  # Create a new user.
                 username = reporter.lower().replace(' ', '_')
                 # Ensure username uniqueness.
@@ -403,7 +403,7 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=Non
                     LOGGER.info(f'Created MediaAttachment {photo}')
 
 
-def import_site_visit_start(form_id="site_visit_start", auth_headers=None):
+def import_site_visit_start(form_id="site_visit_start", initial_duration_hr=8, auth_headers=None):
     """Import submissions to the Site Visit Start ODK form.
     Each submission should create one Survey.
     """
@@ -440,12 +440,16 @@ def import_site_visit_start(form_id="site_visit_start", auth_headers=None):
             start_location_accuracy_m=parse_geopoint_accuracy(visit['location']),
             start_time=parser.isoparse(submission['start_time']),
         )
+
+        # Guess the area & site, and plug in an initial estimated end_time.
+        # The correct end_time will (hopefully) be gathered from the Site Visit End form.
         survey.area = guess_area(survey)
         survey.site = guess_site(survey)
+        survey.end_time = survey.start_time + timedelta(hours=initial_duration_hr)
 
         # We need to save before we can modify the M2M field or set the label.
         survey.save()
-        survey.label = survey.make_label
+        survey.label = survey.make_label()
         if visit['team']:
             team = visit['team'].split(',')
             for name in team:
@@ -492,29 +496,14 @@ def import_site_visit_end(form_id="site_visit_end", duration_hr=8, auth_headers=
         if Survey.objects.filter(source='odk', end_source_id=instance_id):
             continue  # Skip records already imported.
 
-        # Try to match the reporter to an existing User.
-        reporter = submission['reporter'].strip()
-        if User.objects.filter(name__icontains=reporter).exists() and User.objects.filter(name__icontains=reporter).count() == 1:
-            user = User.objects.get(name__icontains=reporter)
-        else:
-            # For this form, we won't create a new user.
-            # Instead, we send a warning to the admins to investigate & address.
-            log = (f"{instance_id}: unable to match an existing user {reporter} for survey end")
-            LOGGER.warning(log)
-            content = json.dumps(submission, indent=2)
-            msg = EmailMultiAlternatives(log, content, settings.DEFAULT_FROM_EMAIL, settings.ADMIN_EMAILS)
-            msg.send(fail_silently=True)
-            continue
-
+        # Try to match a site by location (just use the first one returned by the database).
         visit = submission['site_visit']
         location = parse_geopoint(visit['location'])
-        end_time = parser.isoparse(submission['end_time'])
-        start_time_earliest = end_time - timedelta(hours=duration_hr)
         site = Area.objects.filter(area_type=Area.AREATYPE_SITE, geom__covers=location).first()
 
         if not site:
             # Send a warning to the admins to investigate & address.
-            log = (f"{instance_id}: unable to match a site for survey end at {location.wkt}")
+            log = (f"Site Visit End form: unable to match a site for survey end at {location.wkt}")
             LOGGER.warning(log)
             content = json.dumps(submission, indent=2)
             msg = EmailMultiAlternatives(log, content, settings.DEFAULT_FROM_EMAIL, settings.ADMIN_EMAILS)
@@ -522,13 +511,15 @@ def import_site_visit_end(form_id="site_visit_end", duration_hr=8, auth_headers=
             continue
 
         # Try to match one (only) existing Survey object.
-        # Algorithm: filter Surveys in the same Site, having the same reporter, having
-        # start_time before end_time by no greater than `duration_hr` hours.
+        # Algorithm: filter Surveys in the same Site, having a start_time not before end_time by
+        # greater than `duration_hr` hours.
+        end_time = parser.isoparse(submission['end_time'])
+        start_time_earliest = end_time - timedelta(hours=duration_hr)
         surveys = Survey.objects.filter(
-            reporter=user, site=site, start_time__lt=end_time, start_time__gte=start_time_earliest,
+            site=site, start_time__lt=end_time, start_time__gte=start_time_earliest,
         )
         if surveys.count() != 1:
-            log = (f"{instance_id}: unable to match a single Survey (matched {surveys.count()})")
+            log = (f"Site Visit End form: unable to match a single Survey (matched {surveys.count()})")
             LOGGER.warning(log)
             content = json.dumps(submission, indent=2)
             msg = EmailMultiAlternatives(log, content, settings.DEFAULT_FROM_EMAIL, settings.ADMIN_EMAILS)
