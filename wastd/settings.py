@@ -180,6 +180,7 @@ EMAIL_HOST = os.environ.get("EMAIL_HOST", "email.host")
 EMAIL_PORT = os.environ.get("EMAIL_PORT", 25)
 DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "noreply@dbca.wa.gov.au")
 EMAIL_SUBJECT_PREFIX = os.environ.get("DJANGO_EMAIL_SUBJECT_PREFIX", "[Turtles DB] ")
+ADMIN_EMAILS = os.environ.get("ADMIN_EMAILS", "").split(",")
 
 
 # Static files (CSS, JavaScript, Images)
