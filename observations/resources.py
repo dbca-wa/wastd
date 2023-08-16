@@ -51,7 +51,7 @@ class SurveyResource(ModelResource):
             return ''
 
     def dehydrate_label(self, obj):
-        return obj.make_label
+        return obj.make_label()
 
 
 class EncounterResource(ModelResource):
@@ -96,7 +96,7 @@ class EncounterResource(ModelResource):
         return obj.survey_id if obj.survey else ''
 
     def dehydrate_survey(self, obj):
-        return obj.survey.make_label if obj.survey else ''
+        return obj.survey.make_label() if obj.survey else ''
 
     def dehydrate_observer(self, obj):
         return obj.observer.name
