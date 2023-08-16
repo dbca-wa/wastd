@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
 from dateutil import parser
 from django.conf import settings
+from django.core.mail import EmailMultiAlternatives
+import json
 import logging
 from users.models import User
 from wastd.odk import get_auth_headers, get_form_submission_data, parse_geopoint, parse_geopoint_accuracy, get_submission_attachment
@@ -88,10 +90,7 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=Non
             species=submission['details']['species'],
         )
 
-        if submission['details']['nest_type'] in ['false-crawl', 'track-unsure', 'track-not-assessed']:
-            encounter.encounter_type = 'tracks'
-        else:
-            encounter.encounter_type = 'nest'
+        encounter.encounter_type = encounter.get_encounter_type()
 
         if 'nest' in submission:
             encounter.habitat = submission['nest']['habitat']
@@ -440,7 +439,6 @@ def import_site_visit_start(form_id="site_visit_start", auth_headers=None):
             start_location=parse_geopoint(visit['location']),
             start_location_accuracy_m=parse_geopoint_accuracy(visit['location']),
             start_time=parser.isoparse(submission['start_time']),
-            start_comments=visit['comments'],
         )
         survey.area = guess_area(survey)
         survey.site = guess_site(survey)
@@ -494,11 +492,18 @@ def import_site_visit_end(form_id="site_visit_end", duration_hr=8, auth_headers=
         if Survey.objects.filter(source='odk', end_source_id=instance_id):
             continue  # Skip records already imported.
 
-        # Try to match the reporter to an existing User. If no match, skip record.
+        # Try to match the reporter to an existing User.
         reporter = submission['reporter'].strip()
         if User.objects.filter(name__icontains=reporter).exists() and User.objects.filter(name__icontains=reporter).count() == 1:
             user = User.objects.get(name__icontains=reporter)
         else:
+            # For this form, we won't create a new user.
+            # Instead, we send a warning to the admins to investigate & address.
+            log = (f"{instance_id}: unable to match an existing user {reporter} for survey end")
+            LOGGER.warning(log)
+            content = json.dumps(submission, indent=2)
+            msg = EmailMultiAlternatives(log, content, settings.DEFAULT_FROM_EMAIL, settings.ADMIN_EMAILS)
+            msg.send(fail_silently=True)
             continue
 
         visit = submission['site_visit']
@@ -506,18 +511,28 @@ def import_site_visit_end(form_id="site_visit_end", duration_hr=8, auth_headers=
         end_time = parser.isoparse(submission['end_time'])
         start_time_earliest = end_time - timedelta(hours=duration_hr)
         site = Area.objects.filter(area_type=Area.AREATYPE_SITE, geom__covers=location).first()
+
         if not site:
-            LOGGER.info(f"Unable to match a suitable site for submission located at {location.wkt}")
+            # Send a warning to the admins to investigate & address.
+            log = (f"{instance_id}: unable to match a site for survey end at {location.wkt}")
+            LOGGER.warning(log)
+            content = json.dumps(submission, indent=2)
+            msg = EmailMultiAlternatives(log, content, settings.DEFAULT_FROM_EMAIL, settings.ADMIN_EMAILS)
+            msg.send(fail_silently=True)
             continue
 
         # Try to match one (only) existing Survey object.
         # Algorithm: filter Surveys in the same Site, having the same reporter, having
-        # start_time before end_time by no greater than 8 hours.
+        # start_time before end_time by no greater than `duration_hr` hours.
         surveys = Survey.objects.filter(
             reporter=user, site=site, start_time__lt=end_time, start_time__gte=start_time_earliest,
         )
         if surveys.count() != 1:
-            LOGGER.info(f"Unable to match a single Survey (matched {surveys.count()})")
+            log = (f"{instance_id}: unable to match a single Survey (matched {surveys.count()})")
+            LOGGER.warning(log)
+            content = json.dumps(submission, indent=2)
+            msg = EmailMultiAlternatives(log, content, settings.DEFAULT_FROM_EMAIL, settings.ADMIN_EMAILS)
+            msg.send(fail_silently=True)
             continue
         else:
             survey = surveys.first()
