@@ -706,6 +706,20 @@ class Survey(QualityControlMixin, UrlsMixin, models.Model):
         """
         return self.__str__()
 
+    @property
+    def guess_site(self):
+        """Return the first site containing the start_location or None.
+        """
+        candidates = Area.objects.filter(area_type=Area.AREATYPE_SITE, geom__covers=self.start_location)
+        return candidates.first() or None
+
+    @property
+    def guess_area(self):
+        """Return the first locality containing the start_location or None.
+        """
+        candidates = Area.objects.filter(area_type=Area.AREATYPE_LOCALITY, geom__covers=self.start_location)
+        return candidates.first() or None
+
 
 class SurveyEnd(models.Model):
     """A visit to one site by a team of field workers collecting data.
@@ -783,7 +797,6 @@ class SurveyEnd(models.Model):
 
     def save(self, *args, **kwargs):
         """Guess site."""
-        self.site = self.guess_site
         super(SurveyEnd, self).save(*args, **kwargs)
 
     def __str__(self):
@@ -792,14 +805,6 @@ class SurveyEnd(models.Model):
             "na" if not self.site else self.site,
             "na" if not self.end_time else self.end_time.isoformat(),
         )
-
-    @property
-    def guess_site(self):
-        """Return the first Area containing the start_location or None."""
-        candidates = Area.objects.filter(
-            area_type=Area.AREATYPE_SITE, geom__covers=self.end_location
-        )
-        return None if not candidates else candidates.first()
 
 
 class SurveyMediaAttachment(LegacySourceMixin, models.Model):
@@ -1384,19 +1389,17 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
 
     @property
     def guess_site(self):
-        """Return the first Area containing the start_location or None."""
-        candidates = Area.objects.filter(
-            area_type=Area.AREATYPE_SITE, geom__covers=self.where
-        )
-        return None if not candidates else candidates.first()
+        """Return the first site containing `where`, or None.
+        """
+        candidates = Area.objects.filter(area_type=Area.AREATYPE_SITE, geom__covers=self.where)
+        return candidates.first() or None
 
     @property
     def guess_area(self):
-        """Return the first Area containing the start_location or None."""
-        candidates = Area.objects.filter(
-            area_type=Area.AREATYPE_LOCALITY, geom__covers=self.where
-        )
-        return None if not candidates else candidates.first()
+        """Return the first locality containing `where`, or None.
+        """
+        candidates = Area.objects.filter(area_type=Area.AREATYPE_LOCALITY, geom__covers=self.where)
+        return candidates.first() or None
 
     def set_name(self, name):
         """Set the animal name to a given value."""

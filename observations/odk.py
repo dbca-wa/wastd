@@ -27,7 +27,6 @@ from .models import (
     TurtleDamageObservation,
     TagObservation,
 )
-from .utils import guess_area, guess_site
 
 LOGGER = logging.getLogger('turtles')
 
@@ -443,8 +442,8 @@ def import_site_visit_start(form_id="site_visit_start", initial_duration_hr=8, a
 
         # Guess the area & site, and plug in an initial estimated end_time.
         # The correct end_time will (hopefully) be gathered from the Site Visit End form.
-        survey.area = guess_area(survey)
-        survey.site = guess_site(survey)
+        survey.area = survey.guess_area
+        survey.site = survey.guess_site
         survey.end_time = survey.start_time + timedelta(hours=initial_duration_hr)
 
         # We need to save before we can modify the M2M field or set the label.

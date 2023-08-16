@@ -11,24 +11,6 @@ from .models import (
 LOGGER = logging.getLogger("turtles")
 
 
-def guess_site(survey):
-    """Return the first Area containing the start_location or None.
-    """
-    if not survey.start_location:
-        return None
-    else:
-        return Area.objects.filter(area_type=Area.AREATYPE_SITE, geom__covers=survey.start_location).first()
-
-
-def guess_area(survey):
-    """Return the first Area containing the start_location or None.
-    """
-    if not survey.start_location:
-        return None
-    else:
-        return Area.objects.filter(area_type=Area.AREATYPE_LOCALITY, geom__covers=survey.start_location).first()
-
-
 def claim_encounters(survey):
     """For a Survey, update any 'orphan' Encounters within the same site and the same
     start & end times to be associated with that survey.
