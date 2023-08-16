@@ -14,6 +14,15 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
+            '--initial-duration',
+            action='store',
+            default=8,
+            type=int,
+            help='Initial default duration (hours) to set as the length of new surveys',
+            dest='initial_duration',
+        )
+
+        parser.add_argument(
             '--duration',
             action='store',
             default=8,
@@ -31,7 +40,7 @@ class Command(BaseCommand):
         import_turtle_track_or_nest(auth_headers=auth_headers)
 
         logger.info('Downloading data from Site Visit Start form')
-        import_site_visit_start(auth_headers=auth_headers)
+        import_site_visit_start(initial_duration_hr=options['initial_duration'], auth_headers=auth_headers)
 
         logger.info('Downloading data from Site Visit End form, linking encounters')
         import_site_visit_end(duration_hr=options['duration'], auth_headers=auth_headers)
