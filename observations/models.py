@@ -548,15 +548,12 @@ class Survey(QualityControlMixin, UrlsMixin, models.Model):
     )
 
     class Meta:
-        ordering = [
-            "-start_time",
-        ]
+        ordering = ["-start_time"]
         unique_together = ("source", "source_id")
 
     def __str__(self):
         return self.label or str(self.pk)
 
-    @property
     def make_label(self):
         return "Survey {} of {} on {} from {} to {}".format(
             self.pk,
@@ -583,31 +580,6 @@ class Survey(QualityControlMixin, UrlsMixin, models.Model):
 
     def card_template(self):
         return "observations/survey_card.html"
-
-    @property
-    def encounters(self):
-        """Return the QuerySet of all Encounters within this Survey unless it's a training run."""
-        if not self.production:
-            #LOGGER.info(
-            #    "[observations.models.survey.encounters] Not a production survey, skipping."
-            #)
-            return None
-        if not self.end_time:
-            #LOGGER.info(
-            #    "[observations.models.survey.encounters] No end_time set, can't filter Encounters."
-            #)
-            return None
-        elif not self.site:
-            #LOGGER.info(
-            #    "[observations.models.survey.encounters] No site set, can't filter Encounters."
-            #)
-            return None
-        else:
-            return Encounter.objects.filter(
-                where__coveredby=self.site.geom,
-                when__gte=self.start_time,
-                when__lte=self.end_time,
-            )
 
     @property
     def start_date(self):
@@ -737,6 +709,7 @@ class Survey(QualityControlMixin, UrlsMixin, models.Model):
 
 class SurveyEnd(models.Model):
     """A visit to one site by a team of field workers collecting data.
+    TODO: deprecate this model (consolidate into Survey).
     """
     source = models.CharField(
         max_length=300,
@@ -1258,7 +1231,7 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
     def create_url(cls):
         """Create url. Default: app:model-create."""
         return reverse(
-            "admin:{0}_{1}_add".format(cls._meta.app_label, cls._meta.model_name)
+            "admin:{}_{}_add".format(cls._meta.app_label, cls._meta.model_name)
         )
 
     @property
