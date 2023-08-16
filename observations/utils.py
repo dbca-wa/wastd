@@ -6,7 +6,6 @@ from .models import (
     Area,
     Survey,
     Encounter,
-    SurveyEnd,
 )
 
 LOGGER = logging.getLogger("turtles")
@@ -18,9 +17,7 @@ def guess_site(survey):
     if not survey.start_location:
         return None
     else:
-        return Area.objects.filter(
-            area_type=Area.AREATYPE_SITE, geom__covers=survey.start_location
-        ).first()
+        return Area.objects.filter(area_type=Area.AREATYPE_SITE, geom__covers=survey.start_location).first()
 
 
 def guess_area(survey):
@@ -29,59 +26,21 @@ def guess_area(survey):
     if not survey.start_location:
         return None
     else:
-        return Area.objects.filter(
-            area_type=Area.AREATYPE_LOCALITY,
-            geom__covers=survey.start_location,
-        ).first()
+        return Area.objects.filter(area_type=Area.AREATYPE_LOCALITY, geom__covers=survey.start_location).first()
 
 
 def claim_encounters(survey):
-    """Update Encounters within this Survey to reference survey=self.
+    """For a Survey, update any 'orphan' Encounters within the same site and the same
+    start & end times to be associated with that survey.
     """
-    if survey.encounters:
-        # Update the queryset of encounters covered by the survey site area, and
-        # within the start_time and end_time of the survey.
-        survey.encounters.update(survey=survey, site=survey.site)
-
-
-def claim_end_points(survey):
-    """Claim SurveyEnd.
-
-    The first SurveyEnd with the matching site,
-    and an end_time within six hours after start_time is used
-    to set corresponding end_location, end_time, end_comments,
-    end_photo and end_source_id.
-
-    Since the end point could be taken with a different device (e.g.
-    if primary device malfunctions), we will not filter down to
-    the same device_id.
-
-    If no SurveyEnd is found and no end_time is set, the end_time is set to
-    start_time plus six hours. This should allow the survey to claim its Encounters.
-
-    TODO we could be a bit cleverer and find the latest encounter on the same day and site.
-    """
-    se = SurveyEnd.objects.filter(
-        site=survey.site,
-        end_time__gte=survey.start_time,
-        end_time__lte=survey.start_time + timedelta(hours=6),
-    ).first()
-    if se:
-        survey.end_location = se.end_location
-        survey.end_time = se.end_time
-        survey.end_comments = se.end_comments
-        survey.end_photo = se.end_photo
-        survey.end_source_id = se.source_id
-        survey.end_device_id = se.device_id
-    else:
-        if not survey.end_time:
-            survey.end_time = survey.start_time + timedelta(hours=6)
-            survey.end_comments = (
-                "[NEEDS QA][Missing SiteVisitEnd] Survey end guessed."
-            )
-            LOGGER.info(
-                "[Survey.claim_end_points] Missing SiteVisitEnd for Survey {}".format(survey)
-            )
+    encounters = Encounter.objects.filter(
+        survey__isnull=True,
+        where__coveredby=survey.site.geom,
+        when__gte=survey.start_time,
+        when__lte=survey.end_time,
+    )
+    if encounters:
+        encounters.update(survey=survey, site=survey.site)
 
 
 def reconstruct_missing_surveys(buffer_mins=30):
@@ -94,11 +53,10 @@ def reconstruct_missing_surveys(buffer_mins=30):
 
     Crosstab: See pandas
     """
-    LOGGER.info("Rounding up the orphans...")
-    tne = Encounter.objects.exclude(site=None).filter(survey=None)
-    LOGGER.info("Found {} orphans witout survey.".format(tne.count()))
+    encounters_no_survey = Encounter.objects.exclude(site=None).filter(survey=None)
+    LOGGER.info("Found {} orphans Encounters without survey".format(encounters_no_survey.count()))
     LOGGER.info("Inferring missing survey data...")
-    tne_all = [[t.site.id, t.when.date(), t.when, t.reporter] for t in tne]
+    tne_all = [[t.site.id, t.when.date(), t.when, t.reporter] for t in encounters_no_survey]
     tne_idx = [[t[0], t[1]] for t in tne_all]
     tne_data = [[t[2], t[3]] for t in tne_all]
     idx = pandas.MultiIndex.from_tuples(tne_idx, names=["site", "date"])
@@ -116,7 +74,7 @@ def reconstruct_missing_surveys(buffer_mins=30):
     bfr = timedelta(minutes=buffer_mins)
     for idx, row in missing_surveys.iterrows():
         LOGGER.debug(
-            "Missing Survey on {0} at {1} by {2} from {3}-{4}".format(
+            "Missing Survey on {} at {} by {} from {}-{}".format(
                 idx[0],
                 idx[1],
                 row["reporter"]["first"],
@@ -136,9 +94,9 @@ def reconstruct_missing_surveys(buffer_mins=30):
             start_comments="[QA][AUTO] Reconstructed by WAStD from Encounters without surveys.",
         )
         s.save()
-    LOGGER.info("Created {} surveys to adopt {} orphaned Encounters.".format(len(missing_surveys), tne.count()))
+    LOGGER.info("Created {} surveys to adopt {} orphaned Encounters.".format(len(missing_surveys), encounters_no_survey.count()))
 
-    tne = Encounter.objects.exclude(site=None).filter(survey=None)
-    LOGGER.info("Remaining orphans without survey: {}".format(tne.count()))
+    encounters_no_survey = Encounter.objects.exclude(site=None).filter(survey=None)
+    LOGGER.info("Remaining Encounters without survey: {}".format(encounters_no_survey.count()))
 
     return None
