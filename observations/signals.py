@@ -71,7 +71,6 @@ def encounter_pre_save(sender, instance, *args, **kwargs):
     if not instance.area:
         instance.area = instance.guess_area
     instance.encounter_type = instance.get_encounter_type()
-    instance.as_html = instance.get_popup()
 
 
 @receiver(pre_save, sender=TagObservation)

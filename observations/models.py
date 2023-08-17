@@ -569,8 +569,7 @@ class Survey(QualityControlMixin, UrlsMixin, models.Model):
 
     @property
     def as_html(self):
-        """An HTML representation."""
-        t = loader.get_template("popup/{0}.html".format(self._meta.model_name))
+        t = loader.get_template("popup/survey.html")
         return mark_safe(t.render({"original": self}))
 
     @property
@@ -1546,6 +1545,13 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         """Return a queryset of all attached photographs.
         """
         return MediaAttachment.objects.filter(encounter=self, media_type="photograph")
+
+    @property
+    def as_html(self):
+        """An HTML representation.
+        """
+        t = loader.get_template("popup/{}.html".format(self._meta.model_name))
+        return mark_safe(t.render({"original": self}))
 
 
 class AnimalEncounter(Encounter):
