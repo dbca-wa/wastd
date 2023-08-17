@@ -9,7 +9,7 @@ from rest_framework.authtoken import views as drf_authviews
 from wastd.router import router
 from wastd.router import urlpatterns as api_v2_urlpatterns
 from observations import views as observations_views
-from observations.models import Area
+from observations.models import Area, AnimalEncounter
 
 
 urlpatterns = [
@@ -31,9 +31,39 @@ urlpatterns = [
     path("api-auth/", include(("rest_framework.urls", "api-auth"), namespace="rest_framework")),
     path("api-token-auth/", drf_authviews.obtain_auth_token, name="api-auth"),
     # Spatial data layers
-    path("areas.geojson", GeoJSONLayerView.as_view(model=Area, properties=["leaflet_title"]), name="areas-geojson"),
-    path("localities.geojson", GeoJSONLayerView.as_view(model=Area, queryset=Area.objects.filter(area_type=Area.AREATYPE_LOCALITY), properties=["leaflet_title"]), name="localities-geojson"),
-    path("sites.geojson", GeoJSONLayerView.as_view(model=Area, queryset=Area.objects.filter(area_type=Area.AREATYPE_SITE), properties=["leaflet_title"]), name="sites-geojson"),
+    path(
+        "areas.geojson",
+        GeoJSONLayerView.as_view(model=Area, properties=["leaflet_title"]),
+        name="areas_geojson",
+    ),
+    path(
+        "localities.geojson",
+        GeoJSONLayerView.as_view(
+            model=Area,
+            queryset=Area.objects.filter(area_type=Area.AREATYPE_LOCALITY),
+            properties=["leaflet_title"],
+        ),
+        name="localities_geojson",
+    ),
+    path(
+        "sites.geojson",
+        GeoJSONLayerView.as_view(
+            model=Area,
+            queryset=Area.objects.filter(area_type=Area.AREATYPE_SITE),
+            properties=["leaflet_title"],
+        ),
+        name="sites_geojson",
+    ),
+    path(
+        "strandings.geojson",
+        GeoJSONLayerView.as_view(
+            model=AnimalEncounter,
+            queryset=AnimalEncounter.objects.filter(encounter_type='stranding'),
+            geometry_field="where",
+            properties=["as_html", "leaflet_title", "leaflet_icon", "leaflet_colour"],
+        ),
+        name="strandings_geojson",
+    ),
     # Error pages
     path("400/", defaults.bad_request, kwargs={"exception": Exception("Bad request")}),
     path("403/", defaults.permission_denied, kwargs={"exception": Exception("Permission denied")}),

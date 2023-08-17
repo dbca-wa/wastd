@@ -1723,7 +1723,6 @@ class AnimalEncounter(Encounter):
         verbose_name = "Animal Encounter"
         verbose_name_plural = "Animal Encounters"
         get_latest_by = "when"
-        # base_manager_name = 'base_objects'  # fix delete bug
 
     def __str__(self):
         tpl = "AnimalEncounter {} on {} by {} of {}, {} {} {} on {}"
