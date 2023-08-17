@@ -74,11 +74,10 @@ L.Control.ResetView.ICON = "url({% static 'leaflet/images/reset-view.png' %})";
 /* Custom overlays, Geocoder */
 window.addEventListener("map:init", function (event) {
     var map = event.detail.map;
-    {% include 'shared/styles.js' %}
     /* Transparent overlay layers */
     var lc = map.layerscontrol;
 
-    $.getJSON("{% url 'sites-geojson' %}", function (data) {
+    $.getJSON("{% url 'sites_geojson' %}", function (data) {
         lc.addOverlay(L.geoJson(data, {style: polystyle, onEachFeature: oef}), 'Turtles DB sites')
     });
 
