@@ -24,16 +24,17 @@
 {% block extra_js %}
 {{ block.super }}
 <script type="text/javascript">
-    const oef = function(feature, layer) {
-      layer.bindTooltip(feature.properties.leaflet_title);
-    }
-    const polystyle = {
-        "color": "#0009ff",
-        "weight": 1,
-        "opacity": 0.65
-    };
     function map_init(map, options) {
-        $.getJSON("{% url 'localities-geojson' %}", function (data) {
+        {% include 'shared/styles.js' %}
+        var markers = L.markerClusterGroup();
+
+        $.getJSON("{% url 'strandings_geojson' %}", function(data) {
+            var strandings_layer = L.geoJSON(data, {style: pointstyle, pointToLayer: ptl, onEachFeature: oef_ll});
+            markers.addLayer(strandings_layer);
+            map.addLayer(markers);
+        });
+
+        $.getJSON("{% url 'localities_geojson' %}", function(data) {
             L.geoJson(data, {style: polystyle, onEachFeature: oef}).addTo(map);
         });
     }

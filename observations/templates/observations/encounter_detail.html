@@ -221,7 +221,7 @@
 <script type="text/javascript">
     function map_init(map, options) {
       {% include 'shared/styles.js' %}
-      $.getJSON("{% url 'sites-geojson' %}", function (data) {
+      $.getJSON("{% url 'sites_geojson' %}", function (data) {
           L.geoJson(data, {style: polystyle, onEachFeature: oef}).addTo(map);
       });
       /* Data loading */
