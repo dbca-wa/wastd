@@ -167,13 +167,14 @@ class Area(models.Model):
         verbose_name_plural = "Areas"
 
     def save(self, *args, **kwargs):
-        """Cache centroid and northern extent."""
-        self.as_html = self.get_popup
+        """Cache as_html value, centroid and northern extent.
+        """
+        self.as_html = self.get_popup()
         if not self.northern_extent:
             self.northern_extent = self.derived_northern_extent
         if not self.centroid:
             self.centroid = self.derived_centroid
-        super(Area, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.name} ({self.area_type})"
@@ -188,9 +189,9 @@ class Area(models.Model):
         """The northern extent, derived from the polygon."""
         return self.geom.extent[3] or None
 
-    @property
     def get_popup(self):
-        """Generate HTML popup content."""
+        """Generate HTML popup content.
+        """
         t = loader.get_template("popup/{}.html".format(self._meta.model_name))
         c = dict(original=self)
         return mark_safe(t.render(c))
