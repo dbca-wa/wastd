@@ -1,6 +1,6 @@
 from django.urls import path
 
-from observations.api_v2 import (
+from observations.api import (
     AreaListResource,
     AreaDetailResource,
     SurveyListResource,
@@ -38,7 +38,7 @@ from tagging.api import (
     TurtlePitTagListResource,
     TurtlePitTagDetailResource,
 )
-from users.api_v2 import UserListResource, UserDetailResource
+from users.api import UserListResource, UserDetailResource
 
 
 urlpatterns = [

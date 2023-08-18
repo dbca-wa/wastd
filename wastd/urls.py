@@ -5,7 +5,7 @@ from django.views.generic import TemplateView
 from django.views import defaults
 from djgeojson.views import GeoJSONLayerView
 
-from wastd.router import urlpatterns as api_v2_urlpatterns
+from wastd.router import urlpatterns as api_urlpatterns
 from observations import views as observations_views
 from observations.models import Area, AnimalEncounter
 
@@ -24,7 +24,7 @@ urlpatterns = [
     path("observations/", include(("observations.urls"), namespace="observations")),
     path("map/", observations_views.MapView.as_view(), name="map"),
     # API
-    path('api/2/', include((api_v2_urlpatterns, "wastd"), namespace="api_v2")),
+    path('api/1/', include((api_urlpatterns, "wastd"), namespace="api")),
     # Spatial data layers
     path(
         "areas.geojson",

@@ -17,7 +17,7 @@ from .models import (
     TurtleHatchlingEmergenceOutlierObservation,
     LightSourceObservation,
 )
-from .serializers_v2 import (
+from .serializers import (
     AreaSerializer,
     SurveySerializer,
     SurveyMediaAttachmentSerializer,
