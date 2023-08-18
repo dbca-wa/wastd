@@ -19,7 +19,6 @@ class UserSerializer(ModelSerializer):
             "aliases",
             "role",
             "affiliation",
-            # 'organisations',
             "email",
             "phone",
             "is_active",
