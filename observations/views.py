@@ -106,12 +106,7 @@ class EncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
         return context
 
     def get_queryset(self):
-        qs = (
-            super(EncounterList, self)
-            .get_queryset()
-            .prefetch_related("observer", "reporter", "area", "site")
-            .order_by("-when")
-        )
+        qs = super().get_queryset().prefetch_related("observer", "reporter", "area", "site").order_by("-when")
         return EncounterFilter(self.request.GET, queryset=qs).qs
 
 
@@ -200,19 +195,7 @@ class AnimalEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListVi
         return context
 
     def get_queryset(self):
-        qs = (
-            super(AnimalEncounterList, self)
-            .get_queryset()
-            .prefetch_related(
-                "observer",
-                "reporter",
-                "area",
-                "site",
-                "site_of_first_sighting",
-                "site_of_last_sighting",
-            )
-            .order_by("-when")
-        )
+        qs = super().get_queryset().prefetch_related("observer", "reporter", "area", "site").order_by("-when")
         return AnimalEncounterFilter(self.request.GET, queryset=qs).qs
 
 
@@ -261,7 +244,7 @@ class TurtleNestEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, Li
 
     def get_queryset(self):
         # FIXME: filtering via permissions model.
-        qs = super().get_queryset().prefetch_related("observer", "reporter", "area", "site").order_by("-when")
+        qs = super().get_queryset()
         return TurtleNestEncounterFilter(self.request.GET, queryset=qs).qs
 
 
@@ -304,19 +287,9 @@ class LineTransectEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, 
         return context
 
     def get_queryset(self):
-        qs = (
-            super(LineTransectEncounterList, self)
-            .get_queryset()
-            .prefetch_related("observer", "reporter", "area", "site")
-            .order_by("-when")
-        )
+        qs = super().get_queryset().prefetch_related("observer", "reporter", "area", "site").order_by("-when")
         return LineTransectEncounterFilter(self.request.GET, queryset=qs).qs
 
 
 class LineTransectEncounterDetail(DetailViewBreadcrumbMixin, DetailView):
     model = LineTransectEncounter
-
-    def get_context_data(self, **kwargs):
-        data = super(LineTransectEncounterDetail, self).get_context_data(**kwargs)
-        # data['tags'] = TagObservation.objects.filter(encounter__in=[self.get_object()])
-        return data
