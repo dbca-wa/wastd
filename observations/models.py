@@ -795,12 +795,8 @@ class SurveyEnd(models.Model):
         ordering = ["end_location", "end_time"]
         unique_together = ("source", "source_id")
 
-    def save(self, *args, **kwargs):
-        """Guess site."""
-        super(SurveyEnd, self).save(*args, **kwargs)
-
     def __str__(self):
-        return "SurveyEnd {0} at {1} on {2}".format(
+        return "SurveyEnd {} at {} on {}".format(
             self.pk,
             "na" if not self.site else self.site,
             "na" if not self.end_time else self.end_time.isoformat(),

@@ -280,10 +280,6 @@ class SourceIdEncounterSerializer(GeoFeatureModelSerializer):
 class FastEncounterSerializer(EncounterSerializer):
     """Faster encounter serializer."""
 
-    # area = FastAreaSerializer(required=False)
-    # site = FastAreaSerializer(required=False)
-    # survey = FastSurveySerializer(required=False)
-
     class Meta(EncounterSerializer.Meta):
         fields = (
             "pk",
