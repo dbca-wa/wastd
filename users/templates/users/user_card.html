@@ -53,41 +53,6 @@
       <i class="fa-solid fa-phone" aria-hidden="true"></i> {{ object.phone|default:"-" }}
     </div>
 
-    <div class="card-text">
-        {% if object == request.user %}
-        <a class="btn btn-primary btn-sm" href="{{ object.absolute_admin_url }}">Update my Profile</a>
-        {% endif %}
-      </div>
-
-      {% if object == request.user %}
-      <!-- API auth -->
-      <div class="card-text">
-          <h4>Accessing data from R</h4>
-          <p>Add to your ~/.Renviron:</p>
-          <pre>
-WASTDR_API_URL="{{ request.scheme }}://{{ request.get_host }}/api/1/"
-WASTDR_API_TOKEN="Token {{ request.user.apitoken }}"
-          </pre>
-          <p>See <a href="https://dbca-wa.github.io/wastdr/index.html">the wastdr package documentation</a> for working examples.</p>
-
-          <h4>Accessing data from Python</h4>
-          <pre>
-import requests
-url = '{{ request.scheme }}://{{ request.get_host }}/api/1/animal-encounters/'
-headers = {"Authorization": "Token {{ request.user.apitoken }}"}
-j = requests.get(url + "?format=json", headers=headers).json()
-d = requests.get(url + "?format=csv", headers=headers).content
-          </pre>
-
-          <h4>Accessing data from the command line</h4>
-          <pre>
-curl {{ request.scheme }}://{{ request.get_host }}/api/1/animal-encounters/?format=json -H 'Authorization: Token {{ request.user.apitoken }}'
-          </pre>
-
-      </div><!-- /.row "-->
-      <!-- End API auth -->
-      {% endif %}
-
   </div><!-- /.card-body -->
 
   </div><!-- /#details{{ object.id }} -->
