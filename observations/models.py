@@ -29,7 +29,6 @@ import itertools
 import logging
 from os import path
 from polymorphic.models import PolymorphicModel
-from rest_framework.reverse import reverse as rest_reverse
 from slugify import slugify
 import urllib
 
@@ -221,24 +220,6 @@ class Area(models.Model):
         return "/admin/observations/animalencounter/?{0}__id__exact={1}".format(
             "site" if self.area_type == Area.AREATYPE_SITE else "area",
             self.pk,
-        )
-
-    def make_rest_listurl(self, format="json"):
-        """Return the API list URL in given format (default: JSON).
-
-        Permissible formats depend on configured renderers:
-        api (human readable HTML), csv, json, jsonp, yaml, latex (PDF).
-        """
-        return rest_reverse(self._meta.model_name + "-list", kwargs={"format": format})
-
-    def make_rest_detailurl(self, format="json"):
-        """Return the API detail URL in given format (default: JSON).
-
-        Permissible formats depend on configured renderers:
-        api (human readable HTML), csv, json, jsonp, yaml, latex (PDF).
-        """
-        return rest_reverse(
-            self._meta.model_name + "-detail", kwargs={"pk": self.pk, "format": format}
         )
 
 
@@ -1245,24 +1226,6 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         """Return the absolute admin change URL.
         """
         return reverse("admin:{}_{}_change".format(self._meta.app_label, self._meta.model_name), args=[self.pk])
-
-    def make_rest_listurl(self, format="json"):
-        """Return the API list URL in given format (default: JSON).
-
-        Permissible formats depend on configured renderers:
-        api (human readable HTML), csv, json, jsonp, yaml, latex (PDF).
-        """
-        return rest_reverse(self._meta.model_name + "-list", kwargs={"format": format})
-
-    def make_rest_detailurl(self, format="json"):
-        """Return the API detail URL in given format (default: JSON).
-
-        Permissible formats depend on configured renderers:
-        api (human readable HTML), csv, json, jsonp, yaml, latex (PDF).
-        """
-        return rest_reverse(
-            self._meta.model_name + "-detail", kwargs={"pk": self.pk, "format": format}
-        )
 
     def get_curate_url(self):
         return reverse("observations:animalencounter-curate", kwargs={"pk": self.pk})

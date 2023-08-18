@@ -1,4 +1,4 @@
-from collections import namedtuple, OrderedDict
+from collections import namedtuple
 from datetime import date, datetime
 from django.contrib.admin.widgets import AdminFileWidget
 from django.contrib.gis.db import models
@@ -19,8 +19,6 @@ from import_export.formats import base_formats
 from import_export.resources import Resource
 from leaflet.forms.widgets import LeafletWidget
 import re
-from rest_framework import pagination
-from rest_framework.response import Response
 from urllib import parse
 import uuid
 
@@ -243,40 +241,6 @@ class ResourceDownloadMixin:
             selected_format.__name__.lower(),
         )
         return response
-
-
-class MyGeoJsonPagination(pagination.LimitOffsetPagination):
-    """
-    Paginate GeoJSON with LimitOffset.
-
-    Attempt to un-break HTML filter controls in browsable API.
-    Include GET parameter ``no_page`` to deactivate pagination.
-    """
-    def paginate_queryset(self, queryset, request, view=None):
-        """Turn off pagination based on query param ``no_page``."""
-        if "no_page" in request.query_params:
-            return None
-        return super().paginate_queryset(queryset, request, view)
-
-    def get_paginated_response(self, data):
-        """Return a GeoJSON FeatureCollection with pagination links."""
-        if "features" in data:
-            results = data["features"]
-        elif "results" in data:
-            results = data["results"]
-        else:
-            results = data
-        return Response(
-            OrderedDict(
-                [
-                    ("type", "FeatureCollection"),
-                    ("count", self.count),
-                    ("next", self.get_next_link()),
-                    ("previous", self.get_previous_link()),
-                    ("features", results),
-                ]
-            )
-        )
 
 
 class ListResourceView(ListView):

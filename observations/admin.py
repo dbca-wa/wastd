@@ -10,7 +10,6 @@ from django_select2.forms import ModelSelect2Widget
 from easy_select2 import select2_modelform as s2form
 from fsm_admin.mixins import FSMTransitionMixin
 from import_export.admin import ExportActionMixin
-from rest_framework.authtoken.admin import TokenAdmin
 from reversion.admin import VersionAdmin
 
 from wastd.utils import FORMFIELD_OVERRIDES, S2ATTRS, CustomStateLogInline
@@ -46,8 +45,6 @@ from .resources import (
     TurtleNestEncounterResource,
     LineTransectEncounterResource,
 )
-
-TokenAdmin.raw_id_fields = ("user",)
 
 
 class AreaFilter(RelatedFieldListFilter):

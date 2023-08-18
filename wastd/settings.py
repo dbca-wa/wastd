@@ -45,10 +45,6 @@ INSTALLED_APPS = [
     "django_fsm_log",
     "fsm_admin",
     "reversion",
-    "rest_framework",
-    "rest_framework.authtoken",  # API auth via token
-    "rest_framework_gis",
-    "rest_framework_filters",
     "leaflet",
     "phonenumber_field",
     "crispy_forms",
@@ -245,40 +241,6 @@ CRISPY_TEMPLATE_PACK = "bootstrap4"
 # Grappelli admin
 GRAPPELLI_ADMIN_TITLE = "Turtles Database data curation portal"
 GRAPPELLI_INDEX_DASHBOARD = "wastd.dashboard.AdminDashboard"
-
-# django-restframework
-REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework.authentication.BasicAuthentication",
-        "rest_framework.authentication.SessionAuthentication",
-        "rest_framework.authentication.TokenAuthentication",
-    ),
-    # https://www.django-rest-framework.org/api-guide/permissions/
-    "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly",
-        "rest_framework.permissions.IsAdminUser",
-    ],
-    "DEFAULT_RENDERER_CLASSES": (
-        "rest_framework.renderers.BrowsableAPIRenderer",
-        "rest_framework.renderers.JSONRenderer",
-        #'rest_framework_jsonp.renderers.JSONPRenderer',
-        #'rest_framework_yaml.renderers.YAMLRenderer',
-        #'rest_framework_latex.renderers.LatexRenderer',
-    ),
-    "DEFAULT_PARSER_CLASSES": [
-        "rest_framework.parsers.JSONParser",
-        "rest_framework.parsers.FormParser",
-        "rest_framework.parsers.MultiPartParser",
-    ],
-    "DEFAULT_FILTER_BACKENDS": (
-        "django_filters.rest_framework.DjangoFilterBackend",
-        # 'rest_framework_gis.filters.InBBoxFilter',
-    ),
-    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
-    "PAGE_SIZE": 100,
-    "HTML_SELECT_CUTOFF": 100,
-    "TEST_REQUEST_DEFAULT_FORMAT": "json",
-}
 
 # ODK Central
 ODK_API_URL = os.environ.get("ODK_API_URL", "url")

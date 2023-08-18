@@ -747,65 +747,6 @@ files = [
 test = ["factory-boy", "flake8", "pyflakes", "pytest", "pytest-cov", "pytest-django", "pytest-pythonpath"]
 
 [[package]]
-name = "djangorestframework"
-version = "3.14.0"
-description = "Web APIs for Django, made easy."
-optional = false
-python-versions = ">=3.6"
-files = [
-    {file = "djangorestframework-3.14.0-py3-none-any.whl", hash = "sha256:eb63f58c9f218e1a7d064d17a70751f528ed4e1d35547fdade9aaf4cd103fd08"},
-    {file = "djangorestframework-3.14.0.tar.gz", hash = "sha256:579a333e6256b09489cbe0a067e66abe55c6595d8926be6b99423786334350c8"},
-]
-
-[package.dependencies]
-django = ">=3.0"
-pytz = "*"
-
-[[package]]
-name = "djangorestframework-csv"
-version = "2.1.1"
-description = "CSV Tools for Django REST Framework"
-optional = false
-python-versions = "*"
-files = [
-    {file = "djangorestframework-csv-2.1.1.tar.gz", hash = "sha256:aa0ee4c894fe319c68e042b05c61dace43a9fb6e6872e1abe1724ca7ea4d15f7"},
-]
-
-[package.dependencies]
-djangorestframework = "*"
-six = "*"
-unicodecsv = "*"
-
-[[package]]
-name = "djangorestframework-filters"
-version = "1.0.0.dev2"
-description = "Better filtering for Django REST Framework"
-optional = false
-python-versions = ">=3.5"
-files = [
-    {file = "djangorestframework-filters-1.0.0.dev2.tar.gz", hash = "sha256:ef84527e3427434d54228825b53a35098c8633c1e77b71d06b79597b749ea3f2"},
-    {file = "djangorestframework_filters-1.0.0.dev2-py3-none-any.whl", hash = "sha256:7369998968d656707e013da8c0c3ef1f858b99c4caaa8e9ea40861e5d6ddecff"},
-]
-
-[package.dependencies]
-django-filter = ">=2.0"
-djangorestframework = "*"
-
-[[package]]
-name = "djangorestframework-gis"
-version = "1.0"
-description = "Geographic add-ons for Django Rest Framework"
-optional = false
-python-versions = "*"
-files = [
-    {file = "djangorestframework-gis-1.0.tar.gz", hash = "sha256:921c5adbc9a7c0502c905957a6695b67f55d7bf6582e1ab837888b55a1fce5a6"},
-    {file = "djangorestframework_gis-1.0-py2.py3-none-any.whl", hash = "sha256:bb715f05a111c02b9acc4021b17566e40c0b90dd833c583bac3d67f92be9667d"},
-]
-
-[package.dependencies]
-djangorestframework = "*"
-
-[[package]]
 name = "docutils"
 version = "0.20.1"
 description = "Docutils -- Python Documentation Utilities"
@@ -1971,16 +1912,6 @@ files = [
 ]
 
 [[package]]
-name = "unicodecsv"
-version = "0.14.1"
-description = "Python2's stdlib csv module is nice, but it doesn't support unicode. This module is a drop-in replacement which *does*."
-optional = false
-python-versions = "*"
-files = [
-    {file = "unicodecsv-0.14.1.tar.gz", hash = "sha256:018c08037d48649a0412063ff4eda26eaa81eff1546dbffa51fa5293276ff7fc"},
-]
-
-[[package]]
 name = "urllib3"
 version = "2.0.4"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
@@ -2093,4 +2024,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "bc75365dda6ab388f439ebe9023d8b7e359cce7c54ae148b560af0fa0506850f"
+content-hash = "f4705f5edd0d19af305af7a3af3099e47c5510eda477736b3ac338886d706979"
