@@ -123,6 +123,12 @@
                     View Marine Wildlife Incidents map
                 </a>
                 <a class="dropdown-item"
+                    href="{% url 'observations:animalencounter-list' %}?encounter_type=stranding"
+                    title="Browse encounters with stranded animals">
+                    <i class="fa-solid fa-table" aria-hidden="true"></i>
+                    <span class="align-left">Stranded animals</span>
+                </a>
+                <a class="dropdown-item"
                     href="{% url 'observations:animalencounter-list' %}?health=alive-injured"
                     title="Browse encounters with injured animals">
                     <i class="fa-solid fa-table" aria-hidden="true"></i>
