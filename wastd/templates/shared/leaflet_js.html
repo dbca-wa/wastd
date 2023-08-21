@@ -1,12 +1,9 @@
 {% load static %}
-<!-- Leaflet 1.5.1 latest stable -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.js"
-  integrity="sha256-EErZamuLefUnbMBQbsEqu1USa+btR2oIlCpBJbyD4/g=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" integrity="sha512-puJW3E/qXDqYp9IfhAI54BJEaWIfloJ7JWs7OeD5i6ruC9JZL1gERT1wjtwXFlh7CjE7ZJ+/vcRZRkIYIb6p4g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
 <!-- Leaflet plugins -->
 <!-- https://cdnjs.com/libraries/proj4js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.5.0/proj4.js"
-  integrity="sha256-KJI74PS1qv3+hue+yyIWK/l8TxvS9u4WX7QDrtHkHOo=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.9.0/proj4.min.js" integrity="sha512-Y/B11KRfeaNHAonSdwnF0fvpzsA+W27fqfMPmfkxRAwuySCcA7aT9LfJcWz5fi32McMI02jngFYj7LYT1z+VVg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
 <!-- https://cdnjs.com/libraries/proj4leaflet -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4leaflet/1.0.2/proj4leaflet.min.js"
@@ -23,25 +20,15 @@
 <!-- leaflet.label -->
 <script src="https://unpkg.com/leaflet.label@0.2.4/dist/leaflet.label.js" crossorigin="anonymous"></script>
 
-<!-- https://cdnjs.com/libraries/perliedman-leaflet-control-geocoder -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/perliedman-leaflet-control-geocoder/1.8.2/Control.Geocoder.min.js"
-  integrity="sha256-Stk1bo/8vj3p8NX3wtwWGeAQxSvL4DWGIE2tLLRzAFA=" crossorigin="anonymous"></script>
-
 <!-- https://cdnjs.com/libraries/leaflet.fullscreen -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.fullscreen/1.5.1/Control.FullScreen.min.js"
-  integrity="sha256-1EgFzhCy7+u8Ju2guUij0GIo5WNWtR0WjeS4W6VmpH0=" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/leaflet.fullscreen@2.4.0/Control.FullScreen.js"></script>
 
 <!-- https://cdnjs.com/libraries/leaflet.markercluster -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/leaflet.markercluster.js"
-  integrity="sha256-WL6HHfYfbFEkZOFdsJQeY7lJG/E5airjvqbznghUzRw=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.min.js" integrity="sha512-TiMWaqipFi2Vqt4ugRzsF8oRoGFlFFuqIi30FFxEPNw58Ov9mOy6LgC05ysfkxwLE0xVeZtmr92wVg9siAFRWA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
 <!-- https://cdnjs.com/libraries/leaflet-tilelayer-geojson -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-tilelayer-geojson/1.0.4/TileLayer.GeoJSON.min.js"
   integrity="sha256-wAPWjo+rSGf0uCc0Bx0INODQ6En5mOPxSDGwKBLkfhg=" crossorigin="anonymous"></script>
-
-<!-- https://cdnjs.com/libraries/leaflet-providers -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-providers/1.8.0/leaflet-providers.min.js"
-  integrity="sha256-5oc3Ox+lXzhE5v6ZRXbBHnTfeHaiyqUi+dyfl9zpo+Q=" crossorigin="anonymous"></script>
 
 <!-- Various includes from https://github.com/makinacorpus/django-leaflet/blob/master/leaflet/templates/leaflet/js.html -->
 <script src="{% static 'leaflet/leaflet.forms.js' %}" type="text/javascript"></script>
@@ -52,72 +39,38 @@
 {% include "leaflet/_leaflet_draw_i18n.js" %}
 L.Control.ResetView.TITLE = "Reset view";
 L.Control.ResetView.ICON = "url({% static 'leaflet/images/reset-view.png' %})";
-// L.Icon.Default.imagePath = "{% static "leaflet/images" %}/";
 
-
-/*
- * Workaround for 1px lines appearing in some browsers due to
- * fractional transforms and resulting anti-aliasing.
- * https://github.com/Leaflet/Leaflet/issues/3575
- */
-(function(){
-    // L.Icon.Default.imagePath = '/static/leaflet/images/';
-    // delete L.Icon.Default.prototype._getIconUrl
-    // L.Icon.Default.mergeOptions({
-    //   iconRetinaUrl: "/static/leaflet/images/marker-icon-2x.png",
-    //   iconUrl: "/static/leaflet/images/marker-icon.png",
-    //   shadowUrl: "/static/leaflet/images/marker-shadow.png"
-    // })
-
-    var originalInitTile = L.GridLayer.prototype._initTile
-    L.GridLayer.include({
-        _initTile: function (tile) {
-            originalInitTile.call(this, tile);
-            var tileSize = this.getTileSize();
-            tile.style.width = tileSize.x + 1 + 'px';
-            tile.style.height = tileSize.y + 1 + 'px';
-        }
-    });
-})()
-
-/* Custom overlays, Geocoder */
 window.addEventListener("map:init", function (event) {
-    var map = event.detail.map;
     {% include 'shared/styles.js' %}
-    /* Transparent overlay layers */
+    var map = event.detail.map;
     var lc = map.layerscontrol;
 
-    $.getJSON("{% url 'sites-geojson' %}", function (data) {
-        lc.addOverlay(L.geoJson(data, {style: polystyle, onEachFeature: oef}), 'WAStD Sites')
+    $.getJSON("{% url 'sites_geojson' %}", function (data) {
+        lc.addOverlay(L.geoJson(data, {style: polystyle, onEachFeature: oef}), 'Turtles DB sites')
     });
 
     // FIXME: Switch to using WMTS.
     const kmi_wms = 'https://kmi.dbca.wa.gov.au/geoserver/ows';
-    const wmsoptions = function(lyr) {
+    const layer_options = function(layer) {
         return {
-            layers: lyr,
+            layers: layer,
             format: 'image/png',
+            opacity: 0.8,
             transparent: true
         }
     };
-    lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:townsite_poly')), 'WA Townsites');
-    lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:dbca_managed_tenure')), 'DBCA-managed tenure');
-    lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:unallocated_crown_land')), 'Unallocated Crown Land');
-    lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('landgate:DBCA-022')), 'DBCA Region Boundaries');
-    lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('landgate:DBCA-023')), 'DBCA District Boundaries');
-    lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('landgate:LGATE-233')), 'LGA Boundaries');
-    lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:ibra_wa_subregions')), 'IBRA WA Regions');
-    lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:dpaw_fire_history')), 'P&W Fire History');
-    //lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:road_centrelines')), 'Road Centrelines');
-    //lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:cadastre')), 'Cadastre');
-    //lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:remnant_vegetation')), 'Remnant Vegetation');
-    //lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:dra')), 'Forest Disease Risk');
-    //lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:threatened_fauna')), 'Threatened Fauna');
-    lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:threatened_priority_flora')), 'Threatened and Priority Flora');
-    lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:tec_sites_buffered')), 'Threatened Community Sites buffered');
-    lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('cddp:scientific_study_sites')), 'Scientific Study Sites');
-    lc.addOverlay(L.tileLayer.wms(kmi_wms, wmsoptions('dpaw:pilbara_fuelage')), 'Pilbara Fuel Age');
+    lc.addOverlay(L.tileLayer.wms(kmi_wms, layer_options('cddp:townsite_poly')), 'WA Townsites');
+    lc.addOverlay(L.tileLayer.wms(kmi_wms, layer_options('cddp:dbca_managed_tenure')), 'DBCA-managed tenure');
+    lc.addOverlay(L.tileLayer.wms(kmi_wms, layer_options('cddp:unallocated_crown_land')), 'Unallocated Crown Land');
+    lc.addOverlay(L.tileLayer.wms(kmi_wms, layer_options('landgate:DBCA-022')), 'DBCA Region Boundaries');
+    lc.addOverlay(L.tileLayer.wms(kmi_wms, layer_options('landgate:DBCA-023')), 'DBCA District Boundaries');
+    lc.addOverlay(L.tileLayer.wms(kmi_wms, layer_options('public:lgas_public')), 'LGA Boundaries');
+    lc.addOverlay(L.tileLayer.wms(kmi_wms, layer_options('cddp:ibra_australia')), 'IBRA WA Regions');
+    lc.addOverlay(L.tileLayer.wms(kmi_wms, layer_options('cddp:dpaw_fire_history')), 'P&W Fire History');
+    lc.addOverlay(L.tileLayer.wms(kmi_wms, layer_options('cddp:threatened_priority_flora')), 'Threatened and Priority Flora');
+    lc.addOverlay(L.tileLayer.wms(kmi_wms, layer_options('cddp:tec_sites_buffered')), 'Threatened Community Sites buffered');
+    lc.addOverlay(L.tileLayer.wms(kmi_wms, layer_options('cddp:scientific_study_sites')), 'Scientific Study Sites');
+    lc.addOverlay(L.tileLayer.wms(kmi_wms, layer_options('dpaw:pilbara_fuelage')), 'Pilbara Fuel Age');
     map.addControl(new L.control.fullscreen());
-    map.addControl(new L.Control.Geocoder({placeholder: '⇧+⏎ to search'}));
 });
 </script>

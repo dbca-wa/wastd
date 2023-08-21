@@ -123,6 +123,12 @@
                     View Marine Wildlife Incidents map
                 </a>
                 <a class="dropdown-item"
+                    href="{% url 'observations:animalencounter-list' %}?encounter_type=stranding"
+                    title="Browse encounters with stranded animals">
+                    <i class="fa-solid fa-table" aria-hidden="true"></i>
+                    <span class="align-left">Stranded animals</span>
+                </a>
+                <a class="dropdown-item"
                     href="{% url 'observations:animalencounter-list' %}?health=alive-injured"
                     title="Browse encounters with injured animals">
                     <i class="fa-solid fa-table" aria-hidden="true"></i>
@@ -161,6 +167,13 @@
                     <span class="align-left">Browse production surveys</span>
                 </a>
                 <h6 class="dropdown-header">QA shortlists</h6>
+                <a class="dropdown-item"
+                href="{% url 'observations:survey-list' %}?site=null&production=true"
+                title="Production surveys without a site">
+                    <i class="fa-solid fa-table" aria-hidden="true"></i>
+                    <span class="align-left">Production surveys without a site</span>
+                </a>
+
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item"
                 href="{% url 'observations:survey-list' %}?production=false"

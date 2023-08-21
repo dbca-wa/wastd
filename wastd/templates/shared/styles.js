@@ -77,7 +77,7 @@ function ptl_sve(feature, latlng) {
 /* Actions taken on each feature: title, popup, info preview */
 function oef(feature, layer) {
   layer.bindTooltip(feature.properties.leaflet_title);
-  layer.bindPopup(feature.properties.label);
+  //layer.bindPopup(feature.properties.label);
 }
 
 function oef_wideTT(feature, layer) {
@@ -88,12 +88,12 @@ function oef_wideTT(feature, layer) {
 /* Actions taken on each feature: title, popup, info preview */
 function oef_ll(feature, layer) {
   layer.bindTooltip(feature.properties.leaflet_title);
-  layer.bindPopup(feature.properties.label);
+  layer.bindPopup(feature.properties.as_html);
 }
 
 function oef_llwideTT(feature, layer) {
   layer.bindTooltip(feature.properties.leaflet_title, {className: 'leaflet-tooltip-wide'});
-  layer.bindPopup(feature.properties.label);
+  layer.bindPopup(feature.properties.as_html);
 }
 
 /* Actions taken on each feature: title, popup, info preview */
@@ -104,5 +104,5 @@ function oef_eoo(feature, layer) {
 /* Actions taken on each feature: title, popup, info preview */
 function oef_rel(feature, layer) {
   layer.bindTooltip(feature.properties.label);
-  layer.bindPopup(feature.properties.label);
+  layer.bindPopup(feature.properties.as_html);
 }

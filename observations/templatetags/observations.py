@@ -2,7 +2,6 @@ from django import template
 from django.template.defaultfilters import stringfilter
 from django_fsm_log.models import StateLog
 import os
-from rest_framework.authtoken.models import Token
 
 from observations.models import Encounter
 from observations.lookups import OBSERVATION_ICONS, OBSERVATION_COLOURS
@@ -13,11 +12,6 @@ register = template.Library()
 @register.simple_tag
 def get_verbose_name(object):
     return object._meta.verbose_name
-
-
-@register.simple_tag
-def apitoken(user, **kwargs):
-    return Token.objects.get_or_create(user=user)[0].key
 
 
 @register.inclusion_tag("tx_logs.html", takes_context=False)

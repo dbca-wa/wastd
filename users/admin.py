@@ -8,19 +8,16 @@ from .models import User, Organisation
 
 @admin.register(Organisation)
 class OrganisationAdmin(admin.ModelAdmin):
-    """Organisation admin."""
 
     list_display = ("code", "label", "description")
-    # list_filter = ("owner", "viewers")
     search_fields = (
         "label__icontains",
         "description__icontains",
     )
-    # form = s2form(Organisation, attrs=S2ATTRS)
-    # formfield_overrides = FORMFIELD_OVERRIDES
 
 
 class UserChangeForm(UserChangeForm):
+
     class Meta(UserChangeForm.Meta):
         model = User
 
@@ -45,6 +42,7 @@ class UserCreationForm(UserCreationForm):
 
 @admin.register(User)
 class UserAdmin(AuthUserAdmin):
+
     form = UserChangeForm
     add_form = UserCreationForm
     fieldsets = (
@@ -76,7 +74,6 @@ class UserAdmin(AuthUserAdmin):
         "name",
         "nickname",
         "aliases",
-        # "organisations",
         "role",
         "phone",
         "is_superuser",

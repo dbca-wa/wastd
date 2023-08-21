@@ -27,7 +27,7 @@ ENV POETRY_VERSION=1.5.1
 RUN pip install --upgrade pip && pip install "poetry==$POETRY_VERSION"
 COPY poetry.lock pyproject.toml /app/
 RUN poetry config virtualenvs.create false \
-  && poetry install --no-interaction --no-ansi --only main
+  && poetry install --no-interaction --no-ansi --without dev
 
 # Install the project.
 FROM python_libs_wastd

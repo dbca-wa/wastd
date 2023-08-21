@@ -11,7 +11,13 @@ from django.views.generic import (
 )
 from django.http import HttpResponseRedirect
 from observations.models import Area
-from wastd.utils import Breadcrumb, BreadcrumbContextMixin, ListViewBreadcrumbMixin, DetailViewBreadcrumbMixin, ResourceDownloadMixin
+from wastd.utils import (
+    Breadcrumb,
+    BreadcrumbContextMixin,
+    ListViewBreadcrumbMixin,
+    DetailViewBreadcrumbMixin,
+    ResourceDownloadMixin,
+)
 
 from .models import User
 from .forms import UserMergeForm, TransferForm
@@ -26,7 +32,7 @@ class UserListView(ListViewBreadcrumbMixin, ResourceDownloadMixin, LoginRequired
     filter_class = UserFilter
 
     def get_context_data(self, **kwargs):
-        context = super(UserListView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context["collapse_details"] = True
         qs = self.get_queryset()
         context["list_filter"] = UserFilter(self.request.GET, queryset=qs)
@@ -47,7 +53,7 @@ class UserDetailView(DetailViewBreadcrumbMixin, LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         from observations.models import Survey, Encounter
 
-        context = super(UserDetailView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context["collapse_details"] = False
         context["page_title"] = f"{settings.SITE_CODE} | User profile"
         context["surveys"] = Survey.objects.filter(

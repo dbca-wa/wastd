@@ -1,884 +1,396 @@
-import logging
-from rest_framework.serializers import (
-    ModelSerializer,
-    ReadOnlyField,
-    ValidationError,
-    IntegerField,
-    FileField,
-)
-from rest_framework_gis.serializers import GeoFeatureModelSerializer
-from users.api import FastUserSerializer
-from observations import models
+from django.conf import settings
+from django.utils import timezone
+from typing import Dict, Any
 
 
-logger = logging.getLogger("turtles")
-
-# ----------------------------------------------------------------------------#
-# Areas, Surveys
-# ----------------------------------------------------------------------------#
+TZ = timezone.get_current_timezone()
 
 
-class AreaSerializer(GeoFeatureModelSerializer):
-    class Meta:
-        model = models.Area
-        geo_field = "geom"
-        fields = (
-            "pk",
-            "area_type",
-            "name",
-            "w2_location_code",
-            "w2_place_code",
-            "geom",
-            "northern_extent",
-            "centroid",
-            "length_surveyed_m",
-            "length_survey_roundtrip_m",
-        )
+def area_serializer(obj) -> Dict[str, Any]:
+    return {
+        'type': 'Feature',
+        'geometry': {
+            'type': 'Polygon',
+            'coordinates': obj.geom.coords,
+        },
+        'properties': {
+            'id': obj.pk,
+            'area_type': obj.get_area_type_display(),
+            'name': obj.name,
+            'w2_location_code': obj.w2_location_code,
+            'w2_place_code': obj.w2_place_code,
+            'length_surveyed_m': obj.length_surveyed_m,
+            'length_survey_roundtrip_m': obj.length_survey_roundtrip_m,
+        },
+    }
 
 
-class FastAreaSerializer(ModelSerializer):
-    """Minimal Area serializer."""
-
-    class Meta:
-        model = models.Area
-        geo_field = "geom"
-        fields = ("pk", "area_type", "name")
+class AreaSerializer(object):
+    def serialize(obj):
+        return area_serializer(obj)
 
 
-class CampaignSerializer(ModelSerializer):
-    """Campaign serializer."""
-
-    class Meta:
-        model = models.Campaign
-        geo_fields = "area"
-        fields = "__all__"
-
-
-class SurveySerializer(GeoFeatureModelSerializer):
-    campaign = CampaignSerializer(many=False, read_only=True)
-    reporter = FastUserSerializer(many=False)
-    area = FastAreaSerializer(many=False)
-    site = FastAreaSerializer(many=False)
-    status = ReadOnlyField()
-    absolute_admin_url = ReadOnlyField()
-    start_photo = FileField(required=False)
-    end_photo = FileField(required=False)
-
-    class Meta:
-        model = models.Survey
-        geo_field = "start_location"
-        fields = "__all__"
-
-
-class FastSurveySerializer(ModelSerializer):
-    reporter = FastUserSerializer(many=False, read_only=True)
-    area = FastAreaSerializer(many=False, read_only=True)
-    site = FastAreaSerializer(many=False, read_only=True)
-
-    class Meta:
-        model = models.Survey
-        fields = [
-            "id",
-            "area",
-            "site",
-            "start_time",
-            "end_time",
-            "start_comments",
-            "end_comments",
-            "reporter",
-            "absolute_admin_url",
-            "production",
-        ]
+def survey_serializer(obj) -> Dict[str, Any]:
+    if obj.start_location:
+        geometry = {
+            'type': 'Point',
+            'coordinates': [obj.start_location.x, obj.start_location.y],
+        }
+    else:
+        geometry = None
+    return {
+        'type': 'Feature',
+        'geometry': geometry,
+        'properties': {
+            'id': obj.pk,
+            'status': obj.get_status_display(),
+            'source': obj.get_source_display(),
+            'source_id': obj.source_id,
+            'device_id': obj.device_id,
+            'area_id': obj.area.pk if obj.area else None,
+            'site_id': obj.site.pk if obj.site else None,
+            'reporter_id': obj.reporter.pk if obj.reporter else None,
+            'start_location_accuracy_m': obj.start_location_accuracy_m,
+            'start_time': obj.start_time.astimezone(TZ).isoformat(),
+            'start_photo': settings.MEDIA_URL + obj.start_photo.name if obj.start_photo else None,  # FIXME: absolute URL
+            'start_comments': obj.start_comments,
+            'end_source_id': obj.end_source_id,
+            'end_device_id': obj.end_device_id,
+            'end_location': obj.end_location.wkt if obj.end_location else None,
+            'end_location_accuracy_m': obj.end_location_accuracy_m,
+            'end_time': obj.end_time.astimezone(TZ).isoformat(),
+            'end_photo': settings.MEDIA_URL + obj.end_photo.name if obj.end_photo else None,  # FIXME: absolute URL
+            'end_comments': obj.end_comments,
+            'production': obj.production,
+            'team': [user.pk for user in obj.team.all()],
+            'label': obj.label,
+        },
+    }
 
 
-class SurveyMediaAttachmentSerializer(ModelSerializer):
-    """A special Serializer for SurveyMediaAttachment to handle file uploads."""
-
-    attachment = FileField(required=True)
-    survey = FastSurveySerializer(read_only=True)
-
-    class Meta:
-        model = models.SurveyMediaAttachment
-        fields = (
-            "pk",
-            "source",
-            "source_id",
-            "survey",
-            "media_type",
-            "title",
-            "attachment",
-        )
-
-    def validate(self, data):
-        """Raise ValidateError on missing Survey.
-
-        Fields sent:
-        "source", "source_id", "survey_source_id", "survey_end_source_id",
-        "media_type", "title", "attachment"
-        """
-
-        has_source = (
-            "survey_source" in self.initial_data
-            and self.initial_data["survey_source"] != "NA"
-        )
-        has_source_id = (
-            "survey_source_id" in self.initial_data
-            and self.initial_data["survey_source_id"] != "NA"
-        )
-        has_end_source_id = (
-            "survey_end_source_id" in self.initial_data
-            and self.initial_data["survey_end_source_id"] != "NA"
-        )
-        if (
-            has_source
-            and has_source_id
-            and models.Survey.objects.filter(
-                source=self.initial_data["survey_source"],
-                source_id=self.initial_data["survey_source_id"],
-            ).exists()
-        ):
-            data["survey"] = models.Survey.objects.filter(
-                source=self.initial_data["survey_source"],
-                source_id=self.initial_data["survey_source_id"],
-            ).first()
-
-        elif (
-            has_source
-            and has_end_source_id
-            and models.Survey.objects.filter(
-                source=self.initial_data["survey_source"],
-                end_source_id=self.initial_data["survey_end_source_id"],
-            ).exists()
-        ):
-            data["survey"] = models.Survey.objects.filter(
-                source=self.initial_data["survey_source"],
-                end_source_id=self.initial_data["survey_end_source_id"],
-            ).first()
-
-        else:
-            msg = "Survey does not exist: \nInitial data: {}".format(self.initial_data)
-            logger.info(msg)
-            raise ValidationError(msg)
-
-        return data
-
-    def create(self, validated_data):
-        """Create one new object, resolve Survey from survey_source and
-        either survey_source_id or survey_end_source_id.
-        """
-        return self.Meta.model.objects.create(**validated_data)
-
-    def save(self):
-        """Override the save method in order to prevent 'duplicate' instances being created by
-        the API endpoints. We override save in order to avoid duplicate by either create or update.
-        """
-        duplicates = self.Meta.model.objects.filter(
-            source=self.initial_data["source"], source_id=self.initial_data["source_id"]
-        )
-        if duplicates.exists():
-            if duplicates.count() == 1:
-                return duplicates.first()
-            else:
-                # Passed-in data matches >1 existing instance, so raise a validation error.
-                logger.warning(
-                    "{}: existing duplicate(s) with {} ".format(
-                        self.Meta.model._meta.label, str(**self.validated_data)
-                    )
-                )
-                return duplicates.first()
-        else:
-            # Create the new, unique instance.
-            return self.Meta.model.objects.create(**self.validated_data)
+class SurveySerializer(object):
+    def serialize(obj):
+        return survey_serializer(obj)
 
 
-# ----------------------------------------------------------------------------#
-# Encounter
-# ----------------------------------------------------------------------------#
+def survey_media_attachment_serializer(obj) -> Dict[str, Any]:
+    return {
+        'type': 'Feature',
+        'properties': {
+            'id': obj.pk,
+            'source': obj.survey.get_source_display(),
+            'source_id': obj.survey.source_id,
+            'survey_id': obj.survey.pk,
+            'media_type': obj.get_media_type_display(),
+            'title': obj.title,
+            'attachment': settings.MEDIA_URL + obj.attachment.name,  # FIXME: absolute URL
+        },
+    }
 
 
-class EncounterSerializer(GeoFeatureModelSerializer):
-    """Encounter serializer."""
-
-    area = FastAreaSerializer(required=False)
-    site = FastAreaSerializer(required=False)
-    campaign = CampaignSerializer(many=False, read_only=True)
-    survey = FastSurveySerializer(required=False)
-    observer_id = IntegerField(write_only=True)
-    observer = FastUserSerializer(read_only=True)
-    reporter_id = IntegerField(write_only=True)
-    reporter = FastUserSerializer(read_only=True)
-
-    class Meta:
-        """The non-standard name `where` is declared as the geo field for the
-        GeoJSON serializer's benefit.
-        """
-
-        model = models.Encounter
-        fields = (
-            "pk",
-            "area",
-            "site",
-            "campaign",
-            "survey",
-            "where",
-            "name",
-            "observer_id",
-            "observer",
-            "reporter_id",
-            "reporter",
-            "comments",
-            "status",
-            "source",
-            "source_id",
-            "encounter_type",
-            "when",
-            "leaflet_title",
-            "location_accuracy",
-            "location_accuracy_m",
-            "latitude",
-            "longitude",
-            "crs",
-            "absolute_admin_url",
-            # "photographs",
-            # "tx_logs"
-        )
-        geo_field = "where"
-        id_field = "pk"
+class SurveyMediaAttachmentSerializer(object):
+    def serialize(obj):
+        return survey_media_attachment_serializer(obj)
 
 
-class SourceIdEncounterSerializer(GeoFeatureModelSerializer):
-    """Encounter serializer with pk, source, source_id, where, when, status.
-
-    Use this serializer to retrieve a filtered set of Encounter ``source_id``
-    values to split data imports into create / update / skip.
-
-    @see https://github.com/dbca-wa/wastd/issues/253
+def encounter_serializer(obj) -> Dict[str, Any]:
+    """This serializer is the equivalent of /encounters-fast and /encounters-src output in the v1 API.
     """
-
-    class Meta:
-        """The non-standard name `where` is declared as the geo field for the
-        GeoJSON serializer's benefit.
-        """
-
-        model = models.Encounter
-        name = "encounter"
-        fields = (
-            "pk",
-            "where",
-            "location_accuracy_m",
-            "when",
-            "status",
-            "source",
-            "source_id",
-            "observer",
-            "reporter",
-        )
-        geo_field = "where"
-        id_field = "pk"
-
-
-class FastEncounterSerializer(EncounterSerializer):
-    """Faster encounter serializer."""
-
-    # area = FastAreaSerializer(required=False)
-    # site = FastAreaSerializer(required=False)
-    # survey = FastSurveySerializer(required=False)
-
-    class Meta(EncounterSerializer.Meta):
-        fields = (
-            "pk",
-            "source",
-            "source_id",
-            "encounter_type",
-            "status",
-            "when",
-            "latitude",
-            "longitude",
-            "crs",
-            "location_accuracy",
-            "location_accuracy_m",
-            "name",
-            "leaflet_title",
-            "observer",
-            "reporter",
-            "comments",
-            "area",
-            "site",
-            "survey",
-        )
-        id_field = "pk"
-
-
-class AnimalEncounterSerializer(EncounterSerializer):
-    """AnimalEncounter Serializer.
-
-    Omitted are performace bombs: photographs, observation_set, tx_logs.
-
-    * photographs = MediaAttachments
-    * Observations = specific observation seralizers
-    """
-
-    # photographs = MediaAttachmentSerializer(many=True, read_only=False)
-    # tx_logs = ReadOnlyField()
-    site_of_first_sighting = FastAreaSerializer(required=False)
-    site_of_last_sighting = FastAreaSerializer(required=False)
-
-    class Meta:
-        model = models.AnimalEncounter
-        fields = (
-            "pk",
-            "source",
-            "source_id",
-            "encounter_type",
-            "status",
-            "when",
-            "latitude",
-            "longitude",
-            "crs",
-            "location_accuracy",
-            "location_accuracy_m",
-            "name",
-            "leaflet_title",
-            "observer",
-            "reporter",
-            "comments",
-            "area",
-            "site",
-            "survey",
-            "taxon",
-            "species",
-            "health",
-            "sex",
-            "maturity",
-            "behaviour",
-            "habitat",
-            "activity",
-            "sighting_status",
-            "sighting_status_reason",
-            "identifiers",
-            "datetime_of_last_sighting",
-            "site_of_first_sighting",
-            "site_of_last_sighting",
-            "nesting_event",
-            "nesting_disturbed",
-            "laparoscopy",
-            "checked_for_injuries",
-            "scanned_for_pit_tags",
-            "checked_for_flipper_tags",
-            "cause_of_death",
-            "cause_of_death_confidence",
-            "absolute_admin_url",  # "photographs", "tx_logs",
-            # "observation_set",
-        )
-        geo_field = "where"
-        id_field = "pk"
-
-
-class TurtleNestEncounterSerializer(EncounterSerializer):
-    # photographs = MediaAttachmentSerializer(many=True, read_only=False)
-    # tx_logs = ReadOnlyField()
-
-    class Meta:
-        model = models.TurtleNestEncounter
-        fields = (
-            "pk",
-            "source",
-            "source_id",
-            "encounter_type",
-            "status",
-            "when",
-            "latitude",
-            "longitude",
-            "crs",
-            "location_accuracy",
-            "location_accuracy_m",
-            "name",
-            "leaflet_title",
-            "observer",
-            "reporter",
-            "comments",
-            "area",
-            "site",
-            "survey",
-            "nest_age",
-            "nest_type",
-            "species",
-            "habitat",
-            "disturbance",
-            "nest_tagged",
-            "logger_found",
-            "eggs_counted",
-            "hatchlings_measured",
-            "fan_angles_measured",
-            "comments",
-            "absolute_admin_url",
-            # "photographs", "tx_logs",
-            # "observation_set",
-        )
-        geo_field = "where"
-        id_field = "pk"
-
-
-class LineTransectEncounterSerializer(EncounterSerializer):
-    """Serializer for LineTransectEncounter, geofield: transect.."""
-
-    class Meta:
-        model = models.LineTransectEncounter
-        fields = (
-            "pk",
-            "source",
-            "source_id",
-            "encounter_type",
-            "status",
-            "when",
-            "latitude",
-            "longitude",
-            "crs",
-            "location_accuracy",
-            "location_accuracy_m",
-            "name",
-            "leaflet_title",
-            "observer",
-            "reporter",
-            "comments",
-            "area",
-            "site",
-            "survey",
-            "transect",
-            "absolute_admin_url",
-        )
-        geo_field = "where"
-        id_field = "pk"
-
-
-# ----------------------------------------------------------------------------#
-# Observations
-# ----------------------------------------------------------------------------#
-class ObservationSerializer(ModelSerializer):
-    """
-    A serializer class for an Observation model associated with an Encounter.
-
-    Re-usable for serializing other model classes that inherit from Observation.
-    """
-
-    encounter = EncounterSerializer(read_only=True)
-
-    class Meta:
-        model = models.Observation
-        fields = ["pk", "encounter", "source", "source_id"]
-
-    def validate(self, data):
-        """Raise ValidateError on missing Encounter (encounter PK or source & source_id value)."""
-        if "encounter_id" not in self.initial_data and (
-            "encounter_source" not in self.initial_data
-            and "encounter_source_id" not in self.initial_data
-        ):
-            raise ValidationError(
-                "Encounter reference is required, either as encounter_id or as "
-                "encounter_source and encounter_source_id."
-            )
-        if "encounter_id" in self.initial_data:
-            if not models.Encounter.objects.filter(
-                pk=self.initial_data["encounter_id"]
-            ).exists():
-                raise ValidationError(
-                    "Encounter {} does not exist.".format(
-                        self.initial_data["encounter_id"]
-                    )
-                )
-        if (
-            "encounter_source" in self.initial_data
-            and "encounter_source_id" in self.initial_data
-        ):
-            if not models.Encounter.objects.filter(
-                source=self.initial_data["encounter_source"],
-                source_id=self.initial_data["encounter_source_id"],
-            ).exists():
-                raise ValidationError(
-                    "Encounter with source {} and source_id {} does not exist.".format(
-                        self.initial_data["encounter_source"],
-                        self.initial_data["encounter_source_id"],
-                    )
-                )
-        return data
-
-    def create(self, validated_data):
-        """Create one new object, resolve Encounter from either PK or source & source_id."""
-
-        if "encounter_id" in self.initial_data:
-            validated_data["encounter"] = models.Encounter.objects.get(
-                pk=self.initial_data["encounter_id"]
-            )
-        else:
-            validated_data["encounter"] = models.Encounter.objects.get(
-                source=self.initial_data["encounter_source"],
-                source_id=self.initial_data["encounter_source_id"],
-            )
-        return self.Meta.model.objects.create(**validated_data)
-
-    def save(self):
-        """Override the save method in order to prevent 'duplicate' instances being created by
-        the API endpoints. We override save in order to avoid duplicate by either create or update.
-        """
-        if "encounter" in self.initial_data:
-            self.validated_data["encounter"] = models.Encounter.objects.get(
-                pk=self.initial_data["encounter"]
-            )
-        else:
-            self.validated_data["encounter"] = models.Encounter.objects.get(
-                source=self.initial_data["encounter_source"],
-                source_id=self.initial_data["encounter_source_id"],
-            )
-        # Gate check: we want to ensure that duplicate objects are not created.
-        duplicates = self.Meta.model.objects.filter(
-            source=self.initial_data["source"], source_id=self.initial_data["source_id"]
-        )
-        if duplicates.exists():
-            if duplicates.count() == 1:
-                # TODO: work out how we might return HTTP status 200 instead of 201.
-                # Update existing record: breaks file upload paths! bad!
-                # logger.info(f"Updating existing record {str(self.validated_data)}")
-                # duplicates.update(**self.validated_data)
-                # duplicates.first().save()
-
-                # return self.Meta.model.objects.get(
-                #     source = self.initial_data["source"],
-                #     source_id = self.initial_data["source_id"])
-                # simpler:
-                return duplicates.first()
-            else:
-                # Passed-in data matches >1 existing instance, so raise a validation error.
-                raise ValidationError(
-                    "{}: existing duplicate(s) with {} ".format(
-                        self.Meta.model._meta.label, str(**self.validated_data)
-                    )
-                )
-        else:
-            # Create the new, unique instance.
-            return self.Meta.model.objects.create(**self.validated_data)
-
-
-class MediaAttachmentSerializer(ObservationSerializer):
-    """A special Serializer for MediaAttachment to handle file uploads."""
-
-    attachment = FileField(required=True)
-
-    class Meta:
-        model = models.MediaAttachment
-        fields = (
-            "pk",
-            "source",
-            "source_id",
-            "encounter",
-            "media_type",
-            "title",
-            "attachment",
-        )
-
-
-class TagObservationSerializer(ObservationSerializer):
-
-    # This would break if a Tag is encountered stand-alone,
-    # e.g. during inventory management actions such as
-    # handing out a bag of tags to a field team pre-season.
-    # encounter = AnimalEncounterSerializer(read_only=True)
-
-    handler_id = IntegerField(write_only=True)
-    handler = FastUserSerializer(read_only=True)
-    recorder_id = IntegerField(write_only=True)
-    recorder = FastUserSerializer(read_only=True)
-
-    class Meta:
-        model = models.TagObservation
-        fields = (
-            "pk",
-            "source",
-            "source_id",
-            "encounter",
-            "handler",
-            "handler_id",
-            "recorder",
-            "recorder_id",
-            "tag_type",
-            "name",
-            "tag_location",
-            "status",
-            "comments",
-        )
-
-
-class NestTagObservationSerializer(ObservationSerializer):
-
-    # encounter = TurtleNestEncounterSerializer(read_only=True)
-
-    class Meta:
-        model = models.NestTagObservation
-        fields = (
-            "pk",
-            "source",
-            "source_id",
-            "encounter",
-            "status",
-            "flipper_tag_id",
-            "date_nest_laid",
-            "tag_label",
-            "comments",
-        )
-
-
-class ManagementActionSerializer(ObservationSerializer):
-    class Meta:
-        model = models.ManagementAction
-        fields = (
-            "pk",
-            "source",
-            "source_id",
-            "encounter",
-            "management_actions",
-            "comments",
-        )
-
-
-class TurtleMorphometricObservationSerializer(ObservationSerializer):
-
-    encounter = AnimalEncounterSerializer(read_only=True)
-
-    handler_id = IntegerField(write_only=True)
-    handler = FastUserSerializer(read_only=True)
-    recorder_id = IntegerField(write_only=True)
-    recorder = FastUserSerializer(read_only=True)
-
-    class Meta:
-        model = models.TurtleMorphometricObservation
-        fields = (
-            "pk",
-            "source",
-            "source_id",
-            "encounter",
-            "latitude",
-            "longitude",
-            "curved_carapace_length_mm",
-            "curved_carapace_length_accuracy",
-            "curved_carapace_length_min_mm",
-            "curved_carapace_length_min_accuracy",
-            "straight_carapace_length_mm",
-            "straight_carapace_length_accuracy",
-            "curved_carapace_width_mm",
-            "curved_carapace_width_accuracy",
-            "tail_length_carapace_mm",
-            "tail_length_carapace_accuracy",
-            "tail_length_vent_mm",
-            "tail_length_vent_accuracy",
-            "tail_length_plastron_mm",
-            "tail_length_plastron_accuracy",
-            "maximum_head_width_mm",
-            "maximum_head_width_accuracy",
-            "maximum_head_length_mm",
-            "maximum_head_length_accuracy",
-            "body_depth_mm",
-            "body_depth_accuracy",
-            "body_weight_g",
-            "body_weight_accuracy",
-            "handler",
-            "handler_id",
-            "recorder",
-            "recorder_id",
-        )
-
-
-class HatchlingMorphometricObservationSerializer(ObservationSerializer):
-
-    encounter = TurtleNestEncounterSerializer(read_only=True)
-
-    class Meta:
-        model = models.HatchlingMorphometricObservation
-        fields = (
-            "pk",
-            "source",
-            "source_id",
-            "encounter",
-            "straight_carapace_length_mm",
-            "straight_carapace_width_mm",
-            "body_weight_g",
-        )
-
-
-class TurtleNestDisturbanceObservationSerializer(ObservationSerializer):
-    class Meta:
-        model = models.TurtleNestDisturbanceObservation
-        fields = (
-            "pk",
-            "source",
-            "source_id",
-            "encounter",
-            "disturbance_cause",
-            "disturbance_cause_confidence",
-            "disturbance_severity",
-            "comments",
-        )
-
-
-class TurtleNestObservationSerializer(ObservationSerializer):
-
-    # encounter = TurtleNestEncounterSerializer(read_only=True)
-
-    class Meta:
-        model = models.TurtleNestObservation
-        fields = (
-            "pk",
-            "source",
-            "source_id",
-            "encounter",
-            # 'nest_position',
-            "eggs_laid",
-            "egg_count",
-            "egg_count_calculated",
-            "hatching_success",
-            "emergence_success",
-            "no_egg_shells",
-            "no_live_hatchlings_neck_of_nest",
-            "no_live_hatchlings",
-            "no_dead_hatchlings",
-            "no_undeveloped_eggs",
-            "no_unhatched_eggs",
-            "no_unhatched_term",
-            "no_depredated_eggs",
-            "nest_depth_top",
-            "nest_depth_bottom",
-            "sand_temp",
-            "air_temp",
-            "water_temp",
-            "egg_temp",
-            "comments",
-        )
-
-
-class TurtleHatchlingEmergenceObservationSerializer(ObservationSerializer):
-
-    encounter = TurtleNestEncounterSerializer(read_only=True)
-
-    class Meta:
-        model = models.TurtleHatchlingEmergenceObservation
-        fields = (
-            "pk",
-            "source",
-            "source_id",
-            "encounter",
-            "bearing_to_water_degrees",
-            "bearing_leftmost_track_degrees",
-            "bearing_rightmost_track_degrees",
-            "no_tracks_main_group",
-            "no_tracks_main_group_min",
-            "no_tracks_main_group_max",
-            "outlier_tracks_present",
-            "path_to_sea_comments",
-            "hatchling_emergence_time_known",
-            "light_sources_present",
-            "hatchling_emergence_time",
-            "hatchling_emergence_time_accuracy",
-            "cloud_cover_at_emergence",
-        )
-
-
-class TurtleHatchlingEmergenceOutlierObservationSerializer(ObservationSerializer):
-
-    encounter = TurtleNestEncounterSerializer(read_only=True)
-
-    class Meta:
-        model = models.TurtleHatchlingEmergenceOutlierObservation
-        fields = (
-            "pk",
-            "source",
-            "source_id",
-            "encounter",
-            "bearing_outlier_track_degrees",
-            "outlier_group_size",
-            "outlier_track_comment",
-        )
-
-
-class LightSourceObservationSerializer(ObservationSerializer):
-
-    encounter = TurtleNestEncounterSerializer(read_only=True)
-
-    class Meta:
-        model = models.LightSourceObservation
-        fields = (
-            "pk",
-            "source",
-            "source_id",
-            "encounter",
-            "bearing_light_degrees",
-            "light_source_type",
-            "light_source_description",
-        )
-
-
-class TurtleDamageObservationSerializer(ObservationSerializer):
-
-    encounter = AnimalEncounterSerializer(read_only=True)
-
-    class Meta:
-        model = models.TurtleDamageObservation
-        fields = (
-            "pk",
-            "source",
-            "source_id",
-            "encounter",
-            "body_part",
-            "damage_type",
-            "damage_age",
-            "description",
-        )
-
-
-class TrackTallyObservationSerializer(ObservationSerializer):
-
-    encounter = LineTransectEncounterSerializer(read_only=True)
-
-    class Meta:
-        model = models.TrackTallyObservation
-        fields = (
-            "pk",
-            "source",
-            "source_id",
-            "encounter",
-            "species",
-            "nest_age",
-            "nest_type",
-            "tally",
-        )
-
-
-class TurtleNestDisturbanceTallyObservationSerializer(ObservationSerializer):
-
-    encounter = LineTransectEncounterSerializer(read_only=True)
-
-    class Meta:
-        model = models.TurtleNestDisturbanceTallyObservation
-        fields = (
-            "pk",
-            "source",
-            "source_id",
-            "encounter",
-            "species",
-            "disturbance_cause",
-            "no_nests_disturbed",
-            "no_tracks_encountered",
-            "comments",
-        )
-
-
-class LoggerObservationSerializer(ObservationSerializer):
-    class Meta:
-        model = models.LoggerObservation
-        fields = (
-            "pk",
-            "source",
-            "source_id",
-            "encounter",
-            "logger_type",
-            "deployment_status",
-            "logger_id",
-            "comments",
-        )
+    if obj.where:
+        geometry = {
+            'type': 'Point',
+            'coordinates': [obj.where.x, obj.where.y],
+        }
+    else:
+        geometry = None
+    return {
+        'type': 'Feature',
+        'geometry': geometry,
+        'properties': {
+            'id': obj.pk,
+            'survey_id': obj.survey.pk if obj.survey else None,
+            'area_id': obj.area.pk if obj.area else None,
+            'site_id': obj.site.pk if obj.site else None,
+            'source': obj.get_source_display(),
+            'source_id': obj.source_id,
+            'when': obj.when.astimezone(TZ).isoformat(),
+            'location_accuracy': obj.location_accuracy,
+            'location_accuracy_m': obj.location_accuracy_m,
+            'name': obj.name,
+            'observer_id': obj.observer.pk if obj.observer else None,
+            'reporter_id': obj.reporter.pk if obj.reporter else None,
+            'encounter_type': obj.get_encounter_type_display() if obj.encounter_type else None,
+            'comments': obj.comments,
+            'status': obj.get_status_display(),
+        },
+    }
+
+
+class EncounterSerializer(object):
+    def serialize(encounter):
+        return encounter_serializer(encounter)
+
+
+def animalencounter_serializer(obj) -> Dict[str, Any]:
+    d = {
+        'taxon': obj.get_taxon_display(),
+        'species': obj.get_species_display(),
+        'sex': obj.get_sex_display(),
+        'maturity': obj.get_maturity_display(),
+        'health': obj.get_health_display(),
+        'activity': obj.get_activity_display(),
+        'behaviour': obj.behaviour,
+        'habitat': obj.get_habitat_display(),
+        'sighting_status': obj.get_sighting_status_display(),
+        'sighting_status_reason': obj.sighting_status_reason,
+        'identifiers': obj.identifiers,
+        'datetime_of_last_sighting': obj.datetime_of_last_sighting.astimezone(TZ).isoformat() if obj.datetime_of_last_sighting else None,
+        'site_of_last_sighting_id': obj.site_of_last_sighting.pk if obj.site_of_last_sighting else None,
+        'site_of_first_sighting_id': obj.site_of_first_sighting.pk if obj.site_of_first_sighting else None,
+        'nesting_event': obj.get_nesting_event_display(),
+        'nesting_disturbed': obj.get_nesting_disturbed_display(),
+        'laparoscopy': obj.laparoscopy,
+        'checked_for_injuries': obj.get_checked_for_injuries_display(),
+        'scanned_for_pit_tags': obj.get_scanned_for_pit_tags_display(),
+        'checked_for_flipper_tags': obj.get_checked_for_flipper_tags_display(),
+        'cause_of_death': obj.get_cause_of_death_display(),
+        'cause_of_death_confidence': obj.get_cause_of_death_confidence_display(),
+    }
+    obj = encounter_serializer(obj)
+    # Extend the serialised object.
+    obj['properties'].update(d)
+
+    return obj
+
+
+class AnimalEncounterSerializer(object):
+    def serialize(encounter):
+        return animalencounter_serializer(encounter)
+
+
+def turtlenestencounter_serializer(obj) -> Dict[str, Any]:
+    d = {
+        'nest_age': obj.get_nest_age_display(),
+        'nest_type': obj.get_nest_type_display(),
+        'species': obj.get_species_display(),
+        'habitat': obj.get_habitat_display(),
+        'disturbance': obj.get_disturbance_display(),
+        'nest_tagged': obj.get_nest_tagged_display(),
+        'logger_found': obj.get_logger_found_display(),
+        'eggs_counted': obj.get_eggs_counted_display(),
+        'hatchlings_measured': obj.get_hatchlings_measured_display(),
+        'fan_angles_measured': obj.get_fan_angles_measured_display(),
+    }
+    obj = encounter_serializer(obj)
+    # Extend the serialised object.
+    obj['properties'].update(d)
+
+    return obj
+
+
+class TurtleNestEncounterSerializer(object):
+    def serialize(encounter):
+        return turtlenestencounter_serializer(encounter)
+
+
+def observation_serializer(obj) -> Dict[str, Any]:
+    return {
+        'type': 'Feature',
+        'properties': {
+            'id': obj.pk,
+            'encounter_id': obj.encounter.pk,
+            'source': obj.get_source_display(),
+            'source_id': obj.source_id,
+        },
+    }
+
+
+def media_attachment_serializer(obj) -> Dict[str, Any]:
+    d = {
+        'media_type': obj.get_media_type_display(),
+        'title': obj.title,
+        'attachment': settings.MEDIA_URL + obj.attachment.name,
+    }
+    obj = observation_serializer(obj)
+    # Extend the serialised object.
+    obj['properties'].update(d)
+
+    return obj
+
+
+class MediaAttachmentSerializer(object):
+    def serialize(obj):
+        return media_attachment_serializer(obj)
+
+
+def turtle_nest_observation_serializer(obj) -> Dict[str, Any]:
+    d = {
+        'eggs_laid': obj.eggs_laid,
+        'egg_count': obj.egg_count,
+        'no_egg_shells': obj.no_egg_shells,
+        'no_live_hatchlings_neck_of_nest': obj.no_live_hatchlings_neck_of_nest,
+        'no_live_hatchlings': obj.no_live_hatchlings,
+        'no_dead_hatchlings': obj.no_dead_hatchlings,
+        'no_undeveloped_eggs': obj.no_undeveloped_eggs,
+        'no_unhatched_eggs': obj.no_unhatched_eggs,
+        'no_unhatched_term': obj.no_unhatched_term,
+        'no_depredated_eggs': obj.no_depredated_eggs,
+        'nest_depth_top': obj.nest_depth_top,
+        'nest_depth_bottom': obj.nest_depth_bottom,
+        'sand_temp': obj.sand_temp,
+        'air_temp': obj.air_temp,
+        'water_temp': obj.water_temp,
+        'egg_temp': obj.egg_temp,
+        'comments': obj.comments,
+    }
+    obj = observation_serializer(obj)
+    # Extend the serialised object.
+    obj['properties'].update(d)
+
+    return obj
+
+
+class TurtleNestObservationSerializer(object):
+    def serialize(obj):
+        return turtle_nest_observation_serializer(obj)
+
+
+def turtle_hatchling_emergence_observation_serializer(obj) -> Dict[str, Any]:
+    d = {
+        'bearing_to_water_degrees': obj.bearing_to_water_degrees,
+        'bearing_leftmost_track_degrees': obj.bearing_leftmost_track_degrees,
+        'bearing_rightmost_track_degrees': obj.bearing_rightmost_track_degrees,
+        'no_tracks_main_group': obj.no_tracks_main_group,
+        'no_tracks_main_group_min': obj.no_tracks_main_group_min,
+        'no_tracks_main_group_max': obj.no_tracks_main_group_max,
+        'outlier_tracks_present': obj.get_outlier_tracks_present_display(),
+        'path_to_sea_comments': obj.path_to_sea_comments,
+        'hatchling_emergence_time_known': obj.get_hatchling_emergence_time_known_display(),
+        'cloud_cover_at_emergence_known': obj.get_cloud_cover_at_emergence_known_display(),
+        'light_sources_present': obj.get_light_sources_present_display(),
+        'hatchling_emergence_time': obj.hatchling_emergence_time.astimezone(TZ).isoformat() if obj.hatchling_emergence_time else None,
+        'hatchling_emergence_time_accuracy': obj.hatchling_emergence_time_accuracy,
+        'cloud_cover_at_emergence': obj.cloud_cover_at_emergence,
+    }
+    obj = observation_serializer(obj)
+    # Extend the serialised object.
+    obj['properties'].update(d)
+
+    return obj
+
+
+class TurtleHatchlingEmergenceObservationSerializer(object):
+    def serialize(obj):
+        return turtle_hatchling_emergence_observation_serializer(obj)
+
+
+def nest_tag_observation_serializer(obj) -> Dict[str, Any]:
+    d = {
+        'status': obj.get_status_display(),
+        'flipper_tag_id': obj.flipper_tag_id,
+        'date_nest_laid': obj.date_nest_laid.isoformat() if obj.date_nest_laid else None,
+        'tag_label': obj.tag_label,
+        'comments': obj.comments,
+    }
+    obj = observation_serializer(obj)
+    # Extend the serialised object.
+    obj['properties'].update(d)
+
+    return obj
+
+
+class NestTagObservationSerializer(object):
+    def serialize(obj):
+        return nest_tag_observation_serializer(obj)
+
+
+def turtle_nest_disturbance_observation_serializer(obj) -> Dict[str, Any]:
+    d = {
+        'disturbance_cause': obj.get_disturbance_cause_display(),
+        'disturbance_cause_confidence': obj.get_disturbance_cause_confidence_display(),
+        'disturbance_severity': obj.get_disturbance_severity_display(),
+        'comments': obj.comments,
+    }
+    obj = observation_serializer(obj)
+    # Extend the serialised object.
+    obj['properties'].update(d)
+
+    return obj
+
+
+class TurtleNestDisturbanceObservationSerializer(object):
+    def serialize(obj):
+        return turtle_nest_disturbance_observation_serializer(obj)
+
+
+def logger_observation_serializer(obj) -> Dict[str, Any]:
+    d = {
+        'logger_type': obj.get_logger_type_display(),
+        'deployment_status': obj.get_deployment_status_display(),
+        'logger_id': obj.logger_id,
+        'comments': obj.comments,
+    }
+    obj = observation_serializer(obj)
+    # Extend the serialised object.
+    obj['properties'].update(d)
+
+    return obj
+
+
+class LoggerObservationSerializer(object):
+    def serialize(obj):
+        return logger_observation_serializer(obj)
+
+
+def hatchling_morphometric_observation_serializer(obj) -> Dict[str, Any]:
+    d = {
+        'straight_carapace_length_mm': obj.straight_carapace_length_mm,
+        'straight_carapace_width_mm': obj.straight_carapace_width_mm,
+        'body_weight_g': obj.body_weight_g,
+    }
+    obj = observation_serializer(obj)
+    # Extend the serialised object.
+    obj['properties'].update(d)
+
+    return obj
+
+
+class HatchlingMorphometricObservationSerializer(object):
+    def serialize(obj):
+        return hatchling_morphometric_observation_serializer(obj)
+
+
+def turtle_hatchling_emergence_outlier_observation_serializer(obj) -> Dict[str, Any]:
+    d = {
+        'bearing_outlier_track_degrees': obj.bearing_outlier_track_degrees,
+        'outlier_group_size': obj.outlier_group_size,
+        'outlier_track_comment': obj.outlier_track_comment,
+    }
+    obj = observation_serializer(obj)
+    # Extend the serialised object.
+    obj['properties'].update(d)
+
+    return obj
+
+
+class TurtleHatchlingEmergenceOutlierObservationSerializer(object):
+    def serialize(obj):
+        return turtle_hatchling_emergence_outlier_observation_serializer(obj)
+
+
+def light_source_observation_serializer(obj) -> Dict[str, Any]:
+    d = {
+        'bearing_light_degrees': obj.bearing_light_degrees,
+        'light_source_type': obj.get_light_source_type_display(),
+        'light_source_description': obj.light_source_description,
+    }
+    obj = observation_serializer(obj)
+    # Extend the serialised object.
+    obj['properties'].update(d)
+
+    return obj
+
+
+class LightSourceObservationSerializer(object):
+    def serialize(obj):
+        return light_source_observation_serializer(obj)
