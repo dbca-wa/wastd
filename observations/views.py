@@ -117,7 +117,6 @@ class EncounterDetail(DetailViewBreadcrumbMixin, DetailView):
         context = super().get_context_data(**kwargs)
         obj = self.get_object()
         context["page_title"] = f"{settings.SITE_CODE} | Encounter {obj.pk}"
-        # data['tags'] = TagObservation.objects.filter(encounter__in=[self.get_object()])
         return context
 
 
