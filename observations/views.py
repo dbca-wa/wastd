@@ -49,7 +49,7 @@ class SurveyList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
     paginate_by = 20
     filter_class = SurveyFilter
     resource_class = SurveyResource
-    resource_formats = ['csv', 'xlsx']
+    resource_formats = ["csv", "xlsx"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

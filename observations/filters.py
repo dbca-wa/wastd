@@ -50,6 +50,7 @@ class SurveyFilter(FilterSet):
     site = ModelChoiceFilter(
         label="Site",
         queryset=Area.objects.filter(area_type__in=[Area.AREATYPE_SITE]).order_by("name"),
+        null_label="<No site>",
     )
 
     class Meta:
@@ -113,7 +114,6 @@ class AnimalEncounterFilter(FilterSet):
     user_observer = ModelChoiceFilter(
         field_name="observer",
         label="Observed by",
-        #queryset=User.objects.all(),
         queryset=User.objects.filter(is_active=True).order_by("name"),
     )
     #user_reporter = ModelChoiceFilter(
@@ -145,10 +145,11 @@ class AnimalEncounterFilter(FilterSet):
     status = ChoiceFilter(
         field_name="status",
         choices=(
-            (Encounter.STATUS_NEW, "New"),
             (Encounter.STATUS_IMPORTED, "Imported"),
+            (Encounter.STATUS_MANUAL_INPUT, "Manual input"),
             (Encounter.STATUS_CURATED, "Curated"),
             (Encounter.STATUS_FLAGGED, "Flagged"),
+            (Encounter.STATUS_REJECTED, "Rejected"),
         ),
         label="QA status",
     )
@@ -187,7 +188,6 @@ class TurtleNestEncounterFilter(FilterSet):
     user_observer = ModelChoiceFilter(
         field_name="observer",
         label="Observed by",
-        #queryset=User.objects.all(),
         queryset=User.objects.filter(is_active=True).order_by("name"),
     )
     #user_reporter = ModelChoiceFilter(
@@ -227,10 +227,11 @@ class TurtleNestEncounterFilter(FilterSet):
     status = ChoiceFilter(
         field_name="status",
         choices=(
-            (Encounter.STATUS_NEW, "New"),
             (Encounter.STATUS_IMPORTED, "Imported"),
+            (Encounter.STATUS_MANUAL_INPUT, "Manual input"),
             (Encounter.STATUS_CURATED, "Curated"),
             (Encounter.STATUS_FLAGGED, "Flagged"),
+            (Encounter.STATUS_REJECTED, "Rejected"),
         ),
         label="QA status",
     )
