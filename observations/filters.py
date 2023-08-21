@@ -116,11 +116,6 @@ class AnimalEncounterFilter(FilterSet):
         label="Observed by",
         queryset=User.objects.filter(is_active=True).order_by("name"),
     )
-    #user_reporter = ModelChoiceFilter(
-    #    field_name="reporter",
-    #    label="Reported by",
-    #    queryset=User.objects.none(),
-    #)
     encounter_type = ChoiceFilter(
         field_name="encounter_type",
         choices=(
@@ -141,6 +136,7 @@ class AnimalEncounterFilter(FilterSet):
     site = ModelChoiceFilter(
         label="Site",
         queryset=Area.objects.filter(area_type__in=[Area.AREATYPE_SITE]).order_by("name"),
+        null_label="<No site>",
     )
     status = ChoiceFilter(
         field_name="status",
@@ -161,7 +157,6 @@ class AnimalEncounterFilter(FilterSet):
             "date_from",
             "date_to",
             "user_observer",
-            #"user_reporter",
             "encounter_type",
             "area",  # Locality
             "site",
@@ -190,11 +185,6 @@ class TurtleNestEncounterFilter(FilterSet):
         label="Observed by",
         queryset=User.objects.filter(is_active=True).order_by("name"),
     )
-    #user_reporter = ModelChoiceFilter(
-    #    field_name="reporter",
-    #    label="Reported by",
-    #    queryset=User.objects.all(),
-    #)
     encounter_type = ChoiceFilter(
         field_name="encounter_type",
         choices=(
@@ -223,6 +213,7 @@ class TurtleNestEncounterFilter(FilterSet):
     site = ModelChoiceFilter(
         label="Site",
         queryset=Area.objects.filter(area_type__in=[Area.AREATYPE_SITE]).order_by("name"),
+        null_label="<No site>",
     )
     status = ChoiceFilter(
         field_name="status",
