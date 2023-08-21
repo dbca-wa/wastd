@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="./">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -8,9 +8,9 @@
     <title>Developer documentation &#8212; wastd 0.70.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=4f649999" />
     <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=039e1c02" />
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=94d71e6b"></script>
+    <script src="_static/documentation_options.js?v=ecf2ad1f"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
-    <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Third party access" href="third_party_access.html" />
@@ -32,7 +32,7 @@
           <div class="body" role="main">
             
   <section id="developer-documentation">
-<span id="dev-docs"></span><h1>Developer documentation<a class="headerlink" href="#developer-documentation" title="Permalink to this heading">¶</a></h1>
+<span id="dev-docs"></span><h1>Developer documentation<a class="headerlink" href="#developer-documentation" title="Link to this heading">¶</a></h1>
 <p>This chapter is targetted at developers and those who would like to understand
 the underlying data model.</p>
 <p>In this chapter, we will discuss:</p>
@@ -45,10 +45,10 @@ the underlying data model.</p>
 <li><p>design smells</p></li>
 </ul>
 <section id="design-smells">
-<span id="id1"></span><h2>Design smells<a class="headerlink" href="#design-smells" title="Permalink to this heading">¶</a></h2>
+<span id="id1"></span><h2>Design smells<a class="headerlink" href="#design-smells" title="Link to this heading">¶</a></h2>
 <p>Let’s start this chapter with early design decisions that could be refactored to be improved.</p>
 <section id="unique-identifiers">
-<h3>Unique identifiers<a class="headerlink" href="#unique-identifiers" title="Permalink to this heading">¶</a></h3>
+<h3>Unique identifiers<a class="headerlink" href="#unique-identifiers" title="Link to this heading">¶</a></h3>
 <p>Fields with unique identifiers are called <code class="docutils literal notranslate"><span class="pre">name</span></code>. The word <code class="docutils literal notranslate"><span class="pre">name</span></code> is overloaded.
 The mixin class <code class="docutils literal notranslate"><span class="pre">shared.models.CodeLabelDescriptionMixin</span></code> brings three fields:</p>
 <ul class="simple">
@@ -59,23 +59,23 @@ The mixin class <code class="docutils literal notranslate"><span class="pre">sha
 <p>Smell: inconsistent use of “name”, “label”, for unique identifiers across the codebase and docstrings.</p>
 </section>
 <section id="legacy-sources">
-<h3>Legacy sources<a class="headerlink" href="#legacy-sources" title="Permalink to this heading">¶</a></h3>
+<h3>Legacy sources<a class="headerlink" href="#legacy-sources" title="Link to this heading">¶</a></h3>
 <p>Two competing ways of tracking an upstream point of truth:
 <code class="docutils literal notranslate"><span class="pre">shared.models.LegacySourceMixin</span></code> and per model ChoiceField lookups.
 The underlying value is either a SmallInt (quick lookups, but incomrehensive to the user), or a short string.</p>
 <p>Smell: refactor to use <code class="docutils literal notranslate"><span class="pre">shared.models.LegacySourceMixin</span></code>. Mind that R package wastdr and ETL pipelines need to be updated too.</p>
 </section>
 <section id="hard-coded-lookups">
-<h3>Hard-coded lookups<a class="headerlink" href="#hard-coded-lookups" title="Permalink to this heading">¶</a></h3>
+<h3>Hard-coded lookups<a class="headerlink" href="#hard-coded-lookups" title="Link to this heading">¶</a></h3>
 <p>Hard-coding lookups prevents data corruption by over-eager admin users.
 Since we have much higher code churn than data model churn, these lookups are easy enough to maintain.</p>
 <p>Smell: where to define lookup dicts - currently mixed in <code class="docutils literal notranslate"><span class="pre">observations.models</span></code> at both top level and model level.</p>
 </section>
 </section>
 <section id="extending-the-application">
-<span id="extend-app"></span><h2>Extending the application<a class="headerlink" href="#extending-the-application" title="Permalink to this heading">¶</a></h2>
+<span id="extend-app"></span><h2>Extending the application<a class="headerlink" href="#extending-the-application" title="Link to this heading">¶</a></h2>
 <section id="observationgroup">
-<h3>ObservationGroup<a class="headerlink" href="#observationgroup" title="Permalink to this heading">¶</a></h3>
+<h3>ObservationGroup<a class="headerlink" href="#observationgroup" title="Link to this heading">¶</a></h3>
 <p>TFA, TFL, TEC paper forms contain further observation groups, which
 are reviewed and evaluated for trustworthiness separately.</p>
 <p>Each group becomes a model in TSC, inheriting from <code class="docutils literal notranslate"><span class="pre">occurrences.models.ObservationGroup</span></code>.
@@ -95,7 +95,7 @@ WAStD can add new instances of <code class="docutils literal notranslate"><span 
 </section>
 </section>
 <section id="data-model">
-<span id="id2"></span><h2>Data model<a class="headerlink" href="#data-model" title="Permalink to this heading">¶</a></h2>
+<span id="id2"></span><h2>Data model<a class="headerlink" href="#data-model" title="Link to this heading">¶</a></h2>
 <p>WAStD is designed to handle biological
 observations of any kind which happen during an encounter.</p>
 <p>Both Encounters and Observations are polymorphic (database table inheritance)
@@ -114,36 +114,36 @@ and (if appropriate) TagObservations (flipper / PIT / satellite tags, biopsy
 samples etc.).</p>
 <img alt="WAStD data model" src="_images/datamodel.png" />
 <section id="observations-models-module">
-<h3><cite>observations.models</cite> Module<a class="headerlink" href="#observations-models-module" title="Permalink to this heading">¶</a></h3>
+<h3><cite>observations.models</cite> Module<a class="headerlink" href="#observations-models-module" title="Link to this heading">¶</a></h3>
 </section>
 </section>
 <section id="admin">
-<h2>Admin<a class="headerlink" href="#admin" title="Permalink to this heading">¶</a></h2>
+<h2>Admin<a class="headerlink" href="#admin" title="Link to this heading">¶</a></h2>
 <p>We’re using a nicely styled admin to let trained data entry operators and
 curators add and update data.</p>
 <p>Also, data analysts can search, filter, and export data from here.</p>
 <section id="observations-admin-module">
-<h3><cite>observations.admin</cite> Module<a class="headerlink" href="#observations-admin-module" title="Permalink to this heading">¶</a></h3>
+<h3><cite>observations.admin</cite> Module<a class="headerlink" href="#observations-admin-module" title="Link to this heading">¶</a></h3>
 </section>
 </section>
 <section id="api">
-<h2>API<a class="headerlink" href="#api" title="Permalink to this heading">¶</a></h2>
+<h2>API<a class="headerlink" href="#api" title="Link to this heading">¶</a></h2>
 <p>The API is intended for programmatic access to data, mainly to batch-import
 and batch-export.</p>
 </section>
 <section id="the-rest">
-<h2>The rest<a class="headerlink" href="#the-rest" title="Permalink to this heading">¶</a></h2>
+<h2>The rest<a class="headerlink" href="#the-rest" title="Link to this heading">¶</a></h2>
 <p>This concludes the documentation of the key features.
 The following sections document the remaining modules for completeness’ sake.</p>
 <section id="users-app">
-<h3><cite>users</cite> app<a class="headerlink" href="#users-app" title="Permalink to this heading">¶</a></h3>
+<h3><cite>users</cite> app<a class="headerlink" href="#users-app" title="Link to this heading">¶</a></h3>
 <p>WAStD’s custom user package, courtesy of pydanny’s django project template.</p>
 </section>
 <section id="observations-app">
-<h3><cite>observations</cite> app<a class="headerlink" href="#observations-app" title="Permalink to this heading">¶</a></h3>
+<h3><cite>observations</cite> app<a class="headerlink" href="#observations-app" title="Link to this heading">¶</a></h3>
 <p>Remaining modules of the observations package are documented here.</p>
 <section id="project-delivery-ticking-the-boxes">
-<h4>Project delivery: ticking the boxes<a class="headerlink" href="#project-delivery-ticking-the-boxes" title="Permalink to this heading">¶</a></h4>
+<h4>Project delivery: ticking the boxes<a class="headerlink" href="#project-delivery-ticking-the-boxes" title="Link to this heading">¶</a></h4>
 <p>This chapter closes the development circle by pairing functional requirements with
 corresponding functional, unit and view tests.
 The tests are documented inline with the requirements they cover; the documentation
@@ -185,13 +185,13 @@ Ideally, all requirements from the detailed requirements analysis find their cou
 </section>
 </section>
 <section id="wa-strandings-and-wa-sea-turtles">
-<h2>WA Strandings and WA Sea Turtles<a class="headerlink" href="#wa-strandings-and-wa-sea-turtles" title="Permalink to this heading">¶</a></h2>
+<h2>WA Strandings and WA Sea Turtles<a class="headerlink" href="#wa-strandings-and-wa-sea-turtles" title="Link to this heading">¶</a></h2>
 <section id="observations">
-<h3>Observations<a class="headerlink" href="#observations" title="Permalink to this heading">¶</a></h3>
+<h3>Observations<a class="headerlink" href="#observations" title="Link to this heading">¶</a></h3>
 <p><cite>observations.tests</cite> Module</p>
 </section>
 <section id="users">
-<h3>Users<a class="headerlink" href="#users" title="Permalink to this heading">¶</a></h3>
+<h3>Users<a class="headerlink" href="#users" title="Link to this heading">¶</a></h3>
 <p><cite>users.tests</cite> Module</p>
 </section>
 </section>
@@ -289,7 +289,7 @@ Ideally, all requirements from the detailed requirements analysis find their cou
       &copy;2023, Florian Mayer, Ashley Felton.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.1.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
       
       |

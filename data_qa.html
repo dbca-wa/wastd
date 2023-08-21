@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="./">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -8,9 +8,9 @@
     <title>Data QA &#8212; wastd 0.70.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=4f649999" />
     <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=039e1c02" />
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=94d71e6b"></script>
+    <script src="_static/documentation_options.js?v=ecf2ad1f"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
-    <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Data consumers" href="data_consumers.html" />
@@ -32,7 +32,7 @@
           <div class="body" role="main">
             
   <section id="data-qa">
-<span id="dq-qa"></span><h1>Data QA<a class="headerlink" href="#data-qa" title="Permalink to this heading">¶</a></h1>
+<span id="dq-qa"></span><h1>Data QA<a class="headerlink" href="#data-qa" title="Link to this heading">¶</a></h1>
 <p>This chapter contains</p>
 <ul class="simple">
 <li><p>an explanation of QA levels and how WAStD audits QA decisions: (<a class="reference internal" href="#dq-qa-levels"><span class="std std-ref">QA levels</span></a>),</p></li>
@@ -40,15 +40,15 @@
 <li><p>the protocols for data QA (<a class="reference internal" href="#dq-qa-protocols"><span class="std std-ref">Users</span></a>).</p></li>
 </ul>
 <section id="qa-levels">
-<span id="dq-qa-levels"></span><h2>QA levels<a class="headerlink" href="#qa-levels" title="Permalink to this heading">¶</a></h2>
+<span id="dq-qa-levels"></span><h2>QA levels<a class="headerlink" href="#qa-levels" title="Link to this heading">¶</a></h2>
 <p>WAStD keeps track of trust in the veracity of records as QA levels.
 The QA levels and transitions between them are discussed next.</p>
 <section id="new">
-<h3>New<a class="headerlink" href="#new" title="Permalink to this heading">¶</a></h3>
+<h3>New<a class="headerlink" href="#new" title="Link to this heading">¶</a></h3>
 <p>Manually entered as well as automatically imported records are marked as “new”.</p>
 </section>
 <section id="proofreading-new-proofread">
-<h3>Proofreading: new &gt; proofread<a class="headerlink" href="#proofreading-new-proofread" title="Permalink to this heading">¶</a></h3>
+<h3>Proofreading: new &gt; proofread<a class="headerlink" href="#proofreading-new-proofread" title="Link to this heading">¶</a></h3>
 <p>A literate data QA operator can proofread data by simply comparing attached files
 to the information present.
 If errors are found, data can be updated - WAStD will retain the edit history.
@@ -58,7 +58,7 @@ This step can be reverted by clicking the transition “Require Proofreading Enc
 WAStD will keep an audit log of each transition.</p>
 </section>
 <section id="curating-data-new-proofread-curated">
-<h3>Curating data: new/proofread &gt; curated<a class="headerlink" href="#curating-data-new-proofread-curated" title="Permalink to this heading">¶</a></h3>
+<h3>Curating data: new/proofread &gt; curated<a class="headerlink" href="#curating-data-new-proofread-curated" title="Link to this heading">¶</a></h3>
 <p>A subject matter expert can review records and e.g. confirm species identification.
 Once the expert is satisfied that the record represents accurately the case as
 evident from attached pictures, data sheet and communications records, the transition
@@ -67,16 +67,16 @@ evident from attached pictures, data sheet and communications records, the trans
 Curated records are considered “accepted” but sensitive records.</p>
 </section>
 <section id="flagging-for-review-curated-flagged">
-<h3>Flagging for review: curated &gt; flagged<a class="headerlink" href="#flagging-for-review-curated-flagged" title="Permalink to this heading">¶</a></h3>
+<h3>Flagging for review: curated &gt; flagged<a class="headerlink" href="#flagging-for-review-curated-flagged" title="Link to this heading">¶</a></h3>
 <p>Curated records can be flagged for review. These records require another look by a
 subject matter expert, and then can either be “curated” or “rejected”.</p>
 </section>
 <section id="reject-flagged-rejected">
-<h3>Reject: flagged &gt; rejected<a class="headerlink" href="#reject-flagged-rejected" title="Permalink to this heading">¶</a></h3>
+<h3>Reject: flagged &gt; rejected<a class="headerlink" href="#reject-flagged-rejected" title="Link to this heading">¶</a></h3>
 <p>Records can be marked as untrustworthy and irrecoverable by rejecting them.</p>
 </section>
 <section id="data-release-curated-published">
-<h3>Data release: curated &gt; published<a class="headerlink" href="#data-release-curated-published" title="Permalink to this heading">¶</a></h3>
+<h3>Data release: curated &gt; published<a class="headerlink" href="#data-release-curated-published" title="Link to this heading">¶</a></h3>
 <p>A qualified operator can authorise data release (mark records
 as “publication ready”) or embargo data (to prevent publication).</p>
 <p>The transition “Publish Encounter” will mark the record as ready to be “published”, but not
@@ -85,7 +85,7 @@ This QA level serves simply to mark a record as “ready to publish”.
 This transition can be reversed with “Embargo Encounter”, which will push the record back to “curated”.</p>
 </section>
 <section id="qa-log">
-<h3>QA log<a class="headerlink" href="#qa-log" title="Permalink to this heading">¶</a></h3>
+<h3>QA log<a class="headerlink" href="#qa-log" title="Link to this heading">¶</a></h3>
 <p>The majority of records don’t require any QA edits, and for now remain “new”.
 We could but do not yet batch-curate existing records (per season and locality) after QA by the respective data custodian.
 Reports currently include records of all QA levels.
@@ -93,7 +93,7 @@ A log of QA is kept on the <a class="reference external" href="https://dbcawa.at
 </section>
 </section>
 <section id="qa-entrypoints">
-<span id="dq-qa-links"></span><h2>QA entrypoints<a class="headerlink" href="#qa-entrypoints" title="Permalink to this heading">¶</a></h2>
+<span id="dq-qa-links"></span><h2>QA entrypoints<a class="headerlink" href="#qa-entrypoints" title="Link to this heading">¶</a></h2>
 <p>The main entrypoint for QA are the reports and data products which are disseminated through file shares.
 In 2021, these are SharePoint shares, containing dated folders with the daily full data snapshots and QA products.
 They contain:</p>
@@ -105,7 +105,7 @@ They contain:</p>
 </ul>
 <p>Individual QA sections contain links to specific pages in WAStD (or a specific combination of filters), together with a detailed protocol.</p>
 <section id="productivity-tips">
-<h3>Productivity tips<a class="headerlink" href="#productivity-tips" title="Permalink to this heading">¶</a></h3>
+<h3>Productivity tips<a class="headerlink" href="#productivity-tips" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Open individual records in new tabs (middle-click links or Ctrl+click). You can work on the next tab while another tab is still saving.</p></li>
 <li><p>Close tabs by middle-click on tab header or Ctrl+w.</p></li>
@@ -116,9 +116,9 @@ They contain:</p>
 </section>
 </section>
 <section id="users">
-<span id="dq-qa-protocols"></span><h2>Users<a class="headerlink" href="#users" title="Permalink to this heading">¶</a></h2>
+<span id="dq-qa-protocols"></span><h2>Users<a class="headerlink" href="#users" title="Link to this heading">¶</a></h2>
 <section id="double-check-reporter-names">
-<h3>Double-check reporter names<a class="headerlink" href="#double-check-reporter-names" title="Permalink to this heading">¶</a></h3>
+<h3>Double-check reporter names<a class="headerlink" href="#double-check-reporter-names" title="Link to this heading">¶</a></h3>
 <p>Filter the Survey list to each of your sites, compare “reported by” with “comments at start”.
 WAStD leaves QA messages. Surveys requiring QA will have a “NEEDS QA” remark.</p>
 <p>In addition, review the “QA Users” report, which lists all non-exact matches of username vs WAStD accounts.
@@ -126,7 +126,7 @@ Follow instructions within to add any misspellings of existing WAStD Users as th
 The next reporting run will pick up User aliases and match them better.</p>
 </section>
 <section id="merge-duplicate-user-profiles">
-<h3>Merge duplicate User profiles<a class="headerlink" href="#merge-duplicate-user-profiles" title="Permalink to this heading">¶</a></h3>
+<h3>Merge duplicate User profiles<a class="headerlink" href="#merge-duplicate-user-profiles" title="Link to this heading">¶</a></h3>
 <p>The data in WAStD has been imported from many different sources.
 Import routines have seen improvements, but have in the past created duplicate User profiles,
 or faithfully imported duplicate profiles from legacy sources.</p>
@@ -137,7 +137,7 @@ Duplicate User profiles can be merged from Users &gt; Merge Profiles, or from th
 Finally, the old profile is marked as “not active”, but is retained.</p>
 </section>
 <section id="add-missing-users">
-<h3>Add missing users<a class="headerlink" href="#add-missing-users" title="Permalink to this heading">¶</a></h3>
+<h3>Add missing users<a class="headerlink" href="#add-missing-users" title="Link to this heading">¶</a></h3>
 <p>At the beginning of the field season, send a spreadsheet of new data enumerators to the admin as per the “QA users” report.
 The spreadsheet must contain the following columns:</p>
 <ul class="simple">
@@ -153,7 +153,7 @@ Use their <code class="docutils literal notranslate"><span class="pre">firstname
 the profile will miss the details.</p>
 </section>
 <section id="transfer-data-across-users">
-<h3>Transfer data across users<a class="headerlink" href="#transfer-data-across-users" title="Permalink to this heading">¶</a></h3>
+<h3>Transfer data across users<a class="headerlink" href="#transfer-data-across-users" title="Link to this heading">¶</a></h3>
 <p>Sometimes, the data import takes a wrong guess at a username, and ends up importing
 data against the wrong user profile, typically in an area where the guessed user
 has not worked.</p>
@@ -165,9 +165,9 @@ If the new user has a lot of data to their name, the user detail page will load 
 </section>
 </section>
 <section id="surveys">
-<h2>Surveys<a class="headerlink" href="#surveys" title="Permalink to this heading">¶</a></h2>
+<h2>Surveys<a class="headerlink" href="#surveys" title="Link to this heading">¶</a></h2>
 <section id="data-flow-of-surveys">
-<h3>Data flow of surveys<a class="headerlink" href="#data-flow-of-surveys" title="Permalink to this heading">¶</a></h3>
+<h3>Data flow of surveys<a class="headerlink" href="#data-flow-of-surveys" title="Link to this heading">¶</a></h3>
 <p>WAStD creates or updates (if existing) one
 <a class="reference external" href="https://wastd.dbca.wa.gov.au/admin/observations/survey/">Survey</a>
 for each recorded “Site Visit Start”.
@@ -189,14 +189,14 @@ QA operators (coordinators) have to:</p>
 </ul>
 </section>
 <section id="flag-training-surveys">
-<h3>Flag training surveys<a class="headerlink" href="#flag-training-surveys" title="Permalink to this heading">¶</a></h3>
+<h3>Flag training surveys<a class="headerlink" href="#flag-training-surveys" title="Link to this heading">¶</a></h3>
 <p>Surveys can be marked as training surveys by unticking the “production” checkbox in the data curation portal.
 Training surveys are excluded from analysis.
 Marking a survey as training does not change the linked encounters.</p>
 <p>Remember to “curate” an edited record to protect it from being overwritten with the original data.</p>
 </section>
 <section id="populate-team">
-<h3>Populate team<a class="headerlink" href="#populate-team" title="Permalink to this heading">¶</a></h3>
+<h3>Populate team<a class="headerlink" href="#populate-team" title="Link to this heading">¶</a></h3>
 <p>This section describes the field “Team” in a Survey.
 From “Comments at start” beginning after the [guess_user] QA message, the team is listed.
 Excluding the “reporter”, add all team members to the “team” field.</p>
@@ -207,7 +207,7 @@ and survey effort (hours on ground).</p>
 It is not necessary to “proofread” and “curate” unchanged records.</p>
 </section>
 <section id="qa-survey-end-time">
-<h3>QA Survey end time<a class="headerlink" href="#qa-survey-end-time" title="Permalink to this heading">¶</a></h3>
+<h3>QA Survey end time<a class="headerlink" href="#qa-survey-end-time" title="Link to this heading">¶</a></h3>
 <p>The end time can be incorrect for two reasons:</p>
 <ul class="simple">
 <li><p>If the data collector forgot to capture a Site Visit End, WAStD will guess the end time
@@ -224,13 +224,13 @@ can indicate a mismatch.</p>
 <code class="docutils literal notranslate"><span class="pre">end_comments</span></code>, save and proofread. Set <code class="docutils literal notranslate"><span class="pre">end</span> <span class="pre">time</span></code> to a sensible time, ignore the end point.</p>
 </section>
 <section id="add-missing-surveys">
-<h3>Add missing surveys<a class="headerlink" href="#add-missing-surveys" title="Permalink to this heading">¶</a></h3>
+<h3>Add missing surveys<a class="headerlink" href="#add-missing-surveys" title="Link to this heading">¶</a></h3>
 <p>An admin can re-save all Surveys in batch to adopt any stray Encounters.</p>
 <p>An admin can then run “Curators &gt; Reconstruct missing Surveys”.
 This will create surveys for bundles of Encounters at known sites.</p>
 </section>
 <section id="close-duplicate-surveys">
-<h3>Close duplicate Surveys<a class="headerlink" href="#close-duplicate-surveys" title="Permalink to this heading">¶</a></h3>
+<h3>Close duplicate Surveys<a class="headerlink" href="#close-duplicate-surveys" title="Link to this heading">¶</a></h3>
 <p>Find the “QA duplicate Surveys” table in the report.
 This table lists all combinations of site and dates on which more than one Survey exist.
 Open each link, decide on which Survey to make production, then hit “make production”.
@@ -239,9 +239,9 @@ Adjust start or end time of the missed duplicated, then mark the “good” one 
 </section>
 </section>
 <section id="encounters">
-<h2>Encounters<a class="headerlink" href="#encounters" title="Permalink to this heading">¶</a></h2>
+<h2>Encounters<a class="headerlink" href="#encounters" title="Link to this heading">¶</a></h2>
 <section id="qa-tracks-with-uncertain-species">
-<h3>QA tracks with uncertain species<a class="headerlink" href="#qa-tracks-with-uncertain-species" title="Permalink to this heading">¶</a></h3>
+<h3>QA tracks with uncertain species<a class="headerlink" href="#qa-tracks-with-uncertain-species" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Nests and Tracks &gt; Tracks with <a class="reference external" href="https://wastd.dbca.wa.gov.au/observations/turtle-nest-encounters/?species=cheloniidae-fam)">uncertain species ID</a>, filter to your location, bookmark.</p></li>
 <li><p>Review each record, update from photos as far as possible, curate.</p></li>
@@ -249,7 +249,7 @@ Adjust start or end time of the missed duplicated, then mark the “good” one 
 </ul>
 </section>
 <section id="unsure-if-nest">
-<h3>Unsure if nest<a class="headerlink" href="#unsure-if-nest" title="Permalink to this heading">¶</a></h3>
+<h3>Unsure if nest<a class="headerlink" href="#unsure-if-nest" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Nests and Tracks &gt; <a class="reference external" href="https://wastd.dbca.wa.gov.au/observations/turtle-nest-encounters/?nest_type=track-unsure">Nests with uncertain nesting success</a> &gt; filter to your location, bookmark.</p></li>
 <li><p>Review each record, update from photos as far as possible, curate.</p></li>
@@ -257,7 +257,7 @@ Adjust start or end time of the missed duplicated, then mark the “good” one 
 </ul>
 </section>
 <section id="curate-records-from-training-days">
-<h3>Curate records from training days<a class="headerlink" href="#curate-records-from-training-days" title="Permalink to this heading">¶</a></h3>
+<h3>Curate records from training days<a class="headerlink" href="#curate-records-from-training-days" title="Link to this heading">¶</a></h3>
 <p>For CBB on Oct 25:
 All Tracks/Nests:
 Open TurtleNestEncounters, filter to area and date.
@@ -278,12 +278,12 @@ Set species to hatchback and curate.</p>
 </section>
 </section>
 <section id="data-surgery">
-<span id="id1"></span><h2>Data surgery<a class="headerlink" href="#data-surgery" title="Permalink to this heading">¶</a></h2>
+<span id="id1"></span><h2>Data surgery<a class="headerlink" href="#data-surgery" title="Link to this heading">¶</a></h2>
 <section id="change-wastd-sites">
-<h3>Change WAStD sites<a class="headerlink" href="#change-wastd-sites" title="Permalink to this heading">¶</a></h3>
+<h3>Change WAStD sites<a class="headerlink" href="#change-wastd-sites" title="Link to this heading">¶</a></h3>
 <p>Example: Thevenard was split into North and South beach, we want to re-introduce the Thevenard Tagging area.</p>
 <section id="step-1-update-wastd-sites">
-<h4>Step 1: Update WAStD sites<a class="headerlink" href="#step-1-update-wastd-sites" title="Permalink to this heading">¶</a></h4>
+<h4>Step 1: Update WAStD sites<a class="headerlink" href="#step-1-update-wastd-sites" title="Link to this heading">¶</a></h4>
 <ul class="simple">
 <li><p>Areas: Save <a class="reference external" href="https://wastd.dbca.wa.gov.au/api/1/area/?area_type=Site&amp;format=json&amp;limit=1000">WAStD Areas</a>
 as areas.geojson, drag and drop into QGIS.</p></li>
@@ -292,7 +292,7 @@ as areas.geojson, drag and drop into QGIS.</p></li>
 </ul>
 </section>
 <section id="step-2-update-wastd-encounters-and-surveys">
-<h4>Step 2: Update WAStD Encounters and surveys<a class="headerlink" href="#step-2-update-wastd-encounters-and-surveys" title="Permalink to this heading">¶</a></h4>
+<h4>Step 2: Update WAStD Encounters and surveys<a class="headerlink" href="#step-2-update-wastd-encounters-and-surveys" title="Link to this heading">¶</a></h4>
 <ul>
 <li><p>The new Tagging area (pk=20) takes over parts of Thevenard North (pk=28) and Thevenard South (pk=29).</p></li>
 <li><p>We need to reset the “site” field of all Encounters in Thevenard Tagging which are not yet linked to Thevenard Tagging.</p></li>
@@ -316,11 +316,11 @@ This adopts Encounters within and expels Encounters outside. Encounters in the n
 <p>In our case, we’re reactivating a site that was previously deactivated and had Surveys linked to it via start location.</p>
 </section>
 <section id="step-3-reconstruct-missing-surveys">
-<h4>Step 3: Reconstruct missing surveys<a class="headerlink" href="#step-3-reconstruct-missing-surveys" title="Permalink to this heading">¶</a></h4>
+<h4>Step 3: Reconstruct missing surveys<a class="headerlink" href="#step-3-reconstruct-missing-surveys" title="Link to this heading">¶</a></h4>
 <p>As admin, run WAStD front-end menu Curators &gt; Reconstruct missing surveys.</p>
 </section>
 <section id="step-4-run-reports-to-review-outcome">
-<h4>Step 4: Run reports to review Outcome<a class="headerlink" href="#step-4-run-reports-to-review-outcome" title="Permalink to this heading">¶</a></h4>
+<h4>Step 4: Run reports to review Outcome<a class="headerlink" href="#step-4-run-reports-to-review-outcome" title="Link to this heading">¶</a></h4>
 <p>Once reports are re-run, we will find any duplicate surveys and other problems to fix.</p>
 </section>
 </section>
@@ -430,7 +430,7 @@ This adopts Encounters within and expels Encounters outside. Encounters in the n
       &copy;2023, Florian Mayer, Ashley Felton.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.1.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
       
       |

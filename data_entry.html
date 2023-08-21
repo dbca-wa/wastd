@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="./">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -8,9 +8,9 @@
     <title>Data entry &#8212; wastd 0.70.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=4f649999" />
     <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=039e1c02" />
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=94d71e6b"></script>
+    <script src="_static/documentation_options.js?v=ecf2ad1f"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
-    <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Data QA" href="data_qa.html" />
@@ -32,7 +32,7 @@
           <div class="body" role="main">
             
   <section id="data-entry">
-<span id="id1"></span><h1>Data entry<a class="headerlink" href="#data-entry" title="Permalink to this heading">¶</a></h1>
+<span id="id1"></span><h1>Data entry<a class="headerlink" href="#data-entry" title="Link to this heading">¶</a></h1>
 <p>This chapter addresses data curators, who enter, proofread and curate data from sources like paper datasheets and email.</p>
 <p>WAStD’s data model is built around the concept of an AnimalEncounter, which is
 the physical encounter of an observer an an animal at one point in time and space,
@@ -52,14 +52,14 @@ the location, or the surroundings.</p>
 <p>The following sections will instruct data curators how to enter data from
 supported data sources into WAStD.</p>
 <section id="campaigns">
-<span id="itp-campaigns"></span><h2>Campaigns<a class="headerlink" href="#campaigns" title="Permalink to this heading">¶</a></h2>
+<span id="itp-campaigns"></span><h2>Campaigns<a class="headerlink" href="#campaigns" title="Link to this heading">¶</a></h2>
 <p>The bulk of data is captured in electronic forms using ODK and imported into WAStD on an automated schedule.</p>
 <p>To allocate data ownership and visibility to users of participating organisations,
 Surveys and Encounters are associated with an overarching Campaign.</p>
 <p>A Campaign represents a contiguous set of Surveys instigated by one Organisation (DBCA or external partners).</p>
 <p>Campaigns have to be created manually in WAStD as follows:</p>
 <section id="find-campaign-corner-dates">
-<h3>Find Campaign corner dates<a class="headerlink" href="#find-campaign-corner-dates" title="Permalink to this heading">¶</a></h3>
+<h3>Find Campaign corner dates<a class="headerlink" href="#find-campaign-corner-dates" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>In the Turtle Data Dashboard, find the “Surveys” tab.</p></li>
 <li><p>Select a Locality. This is the Campaign destination.</p></li>
@@ -74,7 +74,7 @@ Surveys and Encounters are associated with an overarching Campaign.</p>
 </ul>
 </section>
 <section id="create-a-campaign">
-<h3>Create a Campaign<a class="headerlink" href="#create-a-campaign" title="Permalink to this heading">¶</a></h3>
+<h3>Create a Campaign<a class="headerlink" href="#create-a-campaign" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>In the WAStD Data Curation Portal, under “Places, Campaigns, Surveys”, find Campaigns.</p></li>
 <li><p>Create a new Campaign by either of:</p>
@@ -103,12 +103,12 @@ Surveys and Encounters are associated with an overarching Campaign.</p>
 </section>
 </section>
 <section id="turtle-tracks-or-nests">
-<span id="itp-tracks-curation"></span><h2>Turtle Tracks or Nests<a class="headerlink" href="#turtle-tracks-or-nests" title="Permalink to this heading">¶</a></h2>
+<span id="itp-tracks-curation"></span><h2>Turtle Tracks or Nests<a class="headerlink" href="#turtle-tracks-or-nests" title="Link to this heading">¶</a></h2>
 <p>If data is not captured via the digital forms, it is still possible to enter data manually.</p>
 <p>With data curator access, open the <a class="reference external" href="https://wastd.dbca.wa.gov.au/admin/">Data curation portal</a>
 and <a class="reference external" href="https://wastd.dbca.wa.gov.au/admin/observations/turtlenestencounter/add/">add a new TurtleNestEncounter</a>.</p>
 <section id="section-encounter">
-<h3>Section “Encounter”<a class="headerlink" href="#section-encounter" title="Permalink to this heading">¶</a></h3>
+<h3>Section “Encounter”<a class="headerlink" href="#section-encounter" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Area: ignore, will be chosen based on location</p></li>
 <li><p>Surveyed site: ignore, will be chosen based on location</p></li>
@@ -135,7 +135,7 @@ and <a class="reference external" href="https://wastd.dbca.wa.gov.au/admin/obser
 </ul>
 </section>
 <section id="section-nest">
-<h3>Section “Nest”<a class="headerlink" href="#section-nest" title="Permalink to this heading">¶</a></h3>
+<h3>Section “Nest”<a class="headerlink" href="#section-nest" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Enter data as per datasheet, then hit “Save and continue editing”.</p></li>
 <li><p>Note that source ID is now set, reflecting the data entered above.</p></li>
@@ -143,16 +143,16 @@ and <a class="reference external" href="https://wastd.dbca.wa.gov.au/admin/obser
 </ul>
 </section>
 <section id="section-media-attachments">
-<h3>Section “Media Attachments”<a class="headerlink" href="#section-media-attachments" title="Permalink to this heading">¶</a></h3>
+<h3>Section “Media Attachments”<a class="headerlink" href="#section-media-attachments" title="Link to this heading">¶</a></h3>
 <p>“Add another” and upload the scanned datasheet (as PDF). “Save and continue editing”.</p>
 </section>
 <section id="other-sections">
-<h3>Other sections<a class="headerlink" href="#other-sections" title="Permalink to this heading">¶</a></h3>
+<h3>Other sections<a class="headerlink" href="#other-sections" title="Link to this heading">¶</a></h3>
 <p>Add as required. “Save and continue editing”.</p>
 </section>
 </section>
 <section id="backfill-tracks-from-paper-track-tally">
-<span id="itp-tracks-backfill"></span><h2>Backfill Tracks from Paper (Track Tally)<a class="headerlink" href="#backfill-tracks-from-paper-track-tally" title="Permalink to this heading">¶</a></h2>
+<span id="itp-tracks-backfill"></span><h2>Backfill Tracks from Paper (Track Tally)<a class="headerlink" href="#backfill-tracks-from-paper-track-tally" title="Link to this heading">¶</a></h2>
 <p>Some field trips were confused between capturing data on paper or digitally.
 These may have paper records of tracks which need to be backfilled into WAStD.</p>
 <p>Since the paper datasheets did not record coordinates for individual tracks,
@@ -160,7 +160,7 @@ we consider missed tracks during tagging and morning tracks from after tagging a
 and backfill these Track Tallies as LineTransectEncounters with TrackTallyObservations and MediaAttachments in WAStD.</p>
 <p>Protocol:</p>
 <section id="scan-paper-datasheets">
-<h3>Scan paper datasheets<a class="headerlink" href="#scan-paper-datasheets" title="Permalink to this heading">¶</a></h3>
+<h3>Scan paper datasheets<a class="headerlink" href="#scan-paper-datasheets" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Find paper records for one day. These might contain:</p>
 <ul>
@@ -186,7 +186,7 @@ and backfill these Track Tallies as LineTransectEncounters with TrackTallyObserv
 </ul>
 </section>
 <section id="summarise-tracks-into-tracktallies">
-<h3>Summarise Tracks into TrackTallies<a class="headerlink" href="#summarise-tracks-into-tracktallies" title="Permalink to this heading">¶</a></h3>
+<h3>Summarise Tracks into TrackTallies<a class="headerlink" href="#summarise-tracks-into-tracktallies" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>With the TrackTally paper datasheet in hand or on screen,
 fill in a new TrackTally paper datasheet by going through the original datasheets.</p>
@@ -201,7 +201,7 @@ or are annotated on the side.</p></li>
 </ul>
 </section>
 <section id="create-wastd-linetransectencounters-from-tracktallies">
-<h3>Create WAStD LineTransectEncounters from TrackTallies<a class="headerlink" href="#create-wastd-linetransectencounters-from-tracktallies" title="Permalink to this heading">¶</a></h3>
+<h3>Create WAStD LineTransectEncounters from TrackTallies<a class="headerlink" href="#create-wastd-linetransectencounters-from-tracktallies" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Next, backfill the TrackTally as a
 <a class="reference external" href="https://wastd.dbca.wa.gov.au/admin/observations/linetransectencounter/add/">new LineTransectEncounter</a>:</p>
@@ -256,7 +256,7 @@ This will reconstruct surveys and link the TrackTallies (LineTransectEncounters)
 </section>
 </section>
 <section id="turtle-strandings">
-<span id="itp-stranding-curation"></span><h2>Turtle Strandings<a class="headerlink" href="#turtle-strandings" title="Permalink to this heading">¶</a></h2>
+<span id="itp-stranding-curation"></span><h2>Turtle Strandings<a class="headerlink" href="#turtle-strandings" title="Link to this heading">¶</a></h2>
 <p>Digitising a stranding record consists of five steps:</p>
 <ul class="simple">
 <li><p>Converting legacy files,</p></li>
@@ -267,7 +267,7 @@ record identifier (record ID),</p></li>
 <li><p>extracting remaining information from the files into WAStD.</p></li>
 </ul>
 <section id="convert-legacy-files">
-<h3>Convert legacy files<a class="headerlink" href="#convert-legacy-files" title="Permalink to this heading">¶</a></h3>
+<h3>Convert legacy files<a class="headerlink" href="#convert-legacy-files" title="Link to this heading">¶</a></h3>
 <p>Reports of Turtle Strandings typically arrive as a mixture of files, which
 include:</p>
 <ul class="simple">
@@ -278,7 +278,7 @@ include:</p>
 <p>Convert all original files to non-proprietary formats, such as PDF, images,
 or plain text, separating duplicate information into a subfolder “duplicates”.</p>
 <section id="emails">
-<h4>Emails<a class="headerlink" href="#emails" title="Permalink to this heading">¶</a></h4>
+<h4>Emails<a class="headerlink" href="#emails" title="Link to this heading">¶</a></h4>
 <ul class="simple">
 <li><p>Emails saved as Outlook <em>.msg</em>: open with Outlook (requires Windows OS),
 save attachments (data sheet, images) separately, then save email as plain text.</p></li>
@@ -291,14 +291,14 @@ thread and redact content as follows:</p></li>
 </ul>
 </section>
 <section id="printed-documents">
-<h4>Printed documents<a class="headerlink" href="#printed-documents" title="Permalink to this heading">¶</a></h4>
+<h4>Printed documents<a class="headerlink" href="#printed-documents" title="Link to this heading">¶</a></h4>
 <ul class="simple">
 <li><p>Paper forms: scan to PDF, make sure the quality is readable enough.</p></li>
 <li><p>Printed photos: scan to jpg, one file per photo.</p></li>
 </ul>
 </section>
 <section id="electronic-documents">
-<h4>Electronic documents<a class="headerlink" href="#electronic-documents" title="Permalink to this heading">¶</a></h4>
+<h4>Electronic documents<a class="headerlink" href="#electronic-documents" title="Link to this heading">¶</a></h4>
 <ul class="simple">
 <li><p>All documents need to be saved as txt (if plain text is sufficient) or PDF (if
 formatting is important).</p></li>
@@ -306,7 +306,7 @@ formatting is important).</p></li>
 </ul>
 </section>
 <section id="photographs">
-<h4>Photographs<a class="headerlink" href="#photographs" title="Permalink to this heading">¶</a></h4>
+<h4>Photographs<a class="headerlink" href="#photographs" title="Link to this heading">¶</a></h4>
 <ul class="simple">
 <li><p>Switch on geotagging before taking phone pictures to include a GPS stamp in the
 image file metadata.</p></li>
@@ -329,7 +329,7 @@ image file metadata.</p></li>
 </section>
 </section>
 <section id="wastd-minimal-record-and-identifier">
-<h3>WAStD minimal record and identifier<a class="headerlink" href="#wastd-minimal-record-and-identifier" title="Permalink to this heading">¶</a></h3>
+<h3>WAStD minimal record and identifier<a class="headerlink" href="#wastd-minimal-record-and-identifier" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Create a <a class="reference external" href="https://strandings.dpaw.wa.gov.au/admin/observations/animalencounter/add/">new AnimalEncounter</a>.</p></li>
 <li><p><strong>Observed at</strong> refers to the location of the encounter with the animal.</p></li>
@@ -358,7 +358,7 @@ show an error.
 In this case, make the source ID unique by appending a running number (e.g. <code class="docutils literal notranslate"><span class="pre">-1</span></code>).</p>
 </section>
 <section id="rename-legacy-files-using-wastd-record-identifier">
-<h3>Rename legacy files using WAStD record identifier<a class="headerlink" href="#rename-legacy-files-using-wastd-record-identifier" title="Permalink to this heading">¶</a></h3>
+<h3>Rename legacy files using WAStD record identifier<a class="headerlink" href="#rename-legacy-files-using-wastd-record-identifier" title="Link to this heading">¶</a></h3>
 <p>Now that we have a source ID, turn to the files for a moment.</p>
 <p>Store the original files (scanned data sheets, pictures, emails)
 in a new folder in a backed up location using WAStD’s auto-generated source ID
@@ -378,7 +378,7 @@ corresponding record in WAStD even without the context of being attached to a
 WAStD record, or being located in an appropriately named folder.</p>
 </section>
 <section id="upload-files">
-<h3>Upload files<a class="headerlink" href="#upload-files" title="Permalink to this heading">¶</a></h3>
+<h3>Upload files<a class="headerlink" href="#upload-files" title="Link to this heading">¶</a></h3>
 <p>It is very important to rename the files <strong>before</strong> uploading them, in order to
 preserve the new filename (containing the source ID) in the uploaded file name.</p>
 <p>This is important, as downloaded files will only be identified by their filename.
@@ -397,7 +397,7 @@ in map popups, e.g.:</p>
 </ul>
 </section>
 <section id="information-extraction">
-<h3>Information extraction<a class="headerlink" href="#information-extraction" title="Permalink to this heading">¶</a></h3>
+<h3>Information extraction<a class="headerlink" href="#information-extraction" title="Link to this heading">¶</a></h3>
 <p>Add subsequent sections if relevant information is given in the original
 data sheet or communication records:</p>
 <ul class="simple">
@@ -424,7 +424,7 @@ the tag).</p>
 </ul>
 </section>
 <section id="turtle-morphometric-observations">
-<h3>Turtle Morphometric Observations<a class="headerlink" href="#turtle-morphometric-observations" title="Permalink to this heading">¶</a></h3>
+<h3>Turtle Morphometric Observations<a class="headerlink" href="#turtle-morphometric-observations" title="Link to this heading">¶</a></h3>
 <p>The measurement accuracy is set based on informed guesses:</p>
 <ul class="simple">
 <li><p>If the datasheet was filled in by a trained vet or core turtle staff, it’s to
@@ -445,7 +445,7 @@ the map popup) and refresh WAStD’s home page to see a summary as popup on the
 Encounter’s place marker.</p>
 </section>
 <section id="updating-an-existing-stranding-record">
-<h3>Updating an existing stranding record<a class="headerlink" href="#updating-an-existing-stranding-record" title="Permalink to this heading">¶</a></h3>
+<h3>Updating an existing stranding record<a class="headerlink" href="#updating-an-existing-stranding-record" title="Link to this heading">¶</a></h3>
 <p>Place the new files into the new case folders (named after WAStD’s source ID for
 that record) following above defined file standards. Prefix the filenames with
 the source ID, then upload them to the corresponding record in WAStD.</p>
@@ -459,7 +459,7 @@ This extra step is extremely important to keep shared identifiers on files and
 electronic records in sync.</p>
 </section>
 <section id="outcome">
-<h3>Outcome<a class="headerlink" href="#outcome" title="Permalink to this heading">¶</a></h3>
+<h3>Outcome<a class="headerlink" href="#outcome" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p><strong>Point of truth</strong> is the record in WAStD, which is the most comprehensive and most
 accessible source of information related to a stranding.</p></li>
@@ -470,7 +470,7 @@ precicely in the same version that is in the case folder.</p></li>
 </section>
 </section>
 <section id="cetacean-strandings">
-<h2>Cetacean Strandings<a class="headerlink" href="#cetacean-strandings" title="Permalink to this heading">¶</a></h2>
+<h2>Cetacean Strandings<a class="headerlink" href="#cetacean-strandings" title="Link to this heading">¶</a></h2>
 <p>The data currently lives in another departmental Strandings database.</p>
 <p>Cetacean Stranding data (if they were entered into WAStD):</p>
 <ul class="simple">
@@ -481,7 +481,7 @@ precicely in the same version that is in the case folder.</p></li>
 </ul>
 </section>
 <section id="turtle-tagging">
-<h2>Turtle Tagging<a class="headerlink" href="#turtle-tagging" title="Permalink to this heading">¶</a></h2>
+<h2>Turtle Tagging<a class="headerlink" href="#turtle-tagging" title="Link to this heading">¶</a></h2>
 <p>The production data currently live in WAMTRAM 2. Migration is underway.</p>
 <p>Turtle Tagging data:</p>
 <ul class="simple">
@@ -496,7 +496,7 @@ precicely in the same version that is in the case folder.</p></li>
 </ul>
 </section>
 <section id="tag-returns">
-<h2>Tag returns<a class="headerlink" href="#tag-returns" title="Permalink to this heading">¶</a></h2>
+<h2>Tag returns<a class="headerlink" href="#tag-returns" title="Link to this heading">¶</a></h2>
 <p>When TOs harvest and eat a tagged turtle, they return the tags to the Department.</p>
 <p>Tag Return data:</p>
 <ul class="simple">
@@ -507,7 +507,7 @@ precicely in the same version that is in the case folder.</p></li>
 a “thank you” email including the known history of the animal.</p>
 </section>
 <section id="turtle-tracks">
-<h2>Turtle Tracks<a class="headerlink" href="#turtle-tracks" title="Permalink to this heading">¶</a></h2>
+<h2>Turtle Tracks<a class="headerlink" href="#turtle-tracks" title="Link to this heading">¶</a></h2>
 <p>Turtle Track Tally data in WAStD:</p>
 <ul class="simple">
 <li><p>Create a <a class="reference external" href="https://strandings.dpaw.wa.gov.au/admin/observations/encounter/add/">new (simple) Encounter</a>.</p></li>
@@ -523,7 +523,7 @@ a “thank you” email including the known history of the animal.</p>
 <p><strong>Note</strong> Data collected with mobile apps are ingested automatically.</p>
 </section>
 <section id="temperature-loggers">
-<h2>Temperature Loggers<a class="headerlink" href="#temperature-loggers" title="Permalink to this heading">¶</a></h2>
+<h2>Temperature Loggers<a class="headerlink" href="#temperature-loggers" title="Link to this heading">¶</a></h2>
 <p>The following life cycle stages are supported for Hobo Temperature Loggers:</p>
 <ul class="simple">
 <li><p>programmed (with settings “start date” and “logging interval”)</p></li>
@@ -545,7 +545,7 @@ a “thank you” email including the known history of the animal.</p>
 </ul>
 </section>
 <section id="data-upload-from-odk">
-<h2>Data upload from ODK<a class="headerlink" href="#data-upload-from-odk" title="Permalink to this heading">¶</a></h2>
+<h2>Data upload from ODK<a class="headerlink" href="#data-upload-from-odk" title="Link to this heading">¶</a></h2>
 <p>WAStD still supports the import of electronically captured data from ODK Aggregate.</p>
 <p>All electronically captured data from the newer ODK Central are imported in a scripted
 and automated process using the R package <a class="reference external" href="https://github.com/dbca-wa/etlTurtleNesting">etlTurtleNesting</a>.
@@ -651,7 +651,7 @@ All data flow through the WAStD API.</p>
       &copy;2023, Florian Mayer, Ashley Felton.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.1.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
       
       |
