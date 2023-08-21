@@ -22,8 +22,6 @@
           {{ object.encounter_set.count }}
           <i class="fa-solid fa-layer-group" title="Duplicate surveys: {{ object.no_duplicates }}" aria-hidden="true"></i>
           {{ object.no_duplicates }}
-          <i class="fa-solid fa-shield-halved" title="Owned by" aria-hidden="true"></i>
-          {% if object.campaign %} {{ object.campaign.owner }}{% else %}-{% endif %}
         </h6>
     </div>
 
