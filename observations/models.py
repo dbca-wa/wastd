@@ -29,8 +29,7 @@ import itertools
 import logging
 from os import path
 from polymorphic.models import PolymorphicModel
-from rest_framework.reverse import reverse as rest_reverse
-import slugify
+from slugify import slugify
 import urllib
 
 from wastd.utils import LegacySourceMixin, QualityControlMixin, UrlsMixin
@@ -167,13 +166,14 @@ class Area(models.Model):
         verbose_name_plural = "Areas"
 
     def save(self, *args, **kwargs):
-        """Cache centroid and northern extent."""
-        self.as_html = self.get_popup
+        """Cache as_html value, centroid and northern extent.
+        """
+        self.as_html = self.get_popup()
         if not self.northern_extent:
             self.northern_extent = self.derived_northern_extent
         if not self.centroid:
             self.centroid = self.derived_centroid
-        super(Area, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.name} ({self.area_type})"
@@ -188,9 +188,9 @@ class Area(models.Model):
         """The northern extent, derived from the polygon."""
         return self.geom.extent[3] or None
 
-    @property
     def get_popup(self):
-        """Generate HTML popup content."""
+        """Generate HTML popup content.
+        """
         t = loader.get_template("popup/{}.html".format(self._meta.model_name))
         c = dict(original=self)
         return mark_safe(t.render(c))
@@ -220,24 +220,6 @@ class Area(models.Model):
         return "/admin/observations/animalencounter/?{0}__id__exact={1}".format(
             "site" if self.area_type == Area.AREATYPE_SITE else "area",
             self.pk,
-        )
-
-    def make_rest_listurl(self, format="json"):
-        """Return the API list URL in given format (default: JSON).
-
-        Permissible formats depend on configured renderers:
-        api (human readable HTML), csv, json, jsonp, yaml, latex (PDF).
-        """
-        return rest_reverse(self._meta.model_name + "-list", kwargs={"format": format})
-
-    def make_rest_detailurl(self, format="json"):
-        """Return the API detail URL in given format (default: JSON).
-
-        Permissible formats depend on configured renderers:
-        api (human readable HTML), csv, json, jsonp, yaml, latex (PDF).
-        """
-        return rest_reverse(
-            self._meta.model_name + "-detail", kwargs={"pk": self.pk, "format": format}
         )
 
 
@@ -548,15 +530,12 @@ class Survey(QualityControlMixin, UrlsMixin, models.Model):
     )
 
     class Meta:
-        ordering = [
-            "-start_time",
-        ]
+        ordering = ["-start_time"]
         unique_together = ("source", "source_id")
 
     def __str__(self):
         return self.label or str(self.pk)
 
-    @property
     def make_label(self):
         return "Survey {} of {} on {} from {} to {}".format(
             self.pk,
@@ -571,8 +550,7 @@ class Survey(QualityControlMixin, UrlsMixin, models.Model):
 
     @property
     def as_html(self):
-        """An HTML representation."""
-        t = loader.get_template("popup/{0}.html".format(self._meta.model_name))
+        t = loader.get_template("popup/survey.html")
         return mark_safe(t.render({"original": self}))
 
     @property
@@ -583,31 +561,6 @@ class Survey(QualityControlMixin, UrlsMixin, models.Model):
 
     def card_template(self):
         return "observations/survey_card.html"
-
-    @property
-    def encounters(self):
-        """Return the QuerySet of all Encounters within this Survey unless it's a training run."""
-        if not self.production:
-            #LOGGER.info(
-            #    "[observations.models.survey.encounters] Not a production survey, skipping."
-            #)
-            return None
-        if not self.end_time:
-            #LOGGER.info(
-            #    "[observations.models.survey.encounters] No end_time set, can't filter Encounters."
-            #)
-            return None
-        elif not self.site:
-            #LOGGER.info(
-            #    "[observations.models.survey.encounters] No site set, can't filter Encounters."
-            #)
-            return None
-        else:
-            return Encounter.objects.filter(
-                where__coveredby=self.site.geom,
-                when__gte=self.start_time,
-                when__lte=self.end_time,
-            )
 
     @property
     def start_date(self):
@@ -734,9 +687,24 @@ class Survey(QualityControlMixin, UrlsMixin, models.Model):
         """
         return self.__str__()
 
+    @property
+    def guess_site(self):
+        """Return the first site containing the start_location or None.
+        """
+        candidates = Area.objects.filter(area_type=Area.AREATYPE_SITE, geom__covers=self.start_location)
+        return candidates.first() or None
+
+    @property
+    def guess_area(self):
+        """Return the first locality containing the start_location or None.
+        """
+        candidates = Area.objects.filter(area_type=Area.AREATYPE_LOCALITY, geom__covers=self.start_location)
+        return candidates.first() or None
+
 
 class SurveyEnd(models.Model):
     """A visit to one site by a team of field workers collecting data.
+    TODO: deprecate this model (consolidate into Survey).
     """
     source = models.CharField(
         max_length=300,
@@ -808,25 +776,12 @@ class SurveyEnd(models.Model):
         ordering = ["end_location", "end_time"]
         unique_together = ("source", "source_id")
 
-    def save(self, *args, **kwargs):
-        """Guess site."""
-        self.site = self.guess_site
-        super(SurveyEnd, self).save(*args, **kwargs)
-
     def __str__(self):
-        return "SurveyEnd {0} at {1} on {2}".format(
+        return "SurveyEnd {} at {} on {}".format(
             self.pk,
             "na" if not self.site else self.site,
             "na" if not self.end_time else self.end_time.isoformat(),
         )
-
-    @property
-    def guess_site(self):
-        """Return the first Area containing the start_location or None."""
-        candidates = Area.objects.filter(
-            area_type=Area.AREATYPE_SITE, geom__covers=self.end_location
-        )
-        return None if not candidates else candidates.first()
 
 
 class SurveyMediaAttachment(LegacySourceMixin, models.Model):
@@ -1258,7 +1213,7 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
     def create_url(cls):
         """Create url. Default: app:model-create."""
         return reverse(
-            "admin:{0}_{1}_add".format(cls._meta.app_label, cls._meta.model_name)
+            "admin:{}_{}_add".format(cls._meta.app_label, cls._meta.model_name)
         )
 
     @property
@@ -1271,24 +1226,6 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         """Return the absolute admin change URL.
         """
         return reverse("admin:{}_{}_change".format(self._meta.app_label, self._meta.model_name), args=[self.pk])
-
-    def make_rest_listurl(self, format="json"):
-        """Return the API list URL in given format (default: JSON).
-
-        Permissible formats depend on configured renderers:
-        api (human readable HTML), csv, json, jsonp, yaml, latex (PDF).
-        """
-        return rest_reverse(self._meta.model_name + "-list", kwargs={"format": format})
-
-    def make_rest_detailurl(self, format="json"):
-        """Return the API detail URL in given format (default: JSON).
-
-        Permissible formats depend on configured renderers:
-        api (human readable HTML), csv, json, jsonp, yaml, latex (PDF).
-        """
-        return rest_reverse(
-            self._meta.model_name + "-detail", kwargs={"pk": self.pk, "format": format}
-        )
 
     def get_curate_url(self):
         return reverse("observations:animalencounter-curate", kwargs={"pk": self.pk})
@@ -1376,7 +1313,7 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         The short_name could be non-unique for encounters of multiple stranded
         animals of the same species and deadness.
         """
-        return slugify.slugify(
+        return slugify(
             "-".join(
                 [
                     self.when.astimezone(tz.tzlocal()).strftime("%Y-%m-%d %H:%M %Z"),
@@ -1411,19 +1348,17 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
 
     @property
     def guess_site(self):
-        """Return the first Area containing the start_location or None."""
-        candidates = Area.objects.filter(
-            area_type=Area.AREATYPE_SITE, geom__covers=self.where
-        )
-        return None if not candidates else candidates.first()
+        """Return the first site containing `where`, or None.
+        """
+        candidates = Area.objects.filter(area_type=Area.AREATYPE_SITE, geom__covers=self.where)
+        return candidates.first() or None
 
     @property
     def guess_area(self):
-        """Return the first Area containing the start_location or None."""
-        candidates = Area.objects.filter(
-            area_type=Area.AREATYPE_LOCALITY, geom__covers=self.where
-        )
-        return None if not candidates else candidates.first()
+        """Return the first locality containing `where`, or None.
+        """
+        candidates = Area.objects.filter(area_type=Area.AREATYPE_LOCALITY, geom__covers=self.where)
+        return candidates.first() or None
 
     def set_name(self, name):
         """Set the animal name to a given value."""
@@ -1433,8 +1368,6 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
     @property
     def inferred_name(self):
         """Return the inferred name from related new capture if existing.
-
-        TODO replace with reconstruct_animal_names logic
         """
         return None
 
@@ -1571,6 +1504,13 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         """Return a queryset of all attached photographs.
         """
         return MediaAttachment.objects.filter(encounter=self, media_type="photograph")
+
+    @property
+    def as_html(self):
+        """An HTML representation.
+        """
+        t = loader.get_template("popup/{}.html".format(self._meta.model_name))
+        return mark_safe(t.render({"original": self}))
 
 
 class AnimalEncounter(Encounter):
@@ -1749,7 +1689,6 @@ class AnimalEncounter(Encounter):
         verbose_name = "Animal Encounter"
         verbose_name_plural = "Animal Encounters"
         get_latest_by = "when"
-        # base_manager_name = 'base_objects'  # fix delete bug
 
     def __str__(self):
         tpl = "AnimalEncounter {} on {} by {} of {}, {} {} {} on {}"
@@ -1815,7 +1754,7 @@ class AnimalEncounter(Encounter):
         ]
         if self.name is not None:
             nameparts.append(self.name)
-        return slugify.slugify("-".join(nameparts))
+        return slugify("-".join(nameparts))
 
     @property
     def latitude(self):
@@ -1994,7 +1933,7 @@ class TurtleNestEncounter(Encounter):
         ]
         if self.name is not None:
             nameparts.append(self.name)
-        return slugify.slugify("-".join(nameparts))
+        return slugify("-".join(nameparts))
 
     @property
     def latitude(self):
@@ -2126,7 +2065,7 @@ class LineTransectEncounter(Encounter):
         ]
         if self.name is not None:
             nameparts.append(self.name)
-        return slugify.slugify("-".join(nameparts))
+        return slugify("-".join(nameparts))
 
     @property
     def latitude(self):

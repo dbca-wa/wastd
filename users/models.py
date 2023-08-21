@@ -1,12 +1,8 @@
-from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 from django.urls import reverse
 from django.utils import timezone
 from phonenumber_field.modelfields import PhoneNumberField
-from rest_framework.authtoken.models import Token
 
 
 class Organisation(models.Model):
@@ -43,7 +39,6 @@ class Organisation(models.Model):
         ordering = ("code",)
 
     def __str__(self):
-        """The full name."""
         return self.label
 
 
@@ -62,27 +57,23 @@ class User(AbstractUser):
     role = models.TextField(
         "Role of User", blank=True, null=True, help_text="The role of the user."
     )
-
     affiliation = models.TextField(
         "Affiliation",
         blank=True,
         help_text="The organisational affiliation of the user as free text.",
     )
-
     organisations = models.ManyToManyField(
         Organisation,
         related_name="members",
         blank=True,
         help_text="The organisational affiliation is used to control data visibility and access. A user can be a member of several Organisations.",
     )
-
     phone = PhoneNumberField(
         verbose_name="Phone Number",
         blank=True,
         null=True,
         help_text="The primary contact number including national prefix, e.g. +61 412 345 678. Spaces are accepted but will be removed on saving.",
     )
-
     alive = models.BooleanField(
         verbose_name="Alive",
         default=True,
@@ -90,7 +81,7 @@ class User(AbstractUser):
     )
 
     class Meta:
-        ordering = ["name", "username"]
+        ordering = ("name", "username")
         verbose_name = "User"
         verbose_name_plural = "Users"
 
@@ -112,12 +103,7 @@ class User(AbstractUser):
 
     def fullname(self):
         """The full name plus email."""
-        return "{0} ({1})".format(self.name or self.username, self.role)
-
-    @property
-    def apitoken(self):
-        """The API token."""
-        return Token.objects.get_or_create(user=self)[0].key
+        return "{} ({})".format(self.name or self.username, self.role)
 
     @staticmethod
     def autocomplete_search_fields():
@@ -137,7 +123,7 @@ class User(AbstractUser):
     def create_url(cls):
         """Create url. Default: app:model-create."""
         return reverse(
-            "admin:{0}_{1}_add".format(cls._meta.app_label, cls._meta.model_name)
+            "admin:{}_{}_add".format(cls._meta.app_label, cls._meta.model_name)
         )
 
     @property
@@ -152,7 +138,7 @@ class User(AbstractUser):
         Default: admin:app_model_change(**pk)
         """
         return reverse(
-            "admin:{0}_{1}_change".format(self._meta.app_label, self._meta.model_name),
+            "admin:{}_{}_change".format(self._meta.app_label, self._meta.model_name),
             args=[self.pk],
         )
 
@@ -162,19 +148,10 @@ class User(AbstractUser):
         Default: app:model-detail(**pk).
         """
         return reverse(
-            "{0}:{1}-detail".format(self._meta.app_label, self._meta.model_name),
+            "{}:{}-detail".format(self._meta.app_label, self._meta.model_name),
             kwargs={"pk": self.pk},
         )
 
     @classmethod
     def list_url(cls):
-        """List url property. Default: app:model-list."""
-        return reverse("{0}:{1}-list".format(cls._meta.app_label, cls._meta.model_name))
-
-
-@receiver(post_save, sender=settings.AUTH_USER_MODEL)
-def create_auth_token(sender, instance=None, created=False, **kwargs):
-    """Create API auth token on User create.
-    """
-    if created:
-        Token.objects.create(user=instance)
+        return reverse("{}:{}-list".format(cls._meta.app_label, cls._meta.model_name))

@@ -45,10 +45,6 @@ INSTALLED_APPS = [
     "django_fsm_log",
     "fsm_admin",
     "reversion",
-    "rest_framework",
-    "rest_framework.authtoken",  # API auth via token
-    "rest_framework_gis",
-    "rest_framework_filters",
     "leaflet",
     "phonenumber_field",
     "crispy_forms",
@@ -126,7 +122,7 @@ LOGIN_REDIRECT_URL = '/'
 SITE_NAME = os.environ.get("SITE_NAME", "Turtles Database")
 SITE_TITLE = os.environ.get("SITE_TITLE", "Turtles Database")
 SITE_CODE = os.environ.get("SITE_CODE", "Turtles")
-VERSION_NO = "1.0.1"
+VERSION_NO = "1.0.2"
 
 
 # Database configuration
@@ -179,7 +175,8 @@ UTC = ZoneInfo("UTC")
 EMAIL_HOST = os.environ.get("EMAIL_HOST", "email.host")
 EMAIL_PORT = os.environ.get("EMAIL_PORT", 25)
 DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "noreply@dbca.wa.gov.au")
-EMAIL_SUBJECT_PREFIX = os.environ.get("DJANGO_EMAIL_SUBJECT_PREFIX", "[Turtles DB] ")
+EMAIL_SUBJECT_PREFIX = os.environ.get("EMAIL_SUBJECT_PREFIX", "[Turtles DB] ")
+ADMIN_EMAILS = os.environ.get("ADMIN_EMAILS", "").split(",")
 
 
 # Static files (CSS, JavaScript, Images)
@@ -245,40 +242,6 @@ CRISPY_TEMPLATE_PACK = "bootstrap4"
 GRAPPELLI_ADMIN_TITLE = "Turtles Database data curation portal"
 GRAPPELLI_INDEX_DASHBOARD = "wastd.dashboard.AdminDashboard"
 
-# django-restframework
-REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework.authentication.BasicAuthentication",
-        "rest_framework.authentication.SessionAuthentication",
-        "rest_framework.authentication.TokenAuthentication",
-    ),
-    # https://www.django-rest-framework.org/api-guide/permissions/
-    "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly",
-        "rest_framework.permissions.IsAdminUser",
-    ],
-    "DEFAULT_RENDERER_CLASSES": (
-        "rest_framework.renderers.BrowsableAPIRenderer",
-        "rest_framework.renderers.JSONRenderer",
-        #'rest_framework_jsonp.renderers.JSONPRenderer',
-        #'rest_framework_yaml.renderers.YAMLRenderer',
-        #'rest_framework_latex.renderers.LatexRenderer',
-    ),
-    "DEFAULT_PARSER_CLASSES": [
-        "rest_framework.parsers.JSONParser",
-        "rest_framework.parsers.FormParser",
-        "rest_framework.parsers.MultiPartParser",
-    ],
-    "DEFAULT_FILTER_BACKENDS": (
-        "django_filters.rest_framework.DjangoFilterBackend",
-        # 'rest_framework_gis.filters.InBBoxFilter',
-    ),
-    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
-    "PAGE_SIZE": 100,
-    "HTML_SELECT_CUTOFF": 100,
-    "TEST_REQUEST_DEFAULT_FORMAT": "json",
-}
-
 # ODK Central
 ODK_API_URL = os.environ.get("ODK_API_URL", "url")
 ODK_API_EMAIL = os.environ.get("ODK_API_EMAIL", "email")
@@ -297,7 +260,6 @@ LEAFLET_CONFIG = {
         "forms": {"auto-include": True},
         "markers": {"auto-include": True},
         "label": {"auto-include": True},
-        "geocoder": {"auto-include": True},
         "fullscreen": {"auto-include": True},
         "markercluster": {"auto-include": True},
         "tilelayer": {

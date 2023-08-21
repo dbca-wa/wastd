@@ -123,7 +123,6 @@ TURTLE_SPECIES_CHOICES = (
     ("lepidochelys-olivacea", "Lepidochelys olivacea (Olive ridley turtle)"),
     ("dermochelys-coriacea", "Dermochelys coriacea (Leatherback turtle)"),
     ("chelonia-mydas-agassazzi", "Chelonia mydas agassazzi (Black turtle or East Pacific Green)"),
-    #("corolla-corolla", "Corolla corolla (Hatchback turtle)"),
     ("test-turtle", "Test/training turtle"),
     (TURTLE_SPECIES_DEFAULT, "Cheloniidae (Unidentified turtle)"),
     # Caretta caretta x Chelonia mydas (Hybrid turtle)

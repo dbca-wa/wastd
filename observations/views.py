@@ -49,7 +49,7 @@ class SurveyList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
     paginate_by = 20
     filter_class = SurveyFilter
     resource_class = SurveyResource
-    resource_formats = ['csv', 'xlsx']
+    resource_formats = ["csv", "xlsx"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -59,7 +59,7 @@ class SurveyList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
         return context
 
     def get_queryset(self):
-        qs = super().get_queryset().prefetch_related("reporter", "site", "encounter_set", "campaign").order_by("-start_time")
+        qs = super().get_queryset().prefetch_related("reporter", "site", "encounter_set").order_by("-start_time")
         return SurveyFilter(self.request.GET, queryset=qs).qs
 
 
@@ -106,12 +106,7 @@ class EncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
         return context
 
     def get_queryset(self):
-        qs = (
-            super(EncounterList, self)
-            .get_queryset()
-            .prefetch_related("observer", "reporter", "area", "site")
-            .order_by("-when")
-        )
+        qs = super().get_queryset().prefetch_related("observer", "area", "site").order_by("-when")
         return EncounterFilter(self.request.GET, queryset=qs).qs
 
 
@@ -122,7 +117,6 @@ class EncounterDetail(DetailViewBreadcrumbMixin, DetailView):
         context = super().get_context_data(**kwargs)
         obj = self.get_object()
         context["page_title"] = f"{settings.SITE_CODE} | Encounter {obj.pk}"
-        # data['tags'] = TagObservation.objects.filter(encounter__in=[self.get_object()])
         return context
 
 
@@ -200,19 +194,7 @@ class AnimalEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListVi
         return context
 
     def get_queryset(self):
-        qs = (
-            super(AnimalEncounterList, self)
-            .get_queryset()
-            .prefetch_related(
-                "observer",
-                "reporter",
-                "area",
-                "site",
-                "site_of_first_sighting",
-                "site_of_last_sighting",
-            )
-            .order_by("-when")
-        )
+        qs = super().get_queryset().prefetch_related("observer", "reporter", "area", "site").order_by("-when")
         return AnimalEncounterFilter(self.request.GET, queryset=qs).qs
 
 
@@ -261,7 +243,7 @@ class TurtleNestEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, Li
 
     def get_queryset(self):
         # FIXME: filtering via permissions model.
-        qs = super().get_queryset().prefetch_related("observer", "reporter", "area", "site").order_by("-when")
+        qs = super().get_queryset()
         return TurtleNestEncounterFilter(self.request.GET, queryset=qs).qs
 
 
@@ -304,19 +286,9 @@ class LineTransectEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, 
         return context
 
     def get_queryset(self):
-        qs = (
-            super(LineTransectEncounterList, self)
-            .get_queryset()
-            .prefetch_related("observer", "reporter", "area", "site")
-            .order_by("-when")
-        )
+        qs = super().get_queryset().prefetch_related("observer", "reporter", "area", "site").order_by("-when")
         return LineTransectEncounterFilter(self.request.GET, queryset=qs).qs
 
 
 class LineTransectEncounterDetail(DetailViewBreadcrumbMixin, DetailView):
     model = LineTransectEncounter
-
-    def get_context_data(self, **kwargs):
-        data = super(LineTransectEncounterDetail, self).get_context_data(**kwargs)
-        # data['tags'] = TagObservation.objects.filter(encounter__in=[self.get_object()])
-        return data

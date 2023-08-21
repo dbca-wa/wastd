@@ -1,63 +1,35 @@
-from rest_framework.serializers import ModelSerializer
-from rest_framework.viewsets import ModelViewSet
-
+from wastd.utils import ListResourceView, DetailResourceView, search_filter
+from django.http import HttpResponseNotFound
 from .models import User
+from .serializers import UserSerializer
 
 
-class UserSerializer(ModelSerializer):
-    """User serializer."""
-
-    partial = True
-
-    class Meta:
-        model = User
-        fields = (
-            "pk",
-            "username",
-            "name",
-            "nickname",
-            "aliases",
-            "role",
-            "affiliation",
-            # 'organisations',
-            "email",
-            "phone",
-            "is_active",
-            "alive",
-        )
-
-
-class FastUserSerializer(ModelSerializer):
-    """Minimal User serializer."""
-
-    class Meta:
-        model = User
-        fields = (
-            "pk",
-            "username",
-            "name",
-        )
-
-
-class UserViewSet(ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    uid_field = "pk"
+class UserListResource(ListResourceView):
     model = User
-    filterset_fields = [
-        "username",
-        "nickname",
-        "email",
-        "aliases",
-        "phone",
-        "is_active",
-        "alive",
-    ]
+    serializer = UserSerializer
+
+    def dispatch(self, request, *args, **kwargs):
+        # FIXME: proper permissions checking.
+        if not request.user.is_superuser:
+            return HttpResponseNotFound()
+        return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
-        queryset = User.objects.all()
-        # TODO: undertake fuzzy string matching on user name/username (if required).
-        name = self.request.query_params.get("name", None)
-        if name is not None:
-            queryset = queryset.filter(name=name)
+        queryset = super().get_queryset()
+        # General-purpose filtering uses the `q` request parameter.
+        if 'q' in self.request.GET and self.request.GET['q']:
+            from .admin import UserAdmin
+            q = search_filter(UserAdmin.search_fields, self.request.GET['q'])
+            queryset = queryset.filter(q).distinct()
         return queryset
+
+
+class UserDetailResource(DetailResourceView):
+    model = User
+    serializer = UserSerializer
+
+    def dispatch(self, request, *args, **kwargs):
+        # FIXME: proper permissions checking.
+        if not request.user.is_superuser:
+            return HttpResponseNotFound()
+        return super().dispatch(request, *args, **kwargs)

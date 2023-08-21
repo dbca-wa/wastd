@@ -1,10 +1,8 @@
-"""User widgets."""
 from django.contrib.auth import get_user_model
 from django_select2.forms import ModelSelect2Widget, ModelSelect2MultipleWidget
 
 
 class UserWidget(ModelSelect2Widget):
-    """User widget."""
 
     queryset = get_user_model().objects.filter(is_active=True)
     search_fields = [
@@ -19,7 +17,6 @@ class UserWidget(ModelSelect2Widget):
 
 
 class UserMultipleWidget(ModelSelect2MultipleWidget):
-    """User widget."""
 
     queryset = get_user_model().objects.filter(is_active=True)
     search_fields = [

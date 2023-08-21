@@ -50,6 +50,7 @@ class SurveyFilter(FilterSet):
     site = ModelChoiceFilter(
         label="Site",
         queryset=Area.objects.filter(area_type__in=[Area.AREATYPE_SITE]).order_by("name"),
+        null_label="<No site>",
     )
 
     class Meta:
@@ -113,14 +114,8 @@ class AnimalEncounterFilter(FilterSet):
     user_observer = ModelChoiceFilter(
         field_name="observer",
         label="Observed by",
-        #queryset=User.objects.all(),
         queryset=User.objects.filter(is_active=True).order_by("name"),
     )
-    #user_reporter = ModelChoiceFilter(
-    #    field_name="reporter",
-    #    label="Reported by",
-    #    queryset=User.objects.none(),
-    #)
     encounter_type = ChoiceFilter(
         field_name="encounter_type",
         choices=(
@@ -141,14 +136,16 @@ class AnimalEncounterFilter(FilterSet):
     site = ModelChoiceFilter(
         label="Site",
         queryset=Area.objects.filter(area_type__in=[Area.AREATYPE_SITE]).order_by("name"),
+        null_label="<No site>",
     )
     status = ChoiceFilter(
         field_name="status",
         choices=(
-            (Encounter.STATUS_NEW, "New"),
             (Encounter.STATUS_IMPORTED, "Imported"),
+            (Encounter.STATUS_MANUAL_INPUT, "Manual input"),
             (Encounter.STATUS_CURATED, "Curated"),
             (Encounter.STATUS_FLAGGED, "Flagged"),
+            (Encounter.STATUS_REJECTED, "Rejected"),
         ),
         label="QA status",
     )
@@ -160,7 +157,6 @@ class AnimalEncounterFilter(FilterSet):
             "date_from",
             "date_to",
             "user_observer",
-            #"user_reporter",
             "encounter_type",
             "area",  # Locality
             "site",
@@ -187,14 +183,8 @@ class TurtleNestEncounterFilter(FilterSet):
     user_observer = ModelChoiceFilter(
         field_name="observer",
         label="Observed by",
-        #queryset=User.objects.all(),
         queryset=User.objects.filter(is_active=True).order_by("name"),
     )
-    #user_reporter = ModelChoiceFilter(
-    #    field_name="reporter",
-    #    label="Reported by",
-    #    queryset=User.objects.all(),
-    #)
     encounter_type = ChoiceFilter(
         field_name="encounter_type",
         choices=(
@@ -223,14 +213,16 @@ class TurtleNestEncounterFilter(FilterSet):
     site = ModelChoiceFilter(
         label="Site",
         queryset=Area.objects.filter(area_type__in=[Area.AREATYPE_SITE]).order_by("name"),
+        null_label="<No site>",
     )
     status = ChoiceFilter(
         field_name="status",
         choices=(
-            (Encounter.STATUS_NEW, "New"),
             (Encounter.STATUS_IMPORTED, "Imported"),
+            (Encounter.STATUS_MANUAL_INPUT, "Manual input"),
             (Encounter.STATUS_CURATED, "Curated"),
             (Encounter.STATUS_FLAGGED, "Flagged"),
+            (Encounter.STATUS_REJECTED, "Rejected"),
         ),
         label="QA status",
     )

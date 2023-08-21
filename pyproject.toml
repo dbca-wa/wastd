@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "wastd"
-version = "1.0.1"
+version = "1.0.2"
 description = "Western Australian Sea Turtles Database"
 authors = ["Florian Mayer <florian.mayer@dbca.wa.gov.au>", "Ashley Felton <ashley.felton@dbca.wa.gov.au>"]
 license = "MIT"
@@ -19,11 +19,7 @@ django-fsm = "2.8.1"
 django-fsm-log = "3.1.0"
 django-fsm-admin = "1.2.5"
 python-dateutil = "2.8.2"
-python-slugify = "7.0.0"
-djangorestframework = "3.14.0"
-djangorestframework-gis = "1.0"
-djangorestframework-csv = "2.1.1"
-djangorestframework-filters = "1.0.0.dev2"
+python-slugify = "8.0.1"
 django-filter = "22.1"
 django-polymorphic = "3.1.0"
 django-reversion = "5.0.4"
@@ -49,18 +45,16 @@ webtemplate-dbca = "1.5.1"
 django-bootstrap-pagination = "1.7.1"
 
 [tool.poetry.group.dev.dependencies]
-ipython = "^8.7.0"
+ipython = "^8.14.0"
 ipdb = "^0.13.9"
 black = "^22.10.0"
-ruff = "^0.0.212"
-django-test-plus = "2.2.1"
-factory-boy = "3.2.1"
+ruff = "^0.0.285"
 sphinx = "^7.0.1"
 vulture = "^2.7"
 
 [build-system]
-requires = ["poetry>=1.2.2"]
-build-backend = "poetry.masonry.api"
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
 
 [tool.ruff]
 # Enable Pyflakes `E` and `F` codes.

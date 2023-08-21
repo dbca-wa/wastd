@@ -86,21 +86,11 @@
                 </tr>
                 <tr>
                     <th>
-                        Campaign
-                    </th>
-                    <td>
-                        {% if object.campaign %}
-                        <a href="{{ object.campaign.get_absolute_url }}">{{ object.campaign }}</a>
-                        {% endif %}
-                    </td>
-                </tr>
-                <tr>
-                    <th>
                         Survey
                     </th>
                     <td>
                         {% if object.survey %}
-                        <a href="{{ object.survey.get_absolute_url }}">{{ object.survey }}</a>
+                        <a href="{{ object.survey.get_absolute_url }}">{{ object.survey.label_short }}</a>
                         {% endif %}
                     </td>
                 </tr>
@@ -221,7 +211,7 @@
 <script type="text/javascript">
     function map_init(map, options) {
       {% include 'shared/styles.js' %}
-      $.getJSON("{% url 'sites-geojson' %}", function (data) {
+      $.getJSON("{% url 'sites_geojson' %}", function (data) {
           L.geoJson(data, {style: polystyle, onEachFeature: oef}).addTo(map);
       });
       /* Data loading */

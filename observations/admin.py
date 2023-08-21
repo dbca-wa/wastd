@@ -10,7 +10,6 @@ from django_select2.forms import ModelSelect2Widget
 from easy_select2 import select2_modelform as s2form
 from fsm_admin.mixins import FSMTransitionMixin
 from import_export.admin import ExportActionMixin
-from rest_framework.authtoken.admin import TokenAdmin
 from reversion.admin import VersionAdmin
 
 from wastd.utils import FORMFIELD_OVERRIDES, S2ATTRS, CustomStateLogInline
@@ -46,8 +45,6 @@ from .resources import (
     TurtleNestEncounterResource,
     LineTransectEncounterResource,
 )
-
-TokenAdmin.raw_id_fields = ("user",)
 
 
 class AreaFilter(RelatedFieldListFilter):
@@ -199,7 +196,6 @@ class SurveyMediaAttachmentInline(admin.TabularInline):
 
 
 class ObservationAdminMixin(VersionAdmin, ModelAdmin):
-    """Admin mixin for Observation models."""
 
     save_on_top = True
     date_hierarchy = "encounter__when"
@@ -223,7 +219,6 @@ class ObservationAdminMixin(VersionAdmin, ModelAdmin):
     )
     search_fields = ("comments",)
     readonly_fields = ("encounter",)
-
     area = forms.ChoiceField(
         widget=ModelSelect2Widget(
             model=Area,
@@ -298,10 +293,7 @@ class ObservationAdminMixin(VersionAdmin, ModelAdmin):
 
 @register(ManagementAction)
 class ManagementActionAdmin(ObservationAdminMixin):
-    """Admin for ManagementAction."""
 
-    # save_on_top = True
-    # date_hierarchy = 'encounter__when'
     list_display = (
         ObservationAdminMixin.LIST_FIRST
         + (
@@ -319,7 +311,7 @@ class ManagementActionAdmin(ObservationAdminMixin):
 
     def get_queryset(self, request):
         return (
-            super(ManagementActionAdmin, self)
+            super()
             .get_queryset(request)
             .prefetch_related(
                 "encounter",
@@ -333,10 +325,7 @@ class ManagementActionAdmin(ObservationAdminMixin):
 
 @register(MediaAttachment)
 class MediaAttachmentAdmin(ObservationAdminMixin):
-    """Admin for MediaAttachment."""
 
-    # save_on_top = True
-    # date_hierarchy = 'encounter__when'
     list_display = (
         ObservationAdminMixin.LIST_FIRST
         + (
@@ -346,15 +335,13 @@ class MediaAttachmentAdmin(ObservationAdminMixin):
         )
         + ObservationAdminMixin.LIST_LAST
     )
-
     list_filter = ObservationAdminMixin.LIST_FILTER + ("media_type",)
     search_fields = ("title",)
-    # readonly_fields = ('thumbnail',)
     formfield_overrides = FORMFIELD_OVERRIDES
 
     def get_queryset(self, request):
         return (
-            super(MediaAttachmentAdmin, self)
+            super()
             .get_queryset(request)
             .prefetch_related(
                 "encounter",
@@ -374,33 +361,21 @@ class MediaAttachmentAdmin(ObservationAdminMixin):
 
 @register(TurtleMorphometricObservation)
 class TurtleMorphometricObservationAdmin(ObservationAdminMixin):
-    """Admin for TurtleMorphometricObservation."""
 
     list_display = (
         ObservationAdminMixin.LIST_FIRST
         + (
             "curved_carapace_length_mm",
-            # "curved_carapace_length_accuracy",
             "curved_carapace_length_min_mm",
-            # "curved_carapace_length_min_accuracy",
             "straight_carapace_length_mm",
-            # "straight_carapace_length_accuracy",
             "curved_carapace_width_mm",
-            # "curved_carapace_width_accuracy",
             "tail_length_carapace_mm",
-            # "tail_length_carapace_accuracy",
             "tail_length_vent_mm",
-            # "tail_length_vent_accuracy",
             "tail_length_plastron_mm",
-            # "tail_length_plastron_accuracy",
             "maximum_head_width_mm",
-            # "maximum_head_width_accuracy",
             "maximum_head_length_mm",
-            # "maximum_head_length_accuracy",
             "body_depth_mm",
-            # "body_depth_accuracy",
             "body_weight_g",
-            # "body_weight_accuracy",
             "handler",
             "recorder",
         )
@@ -414,7 +389,7 @@ class TurtleMorphometricObservationAdmin(ObservationAdminMixin):
 
     def get_queryset(self, request):
         return (
-            super(TurtleMorphometricObservationAdmin, self)
+            super()
             .get_queryset(request)
             .prefetch_related(
                 "encounter",
@@ -430,7 +405,6 @@ class TurtleMorphometricObservationAdmin(ObservationAdminMixin):
 
 @register(TagObservation)
 class TagObservationAdmin(ObservationAdminMixin):
-    """Admin for TagObservation."""
 
     list_display = (
         ObservationAdminMixin.LIST_FIRST
@@ -447,9 +421,6 @@ class TagObservationAdmin(ObservationAdminMixin):
     )
     search_fields = ("name", "comments")
     form = s2form(TagObservation, attrs=S2ATTRS)
-    # autocomplete_lookup_fields = {'fk': ['handler', 'recorder', ], }
-    # handler = forms.ChoiceField(widget=UserWidget())
-    # recorder = forms.ChoiceField(widget=UserWidget())
 
     def type_display(self, obj):
         """Make tag type human readable."""
@@ -472,10 +443,7 @@ class TagObservationAdmin(ObservationAdminMixin):
 
 @register(TurtleDamageObservation)
 class TurtleDamageObservationAdmin(ObservationAdminMixin):
-    """Admin for TurtleDamageObservation."""
 
-    # save_on_top = True
-    # date_hierarchy = 'encounter__when'
     list_display = (
         ObservationAdminMixin.LIST_FIRST
         + (
@@ -486,7 +454,6 @@ class TurtleDamageObservationAdmin(ObservationAdminMixin):
         )
         + ObservationAdminMixin.LIST_LAST
     )
-
     list_filter = ObservationAdminMixin.LIST_FILTER + (
         "body_part",
         "damage_type",
@@ -495,7 +462,7 @@ class TurtleDamageObservationAdmin(ObservationAdminMixin):
 
     def get_queryset(self, request):
         return (
-            super(TurtleDamageObservationAdmin, self)
+            super()
             .get_queryset(request)
             .prefetch_related(
                 "encounter",
@@ -509,10 +476,7 @@ class TurtleDamageObservationAdmin(ObservationAdminMixin):
 
 @register(TurtleNestDisturbanceObservation)
 class TurtleNestDisturbanceObservationAdmin(ObservationAdminMixin):
-    """Admin for TurtleNestDisturbanceObservation."""
 
-    # save_on_top = True
-    # date_hierarchy = 'encounter__when'
     list_display = (
         ObservationAdminMixin.LIST_FIRST
         + (
@@ -523,7 +487,6 @@ class TurtleNestDisturbanceObservationAdmin(ObservationAdminMixin):
         )
         + ObservationAdminMixin.LIST_LAST
     )
-
     list_filter = ObservationAdminMixin.LIST_FILTER + (
         "disturbance_cause_confidence",
         "disturbance_severity",
@@ -531,7 +494,7 @@ class TurtleNestDisturbanceObservationAdmin(ObservationAdminMixin):
 
     def get_queryset(self, request):
         return (
-            super(TurtleNestDisturbanceObservationAdmin, self)
+            super()
             .get_queryset(request)
             .prefetch_related(
                 "encounter",
@@ -545,7 +508,6 @@ class TurtleNestDisturbanceObservationAdmin(ObservationAdminMixin):
 
 @register(TurtleNestObservation)
 class TurtleNestObservationAdmin(ObservationAdminMixin):
-    """Admin for TurtleNestObservation."""
 
     list_display = (
         ObservationAdminMixin.LIST_FIRST
@@ -572,7 +534,7 @@ class TurtleNestObservationAdmin(ObservationAdminMixin):
 
     def get_queryset(self, request):
         return (
-            super(TurtleNestObservationAdmin, self)
+            super()
             .get_queryset(request)
             .prefetch_related(
                 "encounter",
@@ -586,7 +548,6 @@ class TurtleNestObservationAdmin(ObservationAdminMixin):
 
 @register(NestTagObservation)
 class NestTagObservationAdmin(ObservationAdminMixin):
-    """Admin for NestTagObservation."""
 
     list_display = (
         ObservationAdminMixin.LIST_FIRST
@@ -613,7 +574,7 @@ class NestTagObservationAdmin(ObservationAdminMixin):
 
     def get_queryset(self, request):
         return (
-            super(NestTagObservationAdmin, self)
+            super()
             .get_queryset(request)
             .prefetch_related(
                 "encounter",
@@ -627,7 +588,6 @@ class NestTagObservationAdmin(ObservationAdminMixin):
 
 @register(HatchlingMorphometricObservation)
 class HatchlingMorphometricObservationAdmin(ObservationAdminMixin):
-    """Admin for HatchlingMorphometricObservation."""
 
     list_display = (
         ObservationAdminMixin.LIST_FIRST
@@ -639,7 +599,7 @@ class HatchlingMorphometricObservationAdmin(ObservationAdminMixin):
 
     def get_queryset(self, request):
         return (
-            super(HatchlingMorphometricObservationAdmin, self)
+            super()
             .get_queryset(request)
             .prefetch_related(
                 "encounter",
@@ -653,7 +613,6 @@ class HatchlingMorphometricObservationAdmin(ObservationAdminMixin):
 
 @register(TurtleHatchlingEmergenceObservation)
 class TurtleHatchlingEmergenceObservationAdmin(ObservationAdminMixin):
-    """Admin for TurtleHatchlingEmergenceObservation."""
 
     list_display = (
         ObservationAdminMixin.LIST_FIRST
@@ -680,7 +639,7 @@ class TurtleHatchlingEmergenceObservationAdmin(ObservationAdminMixin):
 
     def get_queryset(self, request):
         return (
-            super(TurtleHatchlingEmergenceObservationAdmin, self)
+            super()
             .get_queryset(request)
             .prefetch_related(
                 "encounter",
@@ -694,7 +653,6 @@ class TurtleHatchlingEmergenceObservationAdmin(ObservationAdminMixin):
 
 @register(TurtleHatchlingEmergenceOutlierObservation)
 class TurtleHatchlingEmergenceOutlierObservationAdmin(ObservationAdminMixin):
-    """Admin for TurtleHatchlingEmergenceOutlierObservation."""
 
     list_display = (
         ObservationAdminMixin.LIST_FIRST
@@ -710,7 +668,7 @@ class TurtleHatchlingEmergenceOutlierObservationAdmin(ObservationAdminMixin):
 
     def get_queryset(self, request):
         return (
-            super(TurtleHatchlingEmergenceOutlierObservationAdmin, self)
+            super()
             .get_queryset(request)
             .prefetch_related(
                 "encounter",
@@ -724,7 +682,6 @@ class TurtleHatchlingEmergenceOutlierObservationAdmin(ObservationAdminMixin):
 
 @register(LightSourceObservation)
 class LightSourceObservationAdmin(ObservationAdminMixin):
-    """Admin for LightSourceObservation."""
 
     list_display = (
         ObservationAdminMixin.LIST_FIRST
@@ -740,7 +697,7 @@ class LightSourceObservationAdmin(ObservationAdminMixin):
 
     def get_queryset(self, request):
         return (
-            super(LightSourceObservationAdmin, self)
+            super()
             .get_queryset(request)
             .prefetch_related(
                 "encounter",
@@ -754,7 +711,6 @@ class LightSourceObservationAdmin(ObservationAdminMixin):
 
 @register(TrackTallyObservation)
 class TrackTallyObservationAdmin(ObservationAdminMixin):
-    """Admin for TrackTallyObservation."""
 
     list_display = (
         ObservationAdminMixin.LIST_FIRST
@@ -775,7 +731,7 @@ class TrackTallyObservationAdmin(ObservationAdminMixin):
 
     def get_queryset(self, request):
         return (
-            super(TrackTallyObservationAdmin, self)
+            super()
             .get_queryset(request)
             .prefetch_related(
                 "encounter",
@@ -789,7 +745,6 @@ class TrackTallyObservationAdmin(ObservationAdminMixin):
 
 @register(TurtleNestDisturbanceTallyObservation)
 class TurtleNestDisturbanceTallyObservationAdmin(ObservationAdminMixin):
-    """Admin for TurtleNestDisturbanceTallyObservation."""
 
     list_display = (
         ObservationAdminMixin.LIST_FIRST
@@ -810,7 +765,7 @@ class TurtleNestDisturbanceTallyObservationAdmin(ObservationAdminMixin):
 
     def get_queryset(self, request):
         return (
-            super(TurtleNestDisturbanceTallyObservationAdmin, self)
+            super()
             .get_queryset(request)
             .prefetch_related(
                 "encounter",
@@ -824,7 +779,6 @@ class TurtleNestDisturbanceTallyObservationAdmin(ObservationAdminMixin):
 
 @register(LoggerObservation)
 class LoggerObservationAdmin(ObservationAdminMixin):
-    """Admin for TurtleNestDisturbanceTallyObservation."""
 
     list_display = (
         ObservationAdminMixin.LIST_FIRST
@@ -842,7 +796,7 @@ class LoggerObservationAdmin(ObservationAdminMixin):
 
     def get_queryset(self, request):
         return (
-            super(LoggerObservationAdmin, self)
+            super()
             .get_queryset(request)
             .prefetch_related(
                 "encounter",
@@ -857,7 +811,6 @@ class LoggerObservationAdmin(ObservationAdminMixin):
 @register(Survey)
 class SurveyAdmin(ExportActionMixin, FSMTransitionMixin, VersionAdmin):
 
-    # model = Survey
     date_hierarchy = "start_time"
     list_select_related = (
         "area",
@@ -989,7 +942,6 @@ class SurveyAdmin(ExportActionMixin, FSMTransitionMixin, VersionAdmin):
 
 @register(Area)
 class AreaAdmin(ModelAdmin):
-    """Area admin."""
 
     list_display = (
         "area_type",
@@ -1011,7 +963,6 @@ class AreaAdmin(ModelAdmin):
 
 @register(Campaign)
 class CampaignAdmin(ModelAdmin):
-    """Campaign admin."""
 
     list_display = (
         "destination",
@@ -1034,9 +985,8 @@ class CampaignAdmin(ModelAdmin):
     form = s2form(Campaign, attrs=S2ATTRS)
 
     def get_queryset(self, request):
-        """Speed up Admin change_list through prefetch_related."""
         return (
-            super(CampaignAdmin, self)
+            super()
             .get_queryset(request)
             .prefetch_related(
                 "destination",
@@ -1113,10 +1063,8 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
         "source_display",
         "source_id",
         "status",
-        #"owner",
     )
     list_display = FIRST_COLS + LAST_COLS
-    # save_on_top = True
     search_fields = (
         "observer__name",
         "observer__username",
@@ -1185,7 +1133,7 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
 
     def get_queryset(self, request):
         return (
-            super(EncounterAdmin, self)
+            super()
             .get_queryset(request)
             .prefetch_related(
                 "observer", "reporter", "area", "site", "survey", "campaign"
@@ -1412,7 +1360,7 @@ class AnimalEncounterAdmin(ExportActionMixin, EncounterAdmin):
 
     def get_queryset(self, request):
         return (
-            super(AnimalEncounterAdmin, self)
+            super()
             .get_queryset(request)
             .prefetch_related(
                 "observer",
@@ -1583,7 +1531,6 @@ class LineTransectEncounterAdmin(ExportActionMixin, EncounterAdmin):
         "site",
         "survey",
     )
-    # list_filter = EncounterAdmin.list_filter + ()
     fieldsets = EncounterAdmin.fieldsets + (
         (
             "Location",
@@ -1603,7 +1550,7 @@ class LineTransectEncounterAdmin(ExportActionMixin, EncounterAdmin):
 
     def get_queryset(self, request):
         return (
-            super(LineTransectEncounterAdmin, self)
+            super()
             .get_queryset(request)
             .prefetch_related(
                 "observer",
