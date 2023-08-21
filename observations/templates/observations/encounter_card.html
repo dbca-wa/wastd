@@ -18,8 +18,10 @@
                 {{ object.get_encounter_type|capfirst }}
                 <i class="fa-solid fa-eye" title="Observed by" aria-hidden="true"></i>
                 {{ object.observer.name }}
+                {% if object.site %}
                 <i class="fa-solid fa-map"></i>
                 {{ object.site.name }}
+                {% endif %}
             </h6>
         </div>
         <div>

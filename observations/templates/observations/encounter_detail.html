@@ -86,21 +86,11 @@
                 </tr>
                 <tr>
                     <th>
-                        Campaign
-                    </th>
-                    <td>
-                        {% if object.campaign %}
-                        <a href="{{ object.campaign.get_absolute_url }}">{{ object.campaign }}</a>
-                        {% endif %}
-                    </td>
-                </tr>
-                <tr>
-                    <th>
                         Survey
                     </th>
                     <td>
                         {% if object.survey %}
-                        <a href="{{ object.survey.get_absolute_url }}">{{ object.survey }}</a>
+                        <a href="{{ object.survey.get_absolute_url }}">{{ object.survey.label_short }}</a>
                         {% endif %}
                     </td>
                 </tr>
