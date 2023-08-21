@@ -63,4 +63,4 @@ jobs:
         run: |
           source .venv/bin/activate
           python manage.py collectstatic
-          python manage.py test --noinput --failfast --parallel 4 --verbosity 0 --settings wastd.settings-test
+          python manage.py test --noinput --failfast --verbosity 0 --settings wastd.settings-test
