@@ -29,6 +29,14 @@ def campaign_post_save(sender, instance, *args, **kwargs):
     LOGGER.info(msg)
 
 
+@receiver(pre_save, sender=Survey)
+def survey_pre_save(sender, instance, *args, **kwargs):
+    if not instance.site:
+        instance.site = instance.guess_site
+    if not instance.area:
+        instance.area = instance.guess_area
+
+
 @receiver(post_save, sender=Survey)
 def survey_post_save(sender, instance, *args, **kwargs):
     """Survey: claim encounters if not a training survey.
