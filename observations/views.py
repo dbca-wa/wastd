@@ -59,7 +59,7 @@ class SurveyList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
         return context
 
     def get_queryset(self):
-        qs = super().get_queryset().prefetch_related("reporter", "site", "encounter_set", "campaign").order_by("-start_time")
+        qs = super().get_queryset().prefetch_related("reporter", "site", "encounter_set").order_by("-start_time")
         return SurveyFilter(self.request.GET, queryset=qs).qs
 
 
@@ -106,7 +106,7 @@ class EncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
         return context
 
     def get_queryset(self):
-        qs = super().get_queryset().prefetch_related("observer", "reporter", "area", "site").order_by("-when")
+        qs = super().get_queryset().prefetch_related("observer", "area", "site").order_by("-when")
         return EncounterFilter(self.request.GET, queryset=qs).qs
 
 
