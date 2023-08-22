@@ -19,13 +19,19 @@ INTERNAL_IPS = ["127.0.0.1", "::1"]
 ROOT_URLCONF = "wastd.urls"
 WSGI_APPLICATION = "wastd.wsgi.application"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-# Allow overriding the Django default for FILE_UPLOAD_PERMISSIONS (0o644).
-# Required for non-local Azure storage volumes in Kubernetes environment.
-FILE_UPLOAD_PERMISSIONS = os.environ.get("FILE_UPLOAD_PERMISSIONS", None)
 # This is required to add context variables to all templates:
 STATIC_CONTEXT_VARS = {}
 FIXTURE_DIRS = [os.path.join(BASE_DIR, "wastd", "fixtures")]
 
+# Use Azure blob storage for media uploads, unless explicitly set otherwise.
+if os.environ.get('LOCAL_MEDIA_STORAGE', False):
+    DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+else:
+    DEFAULT_FILE_STORAGE = 'storages.backends.azure_storage.AzureStorage'
+    AZURE_ACCOUNT_NAME = os.environ.get('AZURE_ACCOUNT_NAME', 'name')
+    AZURE_ACCOUNT_KEY = os.environ.get('AZURE_ACCOUNT_KEY', 'key')
+    AZURE_CONTAINER = os.environ.get('AZURE_CONTAINER', 'container')
+    AZURE_URL_EXPIRATION_SECS = os.environ.get('AZURE_URL_EXPIRATION_SECS', 3600)  # Default one hour.
 
 # Application settings
 INSTALLED_APPS = [
@@ -122,7 +128,7 @@ LOGIN_REDIRECT_URL = '/'
 SITE_NAME = os.environ.get("SITE_NAME", "Turtles Database")
 SITE_TITLE = os.environ.get("SITE_TITLE", "Turtles Database")
 SITE_CODE = os.environ.get("SITE_CODE", "Turtles")
-VERSION_NO = "1.0.2"
+VERSION_NO = "1.0.3"
 
 
 # Database configuration
@@ -188,15 +194,8 @@ WHITENOISE_ROOT = STATIC_ROOT
 WHITENOISE_MANIFEST_STRICT = False
 
 # Media (user-uploaded files)
-# Ensure that the media directory exists:
-if not os.path.exists(os.path.join(BASE_DIR, "media")):
-    os.mkdir(os.path.join(BASE_DIR, "media"))
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"
-# Local cache of downloaded ODK data
-DATA_ROOT = os.path.join(MEDIA_ROOT, "data")
-if not os.path.exists(DATA_ROOT):
-    os.mkdir(DATA_ROOT)
 
 
 # Logging settings - log to stdout
