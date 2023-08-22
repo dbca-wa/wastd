@@ -31,6 +31,18 @@ from .models import (
 LOGGER = logging.getLogger('turtles')
 
 
+def create_new_user(name):
+    """Creates and returns a new User based on the passed-in name value.
+    """
+    username = name.lower().replace(' ', '_')
+    # Guarantee a unique username value by appending an underscore to the string.
+    while User.objects.filter(username=username).exists():
+        username += '_'
+    user = User.objects.create(name=name, username=username)
+    user.set_unusable_password()
+    return user
+
+
 def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=None):
     """Import submissions to the Turtle Track or Nest ODK form.
     Each submission should create:
@@ -61,15 +73,10 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=Non
         reporter = submission['reporter']
         if reporter:
             reporter = reporter.strip()
-            if User.objects.filter(name__iexact=reporter).exists() and User.objects.filter(name__iexact=reporter).count() == 1:
-                user = User.objects.get(name__iexact=reporter)
+            if User.objects.filter(is_active=True, name__iexact=reporter).exists():
+                user = User.objects.filter(is_active=True, name__iexact=reporter).first()
             else:  # Create a new user.
-                username = reporter.lower().replace(' ', '_')
-                # Ensure username uniqueness.
-                while User.objects.filter(username=username).exists():
-                    username += '_'  # Keep appending an underscore character.
-                user = User.objects.create(name=reporter, username=username)
-                user.set_unusable_password()
+                user = create_new_user(reporter)
                 LOGGER.info(f"Created new user {user}")
         else:  # The form has been submitted without a user name recorded.
             user = User.objects.get_or_create(name='Unknown user', username='unknown_user')[0]
@@ -247,7 +254,7 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=Non
             loggers = submission['loggers']['logger_details']
             # Might be a list or a single object :|
             if not isinstance(loggers, list):
-                loggers = list(loggers)
+                loggers = [loggers]
 
             for logger in loggers:
                 logger_observation = LoggerObservation(
@@ -278,7 +285,7 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=Non
             hatchlings = submission['hatchling_measurements']['hatchling_measurement']
             # Might be a list or a single object :|
             if not isinstance(hatchlings, list):
-                hatchlings = list(hatchlings)
+                hatchlings = [hatchlings]
 
             for hatchling in hatchlings:
                 hatchling_measurement = HatchlingMorphometricObservation(
@@ -347,8 +354,8 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=Non
             if 'outlier_tracks' in submission:
                 # Might be a list or a single object :|
                 outliers = submission['outlier_tracks']['outlier_track']
-                if isinstance(outliers, list):
-                    outliers = list(outliers)
+                if not isinstance(outliers, list):
+                    outliers = [outliers]
 
                 for outlier in outliers:
                     outlier_obs = TurtleHatchlingEmergenceOutlierObservation(
@@ -376,7 +383,7 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=Non
                 # Might be a list or a single object :|
                 light_sources = submission['light_sources']['light_source']
                 if not isinstance(light_sources, list):
-                    light_sources = list(light_sources)
+                    light_sources = [light_sources]
 
                 for source in light_sources:
                     source_obs = LightSourceObservation(
@@ -420,12 +427,10 @@ def import_site_visit_start(form_id="site_visit_start", initial_duration_hr=8, a
 
         # Try to match the reporter to an existing User. If not, create a new one.
         reporter = submission['reporter'].strip()
-        if User.objects.filter(name__icontains=reporter).exists() and User.objects.filter(name__icontains=reporter).count() == 1:
-            user = User.objects.get(name__icontains=reporter)
+        if User.objects.filter(is_active=True, name__icontains=reporter).exists():
+            user = User.objects.filter(is_active=True, name__icontains=reporter).first()
         else:  # Create a new user.
-            username = reporter.lower().replace(' ', '_')
-            user = User.objects.create(name=reporter, username=username)
-            user.set_unusable_password()
+            user = create_new_user(reporter)
             LOGGER.info(f"Created new user {user}")
 
         visit = submission['site_visit']
@@ -453,12 +458,10 @@ def import_site_visit_start(form_id="site_visit_start", initial_duration_hr=8, a
             team = visit['team'].split(',')
             for name in team:
                 name = name.strip()
-                if User.objects.filter(name__icontains=name).exists() and User.objects.filter(name__icontains=name).count() == 1:
-                    user = User.objects.get(name__icontains=name)
+                if User.objects.filter(is_active=True, name__icontains=name).exists():
+                    user = User.objects.filter(is_active=True, name__icontains=name).first()
                 else:  # Create a new user.
-                    username = name.lower().replace(' ', '_')
-                    user = User.objects.create(name=name, username=username)
-                    user.set_unusable_password()
+                    user = create_new_user(name)
                     LOGGER.info(f"Created new user {user}")
                 survey.team.add(user)
 
@@ -572,12 +575,10 @@ def import_marine_wildlife_incident(form_id="marine_wildlife_incident", auth_hea
 
         # Try to match the reporter to an existing User. If not, create a new one.
         reporter = submission['reporter'].strip()
-        if User.objects.filter(name__icontains=reporter).exists() and User.objects.filter(name__icontains=reporter).count() == 1:
-            user = User.objects.get(name__icontains=reporter)
+        if User.objects.filter(is_active=True, name__icontains=reporter).exists():
+            user = User.objects.filter(is_active=True, name__icontains=reporter).first()
         else:  # Create a new user.
-            username = reporter.lower().replace(' ', '_')
-            user = User.objects.create(name=reporter, username=username)
-            user.set_unusable_password()
+            user = create_new_user(reporter)
             LOGGER.info(f"Created new user {user}")
 
         site_visit = submission['site_visit']
@@ -732,7 +733,7 @@ def import_marine_wildlife_incident(form_id="marine_wildlife_incident", auth_hea
             damage_observations = submission['damage_observations']['damage_observation']
             # Might be a list or a single object :|
             if not isinstance(damage_observations, list):
-                damage_observations = list(damage_observations)
+                damage_observations = [damage_observations]
 
             for obs in damage_observations:
                 damage_observation = TurtleDamageObservation(
@@ -763,7 +764,7 @@ def import_marine_wildlife_incident(form_id="marine_wildlife_incident", auth_hea
             tag_observations = submission['tag_observations']['tag_observation']
             # Might be a list or a single object :|
             if not isinstance(tag_observations, list):
-                tag_observations = list(tag_observations)
+                tag_observations = [tag_observations]
 
             for obs in tag_observations:
                 tag_observation = TagObservation(
