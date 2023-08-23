@@ -1,5 +1,0 @@
-{% load observations rest_framework_latex %}
-{% with original as o %}
-\paragraph{Hatchling emergence light source}
-    {{ o.get_light_source_type_display }} at {{ o.light_bearing_manual }} deg: {{ o.light_source_description }}
-{% endwith %}

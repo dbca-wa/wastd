@@ -1075,13 +1075,6 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         editable=False,
         help_text="The cached HTML representation for display purposes.",
     )
-    as_latex = models.TextField(
-        verbose_name="Latex fragment",
-        blank=True,
-        null=True,
-        editable=False,
-        help_text="The cached Latex fragment for reporting purposes.",
-    )
     encounter_type = models.CharField(
         max_length=300,
         blank=True,
@@ -2108,12 +2101,6 @@ class Observation(PolymorphicModel, LegacySourceMixin, models.Model):
     def as_html(self):
         """An HTML representation."""
         t = loader.get_template("popup/{}.html".format(self._meta.model_name))
-        return mark_safe(t.render({"original": self}))
-
-    @property
-    def as_latex(self):
-        """A Latex representation."""
-        t = loader.get_template("latex/{}.tex".format(self._meta.model_name))
         return mark_safe(t.render({"original": self}))
 
     @property
