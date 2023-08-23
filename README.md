@@ -55,6 +55,20 @@ Run console commands manually:
 
     poetry run python manage.py shell_plus
 
+# Media uploads
+
+The production system stores media uploads in Azure blob storage.
+Credentials for doing so should be defined in the following environment
+variables:
+
+    AZURE_ACCOUNT_NAME=name
+    AZURE_ACCOUNT_KEY=key
+    AZURE_CONTAINER=container_name
+
+To bypass this and use local media storage (for development, etc.) simply set
+the `LOCAL_MEDIA_STORAGE=True` environment variable and create a writable
+`media` directory in the project directory.
+
 # Docker image
 
 To build a new Docker image from the `Dockerfile`:
