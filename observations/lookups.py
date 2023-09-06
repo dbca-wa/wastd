@@ -242,8 +242,8 @@ TURTLE_MATURITY_CHOICES = (
     ("hatchling", "Hatchling"),
     ("post-hatchling", "Post-hatchling"),
     ("juvenile", "Juvenile"),
-    ("pre-pubsecent-immature", "Pre-pubsecent immature"),
-    ("pubsecent-immature", "Pubsecent immature"),
+    ("pre-pubescent-immature", "Pre-pubescent immature"),
+    ("pubescent-immature", "Pubescent immature"),
     ("sub-adult", "Sub-adult"),
     ("adult-measured", "Adult (status determined from carapace and tail measurements)"),
 )
