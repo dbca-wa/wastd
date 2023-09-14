@@ -1,9 +1,0 @@
-{% load observations rest_framework_latex %}
-{% with original as o %}
-\paragraph{Nest disturbance}
-    {{ o.get_disturbance_cause_display }}
-    ({{ o.get_disturbance_cause_confidence_display }})
-    {{ o.get_disturbance_severity_display }}
-\paragraph{Comments}
-    {{ o.comments|tex }}
-{% endwith %}

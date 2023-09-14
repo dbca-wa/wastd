@@ -23,9 +23,11 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 STATIC_CONTEXT_VARS = {}
 FIXTURE_DIRS = [os.path.join(BASE_DIR, "wastd", "fixtures")]
 
-# Use Azure blob storage for media uploads, unless explicitly set otherwise.
-if os.environ.get('LOCAL_MEDIA_STORAGE', False):
-    DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+# Assume Azure blob storage is used for media uploads, unless explicitly set as local storage.
+LOCAL_MEDIA_STORAGE = os.environ.get("LOCAL_MEDIA_STORAGE", False)
+if LOCAL_MEDIA_STORAGE:
+    DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 else:
     DEFAULT_FILE_STORAGE = 'storages.backends.azure_storage.AzureStorage'
     AZURE_ACCOUNT_NAME = os.environ.get('AZURE_ACCOUNT_NAME', 'name')
@@ -128,7 +130,7 @@ LOGIN_REDIRECT_URL = '/'
 SITE_NAME = os.environ.get("SITE_NAME", "Turtles Database")
 SITE_TITLE = os.environ.get("SITE_TITLE", "Turtles Database")
 SITE_CODE = os.environ.get("SITE_CODE", "Turtles")
-VERSION_NO = "1.0.3"
+VERSION_NO = "1.0.4"
 
 
 # Database configuration
@@ -194,7 +196,6 @@ WHITENOISE_ROOT = STATIC_ROOT
 WHITENOISE_MANIFEST_STRICT = False
 
 # Media (user-uploaded files)
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"
 
 

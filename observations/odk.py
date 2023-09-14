@@ -27,6 +27,7 @@ from .models import (
     TurtleDamageObservation,
     TagObservation,
 )
+from .lookups import TURTLE_INTERACTION_CHOICES
 
 LOGGER = logging.getLogger('turtles')
 
@@ -813,3 +814,49 @@ def import_marine_wildlife_incident(form_id="marine_wildlife_incident", auth_hea
             )
             morphometric_obs.save()
             LOGGER.info(f'Created TurtleMorphometricObservation: {morphometric_obs}')
+
+
+def import_turtle_sighting(form_id="turtle_sighting", auth_headers=None):
+    """Import submissions to the Turtle Sighting ODK form.
+    Each submission should create one AnimalEncounter.
+    """
+    if not auth_headers:
+        LOGGER.info("Downloading auth headers")
+        auth_headers = get_auth_headers()
+    project_id = settings.ODK_API_PROJECTID
+    LOGGER.info(f"Downloading {form_id} submission data")
+    submissions = get_form_submission_data(auth_headers, project_id, form_id)
+
+    for submission in submissions:
+        instance_id = submission['meta']['instanceID']
+
+        if AnimalEncounter.objects.filter(source='odk', source_id=instance_id):
+            continue  # Skip records already imported.
+
+        # Try to match the reporter to an existing User. If not, create a new one.
+        reporter = submission['reporter'].strip()
+        if User.objects.filter(is_active=True, name__icontains=reporter).exists():
+            user = User.objects.filter(is_active=True, name__icontains=reporter).first()
+        else:  # Create a new user.
+            user = create_new_user(reporter)
+            LOGGER.info(f"Created new user {user}")
+
+        sighting = submission['encounter']
+        encounter = AnimalEncounter(
+            status='imported',
+            source='odk',
+            source_id=instance_id,
+            where=parse_geopoint(sighting['observed_at']),
+            when=parser.isoparse(submission['start_time']),
+            reporter=user,
+            taxon='Cheloniidae',
+            species=sighting['species'],
+            maturity=sighting['maturity'],
+            comments=sighting['comments'],
+        )
+        if sighting['interaction']:
+            interaction_choices = dict(TURTLE_INTERACTION_CHOICES)
+            encounter.behaviour = interaction_choices.get(sighting['interaction'], None)
+
+        encounter.save()
+        LOGGER.info(f'Created AnimalEncounter {encounter}')

@@ -4,8 +4,8 @@ on:
   push:
     # Publish `master` as `latest` image.
     branches: [master]
-    # Publish `v0.*,1.*` tags as releases.
-    tags: ['v0.*','1.*']
+    # Publish `1.*` tags as releases.
+    tags: [1.*']
   pull_request:
     branches: [master]
 
@@ -15,13 +15,15 @@ env:
 
 jobs:
   build:
-    name: Build Docker image and run vulnerability scan
+    name: Build Docker image
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
       security-events: write
     steps:
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
       - name: Checkout repository
         uses: actions/checkout@v3
         id: checkout-repo
@@ -44,22 +46,32 @@ jobs:
           flavor: |
             latest=true
       - name: Build and push Docker image
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           context: .
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-      - name: Run Trivy vuln scanner on Docker image
+  scan:
+    name: Trivy scan
+    runs-on: ubuntu-latest
+    needs: [build]
+    permissions:
+      contents: read
+      packages: read
+      security-events: write
+    steps:
+      - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}'
-          ignore-unfixed: true
+          scan-type: image
+          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           vuln-type: 'os,library'
-          severity: 'CRITICAL,HIGH'
-          format: 'sarif'
-          output: 'trivy-results.sarif'
+          severity: 'HIGH,CRITICAL'
+          format: template
+          template: '@/contrib/sarif.tpl'
+          output: trivy-results.sarif
       - name: Upload Trivy scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v2
         with:
-          sarif_file: 'trivy-results.sarif'
+          sarif_file: trivy-results.sarif

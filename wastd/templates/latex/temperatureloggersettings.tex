@@ -1,7 +1,0 @@
-{% load observations rest_framework_latex %}
-{% with original as o %}
-\paragraph{Settings}
-    Recording every {{ o.logging_interval }}
-    starting on {{ o.recording_start|date:"r" }}
-    Tested: {{ o.get_tested_display }}
-{% endwith %}
