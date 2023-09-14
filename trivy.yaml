@@ -4,3 +4,6 @@ type:
 severity:
   - HIGH
   - CRITICAL
+format: template
+template: '@/contrib/sarif.tpl'
+output: trivy-results.sarif
