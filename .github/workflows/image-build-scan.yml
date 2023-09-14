@@ -66,8 +66,7 @@ jobs:
         with:
           scan-type: image
           image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          vuln-type: 'os,library'
-          severity: 'HIGH,CRITICAL'
+          trivy-config: trivy.yaml
           format: template
           template: '@/contrib/sarif.tpl'
           output: trivy-results.sarif
