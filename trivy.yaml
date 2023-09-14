@@ -1,0 +1,6 @@
+type:
+  - os
+  - library
+severity:
+  - HIGH
+  - CRITICAL
