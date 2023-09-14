@@ -5,6 +5,7 @@ from observations.odk import (
     import_site_visit_start,
     import_site_visit_end,
     import_marine_wildlife_incident,
+    import_turtle_sighting,
 )
 from wastd.odk import get_auth_headers
 
@@ -47,3 +48,6 @@ class Command(BaseCommand):
 
         logger.info('Downloading data from Marine Wildlife Incident form')
         import_marine_wildlife_incident(auth_headers=auth_headers)
+
+        logger.info('Downloading data from Turtle Sighting form')
+        import_turtle_sighting(auth_headers=auth_headers)

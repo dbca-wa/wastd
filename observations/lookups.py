@@ -532,3 +532,11 @@ TAIL_POKE_CHOICES = (
     ("regular", "Regular"),
     ("na", "NA"),
 )
+
+TURTLE_INTERACTION_CHOICES = (
+    ("no-interaction", "No interaction"),
+    ("net-catch-successful", "Net catch, successful"),
+    ("net-catch-failed", "Net catch, failed"),
+    ("rodeo-catch-successful", "Rodeo catch, successful"),
+    ("rodeo-catch-failed", "Rodeo catch, failed"),
+)
