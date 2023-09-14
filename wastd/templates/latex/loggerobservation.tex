@@ -1,5 +1,0 @@
-{% load observations rest_framework_latex %}
-{% with original as o %}
-\paragraph{Logger}
-{{ o.get_logger_type_display|tex }} ({{ o.get_deployment_status_display|tex }}) {{ o.logger_id|tex }} {{ o.comments|tex }}
-{% endwith %}

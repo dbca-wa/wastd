@@ -242,8 +242,8 @@ TURTLE_MATURITY_CHOICES = (
     ("hatchling", "Hatchling"),
     ("post-hatchling", "Post-hatchling"),
     ("juvenile", "Juvenile"),
-    ("pre-pubsecent-immature", "Pre-pubsecent immature"),
-    ("pubsecent-immature", "Pubsecent immature"),
+    ("pre-pubescent-immature", "Pre-pubescent immature"),
+    ("pubescent-immature", "Pubescent immature"),
     ("sub-adult", "Sub-adult"),
     ("adult-measured", "Adult (status determined from carapace and tail measurements)"),
 )
@@ -531,4 +531,12 @@ TAIL_POKE_CHOICES = (
     ("occasional", "Occasional"),
     ("regular", "Regular"),
     ("na", "NA"),
+)
+
+TURTLE_INTERACTION_CHOICES = (
+    ("no-interaction", "No interaction"),
+    ("net-catch-successful", "Net catch, successful"),
+    ("net-catch-failed", "Net catch, failed"),
+    ("rodeo-catch-successful", "Rodeo catch, successful"),
+    ("rodeo-catch-failed", "Rodeo catch, failed"),
 )

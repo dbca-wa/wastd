@@ -114,20 +114,20 @@
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="/"
                 id="nav-li-mwi"
-                title="Strandings"
+                title="Animal sightings"
                 data-toggle="dropdown"
                 aria-haspopup="true"
                 aria-expanded="false">
-                <i class="fa-solid fa-heart-pulse" aria-hidden="true"></i>
-                Strandings
+                <i class="fa-solid fa-binoculars" aria-hidden="true"></i>
+                Animal sightings
             </a>
             <div class="dropdown-menu" aria-labelledby="nav-li-mwi">
-                <a class="dropdown-item"
-                    href="{% url 'map' %}"
-                    title="View Marine Wildlife Incidents Map">
-                    <i class="fa-solid fa-earth-oceania" aria-hidden="true"></i>
-                    View Marine Wildlife Incidents map
+                <a class="dropdown-item" href="{% url 'observations:animalencounter-list' %}"
+                    title="Browse all animal encounters">
+                    <i class="fa-solid fa-table" aria-hidden="true"></i>
+                    <span class="align-left">Browse all animal encounters</span>
                 </a>
+                <div class="dropdown-divider"></div>
                 <a class="dropdown-item"
                     href="{% url 'observations:animalencounter-list' %}?encounter_type=stranding"
                     title="Browse encounters with stranded animals">
@@ -152,10 +152,12 @@
                     <span class="align-left">Healthy animals</span>
                 </a>
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="{% url 'observations:animalencounter-list' %}"
-                    title="Browse all animal encounters">
+                <h6 class="dropdown-header">QA shortlists</h6>
+                <a class="dropdown-item"
+                    href="{% url 'observations:animalencounter-list' %}?status=flagged"
+                    title="Flagged records">
                     <i class="fa-solid fa-table" aria-hidden="true"></i>
-                    <span class="align-left">Browse all animal encounters</span>
+                    Flagged records
                 </a>
             </div>
         </li>
@@ -172,6 +174,7 @@
                     <i class="fa-solid fa-table" aria-hidden="true"></i>
                     <span class="align-left">Browse production surveys</span>
                 </a>
+                <div class="dropdown-divider"></div>
                 <h6 class="dropdown-header">QA shortlists</h6>
                 <a class="dropdown-item"
                 href="{% url 'observations:survey-list' %}?site=null&production=true"
@@ -179,8 +182,6 @@
                     <i class="fa-solid fa-table" aria-hidden="true"></i>
                     <span class="align-left">Production surveys without a site</span>
                 </a>
-
-                <div class="dropdown-divider"></div>
                 <a class="dropdown-item"
                 href="{% url 'observations:survey-list' %}?production=false"
                 title="Browse all training surveys">

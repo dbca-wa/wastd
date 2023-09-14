@@ -1,8 +1,0 @@
-{% load observations rest_framework_latex %}
-{% with original as o %}
-\paragraph{Actions taken}
-{{ o.management_actions|tex }}
-
-\paragraph{Comments}
-{{ o.comments|tex }}
-{% endwith %}
