@@ -44,6 +44,23 @@ def create_new_user(name):
     return user
 
 
+def get_user(reporter):
+    """Try to match the reporter to an existing user. If not, return 'Unknown user'.
+    """
+    if reporter:
+        reporter = reporter.strip()
+        if User.objects.filter(is_active=True, name__icontains=reporter).exists():
+            user = User.objects.filter(is_active=True, name__icontains=reporter).first()
+        else:  # Create a new user.
+            user = create_new_user(reporter)
+            LOGGER.info(f"Created new user {user}")
+    else:  # The form has been submitted without a user name recorded.
+        user = User.objects.get_or_create(name='Unknown user', username='unknown_user')[0]
+        LOGGER.warning(f"No reporter recorded, returning {user}")
+
+    return user
+
+
 def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=None):
     """Import submissions to the Turtle Track or Nest ODK form.
     Each submission should create:
@@ -72,15 +89,7 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=Non
 
         # Try to match the reporter to an existing user. If not, create a new one.
         reporter = submission['reporter']
-        if reporter:
-            reporter = reporter.strip()
-            if User.objects.filter(is_active=True, name__iexact=reporter).exists():
-                user = User.objects.filter(is_active=True, name__iexact=reporter).first()
-            else:  # Create a new user.
-                user = create_new_user(reporter)
-                LOGGER.info(f"Created new user {user}")
-        else:  # The form has been submitted without a user name recorded.
-            user = User.objects.get_or_create(name='Unknown user', username='unknown_user')[0]
+        user = get_user(reporter)
 
         # Confusingly, TurtleNestEncounter objects cover nest, track and nest & track encounters.
         encounter = TurtleNestEncounter(
@@ -427,12 +436,8 @@ def import_site_visit_start(form_id="site_visit_start", initial_duration_hr=8, a
             continue  # Skip records already imported.
 
         # Try to match the reporter to an existing User. If not, create a new one.
-        reporter = submission['reporter'].strip()
-        if User.objects.filter(is_active=True, name__icontains=reporter).exists():
-            user = User.objects.filter(is_active=True, name__icontains=reporter).first()
-        else:  # Create a new user.
-            user = create_new_user(reporter)
-            LOGGER.info(f"Created new user {user}")
+        reporter = submission['reporter']
+        user = get_user(reporter)
 
         visit = submission['site_visit']
         survey = Survey(
@@ -575,12 +580,8 @@ def import_marine_wildlife_incident(form_id="marine_wildlife_incident", auth_hea
             continue  # Skip records already imported.
 
         # Try to match the reporter to an existing User. If not, create a new one.
-        reporter = submission['reporter'].strip()
-        if User.objects.filter(is_active=True, name__icontains=reporter).exists():
-            user = User.objects.filter(is_active=True, name__icontains=reporter).first()
-        else:  # Create a new user.
-            user = create_new_user(reporter)
-            LOGGER.info(f"Created new user {user}")
+        reporter = submission['reporter']
+        user = get_user(reporter)
 
         site_visit = submission['site_visit']
         encounter = AnimalEncounter(
@@ -834,12 +835,8 @@ def import_turtle_sighting(form_id="turtle_sighting", auth_headers=None):
             continue  # Skip records already imported.
 
         # Try to match the reporter to an existing User. If not, create a new one.
-        reporter = submission['reporter'].strip()
-        if User.objects.filter(is_active=True, name__icontains=reporter).exists():
-            user = User.objects.filter(is_active=True, name__icontains=reporter).first()
-        else:  # Create a new user.
-            user = create_new_user(reporter)
-            LOGGER.info(f"Created new user {user}")
+        reporter = submission['reporter']
+        user = get_user(reporter)
 
         sighting = submission['encounter']
         encounter = AnimalEncounter(
@@ -848,6 +845,7 @@ def import_turtle_sighting(form_id="turtle_sighting", auth_headers=None):
             source_id=instance_id,
             where=parse_geopoint(sighting['observed_at']),
             when=parser.isoparse(submission['start_time']),
+            observer=user,
             reporter=user,
             taxon='Cheloniidae',
             species=sighting['species'],
@@ -858,5 +856,7 @@ def import_turtle_sighting(form_id="turtle_sighting", auth_headers=None):
             interaction_choices = dict(TURTLE_INTERACTION_CHOICES)
             encounter.behaviour = interaction_choices.get(sighting['interaction'], None)
 
+        encounter.encounter_type = encounter.get_encounter_type()
         encounter.save()
+
         LOGGER.info(f'Created AnimalEncounter {encounter}')
