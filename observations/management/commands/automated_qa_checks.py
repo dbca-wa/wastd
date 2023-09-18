@@ -14,6 +14,7 @@ from observations.models import (
     TrackTallyObservation,
     TurtleNestDisturbanceObservation,
     TurtleNestDisturbanceTallyObservation,
+    AnimalEncounter,
 )
 from users.models import User
 
@@ -25,6 +26,7 @@ class Command(BaseCommand):
         logger = logging.getLogger('turtles')
         logger.info('Running automated QA/QC checks and flagging records for curation')
         system_user = User.objects.get(pk=1)
+        unknown_user = User.objects.get_or_create(name='Unknown user', username='unknown_user')[0]
 
         # Check: Any turtle nest encounter with uncertain species.
         nest_encounters = TurtleNestEncounter.objects.filter(species=TURTLE_SPECIES_DEFAULT, status=Encounter.STATUS_IMPORTED)
@@ -167,12 +169,28 @@ class Command(BaseCommand):
                     enc.flag(by=system_user, description=f'Flagged for curation by automated checks: {species_name} at {area.name}')
                     enc.save()
 
-        # Mark remaining TurtleNestEncounter objects with status == New as imported (passed QA/QC checks).
+        # Check: imported Turtle Nest Encounters with 'Unknown user' as the reporter.
+        nest_encounters = TurtleNestEncounter.objects.filter(status=Encounter.STATUS_IMPORTED, reporter=unknown_user)
+        if nest_encounters:
+            logger.info(f'Flagging {nest_encounters.count()} turtle nest encounters for curation: unknown reporter')
+        for enc in nest_encounters:
+            enc.flag(by=system_user, description='Flagged for curation by automated checks due to unknown reporter')
+            enc.save()
+
+        # Mark remaining TurtleNestEncounter objects with status == Imported as imported (passed QA/QC checks).
         nest_encounters = TurtleNestEncounter.objects.filter(status=Encounter.STATUS_IMPORTED)
         if nest_encounters:
             logger.info(f'Marking {nest_encounters.count()} imported turtle nest encounters as curated (passed QA/QC checks)')
         for enc in nest_encounters:
             enc.curate(by=system_user, description=f'Curated by automated QA/QC (passed all checks)')
+            enc.save()
+
+        # Check: imported Animal Encounters with 'Unknown user' as the reporter.
+        animal_encounters = AnimalEncounter.objects.filter(status=Encounter.STATUS_IMPORTED, reporter=unknown_user)
+        if animal_encounters:
+            logger.info(f'Flagging {animal_encounters.count()} animal encounters for curation: unknown reporter')
+        for enc in animal_encounters:
+            enc.flag(by=system_user, description='Flagged for curation by automated checks due to unknown reporter')
             enc.save()
 
         logger.info('Automated QA/QC checks completed')
