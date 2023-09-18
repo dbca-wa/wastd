@@ -1232,10 +1232,9 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         # Returns True if editing this object is permitted, False otherwise.
         # Determined by the object's QA status.
         if self.status in [
-            self.STATUS_NEW,
-            self.STATUS_PROOFREAD,
+            self.STATUS_IMPORTED,
+            self.STATUS_MANUAL_INPUT,
             self.STATUS_FLAGGED,
-            self.STATUS_REJECTED
         ]:
             return True
         return False
