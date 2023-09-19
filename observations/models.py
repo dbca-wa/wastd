@@ -2267,11 +2267,11 @@ class TagObservation(Observation):
         default=lookups.BODY_PART_DEFAULT,
         help_text="Where is the tag attached, or the sample taken from?",
     )
-    # TODO: rename to serial, tag_id, etc.
     name = models.CharField(
         max_length=1000,
         verbose_name="Tag ID",
-        help_text="The ID of a tag must be unique within the tag type.",
+        help_text="The ID/serial number of the tag",
+        db_index=True,
     )
     status = models.CharField(
         max_length=300,
@@ -2309,7 +2309,6 @@ class TagObservation(Observation):
 
     class Meta:
         verbose_name = "Turtle Tag Observation"
-        # unique_together = ("tag_type", "name")  # TODO
 
     def __str__(self):
         return "{} {} {} on {}".format(

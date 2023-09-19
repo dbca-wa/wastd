@@ -230,9 +230,11 @@ SPECIES_CHOICES = (
     + SEASNAKE_SPECIES_CHOICES
 )
 
+UNKNOWN_VALUE = "unknown"
+UNKNOWN_CHOICE = (UNKNOWN_VALUE, "Unknown")
 SEX_CHOICES = (
     (NA_VALUE, "Not applicable"),
-    ("unknown", "Unknown sex"),
+    UNKNOWN_CHOICE,
     ("male", "Male"),
     ("female", "Female"),
     ("intersex", "Hermaphrodite or intersex"),
@@ -515,7 +517,7 @@ NEST_DAMAGE_CHOICES = (
     ("pig", "Pig predation"),
     ("tide", "Tidal disturbance"),
     ("vehicle", "Vehicle damage"),
-    ("unknown", "Unknown"),
+    UNKNOWN_CHOICE,
     ("other", "Other identifiable (see comments)"),
 )
 
