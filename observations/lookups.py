@@ -102,7 +102,7 @@ NEST_TAG_STATUS_CHOICES = (
 
 
 NA_VALUE = "na"
-NA = ((NA_VALUE, "not observed"),)
+NA = ((NA_VALUE, "Not applicable"),)
 
 TAXON_CHOICES_DEFAULT = "Cheloniidae"
 TAXON_CHOICES = NA + (
@@ -231,7 +231,7 @@ SPECIES_CHOICES = (
 )
 
 SEX_CHOICES = (
-    (NA_VALUE, "NA sex"),
+    (NA_VALUE, "Not applicable"),
     ("unknown", "Unknown sex"),
     ("male", "Male"),
     ("female", "Female"),
@@ -394,7 +394,7 @@ HABITAT_WATER = (
 )
 
 NESTING_SUCCESS_CHOICES = (
-    (NA_VALUE, "NA"),
+    (NA_VALUE, "Not applicable"),
     ("nest-with-eggs", "Nest with eggs - witnessed egg drop"),
     ("nest-unsure-of-eggs", "Nest unsure of eggs - found covered up nest mound"),
     ("unsure-if-nest", "Unsure if nest - can't tell whether nest mound present or not"),
@@ -423,7 +423,7 @@ NEST_TYPE_CHOICES = (
 )
 
 OBSERVATION_CHOICES = (
-    (NA_VALUE, "NA"),
+    (NA_VALUE, "Not applicable"),
     ("absent", "Absent"),
     ("present", "Present"),
     ("yes", "Yes"),
@@ -520,7 +520,7 @@ NEST_DAMAGE_CHOICES = (
 )
 
 TIME_ESTIMATE_CHOICES = (
-    (NA_VALUE, "NA"),
+    (NA_VALUE, "Not applicable"),
     ("same-night", "Sometime that night"),
     ("plusminus-2h", "Plus/minus 2h of estimate"),
     ("plusminus-30m", "Correct to the hour"),
@@ -530,7 +530,7 @@ TAIL_POKE_CHOICES = (
     ("absent", "Absent"),
     ("occasional", "Occasional"),
     ("regular", "Regular"),
-    ("na", "NA"),
+    ("na", "Not applicable"),
 )
 
 TURTLE_INTERACTION_CHOICES = (

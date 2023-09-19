@@ -1105,7 +1105,7 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
                     "reporter",
                     "source",
                     "source_id",
-                    "name",
+                    #"name",
                 ),
             },
         ),
