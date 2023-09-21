@@ -1103,6 +1103,7 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
                     "when",
                     "observer",
                     "reporter",
+                    "encounter_type",
                     "source",
                     "source_id",
                     #"name",
