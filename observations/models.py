@@ -1716,8 +1716,8 @@ class AnimalEncounter(Encounter):
             # this will ignore inwater encounters without habitat
             return Encounter.ENCOUNTER_INWATER
         else:
-            # not stranding or in water = fallback to tagging
-            return Encounter.ENCOUNTER_TAGGING
+            # not stranding or in water = fallback to 'other'
+            return Encounter.ENCOUNTER_OTHER
 
     @property
     def short_name(self):

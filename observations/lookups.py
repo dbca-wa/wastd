@@ -498,6 +498,7 @@ DAMAGE_AGE_CHOICES = (
     ("healed-entirely", "Entirely healed"),
     ("healed-partially", "Partially healed"),
     ("fresh", "Fresh"),
+    UNKNOWN_CHOICE,
 )
 
 NEST_DAMAGE_DEFAULT = "turtle"
