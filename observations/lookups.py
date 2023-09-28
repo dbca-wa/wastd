@@ -543,3 +543,24 @@ TURTLE_INTERACTION_CHOICES = (
     ("rodeo-catch-successful", "Rodeo catch, successful"),
     ("rodeo-catch-failed", "Rodeo catch, failed"),
 )
+
+TISSUE_SAMPLE_TYPE_DEFAULT = "tissue"
+TISSUE_SAMPLE_TYPE_CHOICES = (
+    ("blood", "Blood"),
+    ("biopsy", "Biopsy"),
+    ("stomach-content", "Stomach content"),
+    ("egg", "Egg"),
+    ("skin", "Skin"),
+    ("muscle", "Muscle"),
+    ("liver", "Liver"),
+    ("heart", "Heart"),
+    ("kidney", "Kidney"),
+    ("gonad", "Gonad"),
+    ("fat", "Fat"),
+    ("brain", "Brain"),
+    ("faecal", "Faecal"),
+    ("epibiota", "Epibiota"),
+    ("keratin", "Keratin"),
+    ("bone", "Bone"),
+    (TISSUE_SAMPLE_TYPE_DEFAULT, "Other tissue"),
+)
