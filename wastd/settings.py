@@ -70,7 +70,8 @@ INSTALLED_APPS = [
     "users",
     "observations",
     "wamtram",  # Legacy WAMTRAM database
-    "tagging",  # Migrated turtle tagging application
+    #"tagging",  # Temporary turtle tagging data
+    "turtle_tags",
 ]
 
 MIDDLEWARE = [
