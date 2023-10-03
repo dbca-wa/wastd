@@ -10,7 +10,7 @@ class AdminDashboard(Dashboard):
                 column=1,
                 children=[
                     modules.AppList(
-                        "Places, Campaigns, Surveys",
+                        "Places, campaigns, surveys",
                         models=(
                             "observations.models.Area",
                             "observations.models.Campaign",
@@ -18,7 +18,7 @@ class AdminDashboard(Dashboard):
                         ),
                     ),
                     modules.AppList(
-                        "Encounters",
+                        "Encounters and observations",
                         models=(
                             "observations.models.AnimalEncounter",
                             "observations.models.TurtleNestEncounter",
@@ -30,8 +30,25 @@ class AdminDashboard(Dashboard):
 
         self.children.append(
             modules.Group(
-                "User Administration",
+                "Turtle tagging",
                 column=2,
+                children=[
+                    modules.AppList(
+                        "Tag management",
+                        models=(
+                            "turtle_tags.models.Turtle",
+                            "turtle_tags.models.TurtleTag",
+                            "turtle_tags.models.TagPurchaseOrder",
+                        ),
+                    ),
+                ],
+            )
+        )
+
+        self.children.append(
+            modules.Group(
+                "User administration",
+                column=3,
                 children=[
                     modules.AppList(
                         "User access management",
@@ -43,24 +60,3 @@ class AdminDashboard(Dashboard):
                 ],
             )
         )
-
-        # Temporarily comment out tagging models.
-        #self.children.append(
-        #    modules.Group(
-        #        "Animal Tagging",
-        #        column=3,
-        #        children=[
-        #            modules.AppList(
-        #                "Turtle tagging records",
-        #                models=(
-        #                    "tagging.models.Turtle",
-        #                    "tagging.models.TurtleObservation",
-        #                    "tagging.models.TurtleTag",
-        #                    "tagging.models.TurtlePitTag",
-        #                    "tagging.models.TagOrder",
-        #                    "tagging.models.TurtleSample",
-        #                )
-        #            )
-        #        ],
-        #    )
-        #)

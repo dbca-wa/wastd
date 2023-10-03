@@ -411,7 +411,6 @@ class LegacySourceMixin(models.Model):
         choices=SOURCES,
         help_text="Where was this record captured initially?",
     )
-
     source_id = models.CharField(
         max_length=1000,
         default=uuid.uuid4,
@@ -420,8 +419,6 @@ class LegacySourceMixin(models.Model):
     )
 
     class Meta:
-        """Class opts."""
-
         abstract = True
         unique_together = ("source", "source_id")
 

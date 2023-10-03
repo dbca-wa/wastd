@@ -86,15 +86,15 @@
                 Tagging
             </a>
             <div class="dropdown-menu" aria-labelledby="nav-li-tagging">
-                <a class="dropdown-item" href="{% url 'tagging:turtle_list' %}" title="Browse, filter and search all tagged turtles">
+                <a class="dropdown-item" href="{% url 'turtle_tags:turtle_list' %}" title="Browse, filter and search all tagged turtles">
                     <i class="fa-solid fa-table" aria-hidden="true"></i>
                     <span class="align-left">Tagged turtles</span>
                 </a>
+                {% comment %}
                 <a class="dropdown-item" href="{% url 'tagging:turtleobservation_list' %}" title="Browse, filter and search all turtle observations">
                     <i class="fa-solid fa-table" aria-hidden="true"></i>
                     <span class="align-left">Turtle tag observations</span>
                 </a>
-                {% comment %}
                 <a class="dropdown-item" href="{% url 'observations:animalencounter-list' %}?encounter_type=tagging" title="Browse, filter and search all Turtle Tagging encounters">
                     <i class="fa-solid fa-table" aria-hidden="true"></i>
                     <span class="align-left">Tagged turtles</span>

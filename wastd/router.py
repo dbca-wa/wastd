@@ -32,12 +32,12 @@ from observations.api import (
     LightSourceObservationListResource,
     LightSourceObservationDetailResource,
 )
-from tagging.api import (
-    TurtleTagListResource,
-    TurtleTagDetailResource,
-    TurtlePitTagListResource,
-    TurtlePitTagDetailResource,
-)
+#from tagging.api import (
+#    TurtleTagListResource,
+#    TurtleTagDetailResource,
+#    TurtlePitTagListResource,
+#    TurtlePitTagDetailResource,
+#)
 from users.api import UserListResource, UserDetailResource
 
 
@@ -74,8 +74,8 @@ urlpatterns = [
     path('turtle-hatchling-emergence-outlier-observations/<int:pk>/', TurtleHatchlingEmergenceOutlierObservationDetailResource.as_view(), name='turtle_hatchling_emergence_outlier_observation_detail_resource'),
     path('light-source-observations/', LightSourceObservationListResource.as_view(), name='light_source_list_resource'),
     path('light-source-observations/<int:pk>/', LightSourceObservationDetailResource.as_view(), name='light_source_detail_resource'),
-    path('turtle-tags/', TurtleTagListResource.as_view(), name='turtle_tag_list_resource'),
-    path('turtle-tags/<int:pk>/', TurtleTagDetailResource.as_view(), name='turtle_tag_detail_resource'),
-    path('turtle-pit-tags/', TurtlePitTagListResource.as_view(), name='turtle_pit_tag_list_resource'),
-    path('turtle-pit-tags/<int:pk>/', TurtlePitTagDetailResource.as_view(), name='turtle_pit_tag_detail_resource'),
+    #path('turtle-tags/', TurtleTagListResource.as_view(), name='turtle_tag_list_resource'),
+    #path('turtle-tags/<int:pk>/', TurtleTagDetailResource.as_view(), name='turtle_tag_detail_resource'),
+    #path('turtle-pit-tags/', TurtlePitTagListResource.as_view(), name='turtle_pit_tag_list_resource'),
+    #path('turtle-pit-tags/<int:pk>/', TurtlePitTagDetailResource.as_view(), name='turtle_pit_tag_detail_resource'),
 ]

@@ -137,10 +137,14 @@ def import_wamtram(reload=False):
             else:
                 species = TRT_SPECIES_MAP[wamtram_turtle.species_code_id]
 
-            if wamtram_turtle.sex in ["I", "U"]:
-                sex = "unknown"
+            if wamtram_turtle.sex == "I":
+                sex = "intersex"
+            elif wamtram_turtle.sex == "F":
+                sex = "female"
+            elif wamtram_turtle.sex == "M":
+                sex = "male"
             else:
-                sex = wamtram_turtle.sex
+                sex = "unknown"
 
             if wamtram_turtle.entered_by == "bobp":
                 entered_by = bobp
@@ -181,6 +185,7 @@ def import_wamtram(reload=False):
 
     LOGGER.info("Importing flipper tags")
     tag_count = 0
+    # Instantiate a list of tuples: [(<Tag serial minus spaces>, <Tag serial>), ...]
     tag_serials = TrtTags.objects.values_list("tag_id", flat=True)
     tag_serials = [(t.replace(" ", "").strip(), t) for t in tag_serials]
 
@@ -213,6 +218,13 @@ def import_wamtram(reload=False):
             else:
                 order = None
 
+            if wamtram_tag.side == "L":
+                side = "left"
+            elif wamtram_tag.side == "R":
+                side = "right"
+            else:
+                side = None
+
             serial = serials[0]
 
             if TurtleTag.objects.filter(serial=serial, tag_type="flipper-tag", source="wamtram", source_id=serial).exists():
@@ -224,7 +236,7 @@ def import_wamtram(reload=False):
                     tag.order = order
                     tag.custodian = custodian
                     tag.field_handler = field_person
-                    tag.side = wamtram_tag.side
+                    tag.side = side
                     tag.return_date = wamtram_tag.return_date.date() if wamtram_tag.return_date else None
                     tag.return_condition = wamtram_tag.return_condition
                     tag.comments = wamtram_tag.comments
@@ -397,7 +409,7 @@ def import_wamtram(reload=False):
                 else:
                     continue
             else:
-                encounter = AnimalEncounter.objects.get_or_create(
+                encounter, created = AnimalEncounter.objects.get_or_create(
                     source="wamtram",
                     source_id=id,
                     status="imported",
@@ -420,12 +432,10 @@ def import_wamtram(reload=False):
                 else:
                     continue
 
-                status = None
+                status = "resighted"
                 if wamtram_recorded_tag.tag_state:
                     if wamtram_recorded_tag.tag_state in ["A1", "AE"]:
                         status = "applied-new"
-                    elif wamtram_recorded_tag.tag_state in ["OX", "P", "P_OK", "RQ", "P_ED"]:
-                        status = "resighted"
                     elif wamtram_recorded_tag.tag_state == "RC":
                         status = "reclinched"
                     elif wamtram_recorded_tag.tag_state in ["OO", "R"]:
@@ -460,12 +470,10 @@ def import_wamtram(reload=False):
                 else:
                     continue
 
-                status = None
+                status = "resighted"
                 if wamtram_recorded_pit_tag.pit_tag_state:
                     if wamtram_recorded_pit_tag.pit_tag_state_id in ["A1", "AE"]:
                         status = "applied-new"
-                    elif wamtram_recorded_pit_tag.pit_tag_state_id in ["P", "P_OK", "PX"]:
-                        status = "resighted"
 
                 TagObservation.objects.get_or_create(
                     source=TagObservation.SOURCE_WAMTRAM2,
@@ -481,6 +489,15 @@ def import_wamtram(reload=False):
                 pit_tag_count += 1
 
             for wamtram_measurement in TrtMeasurements.objects.filter(observation_id=obs.pk):
+
+                curved_carapace_length_mm = None
+                curved_carapace_width_mm = None
+                straight_carapace_length_mm = None
+                maximum_head_width_mm = None
+                body_weight_g = None
+                tail_length_plastron_mm = None
+                tail_length_vent_mm = None
+                tail_length_carapace_mm = None
 
                 if wamtram_measurement.measurement_type_id == "CCL":
                     curved_carapace_length_mm = wamtram_measurement.measurement_value
@@ -498,6 +515,8 @@ def import_wamtram(reload=False):
                     tail_length_vent_mm = wamtram_measurement.measurement_value
                 elif wamtram_measurement.measurement_type_id == "CT":
                     tail_length_carapace_mm = wamtram_measurement.measurement_value
+                else:
+                    continue  # Measurement type didn't match any of our known types.
 
                 TurtleMorphometricObservation.objects.get_or_create(
                     source=TurtleMorphometricObservation.SOURCE_WAMTRAM2,

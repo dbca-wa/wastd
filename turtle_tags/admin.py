@@ -11,17 +11,19 @@ from .models import (
 @register(Turtle)
 class TurtleAdmin(VersionAdmin):
     date_hierarchy = "created"
-    list_display = ("id", "species", "sex", "source", "source_id")
+    list_display = ("id", "created", "species", "sex", "name", "source", "source_id")
     list_filter = ("species", "sex", "source")
-    search_fields = ("name", "source_id")
+    search_fields = ("id", "name", "source_id")
 
     fields = (
+        "created",
+        "entered_by",
         "species",
         "sex",
         "name",
         "comments",
     )
-    readonly_fields = ("entered_by", "source", "source_id")
+    readonly_fields = ("created", "entered_by", "source")
 
     def response_add(self, request, obj, post_url_continue=None):
         """Set the request user as the person who entered the record.
@@ -55,12 +57,15 @@ class TurtleTagAdmin(VersionAdmin):
     date_hierarchy = "created"
     list_display = ("id", "serial", "tag_type", "turtle", "order")
     list_filter = ("tag_type",)
+    raw_id_fields = ("turtle", "custodian", "field_handler")
     search_fields = (
         "serial", "order__order_number", "turtle__name", "custodian__name", "field_handler__name",
         "comments", "batch_number", "box_number",
     )
 
     fields = (
+        "created",
+        "entered_by",
         "serial",
         "tag_type",
         "turtle",
@@ -74,4 +79,4 @@ class TurtleTagAdmin(VersionAdmin):
         "batch_number",
         "box_number",
     )
-    readonly_fields = ("entered_by", "source", "source_id")
+    readonly_fields = ("created", "entered_by")

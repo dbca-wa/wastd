@@ -1,6 +1,8 @@
 from django.db import models
+from django.urls import reverse
 from django.utils import timezone
 
+from observations.models import AnimalEncounter,TagObservation
 from users.models import User
 
 SOURCE_CHOICES = (
@@ -65,11 +67,43 @@ class Turtle(models.Model):
 
     def __str__(self):
         if self.name and self.species:
-            return f"{self.pk} {self.get_species_display()} ({self.get_sex_display()}) - {self.name}"
+            return f"{self.get_species_display()}, {self.get_sex_display()} - {self.name}"
         elif self.species:
-            return f"{self.pk} {self.get_species_display()} ({self.get_sex_display()})"
+            return f"{self.get_species_display()}, {self.get_sex_display()}"
         else:
-            return f"{self.pk} ({self.get_sex_display()})"
+            return f"{self.get_sex_display()}"
+
+    def get_absolute_url(self):
+        return reverse('turtle_tags:turtle_detail', kwargs={'pk': self.pk})
+
+    def get_tags_description(self):
+        tags = []
+        for tag in self.turtletag_set.all():
+            tags.append(str(tag))
+        return ", ".join(tags)
+
+    def get_tag_observations(self):
+        """Return the queryset of TagObservation records for this turtle.
+        """
+        tag_observation_pks = []
+
+        for tag in self.turtletag_set.all():
+            tag_observation_pks = tag_observation_pks + list(TagObservation.objects.filter(tag_type=tag.tag_type, name=tag.serial).values_list('pk', flat=True))
+
+        return TagObservation.objects.filter(pk__in=tag_observation_pks)
+
+    def get_encounters(self):
+        observations = self.get_tag_observations()
+        return AnimalEncounter.objects.filter(pk__in=observations.values_list("encounter", flat=True))
+
+    def get_newest_encounter(self):
+        """Return the most-recent encounter with this turtle, based upon TagObservation records.
+        """
+        observations = self.get_tag_observations()
+        if observations:
+            return observations.order_by('-encounter__when').first().encounter
+        else:
+            return None
 
 
 class TagPurchaseOrder(models.Model):
@@ -162,3 +196,8 @@ class TurtleTag(models.Model):
 
     def __str__(self):
         return self.serial
+
+    def get_observations(self):
+        """Return the queryset of TagObservation records for this tag.
+        """
+        return TagObservation.objects.filter(tag_type=self.tag_type, name=self.serial)
