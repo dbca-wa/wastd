@@ -1746,6 +1746,20 @@ class AnimalEncounter(Encounter):
     def card_template(self):
         return "observations/animalencounter_card.html"
 
+    def get_tag_observations(self):
+        """Return a queryset of TagObservations.
+        """
+        return self.observation_set.instance_of(TagObservation)
+
+    def get_tag_serials(self):
+        """Return a comma-separated list of tag serials observed during this encounter.
+        """
+        tag_observations = self.get_tag_observations()
+        if tag_observations:
+            return ", ".join([tag.name for tag in tag_observations])
+        else:
+            return ""
+
 
 class TurtleNestEncounter(Encounter):
     """The encounter of turtle nest during its life cycle.

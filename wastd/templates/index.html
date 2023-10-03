@@ -82,17 +82,20 @@
   </p>
   <p>
     <a class="btn btn-primary btn-block"
-      href="{% url 'tagging:turtle_list' %}"
+      href="{% url 'turtle_tags:turtle_list' %}"
       title="Browse, filter and search turtle tagging data">
       Browse tagged turtles »
     </a>
   </p>
+  {% comment %}
+  <p>
     <a class="btn btn-primary btn-block"
       href="{% url 'tagging:turtleobservation_list' %}"
       title="Browse, filter and search turtle tagging data">
       Browse turtle tag observations »
     </a>
   <p>
+  {% endcomment %}
   {% comment %}
   {# FIXME: permissions check #}
   {% if request.user.is_staff %}
