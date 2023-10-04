@@ -1,6 +1,9 @@
 from import_export.fields import Field
 from import_export.resources import ModelResource
 
+from datetime import datetime, timedelta
+from dateutil import tz
+
 from .lookups import NA_VALUE
 from .models import (
     Encounter,
@@ -61,6 +64,20 @@ class EncounterResource(ModelResource):
     observer = Field(column_name='observer')
     reporter = Field(column_name='reporter')
     survey_id = Field()
+    #split out lat long
+    latitude = Field(column_name='latitude')
+    longitude = Field(column_name='longitude')
+    
+    #split the date
+    day = Field(column_name='day')
+    month = Field(column_name='month')
+    year = Field(column_name='year')
+    time = Field(column_name='time')
+    #Turtle time
+    turtle_time_day = Field(column_name='turtle_time_day')
+    
+
+
 
     class Meta:
         model = Encounter
@@ -70,7 +87,14 @@ class EncounterResource(ModelResource):
             "source_id",
             "status",
             "when",
+            "day",
+            "turtle_time_day",
+            "month",
+            "year",
+            "time",
             "where",
+            "latitude",
+            "longitude",
             "locality",
             "site",
             "survey_id",
@@ -106,29 +130,68 @@ class EncounterResource(ModelResource):
 
     def dehydrate_encounter_type(self, obj):
         return obj.get_encounter_type_display()
+    
+    #split lat long
+    def dehydrate_latitude(self, obj):
+         return obj.latitude
+
+    def dehydrate_longitude(self, obj):
+        return obj.longitude
+    
+    #excel can't deal with timezone objects so convert to a string. 
+    #Note this is the server local time NOT the local time the encouter happened - this is potetially bad. Really should be storing the timezone of collection
+    def dehydrate_when(self, obj):
+        return obj.when.astimezone(tz.tzlocal()).strftime("%d-%b-%Y %H:%M:%S")
+
+    
+    #split the date
+    def dehydrate_day(self, obj):
+        if obj.when:
+            return obj.when.astimezone(tz.tzlocal()).day
+        return ''
+
+    def dehydrate_month(self, obj):
+        if obj.when:
+            return obj.when.astimezone(tz.tzlocal()).month
+        return ''
+
+    def dehydrate_year(self, obj):
+        if obj.when:
+            return obj.when.astimezone(tz.tzlocal()).year
+        return ''
+    
+    #Note this is the server local time NOT the local time the encouter happened - this is potetially bad. Really should be storing the timezone of collection
+    def dehydrate_time(self, obj):
+        if obj.when:
+            return obj.when.astimezone(tz.tzlocal()).strftime("%H:%M:%S")
+        return ''
+    
+    #from 12pm to 12pm then next day, the date stays the same i.e 11:59am on 3/12/23 is 2/12/23
+    ##Note this is the server local time NOT the local time the encouter happened - this is potetially bad. Really should be storing the timezone of collection
+    def dehydrate_turtle_time_day(self, obj):
+        if obj.when:
+            if obj.when.astimezone(tz.tzlocal()).hour < 12:
+                adjusted_date =  obj.when.astimezone(tz.tzlocal()) - timedelta(days=1)
+                return adjusted_date.strftime("%d-%b-%Y")
+            return obj.when.strftime("%d-%b-%Y")
+        return ''
+        
 
 
-class AnimalEncounterResource(ModelResource):
+
+
+class AnimalEncounterResource(EncounterResource):
 
     class Meta:
         model = AnimalEncounter
-        fields = [
+        fields =  EncounterResource.Meta.fields + [
+            "id",
             "source",
             "source_id",
-            "where",
-            "wkt" "longitude",
-            "latitude",
             "location_accuracy_m",
-            "when",
             "area",
-            "area__name",
-            "site",
-            "site__name",
             "observer",
-            "observer__name",
             "reporter",
-            "reporter__name",
-            "encounter_type",
             "name",
             "taxon",
             "species",
@@ -148,9 +211,11 @@ class AnimalEncounterResource(ModelResource):
             "scanned_for_pit_tags",
             "checked_for_flipper_tags",
             "cause_of_death",
-            "cause_of_death_confidence",
-            "absolute_admin_url",
+            "cause_of_death_confidence"
+            #"absolute_admin_url"
         ]
+
+
 
 
 class TurtleNestEncounterResource(EncounterResource):
@@ -446,11 +511,13 @@ class TurtleNestEncounterResource(EncounterResource):
             return self.get_child_observation_output(obs, 'light_sources_present')
         else:
             return ''
-
+    #assumed recored in AWST then stored in UTC
     def dehydrate_hatchling_emergence_time(self, encounter):
         obs = encounter.get_hatchling_emergence_observation()
         if obs:
-            return self.get_child_observation_output(obs, 'hatchling_emergence_time')
+            atime =  self.get_child_observation_output(obs, 'hatchling_emergence_time')
+            if atime:
+                return atime.astimezone(tz.tzlocal()).strftime("%d-%b-%Y %H:%M:%S")
         else:
             return ''
 
@@ -488,11 +555,12 @@ class TurtleNestEncounterResource(EncounterResource):
             return obs.flipper_tag_id
         else:
             return ''
-
+    
+    
     def dehydrate_date_nest_laid(self, encounter):
         obs = encounter.get_nesttag_observation()
         if obs and obs.date_nest_laid:
-            return obs.date_nest_laid.strftime("%Y-%m-%d")
+            return obs.date_nest_laid.strftime("%Y-%m-%d") #no timezone stored in object - this may be displaying UTC?
         else:
             return ''
 
