@@ -27,7 +27,6 @@ from django_fsm_log.decorators import fsm_log_by, fsm_log_description
 from django_fsm_log.models import StateLog
 import itertools
 import logging
-from os import path
 from polymorphic.models import PolymorphicModel
 from slugify import slugify
 import urllib
@@ -91,14 +90,12 @@ class Area(models.Model):
 
     area_type = models.CharField(
         max_length=300,
-        verbose_name="Area type",
         default=AREATYPE_SITE,
         choices=AREATYPE_CHOICES,
         help_text="The area type.",
     )
     name = models.CharField(
         max_length=1000,
-        verbose_name="Area Name",
         help_text="The name of the area.",
     )
     w2_location_code = models.CharField(
@@ -120,7 +117,6 @@ class Area(models.Model):
         editable=False,
         blank=True,
         null=True,
-        verbose_name="Centroid",
         help_text="The centroid is a simplified presentation of the Area.",
     )
     northern_extent = models.FloatField(
@@ -133,7 +129,7 @@ class Area(models.Model):
     length_surveyed_m = models.DecimalField(
         max_digits=10,
         decimal_places=0,
-        verbose_name="Surveyed length [m]",
+        verbose_name="Surveyed length (m)",
         blank=True,
         null=True,
         help_text="The length of meters covered by a survey of this area. E.g., the meters of high water mark along a beach.",
@@ -141,7 +137,7 @@ class Area(models.Model):
     length_survey_roundtrip_m = models.DecimalField(
         max_digits=10,
         decimal_places=0,
-        verbose_name="Survey roundtrip [m]",
+        verbose_name="Survey roundtrip (m)",
         blank=True,
         null=True,
         help_text="The total length of meters walked during an end to end survey of this area.",
@@ -160,15 +156,12 @@ class Area(models.Model):
     )
 
     class Meta:
-        ordering = ["-northern_extent", "name"]
+        ordering = ("-northern_extent", "name")
         unique_together = ("area_type", "name")
-        verbose_name = "Area"
-        verbose_name_plural = "Areas"
 
     def save(self, *args, **kwargs):
-        """Cache as_html value, centroid and northern extent.
+        """Cache centroid and northern extent.
         """
-        self.as_html = self.get_popup()
         if not self.northern_extent:
             self.northern_extent = self.derived_northern_extent
         if not self.centroid:
@@ -236,7 +229,6 @@ class Campaign(models.Model):
         blank=True,
         null=True,
         related_name="campaigns",
-        verbose_name="Destination",
         help_text="The surveyed Locality.",
     )
     start_time = models.DateTimeField(
@@ -252,7 +244,6 @@ class Campaign(models.Model):
         help_text="The Campaign end, shown as local time (no daylight savings), stored as UTC.",
     )
     comments = models.TextField(
-        verbose_name="Comments",
         blank=True,
         null=True,
         help_text="Comments about the Campaign.",
@@ -265,7 +256,6 @@ class Campaign(models.Model):
         blank=True,
         null=True,
         related_name="campaigns",
-        verbose_name="Owner",
         help_text="The organisation that ran this Campaign owns all records (Surveys and Encounters).",
     )
     viewers = models.ManyToManyField(
@@ -276,10 +266,10 @@ class Campaign(models.Model):
     )
 
     class Meta:
-        ordering = ["-start_time", "destination", "owner"]
+        ordering = ("-start_time", "destination", "owner")
 
     def __str__(self):
-        return "{0} {1} {2} to {3}".format(
+        return "{} {} {} to {}".format(
             "-" if not self.owner else self.owner.label,
             "-" if not self.destination else self.destination.name,
             "na"
@@ -369,12 +359,11 @@ class Survey(QualityControlMixin, UrlsMixin, models.Model):
         null=True,
         blank=True,
         on_delete=models.CASCADE,
-        verbose_name="Campaign",
         help_text="The overarching Campaign instigating this Survey is automatically linked when a Campaign is saved.",
     )
     source = models.CharField(
         max_length=300,
-        verbose_name="Data Source",
+        verbose_name="Data source",
         default=lookups.SOURCE_DEFAULT,
         choices=lookups.SOURCE_CHOICES,
         help_text="Where was this record captured initially?",
@@ -398,7 +387,7 @@ class Survey(QualityControlMixin, UrlsMixin, models.Model):
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
-        verbose_name="Surveyed Area",
+        verbose_name="Surveyed area",
         related_name="survey_area",
         help_text="The general area this survey took place in.",
     )
@@ -407,7 +396,7 @@ class Survey(QualityControlMixin, UrlsMixin, models.Model):
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
-        verbose_name="Surveyed Site",
+        verbose_name="Surveyed site",
         help_text="The surveyed site, if known.",
     )
     transect = models.LineStringField(
@@ -473,7 +462,7 @@ class Survey(QualityControlMixin, UrlsMixin, models.Model):
         max_length=1000,
         blank=True,
         null=True,
-        verbose_name="End Device ID",
+        verbose_name="End device ID",
         help_text="The ID of the recording device which captured the end point, if available.",
     )
     end_location = models.PointField(
@@ -525,12 +514,11 @@ class Survey(QualityControlMixin, UrlsMixin, models.Model):
         blank=True,
         null=True,
         max_length=500,
-        verbose_name="Label",
         help_text="A human-readable, self-explanatory label.",
     )
 
     class Meta:
-        ordering = ["-start_time"]
+        ordering = ("-start_time",)
         unique_together = ("source", "source_id")
 
     def __str__(self):
@@ -683,8 +671,6 @@ class Survey(QualityControlMixin, UrlsMixin, models.Model):
 
     @property
     def leaflet_title(self):
-        """A title for leaflet map markers.
-        """
         return self.__str__()
 
     @property
@@ -708,7 +694,7 @@ class SurveyEnd(models.Model):
     """
     source = models.CharField(
         max_length=300,
-        verbose_name="Data Source",
+        verbose_name="Data source",
         default=lookups.SOURCE_DEFAULT,
         choices=lookups.SOURCE_CHOICES,
         help_text="Where was this record captured initially?",
@@ -771,9 +757,7 @@ class SurveyEnd(models.Model):
     )
 
     class Meta:
-        verbose_name = "Survey"
-        verbose_name_plural = "Surveys"
-        ordering = ["end_location", "end_time"]
+        ordering = ("end_location", "end_time")
         unique_together = ("source", "source_id")
 
     def __str__(self):
@@ -785,8 +769,8 @@ class SurveyEnd(models.Model):
 
 
 class SurveyMediaAttachment(LegacySourceMixin, models.Model):
-    """A media attachment to a Survey, e.g. start or end photos."""
-
+    """A media attachment to a Survey, e.g. start or end photos.
+    """
     MEDIA_TYPE_CHOICES = (
         ("data_sheet", "Data sheet"),
         ("communication", "Communication record"),
@@ -799,11 +783,9 @@ class SurveyMediaAttachment(LegacySourceMixin, models.Model):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        verbose_name="Survey",
         related_name="attachments",
         help_text="The Survey this attachment belongs to.",
     )
-
     media_type = models.CharField(
         max_length=300,
         verbose_name="Attachment type",
@@ -811,7 +793,6 @@ class SurveyMediaAttachment(LegacySourceMixin, models.Model):
         default="photograph",
         help_text="What is the attached file about?",
     )
-
     title = models.CharField(
         max_length=300,
         verbose_name="Attachment name",
@@ -819,7 +800,6 @@ class SurveyMediaAttachment(LegacySourceMixin, models.Model):
         null=True,
         help_text="Give the attachment a representative name.",
     )
-
     attachment = models.FileField(
         upload_to=survey_media,
         max_length=500,
@@ -827,15 +807,8 @@ class SurveyMediaAttachment(LegacySourceMixin, models.Model):
         help_text="Upload the file.",
     )
 
-    class Meta:
-        verbose_name = "Survey Media Attachment"
-
     def __str__(self):
-        return "Media {0} {1} for {2}".format(
-            self.pk if self.pk else "",
-            self.title,
-            self.survey.__str__() if self.survey else "",
-        )
+        return f"Media {self.pk}: {self.title}"
 
     @property
     def filepath(self):
@@ -975,7 +948,6 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         null=True,
         blank=True,
         on_delete=models.CASCADE,
-        verbose_name="Campaign",
         help_text="The overarching Campaign instigating this Encounter is automatically linked when a Campaign saved.",
     )
     survey = models.ForeignKey(
@@ -983,7 +955,6 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        verbose_name="Survey",
         help_text="The survey during which this encounter happened.",
     )
     area = models.ForeignKey(
@@ -991,7 +962,6 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
-        verbose_name="Area",
         related_name="encounter_area",
         help_text="The general area this encounter took place in.",
     )
@@ -1007,7 +977,7 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
     source = models.CharField(
         max_length=300,
         db_index=True,
-        verbose_name="Data Source",
+        verbose_name="Data source",
         default=lookups.SOURCE_DEFAULT,
         choices=lookups.SOURCE_CHOICES,
         help_text="Where was this record captured initially?",
@@ -1079,27 +1049,19 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         max_length=300,
         blank=True,
         null=True,
-        editable=False,
-        verbose_name="Encounter type",
         default=ENCOUNTER_OTHER,
         choices=ENCOUNTER_TYPES,
         help_text="The primary concern of this encounter.",
     )
     comments = models.TextField(
-        verbose_name="Comments",
         blank=True,
         null=True,
         help_text="Comments",
     )
 
     class Meta:
-        ordering = ["-when", "where"]
+        ordering = ("-when",)
         unique_together = ("source", "source_id")
-        index_together = [
-            ["when", "where"],
-        ]
-        verbose_name = "Encounter"
-        verbose_name_plural = "Encounters"
         get_latest_by = "when"
 
     @property
@@ -1108,7 +1070,7 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         return self._meta
 
     def __str__(self):
-        return "Encounter {0} on {1} by {2}".format(self.pk, self.when, self.observer)
+        return f"Encounter {self.pk} on {self.when} by {self.observer}"
 
     @property
     def status_colour(self):
@@ -1275,20 +1237,9 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         ]
 
     def get_encounter_type(self):
-        """Infer the encounter type.
-
-        "Track" encounters have a TrackTallyObservation, those who don't have
-        one but involve a TagObservation are tag management encounters (tag
-        orders, distribution, returns, decommissioning).
-        Lastly, the catch-all is "other" but complete records should not end up
-        as such.
+        """Placeholder function. Subclasses will include logic to set the encounter type.
         """
-        if self.observation_set.instance_of(TrackTallyObservation).exists():
-            return self.ENCOUNTER_TRACKS
-        elif self.observation_set.instance_of(TagObservation).exists():
-            return self.ENCOUNTER_TAG
-        else:
-            return self.ENCOUNTER_OTHER
+        return self.encounter_type
 
     @property
     def short_name(self):
@@ -1529,21 +1480,18 @@ class AnimalEncounter(Encounter):
     )
     species = models.CharField(
         max_length=300,
-        verbose_name="Species",
         choices=lookups.SPECIES_CHOICES,
         default=lookups.NA_VALUE,
         help_text="The species of the animal.",
     )
     sex = models.CharField(
         max_length=300,
-        verbose_name="Sex",
         choices=lookups.SEX_CHOICES,
         default=lookups.NA_VALUE,
         help_text="The animal's sex.",
     )
     maturity = models.CharField(
         max_length=300,
-        verbose_name="Maturity",
         choices=lookups.MATURITY_CHOICES,
         default=lookups.NA_VALUE,
         help_text="The animal's maturity.",
@@ -1557,7 +1505,6 @@ class AnimalEncounter(Encounter):
     )
     activity = models.CharField(
         max_length=300,
-        verbose_name="Activity",
         choices=lookups.ACTIVITY_CHOICES,
         default=lookups.NA_VALUE,
         help_text="The animal's activity at the time of observation.",
@@ -1570,27 +1517,23 @@ class AnimalEncounter(Encounter):
     )
     habitat = models.CharField(
         max_length=500,
-        verbose_name="Habitat",
         choices=lookups.HABITAT_CHOICES,
         default=lookups.NA_VALUE,
         help_text="The habitat in which the animal was encountered.",
     )
     sighting_status = models.CharField(
         max_length=300,
-        verbose_name="Sighting status",
         choices=lookups.SIGHTING_STATUS_CHOICES,
         default=lookups.NA_VALUE,
         help_text="The status is inferred automatically based on whether and where this animal was processed and identified last.",
     )
     sighting_status_reason = models.CharField(
         max_length=1000,
-        verbose_name="Sighting status reason",
         blank=True,
         null=True,
         help_text="The rationale for the inferred sighting status.",
     )
     identifiers = models.TextField(
-        verbose_name="Identifiers",
         blank=True,
         null=True,
         help_text="""A space-separated list of all identifers ever recorded as associated with this animal.
@@ -1621,7 +1564,6 @@ class AnimalEncounter(Encounter):
         verbose_name="First seen at",
         help_text="The Site in which the animal was encountered first.",
     )
-    # ODK form Turtle Tagging > nest_observed_nesting_success
     nesting_event = models.CharField(  # TODO rename to nesting_success
         max_length=300,
         verbose_name="Nesting success",
@@ -1631,7 +1573,6 @@ class AnimalEncounter(Encounter):
     )
     nesting_disturbed = models.CharField(
         max_length=300,
-        verbose_name="Nesting disturbed",
         choices=lookups.OBSERVATION_CHOICES,
         default=lookups.NA_VALUE,
         help_text="Was the nesting interrupted? If so, specify disturbance in comments.",
@@ -1644,7 +1585,6 @@ class AnimalEncounter(Encounter):
     )
     checked_for_injuries = models.CharField(
         max_length=300,
-        verbose_name="Checked for injuries",
         choices=lookups.OBSERVATION_CHOICES,
         default=lookups.NA_VALUE,
         help_text="Was the animal checked for injuries, were any found?",
@@ -1658,30 +1598,22 @@ class AnimalEncounter(Encounter):
     )
     checked_for_flipper_tags = models.CharField(
         max_length=300,
-        verbose_name="Checked for flipper tags",
         choices=lookups.OBSERVATION_CHOICES,
         default=lookups.NA_VALUE,
         help_text="Was the animal checked for flipper tags, were any found?",
     )
     cause_of_death = models.CharField(
         max_length=300,
-        verbose_name="Cause of death",
         choices=lookups.CAUSE_OF_DEATH_CHOICES,
         default=lookups.NA_VALUE,
         help_text="If dead, is the case of death known?",
     )
     cause_of_death_confidence = models.CharField(
         max_length=300,
-        verbose_name="Cause of death confidence",
         choices=lookups.CONFIDENCE_CHOICES,
         default=lookups.NA_VALUE,
         help_text="What is the cause of death, if known, based on?",
     )
-
-    class Meta:
-        verbose_name = "Animal Encounter"
-        verbose_name_plural = "Animal Encounters"
-        get_latest_by = "when"
 
     def __str__(self):
         tpl = "AnimalEncounter {} on {} by {} of {}, {} {} {} on {}"
@@ -1708,16 +1640,20 @@ class AnimalEncounter(Encounter):
         excluded. Note that an animal encountered in water, or even a dead
         animal (whether that makes sense or not) can also be tagged.
         """
+        # Return any existing type, if set.
+        if self.encounter_type:
+            return self.encounter_type
+
         if self.nesting_event in lookups.NESTING_PRESENT:
             return Encounter.ENCOUNTER_TAGGING
         elif self.health in lookups.DEATH_STAGES:
             return Encounter.ENCOUNTER_STRANDING
         elif self.habitat in lookups.HABITAT_WATER:
-            # this will ignore inwater encounters without habitat
+            # This will ignore inwater encounters without habitat
             return Encounter.ENCOUNTER_INWATER
         else:
-            # not stranding or in water = fallback to tagging
-            return Encounter.ENCOUNTER_TAGGING
+            # Not stranding or in water, fall back to 'other'
+            return Encounter.ENCOUNTER_OTHER
 
     @property
     def short_name(self):
@@ -1800,6 +1736,20 @@ class AnimalEncounter(Encounter):
     def card_template(self):
         return "observations/animalencounter_card.html"
 
+    def get_tag_observations(self):
+        """Return a queryset of TagObservations.
+        """
+        return self.observation_set.instance_of(TagObservation)
+
+    def get_tag_serials(self):
+        """Return a comma-separated list of tag serials observed during this encounter.
+        """
+        tag_observations = self.get_tag_observations()
+        if tag_observations:
+            return ", ".join([tag.name for tag in tag_observations])
+        else:
+            return ""
+
 
 class TurtleNestEncounter(Encounter):
     """The encounter of turtle nest during its life cycle.
@@ -1833,14 +1783,12 @@ class TurtleNestEncounter(Encounter):
     )
     species = models.CharField(
         max_length=300,
-        verbose_name="Species",
         choices=lookups.TURTLE_SPECIES_CHOICES,
         default=lookups.TURTLE_SPECIES_DEFAULT,
         help_text="The species of the animal which created the track or nest.",
     )
     habitat = models.CharField(
         max_length=500,
-        verbose_name="Habitat",
         choices=lookups.BEACH_POSITION_CHOICES,
         default=lookups.NA_VALUE,
         help_text="The habitat in which the track or nest was encountered.",
@@ -1875,7 +1823,6 @@ class TurtleNestEncounter(Encounter):
     )
     hatchlings_measured = models.CharField(
         max_length=300,
-        verbose_name="Hatchlings measured",
         choices=lookups.OBSERVATION_CHOICES,
         default=lookups.NA_VALUE,
         help_text="Were turtle hatchlings encountered and their morphometrics measured?",
@@ -1888,15 +1835,14 @@ class TurtleNestEncounter(Encounter):
         help_text="Were hatchling emergence track fan angles recorded?",
     )
 
-    class Meta:
-        verbose_name = "Turtle Nest Encounter"
-        verbose_name_plural = "Turtle Nest Encounters"
-        get_latest_by = "when"
-
     def __str__(self):
         return f"{self.pk}: {self.get_nest_type_display()}, {self.get_nest_age_display().lower()}, {self.get_species_display()}"
 
     def get_encounter_type(self):
+        # Return any existing type, if set.
+        if self.encounter_type:
+            return self.encounter_type
+
         if self.nest_type in ["successful-crawl", "nest", "hatched-nest"]:
             return Encounter.ENCOUNTER_NEST
         else:
@@ -1989,91 +1935,6 @@ class TurtleNestEncounter(Encounter):
             return None
 
 
-class LineTransectEncounter(Encounter):
-    """Encounter with a line transect.
-
-    An observer tallies (not individually georeferenced) observations along
-    a line transect, while recording the transect route live and keeping the
-    tally until the end of the transect.
-
-    Although individually geo-referenced Encounters are preferable, this Encounter
-    type supports tallies of abundant entities (like turtle tracks on a saturation
-    beach), collected under time pressure.
-
-    Examples:
-
-    ODK form "Track Tally", providing per record:
-    * One LineTransectEncounter with zero to many related:
-    * TrackTallyObservation
-    * TurtleNestDisturbanceTallyObservation
-    """
-
-    transect = models.LineStringField(
-        srid=4326,
-        dim=2,
-        verbose_name="Transect line",
-        help_text="The line transect as LineString in WGS84",
-    )
-
-    class Meta:
-        verbose_name = "Line Transect Encounter"
-        verbose_name_plural = "Line Transect Encounters"
-        get_latest_by = "when"
-
-    def __str__(self):
-        return "Line tx {0}".format(self.pk)
-
-    def inferred_name(self):
-        """Return an empty string."""
-        return ""
-
-    def get_encounter_type(self):
-        """Infer the encounter type.
-
-        If TrackTallyObservations are related, it's a track observation.
-
-        TODO support other types of line transects when added
-        """
-        return Encounter.ENCOUNTER_TRACKS
-
-    @property
-    def short_name(self):
-        """A short, often unique, human-readable representation of the encounter.
-
-        Slugified and dash-separated:
-
-        * Date of encounter as YYYY-mm-dd
-        * longitude in WGS 84 DD, rounded to 4 decimals (<10m),
-        * latitude in WGS 84 DD, rounded to 4 decimals (<10m), (missing sign!!)
-        * nest age (type),
-        * species,
-        * name if available (requires "update names" and tag obs)
-
-        The short_name could be non-unique.
-        """
-        nameparts = [
-            self.when.astimezone(tz.tzlocal()).strftime("%Y-%m-%d %H:%M %Z"),
-            force_text(round(self.longitude, 4)).replace(".", "-"),
-            force_text(round(self.latitude, 4)).replace(".", "-"),
-        ]
-        if self.name is not None:
-            nameparts.append(self.name)
-        return slugify("-".join(nameparts))
-
-    @property
-    def latitude(self):
-        """Return the WGS 84 DD latitude."""
-        return self.where.y
-
-    @property
-    def longitude(self):
-        """Return the WGS 84 DD longitude."""
-        return self.where.x
-
-    def card_template(self):
-        return "observations/linetransectencounter_card.html"
-
-
 class Observation(PolymorphicModel, LegacySourceMixin, models.Model):
     """The Observation base class for encounter observations.
 
@@ -2084,7 +1945,6 @@ class Observation(PolymorphicModel, LegacySourceMixin, models.Model):
     encounter = models.ForeignKey(
         Encounter,
         on_delete=models.CASCADE,
-        verbose_name="Encounter",
         related_name="observations",
         help_text="The Encounter during which the observation was made",
     )
@@ -2170,13 +2030,8 @@ class MediaAttachment(Observation):
         help_text="Upload the file",
     )
 
-    class Meta:
-        verbose_name = "Media Attachment"
-
     def __str__(self):
-        return "Media attachment {} for encounter {}: {}, {}".format(
-            self.pk, self.encounter.pk, self.media_type, path.basename(self.attachment.name),
-        )
+        return f"Media attachment {self.pk} for encounter {self.encounter.pk}: {self.attachment.name}"
 
     @property
     def filepath(self):
@@ -2206,8 +2061,8 @@ class TagObservation(Observation):
     """An Observation of an identifying tag on an observed entity.
 
     The identifying tag can be a flipper tag on a turtle, a PIT tag,
-    a satellite tag, a barcode on a sample taken off an animal, a whisker ID
-    from a picture of a pinniped, a genetic fingerprint or similar.
+    a satellite tag, a whisker ID from a picture of a pinniped,
+    a genetic fingerprint or similar.
 
     The tag has its own life cycle through stages of production, delivery,
     affiliation with an animal, repeated sightings and disposal.
@@ -2241,13 +2096,6 @@ class TagObservation(Observation):
     * applied and did read OK
     * applied and did not read (but still inside and might read later on)
 
-    Sample status:
-
-    * taken off animal
-    * handed to lab
-    * done science to it
-    * handed in report
-
     Animal Name:
     All TagObservations of one animal are linked by shared encounters or
     shared tag names. The earliest associated flipper tag name is used as the
@@ -2255,23 +2103,21 @@ class TagObservation(Observation):
     """
     tag_type = models.CharField(
         max_length=300,
-        verbose_name="Tag type",
         choices=lookups.TAG_TYPE_CHOICES,
         default="flipper-tag",
         help_text="What kind of tag is it?",
     )
     tag_location = models.CharField(
         max_length=300,
-        verbose_name="Tag position",
         choices=lookups.TURTLE_BODY_PART_CHOICES,
         default=lookups.BODY_PART_DEFAULT,
-        help_text="Where is the tag attached, or the sample taken from?",
+        help_text="Where is the tag attached?",
     )
-    # TODO: rename to serial, tag_id, etc.
     name = models.CharField(
         max_length=1000,
         verbose_name="Tag ID",
-        help_text="The ID of a tag must be unique within the tag type.",
+        help_text="The ID/serial number of the tag",
+        db_index=True,
     )
     status = models.CharField(
         max_length=300,
@@ -2288,7 +2134,7 @@ class TagObservation(Observation):
         null=True,
         verbose_name="Handled by",
         related_name="tag_handler",
-        help_text="The person in physical contact with the tag or sample",
+        help_text="The person in physical contact with the tag",
     )
     recorder = models.ForeignKey(
         User,
@@ -2301,15 +2147,10 @@ class TagObservation(Observation):
         help_text="The person who records the tag observation",
     )
     comments = models.TextField(
-        verbose_name="Comments",
         blank=True,
         null=True,
         help_text="Any other comments or notes.",
     )
-
-    class Meta:
-        verbose_name = "Turtle Tag Observation"
-        # unique_together = ("tag_type", "name")  # TODO
 
     def __str__(self):
         return "{} {} {} on {}".format(
@@ -2387,11 +2228,10 @@ class NestTagObservation(Observation):
         max_length=1000,
         blank=True,
         null=True,
-        verbose_name="Flipper Tag ID",
+        verbose_name="Flipper tag ID",
         help_text="The primary flipper tag ID of the nesting turtle if available.",
     )
     date_nest_laid = models.DateField(
-        verbose_name="Date nest laid",
         blank=True,
         null=True,
         help_text="The calendar (not turtle) date of nest creation.",
@@ -2400,18 +2240,13 @@ class NestTagObservation(Observation):
         max_length=1000,
         blank=True,
         null=True,
-        verbose_name="Tag Label",
         help_text="Any extra nest label if other two components are not available.",
     )
     comments = models.TextField(
-        verbose_name="Comments",
         blank=True,
         null=True,
         help_text="Any other comments or notes.",
     )
-
-    class Meta:
-        verbose_name = "Turtle Nest Tag Observation"
 
     def __str__(self):
         return f"{self.name} ({self.get_status_display()})"
@@ -2447,24 +2282,18 @@ class ManagementAction(Observation):
     """
 
     management_actions = models.TextField(
-        verbose_name="Management Actions",
         blank=True,
         null=True,
         help_text="Managment actions taken. Keep updating as appropriate.",
     )
-
     comments = models.TextField(
-        verbose_name="Comments",
         blank=True,
         null=True,
         help_text="Any other comments or notes.",
     )
 
-    class Meta:
-        verbose_name = "Management Action"
-
     def __str__(self):
-        return "Management Action {} of {}".format(self.pk, self.encounter)
+        return f"Management action {self.pk} of {self.encounter}"
 
 
 class TurtleMorphometricObservation(Observation):
@@ -2643,12 +2472,8 @@ class TurtleMorphometricObservation(Observation):
         help_text="The person recording the measurements.",
     )
 
-    class Meta:
-        verbose_name = "Turtle Morphometric Observation"
-
     def __str__(self):
-        tpl = "Turtle Morphometrics {0} CCL {1} CCW {2} for Encounter {3}"
-        return tpl.format(
+        return "Turtle morphometrics {}: CCL {} CCW {} for encounter {}".format(
             self.pk,
             self.curved_carapace_length_mm,
             self.curved_carapace_width_mm,
@@ -2678,17 +2503,8 @@ class HatchlingMorphometricObservation(Observation):
         help_text="The body weight in grams (1000 g = 1kg).",
     )
 
-    class Meta:
-        verbose_name = "Turtle Hatchling Morphometric Observation"
-
     def __str__(self):
-        tpl = "{0} Hatchling SCL {1} mm, SCW {2} mm, Wt {3} g"
-        return tpl.format(
-            self.pk,
-            self.straight_carapace_length_mm,
-            self.straight_carapace_width_mm,
-            self.body_weight_g,
-        )
+        return f"{self.pk} Hatchling SCL {self.straight_carapace_length_mm} mm, SCW {self.straight_carapace_width_mm} mm, Wt {self.body_weight_g} g"
 
 
 class TurtleDamageObservation(Observation):
@@ -2704,123 +2520,26 @@ class TurtleDamageObservation(Observation):
     damage_type = models.CharField(
         max_length=300,
         default="minor-trauma",
-        verbose_name="Damage type",
         choices=lookups.DAMAGE_TYPE_CHOICES,
         help_text="The type of the damage.",
     )
     damage_age = models.CharField(
         max_length=300,
         default="healed-entirely",
-        verbose_name="Damage age",
         choices=lookups.DAMAGE_AGE_CHOICES,
         help_text="The age of the damage.",
     )
     description = models.TextField(
-        verbose_name="Description",
         blank=True,
         null=True,
         help_text="A description of the damage.",
     )
-
-    class Meta:
-        verbose_name = "Turtle Damage Observation"
 
     def __str__(self):
         return "{}: {} {}".format(
             self.get_body_part_display(),
             self.get_damage_age_display(),
             self.get_damage_type_display(),
-        )
-
-
-class TrackTallyObservation(Observation):
-    """Observation of turtle track tallies and signs of predation.
-    """
-    species = models.CharField(
-        max_length=300,
-        verbose_name="Species",
-        choices=lookups.TURTLE_SPECIES_CHOICES,
-        default=lookups.TURTLE_SPECIES_DEFAULT,
-        help_text="The species of the animal causing the track.",
-    )
-    nest_age = models.CharField(
-        max_length=300,
-        verbose_name="Age",
-        choices=lookups.NEST_AGE_CHOICES,
-        default=lookups.NEST_AGE_DEFAULT,
-        help_text="The track or nest age.",
-    )
-    nest_type = models.CharField(
-        max_length=300,
-        verbose_name="Type",
-        choices=lookups.NEST_TYPE_CHOICES,
-        default=lookups.NEST_TYPE_DEFAULT,
-        help_text="The track or nest type.",
-    )
-    tally = models.PositiveIntegerField(
-        verbose_name="Tally",
-        blank=True,
-        null=True,
-        help_text="The sum of encountered tracks.",
-    )
-
-    class Meta:
-        verbose_name = "Turtle Track Tally Observation"
-
-    def __str__(self):
-        t1 = "TrackTally: {0} {1} {2}s of {3}"
-        return t1.format(self.tally, self.nest_age, self.nest_type, self.species)
-
-
-class TurtleNestDisturbanceTallyObservation(Observation):
-    """Observation of turtle track tallies and signs of predation.
-    """
-    species = models.CharField(
-        max_length=300,
-        verbose_name="Species",
-        choices=lookups.TURTLE_SPECIES_CHOICES,
-        default=lookups.TURTLE_SPECIES_DEFAULT,
-        help_text="The species of the nesting animal.",
-    )
-    disturbance_cause = models.CharField(
-        max_length=300,
-        verbose_name="Disturbance cause",
-        choices=lookups.NEST_DAMAGE_CHOICES,
-        default=lookups.NEST_DAMAGE_DEFAULT,
-        help_text="The cause of the disturbance.",
-    )
-    no_nests_disturbed = models.PositiveIntegerField(
-        verbose_name="Tally of nests disturbed",
-        blank=True,
-        null=True,
-        help_text="The sum of damaged nests.",
-    )
-    no_tracks_encountered = models.PositiveIntegerField(
-        verbose_name="Tally of disturbance signs",
-        blank=True,
-        null=True,
-        help_text="The sum of signs, e.g. predator tracks.",
-    )
-    comments = models.TextField(
-        verbose_name="Comments",
-        blank=True,
-        null=True,
-        help_text="Any other comments or notes.",
-    )
-
-    class Meta:
-        verbose_name = "Turtle Nest Disturbance Tally Observation"
-
-    def __str__(self):
-        t1 = (
-            "Nest Damage Tally: {0} nests of {1} showing disturbance by {2} "
-            "({3} disturbance signs sighted)"
-        )
-        return t1.format(
-            self.no_nests_disturbed,
-            self.species,
-            self.disturbance_cause,
-            self.no_tracks_encountered,
         )
 
 
@@ -2932,15 +2651,10 @@ class TurtleNestObservation(Observation):
         help_text="The egg temperature in degree Celsius.",
     )
     comments = models.TextField(
-        verbose_name="Comments",
         blank=True,
         null=True,
         help_text="Any other comments or notes.",
     )
-
-    class Meta:
-        verbose_name = "Turtle Nest Excavation (Egg count)"
-        verbose_name_plural = "Turtle Nest Excavations (Egg count)"
 
     def __str__(self):
         return f"Nest Obs {self.egg_count} eggs, hatching succ {self.hatching_success}, emerg succ {self.emergence_success}"
@@ -3036,11 +2750,9 @@ class TurtleNestDisturbanceObservation(Observation):
 
     disturbance_cause = models.CharField(
         max_length=300,
-        verbose_name="Disturbance cause",
         choices=lookups.NEST_DAMAGE_CHOICES,
         help_text="The cause of the disturbance.",
     )
-
     disturbance_cause_confidence = models.CharField(
         max_length=300,
         verbose_name="Disturbance cause choice confidence",
@@ -3048,29 +2760,20 @@ class TurtleNestDisturbanceObservation(Observation):
         default=lookups.NA_VALUE,
         help_text="What is the choice of disturbance cause based on?",
     )
-
     disturbance_severity = models.CharField(
         max_length=300,
-        verbose_name="Disturbance severity",
         choices=NEST_VIABILITY_CHOICES,
         default=lookups.NA_VALUE,
         help_text="The impact of the disturbance on nest viability.",
     )
-
     comments = models.TextField(
-        verbose_name="Comments",
         blank=True,
         null=True,
         help_text="Any other comments or notes.",
     )
 
     def __str__(self):
-        return "{}: Nest disturbance {} by {}".format(
-            self.pk, self.disturbance_severity, self.disturbance_cause
-        )
-
-    class Meta:
-        verbose_name = "Turtle Nest Disturbance Observation"
+        return f"{self.pk}: Nest disturbance {self.disturbance_severity} by {self.disturbance_cause}"
 
 
 class TurtleTrackObservation(Observation):
@@ -3155,7 +2858,6 @@ class TurtleHatchlingEmergenceObservation(Observation):
     )
     outlier_tracks_present = models.CharField(
         max_length=300,
-        verbose_name="Outlier tracks present",
         choices=lookups.OBSERVATION_CHOICES,
         default=lookups.NA_VALUE,
     )
@@ -3167,7 +2869,6 @@ class TurtleHatchlingEmergenceObservation(Observation):
     )
     hatchling_emergence_time_known = models.CharField(
         max_length=300,
-        verbose_name="Hatchling emergence time known",
         choices=(
             (lookups.NA_VALUE, "NA"),
             ("yes", "Yes"),
@@ -3177,7 +2878,6 @@ class TurtleHatchlingEmergenceObservation(Observation):
     )
     cloud_cover_at_emergence_known = models.CharField(
         max_length=300,
-        verbose_name="Cloud cover at emergence known",
         choices=(
             (lookups.NA_VALUE, "NA"),
             ("yes", "Yes"),
@@ -3192,7 +2892,6 @@ class TurtleHatchlingEmergenceObservation(Observation):
         default=lookups.NA_VALUE,
     )
     hatchling_emergence_time = models.DateTimeField(
-        verbose_name="Hatchling emergence time",
         blank=True,
         null=True,
         help_text="The estimated time of hatchling emergence, stored as UTC and shown in local time.",
@@ -3206,19 +2905,13 @@ class TurtleHatchlingEmergenceObservation(Observation):
         default=lookups.NA_VALUE,
     )
     cloud_cover_at_emergence = models.PositiveIntegerField(
-        verbose_name="Cloud cover at emergence",
         blank=True,
         null=True,
         help_text="If known, in eights.",
     )
 
-    class Meta:
-        verbose_name = "Turtle Hatchling Emergence Observation (Fan Angle)"
-        verbose_name_plural = "Turtle Hatchling Emergence Observations (Fan Angles)"
-
     def __str__(self):
-        """The full name."""
-        return "Fan {0} ({1}-{2}) tracks ({3}-{4} deg); water {5} deg".format(
+        return "Fan {} ({}-{}) tracks ({}-{} deg); water {} deg".format(
             self.no_tracks_main_group,
             self.no_tracks_main_group_min,
             self.no_tracks_main_group_max,
@@ -3239,7 +2932,6 @@ class LightSourceObservation(Observation):
     )
     light_source_type = models.CharField(
         max_length=300,
-        verbose_name="Light source type",
         choices=(
             (lookups.NA_VALUE, "NA"),
             ("natural", "Natural"),
@@ -3254,12 +2946,8 @@ class LightSourceObservation(Observation):
         help_text="Any other comments or notes.",
     )
 
-    class Meta:
-        verbose_name = "Turtle Hatchling Light Source Observation (Fan Angle)"
-        verbose_name_plural = "Turtle Hatchling Light Source Observations (Fan Angles)"
-
     def __str__(self):
-        return "Light Source {} at {} deg: {}".format(
+        return "Light source {} at {} deg: {}".format(
             self.get_light_source_type_display(),
             self.bearing_light_degrees,
             self.light_source_description or "",
@@ -3287,19 +2975,8 @@ class TurtleHatchlingEmergenceOutlierObservation(Observation):
         help_text="Any other comments or notes.",
     )
 
-    class Meta:
-        verbose_name = "Turtle Hatchling Emergence Outlier Observation (Fan Angle)"
-        verbose_name_plural = (
-            "Turtle Hatchling Emergence Outlier Observations (Fan Angles)"
-        )
-
     def __str__(self):
-        """The full name."""
-        return "Outlier: {0} tracks at {1} deg. {2}".format(
-            self.outlier_group_size,
-            self.bearing_outlier_track_degrees,
-            self.outlier_track_comment or "",
-        )
+        return f"Outlier: {self.outlier_group_size} tracks at {self.bearing_outlier_track_degrees} deg."
 
 
 class LoggerObservation(Observation):
@@ -3345,17 +3022,196 @@ class LoggerObservation(Observation):
         help_text="The ID of a logger must be unique within the tag type.",
     )
     comments = models.TextField(
-        verbose_name="Comment",
         blank=True,
         null=True,
         help_text="Comments",
     )
 
-    class Meta:
-        verbose_name = "Logger Observation"
-
     def __str__(self):
         if self.logger_id:
-            return f'{self.logger_id} ({self.get_logger_type_display()})'
+            return f"{self.logger_id} ({self.get_logger_type_display()})"
         else:
-            return f'{self.get_logger_type_display()}'
+            return f"{self.get_logger_type_display()}"
+
+
+class TissueSampleObservation(Observation):
+    """A tissue sample extracted from an animal during an AnimalEncounter.
+    """
+    sample_type = models.CharField(
+        max_length=128,
+        default=lookups.TISSUE_SAMPLE_TYPE_DEFAULT,
+        choices=lookups.TISSUE_SAMPLE_TYPE_CHOICES,
+        help_text="The type of tissue in this sample",
+    )
+    serial = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True,
+        db_index=True,
+        help_text="The ID/serial number of the sample",
+    )
+    description = models.TextField(
+        blank=True,
+        null=True,
+        help_text="An optional description of the sample",
+    )
+    data = models.JSONField(default=dict, help_text="Sample analysis results")
+
+    def __str__(self):
+        if self.serial:
+            return f"{self.get_sample_type_display()} - {self.serial}"
+        else:
+            self.get_sample_type_display()
+
+
+# Line transect encounter classes
+
+
+class LineTransectEncounter(Encounter):
+    """Encounter with a line transect.
+
+    An observer tallies (not individually georeferenced) observations along
+    a line transect, while recording the transect route live and keeping the
+    tally until the end of the transect.
+
+    Although individually geo-referenced Encounters are preferable, this Encounter
+    type supports tallies of abundant entities (like turtle tracks on a saturation
+    beach), collected under time pressure.
+
+    Examples:
+
+    ODK form "Track Tally", providing per record:
+    * One LineTransectEncounter with zero to many related:
+    * TrackTallyObservation
+    * TurtleNestDisturbanceTallyObservation
+    """
+
+    transect = models.LineStringField(
+        srid=4326,
+        dim=2,
+        verbose_name="Transect line",
+        help_text="The line transect as LineString in WGS84",
+    )
+
+    def __str__(self):
+        return f"Line tx {self.pk}"
+
+    def inferred_name(self):
+        """Return an empty string."""
+        return ""
+
+    def get_encounter_type(self):
+        """Infer the encounter type.
+
+        If TrackTallyObservations are related, it's a track observation.
+
+        TODO support other types of line transects when added
+        """
+        return Encounter.ENCOUNTER_TRACKS
+
+    @property
+    def short_name(self):
+        """A short, often unique, human-readable representation of the encounter.
+
+        Slugified and dash-separated:
+
+        * Date of encounter as YYYY-mm-dd
+        * longitude in WGS 84 DD, rounded to 4 decimals (<10m),
+        * latitude in WGS 84 DD, rounded to 4 decimals (<10m), (missing sign!!)
+        * nest age (type),
+        * species,
+        * name if available (requires "update names" and tag obs)
+
+        The short_name could be non-unique.
+        """
+        nameparts = [
+            self.when.astimezone(tz.tzlocal()).strftime("%Y-%m-%d %H:%M %Z"),
+            force_text(round(self.longitude, 4)).replace(".", "-"),
+            force_text(round(self.latitude, 4)).replace(".", "-"),
+        ]
+        if self.name is not None:
+            nameparts.append(self.name)
+        return slugify("-".join(nameparts))
+
+    @property
+    def latitude(self):
+        """Return the WGS 84 DD latitude."""
+        return self.where.y
+
+    @property
+    def longitude(self):
+        """Return the WGS 84 DD longitude."""
+        return self.where.x
+
+    def card_template(self):
+        return "observations/linetransectencounter_card.html"
+
+
+class TrackTallyObservation(Observation):
+    """Observation of turtle track tallies and signs of predation.
+    """
+    species = models.CharField(
+        max_length=300,
+        choices=lookups.TURTLE_SPECIES_CHOICES,
+        default=lookups.TURTLE_SPECIES_DEFAULT,
+        help_text="The species of the animal causing the track.",
+    )
+    nest_age = models.CharField(
+        max_length=300,
+        verbose_name="Age",
+        choices=lookups.NEST_AGE_CHOICES,
+        default=lookups.NEST_AGE_DEFAULT,
+        help_text="The track or nest age.",
+    )
+    nest_type = models.CharField(
+        max_length=300,
+        verbose_name="Type",
+        choices=lookups.NEST_TYPE_CHOICES,
+        default=lookups.NEST_TYPE_DEFAULT,
+        help_text="The track or nest type.",
+    )
+    tally = models.PositiveIntegerField(
+        blank=True,
+        null=True,
+        help_text="The sum of encountered tracks.",
+    )
+
+    def __str__(self):
+        return f"TrackTally: {self.tally} {self.nest_age} {self.nest_type}s of {self.species}"
+
+
+class TurtleNestDisturbanceTallyObservation(Observation):
+    """Observation of turtle track tallies and signs of predation.
+    """
+    species = models.CharField(
+        max_length=300,
+        choices=lookups.TURTLE_SPECIES_CHOICES,
+        default=lookups.TURTLE_SPECIES_DEFAULT,
+        help_text="The species of the nesting animal.",
+    )
+    disturbance_cause = models.CharField(
+        max_length=300,
+        choices=lookups.NEST_DAMAGE_CHOICES,
+        default=lookups.UNKNOWN_VALUE,
+        help_text="The cause of the disturbance.",
+    )
+    no_nests_disturbed = models.PositiveIntegerField(
+        verbose_name="Tally of nests disturbed",
+        blank=True,
+        null=True,
+        help_text="The sum of damaged nests.",
+    )
+    no_tracks_encountered = models.PositiveIntegerField(
+        verbose_name="Tally of disturbance signs",
+        blank=True,
+        null=True,
+        help_text="The sum of signs, e.g. predator tracks.",
+    )
+    comments = models.TextField(
+        blank=True,
+        null=True,
+        help_text="Any other comments or notes.",
+    )
+
+    def __str__(self):
+        return f"Nest Damage Tally: {self.no_nests_disturbed} nests of {self.species} showing disturbance by {self.disturbance_cause}"

@@ -102,7 +102,7 @@ NEST_TAG_STATUS_CHOICES = (
 
 
 NA_VALUE = "na"
-NA = ((NA_VALUE, "not observed"),)
+NA = ((NA_VALUE, "Not applicable"),)
 
 TAXON_CHOICES_DEFAULT = "Cheloniidae"
 TAXON_CHOICES = NA + (
@@ -230,9 +230,11 @@ SPECIES_CHOICES = (
     + SEASNAKE_SPECIES_CHOICES
 )
 
+UNKNOWN_VALUE = "unknown"
+UNKNOWN_CHOICE = (UNKNOWN_VALUE, "Unknown")
 SEX_CHOICES = (
-    (NA_VALUE, "NA sex"),
-    ("unknown", "Unknown sex"),
+    (NA_VALUE, "Not applicable"),
+    UNKNOWN_CHOICE,
     ("male", "Male"),
     ("female", "Female"),
     ("intersex", "Hermaphrodite or intersex"),
@@ -394,7 +396,7 @@ HABITAT_WATER = (
 )
 
 NESTING_SUCCESS_CHOICES = (
-    (NA_VALUE, "NA"),
+    (NA_VALUE, "Not applicable"),
     ("nest-with-eggs", "Nest with eggs - witnessed egg drop"),
     ("nest-unsure-of-eggs", "Nest unsure of eggs - found covered up nest mound"),
     ("unsure-if-nest", "Unsure if nest - can't tell whether nest mound present or not"),
@@ -423,7 +425,7 @@ NEST_TYPE_CHOICES = (
 )
 
 OBSERVATION_CHOICES = (
-    (NA_VALUE, "NA"),
+    (NA_VALUE, "Not applicable"),
     ("absent", "Absent"),
     ("present", "Present"),
     ("yes", "Yes"),
@@ -496,6 +498,7 @@ DAMAGE_AGE_CHOICES = (
     ("healed-entirely", "Entirely healed"),
     ("healed-partially", "Partially healed"),
     ("fresh", "Fresh"),
+    UNKNOWN_CHOICE,
 )
 
 NEST_DAMAGE_DEFAULT = "turtle"
@@ -515,12 +518,12 @@ NEST_DAMAGE_CHOICES = (
     ("pig", "Pig predation"),
     ("tide", "Tidal disturbance"),
     ("vehicle", "Vehicle damage"),
-    ("unknown", "Unknown"),
+    UNKNOWN_CHOICE,
     ("other", "Other identifiable (see comments)"),
 )
 
 TIME_ESTIMATE_CHOICES = (
-    (NA_VALUE, "NA"),
+    (NA_VALUE, "Not applicable"),
     ("same-night", "Sometime that night"),
     ("plusminus-2h", "Plus/minus 2h of estimate"),
     ("plusminus-30m", "Correct to the hour"),
@@ -530,7 +533,7 @@ TAIL_POKE_CHOICES = (
     ("absent", "Absent"),
     ("occasional", "Occasional"),
     ("regular", "Regular"),
-    ("na", "NA"),
+    ("na", "Not applicable"),
 )
 
 TURTLE_INTERACTION_CHOICES = (
@@ -539,4 +542,25 @@ TURTLE_INTERACTION_CHOICES = (
     ("net-catch-failed", "Net catch, failed"),
     ("rodeo-catch-successful", "Rodeo catch, successful"),
     ("rodeo-catch-failed", "Rodeo catch, failed"),
+)
+
+TISSUE_SAMPLE_TYPE_DEFAULT = "tissue"
+TISSUE_SAMPLE_TYPE_CHOICES = (
+    ("blood", "Blood"),
+    ("biopsy", "Biopsy"),
+    ("stomach-content", "Stomach content"),
+    ("egg", "Egg"),
+    ("skin", "Skin"),
+    ("muscle", "Muscle"),
+    ("liver", "Liver"),
+    ("heart", "Heart"),
+    ("kidney", "Kidney"),
+    ("gonad", "Gonad"),
+    ("fat", "Fat"),
+    ("brain", "Brain"),
+    ("faecal", "Faecal"),
+    ("epibiota", "Epibiota"),
+    ("keratin", "Keratin"),
+    ("bone", "Bone"),
+    (TISSUE_SAMPLE_TYPE_DEFAULT, "Other tissue"),
 )

@@ -4,30 +4,36 @@ from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 import json
 import logging
-from users.models import User
-from wastd.odk import get_auth_headers, get_form_submission_data, parse_geopoint, parse_geopoint_accuracy, get_submission_attachment
 
+from users.models import User
+from wastd.odk import (
+    get_auth_headers,
+    get_form_submission_data,
+    parse_geopoint,
+    parse_geopoint_accuracy,
+    get_submission_attachment,
+)
+from .lookups import TURTLE_INTERACTION_CHOICES
 from .models import (
+    Area,
+    Survey,
+    SurveyMediaAttachment,
+    MediaAttachment,
     TurtleNestEncounter,
     TurtleNestObservation,
     TurtleNestDisturbanceObservation,
     TurtleTrackObservation,
     NestTagObservation,
-    LoggerObservation,
     HatchlingMorphometricObservation,
     TurtleHatchlingEmergenceObservation,
     TurtleHatchlingEmergenceOutlierObservation,
     LightSourceObservation,
-    MediaAttachment,
-    Survey,
-    SurveyMediaAttachment,
-    Area,
+    LoggerObservation,
     AnimalEncounter,
     TurtleMorphometricObservation,
     TurtleDamageObservation,
     TagObservation,
 )
-from .lookups import TURTLE_INTERACTION_CHOICES
 
 LOGGER = logging.getLogger('turtles')
 
@@ -851,12 +857,12 @@ def import_turtle_sighting(form_id="turtle_sighting", auth_headers=None):
             species=sighting['species'],
             maturity=sighting['maturity'],
             comments=sighting['comments'],
+            encounter_type='other',
         )
         if sighting['interaction']:
             interaction_choices = dict(TURTLE_INTERACTION_CHOICES)
             encounter.behaviour = interaction_choices.get(sighting['interaction'], None)
 
-        encounter.encounter_type = encounter.get_encounter_type()
         encounter.save()
 
         LOGGER.info(f'Created AnimalEncounter {encounter}')

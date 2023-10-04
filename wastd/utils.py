@@ -1,5 +1,6 @@
 from collections import namedtuple
 from datetime import date, datetime
+from django.contrib.admin import site
 from django.contrib.admin.widgets import AdminFileWidget
 from django.contrib.gis.db import models
 from django.db.models import Q
@@ -129,6 +130,8 @@ class DetailViewBreadcrumbMixin(BreadcrumbContextMixin, View):
 class ResourceDownloadMixin:
     """Copy of the ResourceDownloadMixin class from django-export-download to add XLSX as a format option.
     Reference: https://github.com/soerenbe/django-export-download/blob/master/export_download/views/__init__.py
+
+    TODO: add an R resource format download (i.e. .rds).
     """
     resource_class = None
     resource_formats = ['csv', 'xlsx']
@@ -247,36 +250,53 @@ class ListResourceView(ListView):
     """Generic API list view, having filtering and pagination options as request params.
     Extend with a `model` and `serializer` class.
     """
-    http_method_names = ['get', 'options', 'trace']
+    http_method_names = ["get", "options", "trace"]
     model = None
     serializer = None
 
     def dispatch(self, request, *args, **kwargs):
         # Sanity-check request params.
-        if 'offset' in request.GET and request.GET['offset']:
+        if "offset" in request.GET and request.GET["offset"]:
             try:
-                int(request.GET['offset'])
+                int(request.GET["offset"])
             except:
                 return HttpResponseBadRequest()
-        if 'limit' in request.GET and request.GET['limit']:
+        if "limit" in request.GET and request.GET["limit"]:
             try:
-                int(request.GET['limit'])
+                int(request.GET["limit"])
             except:
                 return HttpResponseBadRequest()
         # FIXME: handle user access authorisation in this method.
         return super().dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        # General-purpose filtering uses the `q` request parameter.
+        if "q" in self.request.GET and self.request.GET["q"]:
+            query_str = self.request.GET["q"]
+            # Replace single-quotes with double-quotes
+            query_str = query_str.replace("'", r'"')
+            # If the model is registered with in admin.py, filter it using
+            # registered search_fields.
+            if site._registry[self.model].search_fields:
+                search_fields = site._registry[self.model].search_fields
+                entry_query = get_query(query_str, search_fields)
+                queryset = queryset.filter(entry_query)
+
+        return queryset
 
     def get(self, request, *args, **kwargs):
         queryset = self.get_queryset()
 
         # Pagination logic.
         count = queryset.count()
-        if 'offset' in request.GET and request.GET['offset']:
-            offset = int(request.GET['offset'])
+        if "offset" in request.GET and request.GET["offset"]:
+            offset = int(request.GET["offset"])
         else:
             offset = 0
-        if 'limit' in request.GET and request.GET['limit']:
-            limit = int(request.GET['limit'])
+        if "limit" in request.GET and request.GET["limit"]:
+            limit = int(request.GET["limit"])
         else:
             limit = 100  # Default limit
 
@@ -285,7 +305,7 @@ class ListResourceView(ListView):
             next_url = None
         else:
             next_url = request.build_absolute_uri()
-            next_url = replace_query_param(next_url, 'offset', offset + limit)
+            next_url = replace_query_param(next_url, "offset", offset + limit)
 
         # Get "previous" URL
         if offset <= 0:
@@ -293,22 +313,22 @@ class ListResourceView(ListView):
         else:
             prev_url = request.build_absolute_uri()
             if offset - limit <= 0:
-                prev_url = remove_query_param(prev_url, 'offset')
+                prev_url = remove_query_param(prev_url, "offset")
             else:
-                prev_url = replace_query_param(prev_url, 'offset', offset - limit)
+                prev_url = replace_query_param(prev_url, "offset", offset - limit)
 
         queryset = queryset[offset:offset + limit]
 
         objects = {
-            'type': 'FeatureCollection',
-            'count': count,
-            'next': next_url,
-            'previous': prev_url,
-            'features': [],
+            "type": "FeatureCollection",
+            "count": count,
+            "next": next_url,
+            "previous": prev_url,
+            "features": [],
         }
 
         for obj in queryset:
-            objects['features'].append(self.serializer.serialize(obj))
+            objects["features"].append(self.serializer.serialize(obj))
 
         return JsonResponse(objects)
 
@@ -317,7 +337,7 @@ class DetailResourceView(DetailView):
     """Generic API detail (single object) view.
     Extend with a `model` and `serializer` class.
     """
-    http_method_names = ['get', 'options', 'trace']
+    http_method_names = ["get", "options", "trace"]
     model = None
     serializer = None
 
@@ -411,7 +431,6 @@ class LegacySourceMixin(models.Model):
         choices=SOURCES,
         help_text="Where was this record captured initially?",
     )
-
     source_id = models.CharField(
         max_length=1000,
         default=uuid.uuid4,
@@ -420,8 +439,6 @@ class LegacySourceMixin(models.Model):
     )
 
     class Meta:
-        """Class opts."""
-
         abstract = True
         unique_together = ("source", "source_id")
 
@@ -930,3 +947,29 @@ FILTER_OVERRIDES = {
         },
     },
 }
+
+
+def get_query(query_string, search_fields):
+    """Returns a query which is a combination of Q objects. That combination
+    aims to search keywords within a model by testing the given search fields.
+
+    Splits the query string into individual keywords, getting rid of unecessary
+    spaces and grouping quoted words together.
+    """
+    findterms = re.compile(r'"([^"]+)"|(\S+)').findall
+    normspace = re.compile(r"\s{2,}").sub
+    query = None  # Query to search for every search term
+    terms = [normspace(" ", (t[0] or t[1]).strip()) for t in findterms(query_string)]
+    for term in terms:
+        or_query = None  # Query to search for a given term in each field
+        for field_name in search_fields:
+            q = Q(**{"%s__icontains" % field_name: term})
+            if or_query is None:
+                or_query = q
+            else:
+                or_query = or_query | q
+        if query is None:
+            query = or_query
+        else:
+            query = query & or_query
+    return query

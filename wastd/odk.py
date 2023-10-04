@@ -5,7 +5,6 @@ from django.contrib.gis.geos import Point
 from django.core.files import File
 import requests
 from tempfile import TemporaryFile
-import xmltodict
 
 from observations.models import Encounter
 
@@ -51,27 +50,25 @@ def get_form(auth_headers, project_id, form_id,):
 
 
 def get_submissions_metadata(auth_headers, project_id, form_id):
-    """Returns metadata about all submissions to an ODK form, as JSON.
+    """Returns metadata about all submissions to an ODK form, as a dict.
     """
     resp = requests.get(f"{ODK_API_URL}/projects/{project_id}/forms/{form_id}/submissions", headers=auth_headers)
     resp.raise_for_status()
-
     return resp.json()
 
 
 def get_submission(auth_headers, project_id, form_id, instance_id):
     """Returns data for a single submission, parsed as a dict.
     """
-    resp = requests.get(f"{ODK_API_URL}/projects/{project_id}/forms/{form_id}/submissions/{instance_id}.xml", headers=auth_headers)
+    resp = requests.get(f"{ODK_API_URL}/projects/{project_id}/forms/{form_id}/submissions/{instance_id}", headers=auth_headers)
     resp.raise_for_status()
-    data = xmltodict.parse(resp.content, xml_attribs=False)['data']
-
-    return data
+    return resp.json()
 
 
-def get_form_submission_data(auth_headers, project_id, form_id, skip_existing=True):
-    """Returns submission data for an ODK form, as JSON. Skips records that have already been
-    imported, by default.
+def get_form_submission_data(auth_headers, project_id, form_id, skip_existing=True, skip_rejected=True):
+    """Returns submission data for an ODK form, as JSON.
+    Skips records that have already been imported by default.
+    Skips records that are in "rejected" state in ODK, by default.
     """
     # Get submission metadata for the form.
     submissions_metadata = get_submissions_metadata(auth_headers, project_id, form_id)
@@ -82,7 +79,12 @@ def get_form_submission_data(auth_headers, project_id, form_id, skip_existing=Tr
         if skip_existing:  # Check to see if record is already present in the local database.
             if Encounter.objects.filter(source='odk', source_id=metadata["instanceId"]).exists():
                 continue
-        submission_data.append(get_submission(auth_headers, project_id, form_id, metadata["instanceId"]))
+
+        submission = get_submission(auth_headers, project_id, form_id, metadata["instanceId"])
+        if skip_rejected and submission["reviewState"] == "rejected":
+            continue
+
+        submission_data.append(submission["currentVersion"])
 
     return submission_data
 

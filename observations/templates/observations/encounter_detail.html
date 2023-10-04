@@ -65,7 +65,7 @@
                         Encounter type
                     </th>
                     <td>
-                        {{ object.get_encounter_type|capfirst }}
+                        {{ object.get_encounter_type_display }}
                     </td>
                 </tr>
                 <tr>
@@ -101,6 +101,8 @@
                     <td>
                         {% if object.survey %}
                         {{ object.survey.site.name }}
+                        {% else %}
+                        {{ object.guess_site.name }}
                         {% endif %}
                     </td>
                 </tr>
