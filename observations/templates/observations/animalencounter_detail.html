@@ -9,6 +9,7 @@
 {% endblock heading %}
 
 {% block extra_encounter_details %}
+{% comment %}
 <tr>
     <th>
         Identifiers
@@ -57,6 +58,7 @@
         {{ object.datetime_of_last_sighting|date:'d M Y H:i'  }}
     </td>
 </tr>
+{% endcomment %}
 <tr>
     <th>
         Data source

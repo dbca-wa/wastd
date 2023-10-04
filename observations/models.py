@@ -1564,7 +1564,6 @@ class AnimalEncounter(Encounter):
         verbose_name="First seen at",
         help_text="The Site in which the animal was encountered first.",
     )
-    # ODK form Turtle Tagging > nest_observed_nesting_success
     nesting_event = models.CharField(  # TODO rename to nesting_success
         max_length=300,
         verbose_name="Nesting success",

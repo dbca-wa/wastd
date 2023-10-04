@@ -96,6 +96,7 @@
                     <th>Date & time</th>
                     <th>Observer</th>
                     <th>Tag(s)</th>
+                    <th>Site</th>
                 </tr>
             </thead>
             <tbody>
@@ -104,6 +105,7 @@
                     <td><a href="{{ encounter.get_absolute_url }}">{{ encounter.when|date:"D, j M Y H:i" }}{% if encounter.where %} <i class="fa-solid fa-location-pin"></i>{% endif %}</a></td>
                     <td>{{ encounter.observer.name }}</td>
                     <td>{{ encounter.get_tag_serials }}</td>
+                    <td>{% if encounter.survey %}{{ encounter.survey.site.name }}{% else %}{{ encounter.guess_site.name }}{% endif %}</td>
                 </tr>
                 {% endfor %}
             </tbody>
