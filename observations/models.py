@@ -1239,20 +1239,9 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         ]
 
     def get_encounter_type(self):
-        """Infer the encounter type.
-
-        "Track" encounters have a TrackTallyObservation, those who don't have
-        one but involve a TagObservation are tag management encounters (tag
-        orders, distribution, returns, decommissioning).
-        Lastly, the catch-all is "other" but complete records should not end up
-        as such.
+        """Placeholder function. Subclasses will include logic to set the encounter type.
         """
-        if self.observation_set.instance_of(TrackTallyObservation).exists():
-            return self.ENCOUNTER_TRACKS
-        elif self.observation_set.instance_of(TagObservation).exists():
-            return self.ENCOUNTER_TAG
-        else:
-            return self.ENCOUNTER_OTHER
+        return self.encounter_type
 
     @property
     def short_name(self):
@@ -1654,15 +1643,19 @@ class AnimalEncounter(Encounter):
         excluded. Note that an animal encountered in water, or even a dead
         animal (whether that makes sense or not) can also be tagged.
         """
+        # Return any existing type, if set.
+        if self.encounter_type:
+            return self.encounter_type
+
         if self.nesting_event in lookups.NESTING_PRESENT:
             return Encounter.ENCOUNTER_TAGGING
         elif self.health in lookups.DEATH_STAGES:
             return Encounter.ENCOUNTER_STRANDING
         elif self.habitat in lookups.HABITAT_WATER:
-            # this will ignore inwater encounters without habitat
+            # This will ignore inwater encounters without habitat
             return Encounter.ENCOUNTER_INWATER
         else:
-            # not stranding or in water = fallback to 'other'
+            # Not stranding or in water, fall back to 'other'
             return Encounter.ENCOUNTER_OTHER
 
     @property
@@ -1849,6 +1842,10 @@ class TurtleNestEncounter(Encounter):
         return f"{self.pk}: {self.get_nest_type_display()}, {self.get_nest_age_display().lower()}, {self.get_species_display()}"
 
     def get_encounter_type(self):
+        # Return any existing type, if set.
+        if self.encounter_type:
+            return self.encounter_type
+
         if self.nest_type in ["successful-crawl", "nest", "hatched-nest"]:
             return Encounter.ENCOUNTER_NEST
         else:
