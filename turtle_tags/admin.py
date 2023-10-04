@@ -51,6 +51,9 @@ class TagPurchaseOrderAdmin(VersionAdmin):
     )
     readonly_fields = ("source", "source_id")
 
+    def has_delete_permission(self, request, obj=None):
+        return False
+
 
 @register(TurtleTag)
 class TurtleTagAdmin(VersionAdmin):
@@ -80,3 +83,6 @@ class TurtleTagAdmin(VersionAdmin):
         "box_number",
     )
     readonly_fields = ("created", "entered_by")
+
+    def has_delete_permission(self, request, obj=None):
+        return False
