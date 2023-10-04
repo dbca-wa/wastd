@@ -39,6 +39,7 @@
                 <th>Name</th>
                 <th>Observation count</th>
                 <th>Most recent observation</th>
+                <th>Most recent site</th>
             </tr>
         </thead>
         <tbody>
@@ -52,6 +53,7 @@
                 <td>{{ obj.name|default_if_none:"" }}</td>
                 <td>{{ obj.get_tag_observations.count }}</td>
                 <td>{{ obj.get_newest_encounter.when|date:"D, j M Y H:i"|default_if_none:"" }}</td>
+                <td>{{ obj.get_newest_site|default_if_none:"" }}</td>
             </tr>
             {% endfor %}
         </tbody>

@@ -77,6 +77,8 @@ class Turtle(models.Model):
         return reverse('turtle_tags:turtle_detail', kwargs={'pk': self.pk})
 
     def get_tags_description(self):
+        """Returns a comma-separated list of tag serial numbers for this turtle.
+        """
         tags = []
         for tag in self.turtletag_set.all():
             tags.append(str(tag))
@@ -93,6 +95,8 @@ class Turtle(models.Model):
         return TagObservation.objects.filter(pk__in=tag_observation_pks)
 
     def get_encounters(self):
+        """Return the queryset of AnimalEncounters for this turtle, based upon TagObservation records.
+        """
         observations = self.get_tag_observations()
         return AnimalEncounter.objects.filter(pk__in=observations.values_list("encounter", flat=True))
 
@@ -102,6 +106,18 @@ class Turtle(models.Model):
         observations = self.get_tag_observations()
         if observations:
             return observations.order_by('-encounter__when').first().encounter
+        else:
+            return None
+
+    def get_newest_site(self):
+        """Returns the name of the site where this turtle was most-recently sighted.
+        """
+        encounter = self.get_newest_encounter()
+
+        if encounter and encounter.survey:
+            return encounter.survey.site.name
+        elif encounter:
+            return encounter.guess_site.name
         else:
             return None
 
