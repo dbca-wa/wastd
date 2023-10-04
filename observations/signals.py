@@ -65,8 +65,7 @@ def encounter_pre_save(sender, instance, *args, **kwargs):
 
     * source_id: Set from short_name if empty
     * area and site: Inferred from location (where) if empty
-    * encounter_type: Always from instance.get_encounter_type()
-    * as_html: Always set from get_popup()
+    * encounter_type: Set from instance.get_encounter_type()
     """
     # If the encounter doesn't have a source_id
     if not instance.source_id:
@@ -78,7 +77,8 @@ def encounter_pre_save(sender, instance, *args, **kwargs):
         instance.site = instance.guess_site
     if not instance.area:
         instance.area = instance.guess_area
-    instance.encounter_type = instance.get_encounter_type()
+    if not instance.encounter_type:
+        instance.encounter_type = instance.get_encounter_type()
 
 
 @receiver(pre_save, sender=TagObservation)

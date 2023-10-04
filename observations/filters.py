@@ -111,6 +111,11 @@ class AnimalEncounterFilter(FilterSet):
         label="Date to",
         input_formats=settings.DATE_INPUT_FORMATS,
     )
+    user_reporter = ModelChoiceFilter(
+        field_name="reporter",
+        label="Reported by",
+        queryset=User.objects.filter(is_active=True).order_by("name"),
+    )
     user_observer = ModelChoiceFilter(
         field_name="observer",
         label="Observed by",
@@ -123,7 +128,7 @@ class AnimalEncounterFilter(FilterSet):
             #(Encounter.ENCOUNTER_LOGGER, "Logger"),
             #(Encounter.ENCOUNTER_OTHER, "Other"),
             (Encounter.ENCOUNTER_STRANDING, "Stranding"),
-            #(Encounter.ENCOUNTER_TAGGING, "Tagging"),
+            (Encounter.ENCOUNTER_TAGGING, "Tagging"),
             #(Encounter.ENCOUNTER_TAG, "Tag Management"),
         ),
     )
@@ -156,13 +161,14 @@ class AnimalEncounterFilter(FilterSet):
             "status",
             "date_from",
             "date_to",
+            "user_reporter",
             "user_observer",
             "encounter_type",
             "area",  # Locality
             "site",
             "species",
             "health",
-            "checked_for_flipper_tags",
+            #"checked_for_flipper_tags",
         ]
 
 
