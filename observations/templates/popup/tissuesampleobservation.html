@@ -1,0 +1,8 @@
+{% with original as o %}
+<i class="fa-solid fa-vial"></i>
+Tissue sample: {{ o.get_sample_type_display }}
+
+{% if o.serial %}
+Serial: {{ o.serial }}
+{% endif %}
+{% endwith %}

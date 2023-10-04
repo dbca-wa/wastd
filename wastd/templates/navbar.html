@@ -90,24 +90,10 @@
                     <i class="fa-solid fa-table" aria-hidden="true"></i>
                     <span class="align-left">Tagged turtles</span>
                 </a>
-                {% comment %}
-                <a class="dropdown-item" href="{% url 'tagging:turtleobservation_list' %}" title="Browse, filter and search all turtle observations">
+                <a class="dropdown-item" href="{% url 'observations:animalencounter-list' %}?encounter_type=tagging" title="Browse, filter and search all tagging encounters">
                     <i class="fa-solid fa-table" aria-hidden="true"></i>
-                    <span class="align-left">Turtle tag observations</span>
+                    <span class="align-left">Turtle tagging encounters</span>
                 </a>
-                <a class="dropdown-item" href="{% url 'observations:animalencounter-list' %}?encounter_type=tagging" title="Browse, filter and search all Turtle Tagging encounters">
-                    <i class="fa-solid fa-table" aria-hidden="true"></i>
-                    <span class="align-left">Tagged turtles</span>
-                </a>
-                <a class="dropdown-item" href="{% url 'observations:animalencounter-list' %}?checked_for_flipper_tags=present" title="Browse, filter and search all encounters with injured turtles, including tagging and strandings">
-                    <i class="fa-solid fa-table" aria-hidden="true"></i>
-                    <span class="align-left">Flipper tagged Turtles</span>
-                </a>
-                <a class="dropdown-item" href="{% url 'observations:animalencounter-list' %}?encounter_type=inwater" title="Browse, filter and search all in-water encounters">
-                    <i class="fa-solid fa-table" aria-hidden="true"></i>
-                    <span class="align-left">In-water encounters</span>
-                </a>
-                {% endcomment %}
             </div>
         </li>
 
@@ -150,6 +136,10 @@
                     title="Browse encounters with healthy animals">
                     <i class="fa-solid fa-table" aria-hidden="true"></i>
                     <span class="align-left">Healthy animals</span>
+                </a>
+                <a class="dropdown-item" href="{% url 'observations:animalencounter-list' %}?encounter_type=inwater" title="Browse, filter and search all in-water encounters">
+                    <i class="fa-solid fa-table" aria-hidden="true"></i>
+                    <span class="align-left">In-water encounters</span>
                 </a>
                 <div class="dropdown-divider"></div>
                 <h6 class="dropdown-header">QA shortlists</h6>
