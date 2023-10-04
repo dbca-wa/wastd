@@ -160,9 +160,8 @@ class Area(models.Model):
         unique_together = ("area_type", "name")
 
     def save(self, *args, **kwargs):
-        """Cache as_html value, centroid and northern extent.
+        """Cache centroid and northern extent.
         """
-        self.as_html = self.get_popup()
         if not self.northern_extent:
             self.northern_extent = self.derived_northern_extent
         if not self.centroid:
@@ -1050,7 +1049,6 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         max_length=300,
         blank=True,
         null=True,
-        editable=False,
         default=ENCOUNTER_OTHER,
         choices=ENCOUNTER_TYPES,
         help_text="The primary concern of this encounter.",
