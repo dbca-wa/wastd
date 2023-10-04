@@ -44,9 +44,9 @@
         <tbody>
             {% for obj in object_list %}
             <tr>
-                <td>{{ obj.pk }}</td>
+                <td><a href="{{ obj.get_absolute_url }}">{{ obj.pk }}</a></td>
                 <td>{{ obj.created|date:"j M Y" }}</td>
-                <td><a href="{{ obj.get_absolute_url }}">{{ obj.get_species_display }}</a></td>
+                <td>{{ obj.get_species_display }}</td>
                 <td>{{ obj.get_sex_display }}</td>
                 <td>{{ obj.get_tags_description }}</td>
                 <td>{{ obj.name|default_if_none:"" }}</td>
