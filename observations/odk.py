@@ -857,12 +857,12 @@ def import_turtle_sighting(form_id="turtle_sighting", auth_headers=None):
             species=sighting['species'],
             maturity=sighting['maturity'],
             comments=sighting['comments'],
+            encounter_type='other',
         )
         if sighting['interaction']:
             interaction_choices = dict(TURTLE_INTERACTION_CHOICES)
             encounter.behaviour = interaction_choices.get(sighting['interaction'], None)
 
-        encounter.encounter_type = encounter.get_encounter_type()
         encounter.save()
 
         LOGGER.info(f'Created AnimalEncounter {encounter}')
