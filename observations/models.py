@@ -1076,6 +1076,16 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
     def status_colour(self):
         """Return a Bootstrap4 CSS colour class for each status."""
         return self.STATUS_LABELS[self.status]
+    
+    @property
+    def latitude(self):
+        """Return the WGS 84 DD latitude."""
+        return self.where.y
+
+    @property
+    def longitude(self):
+        """Return the WGS 84 DD longitude."""
+        return self.where.x
 
     # FSM transitions --------------------------------------------------------#
     def can_curate(self):
@@ -1403,10 +1413,7 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         return False
 
     # HTML popup -------------------------------------------------------------#
-    @property
-    def wkt(self):
-        """Return the point coordinates as Well Known Text (WKT)."""
-        return self.where.wkt
+    
 
     def get_popup(self):
         """Generate HTML popup content."""
@@ -1417,7 +1424,12 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         """Generate an HTML report of the Encounter."""
         t = loader.get_template("reports/{}.html".format(self._meta.model_name))
         return mark_safe(t.render({"original": self}))
-
+    
+    @property
+    def wkt(self):
+        """Return the point coordinates as Well Known Text (WKT)."""
+        return self.where.wkt
+    
     @property
     def observation_set(self):
         """Manually implement the backwards relation to the Observation model."""
@@ -1685,15 +1697,15 @@ class AnimalEncounter(Encounter):
             nameparts.append(self.name)
         return slugify("-".join(nameparts))
 
-    @property
-    def latitude(self):
-        """Return the WGS 84 DD latitude."""
-        return self.where.y
+    # @property
+    # def latitude(self):
+    #     """Return the WGS 84 DD latitude."""
+    #     return self.where.y
 
-    @property
-    def longitude(self):
-        """Return the WGS 84 DD longitude."""
-        return self.where.x
+    # @property
+    # def longitude(self):
+    #     """Return the WGS 84 DD longitude."""
+    #     return self.where.x
 
     @property
     def is_stranding(self):
@@ -1874,15 +1886,15 @@ class TurtleNestEncounter(Encounter):
             nameparts.append(self.name)
         return slugify("-".join(nameparts))
 
-    @property
-    def latitude(self):
-        """Return the WGS 84 DD latitude."""
-        return self.where.y
+    # @property
+    # def latitude(self):
+    #     """Return the WGS 84 DD latitude."""
+    #     return self.where.y
 
-    @property
-    def longitude(self):
-        """Return the WGS 84 DD longitude."""
-        return self.where.x
+    # @property
+    # def longitude(self):
+    #     """Return the WGS 84 DD longitude."""
+    #     return self.where.x
 
     @property
     def inferred_name(self):
