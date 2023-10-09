@@ -1,12 +1,12 @@
 from django.core.management.base import BaseCommand
 import logging
 from observations.odk import (
-    import_turtle_track_or_nest,
+    import_turtle_track_or_nest_simple,
+    # import_turtle_track_or_nest,
     import_site_visit_start,
     import_site_visit_end,
-    import_marine_wildlife_incident,
-    import_turtle_sighting,
-    import_turtle_track_or_nest_simple
+    # import_marine_wildlife_incident,
+    # import_turtle_sighting,
 )
 from wastd.odk import get_auth_headers
 
@@ -38,11 +38,11 @@ class Command(BaseCommand):
         logger.info("Downloading auth headers")
         auth_headers = get_auth_headers()
 
-        logger.info('Downloading data from Turtle Track or Nest form')
-        import_turtle_track_or_nest(auth_headers=auth_headers)
-
         logger.info('Downloading data from Simple Turtle Track or Nest form')
         import_turtle_track_or_nest_simple(auth_headers=auth_headers)
+
+        #logger.info('Downloading data from Turtle Track or Nest form')
+        #import_turtle_track_or_nest(auth_headers=auth_headers)
 
         logger.info('Downloading data from Site Visit Start form')
         import_site_visit_start(initial_duration_hr=options['initial_duration'], auth_headers=auth_headers)
@@ -50,8 +50,8 @@ class Command(BaseCommand):
         logger.info('Downloading data from Site Visit End form, linking encounters')
         import_site_visit_end(duration_hr=options['duration'], auth_headers=auth_headers)
 
-        logger.info('Downloading data from Marine Wildlife Incident form')
-        import_marine_wildlife_incident(auth_headers=auth_headers)
+        # logger.info('Downloading data from Marine Wildlife Incident form')
+        # import_marine_wildlife_incident(auth_headers=auth_headers)
 
-        logger.info('Downloading data from Turtle Sighting form')
-        import_turtle_sighting(auth_headers=auth_headers)
+        # logger.info('Downloading data from Turtle Sighting form')
+        # import_turtle_sighting(auth_headers=auth_headers)
