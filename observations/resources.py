@@ -139,7 +139,7 @@ class EncounterResource(ModelResource):
         return obj.longitude
     
     #excel can't deal with timezone objects so convert to a string. 
-    #Note this is the server local time NOT the local time the encouter happened - this is potetially bad. Really should be storing the timezone of collection
+    #Note this displayed using the Django set timezone NOT the timezone the encouter happened - this is potetially bad if it is different. Really should be showing the timezone of collection
     def dehydrate_when(self, obj):
         return obj.when.astimezone(tz.tzlocal()).strftime("%d-%b-%Y %H:%M:%S")
 
@@ -160,14 +160,14 @@ class EncounterResource(ModelResource):
             return obj.when.astimezone(tz.tzlocal()).year
         return ''
     
-    #Note this is the server local time NOT the local time the encouter happened - this is potetially bad. Really should be storing the timezone of collection
+    #Note this displayed using the Django set timezone NOT the timezone the encouter happened - this is potetially bad if it is different. Really should be showing the timezone of collection
     def dehydrate_time(self, obj):
         if obj.when:
             return obj.when.astimezone(tz.tzlocal()).strftime("%H:%M:%S")
         return ''
     
     #from 12pm to 12pm then next day, the date stays the same i.e 11:59am on 3/12/23 is 2/12/23
-    ##Note this is the server local time NOT the local time the encouter happened - this is potetially bad. Really should be storing the timezone of collection
+    #Note this displayed using the Django set timezone NOT the timezone the encouter happened - this is potetially bad if it is different. Really should be showing the timezone of collection
     def dehydrate_turtle_time_day(self, obj):
         if obj.when:
             if obj.when.astimezone(tz.tzlocal()).hour < 12:
@@ -560,7 +560,7 @@ class TurtleNestEncounterResource(EncounterResource):
     def dehydrate_date_nest_laid(self, encounter):
         obs = encounter.get_nesttag_observation()
         if obs and obs.date_nest_laid:
-            return obs.date_nest_laid.strftime("%Y-%m-%d") #no timezone stored in object - this may be displaying UTC?
+            return obs.date_nest_laid.strftime("%Y-%m-%d") #no timezone stored in object as it's only a date object
         else:
             return ''
 

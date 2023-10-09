@@ -34,10 +34,11 @@ from .models import (
     TurtleNestDisturbanceTallyObservation,
     TurtleNestEncounter,
     TurtleNestObservation,
+    TurtleTrackObservation,
     TurtleHatchlingEmergenceObservation,
     TurtleHatchlingEmergenceOutlierObservation,
     LightSourceObservation,
-    LoggerObservation,
+    LoggerObservation
 )
 from .resources import (
     SurveyResource,
@@ -145,6 +146,10 @@ class TurtleNestObservationInline(StackedInline):
     model = TurtleNestObservation
     classes = ("grp-collapse grp-open",)
 
+class TurtleTrackObservationInline(admin.TabularInline):
+    extra = 0
+    model = TurtleTrackObservation
+    classes = ("grp-collapse grp-open",)
 
 class TurtleNestDisturbanceObservationInline(admin.TabularInline):
     """Admin for TurtleNestDisturbanceObservation."""
@@ -473,6 +478,32 @@ class TurtleDamageObservationAdmin(ObservationAdminMixin):
             )
         )
 
+@register(TurtleTrackObservation)
+class TurtleTrackObservationAdmin(ObservationAdminMixin):
+    list_display = (
+        ObservationAdminMixin.LIST_FIRST
+        + (
+            "max_track_width_front",
+            "max_track_width_rear",
+            "carapace_drag_width",
+            "step_length",
+        )
+        + ObservationAdminMixin.LIST_LAST
+    )
+
+
+    def get_queryset(self, request):
+        return (
+            super()
+            .get_queryset(request)
+            .prefetch_related(
+                "encounter",
+                "encounter__reporter",
+                "encounter__observer",
+                "encounter__area",
+                "encounter__site",
+            )
+        )
 
 @register(TurtleNestDisturbanceObservation)
 class TurtleNestDisturbanceObservationAdmin(ObservationAdminMixin):
@@ -1491,6 +1522,7 @@ class TurtleNestEncounterAdmin(ExportActionMixin, EncounterAdmin):
         NestTagObservationInline,
         TurtleNestObservationInline,
         TurtleNestDisturbanceObservationInline,
+        TurtleTrackObservationInline,
         HatchlingMorphometricObservationInline,
         TurtleHatchlingEmergenceObservationInline,
         TurtleHatchlingEmergenceOutlierObservationInline,

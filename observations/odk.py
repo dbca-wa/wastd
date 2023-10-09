@@ -237,6 +237,7 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=Non
                     step_length=int(track_observation['step_length']) if track_observation['step_length'] else None,
                     tail_pokes=track_observation['tail_pokes'],
                 )
+                track_observation.save()
                 LOGGER.info(f'Created TurtleTrackObservation {track_observation}')
 
         # NestTagObservation object.
@@ -424,6 +425,115 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=Non
                     photo.save()
                     LOGGER.info(f'Created MediaAttachment {photo}')
 
+def import_turtle_track_or_nest_simple(form_id="beach_tracks_nest_simple", auth_headers=None):
+    """Import submissions to the Simple turtle Track or Nest ODK form.
+    Each submission should create:
+    1 TurtleNestEncounter
+    0-1 TurtleTrackObservation (unidentified species track)
+    0+ TurtleNestDisturbanceObservation (disturbance/predation observations)
+    """
+    if not auth_headers:
+        LOGGER.info("Downloading auth headers")
+        auth_headers = get_auth_headers()
+    project_id = settings.ODK_API_PROJECTID
+    LOGGER.info(f"Downloading {form_id} submission data")
+    submissions = get_form_submission_data(auth_headers, project_id, form_id)
+
+    for submission in submissions:
+        instance_id = submission['meta']['instanceID']
+        if TurtleNestEncounter.objects.filter(source='odk', source_id=instance_id):
+            continue  # Skip records already imported.
+
+        # Try to match the reporter to an existing user. If not, create a new one.
+        reporter = submission['reporter']
+        user = get_user(reporter)
+
+        # Confusingly, TurtleNestEncounter objects cover nest, track and nest & track encounters.
+        encounter = TurtleNestEncounter(
+            status='imported',
+            source='odk',
+            source_id=instance_id,
+            where=parse_geopoint(submission['details']['observed_at']),
+            when=parser.isoparse(submission['start_time']),
+            observer=user,
+            reporter=user,
+            comments=f'Device ID {submission["device_id"]}',
+            #nest_age=submission['details']['nest_age'],
+            nest_type=submission['details']['nest_type'],
+            species=submission['details']['species'],
+        )
+
+        encounter.encounter_type = encounter.get_encounter_type()
+
+        if 'details' in submission:
+            encounter.habitat = submission['details']['habitat']
+            if submission['details']['disturbance_cause']:
+                encounter.disturbance = "yes"
+            else:
+                encounter.disturbance = "no"
+
+        # Try to determine the encounter site & area.
+        encounter.area = encounter.guess_area
+        encounter.site = encounter.guess_site
+
+        encounter.save()
+        LOGGER.info(f'Created TurtleNestEncounter: {encounter}')
+        # TurtleTrackObservation object.
+        if 'track_photos' in submission['details']:
+            track_observation = submission['details']['track_photos']
+            if track_observation['photo_track_1']:
+                filename = track_observation['photo_track_1']
+                LOGGER.info(f"Downloading {filename}")
+                attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
+                photo = MediaAttachment(
+                    encounter=encounter,
+                    media_type='photograph',
+                    title=f'Photo of track {filename}',
+                    attachment=attachment,
+                )
+                photo.save()
+                LOGGER.info(f'Created MediaAttachment {photo}')
+            if track_observation['photo_track_2']:
+                filename = track_observation['photo_track_2']
+                LOGGER.info(f"Downloading {filename}")
+                attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
+                photo = MediaAttachment(
+                    encounter=encounter,
+                    media_type='photograph',
+                    title=f'Photo of track {filename}',
+                    attachment=attachment,
+                )
+                photo.save()
+                LOGGER.info(f'Created MediaAttachment {photo}')
+            if any([
+                track_observation['max_track_width_front'],
+                track_observation['tail_pokes'],
+            ]):
+                track_observation = TurtleTrackObservation(
+                    encounter=encounter,
+                    max_track_width_front=int(track_observation['max_track_width_front']) if track_observation['max_track_width_front'] else None,
+                    tail_pokes=track_observation['tail_pokes'],
+                )
+                track_observation.save()
+                LOGGER.info(f'Created TurtleTrackObservation {track_observation}')
+
+        
+        #for this simple form we are just assuming tracks are a low disturbance event, with no other information collected
+        #these are retrieved as a space delimited string "fox cat dog"
+        if submission['details']['disturbance_cause']:
+            disturbances = submission['details']['disturbance_cause'].split()
+            for aDisturbance in disturbances:
+                disturbance = TurtleNestDisturbanceObservation(
+                    encounter=encounter,
+                    disturbance_cause=aDisturbance,
+                    #disturbance_cause_confidence=observation['disturbance_cause_confidence'],
+                    #disturbance_severity=observation['disturbance_severity'],
+                    comments=submission['details']['comments'],
+                )
+                disturbance.save()
+                LOGGER.info(f'Created TurtleNestDisturbanceObservation: {disturbance}')
+
+
 
 def import_site_visit_start(form_id="site_visit_start", initial_duration_hr=8, auth_headers=None):
     """Import submissions to the Site Visit Start ODK form.
@@ -567,11 +677,11 @@ def import_site_visit_end(form_id="site_visit_end", duration_hr=8, auth_headers=
 
 def import_marine_wildlife_incident(form_id="marine_wildlife_incident", auth_headers=None):
     """Import submissions to the Marine Wildlife Incident ODK form.
-    Each submission should create:
-        1 AnimalEncounter
-        0-1 TurtleMorphometricObservation
-        0+ TurtleDamageObservation
-        0+ TagObservation
+        Each submission should create:
+            1 AnimalEncounter
+            0-1 TurtleMorphometricObservation
+            0+ TurtleDamageObservation
+            0+ TagObservation
     """
     if not auth_headers:
         LOGGER.info("Downloading auth headers")
