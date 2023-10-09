@@ -2820,6 +2820,9 @@ class TurtleTrackObservation(Observation):
         help_text="Are regular dips in the middle of the track present?",
     )
 
+    def __str__(self):
+        return f"Track front width {self.max_track_width_front} mm"
+
 
 class TurtleHatchlingEmergenceObservation(Observation):
     """Turtle hatchling emergence observation.
