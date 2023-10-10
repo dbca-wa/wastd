@@ -580,7 +580,7 @@ class LineTransectEncounterResource(ModelResource):
             "source",
             "source_id",
             "where",
-            "wkt" "longitude",
+            "longitude",
             "latitude",
             "location_accuracy_m",
             "when",
