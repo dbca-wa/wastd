@@ -44,6 +44,7 @@ mssql-django = "1.2"
 webtemplate-dbca = "1.5.1"
 django-bootstrap-pagination = "1.7.1"
 django-storages = {version = "1.13.2", extras = ["azure"]}
+django-debug-toolbar = "^4.2.0"
 
 [tool.poetry.group.dev.dependencies]
 ipython = "^8.14.0"

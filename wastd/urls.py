@@ -64,4 +64,5 @@ urlpatterns = [
     path("403/", defaults.permission_denied, kwargs={"exception": Exception("Permission denied")}),
     path("404/", defaults.page_not_found, kwargs={"exception": Exception("Page not found")}),
     path("500/", defaults.server_error),
+    path("__debug__/", include("debug_toolbar.urls")),
 ]
