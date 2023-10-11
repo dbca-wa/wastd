@@ -1697,15 +1697,6 @@ class AnimalEncounter(Encounter):
             nameparts.append(self.name)
         return slugify("-".join(nameparts))
 
-    # @property
-    # def latitude(self):
-    #     """Return the WGS 84 DD latitude."""
-    #     return self.where.y
-
-    # @property
-    # def longitude(self):
-    #     """Return the WGS 84 DD longitude."""
-    #     return self.where.x
 
     @property
     def is_stranding(self):
@@ -1886,16 +1877,6 @@ class TurtleNestEncounter(Encounter):
             nameparts.append(self.name)
         return slugify("-".join(nameparts))
 
-    # @property
-    # def latitude(self):
-    #     """Return the WGS 84 DD latitude."""
-    #     return self.where.y
-
-    # @property
-    # def longitude(self):
-    #     """Return the WGS 84 DD longitude."""
-    #     return self.where.x
-
     @property
     def inferred_name(self):
         """Return the first NestTag name or None."""
@@ -1923,28 +1904,23 @@ class TurtleNestEncounter(Encounter):
         """A turtle nest encounter should be associated with 0-1 nest observation objects.
         Returns the related turtle nest observation or None.
         """
-        if self.observation_set.instance_of(TurtleNestObservation).exists():
-            return self.observation_set.instance_of(TurtleNestObservation).first()
-        else:
-            return None
+        observation = self.observation_set.instance_of(TurtleNestObservation).first()
+        return observation
 
     def get_nesttag_observation(self):
         """A turtle nest encounter should be associated with 0-1 NestTagObservation objects.
         Returns the related NestTagObservation or None.
         """
-        if self.observation_set.instance_of(NestTagObservation).exists():
-            return self.observation_set.instance_of(NestTagObservation).first()
-        else:
-            return None
+        
+        observation = self.observation_set.instance_of(NestTagObservation).first()
+        return observation
 
     def get_hatchling_emergence_observation(self):
         """A turtle nest encounter should be associated with 0-1 TurtleHatchlingEmergenceObservation objects.
         Returns the related TurtleHatchlingEmergenceObservation or None.
         """
-        if self.observation_set.instance_of(TurtleHatchlingEmergenceObservation).exists():
-            return self.observation_set.instance_of(TurtleHatchlingEmergenceObservation).first()
-        else:
-            return None
+        observation = self.observation_set.instance_of(TurtleHatchlingEmergenceObservation).first()
+        return observation
 
 
 class Observation(PolymorphicModel, LegacySourceMixin, models.Model):
