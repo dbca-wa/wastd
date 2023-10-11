@@ -219,7 +219,7 @@ class AnimalEncounterResource(EncounterResource):
 
 
 class TurtleNestEncounterResource(EncounterResource):
-
+   
     # Construct fields that belong to child TurtleNestObservation objects.
     eggs_laid = Field(column_name='Eggs laid?')
     egg_count = Field(column_name='Eggs count')
@@ -368,71 +368,71 @@ class TurtleNestEncounterResource(EncounterResource):
             return encounter.fan_angles_measured in ['present', 'yes']
 
     def dehydrate_eggs_laid(self, encounter):
-        obs = encounter.get_nest_observation()
+        obs = self._get_or_cache_observation(encounter, 'nest_observation')
         return self.get_child_observation_output(obs, 'eggs_laid')
 
     def dehydrate_egg_count(self, encounter):
-        obs = encounter.get_nest_observation()
+        obs = self._get_or_cache_observation(encounter, 'nest_observation')
         return self.get_child_observation_output(obs, 'egg_count')
 
     def dehydrate_no_egg_shells(self, encounter):
-        obs = encounter.get_nest_observation()
+        obs = self._get_or_cache_observation(encounter, 'nest_observation')
         return self.get_child_observation_output(obs, 'no_egg_shells')
 
     def dehydrate_no_live_hatchlings(self, encounter):
-        obs = encounter.get_nest_observation()
+        obs = self._get_or_cache_observation(encounter, 'nest_observation')
         return self.get_child_observation_output(obs, 'no_live_hatchlings')
 
     def dehydrate_no_dead_hatchlings(self, encounter):
-        obs = encounter.get_nest_observation()
+        obs = self._get_or_cache_observation(encounter, 'nest_observation')
         return self.get_child_observation_output(obs, 'no_dead_hatchlings')
 
     def dehydrate_no_undeveloped_eggs(self, encounter):
-        obs = encounter.get_nest_observation()
+        obs = self._get_or_cache_observation(encounter, 'nest_observation')
         return self.get_child_observation_output(obs, 'no_undeveloped_eggs')
 
     def dehydrate_no_unhatched_eggs(self, encounter):
-        obs = encounter.get_nest_observation()
+        obs = self._get_or_cache_observation(encounter, 'nest_observation')
         return self.get_child_observation_output(obs, 'no_unhatched_eggs')
 
     def dehydrate_no_unhatched_term(self, encounter):
-        obs = encounter.get_nest_observation()
+        obs = self._get_or_cache_observation(encounter, 'nest_observation')
         return self.get_child_observation_output(obs, 'no_unhatched_term')
 
     def dehydrate_no_depredated_eggs(self, encounter):
-        obs = encounter.get_nest_observation()
+        obs = self._get_or_cache_observation(encounter, 'nest_observation')
         return self.get_child_observation_output(obs, 'no_depredated_eggs')
 
     def dehydrate_hatching_success(self, encounter):
-        obs = encounter.get_nest_observation()
+        obs = self._get_or_cache_observation(encounter, 'nest_observation')
         return self.get_child_observation_output(obs, 'hatching_success')
 
     def dehydrate_emergence_success(self, encounter):
-        obs = encounter.get_nest_observation()
+        obs = self._get_or_cache_observation(encounter, 'nest_observation')
         return self.get_child_observation_output(obs, 'emergence_success')
 
     def dehydrate_nest_depth_top(self, encounter):
-        obs = encounter.get_nest_observation()
+        obs = self._get_or_cache_observation(encounter, 'nest_observation')
         return self.get_child_observation_output(obs, 'nest_depth_top')
 
     def dehydrate_nest_depth_bottom(self, encounter):
-        obs = encounter.get_nest_observation()
+        obs = self._get_or_cache_observation(encounter, 'nest_observation')
         return self.get_child_observation_output(obs, 'nest_depth_bottom')
 
     def dehydrate_sand_temp(self, encounter):
-        obs = encounter.get_nest_observation()
+        obs = self._get_or_cache_observation(encounter, 'nest_observation')
         return self.get_child_observation_output(obs, 'sand_temp')
 
     def dehydrate_air_temp(self, encounter):
-        obs = encounter.get_nest_observation()
+        obs = self._get_or_cache_observation(encounter, 'nest_observation')
         return self.get_child_observation_output(obs, 'air_temp')
 
     def dehydrate_water_temp(self, encounter):
-        obs = encounter.get_nest_observation()
+        obs = self._get_or_cache_observation(encounter, 'nest_observation')
         return self.get_child_observation_output(obs, 'water_temp')
 
     def dehydrate_egg_temp(self, encounter):
-        obs = encounter.get_nest_observation()
+        obs = self._get_or_cache_observation(encounter, 'nest_observation')
         return self.get_child_observation_output(obs, 'egg_temp')
 
     def dehydrate_nest_tag(self, encounter):
@@ -443,77 +443,50 @@ class TurtleNestEncounterResource(EncounterResource):
             return ''
 
     def dehydrate_bearing_to_water_degrees(self, encounter):
-        obs = encounter.get_hatchling_emergence_observation()
-        if obs:
-            return self.get_child_observation_output(obs, 'bearing_to_water_degrees')
-        else:
-            return ''
+        obs = self._get_or_cache_observation(encounter, 'hatchling_emergence_observation')
+
+        return self.get_child_observation_output(obs, 'bearing_to_water_degrees')
+    
 
     def dehydrate_bearing_leftmost_track_degrees(self, encounter):
-        obs = encounter.get_hatchling_emergence_observation()
-        if obs:
-            return self.get_child_observation_output(obs, 'bearing_leftmost_track_degrees')
-        else:
-            return ''
+        obs = self._get_or_cache_observation(encounter, 'hatchling_emergence_observation')
+        return self.get_child_observation_output(obs, 'bearing_leftmost_track_degrees')
 
     def dehydrate_bearing_rightmost_track_degrees(self, encounter):
-        obs = encounter.get_hatchling_emergence_observation()
-        if obs:
-            return self.get_child_observation_output(obs, 'bearing_rightmost_track_degrees')
-        else:
-            return ''
+        obs = self._get_or_cache_observation(encounter, 'hatchling_emergence_observation')
+        return self.get_child_observation_output(obs, 'bearing_rightmost_track_degrees')
 
     def dehydrate_no_tracks_main_group(self, encounter):
-        obs = encounter.get_hatchling_emergence_observation()
-        if obs:
-            return self.get_child_observation_output(obs, 'no_tracks_main_group')
-        else:
-            return ''
+        obs = self._get_or_cache_observation(encounter, 'hatchling_emergence_observation')
+        return self.get_child_observation_output(obs, 'no_tracks_main_group')
 
     def dehydrate_no_tracks_main_group_min(self, encounter):
-        obs = encounter.get_hatchling_emergence_observation()
-        if obs:
-            return self.get_child_observation_output(obs, 'no_tracks_main_group_min')
-        else:
-            return ''
+        obs = self._get_or_cache_observation(encounter, 'hatchling_emergence_observation')
+        return self.get_child_observation_output(obs, 'no_tracks_main_group_min')
 
     def dehydrate_no_tracks_main_group_max(self, encounter):
-        obs = encounter.get_hatchling_emergence_observation()
-        if obs:
-            return self.get_child_observation_output(obs, 'no_tracks_main_group_max')
-        else:
-            return ''
+        obs = self._get_or_cache_observation(encounter, 'hatchling_emergence_observation')
+        return self.get_child_observation_output(obs, 'no_tracks_main_group_max')
 
     def dehydrate_outlier_tracks_present(self, encounter):
-        obs = encounter.get_hatchling_emergence_observation()
-        if obs:
-            return self.get_child_observation_output(obs, 'outlier_tracks_present')
-        else:
-            return ''
+        obs = self._get_or_cache_observation(encounter, 'hatchling_emergence_observation')
+        return self.get_child_observation_output(obs, 'outlier_tracks_present')
 
     def dehydrate_path_to_sea_comments(self, encounter):
-        obs = encounter.get_hatchling_emergence_observation()
-        if obs:
-            return self.get_child_observation_output(obs, 'path_to_sea_comments')
-        else:
-            return ''
+        obs = self._get_or_cache_observation(encounter, 'hatchling_emergence_observation')
+        return self.get_child_observation_output(obs, 'path_to_sea_comments')
 
     def dehydrate_hatchling_emergence_time_known(self, encounter):
-        obs = encounter.get_hatchling_emergence_observation()
-        if obs:
-            return self.get_child_observation_output(obs, 'hatchling_emergence_time_known')
-        else:
-            return ''
+        obs = self._get_or_cache_observation(encounter, 'hatchling_emergence_observation')
+        return self.get_child_observation_output(obs, 'hatchling_emergence_time_known')
 
     def dehydrate_light_sources_present(self, encounter):
-        obs = encounter.get_hatchling_emergence_observation()
-        if obs:
-            return self.get_child_observation_output(obs, 'light_sources_present')
-        else:
-            return ''
+        obs = self._get_or_cache_observation(encounter, 'hatchling_emergence_observation')
+        return self.get_child_observation_output(obs, 'light_sources_present')
+    
     #assumed recored in AWST then stored in UTC
     def dehydrate_hatchling_emergence_time(self, encounter):
-        obs = encounter.get_hatchling_emergence_observation()
+        obs = self._get_or_cache_observation(encounter, 'hatchling_emergence_observation')
         if obs:
             atime =  self.get_child_observation_output(obs, 'hatchling_emergence_time')
             if atime:
@@ -522,35 +495,27 @@ class TurtleNestEncounterResource(EncounterResource):
             return ''
 
     def dehydrate_hatchling_emergence_time_accuracy(self, encounter):
-        obs = encounter.get_hatchling_emergence_observation()
-        if obs:
-            return self.get_child_observation_output(obs, 'hatchling_emergence_time_accuracy')
-        else:
-            return ''
+        obs = self._get_or_cache_observation(encounter, 'hatchling_emergence_observation')
+        return self.get_child_observation_output(obs, 'hatchling_emergence_time_accuracy')
+
 
     def dehydrate_cloud_cover_at_emergence_known(self, encounter):
-        obs = encounter.get_hatchling_emergence_observation()
-        if obs:
-            return self.get_child_observation_output(obs, 'cloud_cover_at_emergence_known')
-        else:
-            return ''
+        obs = self._get_or_cache_observation(encounter, 'hatchling_emergence_observation')
+        return self.get_child_observation_output(obs, 'cloud_cover_at_emergence_known')
 
     def dehydrate_cloud_cover_at_emergence(self, encounter):
-        obs = encounter.get_hatchling_emergence_observation()
-        if obs:
-            return self.get_child_observation_output(obs, 'cloud_cover_at_emergence')
-        else:
-            return ''
+        obs = self._get_or_cache_observation(encounter, 'hatchling_emergence_observation')
+        return self.get_child_observation_output(obs, 'cloud_cover_at_emergence')
 
     def dehydrate_nest_tag_status(self, encounter):
-        obs = encounter.get_nesttag_observation()
+        obs = self._get_or_cache_observation(encounter,'nesttag_observation')
         if obs:
             return obs.get_status_display()
         else:
             return ''
 
     def dehydrate_flipper_tag_id(self, encounter):
-        obs = encounter.get_nesttag_observation()
+        obs = self._get_or_cache_observation(encounter,'nesttag_observation')
         if obs:
             return obs.flipper_tag_id
         else:
@@ -558,18 +523,33 @@ class TurtleNestEncounterResource(EncounterResource):
     
     
     def dehydrate_date_nest_laid(self, encounter):
-        obs = encounter.get_nesttag_observation()
+        obs = self._get_or_cache_observation(encounter,'nesttag_observation')
         if obs and obs.date_nest_laid:
             return obs.date_nest_laid.strftime("%Y-%m-%d") #no timezone stored in object as it's only a date object
         else:
             return ''
 
     def dehydrate_tag_label(self, encounter):
-        obs = encounter.get_nesttag_observation()
+        obs = self._get_or_cache_observation(encounter,'nesttag_observation')
         if obs:
             return obs.tag_label or ''
         else:
             return ''
+    
+    #only call the database if we haven't got the observation yet
+    def _get_or_cache_observation(self, encounter, obs_type):
+        cache_attr = f"_cached_{obs_type}"
+        if not hasattr(encounter, cache_attr):
+            if obs_type == 'nest_observation':
+                observation = encounter.get_nest_observation()
+            elif obs_type == 'hatchling_emergence_observation':
+                observation = encounter.get_hatchling_emergence_observation()
+            elif obs_type == 'nesttag_observation':
+                observation = encounter.get_nesttag_observation()
+            else:
+                observation = None
+            setattr(encounter, cache_attr, observation)
+        return getattr(encounter, cache_attr)
 
 
 class LineTransectEncounterResource(ModelResource):
