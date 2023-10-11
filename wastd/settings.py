@@ -9,7 +9,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # Settings defined in environment variables.
-DEBUG = os.environ.get("DEBUG", False) == "False"
+DEBUG = os.environ.get("DEBUG", False) == "True"
 SECRET_KEY = os.environ.get("SECRET_KEY", "PlaceholderSecretKey")
 if not DEBUG:
     ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(",")
@@ -202,7 +202,7 @@ LOGIN_REDIRECT_URL = '/'
 SITE_NAME = os.environ.get("SITE_NAME", "Turtles Database")
 SITE_TITLE = os.environ.get("SITE_TITLE", "Turtles Database")
 SITE_CODE = os.environ.get("SITE_CODE", "Turtles")
-VERSION_NO = "1.0.6"
+VERSION_NO = "1.0.7"
 
 
 # Database configuration
