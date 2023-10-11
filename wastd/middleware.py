@@ -1,6 +1,9 @@
 from django.http import HttpResponse, HttpResponseServerError
 import logging
-from debug_toolbar.panels import Panel
+from django.conf import settings
+if settings.DEBUG:
+    from debug_toolbar.panels import Panel
+
 
 LOGGER = logging.getLogger("turtles")
 
@@ -41,17 +44,17 @@ class HealthCheckMiddleware(object):
 
         return HttpResponse("OK")
 
+if settings.DEBUG:
+    #Create a debug panel to catch file downloads, allows profiling 
+    #from https://stackoverflow.com/a/74223126
+    class FileInterceptsPanel(Panel):
+        has_content = False
+        title = 'Intercept files'
 
-#Create a debug panel to catch file downloads, allows profiling 
-#from https://stackoverflow.com/a/74223126
-class FileInterceptsPanel(Panel):
-    has_content = False
-    title = 'Intercept files'
-
-    def process_request(self, request):
-        """If the response contains a file, replace it by a dummy response"""
-        response = super().process_request(request)
-        response_is_file = ...  # use whatever test suits your case
-        if response_is_file:
-            response = HttpResponse('<body>debug file response</body>')
-        return response
+        def process_request(self, request):
+            """If the response contains a file, replace it by a dummy response"""
+            response = super().process_request(request)
+            response_is_file = ...  # use whatever test suits your case
+            if response_is_file:
+                response = HttpResponse('<body>debug file response</body>')
+            return response
