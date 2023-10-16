@@ -295,7 +295,16 @@ class LineTransectEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, 
 class LineTransectEncounterDetail(DetailViewBreadcrumbMixin, DetailView):
     model = LineTransectEncounter
 
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.authentication import BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth.decorators import login_required
+
 #This just dumps the database as json for use by external tools such as PowerBI or Shiny
+@api_view(['GET'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
+@login_required 
 def dbdump(request):
     query = '''
 SELECT 
