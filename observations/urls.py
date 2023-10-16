@@ -21,4 +21,5 @@ urlpatterns = [
     path("turtle-nest-encounters/<int:pk>/reject/", views.TurtleNestEncounterReject.as_view(), name="turtlenestencounter-reject"),
     path("line-transect-encounters/", views.LineTransectEncounterList.as_view(), name="linetransectencounter-list"),
     path("line-transect-encounters/<int:pk>/", views.LineTransectEncounterDetail.as_view(), name="linetransectencounter-detail"),
+    path('dbdump/', views.dbdump, name='dbdump'),
 ]
