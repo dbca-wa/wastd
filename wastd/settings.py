@@ -35,46 +35,67 @@ else:
     AZURE_CONTAINER = os.environ.get('AZURE_CONTAINER', 'container')
     AZURE_URL_EXPIRATION_SECS = os.environ.get('AZURE_URL_EXPIRATION_SECS', 3600)  # Default one hour.
 
+
+
+# Application settings
+INSTALLED_APPS = [
+    "whitenoise.runserver_nostatic",
+    "polymorphic",  # Before django.contrib.contenttypes
+    "django.contrib.contenttypes",
+    "grappelli.dashboard",
+    "grappelli",
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.gis",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "django_extensions",
+    "django_fsm",
+    "django_fsm_log",
+    "fsm_admin",
+    "reversion",
+    "leaflet",
+    "phonenumber_field",
+    "crispy_forms",
+    "bootstrap4",
+    "bootstrap_pagination",
+    "webtemplate_dbca",
+    "django_filters",
+    "export_download",
+    "django_tables2",
+    "django_select2",
+    "easy_select2",
+    "djgeojson",
+    "import_export",
+    'rest_framework',
+    # Local apps
+    "users",
+    "observations",
+    "wamtram",  # Legacy WAMTRAM database
+    #"tagging",  # Temporary turtle tagging data
+    "turtle_tags",
+]
+MIDDLEWARE = [
+    "wastd.middleware.HealthCheckMiddleware",
+    "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "reversion.middleware.RevisionMiddleware",
+    "dbca_utils.middleware.SSOLoginMiddleware",
+]
+
 if DEBUG:
     # Application settings
-    INSTALLED_APPS = [
-        "whitenoise.runserver_nostatic",
-        "polymorphic",  # Before django.contrib.contenttypes
-        "django.contrib.contenttypes",
-        "grappelli.dashboard",
-        "grappelli",
-        "django.contrib.admin",
-        "django.contrib.auth",
-        "django.contrib.gis",
-        "django.contrib.sessions",
-        "django.contrib.messages",
-        "django.contrib.staticfiles",
-        "django_extensions",
-        "django_fsm",
-        "django_fsm_log",
-        "fsm_admin",
-        "reversion",
-        "leaflet",
-        "phonenumber_field",
-        "crispy_forms",
-        "bootstrap4",
-        "bootstrap_pagination",
-        "webtemplate_dbca",
-        "django_filters",
-        "export_download",
-        "django_tables2",
-        "django_select2",
-        "easy_select2",
-        "djgeojson",
-        "import_export",
-        # Local apps
-        "users",
-        "observations",
-        "wamtram",  # Legacy WAMTRAM database
-        #"tagging",  # Temporary turtle tagging data
-        "turtle_tags",
+    INSTALLED_APPS = INSTALLED_APPS + [
         "debug_toolbar",
     ]
+    #need to redefined as the order is important for the debug toolbar
     MIDDLEWARE = [
         "wastd.middleware.HealthCheckMiddleware",
         "django.middleware.security.SecurityMiddleware",
@@ -89,75 +110,39 @@ if DEBUG:
         "reversion.middleware.RevisionMiddleware",
         "dbca_utils.middleware.SSOLoginMiddleware",
     ]
-else:
-    # Application settings
-    INSTALLED_APPS = [
-        "whitenoise.runserver_nostatic",
-        "polymorphic",  # Before django.contrib.contenttypes
-        "django.contrib.contenttypes",
-        "grappelli.dashboard",
-        "grappelli",
-        "django.contrib.admin",
-        "django.contrib.auth",
-        "django.contrib.gis",
-        "django.contrib.sessions",
-        "django.contrib.messages",
-        "django.contrib.staticfiles",
-        "django_extensions",
-        "django_fsm",
-        "django_fsm_log",
-        "fsm_admin",
-        "reversion",
-        "leaflet",
-        "phonenumber_field",
-        "crispy_forms",
-        "bootstrap4",
-        "bootstrap_pagination",
-        "webtemplate_dbca",
-        "django_filters",
-        "export_download",
-        "django_tables2",
-        "django_select2",
-        "easy_select2",
-        "djgeojson",
-        "import_export",
-        # Local apps
-        "users",
-        "observations",
-        "wamtram",  # Legacy WAMTRAM database
-        #"tagging",  # Temporary turtle tagging data
-        "turtle_tags",
-    ]
-    MIDDLEWARE = [
-        "wastd.middleware.HealthCheckMiddleware",
-        "django.middleware.security.SecurityMiddleware",
-        "whitenoise.middleware.WhiteNoiseMiddleware",
-        "django.contrib.sessions.middleware.SessionMiddleware",
-        "django.middleware.common.CommonMiddleware",
-        "django.middleware.csrf.CsrfViewMiddleware",
-        "django.contrib.auth.middleware.AuthenticationMiddleware",
-        "django.contrib.messages.middleware.MessageMiddleware",
-        "django.middleware.clickjacking.XFrameOptionsMiddleware",
-        "reversion.middleware.RevisionMiddleware",
-        "dbca_utils.middleware.SSOLoginMiddleware",
-    ]
 
-DEBUG_TOOLBAR_PANELS = [
-    'debug_toolbar.panels.history.HistoryPanel',
-    'debug_toolbar.panels.versions.VersionsPanel',
-    'debug_toolbar.panels.timer.TimerPanel',
-    'debug_toolbar.panels.settings.SettingsPanel',
-    'debug_toolbar.panels.headers.HeadersPanel',
-    'debug_toolbar.panels.request.RequestPanel',
-    'debug_toolbar.panels.sql.SQLPanel',
-    'debug_toolbar.panels.staticfiles.StaticFilesPanel',
-    'debug_toolbar.panels.templates.TemplatesPanel',
-    'debug_toolbar.panels.cache.CachePanel',
-    'debug_toolbar.panels.signals.SignalsPanel',
-    'debug_toolbar.panels.redirects.RedirectsPanel',
-    'debug_toolbar.panels.profiling.ProfilingPanel',
-    "wastd.middleware.FileInterceptsPanel"
-]
+    DEBUG_TOOLBAR_PANELS = [
+        'debug_toolbar.panels.history.HistoryPanel',
+        'debug_toolbar.panels.versions.VersionsPanel',
+        'debug_toolbar.panels.timer.TimerPanel',
+        'debug_toolbar.panels.settings.SettingsPanel',
+        'debug_toolbar.panels.headers.HeadersPanel',
+        'debug_toolbar.panels.request.RequestPanel',
+        'debug_toolbar.panels.sql.SQLPanel',
+        'debug_toolbar.panels.staticfiles.StaticFilesPanel',
+        'debug_toolbar.panels.templates.TemplatesPanel',
+        'debug_toolbar.panels.cache.CachePanel',
+        'debug_toolbar.panels.signals.SignalsPanel',
+        'debug_toolbar.panels.redirects.RedirectsPanel',
+        'debug_toolbar.panels.profiling.ProfilingPanel',
+        "wastd.middleware.FileInterceptsPanel"
+    ]
+    DEBUG_TOOLBAR_PANELS = [
+        'debug_toolbar.panels.history.HistoryPanel',
+        'debug_toolbar.panels.versions.VersionsPanel',
+        'debug_toolbar.panels.timer.TimerPanel',
+        'debug_toolbar.panels.settings.SettingsPanel',
+        'debug_toolbar.panels.headers.HeadersPanel',
+        'debug_toolbar.panels.request.RequestPanel',
+        'debug_toolbar.panels.sql.SQLPanel',
+        'debug_toolbar.panels.staticfiles.StaticFilesPanel',
+        'debug_toolbar.panels.templates.TemplatesPanel',
+        'debug_toolbar.panels.cache.CachePanel',
+        'debug_toolbar.panels.signals.SignalsPanel',
+        'debug_toolbar.panels.redirects.RedirectsPanel',
+        'debug_toolbar.panels.profiling.ProfilingPanel',
+        "wastd.middleware.FileInterceptsPanel"
+    ]
 
 TEMPLATES = [
     {
@@ -184,6 +169,19 @@ TEMPLATES = [
     },
 ]
 
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+    ]
+}
+
+
 # Use the customised User model
 AUTH_USER_MODEL = "users.User"
 ADMIN_USER = os.environ.get("ADMIN_USER_ID", 1)
@@ -202,7 +200,7 @@ LOGIN_REDIRECT_URL = '/'
 SITE_NAME = os.environ.get("SITE_NAME", "Turtles Database")
 SITE_TITLE = os.environ.get("SITE_TITLE", "Turtles Database")
 SITE_CODE = os.environ.get("SITE_CODE", "Turtles")
-VERSION_NO = "1.0.7"
+VERSION_NO = "1.0.8b"
 
 
 # Database configuration
