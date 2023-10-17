@@ -65,7 +65,7 @@ urlpatterns = [
     path("403/", defaults.permission_denied, kwargs={"exception": Exception("Permission denied")}),
     path("404/", defaults.page_not_found, kwargs={"exception": Exception("Page not found")}),
     path("500/", defaults.server_error),
-    path('api/', include('observations.urls', namespace='observations_api')),
+    #path('api/', include('observations.urls', namespace='observations_api')),
 ]
 
 if settings.DEBUG:
