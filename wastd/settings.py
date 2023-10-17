@@ -87,7 +87,8 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "reversion.middleware.RevisionMiddleware",
-    "dbca_utils.middleware.SSOLoginMiddleware",
+    #"dbca_utils.middleware.SSOLoginMiddleware",
+    "wastd.middleware.CustomSSOLoginMiddleware"
 ]
 
 if DEBUG:
@@ -108,7 +109,8 @@ if DEBUG:
         "django.contrib.messages.middleware.MessageMiddleware",
         "django.middleware.clickjacking.XFrameOptionsMiddleware",
         "reversion.middleware.RevisionMiddleware",
-        "dbca_utils.middleware.SSOLoginMiddleware",
+        #"dbca_utils.middleware.SSOLoginMiddleware",
+        "wastd.middleware.CustomSSOLoginMiddleware"
     ]
 
     DEBUG_TOOLBAR_PANELS = [
