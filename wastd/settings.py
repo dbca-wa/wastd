@@ -87,8 +87,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "reversion.middleware.RevisionMiddleware",
-    #"dbca_utils.middleware.SSOLoginMiddleware",
-    "wastd.middleware.CustomSSOLoginMiddleware"
+    "dbca_utils.middleware.SSOLoginMiddleware",
 ]
 
 if DEBUG:
@@ -109,8 +108,8 @@ if DEBUG:
         "django.contrib.messages.middleware.MessageMiddleware",
         "django.middleware.clickjacking.XFrameOptionsMiddleware",
         "reversion.middleware.RevisionMiddleware",
-        #"dbca_utils.middleware.SSOLoginMiddleware",
-        "wastd.middleware.CustomSSOLoginMiddleware"
+        "dbca_utils.middleware.SSOLoginMiddleware",
+        
     ]
 
     DEBUG_TOOLBAR_PANELS = [
@@ -177,9 +176,6 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
-    ],
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.BasicAuthentication',
     ]
 }
 

@@ -58,15 +58,3 @@ if settings.DEBUG:
             if response_is_file:
                 response = HttpResponse('<body>debug file response</body>')
             return response
-
-from dbca_utils.middleware import SSOLoginMiddleware
-
-class CustomSSOLoginMiddleware(SSOLoginMiddleware):
-
-    def process_request(self, request):
-        # Bypass middleware for API endpoints
-        if request.path.startswith('/observations/dbdump/'):
-            return
-
-        # Call the original process_request method for non-API requests
-        return super().process_request(request)
