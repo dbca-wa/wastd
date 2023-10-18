@@ -1476,6 +1476,7 @@ class TurtleNestEncounterAdmin(ExportActionMixin, EncounterAdmin):
     )
     list_select_related = True
     list_filter = (
+        ('when', admin.DateFieldListFilter),
         "campaign__owner",
         ("area", AreaFilter),
         ("site", SiteFilter),

@@ -28,7 +28,23 @@ class Command(BaseCommand):
         system_user = User.objects.get(pk=1)
         unknown_user = User.objects.get_or_create(name='Unknown user', username='unknown_user')[0]
 
-        # Check: Any turtle nest encounter with uncertain species.
+        # Check: Any TurtleNestEncounter with a site label containing the term "training".
+        nest_encounters = TurtleNestEncounter.objects.filter(site__name__icontains="training", status=Encounter.STATUS_IMPORTED)
+        if nest_encounters:
+            logger.info(f'Flagging {nest_encounters.count()} turtle nest encounters for curation due to site containing "Training"')
+        for enc in nest_encounters:
+            enc.flag(by=system_user, description='Flagged for curation by automated checks due to site containing "Training"')
+            enc.save()
+
+        # Check: Any TurtleNestEncounter with a site label containing the term "testing".
+        nest_encounters = TurtleNestEncounter.objects.filter(site__name__icontains="testing", status=Encounter.STATUS_IMPORTED)
+        if nest_encounters:
+            logger.info(f'Flagging {nest_encounters.count()} turtle nest encounters for curation due to site containing "testing"')
+        for enc in nest_encounters:
+            enc.flag(by=system_user, description='Flagged for curation by automated checks due to site containing "testing"')
+            enc.save()
+
+        # Check: Any turtle nest encounter with uncertain species.cg
         nest_encounters = TurtleNestEncounter.objects.filter(species=TURTLE_SPECIES_DEFAULT, status=Encounter.STATUS_IMPORTED)
         if nest_encounters:
             logger.info(f'Flagging {nest_encounters.count()} turtle nest encounters for curation due to uncertain species')
