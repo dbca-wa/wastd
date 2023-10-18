@@ -306,11 +306,12 @@ def dbdump(request):
 SELECT 
     e."id",
     e."source",
-    e."source_id",
-    ctype_o."model" AS "turtle_observation_model",  -- Add the model name for turtle observation in
-    ctype_tag."model" AS "tag_observation_model",   -- Add the model name for tag observation
-    ctype_hatch."model" AS "hatch_observation_model", -- Add the model name for hatch observation
+    -- e."source_id",
+    -- ctype_o."model" AS "turtle_observation_model",  -- Add the model name for turtle observation in
+    -- ctype_tag."model" AS "tag_observation_model",   -- Add the model name for tag observation
+    -- ctype_hatch."model" AS "hatch_observation_model", -- Add the model name for hatch observation
     e."status",
+    org."label" AS "owner",
     TO_CHAR(e."when" AT TIME ZONE \'Australia/Perth\', \'YYYY-MM-DD\') AS "date",
     TO_CHAR(e."when" AT TIME ZONE \'Australia/Perth\', \'HH24:MI:SS\') AS "time",
     CASE 
@@ -329,7 +330,7 @@ SELECT
     rep."name" AS "reporter",
     e."encounter_type",
     e."comments",
-    t."encounter_ptr_id",
+    -- t."encounter_ptr_id",
     t."nest_age",
     t."nest_type",
     t."species",
@@ -340,9 +341,9 @@ SELECT
     t."eggs_counted",
     t."hatchlings_measured",
     t."fan_angles_measured",
-    o."id" as "turtle_observation_id",
-    o."source" as "turtle_observation_source",
-    o."source_id" as "turtle_observation_source_id",
+    -- o."id" as "turtle_observation_id",
+    -- o."source" as "turtle_observation_source",
+    -- o."source_id" as "turtle_observation_source_id",
     n."eggs_laid",
     n."egg_count",
     n."no_egg_shells",
@@ -372,10 +373,10 @@ SELECT
     hatch."hatchling_emergence_time_accuracy",
     hatch."cloud_cover_at_emergence_known",
     hatch."cloud_cover_at_emergence",
-    tag."observation_ptr_id" as "tag_observation_id",
+    -- tag."observation_ptr_id" as "tag_observation_id",
     tag."status" AS "nest_tag_status",
     tag."flipper_tag_id",
-    tag."date_nest_laid",
+    TO_CHAR(tag."date_nest_laid" AT TIME ZONE \'Australia/Perth\', \'YYYY-MM-DD\') AS "date_nest_laid",
     tag."tag_label"
 FROM 
     "observations_turtlenestencounter" t
@@ -409,8 +410,12 @@ LEFT JOIN
     "django_content_type" ctype_hatch ON (obs_hatch."polymorphic_ctype_id" = ctype_hatch."id")  -- Join for hatch observation model name
 LEFT JOIN 
     "observations_turtlehatchlingemergenceobservation" hatch ON (obs_hatch."id" = hatch."observation_ptr_id")
+LEFT JOIN 
+  "observations_campaign" c ON (e."campaign_id" = c."id")
+LEFT JOIN 
+  "users_organisation" org ON (c."owner_id" = org."id")
 WHERE 
-    survey."production" = true
+    survey."production" = true -- AND org."code" = \'dbca\'
 ORDER BY 
     e."when" DESC
     '''
