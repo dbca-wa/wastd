@@ -295,10 +295,6 @@ class LineTransectEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, 
 class LineTransectEncounterDetail(DetailViewBreadcrumbMixin, DetailView):
     model = LineTransectEncounter
 
-from rest_framework.decorators import api_view, authentication_classes, permission_classes
-from rest_framework.authentication import BasicAuthentication
-from rest_framework.permissions import IsAuthenticated
-from django.contrib.auth.decorators import login_required
 
 #This just dumps the database as json for use by external tools such as PowerBI or Shiny
 def dbdump(request):
@@ -394,20 +390,20 @@ LEFT JOIN
     "users_user" rep ON (e."reporter_id" = rep."id")
 LEFT JOIN 
     "observations_observation" o ON (e."id" = o."encounter_id" AND o."polymorphic_ctype_id" IN (26))
-LEFT JOIN 
-    "django_content_type" ctype_o ON (o."polymorphic_ctype_id" = ctype_o."id")  -- Join for turtle observation model name
+-- LEFT JOIN 
+--    "django_content_type" ctype_o ON (o."polymorphic_ctype_id" = ctype_o."id")  -- Join for turtle observation model name
 LEFT JOIN 
     "observations_turtlenestobservation" n ON (o."id" = n."observation_ptr_id")
 LEFT JOIN 
     "observations_observation" obs_tag ON (e."id" = obs_tag."encounter_id" AND obs_tag."polymorphic_ctype_id" IN (38))
-LEFT JOIN 
-    "django_content_type" ctype_tag ON (obs_tag."polymorphic_ctype_id" = ctype_tag."id")  -- Join for tag observation model name
+-- LEFT JOIN 
+--    "django_content_type" ctype_tag ON (obs_tag."polymorphic_ctype_id" = ctype_tag."id")  -- Join for tag observation model name
 LEFT JOIN 
     "observations_nesttagobservation" tag ON (obs_tag."id" = tag."observation_ptr_id")
 LEFT JOIN 
     "observations_observation" obs_hatch ON (e."id" = obs_hatch."encounter_id" AND obs_hatch."polymorphic_ctype_id" IN (279))
-LEFT JOIN 
-    "django_content_type" ctype_hatch ON (obs_hatch."polymorphic_ctype_id" = ctype_hatch."id")  -- Join for hatch observation model name
+-- LEFT JOIN 
+--    "django_content_type" ctype_hatch ON (obs_hatch."polymorphic_ctype_id" = ctype_hatch."id")  -- Join for hatch observation model name
 LEFT JOIN 
     "observations_turtlehatchlingemergenceobservation" hatch ON (obs_hatch."id" = hatch."observation_ptr_id")
 LEFT JOIN 
