@@ -8,8 +8,12 @@ from django.views.generic import View, TemplateView, ListView, DetailView
 from django.views.generic.detail import SingleObjectMixin
 from django_fsm_log.models import StateLog
 from wastd.utils import ListViewBreadcrumbMixin, DetailViewBreadcrumbMixin, ResourceDownloadMixin
-from django.http import JsonResponse
+#from django.http import JsonResponse
 from django.db import connection
+from django.http import StreamingHttpResponse
+import json
+import datetime
+
 
 from .admin import (
     EncounterAdmin,
@@ -425,4 +429,32 @@ ORDER BY
             for row in cursor.fetchall()
         ]
 
-    return JsonResponse({'results': results}, safe=False)
+    # Use StreamingHttpResponse with the generator function
+    response = StreamingHttpResponse(stream_json(results), content_type='application/json')
+    
+    return response
+
+class DateTimeEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, datetime.datetime):
+            return obj.isoformat()
+        return super(DateTimeEncoder, self).default(obj)
+
+def stream_json(data):
+    # Yield the start of the JSON list
+    yield '['
+    
+    first = True
+    for item in data:
+        # If not the first item, yield a comma
+        if not first:
+            yield ','
+        else:
+            first = False
+        
+        # Yield the serialized item using the custom encoder
+        yield json.dumps(item, cls=DateTimeEncoder)
+    
+    # Yield the end of the JSON list
+    yield ']'
+

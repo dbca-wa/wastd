@@ -68,7 +68,7 @@ INSTALLED_APPS = [
     "easy_select2",
     "djgeojson",
     "import_export",
-    'rest_framework',
+    #'rest_framework',
     # Local apps
     "users",
     "observations",
@@ -170,14 +170,14 @@ TEMPLATES = [
     },
 ]
 
-REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
-    ],
-    'DEFAULT_RENDERER_CLASSES': [
-        'rest_framework.renderers.JSONRenderer',
-    ]
-}
+#REST_FRAMEWORK = {
+#    'DEFAULT_PERMISSION_CLASSES': [
+#        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+#    ],
+#    'DEFAULT_RENDERER_CLASSES': [
+#        'rest_framework.renderers.JSONRenderer',
+#    ]
+#}
 
 
 # Use the customised User model
