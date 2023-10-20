@@ -8,11 +8,11 @@ from django.views.generic import View, TemplateView, ListView, DetailView
 from django.views.generic.detail import SingleObjectMixin
 from django_fsm_log.models import StateLog
 from wastd.utils import ListViewBreadcrumbMixin, DetailViewBreadcrumbMixin, ResourceDownloadMixin
-#from django.http import JsonResponse
 from django.db import connection
 from django.http import StreamingHttpResponse
 import json
 import datetime
+
 
 
 from .admin import (
@@ -419,19 +419,8 @@ WHERE
 ORDER BY 
     e."when" DESC
     '''
-    with connection.cursor() as cursor:
-        cursor.execute(query)
-        # Fetch column names from the cursor description
-        columns = [col[0] for col in cursor.description]
-        # Convert the result to a list of dictionaries
-        results = [
-            dict(zip(columns, row))
-            for row in cursor.fetchall()
-        ]
-
-    # Use StreamingHttpResponse with the generator function
-    response = StreamingHttpResponse(stream_json(results), content_type='application/json')
-    
+ 
+    response = StreamingHttpResponse(stream_data(query), content_type="application/json")
     return response
 
 class DateTimeEncoder(json.JSONEncoder):
@@ -440,21 +429,27 @@ class DateTimeEncoder(json.JSONEncoder):
             return obj.isoformat()
         return super(DateTimeEncoder, self).default(obj)
 
-def stream_json(data):
-    # Yield the start of the JSON list
-    yield '['
-    
-    first = True
-    for item in data:
-        # If not the first item, yield a comma
-        if not first:
-            yield ','
-        else:
-            first = False
+def stream_data(query):
+    with connection.cursor() as cursor:
+        cursor.execute(query)
         
-        # Yield the serialized item using the custom encoder
-        yield json.dumps(item, cls=DateTimeEncoder)
-    
-    # Yield the end of the JSON list
-    yield ']'
-
+        # Get column names from cursor.description
+        columns = [col[0] for col in cursor.description]
+        
+        yield '['  # Start of JSON array
+        first_row = True
+        row = cursor.fetchone()
+        while row:
+            if not first_row:
+                yield ','
+            else:
+                first_row = False
+            
+            # Convert row data to dictionary with column names as keys
+            row_dict = dict(zip(columns, row))
+            
+            # Convert the dictionary to JSON and yield
+            yield json.dumps(row_dict, cls=DateTimeEncoder)
+            
+            row = cursor.fetchone()
+        yield ']'  # End of JSON array
