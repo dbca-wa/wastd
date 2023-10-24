@@ -40,10 +40,12 @@ from turtle_tags.api import (
 )
 from users.api import UserListResource, UserDetailResource
 from observations import views
+from turtle_tags import views as tagviews
 
 urlpatterns = [
     # observations
-    path('dbdump/', views.dbdump, name='dbdump'),
+    path('nestAndTracks/', views.nestAndTracks, name='nestAndTracks'),
+    path('taggedTurtles/', tagviews.taggedTurtles, name='taggedTurtles'),
     path("users/", UserListResource.as_view(), name="user_list_resource"),
     path("users/<int:pk>/", UserDetailResource.as_view(), name="user_detail_resource"),
     path("areas/", AreaListResource.as_view(), name="area_list_resource"),
