@@ -301,7 +301,7 @@ class LineTransectEncounterDetail(DetailViewBreadcrumbMixin, DetailView):
 
 
 #This just dumps the database as json for use by external tools such as PowerBI or Shiny
-def dbdump(request):
+def nestAndTracks(request):
     query = '''
 SELECT 
     e."id",
