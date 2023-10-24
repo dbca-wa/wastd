@@ -304,14 +304,9 @@ class LineTransectEncounterDetail(DetailViewBreadcrumbMixin, DetailView):
 def nestAndTracks(request):
     query = '''
 SELECT 
-    e."id",
-    e."source",
-    -- e."source_id",
-    -- ctype_o."model" AS "turtle_observation_model",  -- Add the model name for turtle observation in
-    -- ctype_tag."model" AS "tag_observation_model",   -- Add the model name for tag observation
-    -- ctype_hatch."model" AS "hatch_observation_model", -- Add the model name for hatch observation
+    e."id" as encounter_id,
     e."status",
-    org."label" AS "owner",
+    org."label" AS "data_owner",
     TO_CHAR(e."when" AT TIME ZONE \'Australia/Perth\', \'YYYY-MM-DD\') AS "date",
     TO_CHAR(e."when" AT TIME ZONE \'Australia/Perth\', \'HH24:MI:SS\') AS "time",
     CASE 
@@ -323,14 +318,12 @@ SELECT
     site."name" AS "site_name",
     ST_Y(e."where") as latitude,
     ST_X(e."where") as longitude,
-    e."survey_id",
     area."name" AS "area_name",
-    e."name",
+    e."name" AS encounter_name,
     obs."name" AS "observer",
     rep."name" AS "reporter",
     e."encounter_type",
     e."comments",
-    -- t."encounter_ptr_id",
     t."nest_age",
     t."nest_type",
     t."species",
@@ -341,9 +334,6 @@ SELECT
     t."eggs_counted",
     t."hatchlings_measured",
     t."fan_angles_measured",
-    -- o."id" as "turtle_observation_id",
-    -- o."source" as "turtle_observation_source",
-    -- o."source_id" as "turtle_observation_source_id",
     n."eggs_laid",
     n."egg_count",
     n."no_egg_shells",
@@ -373,7 +363,6 @@ SELECT
     hatch."hatchling_emergence_time_accuracy",
     hatch."cloud_cover_at_emergence_known",
     hatch."cloud_cover_at_emergence",
-    -- tag."observation_ptr_id" as "tag_observation_id",
     tag."status" AS "nest_tag_status",
     tag."flipper_tag_id",
     TO_CHAR(tag."date_nest_laid" AT TIME ZONE \'Australia/Perth\', \'YYYY-MM-DD\') AS "date_nest_laid",
@@ -394,20 +383,14 @@ LEFT JOIN
     "users_user" rep ON (e."reporter_id" = rep."id")
 LEFT JOIN 
     "observations_observation" o ON (e."id" = o."encounter_id" AND o."polymorphic_ctype_id" IN (26))
--- LEFT JOIN 
---    "django_content_type" ctype_o ON (o."polymorphic_ctype_id" = ctype_o."id")  -- Join for turtle observation model name
 LEFT JOIN 
     "observations_turtlenestobservation" n ON (o."id" = n."observation_ptr_id")
 LEFT JOIN 
     "observations_observation" obs_tag ON (e."id" = obs_tag."encounter_id" AND obs_tag."polymorphic_ctype_id" IN (38))
--- LEFT JOIN 
---    "django_content_type" ctype_tag ON (obs_tag."polymorphic_ctype_id" = ctype_tag."id")  -- Join for tag observation model name
 LEFT JOIN 
     "observations_nesttagobservation" tag ON (obs_tag."id" = tag."observation_ptr_id")
 LEFT JOIN 
     "observations_observation" obs_hatch ON (e."id" = obs_hatch."encounter_id" AND obs_hatch."polymorphic_ctype_id" IN (279))
--- LEFT JOIN 
---    "django_content_type" ctype_hatch ON (obs_hatch."polymorphic_ctype_id" = ctype_hatch."id")  -- Join for hatch observation model name
 LEFT JOIN 
     "observations_turtlehatchlingemergenceobservation" hatch ON (obs_hatch."id" = hatch."observation_ptr_id")
 LEFT JOIN 
@@ -415,7 +398,7 @@ LEFT JOIN
 LEFT JOIN 
   "users_organisation" org ON (c."owner_id" = org."id")
 WHERE 
-    survey."production" = true -- AND org."code" = \'dbca\'
+    survey."production" = true
 ORDER BY 
     e."when" DESC
     '''
