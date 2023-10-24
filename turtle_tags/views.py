@@ -86,7 +86,6 @@ def taggedTurtles(request):
     query = '''
 SELECT 
     t.id AS turtle_id,
-    -- TO_CHAR(t.created AT TIME ZONE \'Australia/Perth\', \'YYYY-MM-DD\') AS "created",
     t.species,
     t.sex,
     t.name AS turtle_name,
@@ -97,6 +96,7 @@ SELECT
     tobs.tag_location,
     tobs.comments AS tag_comments, 
     TO_CHAR(enc.when AT TIME ZONE \'Australia/Perth\', \'YYYY-MM-DD\') AS "encounter_date",
+    TO_CHAR(enc."when" AT TIME ZONE \'Australia/Perth\', \'HH24:MI:SS\') AS "encounter_time",
     ST_Y(enc."where") as latitude,
     ST_X(enc."where") as longitude,
     enc.name AS encouter_name,
@@ -114,9 +114,13 @@ LEFT JOIN
 LEFT JOIN 
     "observations_encounter" enc ON (enc."id" = obs."encounter_id")
 LEFT JOIN 
+    "observations_survey" survey ON (enc."survey_id" = survey."id")
+LEFT JOIN 
     "observations_area" site ON (enc."site_id" = site."id")
 LEFT JOIN 
     "observations_area" area ON (enc."area_id" = area."id")
+WHERE 
+    (survey."production" = true OR survey."production" IS null) OR enc."survey_id" = null
 ORDER BY 
     t.id;
             '''
