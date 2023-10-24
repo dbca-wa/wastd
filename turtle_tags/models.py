@@ -117,7 +117,11 @@ class Turtle(models.Model):
         if encounter and encounter.survey:
             return encounter.survey.site.name
         elif encounter:
-            return encounter.guess_site.name
+            site = encounter.guess_site
+            if site:
+                return encounter.guess_site.name
+            else:
+                return None
         else:
             return None
 
