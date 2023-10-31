@@ -574,9 +574,10 @@ def import_site_visit_start(form_id="site_visit_start", initial_duration_hr=8, a
         survey.end_time = survey.start_time + timedelta(hours=initial_duration_hr)
      
         #set training surveys to non production
-        if 'training' in survey.site.name.lower() or 'testing' in survey.site.name.lower():
-            survey.production = False
-            LOGGER.info(survey.site.name + " set as not production.")
+        if survey.site != None:
+            if 'training' in survey.site.name.lower() or 'testing' in survey.site.name.lower():
+                survey.production = False
+                LOGGER.info(survey.site.name + " set as not production.")
 
         # We need to save before we can modify the M2M field or set the label.
         survey.save()
