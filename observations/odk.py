@@ -620,7 +620,8 @@ def import_site_visit_end(form_id="site_visit_end", duration_hr=8, auth_headers=
     project_id = settings.ODK_API_PROJECTID
     LOGGER.info(f"Downloading {form_id} submission data")
     submissions = get_form_submission_data(auth_headers, project_id, form_id)
-
+    #email content if any errors
+    emailText = None
     for submission in submissions:
         instance_id = submission['meta']['instanceID']
         if Survey.objects.filter(source='odk', end_source_id=instance_id):
@@ -635,9 +636,10 @@ def import_site_visit_end(form_id="site_visit_end", duration_hr=8, auth_headers=
             # Send a warning to the admins to investigate & address.
             log = (f"Site Visit End form: unable to match a site for survey end at {location.wkt}")
             LOGGER.warning(log)
-            content = json.dumps(submission, indent=2)
-            msg = EmailMultiAlternatives(log, content, settings.DEFAULT_FROM_EMAIL, settings.ADMIN_EMAILS)
-            msg.send(fail_silently=True)
+            if(emailText == None):
+                emailText = log
+            else:
+                emailText = emailText + "\n\n" + log
             continue
 
         # Try to match one (only) existing Survey object.
@@ -651,9 +653,10 @@ def import_site_visit_end(form_id="site_visit_end", duration_hr=8, auth_headers=
         if surveys.count() != 1:
             log = (f"Site Visit End form: unable to match a single Survey (matched {surveys.count()})")
             LOGGER.warning(log)
-            content = json.dumps(submission, indent=2)
-            msg = EmailMultiAlternatives(log, content, settings.DEFAULT_FROM_EMAIL, settings.ADMIN_EMAILS)
-            msg.send(fail_silently=True)
+            if(emailText == None):
+                emailText = log
+            else:
+                emailText = emailText + "\n\n" + log
             continue
         else:
             survey = surveys.first()
@@ -679,6 +682,11 @@ def import_site_visit_end(form_id="site_visit_end", duration_hr=8, auth_headers=
             )
             photo.save()
             LOGGER.info(f'Created SurveyMediaAttachment {photo}')
+
+    #send an email with errors if needed
+    if emailText != None:
+        msg = EmailMultiAlternatives("Wastd import Errors", emailText, settings.DEFAULT_FROM_EMAIL, settings.ADMIN_EMAILS)
+        msg.send(fail_silently=True)
 
 
 def import_marine_wildlife_incident(form_id="marine_wildlife_incident", auth_headers=None):
