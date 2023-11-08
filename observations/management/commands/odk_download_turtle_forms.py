@@ -39,19 +39,44 @@ class Command(BaseCommand):
         auth_headers = get_auth_headers()
 
         logger.info('Downloading data from Turtle Track or Nest form')
-        import_turtle_track_or_nest(auth_headers=auth_headers)
+        try:
+            import_turtle_track_or_nest(auth_headers=auth_headers)
+        except Exception as e:  # catches all exceptions, also log the exception type
+            exception_message = f"{e.__class__.__name__}: {e}"
+            logger.error(f"An error occurred: {exception_message}")
+
 
         logger.info('Downloading data from Simple Turtle Track or Nest form')
-        import_turtle_track_or_nest_simple(auth_headers=auth_headers)
+        try:
+            import_turtle_track_or_nest_simple(auth_headers=auth_headers)
+        except Exception as e:  # catches all exceptions, also log the exception type
+            exception_message = f"{e.__class__.__name__}: {e}"
+            logger.error(f"An error occurred: {exception_message}")
 
         logger.info('Downloading data from Site Visit Start form')
-        import_site_visit_start(initial_duration_hr=options['initial_duration'], auth_headers=auth_headers)
+        try:
+            import_site_visit_start(initial_duration_hr=options['initial_duration'], auth_headers=auth_headers)
+        except Exception as e:  # catches all exceptions, also log the exception type
+            exception_message = f"{e.__class__.__name__}: {e}"
+            logger.error(f"An error occurred: {exception_message}")
 
         logger.info('Downloading data from Site Visit End form, linking encounters')
-        import_site_visit_end(duration_hr=options['duration'], auth_headers=auth_headers)
+        try:
+            import_site_visit_end(duration_hr=options['duration'], auth_headers=auth_headers)
+        except Exception as e:  # catches all exceptions, also log the exception type
+            exception_message = f"{e.__class__.__name__}: {e}"
+            logger.error(f"An error occurred: {exception_message}")
 
         logger.info('Downloading data from Marine Wildlife Incident form')
-        import_marine_wildlife_incident(auth_headers=auth_headers)
+        try:
+            import_marine_wildlife_incident(auth_headers=auth_headers)
+        except Exception as e:  # catches all exceptions, also log the exception type
+            exception_message = f"{e.__class__.__name__}: {e}"
+            logger.error(f"An error occurred: {exception_message}")
 
         logger.info('Downloading data from Turtle Sighting form')
-        import_turtle_sighting(auth_headers=auth_headers)
+        try:
+            import_turtle_sighting(auth_headers=auth_headers)
+        except Exception as e:  # catches all exceptions, also log the exception type
+            exception_message = f"{e.__class__.__name__}: {e}"
+            logger.error(f"An error occurred: {exception_message}")
