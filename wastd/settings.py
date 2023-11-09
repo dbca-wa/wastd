@@ -75,6 +75,7 @@ INSTALLED_APPS = [
     "wamtram",  # Legacy WAMTRAM database
     #"tagging",  # Temporary turtle tagging data
     "turtle_tags",
+    #"marine_mammal_incidents"
 ]
 MIDDLEWARE = [
     "wastd.middleware.HealthCheckMiddleware",
@@ -251,8 +252,10 @@ UTC = ZoneInfo("UTC")
 EMAIL_HOST = os.environ.get("EMAIL_HOST", "email.host")
 EMAIL_PORT = os.environ.get("EMAIL_PORT", 25)
 DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "noreply@dbca.wa.gov.au")
+SERVER_EMAIL = DEFAULT_FROM_EMAIL
 EMAIL_SUBJECT_PREFIX = os.environ.get("EMAIL_SUBJECT_PREFIX", "[Turtles DB] ")
 ADMIN_EMAILS = os.environ.get("ADMIN_EMAILS", "").split(",")
+ADMINS =[("Admin",os.environ.get("ADMIN_EMAILS", ""))]
 
 
 # Static files (CSS, JavaScript, Images)
@@ -281,6 +284,11 @@ LOGGING = {
             "stream": sys.stdout,
             "level": "WARNING",
         },
+        "mail_admins": {
+            "level": "ERROR",
+            "class": "django.utils.log.AdminEmailHandler",
+            "formatter": "verbose",
+        },
         "turtles": {
             "class": "logging.StreamHandler",
             "formatter": "verbose",
@@ -290,7 +298,7 @@ LOGGING = {
     },
     "loggers": {
         "django": {
-            "handlers": ["console"],
+            "handlers": ["console","mail_admins"],
             "level": "ERROR",
         },
         "turtles": {
