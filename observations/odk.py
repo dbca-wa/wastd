@@ -99,13 +99,19 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=Non
             reporter = submission['reporter']
             user = get_user(reporter)
 
+            #check for new forms
+            if 'survey_start_time' in submission['details']:
+                startTime = parser.isoparse(submission['details']['survey_start_time']) #new forms allow editing of time in case submitted after the fact
+            else:
+                startTime = parser.isoparse(submission['start_time']) #old forms
+
             # Confusingly, TurtleNestEncounter objects cover nest, track and nest & track encounters.
             encounter = TurtleNestEncounter(
                 status='imported',
                 source='odk',
                 source_id=instance_id,
                 where=parse_geopoint(submission['details']['observed_at']),
-                when=parser.isoparse(submission['start_time']),
+                when=startTime,
                 observer=user,
                 reporter=user,
                 comments=f'Device ID {submission["device_id"]}',
@@ -457,13 +463,19 @@ def import_turtle_track_or_nest_simple(form_id="beach_tracks_nest_simple", auth_
             reporter = submission['reporter']
             user = get_user(reporter)
 
+            #check for new forms
+            if 'survey_start_time' in submission['details']:
+                startTime = parser.isoparse(submission['details']['survey_start_time']) #new forms allow editing of time in case submitted after the fact
+            else:
+                startTime = parser.isoparse(submission['start_time']) #old forms
+
             # Confusingly, TurtleNestEncounter objects cover nest, track and nest & track encounters.
             encounter = TurtleNestEncounter(
                 status='imported',
                 source='odk',
                 source_id=instance_id,
                 where=parse_geopoint(submission['details']['observed_at']),
-                when=parser.isoparse(submission['start_time']),
+                when=startTime,
                 observer=user,
                 reporter=user,
                 comments=f'Device ID {submission["device_id"]}',
@@ -571,6 +583,12 @@ def import_site_visit_start(form_id="site_visit_start", initial_duration_hr=8, a
             user = get_user(reporter)
 
             visit = submission['site_visit']
+            #check for new forms
+            if 'survey_start_time' in visit:
+                startTime = parser.isoparse(visit['survey_start_time']) #new forms allow editing of time in case submitted after the fact
+            else:
+                startTime = parser.isoparse(submission['start_time']) #old forms
+
             survey = Survey(
                 status='imported',
                 source='odk',
@@ -579,7 +597,7 @@ def import_site_visit_start(form_id="site_visit_start", initial_duration_hr=8, a
                 reporter=user,
                 start_location=parse_geopoint(visit['location']),
                 start_location_accuracy_m=parse_geopoint_accuracy(visit['location']),
-                start_time=parser.isoparse(submission['start_time']),
+                start_time=startTime,
             )
 
             # Guess the area & site, and plug in an initial estimated end_time.
@@ -667,7 +685,12 @@ def import_site_visit_end(form_id="site_visit_end", duration_hr=8, auth_headers=
             # Try to match one (only) existing Survey object.
             # Algorithm: filter Surveys in the same Site, having a start_time not before end_time by
             # greater than `duration_hr` hours.
-            end_time = parser.isoparse(submission['end_time'])
+            #check for new forms
+            if 'survey_start_time' in visit:
+                end_time = parser.isoparse(visit['survey_end_time']) #new forms allow editing of time in case submitted after the fact
+            else:
+                end_time = parser.isoparse(submission['end_time']) #old forms
+           
             start_time_earliest = end_time - timedelta(hours=duration_hr)
             surveys = Survey.objects.filter(
                 site=site, start_time__lt=end_time, start_time__gte=start_time_earliest,
@@ -712,10 +735,10 @@ def import_site_visit_end(form_id="site_visit_end", duration_hr=8, auth_headers=
                 msg = EmailMultiAlternatives("Wastd survey end import failed!", f"An error occurred, a survey end record was not imported: {exception_message}", settings.DEFAULT_FROM_EMAIL, settings.ADMIN_EMAILS)
                 msg.send(fail_silently=True)
         
-         #send an email with errors if needed
-        if emailText != None:
-            msg = EmailMultiAlternatives("Wastd import Errors", emailText, settings.DEFAULT_FROM_EMAIL, settings.ADMIN_EMAILS)
-            msg.send(fail_silently=True)
+    #send an email with errors if needed
+    if emailText != None:
+        msg = EmailMultiAlternatives("Wastd import Errors", emailText, settings.DEFAULT_FROM_EMAIL, settings.ADMIN_EMAILS)
+        msg.send(fail_silently=True)
 
 
 def import_marine_wildlife_incident(form_id="marine_wildlife_incident", auth_headers=None):
