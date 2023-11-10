@@ -56,8 +56,8 @@ def get_user(reporter):
     """
     if reporter:
         reporter = reporter.strip()
-        if User.objects.filter(is_active=True, name__icontains=reporter).exists():
-            user = User.objects.filter(is_active=True, name__icontains=reporter).first()
+        if User.objects.filter(is_active=True, name=reporter).exists():
+            user = User.objects.filter(is_active=True, name=reporter).first()
         else:  # Create a new user.
             user = create_new_user(reporter)
             LOGGER.info(f"Created new user {user}")
@@ -478,7 +478,7 @@ def import_turtle_track_or_nest_simple(form_id="beach_tracks_nest_simple", auth_
                 when=startTime,
                 observer=user,
                 reporter=user,
-                comments=f'Device ID {submission["device_id"]}',
+                comments=f'{submission["details"]["comments"]} (Device ID {submission["device_id"]})',
                 #nest_age=submission['details']['nest_age'],
                 nest_type=submission['details']['nest_type'],
                 species=submission['details']['species'],
@@ -549,7 +549,6 @@ def import_turtle_track_or_nest_simple(form_id="beach_tracks_nest_simple", auth_
                         disturbance_cause=aDisturbance,
                         #disturbance_cause_confidence=observation['disturbance_cause_confidence'],
                         #disturbance_severity=observation['disturbance_severity'],
-                        comments=submission['details']['comments'],
                     )
                     disturbance.save()
                     LOGGER.info(f'Created TurtleNestDisturbanceObservation: {disturbance}')
