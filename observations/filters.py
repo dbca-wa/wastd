@@ -191,6 +191,13 @@ class TurtleNestEncounterFilter(FilterSet):
         label="Observed by",
         queryset=User.objects.filter(is_active=True).order_by("name"),
     )
+    survey = ChoiceFilter(
+        field_name="survey",
+        choices=(
+          ("null","<No survey>"),
+        ),
+        label="Survey",
+    )
     encounter_type = ChoiceFilter(
         field_name="encounter_type",
         choices=(
