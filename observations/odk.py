@@ -354,9 +354,9 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=Non
 
                 emergence_obs = TurtleHatchlingEmergenceObservation(
                     encounter=encounter,
-                    bearing_to_water_degrees=int(fan['bearing_to_water_manual']) if fan['bearing_to_water_manual'] else None,
-                    bearing_leftmost_track_degrees=int(fan['leftmost_track_manual']) if fan['leftmost_track_manual'] else None,
-                    bearing_rightmost_track_degrees=int(fan['rightmost_track_manual']) if fan['rightmost_track_manual'] else None,
+                    bearing_to_water_degrees=float(fan['bearing_to_water_manual']) if fan['bearing_to_water_manual'] else None,
+                    bearing_leftmost_track_degrees=float(fan['leftmost_track_manual']) if fan['leftmost_track_manual'] else None,
+                    bearing_rightmost_track_degrees=float(fan['rightmost_track_manual']) if fan['rightmost_track_manual'] else None,
                     no_tracks_main_group=int(fan['no_tracks_main_group']) if fan['no_tracks_main_group'] else None,
                     no_tracks_main_group_min=int(fan['no_tracks_main_group_min']) if fan['no_tracks_main_group_min'] else None,
                     no_tracks_main_group_max=int(fan['no_tracks_main_group_max']) if fan['no_tracks_main_group_max'] else None,
