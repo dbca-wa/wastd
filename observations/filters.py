@@ -210,7 +210,7 @@ class TurtleNestEncounterFilter(FilterSet):
         field_name="nest_type",
         choices=(
             ("successful-crawl", "Track with nest"),
-            ("false-crawl", "Track without nest"),
+            ("false-crawl", "Track without nest (false crawl)"),
             ("track-not-assessed", "Track, not checked for nest"),
             ("nest", "Nest, unhatched, no track"),
             ("hatched-nest", "Nest, hatched"),
