@@ -832,6 +832,17 @@ Django = "*"
 docs = ["sphinx", "sphinx-autobuild"]
 
 [[package]]
+name = "django-map-widgets"
+version = "0.4.2"
+description = "Map widgets for Django PostGIS fields"
+optional = false
+python-versions = "*"
+files = [
+    {file = "django-map-widgets-0.4.2.tar.gz", hash = "sha256:a86e9b08b950d95ddd4acce79b2b0f4d791019dc6f51068a59c5377519c8965c"},
+    {file = "django_map_widgets-0.4.2-py3-none-any.whl", hash = "sha256:5820d8648eba74c69e1ea93ea092679e76a3a421d5ebdc4727ac08b4b1311507"},
+]
+
+[[package]]
 name = "django-phonenumber-field"
 version = "7.0.1"
 description = "An international phone number field for django models."
@@ -2232,4 +2243,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "8b5d93763ae841277022d280e68be72bcdf89969749907ce7e2de39df0e04994"
+content-hash = "34a24910b2aa82bb79e625498bbeb2efe0c2d386020d92f1f5532cc9d4926000"
