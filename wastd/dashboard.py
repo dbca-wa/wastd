@@ -47,6 +47,23 @@ class AdminDashboard(Dashboard):
 
         self.children.append(
             modules.Group(
+                "Marine mammal incidents",
+                column=2,
+                children=[
+                    modules.AppList(
+                        "Incidents management",
+                        models=(
+                            "marine_mammal_incidents.models.Incident",
+                            "marine_mammal_incidents.models.Species",
+                            "marine_mammal_incidents.models.Uploaded_file"
+                        ),
+                    ),
+                ],
+            )
+        )
+
+        self.children.append(
+            modules.Group(
                 "User administration",
                 column=3,
                 children=[

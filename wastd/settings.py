@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     "django_fsm_log",
     "fsm_admin",
     "reversion",
+    'mapwidgets',
     "leaflet",
     "phonenumber_field",
     "crispy_forms",
@@ -75,7 +76,7 @@ INSTALLED_APPS = [
     "wamtram",  # Legacy WAMTRAM database
     #"tagging",  # Temporary turtle tagging data
     "turtle_tags",
-    #"marine_mammal_incidents"
+    "marine_mammal_incidents"
 ]
 MIDDLEWARE = [
     "wastd.middleware.HealthCheckMiddleware",
@@ -171,6 +172,23 @@ TEMPLATES = [
     },
 ]
 
+MAP_WIDGETS = {
+    "MapboxPointFieldWidget": {
+        "access_token": os.environ.get("MAPBOX_TOKEN", ""),
+        "markerFitZoom": 12,
+        "mapOptions": {
+            "animate": True,
+            "zoom": 10,
+            "center": (-31.996226, 115.883947),
+            "scrollZoom": True,
+        },
+        "geocoderOptions": {
+            "zoom": 7,
+            "countries": "au"
+        }
+    }
+}
+
 #REST_FRAMEWORK = {
 #    'DEFAULT_PERMISSION_CLASSES': [
 #        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
@@ -179,7 +197,7 @@ TEMPLATES = [
 #        'rest_framework.renderers.JSONRenderer',
 #    ]
 #}
-
+IMPORT_EXPORT_SKIP_ADMIN_CONFIRM=True
 
 # Use the customised User model
 AUTH_USER_MODEL = "users.User"
@@ -199,7 +217,7 @@ LOGIN_REDIRECT_URL = '/'
 SITE_NAME = os.environ.get("SITE_NAME", "Turtles Database")
 SITE_TITLE = os.environ.get("SITE_TITLE", "Turtles Database")
 SITE_CODE = os.environ.get("SITE_CODE", "Turtles")
-VERSION_NO = "1.0.7"
+VERSION_NO = "1.0.8"
 
 
 # Database configuration
