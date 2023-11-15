@@ -273,7 +273,8 @@ DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "noreply@dbca.wa.gov.a
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
 EMAIL_SUBJECT_PREFIX = os.environ.get("EMAIL_SUBJECT_PREFIX", "[Turtles DB] ")
 ADMIN_EMAILS = os.environ.get("ADMIN_EMAILS", "").split(",")
-ADMINS =[("Admin",os.environ.get("ADMIN_EMAILS", ""))]
+if not DEBUG:
+    ADMINS =[("Admin",os.environ.get("ADMIN_EMAILS", ""))]
 
 
 # Static files (CSS, JavaScript, Images)
