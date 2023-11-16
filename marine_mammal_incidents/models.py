@@ -15,11 +15,24 @@ class Incident(models.Model):
     geo_location = models.PointField(null=True, blank=True)
     number_of_animals = models.IntegerField()
     mass_incident = models.BooleanField()
-    incident_type = models.CharField(max_length=100)
+
+    STRANDING = 'Stranding'
+    ENTANGLEMENT = 'Entanglement'
+    ENTRAPMENT = 'Entrapment'
+    VESSEL_COLLISION = 'Vessel collision'
+    UNUSUAL_MORTALITY_EVENT = 'Unusual mortality event'
+    INCIDENT_TYPE_CHOICES = [
+        (STRANDING, 'Stranding'),
+        (ENTANGLEMENT, 'Entanglement'),
+        (ENTRAPMENT, 'Entrapment'),
+        (VESSEL_COLLISION, 'Vessel collision'),
+        (UNUSUAL_MORTALITY_EVENT, 'Unusual mortality event')
+    ]
+    incident_type = models.CharField(max_length=50,choices=INCIDENT_TYPE_CHOICES)
+
     MALE = 'Male'
     FEMALE = 'Female'
     UNKNOWN = 'Unknown'
-
     SEX_CHOICES = [
         (MALE,'Male'),
         (FEMALE,'Female'),
@@ -33,7 +46,6 @@ class Incident(models.Model):
     CALF = 'Calf'
     NEONATE = 'Neonate'
     UNKNOWN = 'Unknown'
-
     AGE_CLASS_CHOICES = [
         (ADULT,'Adult'),
         (JUVENILE,'Juvenile'),
@@ -48,8 +60,6 @@ class Incident(models.Model):
 
     weight = models.DecimalField(max_digits=6,decimal_places=2,help_text="in kilograms")
 
-    comments = models.TextField(blank=True)
-
     photos_taken = models.BooleanField()
 
     samples_taken = models.BooleanField()
@@ -58,20 +68,44 @@ class Incident(models.Model):
 
     carcass_location_fate = models.CharField(blank=True,max_length=100,help_text='Carcass transported to or disposed of site')
 
-    entanglement_gear = models.CharField(max_length=50,blank=True) #choices
+    ENTANGLEMENT_GEAR_CHOICES = [
+        ('Fishing net','Fishing net'),
+        ('Rock lobster pot/rope','Rock lobster pot/rope'),
+        ('Crab pot/rope','Crab pot/rope'),
+        ('Unknown origin set gear (pot/rope)','Unknown origin set gear (pot/rope)'),
+        ('Rope','Rope'),
+        ('Monofilament fishing line','Monofilament fishing line'),
+        ('Professional longline','Professional longline'),
+        ('Braided line','Braided line'),
+        ('Aquaculture infrastructure','Aquaculture infrastructure'),
+        ('Tackle','Tackle'),
+        ('Plastic debris','Plastic debris'),
+        ('Other (see comments)','Other (add in comments)')
+    ]
+    entanglement_gear = models.CharField(max_length=50,blank=True,choices=ENTANGLEMENT_GEAR_CHOICES) #choices
 
     DBCA_staff_attended = models.BooleanField()
 
     CONDITION_FOUND_CHOICES = [
-        ('Alive','Alive'),
-        ('Dead','Dead')
-    ]
-    condition_when_found = models.CharField(max_length=5,choices=CONDITION_FOUND_CHOICES)
+        ('Stage 1 = alive','Stage 1 = alive'),
+        ('Stage 2 = fresh','Stage 2 = fresh'),
+        ('Stage 3 = mild decomposition','Stage 3 = mild decomposition'),
+        ('Stage 4 = advanced decomposition', 'Stage 4 = advanced decomposition'),
+        ('Stage 5 = mummified/skeletal','Stage 5 = mummified/skeletal')
 
-    outcome = models.CharField(max_length=100) #choices
+    ]
+    condition_when_found = models.CharField(max_length=40,choices=CONDITION_FOUND_CHOICES)
+
+    OUTCOME_CHOICES = [
+        ('Euthanased','Euthanased'),
+        ('Restranded and euthanased','Restranded and euthanased'),
+        ('Refloated, fate unknown','Refloated, fate unknown'),
+        ('Died','Died')
+    ]
+    outcome = models.CharField(max_length=30, choices=OUTCOME_CHOICES) #choices
 
     cause_of_death = models.CharField(max_length=100,blank=True) #choices
-
+    comments = models.TextField(blank=True)
     # @property
     # def latitude(self):
     #     """Return the WGS 84 DD latitude."""
