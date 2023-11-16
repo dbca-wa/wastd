@@ -16,4 +16,6 @@ class WamtramRouter:
         return None
 
     def allow_migrate(self, db, app_label, model_name=None, **hints):
-        return False
+        if model_name == 'wamtram':
+            return False
+        return None
