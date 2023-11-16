@@ -74,7 +74,7 @@ INSTALLED_APPS = [
     "users",
     "observations",
     "wamtram",  # Legacy WAMTRAM database
-    #"tagging",  # Temporary turtle tagging data
+    "tagging",  # Temporary turtle tagging data
     "turtle_tags",
     "marine_mammal_incidents"
 ]
