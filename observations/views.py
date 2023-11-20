@@ -397,8 +397,6 @@ LEFT JOIN
   "observations_campaign" c ON (e."campaign_id" = c."id")
 LEFT JOIN 
   "users_organisation" org ON (c."owner_id" = org."id")
-WHERE 
-    survey."production" = true
 ORDER BY 
     e."when" DESC
     '''
