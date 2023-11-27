@@ -88,7 +88,7 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=Non
     project_id = settings.ODK_API_PROJECTID
     LOGGER.info(f"Downloading {form_id} submission data")
     submissions = get_form_submission_data(auth_headers, project_id, form_id)
-
+    LOGGER.info(f"Downloaded {form_id} submission data")
     for submission in submissions:
         try:
             instance_id = submission['meta']['instanceID']
@@ -136,6 +136,48 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=Non
 
             encounter.save()
             LOGGER.info(f'Created TurtleNestEncounter: {encounter}')
+
+            #get any nest photos
+            if 'nest_photos' in submission:
+                nest_photos = submission['nest_photos']
+                if nest_photos['photo_nest_1']:
+                        filename = nest_photos['photo_nest_1']
+                        LOGGER.info(f"Downloading {filename}")
+                        attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
+                        photo = MediaAttachment(
+                            encounter=encounter,
+                            media_type='photograph',
+                            title=f'Photo of nest {filename}',
+                            attachment=attachment,
+                        )
+                        photo.save()
+                        LOGGER.info(f'Created MediaAttachment {photo}')
+
+                if nest_photos['photo_nest_2']:
+                        filename = nest_photos['photo_nest_2']
+                        LOGGER.info(f"Downloading {filename}")
+                        attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
+                        photo = MediaAttachment(
+                            encounter=encounter,
+                            media_type='photograph',
+                            title=f'Photo of nest {filename}',
+                            attachment=attachment,
+                        )
+                        photo.save()
+                        LOGGER.info(f'Created MediaAttachment {photo}')
+
+                if nest_photos['photo_nest_3']:
+                        filename = nest_photos['photo_nest_3']
+                        LOGGER.info(f"Downloading {filename}")
+                        attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
+                        photo = MediaAttachment(
+                            encounter=encounter,
+                            media_type='photograph',
+                            title=f'Photo of nest {filename}',
+                            attachment=attachment,
+                        )
+                        photo.save()
+                        LOGGER.info(f'Created MediaAttachment {photo}')
 
             # TurtleNestObservation object
             if 'egg_count' in submission:
