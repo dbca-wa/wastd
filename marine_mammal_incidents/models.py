@@ -57,9 +57,9 @@ class Incident(models.Model):
     ]
     age_class = models.CharField(max_length=10,choices=AGE_CLASS_CHOICES)
 
-    length = models.DecimalField(max_digits=3,decimal_places=2,help_text="in centimeters")
+    length = models.DecimalField(max_digits=10,decimal_places=2,help_text="in centimeters")
 
-    weight = models.DecimalField(max_digits=6,decimal_places=2,help_text="in kilograms")
+    weight = models.DecimalField(max_digits=10,decimal_places=2,help_text="in kilograms")
     weight_is_estimated = models.BooleanField(default=False)
 
 
