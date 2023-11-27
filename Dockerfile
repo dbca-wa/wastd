@@ -37,6 +37,7 @@ COPY users ./users
 COPY wastd ./wastd
 COPY wamtram ./wamtram
 COPY turtle_tags ./turtle_tags
+COPY marine_mammal_incidents ./marine_mammal_incidents
 RUN python manage.py collectstatic --noinput
 
 # Run the application as the www-data user.

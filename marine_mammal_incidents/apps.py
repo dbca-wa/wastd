@@ -1,7 +1,6 @@
 from django.apps import AppConfig
 
 
-class TaggingConfig(AppConfig):
+class MarineMammalIncidentsConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'tagging'
-    verbose_name = 'Tagging'
+    name = 'marine_mammal_incidents'
