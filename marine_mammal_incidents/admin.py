@@ -10,7 +10,7 @@ from django.contrib.gis.db import models
 from mapwidgets.widgets import MapboxPointFieldWidget
 
 
-class UploadedFileAdmin(admin.StackedInline):
+class UploadedFileInline(admin.StackedInline):
     model = Uploaded_file
     verbose_name = "File"  # Singular name for one object
     verbose_name_plural = "Files and photos"  # Plural name for more than one object
@@ -49,7 +49,7 @@ class IncidentAdmin(ImportExportModelAdmin):
     
     #list_display = ('id','species','incident_date')
     date_hierarchy = "incident_date"
-    inlines = [UploadedFileAdmin]
+    inlines = [UploadedFileInline]
     resource_class = IncidentResource  # Use the custom resource class
     list_filter = ['species__common_name','species__scientific_name','incident_date','mass_incident','sex','age_class','condition_when_found','outcome','post_mortem']
     #search_fields = ('comments',)
@@ -77,4 +77,8 @@ class SpeciesAdmin(ImportExportModelAdmin):
 
 @admin.register(Uploaded_file)
 class UploadedFileAdmin(admin.ModelAdmin):
-    pass
+    def get_model_perms(self, request):
+        """
+        Return empty perms dict thus hiding the model from admin index.
+        """
+        return {}

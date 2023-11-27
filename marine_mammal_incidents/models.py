@@ -6,8 +6,9 @@ def incident_directory_path(instance, filename):
     return 'incident_{0}_attachents/{1}'.format(instance.incident.id, filename)
 
 class Incident(models.Model):
-    file_number = models.CharField(max_length=100)
-    incident_date = models.DateTimeField()
+    #file_number = models.CharField(max_length=100)
+    incident_date = models.DateField()
+    incident_time = models.TimeField(null=True,blank=True)
     species = models.ForeignKey(
         'Species',
         on_delete=models.PROTECT)
@@ -44,27 +45,23 @@ class Incident(models.Model):
     JUVENILE = 'Juvenile'
     SUBADULT = 'Sub-adult'
     CALF = 'Calf'
-    NEONATE = 'Neonate'
+    NEWBORN = 'Newborn'
     UNKNOWN = 'Unknown'
     AGE_CLASS_CHOICES = [
         (ADULT,'Adult'),
         (JUVENILE,'Juvenile'),
         (SUBADULT,'Sub-adult'),
         (CALF,'Calf'),
-        (NEONATE,'Neonate'),
+        (NEWBORN,'Newborn'),
         (UNKNOWN,'Unknown')
     ]
     age_class = models.CharField(max_length=10,choices=AGE_CLASS_CHOICES)
 
-    length = models.DecimalField(max_digits=3,decimal_places=2,help_text="in meters")
+    length = models.DecimalField(max_digits=3,decimal_places=2,help_text="in centimeters")
 
     weight = models.DecimalField(max_digits=6,decimal_places=2,help_text="in kilograms")
+    weight_is_estimated = models.BooleanField(default=False)
 
-    photos_taken = models.BooleanField()
-
-    samples_taken = models.BooleanField()
-
-    post_mortem = models.BooleanField()
 
     carcass_location_fate = models.CharField(blank=True,max_length=100,help_text='Carcass transported to or disposed of site')
 
@@ -88,7 +85,7 @@ class Incident(models.Model):
 
     CONDITION_FOUND_CHOICES = [
         ('Stage 1 = alive','Stage 1 = alive'),
-        ('Stage 2 = fresh','Stage 2 = fresh'),
+        ('Stage 2 = fresh dead','Stage 2 = fresh dead'),
         ('Stage 3 = mild decomposition','Stage 3 = mild decomposition'),
         ('Stage 4 = advanced decomposition', 'Stage 4 = advanced decomposition'),
         ('Stage 5 = mummified/skeletal','Stage 5 = mummified/skeletal')
@@ -105,6 +102,11 @@ class Incident(models.Model):
     outcome = models.CharField(max_length=30, choices=OUTCOME_CHOICES) #choices
 
     cause_of_death = models.CharField(max_length=100,blank=True) #choices
+    photos_taken = models.BooleanField()
+
+    samples_taken = models.BooleanField()
+
+    post_mortem = models.BooleanField()
     comments = models.TextField(blank=True)
     # @property
     # def latitude(self):
