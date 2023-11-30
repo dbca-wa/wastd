@@ -77,7 +77,7 @@ def import_wamtram(reload=False):
     LOGGER.info("Importing persons")
     for p in TrtPersons.objects.all():
         name = p.get_name()
-        if not User.objects.filter(name__iexact=name.lower(), is_active=True).exists():
+        if not User.objects.filter(name__iexact=name.lower()).exists():
             User.objects.create(
                 username=p.email if p.email else "_".join([p.first_name, p.surname if p.surname else ""]),
                 first_name=p.first_name,

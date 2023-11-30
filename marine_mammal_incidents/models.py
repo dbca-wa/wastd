@@ -12,10 +12,11 @@ class Incident(models.Model):
     species = models.ForeignKey(
         'Species',
         on_delete=models.PROTECT)
+    species_confirmed_genetically = models.BooleanField(default=False)
     location_name = models.CharField(max_length=100)
     geo_location = models.PointField(null=True, blank=True)
     number_of_animals = models.IntegerField()
-    mass_incident = models.BooleanField()
+    mass_incident = models.BooleanField(default=False)
 
     STRANDING = 'Stranding'
     ENTANGLEMENT = 'Entanglement'
@@ -57,9 +58,9 @@ class Incident(models.Model):
     ]
     age_class = models.CharField(max_length=10,choices=AGE_CLASS_CHOICES)
 
-    length = models.DecimalField(max_digits=10,decimal_places=2,help_text="in centimeters")
+    length = models.DecimalField(max_digits=10,decimal_places=2,help_text="in centimeters",null=True,blank=True)
 
-    weight = models.DecimalField(max_digits=10,decimal_places=2,help_text="in kilograms")
+    weight = models.DecimalField(max_digits=10,decimal_places=2,help_text="in kilograms",null=True,blank=True)
     weight_is_estimated = models.BooleanField(default=False)
 
 
@@ -88,8 +89,8 @@ class Incident(models.Model):
         ('Stage 2 = fresh dead','Stage 2 = fresh dead'),
         ('Stage 3 = mild decomposition','Stage 3 = mild decomposition'),
         ('Stage 4 = advanced decomposition', 'Stage 4 = advanced decomposition'),
-        ('Stage 5 = mummified/skeletal','Stage 5 = mummified/skeletal')
-
+        ('Stage 5 = mummified/skeletal','Stage 5 = mummified/skeletal'),
+        ('Unknown','Unknown')
     ]
     condition_when_found = models.CharField(max_length=40,choices=CONDITION_FOUND_CHOICES)
 
@@ -97,7 +98,8 @@ class Incident(models.Model):
         ('Euthanased','Euthanased'),
         ('Restranded and euthanased','Restranded and euthanased'),
         ('Refloated, fate unknown','Refloated, fate unknown'),
-        ('Died','Died')
+        ('Died','Died'),
+        ('Unknown','Unknown')
     ]
     outcome = models.CharField(max_length=30, choices=OUTCOME_CHOICES) #choices
 
