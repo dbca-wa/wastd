@@ -593,16 +593,6 @@ argon2 = ["argon2-cffi (>=19.1.0)"]
 bcrypt = ["bcrypt"]
 
 [[package]]
-name = "django-ajax-selects"
-version = "2.2.0"
-description = "Edit ForeignKey, ManyToManyField and CharField in Django Admin using jQuery UI AutoComplete."
-optional = false
-python-versions = "*"
-files = [
-    {file = "django-ajax-selects-2.2.0.tar.gz", hash = "sha256:539298874b2d26ce9e778a5173d312f55340c887a126c7e2d3460b9a5b4593a2"},
-]
-
-[[package]]
 name = "django-appconf"
 version = "1.0.5"
 description = "A helper class for handling configuration defaults of packaged apps gracefully."
@@ -789,13 +779,13 @@ field = ["django-leaflet (>=0.12)"]
 
 [[package]]
 name = "django-grappelli"
-version = "3.0.4"
+version = "3.0.8"
 description = "A jazzy skin for the Django Admin-Interface."
 optional = false
 python-versions = "*"
 files = [
-    {file = "django-grappelli-3.0.4.tar.gz", hash = "sha256:344bff45a10bf9fa251d9e0ec724a3ed1bae5dada58bbc1c030421ce9d428a72"},
-    {file = "django_grappelli-3.0.4-py2.py3-none-any.whl", hash = "sha256:f2d515de1f58c50b0f723fdf99cea66f4a26a8e9c9229291f8cee47a2dc94110"},
+    {file = "django-grappelli-3.0.8.tar.gz", hash = "sha256:0c24a0128a8e94b0f251a99d71b96738e4cf546d20fd993d03b26c05c8642fdd"},
+    {file = "django_grappelli-3.0.8-py2.py3-none-any.whl", hash = "sha256:4664f14cd8f296e01130d167cb869a106644818bf84953dfeabff498be937319"},
 ]
 
 [[package]]
@@ -841,6 +831,24 @@ files = [
     {file = "django-map-widgets-0.4.2.tar.gz", hash = "sha256:a86e9b08b950d95ddd4acce79b2b0f4d791019dc6f51068a59c5377519c8965c"},
     {file = "django_map_widgets-0.4.2-py3-none-any.whl", hash = "sha256:5820d8648eba74c69e1ea93ea092679e76a3a421d5ebdc4727ac08b4b1311507"},
 ]
+
+[[package]]
+name = "django-nested-admin"
+version = "4.0.2"
+description = "Django admin classes that allow for nested inlines"
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "django-nested-admin-4.0.2.tar.gz", hash = "sha256:79a5ce80b81c41a0f48f778fb556a3721029df48580bfce60a5962ffa2ef2d47"},
+    {file = "django_nested_admin-4.0.2-py3-none-any.whl", hash = "sha256:74d8fc0d0f17862ffcece66d39b8814cb649878b3b6ba8438076145a688ea473"},
+]
+
+[package.dependencies]
+python-monkey-business = ">=1.0.0"
+
+[package.extras]
+dev = ["Pillow", "black", "dj-database-url", "django-selenosis", "flake8", "pytest", "pytest-cov", "pytest-django", "pytest-xdist", "selenium"]
+test = ["Pillow", "dj-database-url", "django-selenosis", "pytest", "pytest-cov", "pytest-django", "pytest-xdist", "selenium"]
 
 [[package]]
 name = "django-phonenumber-field"
@@ -1687,6 +1695,20 @@ files = [
 cli = ["click (>=5.0)"]
 
 [[package]]
+name = "python-monkey-business"
+version = "1.0.0"
+description = "Utility functions for monkey-patching python code"
+optional = false
+python-versions = "*"
+files = [
+    {file = "python-monkey-business-1.0.0.tar.gz", hash = "sha256:9976522989766f00b2aaa24ec96eacb91a6de7b7001d1452079323b071988e0e"},
+    {file = "python_monkey_business-1.0.0-py2.py3-none-any.whl", hash = "sha256:6d4cf47f011945db838ccf04643acd49b82f7ad6ab7ecba4c8165385687a828a"},
+]
+
+[package.dependencies]
+six = ">=1.7.0"
+
+[[package]]
 name = "python-slugify"
 version = "8.0.1"
 description = "A Python slugify application that also handles Unicode"
@@ -2243,4 +2265,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "34a24910b2aa82bb79e625498bbeb2efe0c2d386020d92f1f5532cc9d4926000"
+content-hash = "a4baf51668e88db79b9282758fe6ab2787a9f11f6729bff0b72cfd3f1a0cc873"

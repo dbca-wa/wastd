@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "grappelli.dashboard",
     "grappelli",
     "django.contrib.admin",
+    "nested_admin",
     "django.contrib.auth",
     "django.contrib.gis",
     "django.contrib.sessions",
@@ -75,7 +76,8 @@ INSTALLED_APPS = [
     "observations",
     "wamtram",  # Legacy WAMTRAM database
     "turtle_tags",
-    "marine_mammal_incidents"
+    "marine_mammal_incidents",
+    "wamtram2"
 ]
 MIDDLEWARE = [
     "wastd.middleware.HealthCheckMiddleware",
@@ -113,22 +115,6 @@ if DEBUG:
         
     ]
 
-    DEBUG_TOOLBAR_PANELS = [
-        'debug_toolbar.panels.history.HistoryPanel',
-        'debug_toolbar.panels.versions.VersionsPanel',
-        'debug_toolbar.panels.timer.TimerPanel',
-        'debug_toolbar.panels.settings.SettingsPanel',
-        'debug_toolbar.panels.headers.HeadersPanel',
-        'debug_toolbar.panels.request.RequestPanel',
-        'debug_toolbar.panels.sql.SQLPanel',
-        'debug_toolbar.panels.staticfiles.StaticFilesPanel',
-        'debug_toolbar.panels.templates.TemplatesPanel',
-        'debug_toolbar.panels.cache.CachePanel',
-        'debug_toolbar.panels.signals.SignalsPanel',
-        'debug_toolbar.panels.redirects.RedirectsPanel',
-        'debug_toolbar.panels.profiling.ProfilingPanel',
-        "wastd.middleware.FileInterceptsPanel"
-    ]
     DEBUG_TOOLBAR_PANELS = [
         'debug_toolbar.panels.history.HistoryPanel',
         'debug_toolbar.panels.versions.VersionsPanel',
@@ -223,6 +209,26 @@ VERSION_NO = "1.0.8"
 DATABASES = {
     # Defined in DATABASE_URL env variable.
     "default": dj_database_url.config(),
+    # "wamtram2": {
+    #     'ENGINE': 'django.db.backends.postgresql',
+    #     'HOST': os.environ.get('DB_HOST2', '127.0.0.1'),
+    #     'NAME': 'wamtram',
+    #     'PORT': '5432',
+    #     'USER': 'evan',
+    #     'PASSWORD': 'dbcatest'
+    # },
+    "wamtram2": {
+        'ENGINE': 'mssql',
+        'HOST': 'kiboko.database.windows.net',
+        'NAME': 'Turtle_Tagging',
+        'PORT': '1433',
+        'USER': 'testadmin',
+        'PASSWORD': 'DBCAtest1',
+        'OPTIONS': {
+            'driver': 'ODBC Driver 18 for SQL Server',
+            #'extra_params': os.environ.get('DB_EXTRA_PARAMS', ''),
+        },
+    },
     "wamtram": {
         'ENGINE': os.environ.get('DB_ENGINE', 'mssql'),
         'HOST': os.environ.get('DB_HOST', 'host'),
@@ -236,7 +242,7 @@ DATABASES = {
         },
     }
 }
-DATABASE_ROUTERS = ['wamtram.routers.WamtramRouter']
+DATABASE_ROUTERS = ['wamtram.routers.WamtramRouter','wamtram2.routers.Wamtram2Router']
 
 
 # Internationalisation.
@@ -386,3 +392,4 @@ PHONENUMBER_DB_FORMAT = "INTERNATIONAL"
 BOOTSTRAP4 = {
     'success_css_class': '',  # Don't add `is-valid` to every form field by default.
 }
+
