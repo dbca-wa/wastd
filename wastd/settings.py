@@ -212,18 +212,18 @@ DATABASES = {
     # "wamtram2": {
     #     'ENGINE': 'django.db.backends.postgresql',
     #     'HOST': os.environ.get('DB_HOST2', '127.0.0.1'),
-    #     'NAME': 'wamtram',
+    #     'NAME': '',
     #     'PORT': '5432',
-    #     'USER': 'evan',
-    #     'PASSWORD': 'dbcatest'
+    #     'USER': '',
+    #     'PASSWORD': ''
     # },
     "wamtram2": {
         'ENGINE': 'mssql',
-        'HOST': 'kiboko.database.windows.net',
-        'NAME': 'Turtle_Tagging',
+        'HOST': os.environ.get('WTDB_HOST', 'host'),
+        'NAME': os.environ.get('WTDB_NAME', 'database'),
         'PORT': '1433',
-        'USER': 'testadmin',
-        'PASSWORD': 'DBCAtest1',
+        'USER': os.environ.get('WTDB_USERNAME', 'user'),
+        'PASSWORD': os.environ.get('WTDB_PASSWORD', 'user'),
         'OPTIONS': {
             'driver': 'ODBC Driver 18 for SQL Server',
             #'extra_params': os.environ.get('DB_EXTRA_PARAMS', ''),
