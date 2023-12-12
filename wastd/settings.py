@@ -61,7 +61,6 @@ INSTALLED_APPS = [
     "phonenumber_field",
     "crispy_forms",
     "bootstrap4",
-    "bootstrap_pagination",
     "webtemplate_dbca",
     "django_filters",
     "export_download",
@@ -141,6 +140,11 @@ TEMPLATES = [
         "APP_DIRS": True,
         "OPTIONS": {
             "debug": DEBUG,
+            "libraries" : { 
+                "proper_paginate": "wastd.templatetags.proper_paginate",
+                "url_replace": "wastd.templatetags.url_replace",
+                "dict_filter": "wastd.templatetags.dict_filter",
+                },
             "context_processors": [
                 "django.contrib.auth.context_processors.auth",
                 "django.template.context_processors.debug",
@@ -197,6 +201,7 @@ LOCAL_USERGROUPS = [
 ]
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
+CSRF_TRUSTED_ORIGINS = ["https://turtles-uat.dbca.wa.gov.au","https://turtles.dbca.wa.gov.au"]
 
 # Branding
 SITE_NAME = os.environ.get("SITE_NAME", "Turtles Database")
@@ -226,7 +231,7 @@ DATABASES = {
         'PASSWORD': os.environ.get('WTDB_PASSWORD', 'user'),
         'OPTIONS': {
             'driver': 'ODBC Driver 18 for SQL Server',
-            #'extra_params': os.environ.get('DB_EXTRA_PARAMS', ''),
+            'extra_params': os.environ.get('WTDB_EXTRA_PARAMS', ''),
         },
     },
     "wamtram": {

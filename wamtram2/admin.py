@@ -2,7 +2,7 @@ from django.contrib import admin
 import nested_admin
 from .models import TrtTurtles, TrtObservations, TrtTags,TrtPitTags,TrtMeasurements,TrtDamage,TrtDataEntry ,TrtEntryBatches
 from import_export.admin import ImportExportModelAdmin
-from easy_select2 import select2_modelform
+#from easy_select2 import select2_modelform
 from .forms import DataEntryUserModelForm, EnterUserModelForm
         
 #nested admin forms

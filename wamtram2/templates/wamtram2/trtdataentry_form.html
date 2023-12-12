@@ -1,20 +1,160 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>Turtle Data Entry</title>
-    {{ form.media.css }}
-    <style>
-        input, select {width: 100%}
-    </style>
-</head>
-<body>
-    <h1>Create a new entry</h1>
-    <form method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit">
-    </form>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    {{ form.media.js }}
-</body>
-</html>
+{% extends "base_wastd.html" %}
+
+{% load static bootstrap4 %}
+
+{% block extra_style %}
+{{ block.super }}
+{{ form.media.css }}
+<style>
+  input, select {width: 200px}
+  .center-form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+  </style>
+  {% endblock %}
+  
+  {% block extra_head %}
+  {# Select2 widgets need jQuery to be loaded at the top of the template, so we move it here. #}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+  {% endblock extra_head %}
+
+{% block breadcrumbs %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'wamtram2:entry_batches'%}">Entry batches</a></li>
+        {% if entry.entry_batch %}
+        <li class="breadcrumb-item"><a href="{% url 'wamtram2:entry_batch_detail' entry.entry_batch %}">{{entry.entry_batch}}</a></li>
+        {% endif %}
+        {% if batch_id %}
+        <li class="breadcrumb-item"><a href="{% url 'wamtram2:entry_batch_detail' batch_id %}">{{batch_id}}</a></li>
+        {% endif %}
+        <li class="breadcrumb-item active">{{ entry_id }}</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block page_content_inner %}
+{% if entry_id %}
+<form action="{% url 'wamtram2:trtdataentry' entry_id %}" method="post">
+{% else %}
+<form action="{% url 'wamtram2:newtrtdataentry' batch_id %}" method="post">
+{% endif %}
+{% csrf_token %}
+    <div class="form-group">
+        <label for="{{ form.entry_batch.id_for_label }}">{{ form.entry_batch.label }}</label>
+        {{ form.entry_batch }}
+        <label for="{{ form.turtle_id.id_for_label }}">{{ form.turtle_id.label }}</label>
+        {{ form.turtle_id }}
+        <label for="{{ form.do_not_process.id_for_label }}">{{ form.do_not_process.label }}</label>
+        {{ form.do_not_process }}
+    </div>
+  
+    <div class="form-group">
+        <label for="{{ form.user_entry_id.id_for_label }}">{{ form.user_entry_id.label }}</label>
+        {{ form.user_entry_id }}
+    </div>
+    <div class="form-group">
+      <label for="{{ form.observation_date.id_for_label }}">{{ form.observation_date.label }}</label>
+      {{ form.observation_date }}
+    </div>
+    <div class="form-group">
+        <h3>Recapture Tags</h3>
+        <label for="{{ form.recapture_left_tag_id.id_for_label }}">{{ form.recapture_left_tag_id.label }}</label>
+        {{ form.recapture_left_tag_id }}
+        <label for="{{ form.recapture_left_tag_id_2.id_for_label }}">{{ form.recapture_left_tag_id_2.label }}</label>
+        {{ form.recapture_left_tag_id_2 }}
+        <label for="{{ form.recapture_left_tag_id_3.id_for_label }}">{{ form.recapture_left_tag_id_3.label }}</label>
+        {{ form.recapture_left_tag_id_3 }}
+        <label for="{{ form.recapture_right_tag_id.id_for_label }}">{{ form.recapture_right_tag_id.label }}</label>
+        {{ form.recapture_right_tag_id }}
+        <label for="{{ form.recapture_right_tag_id_2.id_for_label }}">{{ form.recapture_right_tag_id_2.label }}</label>
+        {{ form.recapture_right_tag_id_2 }}
+        <label for="{{ form.recapture_right_tag_id_3.id_for_label }}">{{ form.recapture_right_tag_id_3.label }}</label>
+        {{ form.recapture_right_tag_id_3 }}
+        <label for="{{ form.recapture_pit_tag_id.id_for_label }}">{{ form.recapture_pit_tag_id.label }}</label>
+        {{ form.recapture_pit_tag_id }}
+        <label for="{{ form.recapture_pit_tag_id_2.id_for_label }}">{{ form.recapture_pit_tag_id_2.label }}</label>
+        {{ form.recapture_pit_tag_id_2 }}
+    </div>
+    <div class="form-group">
+        <h3>New Tags</h3>
+        <label for="{{ form.new_left_tag_id.id_for_label }}">{{ form.new_left_tag_id.label }}</label>
+        {{ form.new_left_tag_id }}
+        <label for="{{ form.new_left_tag_id_2.id_for_label }}">{{ form.new_left_tag_id_2.label }}</label>
+        {{ form.new_left_tag_id_2 }}
+        <label for="{{ form.new_pit_tag_id.id_for_label }}">{{ form.new_pit_tag_id.label }}</label>
+        {{ form.new_pit_tag_id }}
+        <label for="{{ form.new_pit_tag_id_2.id_for_label }}">{{ form.new_pit_tag_id_2.label }}</label>
+        {{ form.new_pit_tag_id_2 }}
+    </div>
+    <div class="form-group">
+      <h3>Tag scars</h3>
+      <label for="{{ form.scars_left.id_for_label }}">{{ form.scars_left.label }}</label>
+      {{ form.scars_left }}
+      <label for="{{ form.scars_right.id_for_label }}">{{ form.scars_right.label }}</label>
+      {{ form.scars_right }}
+      <label for="{{ form.scars_left.id_for_label }}">{{ form.scars_left.label }}</label>
+      {{ form.scars_left }}
+      <label for="{{ form.scars_left_scale_1.id_for_label }}">{{ form.scars_left_scale_1.label }}</label>
+      {{ form.scars_left_scale_1 }}
+      <label for="{{ form.scars_left_scale_2.id_for_label }}">{{ form.scars_left_scale_2.label }}</label>
+      {{ form.scars_left_scale_2 }}
+      <label for="{{ form.scars_left_scale_3.id_for_label }}">{{ form.scars_left_scale_3.label }}</label>
+      {{ form.scars_left_scale_3 }}
+      <label for="{{ form.scars_right.id_for_label }}">{{ form.scars_right.label }}</label>
+      {{ form.scars_right }}
+      <label for="{{ form.scars_right_scale_1.id_for_label }}">{{ form.scars_right_scale_1.label }}</label>
+      {{ form.scars_right_scale_1 }}
+      <label for="{{ form.scars_right_scale_2.id_for_label }}">{{ form.scars_right_scale_2.label }}</label>
+      {{ form.scars_right_scale_2 }}
+      <label for="{{ form.scars_right_scale_3.id_for_label }}">{{ form.scars_right_scale_3.label }}</label>
+      {{ form.scars_right_scale_3 }}
+      <div class="form-group">
+        <label for="{{ form.cc_length_not_measured.id_for_label }}">{{ form.cc_length_not_measured.label }}</label>
+        {{ form.cc_length_not_measured }}
+      </div>
+      <div class="form-group">
+        <label for="{{ form.cc_notch_length_not_measured.id_for_label }}">{{ form.cc_notch_length_not_measured.label }}</label>
+        {{ form.cc_notch_length_not_measured }}
+      </div>
+      <div class="form-group">
+        <label for="{{ form.cc_width_not_measured.id_for_label }}">{{ form.cc_width_not_measured.label }}</label>
+        {{ form.cc_width_not_measured }}
+      </div>
+      <div class="form-group">
+        <label for="{{ form.tagscarnotchecked.id_for_label }}">{{ form.tagscarnotchecked.label }}</label>
+        {{ form.tagscarnotchecked }}
+      </div>
+      <div class="form-group">
+        <label for="{{ form.didnotcheckforinjury.id_for_label }}">{{ form.didnotcheckforinjury.label }}</label>
+        {{ form.didnotcheckforinjury }}
+      </div>
+  </div>
+    {% if form.errors %}
+        <div class="alert alert-danger">
+            <strong>There were some errors with your submission:</strong>
+            <ul>
+            {% for field in form %}
+                {% for error in field.errors %}
+                    <li><strong>{{ field.label }}:</strong> {{ error|escape }}</li>
+                {% endfor %}
+            {% endfor %}
+            {% for error in form.non_field_errors %}
+                <li><strong>Non-field error:</strong> {{ error|escape }}</li>
+            {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+{# Load Select2 library after jQuery #}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+{{ form.media.js }}
+{% endblock %}

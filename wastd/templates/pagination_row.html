@@ -1,6 +1,6 @@
-  {% load bootstrap4 %}
+{% load bootstrap4 %}
   <div class="row" id="pagination-row">
     <div class="col-12">
-        {% bootstrap_pagination page_obj pages_to_show=7 size='small' extra=request.GET.urlencode %}
+        {% page_obj pages_to_show=7 size='small' extra=request.GET.urlencode %}
     </div>
   </div>

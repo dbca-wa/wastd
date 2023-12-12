@@ -6,7 +6,7 @@
 #   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
 # Feel free to rename the models, but don't rename db_table values or field names.
 from django.contrib.gis.db import models
-
+from datetime import datetime
 
 class TrtActivities(models.Model):
     activity_code = models.CharField(db_column='ACTIVITY_CODE', primary_key=True, max_length=1)  # Field name made lowercase.
@@ -221,6 +221,7 @@ class TrtDataEntry(models.Model):
 
     def __str__(self):
         return f"{self.data_entry_id}"
+
 
 
 # class TrtDataEntryExceptions(models.Model):
@@ -568,6 +569,9 @@ class TrtPitTags(models.Model):
         db_table = 'TRT_PIT_TAGS'
         unique_together = (('pit_tag_id', 'turtle'),)
         verbose_name = "Pit tag"
+        ordering = ['pit_tag_id']
+    def __str__(self):
+        return f"{self.pit_tag_id}"
 
 
 class TrtPitTagStates(models.Model):
@@ -820,6 +824,8 @@ class TrtTurtleStatus(models.Model):
     class Meta:
         managed = False
         db_table = 'TRT_TURTLE_STATUS'
+    def __str__(self):
+        return f"{self.description}"
 
 
 class TrtYesNo(models.Model):
