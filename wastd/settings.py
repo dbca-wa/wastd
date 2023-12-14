@@ -35,7 +35,12 @@ else:
     AZURE_CONTAINER = os.environ.get('AZURE_CONTAINER', 'container')
     AZURE_URL_EXPIRATION_SECS = os.environ.get('AZURE_URL_EXPIRATION_SECS', 3600)  # Default one hour.
 
-
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.memcached.PyMemcacheCache",
+        "LOCATION": "127.0.0.1:11211",
+    },
+}
 
 # Application settings
 INSTALLED_APPS = [

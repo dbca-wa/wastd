@@ -44,6 +44,7 @@ django-nested-admin = "^4.0.2"
 django-grappelli = "^3.0.8"
 django-bootstrap4 = "^23.2"
 django-easy-select2 = "^1.5.8"
+pymemcache = "^4.0.0"
 
 [tool.poetry.group.dev.dependencies]
 ipython = "^8.14.0"
