@@ -36,9 +36,15 @@ class AdminDashboard(Dashboard):
                     modules.AppList(
                         "Tag management",
                         models=(
-                            "turtle_tags.models.Turtle",
-                            "turtle_tags.models.TurtleTag",
-                            "turtle_tags.models.TagPurchaseOrder",
+                            "wamtram2.models.TrtTags",
+                            "wamtram2.models.TrtPitTags",
+                            "wamtram2.models.TrtTagOrders",
+                        ),
+                    ),
+                    modules.AppList(
+                        "Turtle management",
+                        models=(
+                            "wamtram2.models.TrtTurtles",
                         ),
                     ),
                 ],

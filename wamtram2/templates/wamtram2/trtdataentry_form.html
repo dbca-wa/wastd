@@ -38,6 +38,11 @@
 {% endblock %}
 
 {% block page_content_inner %}
+{% if form.observation_id %}
+<div class="row">
+<h3>Observation has aleady been submitted. <a href="{% url 'wamtram2:observationdetail' pk=form.observation_id.value %}">View observation</a></h3> 
+</div>
+{% endif %}
 {% if entry_id %}
 <form action="{% url 'wamtram2:trtdataentry' entry_id %}" method="post">
 {% else %}
@@ -51,12 +56,27 @@
         {{ form.turtle_id }}
         <label for="{{ form.do_not_process.id_for_label }}">{{ form.do_not_process.label }}</label>
         {{ form.do_not_process }}
+        <label for="{{ form.species_code.id_for_label }}">{{ form.species_code.label }}</label>
+        {{ form.species_code }}
+        <label for="{{ form.sex.id_for_label }}">{{ form.sex.label }}</label>
+        {{ form.sex }}
+        <label for="{{ form.place_code.id_for_label }}">{{ form.place_code.label }}</label>
+        {{ form.place_code }}
     </div>
   
     <div class="form-group">
-        <label for="{{ form.user_entry_id.id_for_label }}">{{ form.user_entry_id.label }}</label>
-        {{ form.user_entry_id }}
+        <label for="{{ form.measured_by_id.id_for_label }}">{{ form.measured_by_id.label }}</label>
+        {{ form.measured_by_id }}
+        <label for="{{ form.recorded_by_id.id_for_label }}">{{ form.recorded_by_id.label }}</label>
+        {{ form.recorded_by_id }}
+        <label for="{{ form.tagged_by_id.id_for_label }}">{{ form.tagged_by_id.label }}</label>
+        {{ form.tagged_by_id }}
+        <label for="{{ form.entered_by_id.id_for_label }}">{{ form.entered_by_id.label }}</label>
+        {{ form.entered_by_id }}
+        <label for="{{ form.measured_recorded_by_id.id_for_label }}">{{ form.measured_recorded_by_id.label }}</label>
+        {{ form.measured_recorded_by_id }}
     </div>
+    
     <div class="form-group">
       <label for="{{ form.observation_date.id_for_label }}">{{ form.observation_date.label }}</label>
       {{ form.observation_date }}

@@ -60,11 +60,10 @@
     </div>
 </div>
 {% endblock pagination_row %}
-
-<a href="{% url 'wamtram2:validate_data_entry_batch' batch_id=batch.entry_batch_id %}" class="btn btn-primary">Validate this Batch</a>
-<a href="{% url 'wamtram2:process_data_entry_batch' batch_id=batch.entry_batch_id %}" class="btn btn-primary">Process this Batch</a>
-<a href="{% url 'wamtram2:find_turtle' batch_id=batch.entry_batch_id %}" class="btn btn-primary">Create New Entry</a>
-<a href="{% url 'wamtram2:delete_batch' batch_id=batch.entry_batch_id %}" class="btn btn-danger float-right">Delete Batch</a>
+<a href="{% url 'wamtram2:find_turtle' batch_id=batch.entry_batch_id %}" class="btn btn-primary">1. Create a new entry</a> ->
+<a href="{% url 'wamtram2:validate_data_entry_batch' batch_id=batch.entry_batch_id %}" class="btn btn-primary">2. Validate this Batch</a> ->
+<a href="{% url 'wamtram2:process_data_entry_batch' batch_id=batch.entry_batch_id %}" class="btn btn-primary">3. Add this batch to the database</a>
+<a href="{% url 'wamtram2:delete_batch' batch_id=batch.entry_batch_id %}" class="btn btn-danger float-right" onclick="return confirm('Are you sure you want to delete this batch?');">Delete Batch</a>
 {% if object_list %}
 <div class="row mt-3">
   <div class="col">
@@ -82,7 +81,7 @@
         <tbody>
             {% for obj in object_list %}
             <tr>
-                <td><a href="{% url 'wamtram2:trtdataentry' obj.data_entry_id %}">{{ obj.pk }}</a></td>
+                <td><a href="{% url 'wamtram2:trtdataentry' obj.data_entry_id %}">{{ obj.data_entry_id }}</a></td>
                 <td>{{ obj.entry_date|date:"j M Y" }}</td>
                 <td>{% if obj.turtle_id %}<a href="{% url 'wamtram2:turtle_detail' obj.turtle_id %}">{{obj.turtle_id}}</a>{% endif %}</td>
                 <td>{{ obj.error_message }}</td>

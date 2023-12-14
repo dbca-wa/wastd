@@ -1,6 +1,6 @@
 from django.contrib import admin
 import nested_admin
-from .models import TrtTurtles, TrtObservations, TrtTags,TrtPitTags,TrtMeasurements,TrtDamage,TrtDataEntry ,TrtEntryBatches
+from .models import TrtTurtles, TrtObservations, TrtTags,TrtPitTags,TrtMeasurements,TrtDamage,TrtDataEntry ,TrtEntryBatches, TrtTagOrders
 from import_export.admin import ImportExportModelAdmin
 #from easy_select2 import select2_modelform
 from .forms import DataEntryUserModelForm, EnterUserModelForm
@@ -98,7 +98,13 @@ class TrtTagsAdmin(ImportExportModelAdmin):
     list_filter = ['pit_tag_status']
     search_fields = ['pit_tag_id']
 
-
+@admin.register(TrtTagOrders)
+class TrtTagOrdersAdmin(ImportExportModelAdmin):
+    list_display = ('tag_order_id','order_date','order_number')
+    list_filter = ['order_date']
+    search_fields = ['tag_order_id']
+    verbose_name = "Tag Order"  # Singular name for one object
+    verbose_name_plural = "Tag Orders"
 
 
 

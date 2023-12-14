@@ -22,7 +22,6 @@ urlpatterns = [
     #path("ajax_select/", include("ajax_select.urls")),
     path("select2/", include("django_select2.urls")),
     path("users/", include(("users.urls", "users"), namespace="users")),
-    path("turtle-tags/", include("turtle_tags.urls")),
     path("observations/", include(("observations.urls"), namespace="observations")),
     path("wamtram2/", include(("wamtram2.urls"), namespace="wamtram2")),
     path("map/", observations_views.MapView.as_view(), name="map"),

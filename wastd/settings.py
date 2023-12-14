@@ -73,8 +73,6 @@ INSTALLED_APPS = [
     # Local apps
     "users",
     "observations",
-    "wamtram",  # Legacy WAMTRAM database
-    "turtle_tags",
     "marine_mammal_incidents",
     "wamtram2"
 ]
@@ -224,30 +222,30 @@ DATABASES = {
     # },
     "wamtram2": {
         'ENGINE': 'mssql',
-        'HOST': os.environ.get('WTDB_HOST', 'host'),
-        'NAME': os.environ.get('WTDB_NAME', 'database'),
-        'PORT': '1433',
-        'USER': os.environ.get('WTDB_USERNAME', 'user'),
-        'PASSWORD': os.environ.get('WTDB_PASSWORD', 'user'),
-        'OPTIONS': {
-            'driver': 'ODBC Driver 18 for SQL Server',
-            'extra_params': os.environ.get('WTDB_EXTRA_PARAMS', ''),
-        },
-    },
-    "wamtram": {
-        'ENGINE': os.environ.get('DB_ENGINE', 'mssql'),
         'HOST': os.environ.get('DB_HOST', 'host'),
         'NAME': os.environ.get('DB_NAME', 'database'),
         'PORT': os.environ.get('DB_PORT', 1234),
         'USER': os.environ.get('DB_USERNAME', 'user'),
-        'PASSWORD': os.environ.get('DB_PASSWORD', 'pass'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', 'user'),
         'OPTIONS': {
             'driver': os.environ.get('DB_DRIVER', 'ODBC Driver 17 for SQL Server'),
             'extra_params': os.environ.get('DB_EXTRA_PARAMS', ''),
         },
-    }
+    },
+    # "wamtram": {
+    #     'ENGINE': os.environ.get('DB_ENGINE', 'mssql'),
+    #     'HOST': os.environ.get('DB_HOST', 'host'),
+    #     'NAME': os.environ.get('DB_NAME', 'database'),
+    #     'PORT': os.environ.get('DB_PORT', 1234),
+    #     'USER': os.environ.get('DB_USERNAME', 'user'),
+    #     'PASSWORD': os.environ.get('DB_PASSWORD', 'pass'),
+    #     'OPTIONS': {
+    #         'driver': os.environ.get('DB_DRIVER', 'ODBC Driver 17 for SQL Server'),
+    #         'extra_params': os.environ.get('DB_EXTRA_PARAMS', ''),
+    #     },
+    #}
 }
-DATABASE_ROUTERS = ['wamtram.routers.WamtramRouter','wamtram2.routers.Wamtram2Router']
+DATABASE_ROUTERS = ['wamtram2.routers.Wamtram2Router']
 
 
 # Internationalisation.

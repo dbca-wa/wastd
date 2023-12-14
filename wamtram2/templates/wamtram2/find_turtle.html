@@ -37,9 +37,13 @@
   <div class="center-form">
     <h3>Search for a Turtle</h1>
       <div class="row">
+        
         <div class="col col-12 mb-3">
           <div class="card card-lg shadow-lg">
             <div class="card-body">
+              {% if no_turtle_found %}
+                <a href="{% url 'wamtram2:newtrtdataentry' form.batch_id.value %}" class="btn btn-primary">Create New Turtle</a>
+              {% endif %}
               <form method="post">
                 {% csrf_token %}
                 {{ form.as_p }}
@@ -64,7 +68,7 @@
                 {% endfor %}
               </ul>
     
-              <a href="{% url 'wamtram2:existingtrtdataentry' batch_id=form.batch_id.value turtle_id=turtle.turtle_id %}" class="btn btn-primary">Create New Entry</a>
+              <a href="{% url 'wamtram2:existingtrtdataentry' batch_id=form.batch_id.value turtle_id=turtle.turtle_id %}" class="btn btn-primary">Create New Observation</a>
               {% endif %}
             </div><!-- .card-body -->
           </div><!-- .card -->

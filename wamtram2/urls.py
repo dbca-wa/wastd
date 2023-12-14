@@ -5,7 +5,7 @@ app_name = "wamtram2"
 
 
 urlpatterns = [
-    path("", views.TurtleListView.as_view(), name="home"),
+    path("", views.HomePageView.as_view(), name="home"),
     path("turtles/", views.TurtleListView.as_view(), name="turtle_list"),
     path("turtles/<int:pk>/", views.TurtleDetailView.as_view(), name="turtle_detail"),
     path('newdataentry/<int:batch_id>/', views.TrtDataEntryForm.as_view(), name='newtrtdataentry'),
@@ -18,4 +18,5 @@ urlpatterns = [
     path('deleteBatch/<int:batch_id>/', views.DeleteBatchView.as_view(), name='delete_batch'),
     path('validate_data_entry_batch/<int:batch_id>/', views.ValidateDataEntryBatchView.as_view(), name='validate_data_entry_batch'),
     path('process_data_entry_batch/<int:batch_id>/', views.ProcessDataEntryBatchView.as_view(), name='process_data_entry_batch'),
+    path('observations/<int:pk>/', views.ObservationDetailView.as_view(), name='observationdetail'),
 ]

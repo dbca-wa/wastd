@@ -1,8 +1,4 @@
 {% extends "base_wastd.html" %}
-{% load crispy_forms_tags %}
-
-{% block leaflet_style %}{% endblock %}
-{% block leaflet_js %}{% endblock %}
 
 {% block page_content_inner %}
 <!-- Search bar -->
@@ -67,28 +63,32 @@
         <thead>
             <tr>
                 <th>ID</th>
+                <th>Name</th>
                 <th>Date Entered</th>
                 <th>Species</th>
                 <th>Sex</th>
                 <th>Tags</th>
-                <th>Name</th>
+                {% comment %}
                 <th>Observation count</th>
                 <th>Most recent observation</th>
                 <th>Most recent site</th>
+                {% endcomment %}
             </tr>
         </thead>
         <tbody>
             {% for obj in object_list %}
             <tr>
                 <td><a href="{% url 'wamtram2:turtle_detail' obj.pk %}">{{ obj.pk }}</a></td>
+                <td>{{ obj.turtle_name|default_if_none:"" }}</td>
                 <td>{{ obj.date_entered|date:"j M Y" }}</td>
                 <td>{{ obj.species_code }}</td>
                 <td>{{ obj.sex}}</td>
                 <td>{{ obj.get_tags_description }}</td>
-                <td>{{ obj.turtle_name|default_if_none:"" }}</td>
+                {% comment %}
                 <td>{{ obj.get_tag_observations.count }}</td>
                 <td>{{ obj.get_newest_encounter.when|date:"D, j M Y H:i"|default_if_none:"" }}</td>
                 <td>{{ obj.get_newest_site|default_if_none:"" }}</td>
+                {% endcomment %}
             </tr>
             {% endfor %}
         </tbody>
@@ -97,10 +97,6 @@
 </div>
 {% endif %}
 
-{% if object_list %}
-
-{% endif %}
 
 {% endblock page_content_inner %}
 
-{% block extra_js %}{% endblock %}

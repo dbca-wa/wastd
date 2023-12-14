@@ -5,7 +5,7 @@ from django.views import generic
 from django.conf import settings
 from wastd.utils import search_filter, Breadcrumb
 
-from .models import TrtTurtles,TrtTags,TrtPitTags, TrtEntryBatches,TrtDataEntry,TrtPersons
+from .models import TrtTurtles,TrtTags,TrtPitTags, TrtEntryBatches,TrtDataEntry,TrtPersons,TrtObservations
 from .forms import TrtDataEntryForm, SearchForm
 from django.shortcuts import get_object_or_404
 from django.forms.models import model_to_dict
@@ -15,9 +15,23 @@ from django.db import connections
 from django.views.generic import ListView
 from django.contrib import messages
 from django.db import DatabaseError
+from django.utils import timezone
+from django.db.models import Q
+
+from django.views.generic import TemplateView
+
+class HomePageView(LoginRequiredMixin,TemplateView):
+    """
+    A view for the home page.
+
+    Attributes:
+        template_name (str): The name of the template to be used for rendering the view.
+    """
+
+    template_name = 'wamtram2/home.html'
 
 
-class EntryBatchesListView(ListView):
+class EntryBatchesListView(LoginRequiredMixin,ListView):
     """
     A view that displays a list of entry batches.
 
@@ -58,7 +72,7 @@ class EntryBatchesListView(ListView):
         context['persons'] = {person.person_id: person for person in TrtPersons.objects.all()}
         return context
 
-class EntryBatchDetailView(generic.ListView):
+class EntryBatchDetailView(LoginRequiredMixin,generic.ListView):
     """
     A view for displaying list of a batch of TrtDataEntry objects.
 
@@ -78,7 +92,8 @@ class EntryBatchDetailView(generic.ListView):
     template_name = 'wamtram2/trtentrybatch_detail.html'  
     context_object_name = 'batch'
     paginate_by = 50
-    from django.utils import timezone
+
+
 
 
     def get(self, request, *args, **kwargs):
@@ -111,7 +126,7 @@ class EntryBatchDetailView(generic.ListView):
         """
         queryset = super().get_queryset()
         batch_id = self.kwargs.get('batch_id')
-        return queryset.filter(entry_batch_id=batch_id).order_by('-entry_batch_id')
+        return queryset.filter(entry_batch_id=batch_id).order_by('-data_entry_id')
 
     def get_context_data(self, **kwargs):
         """
@@ -159,29 +174,77 @@ class TrtDataEntryForm(LoginRequiredMixin, generic.FormView):
         return kwargs
 
     def get_initial(self):
-        """
-        Returns the initial data to use for forms on this view.
 
-        Returns:
-            dict: The initial data for the form.
-        """
         initial = super().get_initial()
         batch_id = self.kwargs.get('batch_id')
         turtle_id = self.kwargs.get('turtle_id')
+        entry_id = self.kwargs.get('entry_id')
+
+        #starting a new observation in a batch
         if batch_id:
             initial['entry_batch'] = get_object_or_404(TrtEntryBatches, entry_batch_id=batch_id)
+        
+        #starting a new observation with an existing turtle
         if turtle_id:
             turtle = get_object_or_404(TrtTurtles, turtle_id=turtle_id)
             initial['turtle_id'] = turtle_id 
+
+            initial['species_code'] = turtle.species_code
+
+            initial['sex'] = turtle.sex
+
             initial['recapture_left_tag_id'] = turtle.trttags_set.filter(side='L').all().order_by('tag_order_id')[0] if turtle.trttags_set.filter(side='L').count() > 0 else None
+
             initial['recapture_left_tag_id_2'] = turtle.trttags_set.filter(side='L').all().order_by('tag_order_id')[1] if turtle.trttags_set.filter(side='L').count() > 1 else None
+
             initial['recapture_right_tag_id_2'] = turtle.trttags_set.filter(side='L').all().order_by('tag_order_id')[2] if turtle.trttags_set.filter(side='L').count() > 2 else None
+
             initial['recapture_right_tag_id'] = turtle.trttags_set.filter(side='R').all().order_by('tag_order_id')[0] if turtle.trttags_set.filter(side='R').count() > 0 else None
+    
             initial['recapture_right_tag_id_2'] = turtle.trttags_set.filter(side='R').all().order_by('tag_order_id')[1] if turtle.trttags_set.filter(side='R').count() > 1 else None
+    
             initial['recapture_right_tag_id_3'] = turtle.trttags_set.filter(side='R').all().order_by('tag_order_id')[2] if turtle.trttags_set.filter(side='R').count() > 2 else None
-        
+
             initial['recapture_pit_tag_id'] = turtle.trtpittags_set.all().order_by('tag_order_id')[0] if turtle.trtpittags_set.count() > 0 else None
+
             initial['recapture_pit_tag_id_2'] = turtle.trtpittags_set.all().order_by('tag_order_id')[1] if turtle.trtpittags_set.count() > 1 else None
+        
+        #editing an existing observation we need to populate the person id fields from the strings stored 
+        #using the old MS Access system
+        if entry_id:
+            trtdataentry = get_object_or_404(TrtDataEntry, data_entry_id=entry_id)
+            measured_by = trtdataentry.measured_by
+            recorded_by = trtdataentry.recorded_by
+            tagged_by = trtdataentry.tagged_by
+            entered_by = trtdataentry.entered_by
+            measured_recorded_by = trtdataentry.measured_recorded_by         
+
+            if measured_by:
+                first_name, last_name = measured_by.split(' ')
+                person = TrtPersons.objects.filter(first_name=first_name, surname=last_name).first()
+                if person:
+                    initial['measured_by_id'] = person.person_id
+            if recorded_by:
+                first_name, last_name = recorded_by.split(' ')
+                person = TrtPersons.objects.filter(first_name=first_name, surname=last_name).first()
+                if person:
+                    initial['recorded_by_id'] = person.person_id
+            if tagged_by:
+                first_name, last_name = tagged_by.split(' ')
+                person = TrtPersons.objects.filter(first_name=first_name, surname=last_name).first()
+                if person:
+                    initial['tagged_by_id'] = person.person_id
+            if entered_by:
+                first_name, last_name = entered_by.split(' ')
+                person = TrtPersons.objects.filter(first_name=first_name, surname=last_name).first()
+                if person:
+                    initial['entered_by_id'] = person.person_id
+            if measured_recorded_by:
+                first_name, last_name = measured_recorded_by.split(' ')
+                person = TrtPersons.objects.filter(first_name=first_name, surname=last_name).first()
+                if person:
+                    initial['measured_recorded_by_id'] = person.person_id
+
         return initial
         
     def form_valid(self, form):
@@ -223,16 +286,6 @@ class TrtDataEntryForm(LoginRequiredMixin, generic.FormView):
             context['batch_id'] = batch_id #creating new entry in batch
           
         return context
-    
-    # def get_success_url(self):
-    #     """
-    #     Returns the success URL for redirecting after form submission.
-
-    #     Returns:
-    #         str: The success URL.
-    #     """
-    #     batch_id = self.kwargs.get('batch_id')
-    #     return reverse('wamtram2:entry_batch_detail', args=[batch_id])
     
 
 
@@ -337,13 +390,18 @@ class FindTurtleView(LoginRequiredMixin,View):
                
             except TrtTags.DoesNotExist:
                 form.add_error(None, 'No Turtle found with the given tag id.')
+                no_turtle_found = True
 
-        return render(request, 'wamtram2/find_turtle.html', {'form': form})
+        return render(request, 'wamtram2/find_turtle.html', {'form': form, 'no_turtle_found': no_turtle_found})
 
+class ObservationDetailView(LoginRequiredMixin, generic.DetailView):
+    model = TrtObservations
+    template_name = 'wamtram2/observation_detail.html'
 
-
-
-
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['observation'] = get_object_or_404(TrtObservations, observation_id=self.kwargs.get('pk'))
+        return context
 
 
 class TurtleListView(LoginRequiredMixin, generic.ListView):
@@ -373,7 +431,7 @@ class TurtleListView(LoginRequiredMixin, generic.ListView):
             context["query_string"] = self.request.GET["q"]
         context["breadcrumbs"] = (
             Breadcrumb("Home", reverse("home")),
-            Breadcrumb("WAMTRAM2", None),
+            Breadcrumb("turtles", None),
         )
         return context
 
@@ -387,12 +445,10 @@ class TurtleListView(LoginRequiredMixin, generic.ListView):
         qs = super().get_queryset()
         # General-purpose search uses the `q` parameter.
         if "q" in self.request.GET and self.request.GET["q"]:
-            from .admin import TurtleAdmin
-            q = search_filter(TurtleAdmin.search_fields, self.request.GET["q"])
-            qs = qs.filter(q).distinct()
+            q = self.request.GET["q"]
+            qs = qs.filter(Q(pk__icontains=q) | Q(turtle_name__icontains=q) | Q(trttags__tag_id__icontains=q) | Q(trtpittags__pit_tag_id__icontains=q)).distinct()
 
         return qs.order_by("pk")
-
 
 class TurtleDetailView(LoginRequiredMixin,generic.DetailView):
     """
@@ -416,4 +472,5 @@ class TurtleDetailView(LoginRequiredMixin,generic.DetailView):
         context["page_title"] = f"{settings.SITE_CODE} | WAMTRAM2 | {obj.pk}"
         context["tags"] = obj.trttags_set.all()
         context["pittags"] = obj.trtpittags_set.all()
+        context["observations"] = obj.trtobservations_set.all()
         return context
