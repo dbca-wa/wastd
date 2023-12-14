@@ -6,7 +6,7 @@ from django.conf import settings
 from wastd.utils import search_filter, Breadcrumb
 
 from .models import TrtTurtles,TrtTags,TrtPitTags, TrtEntryBatches,TrtDataEntry,TrtPersons,TrtObservations
-from .forms import TrtDataEntryForm, SearchForm
+from .forms import TrtDataEntryForm, SearchForm, TrtEntryBatchesForm
 from django.shortcuts import get_object_or_404
 from django.forms.models import model_to_dict
 from django.views import View
@@ -141,7 +141,9 @@ class EntryBatchDetailView(LoginRequiredMixin,generic.ListView):
         """
         context = super().get_context_data(**kwargs)
         context['persons'] = {person.person_id: person for person in TrtPersons.objects.all()}
-        context['batch'] = TrtEntryBatches.objects.get(entry_batch_id=self.kwargs.get('batch_id'))  # add the batch to the context
+        batch = TrtEntryBatches.objects.get(entry_batch_id=self.kwargs.get('batch_id'))
+        context['batch'] = batch  # add the batch to the context
+        context['form'] = TrtEntryBatchesForm(instance=batch)  # Add the form to the context data
         return context
 
 class TrtDataEntryForm(LoginRequiredMixin, generic.FormView):
@@ -205,9 +207,9 @@ class TrtDataEntryForm(LoginRequiredMixin, generic.FormView):
     
             initial['recapture_right_tag_id_3'] = turtle.trttags_set.filter(side='R').all().order_by('tag_order_id')[2] if turtle.trttags_set.filter(side='R').count() > 2 else None
 
-            initial['recapture_pit_tag_id'] = turtle.trtpittags_set.all().order_by('tag_order_id')[0] if turtle.trtpittags_set.count() > 0 else None
+            initial['recapture_pittag_id'] = turtle.trtpittags_set.all().order_by('tag_order_id')[0] if turtle.trtpittags_set.count() > 0 else None
 
-            initial['recapture_pit_tag_id_2'] = turtle.trtpittags_set.all().order_by('tag_order_id')[1] if turtle.trtpittags_set.count() > 1 else None
+            initial['recapture_pittag_id_2'] = turtle.trtpittags_set.all().order_by('tag_order_id')[1] if turtle.trtpittags_set.count() > 1 else None
         
         #editing an existing observation we need to populate the person id fields from the strings stored 
         #using the old MS Access system
@@ -371,7 +373,7 @@ class FindTurtleView(LoginRequiredMixin,View):
             tag_id = form.cleaned_data['tag_id']
             try:
                 tag = TrtTags.objects.filter(tag_id=tag_id).first()
-                pit_tag = TrtPitTags.objects.filter(pit_tag_id=tag_id).first()
+                pit_tag = TrtPitTags.objects.filter(pittag_id=tag_id).first()
                 if tag:
                     turtle = tag.turtle
                 elif pit_tag:
@@ -446,7 +448,7 @@ class TurtleListView(LoginRequiredMixin, generic.ListView):
         # General-purpose search uses the `q` parameter.
         if "q" in self.request.GET and self.request.GET["q"]:
             q = self.request.GET["q"]
-            qs = qs.filter(Q(pk__icontains=q) | Q(turtle_name__icontains=q) | Q(trttags__tag_id__icontains=q) | Q(trtpittags__pit_tag_id__icontains=q)).distinct()
+            qs = qs.filter(Q(pk__icontains=q) | Q(turtle_name__icontains=q) | Q(trttags__tag_id__icontains=q) | Q(trtpittags__pittag_id__icontains=q)).distinct()
 
         return qs.order_by("pk")
 

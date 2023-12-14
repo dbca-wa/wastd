@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import DateInput, DateTimeInput
 from easy_select2 import apply_select2
-from .models import TrtPersons,TrtDataEntry,TrtTags, TrtTurtles
+from .models import TrtPersons,TrtDataEntry,TrtTags, TrtEntryBatches
 from django_select2.forms import ModelSelect2Widget
 from .models import TrtTags, TrtPitTags
 from django.core.exceptions import ValidationError
@@ -25,20 +25,20 @@ unAssignedTagWidget =  ModelSelect2Widget(
 pitTagWidget =  ModelSelect2Widget(
     queryset = TrtPitTags.objects.all() ,
     model = TrtPitTags,
-    search_fields = [ "pit_tag_id__icontains", ]
+    search_fields = [ "pittag_id__icontains", ]
     
 )
 
 unassignedPitTagWidget =  ModelSelect2Widget(
     queryset = TrtPitTags.objects.filter(pit_tag_status='U') ,
     model = TrtPitTags,
-    search_fields = [ "pit_tag_id__icontains", ]
+    search_fields = [ "pittag_id__icontains", ]
     
 )
 
 personWidget =  ModelSelect2Widget(
     queryset = TrtPersons.objects.all() ,
-    model = TrtPitTags,
+    model = TrtPersons,
     search_fields = [ "first_name__icontains","surname__icontains" ]
     
 )
@@ -49,7 +49,7 @@ class CustomModelSelect2Widget(ModelSelect2Widget):
 
     def filter_queryset(self, request, term, queryset=None, **dependent_fields):
         trt_tags = TrtTags.objects.filter(tag_id__icontains=term)
-        trt_pit_tags = TrtPitTags.objects.filter(pit_tag_id__icontains=term)
+        trt_pit_tags = TrtPitTags.objects.filter(pittag_id__icontains=term)
         return list(trt_pit_tags) + list(trt_tags)
 
     def get_queryset(self):
@@ -59,6 +59,14 @@ class SearchForm(forms.Form):
     batch_id = forms.IntegerField(disabled=True)
     tag_id = forms.CharField(widget=CustomModelSelect2Widget)
     
+
+
+
+class TrtEntryBatchesForm(forms.ModelForm):
+    class Meta:
+        model = TrtEntryBatches
+        fields = ['entered_person_id','comments']
+        widgets = { 'entered_person_id': personWidget}
 
 class TrtDataEntryForm(forms.ModelForm):
 
@@ -86,10 +94,10 @@ class TrtDataEntryForm(forms.ModelForm):
                   'recapture_right_tag_id_3',
                   'new_left_tag_id',
                   'new_left_tag_id_2',
-                  'new_pit_tag_id',
-                  'new_pit_tag_id_2',
-                  'recapture_pit_tag_id',
-                  'recapture_pit_tag_id_2',
+                  'new_pittag_id',
+                  'new_pittag_id_2',
+                  'recapture_pittag_id',
+                  'recapture_pittag_id_2',
                   'scars_left',
                   'scars_right',
                   'scars_left_scale_1',
@@ -109,16 +117,16 @@ class TrtDataEntryForm(forms.ModelForm):
             "new_left_tag_id_2": unAssignedTagWidget,
             "new_right_tag_id": unAssignedTagWidget,
             "new_right_tag_id_2": unAssignedTagWidget,
-            "new_pit_tag_id": unassignedPitTagWidget,
-            "new_pit_tag_id_2": unassignedPitTagWidget,
+            "new_pittag_id": unassignedPitTagWidget,
+            "new_pittag_id_2": unassignedPitTagWidget,
             "recapture_left_tag_id": tagWidget,
             "recapture_left_tag_id_2": tagWidget,
             "recapture_left_tag_id_3": tagWidget,
             "recapture_right_tag_id": tagWidget,
             "recapture_right_tag_id_2": tagWidget,
             "recapture_right_tag_id_3": tagWidget,
-            "recapture_pit_tag_id": pitTagWidget,
-            "recapture_pit_tag_id_2": pitTagWidget,
+            "recapture_pittag_id": pitTagWidget,
+            "recapture_pittag_id_2": pitTagWidget,
             "user_entry_id": personWidget,
             "measured_by_id": personWidget,
             "recorded_by_id": personWidget,

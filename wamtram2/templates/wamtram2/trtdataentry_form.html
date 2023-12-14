@@ -38,7 +38,7 @@
 {% endblock %}
 
 {% block page_content_inner %}
-{% if form.observation_id %}
+{% if form.observation_id.value %}
 <div class="row">
 <h3>Observation has aleady been submitted. <a href="{% url 'wamtram2:observationdetail' pk=form.observation_id.value %}">View observation</a></h3> 
 </div>
@@ -95,10 +95,10 @@
         {{ form.recapture_right_tag_id_2 }}
         <label for="{{ form.recapture_right_tag_id_3.id_for_label }}">{{ form.recapture_right_tag_id_3.label }}</label>
         {{ form.recapture_right_tag_id_3 }}
-        <label for="{{ form.recapture_pit_tag_id.id_for_label }}">{{ form.recapture_pit_tag_id.label }}</label>
-        {{ form.recapture_pit_tag_id }}
-        <label for="{{ form.recapture_pit_tag_id_2.id_for_label }}">{{ form.recapture_pit_tag_id_2.label }}</label>
-        {{ form.recapture_pit_tag_id_2 }}
+        <label for="{{ form.recapture_pittag_id.id_for_label }}">{{ form.recapture_pittag_id.label }}</label>
+        {{ form.recapture_pittag_id }}
+        <label for="{{ form.recapture_pittag_id_2.id_for_label }}">{{ form.recapture_pittag_id_2.label }}</label>
+        {{ form.recapture_pittag_id_2 }}
     </div>
     <div class="form-group">
         <h3>New Tags</h3>
@@ -106,10 +106,10 @@
         {{ form.new_left_tag_id }}
         <label for="{{ form.new_left_tag_id_2.id_for_label }}">{{ form.new_left_tag_id_2.label }}</label>
         {{ form.new_left_tag_id_2 }}
-        <label for="{{ form.new_pit_tag_id.id_for_label }}">{{ form.new_pit_tag_id.label }}</label>
-        {{ form.new_pit_tag_id }}
-        <label for="{{ form.new_pit_tag_id_2.id_for_label }}">{{ form.new_pit_tag_id_2.label }}</label>
-        {{ form.new_pit_tag_id_2 }}
+        <label for="{{ form.new_pittag_id.id_for_label }}">{{ form.new_pittag_id.label }}</label>
+        {{ form.new_pittag_id }}
+        <label for="{{ form.new_pittag_id_2.id_for_label }}">{{ form.new_pittag_id_2.label }}</label>
+        {{ form.new_pittag_id_2 }}
     </div>
     <div class="form-group">
       <h3>Tag scars</h3>

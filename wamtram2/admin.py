@@ -94,9 +94,9 @@ class TrtTagsAdmin(ImportExportModelAdmin):
 
 @admin.register(TrtPitTags)
 class TrtTagsAdmin(ImportExportModelAdmin):
-    list_display = ('pit_tag_id','turtle','pit_tag_status')
+    list_display = ('pittag_id','turtle','pit_tag_status')
     list_filter = ['pit_tag_status']
-    search_fields = ['pit_tag_id']
+    search_fields = ['pittag_id']
 
 @admin.register(TrtTagOrders)
 class TrtTagOrdersAdmin(ImportExportModelAdmin):
