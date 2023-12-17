@@ -427,7 +427,7 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=Non
                     for outlier in outliers:
                         outlier_obs = TurtleHatchlingEmergenceOutlierObservation(
                             encounter=encounter,
-                            bearing_outlier_track_degrees=int(outlier['outlier_track_bearing_manual']) if outlier['outlier_track_bearing_manual'] else None,
+                            bearing_outlier_track_degrees=float(outlier['outlier_track_bearing_manual']) if outlier['outlier_track_bearing_manual'] else None,
                             outlier_group_size=int(outlier['outlier_group_size']) if outlier['outlier_group_size'] else None,
                             outlier_track_comment=outlier['outlier_track_comment'],
                         )
