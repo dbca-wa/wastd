@@ -1,10 +1,22 @@
-
 {% extends "base_wastd.html" %}
 {% load static dict_filter %}
-
+{% block extra_style %}
+{{ block.super }}
+{{ form.media.css }}
+<style>
+  input, select {width: 200px}
+  .center-form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+  </style>
+  {% endblock %}
 {% block extra_head %}
   {# Select2 widgets need jQuery to be loaded at the top of the template, so we move it here. #}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+  {{ form.media }} 
   {% endblock extra_head %}
 {% block breadcrumbs %}
 <nav aria-label="breadcrumb">
@@ -18,17 +30,7 @@
 
 
 {% block page_content_inner %}
-<div class="row mt-3">
-    <form method="post">
-        {% csrf_token %}
-        <label for="{{ form.entered_person_id.id_for_label }}">{{ form.entered_person_id.label }}</label>
-        {{ form.entered_person_id }}
-        <label for="{{ form.comments.id_for_label }}">{{ form.comments.label }}</label>
-        {{ form.comments }}
-        <button type="submit">Update</button>
-    </form>
-    {{ form.media.js }}
-</div>
+
 {% block pagination_row %}
 <div class="row" id="pagination-row">
   <div class="col">
@@ -74,10 +76,30 @@
     </div>
 </div>
 {% endblock pagination_row %}
-<a href="{% url 'wamtram2:find_turtle' batch_id=batch.entry_batch_id %}" class="btn btn-primary">1. Create a new entry</a> ->
-<a href="{% url 'wamtram2:validate_data_entry_batch' batch_id=batch.entry_batch_id %}" class="btn btn-primary">2. Validate this Batch</a> ->
-<a href="{% url 'wamtram2:process_data_entry_batch' batch_id=batch.entry_batch_id %}" class="btn btn-primary" onclick="return confirm('Are you sure you want to add this batch?\nOnce the observations are added you will not be able to edit them.\nObservations that have already been added will not be processed.');">3. Add this batch to the database</a>
+<div class="row mt-3">
+    <div class="col">
+    <form action="{% url 'wamtram2:entry_batch_detail' batch_id=batch.entry_batch_id %}" method="post">
+        {% csrf_token %}
+        <label for="{{ form.entered_person_id.id_for_label }}">{{ form.entered_person_id.label }}</label>
+        {{ form.entered_person_id }}
+        <label for="{{ form.comments.id_for_label }}">{{ form.comments.label }}</label>
+        {{ form.comments }}
+        <button class="btn btn-primary" type="submit">Save</button>
+    </form>
+    {{ form.media.js }}
+</div>
 <a href="{% url 'wamtram2:delete_batch' batch_id=batch.entry_batch_id %}" class="btn btn-danger float-right" onclick="return confirm('Are you sure you want to delete this batch?\nThis will not delete observations that have already been added to the database.');">Delete Batch</a>
+</div>
+<div class="row mt-3">
+    <div class="col">
+    <a href="{% url 'wamtram2:find_turtle' batch_id=batch.entry_batch_id %}" class="btn btn-primary">1. Create a new entry</a> ->
+    {% if object_list %}
+    <a href="{% url 'wamtram2:validate_data_entry_batch' batch_id=batch.entry_batch_id %}" class="btn btn-primary">2. Validate this Batch</a> ->
+    <a href="{% url 'wamtram2:process_data_entry_batch' batch_id=batch.entry_batch_id %}" class="btn btn-primary" onclick="return confirm('Are you sure you want to add this batch?\nOnce the observations are added you will not be able to edit them.\nObservations that have already been added will not be processed.');">3. Add this batch to the database</a>
+    {% endif %}
+    </div>
+</div>
+
 
 {% if object_list %}
 <div class="row mt-3">
@@ -115,8 +137,8 @@
   </div>
 </div>
 {% else %}
-    <div class="row">
-        <div class="col">
+<div class="row mt-3">
+    <div class="col">
             <p>No data entries found.</p>
         </div>
     </div>

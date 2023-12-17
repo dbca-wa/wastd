@@ -55,10 +55,10 @@ class TrtConditionCodes(models.Model):
         return f"{self.description}"
 
 class TrtDamage(models.Model):
-    observation = models.OneToOneField('TrtObservations', models.DO_NOTHING, db_column='OBSERVATION_ID', primary_key=True)  # Field name made lowercase.
-    body_part = models.ForeignKey(TrtBodyParts, models.DO_NOTHING, db_column='BODY_PART')  # Field name made lowercase.
-    damage_code = models.ForeignKey('TrtDamageCodes', models.DO_NOTHING, db_column='DAMAGE_CODE')  # Field name made lowercase.
-    damage_cause_code = models.ForeignKey('TrtDamageCauseCodes', models.DO_NOTHING, db_column='DAMAGE_CAUSE_CODE', blank=True, null=True)  # Field name made lowercase.
+    observation = models.OneToOneField('TrtObservations', models.CASCADE, db_column='OBSERVATION_ID', primary_key=True)  # Field name made lowercase.
+    body_part = models.ForeignKey(TrtBodyParts, models.CASCADE, db_column='BODY_PART')  # Field name made lowercase.
+    damage_code = models.ForeignKey('TrtDamageCodes', models.CASCADE, db_column='DAMAGE_CODE')  # Field name made lowercase.
+    damage_cause_code = models.ForeignKey('TrtDamageCauseCodes', models.SET_NULL, db_column='DAMAGE_CAUSE_CODE', blank=True, null=True)  # Field name made lowercase.
     comments = models.CharField(db_column='COMMENTS', max_length=255, blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
@@ -100,6 +100,10 @@ class TrtDamageCodes(models.Model):
         return f"{self.description}"
 
 class TrtDataChanged(models.Model):
+    """
+    Used to store data entries while they are being edited and validated.
+    When processed using the sql stored procedure, the data is copied to the database
+    """
     trt_data_changed_id = models.AutoField(db_column='TRT_DATA_CHANGED_ID', primary_key=True)  # Field name made lowercase.
     datachanged_date = models.DateTimeField(db_column='DATACHANGED_DATE', blank=True, null=True)  # Field name made lowercase.
     datachangedby = models.CharField(db_column='DATACHANGEDBY', max_length=255, blank=True, null=True)  # Field name made lowercase.
@@ -117,60 +121,60 @@ class TrtDataEntry(models.Model):
         ("I","Indeterminate"),
     ]
     data_entry_id = models.AutoField(db_column='DATA_ENTRY_ID', primary_key=True)  # Field name made lowercase.
-    entry_batch = models.ForeignKey('TrtEntryBatches', models.DO_NOTHING, db_column='ENTRY_BATCH_ID')  # Field name made lowercase.
+    entry_batch = models.ForeignKey('TrtEntryBatches', models.CASCADE, db_column='ENTRY_BATCH_ID')  # Field name made lowercase.
     user_entry_id = models.IntegerField(db_column='USER_ENTRY_ID', blank=True,null=True)  # Field name made lowercase.
-    turtle_id = models.ForeignKey('TrtTurtles', models.DO_NOTHING, db_column='TURTLE_ID', blank=True, null=True) #fake foreign key #models.IntegerField(db_column='TURTLE_ID', blank=True, null=True)  # Field name made lowercase.
-    observation_id = models.ForeignKey('TrtObservations', models.DO_NOTHING, db_column='OBSERVATION_ID', blank=True, null=True) #fake foreign key #models.IntegerField(db_column='OBSERVATION_ID', blank=True, null=True)  # Field name made lowercase.
+    turtle_id = models.ForeignKey('TrtTurtles', models.SET_NULL, db_column='TURTLE_ID', blank=True, null=True) #fake foreign key #models.IntegerField(db_column='TURTLE_ID', blank=True, null=True)  # Field name made lowercase.
+    observation_id = models.ForeignKey('TrtObservations', models.SET_NULL, db_column='OBSERVATION_ID', blank=True, null=True) #fake foreign key #models.IntegerField(db_column='OBSERVATION_ID', blank=True, null=True)  # Field name made lowercase.
     do_not_process = models.BooleanField(db_column='DO_NOT_PROCESS')  # Field name made lowercase.
-    recapture_left_tag_id = models.ForeignKey('TrtTags',models.DO_NOTHING, db_column='RECAPTURE_LEFT_TAG_ID', blank=True, null=True,related_name='recapturelefttag') #fake foreign key #models.CharField(db_column='RECAPTURE_LEFT_TAG_ID', max_length=10, blank=True, null=True)  # Field name made lowercase.
-    recapture_left_tag_id_2 = models.ForeignKey('TrtTags',models.DO_NOTHING, db_column='RECAPTURE_LEFT_TAG_ID_2', blank=True, null=True,related_name='recapturelefttag2') #fake foreign key #models.CharField(db_column='RECAPTURE_LEFT_TAG_ID_2', max_length=10, blank=True, null=True)  # Field name made lowercase.
-    recapture_right_tag_id = models.ForeignKey('TrtTags',models.DO_NOTHING, db_column='RECAPTURE_RIGHT_TAG_ID', blank=True, null=True,related_name='recapturerighttag') #fake foreign key #models.CharField(db_column='RECAPTURE_RIGHT_TAG_ID', max_length=10, blank=True, null=True)  # Field name made lowercase.
-    recapture_right_tag_id_2 = models.ForeignKey('TrtTags',models.DO_NOTHING, db_column='RECAPTURE_RIGHT_TAG_ID_2', blank=True, null=True,related_name='recapturerighttag2') #fake foreign key #models.CharField(db_column='RECAPTURE_RIGHT_TAG_ID_2', max_length=10, blank=True, null=True)  # Field name made lowercase.
-    recapture_pittag_id = models.ForeignKey('TrtPitTags',models.DO_NOTHING, db_column='RECAPTURE_PIT_TAG_ID', blank=True, null=True,related_name='recapturepittag') #fake foreign key #models.CharField(db_column='recapture_pittag_id', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    recapture_left_tag_id = models.ForeignKey('TrtTags',models.SET_NULL, db_column='RECAPTURE_LEFT_TAG_ID', blank=True, null=True,related_name='recapturelefttag') #fake foreign key #models.CharField(db_column='RECAPTURE_LEFT_TAG_ID', max_length=10, blank=True, null=True)  # Field name made lowercase.
+    recapture_left_tag_id_2 = models.ForeignKey('TrtTags',models.SET_NULL, db_column='RECAPTURE_LEFT_TAG_ID_2', blank=True, null=True,related_name='recapturelefttag2') #fake foreign key #models.CharField(db_column='RECAPTURE_LEFT_TAG_ID_2', max_length=10, blank=True, null=True)  # Field name made lowercase.
+    recapture_right_tag_id = models.ForeignKey('TrtTags',models.SET_NULL, db_column='RECAPTURE_RIGHT_TAG_ID', blank=True, null=True,related_name='recapturerighttag') #fake foreign key #models.CharField(db_column='RECAPTURE_RIGHT_TAG_ID', max_length=10, blank=True, null=True)  # Field name made lowercase.
+    recapture_right_tag_id_2 = models.ForeignKey('TrtTags',models.SET_NULL, db_column='RECAPTURE_RIGHT_TAG_ID_2', blank=True, null=True,related_name='recapturerighttag2') #fake foreign key #models.CharField(db_column='RECAPTURE_RIGHT_TAG_ID_2', max_length=10, blank=True, null=True)  # Field name made lowercase.
+    recapture_pittag_id = models.ForeignKey('TrtPitTags',models.SET_NULL, db_column='RECAPTURE_PIT_TAG_ID', blank=True, null=True,related_name='recapturepittag') #fake foreign key for left pit tag #models.CharField(db_column='recapture_pittag_id', max_length=50, blank=True, null=True)  # Field name made lowercase.
     other_left_tag = models.CharField(db_column='OTHER_LEFT_TAG', max_length=2, blank=True, null=True)  # Field name made lowercase.
     other_right_tag = models.CharField(db_column='OTHER_RIGHT_TAG', max_length=2, blank=True, null=True)  # Field name made lowercase.
-    new_left_tag_id = models.ForeignKey('TrtTags',models.DO_NOTHING, db_column='NEW_LEFT_TAG_ID', blank=True, null=True,related_name='lefttag') #fake foreign key #models.CharField(db_column='NEW_LEFT_TAG_ID', max_length=10, blank=True, null=True)  # Field name made lowercase.
-    new_left_tag_id_2 =  models.ForeignKey('TrtTags',models.DO_NOTHING, db_column='NEW_LEFT_TAG_ID_2', blank=True, null=True,related_name="lefttag2") #fake foreign key #models.CharField(db_column='NEW_LEFT_TAG_ID_2', max_length=10, blank=True, null=True)  # Field name made lowercase.
-    new_right_tag_id =  models.ForeignKey('TrtTags',models.DO_NOTHING, db_column='NEW_RIGHT_TAG_ID', blank=True, null=True,related_name="righttag") #fake foreign key $models.CharField(db_column='NEW_RIGHT_TAG_ID', max_length=10, blank=True, null=True)  # Field name made lowercase.
-    new_right_tag_id_2 =  models.ForeignKey('TrtTags',models.DO_NOTHING, db_column='NEW_RIGHT_TAG_ID_2', blank=True, null=True, related_name="righttag2") #fake foreign key #models.CharField(db_column='NEW_RIGHT_TAG_ID_2', max_length=10, blank=True, null=True)  # Field name made lowercase.
-    new_pittag_id =  models.ForeignKey('TrtPitTags',models.DO_NOTHING, db_column='NEW_PIT_TAG_ID', blank=True, null=True) #fake foreign key #models.CharField(db_column='NEW_pittag_id', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    new_left_tag_id = models.ForeignKey('TrtTags',models.SET_NULL, db_column='NEW_LEFT_TAG_ID', blank=True, null=True,related_name='lefttag') #fake foreign key #models.CharField(db_column='NEW_LEFT_TAG_ID', max_length=10, blank=True, null=True)  # Field name made lowercase.
+    new_left_tag_id_2 =  models.ForeignKey('TrtTags',models.SET_NULL, db_column='NEW_LEFT_TAG_ID_2', blank=True, null=True,related_name="lefttag2") #fake foreign key #models.CharField(db_column='NEW_LEFT_TAG_ID_2', max_length=10, blank=True, null=True)  # Field name made lowercase.
+    new_right_tag_id =  models.ForeignKey('TrtTags',models.SET_NULL, db_column='NEW_RIGHT_TAG_ID', blank=True, null=True,related_name="righttag") #fake foreign key #models.CharField(db_column='NEW_RIGHT_TAG_ID', max_length=10, blank=True, null=True)  # Field name made lowercase.
+    new_right_tag_id_2 =  models.ForeignKey('TrtTags',models.SET_NULL, db_column='NEW_RIGHT_TAG_ID_2', blank=True, null=True, related_name="righttag2") #fake foreign key #models.CharField(db_column='NEW_RIGHT_TAG_ID_2', max_length=10, blank=True, null=True)  # Field name made lowercase.
+    new_pittag_id =  models.ForeignKey('TrtPitTags',models.SET_NULL, db_column='NEW_PIT_TAG_ID', blank=True, null=True) #fake foreign key for left pit tag #models.CharField(db_column='NEW_pittag_id', max_length=50, blank=True, null=True)  # Field name made lowercase.
     alive = models.CharField(db_column='ALIVE', max_length=1, blank=True, null=True)  # Field name made lowercase.
-    place_code = models.ForeignKey('TrtPlaces',models.DO_NOTHING, db_column='PLACE_CODE', blank=True, null=True) #fake foreign key $models.CharField(db_column='PLACE_CODE', max_length=4, blank=True, null=True)  # Field name made lowercase.
+    place_code = models.ForeignKey('TrtPlaces',models.SET_NULL, db_column='PLACE_CODE', blank=True, null=True) #fake foreign key $models.CharField(db_column='PLACE_CODE', max_length=4, blank=True, null=True)  # Field name made lowercase.
     observation_date = models.DateTimeField(db_column='OBSERVATION_DATE', blank=True, null=True)  # Field name made lowercase.
     observation_time = models.DateTimeField(db_column='OBSERVATION_TIME', blank=True, null=True)  # Field name made lowercase.
-    nesting = models.CharField(db_column='NESTING', max_length=1, blank=True, null=True)  # Field name made lowercase.
-    species_code = models.ForeignKey('TrtSpecies',models.DO_NOTHING, db_column='SPECIES_CODE', blank=True, null=True) #fake foreign key #models.CharField(db_column='SPECIES_CODE', max_length=2, blank=True, null=True)  # Field name made lowercase.
+    nesting = models.ForeignKey('TrtYesNo',models.SET_NULL, db_column='NESTING', blank=True, null=True) #fake foreign key #models.CharField(db_column='NESTING', max_length=1, blank=True, null=True)  # Field name made lowercase.
+    species_code = models.ForeignKey('TrtSpecies',models.SET_NULL, db_column='SPECIES_CODE', blank=True, null=True) #fake foreign key #models.CharField(db_column='SPECIES_CODE', max_length=2, blank=True, null=True)  # Field name made lowercase.
     identification_confidence = models.CharField(db_column='IDENTIFICATION_CONFIDENCE', max_length=1, blank=True, null=True)  # Field name made lowercase.
     sex = models.CharField(db_column='SEX', max_length=1, blank=True, null=True,choices=SEX_CHOICES)  # Field name made lowercase.
     curved_carapace_length = models.IntegerField(db_column='CURVED_CARAPACE_LENGTH', blank=True, null=True)  # Field name made lowercase.
     curved_carapace_width = models.IntegerField(db_column='CURVED_CARAPACE_WIDTH', blank=True, null=True)  # Field name made lowercase.
-    activity_code = models.CharField(db_column='ACTIVITY_CODE', max_length=1, blank=True, null=True)  # Field name made lowercase.
+    activity_code = models.ForeignKey('TrtActivities',models.SET_NULL, db_column='ACTIVITY_CODE', blank=True, null=True) #fake foreign key #models.CharField(db_column='ACTIVITY_CODE', max_length=1, blank=True, null=True)  # Field name made lowercase.
     beach_position_code = models.CharField(db_column='BEACH_POSITION_CODE', max_length=2, blank=True, null=True)  # Field name made lowercase.
-    damage_carapace = models.CharField(db_column='DAMAGE_CARAPACE', max_length=1, blank=True, null=True)  # Field name made lowercase.
-    damage_lff = models.CharField(db_column='DAMAGE_LFF', max_length=1, blank=True, null=True)  # Field name made lowercase.
-    damage_rff = models.CharField(db_column='DAMAGE_RFF', max_length=1, blank=True, null=True)  # Field name made lowercase.
-    damage_lhf = models.CharField(db_column='DAMAGE_LHF', max_length=1, blank=True, null=True)  # Field name made lowercase.
-    damage_rhf = models.CharField(db_column='DAMAGE_RHF', max_length=1, blank=True, null=True)  # Field name made lowercase.
-    body_part_1 = models.CharField(db_column='BODY_PART_1', max_length=1, blank=True, null=True)  # Field name made lowercase.
-    damage_code_1 = models.CharField(db_column='DAMAGE_CODE_1', max_length=1, blank=True, null=True)  # Field name made lowercase.
-    body_part_2 = models.CharField(db_column='BODY_PART_2', max_length=1, blank=True, null=True)  # Field name made lowercase.
-    damage_code_2 = models.CharField(db_column='DAMAGE_CODE_2', max_length=1, blank=True, null=True)  # Field name made lowercase.
+    damage_carapace = models.ForeignKey('TrtDamageCodes',models.SET_NULL, db_column='DAMAGE_CARAPACE', blank=True, null=True, related_name="carapace") #fake foreign key #models.CharField(db_column='DAMAGE_CARAPACE', max_length=1, blank=True, null=True)  # Field name made lowercase.
+    damage_lff = models.ForeignKey('TrtDamageCodes',models.SET_NULL, db_column='DAMAGE_LFF', blank=True, null=True, related_name="lff") #fake foreign key #models.CharField(db_column='DAMAGE_LFF', max_length=1, blank=True, null=True)  # Field name made lowercase.
+    damage_rff = models.ForeignKey('TrtDamageCodes',models.SET_NULL, db_column='DAMAGE_RFF', blank=True, null=True, related_name="rff") #fake foreign key #models.CharField(db_column='DAMAGE_RFF', max_length=1, blank=True, null=True)  # Field name made lowercase.
+    damage_lhf = models.ForeignKey('TrtDamageCodes',models.SET_NULL, db_column='DAMAGE_LHF', blank=True, null=True, related_name="lhf") #fake foreign key #models.CharField(db_column='DAMAGE_LHF', max_length=1, blank=True, null=True)  # Field name made lowercase.
+    damage_rhf = models.ForeignKey('TrtDamageCodes',models.SET_NULL, db_column='DAMAGE_RHF', blank=True, null=True, related_name="rhf") #fake foreign key #models.CharField(db_column='DAMAGE_RHF', max_length=1, blank=True, null=True)  # Field name made lowercase.
+    body_part_1 = models.ForeignKey('TrtBodyParts',models.SET_NULL, db_column='BODY_PART_1', blank=True, null=True, related_name="bp1") #fake foreign key #models.CharField(db_column='BODY_PART_1', max_length=1, blank=True, null=True)  # Field name made lowercase.
+    damage_code_1 = models.ForeignKey('TrtDamageCodes',models.SET_NULL, db_column='DAMAGE_CODE_1', blank=True, null=True, related_name="dc1") #fake foreign key #models.CharField(db_column='DAMAGE_CODE_1', max_length=1, blank=True, null=True)  # Field name made lowercase.
+    body_part_2 = models.ForeignKey('TrtBodyParts',models.SET_NULL, db_column='BODY_PART_2', blank=True, null=True, related_name="bp2") #fake foreign key #models.CharField(db_column='BODY_PART_2', max_length=1, blank=True, null=True)  # Field name made lowercase.
+    damage_code_2 = models.ForeignKey('TrtDamageCodes',models.SET_NULL, db_column='DAMAGE_CODE_2', blank=True, null=True, related_name="dc2") #fake foreign key #models.CharField(db_column='DAMAGE_CODE_2', max_length=1, blank=True, null=True)  # Field name made lowercase.
     egg_count = models.IntegerField(db_column='EGG_COUNT', blank=True, null=True)  # Field name made lowercase.
     egg_count_method = models.CharField(db_column='EGG_COUNT_METHOD', max_length=3, blank=True, null=True)  # Field name made lowercase.
     clutch_completed = models.CharField(db_column='CLUTCH_COMPLETED', max_length=1, blank=True, null=True)  # Field name made lowercase.
     measured_by = models.CharField(db_column='MEASURED_BY', max_length=50, blank=True, null=True)  # Field name made lowercase. Used by old MSAccess frontend 
-    measured_by_id = models.ForeignKey('TrtPersons', models.DO_NOTHING, db_column='MEASURED_BY_ID', blank=True, null=True,related_name='measuredby')
+    measured_by_id = models.ForeignKey('TrtPersons', models.SET_NULL, db_column='MEASURED_BY_ID', blank=True, null=True,related_name='measuredby')
     recorded_by = models.CharField(db_column='RECORDED_BY', max_length=50, blank=True, null=True)  # Field name made lowercase.Used by old MSAccess frontend
-    recorded_by_id = models.ForeignKey('TrtPersons', models.DO_NOTHING, db_column='RECORDED_BY_ID', blank=True, null=True, related_name='recordedby') 
+    recorded_by_id = models.ForeignKey('TrtPersons', models.SET_NULL, db_column='RECORDED_BY_ID', blank=True, null=True, related_name='recordedby') 
     tagged_by = models.CharField(db_column='TAGGED_BY', max_length=50, blank=True, null=True)  # Field name made lowercase.Used by old MSAccess frontend
-    tagged_by_id = models.ForeignKey('TrtPersons', models.DO_NOTHING, db_column='TAGGED_BY_ID', blank=True, null=True,related_name='taggedby') 
+    tagged_by_id = models.ForeignKey('TrtPersons', models.SET_NULL, db_column='TAGGED_BY_ID', blank=True, null=True,related_name='taggedby') 
     entered_by = models.CharField(db_column='ENTERED_BY', max_length=50, blank=True, null=True)  # Field name made lowercase.Used by old MSAccess frontend
-    entered_by_id = models.ForeignKey('TrtPersons', models.DO_NOTHING, db_column='ENTERED_BY_ID', blank=True, null=True, related_name='enteredby')
+    entered_by_id = models.ForeignKey('TrtPersons', models.SET_NULL, db_column='ENTERED_BY_ID', blank=True, null=True, related_name='enteredby')
     measured_recorded_by = models.CharField(db_column='MEASURED_RECORDED_BY', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    measured_recorded_by_id = models.ForeignKey('TrtPersons', models.DO_NOTHING, db_column='MEASURED_RECORDED_BY_ID', blank=True, null=True, related_name='measuredrecordedby')
-    measurement_type_1 = models.CharField(db_column='MEASUREMENT_TYPE_1', max_length=10, blank=True, null=True)  # Field name made lowercase.
+    measured_recorded_by_id = models.ForeignKey('TrtPersons', models.SET_NULL, db_column='MEASURED_RECORDED_BY_ID', blank=True, null=True, related_name='measuredrecordedby')
+    measurement_type_1 = models.ForeignKey('TrtMeasurementTypes',models.SET_NULL, db_column='MEASUREMENT_TYPE_1', blank=True, null=True,related_name="measuretype1") #fake foreign key #models.CharField(db_column='MEASUREMENT_TYPE_1', max_length=10, blank=True, null=True)  # Field name made lowercase.
     measurement_value_1 = models.FloatField(db_column='MEASUREMENT_VALUE_1', blank=True, null=True)  # Field name made lowercase.
-    measurement_type_2 = models.CharField(db_column='MEASUREMENT_TYPE_2', max_length=10, blank=True, null=True)  # Field name made lowercase.
+    measurement_type_2 = models.ForeignKey('TrtMeasurementTypes',models.SET_NULL, db_column='MEASUREMENT_TYPE_2', blank=True, null=True,related_name="measuretype2") #fake foreign key #models.CharField(db_column='MEASUREMENT_TYPE_2', max_length=10, blank=True, null=True)  # Field name made lowercase.
     measurement_value_2 = models.FloatField(db_column='MEASUREMENT_VALUE_2', blank=True, null=True)  # Field name made lowercase.
     datum_code = models.CharField(db_column='DATUM_CODE', max_length=5, blank=True, null=True)  # Field name made lowercase.
     zone = models.IntegerField(db_column='ZONE', blank=True, null=True)  # Field name made lowercase.
@@ -205,17 +209,17 @@ class TrtDataEntry(models.Model):
     comments = models.TextField(db_column='COMMENTS', blank=True, null=True)  # Field name made lowercase.
     error_number = models.IntegerField(db_column='ERROR_NUMBER', blank=True, null=True)  # Field name made lowercase.
     error_message = models.CharField(db_column='ERROR_MESSAGE', max_length=255, blank=True, null=True)  # Field name made lowercase.
-    recapture_left_tag_id_3 = models.ForeignKey('TrtTags',models.DO_NOTHING, db_column='RECAPTURE_LEFT_TAG_ID_3', blank=True, null=True,related_name='recapturelefttag3') #fake foreign key #models.CharField(db_column='RECAPTURE_LEFT_TAG_ID_3', max_length=10, blank=True, null=True)  # Field name made lowercase.
-    recapture_right_tag_id_3 = models.ForeignKey('TrtTags',models.DO_NOTHING, db_column='RECAPTURE_RIGHT_TAG_ID_3', blank=True, null=True,related_name='recapturerighttag3') #fake foreign key #models.CharField(db_column='RECAPTURE_RIGHT_TAG_ID_3', max_length=10, blank=True, null=True)  # Field name made lowercase.
+    recapture_left_tag_id_3 = models.ForeignKey('TrtTags',models.SET_NULL, db_column='RECAPTURE_LEFT_TAG_ID_3', blank=True, null=True,related_name='recapturelefttag3') #fake foreign key #models.CharField(db_column='RECAPTURE_LEFT_TAG_ID_3', max_length=10, blank=True, null=True)  # Field name made lowercase.
+    recapture_right_tag_id_3 = models.ForeignKey('TrtTags',models.SET_NULL, db_column='RECAPTURE_RIGHT_TAG_ID_3', blank=True, null=True,related_name='recapturerighttag3') #fake foreign key #models.CharField(db_column='RECAPTURE_RIGHT_TAG_ID_3', max_length=10, blank=True, null=True)  # Field name made lowercase.
     body_part_3 = models.CharField(db_column='BODY_PART_3', max_length=1, blank=True, null=True)  # Field name made lowercase.
     damage_code_3 = models.CharField(db_column='DAMAGE_CODE_3', max_length=1, blank=True, null=True)  # Field name made lowercase.
-    tissue_type_1 = models.CharField(db_column='TISSUE_TYPE_1', max_length=5, blank=True, null=True)  # Field name made lowercase.
+    tissue_type_1 = models.ForeignKey('TrtTissueTypes',models.SET_NULL, db_column='TISSUE_TYPE_1', blank=True, null=True,related_name='tt1') #fake foreign key #models.CharField(db_column='TISSUE_TYPE_1', max_length=5, blank=True, null=True)  # Field name made lowercase.
     sample_label_1 = models.CharField(db_column='SAMPLE_LABEL_1', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    tissue_type_2 = models.CharField(db_column='TISSUE_TYPE_2', max_length=5, blank=True, null=True)  # Field name made lowercase.
+    tissue_type_2 = models.ForeignKey('TrtTissueTypes',models.SET_NULL, db_column='TISSUE_TYPE_2', blank=True, null=True,related_name='tt2') #fake foreign key #models.CharField(db_column='TISSUE_TYPE_2', max_length=5, blank=True, null=True)  # Field name made lowercase.
     sample_label_2 = models.CharField(db_column='SAMPLE_LABEL_2', max_length=50, blank=True, null=True)  # Field name made lowercase.
     turtle_comments = models.CharField(db_column='TURTLE_COMMENTS', max_length=255, blank=True, null=True)  # Field name made lowercase.
-    recapture_pittag_id_2 = models.ForeignKey('TrtPitTags',models.DO_NOTHING, db_column='RECAPTURE_PIT_TAG_ID_2', blank=True, null=True,related_name='recapturepittag2') #fake foreign key #models.CharField(db_column='recapture_pittag_id_2', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    new_pittag_id_2 = models.CharField(db_column='NEW_PIT_TAG_ID_2', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    recapture_pittag_id_2 = models.ForeignKey('TrtPitTags',models.SET_NULL, db_column='RECAPTURE_PIT_TAG_ID_2', blank=True, null=True,related_name='recapturepittag2') #fake foreign key for right pit tag #models.CharField(db_column='recapture_pittag_id_2', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    new_pittag_id_2 = models.ForeignKey('TrtPitTags',models.SET_NULL, db_column='NEW_PIT_TAG_ID_2', blank=True, null=True, related_name='newpittag2') #fake foreign key for right pit tag #models.CharField(db_column='NEW_PIT_TAG_ID_2', max_length=50, blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
         managed = False
@@ -292,7 +296,7 @@ class TrtDataEntryExceptions(models.Model):
 
 class TrtDataEntryPersons(models.Model):
     data_entry_person_id = models.AutoField(db_column='DATA_ENTRY_PERSON_ID', primary_key=True)  # Field name made lowercase.
-    entry_batch = models.ForeignKey('TrtEntryBatches', models.DO_NOTHING, db_column='ENTRY_BATCH_ID')  # Field name made lowercase.
+    entry_batch = models.ForeignKey('TrtEntryBatches', models.CASCADE, db_column='ENTRY_BATCH_ID')  # Field name made lowercase.
     person_name = models.CharField(db_column='PERSON_NAME', max_length=100)  # Field name made lowercase.
     person_id = models.IntegerField(db_column='PERSON_ID', blank=True, null=True)  # Field name made lowercase.
 
@@ -361,7 +365,7 @@ class TrtEggCountMethods(models.Model):
 class TrtEntryBatches(models.Model):
     entry_batch_id = models.AutoField(db_column='ENTRY_BATCH_ID', primary_key=True)  # Field name made lowercase.
     entry_date = models.DateTimeField(db_column='ENTRY_DATE', blank=True, null=True)  # Field name made lowercase.
-    entered_person_id = models.ForeignKey('TrtPersons', models.DO_NOTHING, db_column='ENTERED_PERSON_ID', blank=True, null=True) #fake foreign key #models.IntegerField(db_column='ENTERED_PERSON_ID', blank=True, null=True)  # Field name made lowercase.
+    entered_person_id = models.ForeignKey('TrtPersons', models.SET_NULL, db_column='ENTERED_PERSON_ID', blank=True, null=True) #fake foreign key #models.IntegerField(db_column='ENTERED_PERSON_ID', blank=True, null=True)  # Field name made lowercase.
     filename = models.CharField(db_column='FILENAME', max_length=255, blank=True, null=True)  # Field name made lowercase.
     comments = models.CharField(db_column='COMMENTS', max_length=255, blank=True, null=True)  # Field name made lowercase.
     pr_date_convention = models.BooleanField(db_column='PR_DATE_CONVENTION')  # Field name made lowercase.
@@ -377,8 +381,8 @@ class TrtEntryBatches(models.Model):
         return f"{self.entry_batch_id}"
 
 class TrtIdentification(models.Model):
-    turtle = models.OneToOneField('TrtTurtles', models.DO_NOTHING, db_column='TURTLE_ID', primary_key=True)  # Field name made lowercase.
-    identification_type = models.ForeignKey('TrtIdentificationTypes', models.DO_NOTHING, db_column='IDENTIFICATION_TYPE',related_name='identification_type2')  # Field name made lowercase.
+    turtle = models.OneToOneField('TrtTurtles', models.CASCADE, db_column='TURTLE_ID', primary_key=True)  # Field name made lowercase.
+    identification_type = models.ForeignKey('TrtIdentificationTypes', models.CASCADE, db_column='IDENTIFICATION_TYPE',related_name='identification_type2')  # Field name made lowercase.
     identifier = models.CharField(db_column='IDENTIFIER', max_length=20)  # Field name made lowercase.
     comments = models.CharField(db_column='COMMENTS', max_length=255, blank=True, null=True)  # Field name made lowercase.
 
@@ -410,7 +414,7 @@ class TrtLocations(models.Model):
 class TrtMeasurements(models.Model):
     id = models.AutoField(db_column='ID',primary_key=True)
     observation = models.ForeignKey('TrtObservations', on_delete=models.CASCADE)  # Field name made lowercase.
-    measurement_type = models.ForeignKey('TrtMeasurementTypes', models.DO_NOTHING, db_column='MEASUREMENT_TYPE')  # Field name made lowercase.
+    measurement_type = models.ForeignKey('TrtMeasurementTypes', models.CASCADE, db_column='MEASUREMENT_TYPE')  # Field name made lowercase.
     measurement_value = models.FloatField(db_column='MEASUREMENT_VALUE')  # Field name made lowercase.
     comments = models.CharField(db_column='COMMENTS', max_length=255, blank=True, null=True)  # Field name made lowercase.
 
@@ -458,18 +462,18 @@ class TrtNestingSeason(models.Model):
 
 class TrtObservations(models.Model):
     observation_id = models.AutoField(db_column='OBSERVATION_ID', primary_key=True)  # Field name made lowercase.
-    turtle = models.ForeignKey('TrtTurtles', models.DO_NOTHING, db_column='TURTLE_ID')  # Field name made lowercase.
+    turtle = models.ForeignKey('TrtTurtles', models.CASCADE, db_column='TURTLE_ID')  # Field name made lowercase.
     observation_date = models.DateTimeField(db_column='OBSERVATION_DATE')  # Field name made lowercase.
     observation_time = models.DateTimeField(db_column='OBSERVATION_TIME', blank=True, null=True)  # Field name made lowercase.
     observation_date_old = models.DateTimeField(db_column='OBSERVATION_DATE_OLD', blank=True, null=True)  # Field name made lowercase.
     alive = models.CharField(db_column='ALIVE', max_length=1, blank=True, null=True)  # Field name made lowercase.
-    measurer_person = models.ForeignKey('TrtPersons', models.DO_NOTHING, db_column='MEASURER_PERSON_ID', blank=True, null=True,related_name='measurer_person')  # Field name made lowercase.
-    measurer_reporter_person = models.ForeignKey('TrtPersons', models.DO_NOTHING, db_column='MEASURER_REPORTER_PERSON_ID', blank=True, null=True,related_name='measurer_reporter_person')  # Field name made lowercase.
-    tagger_person = models.ForeignKey('TrtPersons', models.DO_NOTHING, db_column='TAGGER_PERSON_ID', blank=True, null=True,related_name='tagger_person')  # Field name made lowercase.
-    reporter_person = models.ForeignKey('TrtPersons', models.DO_NOTHING, db_column='REPORTER_PERSON_ID', blank=True, null=True)  # Field name made lowercase.
-    place_code = models.ForeignKey('TrtPlaces', models.DO_NOTHING, db_column='PLACE_CODE', blank=True, null=True)  # Field name made lowercase.
+    measurer_person = models.ForeignKey('TrtPersons', models.SET_NULL, db_column='MEASURER_PERSON_ID', blank=True, null=True,related_name='measurer_person')  # Field name made lowercase.
+    measurer_reporter_person = models.ForeignKey('TrtPersons', models.SET_NULL, db_column='MEASURER_REPORTER_PERSON_ID', blank=True, null=True,related_name='measurer_reporter_person')  # Field name made lowercase.
+    tagger_person = models.ForeignKey('TrtPersons', models.SET_NULL, db_column='TAGGER_PERSON_ID', blank=True, null=True,related_name='tagger_person')  # Field name made lowercase.
+    reporter_person = models.ForeignKey('TrtPersons', models.SET_NULL, db_column='REPORTER_PERSON_ID', blank=True, null=True)  # Field name made lowercase.
+    place_code = models.ForeignKey('TrtPlaces', models.SET_NULL, db_column='PLACE_CODE', blank=True, null=True)  # Field name made lowercase.
     place_description = models.CharField(db_column='PLACE_DESCRIPTION', max_length=300, blank=True, null=True)  # Field name made lowercase.
-    datum_code = models.ForeignKey(TrtDatumCodes, models.DO_NOTHING, db_column='DATUM_CODE', blank=True, null=True)  # Field name made lowercase.
+    datum_code = models.ForeignKey(TrtDatumCodes, models.SET_NULL, db_column='DATUM_CODE', blank=True, null=True)  # Field name made lowercase.
     latitude = models.FloatField(db_column='LATITUDE', blank=True, null=True)  # Field name made lowercase.
     longitude = models.FloatField(db_column='LONGITUDE', blank=True, null=True)  # Field name made lowercase.
     latitude_degrees = models.IntegerField(db_column='LATITUDE_DEGREES', blank=True, null=True)  # Field name made lowercase.
@@ -481,28 +485,28 @@ class TrtObservations(models.Model):
     zone = models.IntegerField(db_column='ZONE', blank=True, null=True)  # Field name made lowercase.
     easting = models.FloatField(db_column='EASTING', blank=True, null=True)  # Field name made lowercase.
     northing = models.FloatField(db_column='NORTHING', blank=True, null=True)  # Field name made lowercase.
-    activity_code = models.ForeignKey(TrtActivities, models.DO_NOTHING, db_column='ACTIVITY_CODE', blank=True, null=True)  # Field name made lowercase.
-    beach_position_code = models.ForeignKey(TrtBeachPositions, models.DO_NOTHING, db_column='BEACH_POSITION_CODE', blank=True, null=True)  # Field name made lowercase.
-    condition_code = models.ForeignKey(TrtConditionCodes, models.DO_NOTHING, db_column='CONDITION_CODE', blank=True, null=True)  # Field name made lowercase.
+    activity_code = models.ForeignKey(TrtActivities, models.SET_NULL, db_column='ACTIVITY_CODE', blank=True, null=True)  # Field name made lowercase.
+    beach_position_code = models.ForeignKey(TrtBeachPositions, models.SET_NULL, db_column='BEACH_POSITION_CODE', blank=True, null=True)  # Field name made lowercase.
+    condition_code = models.ForeignKey(TrtConditionCodes, models.SET_NULL, db_column='CONDITION_CODE', blank=True, null=True)  # Field name made lowercase.
     nesting = models.CharField(db_column='NESTING', max_length=1, blank=True, null=True)  # Field name made lowercase.
     clutch_completed = models.CharField(db_column='CLUTCH_COMPLETED', max_length=1, blank=True, null=True)  # Field name made lowercase.
     number_of_eggs = models.SmallIntegerField(db_column='NUMBER_OF_EGGS', blank=True, null=True)  # Field name made lowercase.
-    egg_count_method = models.ForeignKey(TrtEggCountMethods, models.DO_NOTHING, db_column='EGG_COUNT_METHOD', blank=True, null=True)  # Field name made lowercase.
+    egg_count_method = models.ForeignKey(TrtEggCountMethods, models.SET_NULL, db_column='EGG_COUNT_METHOD', blank=True, null=True)  # Field name made lowercase.
     measurements = models.CharField(db_column='MEASUREMENTS', max_length=1)  # Field name made lowercase.
     action_taken = models.CharField(db_column='ACTION_TAKEN', max_length=255, blank=True, null=True)  # Field name made lowercase.
     comments = models.TextField(db_column='COMMENTS', blank=True, null=True)  # Field name made lowercase.
     entered_by = models.CharField(db_column='ENTERED_BY', max_length=50, blank=True, null=True)  # Field name made lowercase.
     date_entered = models.DateTimeField(db_column='DATE_ENTERED', blank=True, null=True)  # Field name made lowercase.
     original_observation_id = models.IntegerField(db_column='ORIGINAL_OBSERVATION_ID', blank=True, null=True)  # Field name made lowercase.
-    entry_batch = models.ForeignKey(TrtEntryBatches, models.DO_NOTHING, db_column='ENTRY_BATCH_ID', blank=True, null=True)  # Field name made lowercase.
+    entry_batch = models.ForeignKey(TrtEntryBatches, models.SET_NULL, db_column='ENTRY_BATCH_ID', blank=True, null=True)  # Field name made lowercase.
     comment_fromrecordedtagstable = models.TextField(db_column='COMMENT_FROMRECORDEDTAGSTABLE', blank=True, null=True)  # Field name made lowercase.
     scars_left = models.BooleanField(db_column='SCARS_LEFT')  # Field name made lowercase.
     scars_right = models.BooleanField(db_column='SCARS_RIGHT')  # Field name made lowercase.
     other_tags = models.CharField(db_column='OTHER_TAGS', max_length=255, blank=True, null=True)  # Field name made lowercase.
-    other_tags_identification_type = models.ForeignKey(TrtIdentificationTypes, models.DO_NOTHING, db_column='OTHER_TAGS_IDENTIFICATION_TYPE', blank=True, null=True)  # Field name made lowercase.
+    other_tags_identification_type = models.ForeignKey(TrtIdentificationTypes, models.SET_NULL, db_column='OTHER_TAGS_IDENTIFICATION_TYPE', blank=True, null=True)  # Field name made lowercase.
     transferid = models.IntegerField(db_column='TransferID', blank=True, null=True)  # Field name made lowercase.
     mund = models.BooleanField(db_column='Mund')  # Field name made lowercase.
-    entered_by_person = models.ForeignKey('TrtPersons', models.DO_NOTHING, db_column='ENTERED_BY_PERSON_ID', blank=True, null=True,related_name='entered_by_person')  # Field name made lowercase.
+    entered_by_person = models.ForeignKey('TrtPersons', models.SET_NULL, db_column='ENTERED_BY_PERSON_ID', blank=True, null=True,related_name='entered_by_person')  # Field name made lowercase.
     scars_left_scale_1 = models.BooleanField(db_column='SCARS_LEFT_SCALE_1')  # Field name made lowercase.
     scars_left_scale_2 = models.BooleanField(db_column='SCARS_LEFT_SCALE_2')  # Field name made lowercase.
     scars_left_scale_3 = models.BooleanField(db_column='SCARS_LEFT_SCALE_3')  # Field name made lowercase.
@@ -559,8 +563,8 @@ class TrtPitTags(models.Model):
     pittag_id = models.CharField(db_column='PIT_TAG_ID', primary_key=True, max_length=50)  # Field name made lowercase.
     issue_location = models.CharField(db_column='ISSUE_LOCATION', max_length=50, blank=True, null=True)  # Field name made lowercase.
     custodian_person_id = models.IntegerField(db_column='CUSTODIAN_PERSON_ID', blank=True, null=True)  # Field name made lowercase.
-    turtle = models.ForeignKey('TrtTurtles', models.DO_NOTHING, db_column='TURTLE_ID', blank=True, null=True)  # Field name made lowercase.
-    pit_tag_status = models.ForeignKey('TrtPitTagStatus', models.DO_NOTHING, db_column='PIT_TAG_STATUS', blank=True, null=True)  # Field name made lowercase.
+    turtle = models.ForeignKey('TrtTurtles', models.SET_NULL, db_column='TURTLE_ID', blank=True, null=True)  # Field name made lowercase.
+    pit_tag_status = models.ForeignKey('TrtPitTagStatus', models.SET_NULL, db_column='PIT_TAG_STATUS', blank=True, null=True)  # Field name made lowercase.
     return_date = models.DateTimeField(db_column='RETURN_DATE', blank=True, null=True)  # Field name made lowercase.
     return_condition = models.CharField(db_column='RETURN_CONDITION', max_length=50, blank=True, null=True)  # Field name made lowercase.
     comments = models.CharField(db_column='COMMENTS', max_length=255, blank=True, null=True)  # Field name made lowercase.
@@ -582,7 +586,7 @@ class TrtPitTags(models.Model):
 class TrtPitTagStates(models.Model):
     pit_tag_state = models.CharField(db_column='PIT_TAG_STATE', primary_key=True, max_length=10)  # Field name made lowercase.
     description = models.CharField(db_column='DESCRIPTION', max_length=50)  # Field name made lowercase.
-    pit_tag_status = models.ForeignKey('TrtPitTagStatus', models.DO_NOTHING, db_column='PIT_TAG_STATUS')  # Field name made lowercase.
+    pit_tag_status = models.ForeignKey('TrtPitTagStatus', models.CASCADE, db_column='PIT_TAG_STATUS')  # Field name made lowercase.
     existing_tag_list = models.BooleanField(db_column='EXISTING_TAG_LIST')  # Field name made lowercase.
     new_tag_list = models.BooleanField(db_column='NEW_TAG_LIST')  # Field name made lowercase.
 
@@ -623,9 +627,9 @@ class TrtPlaces(models.Model):
 class TrtRecordedIdentification(models.Model):
     recorded_identification_id = models.AutoField(db_column='RECORDED_IDENTIFICATION_ID', primary_key=True)  # Field name made lowercase.
     observation_id = models.IntegerField(db_column='OBSERVATION_ID')  # Field name made lowercase.
-    turtle = models.ForeignKey(TrtIdentification, models.DO_NOTHING, db_column='TURTLE_ID',related_name='turtle2')  # Field name made lowercase.
-    identification_type = models.ForeignKey(TrtIdentification, models.DO_NOTHING, db_column='IDENTIFICATION_TYPE')  # Field name made lowercase.
-    identifier = models.ForeignKey(TrtIdentification, models.DO_NOTHING, db_column='IDENTIFIER',related_name='identifier2')  # Field name made lowercase.
+    turtle = models.ForeignKey(TrtIdentification, models.CASCADE, db_column='TURTLE_ID',related_name='turtle2')  # Field name made lowercase.
+    identification_type = models.ForeignKey(TrtIdentification, models.CASCADE, db_column='IDENTIFICATION_TYPE')  # Field name made lowercase.
+    identifier = models.ForeignKey(TrtIdentification, models.CASCADE, db_column='IDENTIFIER',related_name='identifier2')  # Field name made lowercase.
     comments = models.CharField(db_column='COMMENTS', max_length=255, blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
@@ -667,9 +671,9 @@ class TrtRecordedTags(models.Model):
 
 class TrtSamples(models.Model):
     sample_id = models.AutoField(db_column='SAMPLE_ID', primary_key=True)  # Field name made lowercase.
-    turtle = models.ForeignKey('TrtTurtles', models.DO_NOTHING, db_column='TURTLE_ID')  # Field name made lowercase.
+    turtle = models.ForeignKey('TrtTurtles', models.CASCADE, db_column='TURTLE_ID')  # Field name made lowercase.
     sample_date = models.DateTimeField(db_column='SAMPLE_DATE', blank=True, null=True)  # Field name made lowercase.
-    tissue_type = models.ForeignKey('TrtTissueTypes', models.DO_NOTHING, db_column='TISSUE_TYPE')  # Field name made lowercase.
+    tissue_type = models.ForeignKey('TrtTissueTypes', models.CASCADE, db_column='TISSUE_TYPE')  # Field name made lowercase.
     arsenic = models.FloatField(db_column='ARSENIC', blank=True, null=True)  # Field name made lowercase.
     selenium = models.FloatField(db_column='SELENIUM', blank=True, null=True)  # Field name made lowercase.
     zinc = models.FloatField(db_column='ZINC', blank=True, null=True)  # Field name made lowercase.
@@ -728,9 +732,9 @@ class TrtTags(models.Model):
     tag_order_id = models.IntegerField(db_column='TAG_ORDER_ID', blank=True, null=True)  # Field name made lowercase.
     issue_location = models.CharField(db_column='ISSUE_LOCATION', max_length=50, blank=True, null=True)  # Field name made lowercase.
     custodian_person_id = models.IntegerField(db_column='CUSTODIAN_PERSON_ID', blank=True, null=True)  # Field name made lowercase.
-    turtle = models.ForeignKey('TrtTurtles', models.DO_NOTHING, db_column='TURTLE_ID', blank=True, null=True)  # Field name made lowercase.
+    turtle = models.ForeignKey('TrtTurtles', models.SET_NULL, db_column='TURTLE_ID', blank=True, null=True)  # Field name made lowercase.
     side = models.CharField(db_column='SIDE', max_length=1, blank=True, null=True)  # Field name made lowercase.
-    tag_status = models.ForeignKey('TrtTagStatus', models.DO_NOTHING, db_column='TAG_STATUS', blank=True, null=True)  # Field name made lowercase.
+    tag_status = models.ForeignKey('TrtTagStatus', models.SET_NULL, db_column='TAG_STATUS', blank=True, null=True)  # Field name made lowercase.
     return_date = models.DateTimeField(db_column='RETURN_DATE', blank=True, null=True)  # Field name made lowercase.
     return_condition = models.CharField(db_column='RETURN_CONDITION', max_length=50, blank=True, null=True)  # Field name made lowercase.
     comments = models.CharField(db_column='COMMENTS', max_length=255, blank=True, null=True)  # Field name made lowercase.
@@ -805,9 +809,9 @@ class TrtTurtles(models.Model):
     species_code = models.ForeignKey(TrtSpecies, models.DO_NOTHING, db_column='SPECIES_CODE')  # Field name made lowercase.
     identification_confidence = models.CharField(db_column='IDENTIFICATION_CONFIDENCE', max_length=1, blank=True, null=True)  # Field name made lowercase.
     sex = models.CharField(db_column='SEX', max_length=1)  # Field name made lowercase.
-    turtle_status = models.ForeignKey('TrtTurtleStatus', models.DO_NOTHING, db_column='TURTLE_STATUS', blank=True, null=True)  # Field name made lowercase.
-    location_code = models.ForeignKey(TrtLocations, models.DO_NOTHING, db_column='LOCATION_CODE', blank=True, null=True)  # Field name made lowercase.
-    cause_of_death = models.ForeignKey(TrtCauseOfDeath, models.DO_NOTHING, db_column='CAUSE_OF_DEATH', blank=True, null=True)  # Field name made lowercase.
+    turtle_status = models.ForeignKey('TrtTurtleStatus', models.SET_NULL, db_column='TURTLE_STATUS', blank=True, null=True)  # Field name made lowercase.
+    location_code = models.ForeignKey(TrtLocations, models.SET_NULL, db_column='LOCATION_CODE', blank=True, null=True)  # Field name made lowercase.
+    cause_of_death = models.ForeignKey(TrtCauseOfDeath, models.SET_NULL, db_column='CAUSE_OF_DEATH', blank=True, null=True)  # Field name made lowercase.
     re_entered_population = models.CharField(db_column='RE_ENTERED_POPULATION', max_length=1, blank=True, null=True)  # Field name made lowercase.
     comments = models.CharField(db_column='COMMENTS', max_length=255, blank=True, null=True)  # Field name made lowercase.
     entered_by = models.CharField(db_column='ENTERED_BY', max_length=50, blank=True, null=True)  # Field name made lowercase.
@@ -856,6 +860,9 @@ class TrtYesNo(models.Model):
     class Meta:
         managed = False
         db_table = 'TRT_YES_NO'
+
+    def __str__(self):
+        return f"{self.description}"
 
 
 # class Tbldamage(models.Model):

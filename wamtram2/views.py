@@ -1,21 +1,22 @@
 from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic.edit import FormMixin
 from django.urls import reverse
 from django.views import generic
 from django.conf import settings
-from wastd.utils import search_filter, Breadcrumb
+from wastd.utils import  Breadcrumb
+from django.http import HttpResponseRedirect
 
 from .models import TrtTurtles,TrtTags,TrtPitTags, TrtEntryBatches,TrtDataEntry,TrtPersons,TrtObservations
 from .forms import TrtDataEntryForm, SearchForm, TrtEntryBatchesForm
 from django.shortcuts import get_object_or_404
-from django.forms.models import model_to_dict
+
 from django.views import View
 from django.shortcuts import redirect
 from django.db import connections
 from django.views.generic import ListView
 from django.contrib import messages
 from django.db import DatabaseError
-from django.utils import timezone
 from django.db.models import Q
 
 from django.views.generic import TemplateView
@@ -72,7 +73,7 @@ class EntryBatchesListView(LoginRequiredMixin,ListView):
         context['persons'] = {person.person_id: person for person in TrtPersons.objects.all()}
         return context
 
-class EntryBatchDetailView(LoginRequiredMixin,generic.ListView):
+class EntryBatchDetailView(LoginRequiredMixin,FormMixin,generic.ListView):
     """
     A view for displaying list of a batch of TrtDataEntry objects.
 
@@ -88,14 +89,12 @@ class EntryBatchDetailView(LoginRequiredMixin,generic.ListView):
 
     """
 
-    model = TrtDataEntry
+    model = TrtDataEntry    
     template_name = 'wamtram2/trtentrybatch_detail.html'  
     context_object_name = 'batch'
     paginate_by = 50
-
-
-
-
+    form_class = TrtEntryBatchesForm
+    
     def get(self, request, *args, **kwargs):
         """
         Handle GET requests.
@@ -145,7 +144,41 @@ class EntryBatchDetailView(LoginRequiredMixin,generic.ListView):
         context['batch'] = batch  # add the batch to the context
         context['form'] = TrtEntryBatchesForm(instance=batch)  # Add the form to the context data
         return context
+    
+    """
+    FormMixin provides the following methods:
+    """
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        form.instance.entry_batch_id = self.kwargs.get('batch_id')
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
 
+    def form_valid(self, form):
+        batch = form.save(commit=False)
+
+        batch_id = batch.entry_batch_id
+
+        # Get the existing instance from the database
+        existing_batch = TrtEntryBatches.objects.get(entry_batch_id=batch_id)
+
+        # Update the PR_DATE_CONVENTION field with the existing value
+        batch.pr_date_convention = existing_batch.pr_date_convention
+        batch.entry_date = existing_batch.entry_date
+        batch.filename = existing_batch.filename
+
+        # Save the batch instance
+        batch.save()
+
+        # Redirect to the success URL
+        return HttpResponseRedirect(self.get_success_url())
+    
+    def get_success_url(self):
+        batch_id = self.kwargs.get('batch_id') 
+        return reverse('wamtram2:entry_batch_detail', args=[batch_id])
+    
 class TrtDataEntryForm(LoginRequiredMixin, generic.FormView):
     """
     A form view for entering TRT data.

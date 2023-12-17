@@ -72,45 +72,75 @@ class TrtDataEntryForm(forms.ModelForm):
 
     class Meta:
         model = TrtDataEntry
-        fields = ['entry_batch',
-                  'do_not_process',
-                  'turtle_id',
-                  'observation_date',
-                  'observation_id',
-                  'place_code',
-                  'species_code',
-                  'sex',
-                  'user_entry_id',
-                  'measured_by_id',
-                  'recorded_by_id',
-                  'tagged_by_id',
-                  'entered_by_id',
-                  'measured_recorded_by_id',
-                  'recapture_left_tag_id',
-                  'recapture_left_tag_id_2',
-                  'recapture_left_tag_id_3',
-                  'recapture_right_tag_id',
-                  'recapture_right_tag_id_2',
-                  'recapture_right_tag_id_3',
-                  'new_left_tag_id',
-                  'new_left_tag_id_2',
-                  'new_pittag_id',
-                  'new_pittag_id_2',
-                  'recapture_pittag_id',
-                  'recapture_pittag_id_2',
-                  'scars_left',
-                  'scars_right',
-                  'scars_left_scale_1',
-                  'scars_left_scale_2',
-                  'scars_left_scale_3',
-                  'scars_right_scale_1',
-                  'scars_right_scale_2',
-                  'scars_right_scale_3',
-                  'cc_length_not_measured',
-                  'cc_notch_length_not_measured',
-                  'cc_width_not_measured',
-                  'tagscarnotchecked',
-                  'didnotcheckforinjury',] #"__all__"
+        fields = [
+                'entry_batch',
+                'do_not_process',
+                'turtle_id',
+                'observation_date',
+                'observation_id',
+                'latitude',
+                'longitude',
+                'place_code',
+                'species_code',
+                'sex',
+                'user_entry_id',
+                'measured_by_id',
+                'recorded_by_id',
+                'tagged_by_id',
+                'entered_by_id',
+                'measured_recorded_by_id',
+                'recapture_left_tag_id',
+                'recapture_left_tag_id_2',
+                'recapture_left_tag_id_3',
+                'recapture_right_tag_id',
+                'recapture_right_tag_id_2',
+                'recapture_right_tag_id_3',
+                'new_left_tag_id',
+                'new_left_tag_id_2',
+                'new_right_tag_id',
+                'new_right_tag_id_2',
+                'new_pittag_id',
+                'new_pittag_id_2',
+                'recapture_pittag_id',
+                'recapture_pittag_id_2',
+                'scars_left',
+                'scars_right',
+                'scars_left_scale_1',
+                'scars_left_scale_2',
+                'scars_left_scale_3',
+                'scars_right_scale_1',
+                'scars_right_scale_2',
+                'scars_right_scale_3',
+                'cc_length_not_measured',
+                'curved_carapace_length',
+                'cc_notch_length_not_measured',
+                'cc_width_not_measured',
+                'curved_carapace_width',
+                'measurement_value_1',
+                'measurement_value_2',
+                'measurement_type_1',
+                'measurement_type_2',
+                'tagscarnotchecked',
+                'didnotcheckforinjury',
+                'damage_carapace',
+                'damage_lff',
+                'damage_rff',
+                'damage_lhf',  
+                'damage_rhf',
+                'body_part_1',
+                'damage_code_1',
+                'body_part_2',
+                'damage_code_2',
+                'activity_code',
+                'nesting',
+                'sample_label_1',
+                'tissue_type_1',
+                'sample_label_2',
+                'tissue_type_2',
+                ] #"__all__"
+        
+
+
         widgets = {
             'observation_date': DateTimeInput(attrs={'type': 'datetime-local'}),
             "new_left_tag_id": unAssignedTagWidget,
@@ -141,6 +171,22 @@ class TrtDataEntryForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['entry_batch'].disabled = True
         self.fields['turtle_id'].disabled = True
+        self.fields['observation_date'].required = True
+        self.fields['recapture_pittag_id'].label = "Recapture Left PIT Tag"
+        self.fields['recapture_pittag_id_2'].label = "Recapture Right PIT Tag"
+        self.fields['new_pittag_id'].label = "New Left PIT Tag"
+        self.fields['new_pittag_id_2'].label = "New Right PIT Tag"
+        self.fields['recapture_left_tag_id'].label = "Recapture Left Tag"
+        self.fields['recapture_left_tag_id_2'].label = "Recapture Left Tag 2"
+        self.fields['recapture_left_tag_id_3'].label = "Recapture Left Tag 3"
+        self.fields['recapture_right_tag_id'].label = "Recapture Right Tag"
+        self.fields['recapture_right_tag_id_2'].label = "Recapture Right Tag 2"
+        self.fields['recapture_right_tag_id_3'].label = "Recapture Right Tag 3"
+        self.fields['new_left_tag_id'].label = "New Left Tag"
+        self.fields['new_left_tag_id_2'].label = "New Left Tag 2"
+        self.fields['new_right_tag_id'].label = "New Right Tag"
+        self.fields['new_right_tag_id_2'].label = "New Right Tag 2"
+        
 
         # Disable all fields if there is an observation_id as it already in the database
         if self.instance.observation_id:
