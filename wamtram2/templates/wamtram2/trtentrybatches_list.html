@@ -1,0 +1,96 @@
+{% extends "base_wastd.html" %}
+{% load dict_filter %}
+
+{% block breadcrumbs %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+    </ol>
+</nav>
+{% endblock %}
+
+
+{% block page_content_inner %}
+
+
+{% block pagination_row %}
+<div class="row" id="pagination-row">
+  <div class="col">
+  {% if is_paginated %}
+    {% load proper_paginate %}
+    {% load url_replace %}
+    <ul class="pagination">
+        {% if page_obj.number == 1 %}
+            <li class="page-item disabled"><span class="page-link">⇤</span></li>
+        {% else %}
+            <li class="page-item"><a class="page-link" href="?{% url_replace request 'page' 1 %}">⇤</a></li>
+        {% endif %}
+        {% if page_obj.has_previous %}
+            <li class="page-item"><a class="page-link" href="?{% url_replace request 'page' page_obj.previous_page_number %}">&laquo;</a></li>
+        {% else %}
+            <li class="page-item disabled""><span class="page-link">&laquo;</span></li>
+        {% endif %}
+        {% for i in paginator|proper_paginate:page_obj.number %}
+            {% if page_obj.number == i %}
+                <li class="page-item active"><span class="page-link">{{ i }} <span class="sr-only">(current)</span></span></li>
+            {% else %}
+                <li class="page-item"><a class="page-link" href="?{% url_replace request 'page' i %}">{{ i }}</a></li>
+            {% endif %}
+        {% endfor %}
+        {% if page_obj.has_next %}
+            <li class="page-item"><a class="page-link" href="?{% url_replace request 'page' page_obj.next_page_number %}">&raquo;</a></li>
+        {% else %}
+            <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+        {% endif %}
+        {% if page_obj.number == paginator.num_pages %}
+            <li class="page-item disabled"><span class="page-link">⇥</span></li>
+        {% else %}
+            <li class="page-item"><a class="page-link" href="?{% url_replace request 'page' paginator.num_pages %}">⇥</a></li>
+        {% endif %}
+    </ul>
+{% endif %}
+   
+    {% if object_list %}
+
+        {% if object_count %}<div>Found {{ object_count }} records</div>{% endif %}
+        
+    {% endif %}
+    </div>
+</div>
+{% endblock pagination_row %}
+<a href="{% url 'wamtram2:new_batch_detail' %}" class="btn btn-primary">Create a new entry batch</a>
+{% if object_list %}
+<div class="row mt-3">
+  <div class="col">
+    <table class="table table-striped table-bordered table-sm table-hover">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Date Entered</th>
+                <th>Enterer</th>
+                <th>comments</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for obj in object_list %}
+            <tr>
+                <td><a href="{% url 'wamtram2:entry_batch_detail' obj.pk %}">{{ obj.pk }}</a></td>
+                <td>{{ obj.entry_date|date:"j M Y" }}</td>
+                <td>
+                    {{ obj.entered_person_id }}           
+                </td>
+                <td>{{ obj.comments}}</td>
+           
+        
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
+
+
+{% endblock page_content_inner %}
+

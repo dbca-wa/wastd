@@ -92,14 +92,10 @@
                 Tagging
             </a>
             <div class="dropdown-menu" aria-labelledby="nav-li-tagging">
-                <a class="dropdown-item" href="{% url 'turtle_tags:turtle_list' %}" title="Browse, filter and search all tagged turtles">
+                <a class="dropdown-item" href="{% url 'wamtram2:turtle_list' %}" title="Browse, filter and search all tagged turtles">
                     <i class="fa-solid fa-table" aria-hidden="true"></i>
                     <span class="align-left">Tagged turtles</span>
-                </a>
-                <a class="dropdown-item" href="{% url 'observations:animalencounter-list' %}?encounter_type=tagging" title="Browse, filter and search all tagging encounters">
-                    <i class="fa-solid fa-table" aria-hidden="true"></i>
-                    <span class="align-left">Turtle tagging encounters</span>
-                </a>
+                </a>                
             </div>
         </li>
 

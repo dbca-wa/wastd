@@ -1,0 +1,36 @@
+{% extends "base_wastd.html" %}
+
+{% block extra_style %}
+{{ block.super }}
+{{ form.media.css }}
+<style>
+  input, select {width: 200px}
+  .center-form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+  </style>
+  {% endblock %}
+  
+
+{% block breadcrumbs %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+    </ol>
+</nav>
+{% endblock %}
+  {% block page_content_inner %}
+  <div class="row">
+    <a href="{% url 'wamtram2:entry_batches'%}">View Data Entry Batches</a>
+    </div>
+    <div class="row">
+    <a href="{% url 'wamtram2:turtle_list'%}">View Turtles</a>
+    </div>
+    {% endblock %}
+    
+
+    
+    

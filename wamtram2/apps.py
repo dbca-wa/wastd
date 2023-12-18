@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class AccessdbConfig(AppConfig):
+class Wamtram2Config(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'wamtram'
+    name = 'wamtram2'

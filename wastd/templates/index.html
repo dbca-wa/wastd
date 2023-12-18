@@ -82,7 +82,7 @@
   </p>
   <p>
     <a class="btn btn-primary btn-block"
-      href="{% url 'turtle_tags:turtle_list' %}"
+      href="{% url 'wamtram2:turtle_list' %}"
       title="Browse, filter and search turtle tagging data">
       Browse tagged turtles »
     </a>
@@ -96,18 +96,17 @@
     </a>
   <p>
   {% endcomment %}
-  {% comment %}
-  {# FIXME: permissions check #}
+
   {% if request.user.is_staff %}
   <p>
     <a class="btn btn-success btn-block"
-      href="{% url 'admin:app_list' 'tagging' %}"
-      title="Curate tagged turtles">
-      Curate »
+      href="{% url 'wamtram2:entry_batches'%}"
+      title="Enter tagging data">
+      Enter tagging data »
     </a>
   </p>
   {% endif %}
-  {% endcomment %}
+
 </div>
 
 <!-- Marine Wildlife Incidents column -->

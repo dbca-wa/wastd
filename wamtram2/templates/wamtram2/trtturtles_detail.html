@@ -1,11 +1,11 @@
 {% extends "base_wastd.html" %}
-{% load leaflet_tags %}
+
 
 {% block breadcrumbs %}
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-        <li class="breadcrumb-item"><a href="{% url 'turtle_tags:turtle_list' %}">Tagged turtles</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'wamtram2:turtle_list' %}">Turtles</a></li>
         <li class="breadcrumb-item active">{{ object.pk }}</li>
     </ol>
 </nav>
@@ -23,19 +23,19 @@
             <tbody>
                 <tr>
                     <th>Date created</th>
-                    <td>{{ object.created|date:"j M Y" }}</td>
+                    <td>{{ object.date_entered|date:"j M Y" }}</td>
                 </tr>
                 <tr>
                     <th>Entered by</th>
-                    <td>{{ object.entered_by.name|default_if_none:"" }}</td>
+                    <td>{{ object.entered_by|default_if_none:"" }}</td>
                 </tr>
                 <tr>
                     <th>Species</th>
-                    <td>{{ object.get_species_display }}</td>
+                    <td>{{ object.species_code }}</td>
                 </tr>
                 <tr>
                     <th>Sex</th>
-                    <td>{{ object.get_sex_display|default_if_none:"Unknown" }}</td>
+                    <td>{{ object.sex|default_if_none:"Unknown" }}</td>
                 </tr>
                 <tr>
                     <th>Name</th>
@@ -55,7 +55,7 @@
         <h3>Tags</h3>
     </div>
 </div>
-{% if tags %}
+{% if tags or pittags %}
 <div class="row">
     <div class="col">
         <table class="table table-striped table-bordered table-sm">
@@ -64,17 +64,23 @@
                     <th>Tag type</th>
                     <th>Serial</th>
                     <th>Side</th>
-                    <th>Observations</th>
                     <th>Comments</th>
                 </tr>
             </thead>
             <tbody>
                 {% for tag in tags %}
                 <tr>
-                    <td>{{ tag.get_tag_type_display }}</td>
-                    <td>{{ tag.serial }}</td>
-                    <td>{{ tag.get_side_display|default_if_none:"" }}</td>
-                    <td>{{ tag.get_observations.count }}</td>
+                    <td>Flipper</td>
+                    <td>{{ tag.tag_id }}</td>
+                    <td>{{ tag.side|default_if_none:"" }}</td>
+                    <td>{{ tag.comments|default_if_none:"" }}</td>
+                </tr>
+                {% endfor %}
+                {% for tag in pittags %}
+                <tr>
+                    <td>Pit</td>
+                    <td>{{ tag.pittag_id }}</td>
+                    <td></td>
                     <td>{{ tag.comments|default_if_none:"" }}</td>
                 </tr>
                 {% endfor %}
@@ -86,61 +92,37 @@
 <p>None recorded</p>
 {% endif %}
 
-<h3>Encounters</h3>
-{% if encounters %}
+<h3>Observations</h3>
+{% if observations %}
 <div class="row">
     <div class="col">
         <table class="table table-striped table-bordered table-sm">
             <thead>
                 <tr>
                     <th>Date & time</th>
-                    <th>Observer</th>
-                    <th>Tag(s)</th>
+                    <th>Reporter</th>
+                    <th>Measurer</th>
                     <th>Site</th>
                 </tr>
             </thead>
             <tbody>
-                {% for encounter in encounters %}
+                {% for observation in observations %}
                 <tr>
-                    <td><a href="{{ encounter.get_absolute_url }}">{{ encounter.when|date:"D, j M Y H:i" }}{% if encounter.where %} <i class="fa-solid fa-location-pin"></i>{% endif %}</a></td>
-                    <td>{{ encounter.observer.name }}</td>
-                    <td>{{ encounter.get_tag_serials }}</td>
-                    <td>{% if encounter.survey %}{{ encounter.survey.site.name }}{% else %}{{ encounter.guess_site.name }}{% endif %}</td>
+                    <td><a href="{% url 'wamtram2:observationdetail' pk=observation.observation_id %}">{{ observation.observation_date|date:"D, j M Y H:i" }}</a></td>
+                    <td>{{ observation.reporter_person }}</td>
+                    <td>{{ observation.measurer_person }}</td>
+                    <td>{{ observation.place_code }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
 </div>
-{% if encounters_points %}
-<div class="row">
-    <div class="col">
-    {% leaflet_map "detailmap" callback="window.map_init" %}
-    </div>
-</div>
-{% endif %}<!-- encounters_points -->
+
 {% else %}
 <p>None recorded</p>
 {% endif %}<!-- encounters -->
 
 {% endblock page_content_inner %}
 
-{% block extra_js %}
-{% if encounters_points %}
-{{ block.super }}
-<script type="text/javascript">
-function map_init(map, options) {
-    {% include "shared/styles.js" %}
-    function onEachFeature(feature, layer) {
-        if (feature.properties && feature.properties.label) {
-            layer.bindPopup(feature.properties.label);
-        }
-    };
-    const obsFeatures = {{ encounters_points|safe }};
-    const obsLayer = L.geoJSON(obsFeatures, {onEachFeature: onEachFeature});
-    obsLayer.addTo(map);
-    map.fitBounds(obsLayer.getBounds());
-};
-</script>
-{% endif %}
-{% endblock extra_js %}
+
