@@ -1,6 +1,6 @@
 {% extends "base_wastd.html" %}
 
-{% load static bootstrap4 %}
+{% load static %}
 
 {% block extra_style %}
 {{ block.super }}
@@ -35,33 +35,32 @@
   {% block page_content_inner %}
   
   <div class="center-form">
-    <h3>Search for a Turtle</h1>
       <div class="row">
-        
         <div class="col col-12 mb-3">
           <div class="card card-lg shadow-lg">
-            <div class="card-body">
-              {% if no_turtle_found %}
-                <a href="{% url 'wamtram2:newtrtdataentry' form.batch_id.value %}" class="btn btn-primary">Create New Turtle</a>
-              {% endif %}
-              <form method="post">
+            
+            <div class="card-body center-form" >
+              
+                <a href="{% url 'wamtram2:newtrtdataentry' form.batch_id.value %}" class="btn btn-primary">Create New Untagged Turtle</a>
+                <div class="center-form">or</div>
+                <h4>Search for a Tagged Turtle</h4>
+              <form method="post" class="center-form">
                 {% csrf_token %}
                 {{ form.as_p }}
-                <input type="submit" value="Search">
+                <input type="submit" value="Search" class="btn btn-primary">
               </form>
               {% if turtle %}
               <p>Turtle ID: {{ turtle.turtle_id }}</p>
               <p>Sex: {{ turtle.sex }}</p>
               <p>Species: {{ turtle.species_code }}</p>
               <p>Status: {{ turtle.turtle_status }}</p>
-              <p>Date entered: {{ turtle.date_entered }}</p>
               <p>Flipper tag IDs:</p>
               <ul>
                 {% for tag in tags %}
                 <li>{{tag.side}}:{{ tag.tag_id }}</li>
                 {% endfor %}
               </ul>
-              <p>Pit tag IDs:</p>
+              <p>PIT tag IDs:</p>
               <ul>
                 {% for tag in pittags %}
                 <li>{{ tag.pittag_id }}</li>

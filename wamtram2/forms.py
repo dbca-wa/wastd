@@ -74,6 +74,7 @@ class TrtDataEntryForm(forms.ModelForm):
         model = TrtDataEntry
         fields = [
                 'entry_batch',
+                'alive',
                 'do_not_process',
                 'turtle_id',
                 'observation_date',
@@ -186,6 +187,7 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields['new_left_tag_id_2'].label = "New Left Tag 2"
         self.fields['new_right_tag_id'].label = "New Right Tag"
         self.fields['new_right_tag_id_2'].label = "New Right Tag 2"
+        self.fields['tagscarnotchecked'].label = "Didn't check for tag scars"
         
 
         # Disable all fields if there is an observation_id as it already in the database

@@ -84,3 +84,16 @@ class AdminDashboard(Dashboard):
                 ],
             )
         )
+        self.children.append(
+            modules.LinkList(
+                "Authentication",
+                column=3,
+                children=[
+                    {
+                        "title": "Groups",
+                        "url": "/admin/auth/group/",
+                        "external": False,
+                    },
+                ],
+            )
+        )

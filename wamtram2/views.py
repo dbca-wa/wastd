@@ -435,7 +435,11 @@ class ObservationDetailView(LoginRequiredMixin, generic.DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['observation'] = get_object_or_404(TrtObservations, observation_id=self.kwargs.get('pk'))
+        obj = get_object_or_404(TrtObservations, observation_id=self.kwargs.get('pk'))
+        context['observation'] = obj
+        context["tags"] = obj.trtrecordedtags_set.all()
+        context["pittags"] = obj.trtrecordedpittags_set.all()
+        context["measurements"] = obj.trtmeasurements_set.all()
         return context
 
 

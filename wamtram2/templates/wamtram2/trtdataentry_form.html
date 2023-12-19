@@ -1,25 +1,18 @@
 {% extends "base_wastd.html" %}
-
 {% load static bootstrap4 %}
 
+{% bootstrap_css %}
 {% block extra_style %}
 {{ block.super }}
 {{ form.media.css }}
 <style>
-  input, select {width: 200px}
-  .center-form {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
+  .select2 {
+    width: 100% !important;
+
   }
-  </style>
-  {% endblock %}
-  
-  {% block extra_head %}
-  {# Select2 widgets need jQuery to be loaded at the top of the template, so we move it here. #}
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
-  {% endblock extra_head %}
+
+</style>
+{% endblock %}  
 
 {% block breadcrumbs %}
 <nav aria-label="breadcrumb">
@@ -38,208 +31,311 @@
 {% endblock %}
 
 {% block page_content_inner %}
-{% if form.observation_id.value %}
-<div class="row">
-<h3>Observation has aleady been submitted. <a href="{% url 'wamtram2:observationdetail' pk=form.observation_id.value %}">View observation</a></h3> 
-</div>
-{% endif %}
+
 {% if entry_id %}
-<form action="{% url 'wamtram2:trtdataentry' entry_id %}" method="post">
+
+<form action="{% url 'wamtram2:trtdataentry' entry_id %}" method="post"  class="container">
 {% else %}
-<form action="{% url 'wamtram2:newtrtdataentry' batch_id %}" method="post">
+<form action="{% url 'wamtram2:newtrtdataentry' batch_id %}" method="post"  class="container">
 {% endif %}
 {% csrf_token %}
-    <div class="form-group">
-      <h2>Observation details</h2>
-        <label for="{{ form.entry_batch.id_for_label }}">{{ form.entry_batch.label }}</label>
-        {{ form.entry_batch }}
-        <label for="{{ form.turtle_id.id_for_label }}">{{ form.turtle_id.label }}</label>
-        {{ form.turtle_id }}
-        <label for="{{ form.do_not_process.id_for_label }}">{{ form.do_not_process.label }}</label>
-        {{ form.do_not_process }}
-        <label for="{{ form.species_code.id_for_label }}">{{ form.species_code.label }}</label>
-        {{ form.species_code }}
-        <label for="{{ form.sex.id_for_label }}">{{ form.sex.label }}</label>
-        {{ form.sex }}
-        <label for="{{ form.place_code.id_for_label }}">{{ form.place_code.label }}</label>
-        {{ form.place_code }}
-        <label for="{{ form.latitude.id_for_label }}">{{ form.latitude.label }}</label>
-        {{ form.latitude }}
-        <label for="{{ form.longitude.id_for_label }}">{{ form.longitude.label }}</label>
-        {{ form.longitude }}
-    </div>
-  
-    <div class="form-group">
-        <label for="{{ form.recorded_by_id.id_for_label }}">{{ form.recorded_by_id.label }}</label>
-        {{ form.recorded_by_id }}   
-        <label for="{{ form.entered_by_id.id_for_label }}">{{ form.entered_by_id.label }}</label>
-        {{ form.entered_by_id }}    
-    </div>
-    
-    <div class="form-group">
-      <label for="{{ form.observation_date.id_for_label }}">{{ form.observation_date.label }}</label>
-      {{ form.observation_date }}
-    </div>
+{% if form.observation_id.value %}
+<div class="row">
+<h4>Observation has aleady been submitted: <a href="{% url 'wamtram2:observationdetail' pk=form.observation_id.value %}">view observation</a></h4> 
+</div>
+{% endif %}
+<div class="row g3">
+  <div class="col-md-6">
+    {% bootstrap_field form.do_not_process %}
+  </div>
+</div>
 
-    <div class="form-group">
-        <h3>Recapture Tags</h3>
-        <label for="{{ form.recapture_left_tag_id.id_for_label }}">{{ form.recapture_left_tag_id.label }}</label>
-        {{ form.recapture_left_tag_id }}
-        <label for="{{ form.recapture_left_tag_id_2.id_for_label }}">{{ form.recapture_left_tag_id_2.label }}</label>
-        {{ form.recapture_left_tag_id_2 }}
-        <label for="{{ form.recapture_left_tag_id_3.id_for_label }}">{{ form.recapture_left_tag_id_3.label }}</label>
-        {{ form.recapture_left_tag_id_3 }}
-        <label for="{{ form.recapture_right_tag_id.id_for_label }}">{{ form.recapture_right_tag_id.label }}</label>
-        {{ form.recapture_right_tag_id }}
-        <label for="{{ form.recapture_right_tag_id_2.id_for_label }}">{{ form.recapture_right_tag_id_2.label }}</label>
-        {{ form.recapture_right_tag_id_2 }}
-        <label for="{{ form.recapture_right_tag_id_3.id_for_label }}">{{ form.recapture_right_tag_id_3.label }}</label>
-        {{ form.recapture_right_tag_id_3 }}
-        <label for="{{ form.recapture_pittag_id.id_for_label }}">{{ form.recapture_pittag_id.label }}</label>
-        {{ form.recapture_pittag_id }}
-        <label for="{{ form.recapture_pittag_id_2.id_for_label }}">{{ form.recapture_pittag_id_2.label }}</label>
-        {{ form.recapture_pittag_id_2 }}
-    </div>
-
-    <div class="form-group">
-        <h3>New Tags</h3>
-        <label for="{{ form.tagged_by_id.id_for_label }}">{{ form.tagged_by_id.label }}</label>
-        {{ form.tagged_by_id }}
-        <label for="{{ form.new_left_tag_id.id_for_label }}">{{ form.new_left_tag_id.label }}</label>
-        {{ form.new_left_tag_id }}
-        <label for="{{ form.new_left_tag_id_2.id_for_label }}">{{ form.new_left_tag_id_2.label }}</label>
-        {{ form.new_left_tag_id_2 }}
-        <label for="{{ form.new_right_tag_id.id_for_label }}">{{ form.new_right_tag_id.label }}</label>
-        {{ form.new_right_tag_id }}
-        <label for="{{ form.new_right_tag_id_2.id_for_label }}">{{ form.new_right_tag_id_2.label }}</label>
-        {{ form.new_right_tag_id_2 }}
-        <label for="{{ form.new_pittag_id.id_for_label }}">{{ form.new_pittag_id.label }}</label>
-        {{ form.new_pittag_id }}
-        <label for="{{ form.new_pittag_id_2.id_for_label }}">{{ form.new_pittag_id_2.label }}</label>
-        {{ form.new_pittag_id_2 }}
-    </div>
-
-    <div class="form-group">
-      <h3>Tag scars</h3>
-      <label for="{{ form.tagscarnotchecked.id_for_label }}">{{ form.tagscarnotchecked.label }}</label>
-      {{ form.tagscarnotchecked }}
-      <label for="{{ form.scars_left.id_for_label }}">{{ form.scars_left.label }}</label>
-      {{ form.scars_left }}
-      <label for="{{ form.scars_right.id_for_label }}">{{ form.scars_right.label }}</label>
-      {{ form.scars_right }}
-      <label for="{{ form.scars_left_scale_1.id_for_label }}">{{ form.scars_left_scale_1.label }}</label>
-      {{ form.scars_left_scale_1 }}
-      <label for="{{ form.scars_left_scale_2.id_for_label }}">{{ form.scars_left_scale_2.label }}</label>
-      {{ form.scars_left_scale_2 }}
-      <label for="{{ form.scars_left_scale_3.id_for_label }}">{{ form.scars_left_scale_3.label }}</label>
-      {{ form.scars_left_scale_3 }}
-      <label for="{{ form.scars_right.id_for_label }}">{{ form.scars_right.label }}</label>
-      {{ form.scars_right }}
-      <label for="{{ form.scars_right_scale_1.id_for_label }}">{{ form.scars_right_scale_1.label }}</label>
-      {{ form.scars_right_scale_1 }}
-      <label for="{{ form.scars_right_scale_2.id_for_label }}">{{ form.scars_right_scale_2.label }}</label>
-      {{ form.scars_right_scale_2 }}
-      <label for="{{ form.scars_right_scale_3.id_for_label }}">{{ form.scars_right_scale_3.label }}</label>
-      {{ form.scars_right_scale_3 }}
-    </div>
-    <h3>Measurements</h3>
-      <div class="form-group">
-        <label for="{{ form.measured_by_id.id_for_label }}">{{ form.measured_by_id.label }}</label>
-        {{ form.measured_by_id }}
-        <label for="{{ form.measured_recorded_by_id.id_for_label }}">{{ form.measured_recorded_by_id.label }}</label>
-        {{ form.measured_recorded_by_id }}
+<div class="row g3">
+      <div class="col-md-6">
+      <h5>Entry Batch ID: {{ form.entry_batch.value }}</h5>
       </div>
-      <div class="form-group">
-        <label for="{{ form.cc_length_not_measured.id_for_label }}">{{ form.cc_length_not_measured.label }}</label>
-        {{ form.cc_length_not_measured }}
-        <label for="{{ form.curved_carapace_length.id_for_label }}">{{ form.curved_carapace_length.label }}</label>
-        {{ form.curved_carapace_length }}
+      <div class="col-md-6">
+      <h5>Turtle ID: {{ form.turtle_id.value }}</h5>
       </div>
-
-        
-      <div class="form-group">
-        <label for="{{ form.cc_notch_length_not_measured.id_for_label }}">{{ form.cc_notch_length_not_measured.label }}</label>
-        {{ form.cc_notch_length_not_measured }}
+</div>
+<div class="row g3">
+      <div class="col-md-6">
+        {% bootstrap_field form.observation_date %}
       </div>
-
-      <div class="form-group">
-        <label for="{{ form.cc_width_not_measured.id_for_label }}">{{ form.cc_width_not_measured.label }}</label>
-        {{ form.cc_width_not_measured }}
-        <label for="{{ form.curved_carapace_width.id_for_label }}">{{ form.curved_carapace_width.label }}</label>
-        {{ form.curved_carapace_width }}
+      <div class="col-md-6">
+        {% bootstrap_field form.species_code %}
       </div>
-      <div class="form-group">
-        <label for="{{ form.measurement_value_1.id_for_label }}">{{ form.measurement_value_1.label }}</label>
-        {{ form.measurement_value_1 }}
-        <label for="{{ form.measurement_type_1.id_for_label }}">{{ form.measurement_type_1.label }}</label>
-        {{ form.measurement_type_1 }}
-        <label for="{{ form.measurement_value_2.id_for_label }}">{{ form.measurement_value_2.label }}</label>
-        {{ form.measurement_value_2 }}
-        <label for="{{ form.measurement_type_2.id_for_label }}">{{ form.measurement_type_2.label }}</label>
-        {{ form.measurement_type_2 }}
+      <div class="col-md-6">
+        {% bootstrap_field form.sex %}
       </div>
-      <div class="form-group">
-        <h2>Injuries</h2>
-        <label for="{{ form.didnotcheckforinjury.id_for_label }}">{{ form.didnotcheckforinjury.label }}</label>
-        {{ form.didnotcheckforinjury }}
-        <label for="{{ form.damage_carapace.id_for_label }}">{{ form.damage_carapace.label }}</label>
-        {{ form.damage_carapace }}
-        <label for="{{ form.damage_lff.id_for_label }}">{{ form.damage_lff.label }}</label>
-        {{ form.damage_lff }}
-        <label for="{{ form.damage_rff.id_for_label }}">{{ form.damage_rff.label }}</label>
-        {{ form.damage_rff }}
-        <label for="{{ form.damage_lhf.id_for_label }}">{{ form.damage_lhf.label }}</label>
-        {{ form.damage_lhf }}
-        <label for="{{ form.damage_rhf.id_for_label }}">{{ form.damage_rhf.label }}</label>
-        {{ form.damage_rhf }}
-        <label for="{{ form.damage_code_1.id_for_label }}">{{ form.damage_code_1.label }}</label>
-        {{ form.damage_code_1 }}
-        <label for="{{ form.body_part_1.id_for_label }}">{{ form.body_part_1.label }}</label>
-        {{ form.body_part_1 }}
-        <label for="{{ form.damage_code_2.id_for_label }}">{{ form.damage_code_2.label }}</label>
-        {{ form.damage_code_2 }}
-        <label for="{{ form.body_part_2.id_for_label }}">{{ form.body_part_2.label }}</label>
-        {{ form.body_part_2 }}
+      <div class="col-md-6">
+        {% bootstrap_field form.place_code %}
       </div>
-      <div class="form-group">
-        <h2>Activity</h2>
-        <label for="{{ form.activity_code.id_for_label }}">{{ form.activity_code.label }}</label>
-        {{ form.activity_code }}
-        <label for="{{ form.nesting.id_for_label }}">{{ form.nesting.label }}</label>
-        {{ form.nesting }}
+      <div class="col-md-6">
+        {% bootstrap_field form.latitude %}
       </div>
-      <div class="form-group">
-        <h2>Samples</h2>
-        <label for="{{ form.sample_label_1.id_for_label }}">{{ form.sample_label_1.label }}</label>
-        {{ form.sample_label_1 }}
-        <label for="{{ form.tissue_type_1.id_for_label }}">{{ form.tissue_type_1.label }}</label>
-        {{ form.tissue_type_1 }}
-        <label for="{{ form.sample_label_2.id_for_label }}">{{ form.sample_label_2.label }}</label>
-        {{ form.sample_label_2 }}
-        <label for="{{ form.tissue_type_2.id_for_label }}">{{ form.tissue_type_2.label }}</label>
-        {{ form.tissue_type_2 }}
+      <div class="col-md-6">
+        {% bootstrap_field form.longitude %}
       </div>
-     
-        
-    {% if form.errors %}
-        <div class="alert alert-danger">
-            <strong>There were some errors with your submission:</strong>
-            <ul>
-            {% for field in form %}
-                {% for error in field.errors %}
-                    <li><strong>{{ field.label }}:</strong> {{ error|escape }}</li>
-                {% endfor %}
-            {% endfor %}
-            {% for error in form.non_field_errors %}
-                <li><strong>Non-field error:</strong> {{ error|escape }}</li>
-            {% endfor %}
-            </ul>
+      <div class="col-md-6">
+        <div>
+            {% bootstrap_label form.recorded_by_id.label label_for="recorded_by_id" %}
         </div>
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="flex-grow-1">
+                {% bootstrap_field form.recorded_by_id show_label=False %}
+            </div>
+            <button type="button" class="btn-secondary" onClick="window.open('{% url 'admin:wamtram2_trtpersons_add' %}');">+</button>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div>
+            {% bootstrap_label form.entered_by_id.label label_for="entered_by_id" %}
+        </div>
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="flex-grow-1">
+                {% bootstrap_field form.entered_by_id show_label=False %}
+            </div>
+            <button type="button" class="btn-secondary" onClick="window.open('{% url 'admin:wamtram2_trtpersons_add' %}');">+</button>
+        </div>
+      </div>
+</div>
+
+<div class="row">
+  <h4>Recapture Tags</h4>
+</div>
+<div class="row g3">
+    <div class="col-md-6">
+        {% bootstrap_field form.recapture_left_tag_id %}
+      </div>
+      <div class="col-md-6">
+        {% bootstrap_field form.recapture_left_tag_id_2 %}
+      </div>
+      <div class="col-md-6">
+        {% bootstrap_field form.recapture_left_tag_id_3 %}
+      </div>
+      <div class="col-md-6">
+        {% bootstrap_field form.recapture_right_tag_id %}
+      </div>
+      <div class="col-md-6">
+        {% bootstrap_field form.recapture_right_tag_id_2 %}
+      </div>
+      <div class="col-md-6">
+        {% bootstrap_field form.recapture_right_tag_id_3 %}
+      </div>
+      <div class="col-md-6">
+        {% bootstrap_field form.recapture_pittag_id %}
+      </div>
+      <div class="col-md-6">
+        {% bootstrap_field form.recapture_pittag_id_2 %}
+      </div>
+</div>
+
+<div class="row"><h4>New Tags</h4></div>
+<div class="row g3">
+      <div class="col-md-6">
+        {% bootstrap_field form.new_left_tag_id %}
+      </div>
+      <div class="col-md-6">
+        {% bootstrap_field form.new_right_tag_id %}
+      </div>
+      <div class="col-md-6">
+        {% bootstrap_field form.new_left_tag_id_2 %}
+      </div>      
+      <div class="col-md-6">
+        {% bootstrap_field form.new_right_tag_id_2 %}
+      </div>
+      <div class="col-md-6">
+        {% bootstrap_field form.new_pittag_id %}
+      </div>
+      <div class="col-md-6">
+        {% bootstrap_field form.new_pittag_id_2 %}
+    </div>
+    <div class="col-md-6">
+      <div>
+          {% bootstrap_label form.tagged_by_id.label label_for="tagged_by_id" %}
+      </div>
+      <div class="d-flex justify-content-between align-items-center">
+          <div class="flex-grow-1">
+              {% bootstrap_field form.tagged_by_id show_label=False %}
+          </div>
+          <button type="button" class="btn-secondary" onClick="window.open('{% url 'admin:wamtram2_trtpersons_add' %}');">+</button>
+      </div>
+    </div>
+</div>
+
+<div class="row"> <h4>Tag scars</h4></div>
+<div class="row g3">
+    <div class="col-md-6">
+      {% bootstrap_field form.tagscarnotchecked %}
+    </div>
+    <div class="col-md-6"></div>
+    <div class="col-md-6">
+      {% bootstrap_field form.scars_left %}
+    </div>
+    <div class="col-md-6">
+      {% bootstrap_field form.scars_right %}
+    </div>
+    <div class="col-md-6">
+      {% bootstrap_field form.scars_left_scale_1 %}
+    </div>
+    <div class="col-md-6">
+      {% bootstrap_field form.scars_right_scale_1 %}
+    </div>
+    <div class="col-md-6">
+      {% bootstrap_field form.scars_left_scale_2 %}
+    </div>
+    <div class="col-md-6">
+      {% bootstrap_field form.scars_right_scale_2 %}
+    </div>
+    <div class="col-md-6">
+      {% bootstrap_field form.scars_left_scale_3 %}
+    </div>
+    <div class="col-md-6">
+      {% bootstrap_field form.scars_right_scale_3 %}
+    </div>
+
+
+
+</div>
+
+    <div class="row">
+    <h4>Measurements</h4>
+    </div>
+    <div class="row g3">
+      <div class="col-md-6">
+        <div>
+            {% bootstrap_label form.measured_by_id.label label_for="measured_by_id" %}
+        </div>
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="flex-grow-1">
+                {% bootstrap_field form.measured_by_id show_label=False %}
+            </div>
+            <button type="button" class="btn-secondary" onClick="window.open('{% url 'admin:wamtram2_trtpersons_add' %}');">+</button>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div>
+            {% bootstrap_label form.measured_recorded_by_id.label label_for="measured_recorded_by_id" %}
+        </div>
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="flex-grow-1">
+                {% bootstrap_field form.measured_recorded_by_id show_label=False %}
+            </div>
+            <button type="button" class="btn-secondary" onClick="window.open('{% url 'admin:wamtram2_trtpersons_add' %}');">+</button>
+        </div>
+      </div>
+      <div class="col-md-6">
+        {% bootstrap_field form.cc_length_not_measured %}
+      </div>
+      <div class="col-md-6">
+        {% bootstrap_field form.cc_width_not_measured %}
+      </div>
+      <div class="col-md-6">
+        {% bootstrap_field form.curved_carapace_length %}
+      </div>
+      
+      
+      <div class="col-md-6">
+        {% bootstrap_field form.curved_carapace_width %}
+      </div>
+      <div class="col-md-6">
+        {% bootstrap_field form.cc_notch_length_not_measured %}
+      </div>
+      <div class="col-md-6"></div>
+      <div class="col-md-6">
+        {% bootstrap_field form.measurement_value_1 %}
+      </div>
+      <div class="col-md-6">
+        {% bootstrap_field form.measurement_type_1 %}
+      </div>
+      <div class="col-md-6">
+        {% bootstrap_field form.measurement_value_2 %}
+      </div>
+      <div class="col-md-6">
+        {% bootstrap_field form.measurement_type_2 %}
+      </div>
+    </div>
+
+    <div class="row">
+        <h4>Injuries</h4>
+      </div>
+    <div class="row g3">
+      <div class="col-md-6">
+        {% bootstrap_field form.didnotcheckforinjury %}
+      </div>
+      <div class="col-md-6"></div>
+      <div class="col-md-6">
+        {% bootstrap_field form.alive %}
+      </div>
+      <div class="col-md-6">
+        {% bootstrap_field form.damage_carapace %}
+      </div>
+      <div class="col-md-6">
+        {% bootstrap_field form.damage_lff %}
+      </div>
+      <div class="col-md-6">
+        {% bootstrap_field form.damage_rff %}
+      </div>
+      <div class="col-md-6">
+        {% bootstrap_field form.damage_lhf %}
+      </div>
+      <div class="col-md-6">
+        {% bootstrap_field form.damage_rhf %}
+      </div>
+      <div class="col-md-6">
+        {% bootstrap_field form.damage_code_1 %}
+      </div>
+      <div class="col-md-6">
+        {% bootstrap_field form.body_part_1 %}
+      </div>
+      <div class="col-md-6">
+        {% bootstrap_field form.damage_code_2 %}
+      </div>
+      <div class="col-md-6">
+        {% bootstrap_field form.body_part_2 %}
+      </div>
+    </div>
+
+<div class="row">
+  <h4>Activity</h4>
+</div>
+    <div class="row g3">        
+      <div class="col-md-6">
+        {% bootstrap_field form.activity_code %}
+      </div>
+      <div class="col-md-6">
+        {% bootstrap_field form.nesting %}
+      </div>
+      <div class="row">
+        <h4>Samples</h4>
+      </div>
+    </div>  
+
+    <div class="row g3">
+      <div class="col-md-6">
+        {% bootstrap_field form.sample_label_1 %}
+      </div>
+      <div class="col-md-6">
+        {% bootstrap_field form.tissue_type_1 %}
+      </div>
+      <div class="col-md-6">
+        {% bootstrap_field form.sample_label_2 %}
+      </div>
+      <div class="col-md-6">
+        {% bootstrap_field form.tissue_type_2 %}
+      </div>
+    </div>
+        
+    {% bootstrap_form_errors form %}
+    {% if not form.observation_id.value %}
+    {% bootstrap_button "Save" button_type="submit" button_class="btn-primary" %}
     {% endif %}
-    <button type="submit" class="btn btn-primary">Save</button>
+
 </form>
 {% endblock %}
 
 {% block extra_js %}
+
 {{ form.media.js }}
 {% endblock %}

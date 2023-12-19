@@ -42,6 +42,14 @@
                     <td>{{ object.name|default_if_none:"" }}</td>
                 </tr>
                 <tr>
+                    <th>Status</th>
+                    <td>{{ object.turtle_status }}</td>
+                </tr>
+                <tr>
+                    <th>Cause of death</th>
+                    <td>{{ object.cause_of_death }}</td>
+                </tr>
+                <tr>
                     <th>Comments</th>
                     <td>{{ object.comments|default_if_none:"" }}</td>
                 </tr>
@@ -78,7 +86,7 @@
                 {% endfor %}
                 {% for tag in pittags %}
                 <tr>
-                    <td>Pit</td>
+                    <td>PIT</td>
                     <td>{{ tag.pittag_id }}</td>
                     <td></td>
                     <td>{{ tag.comments|default_if_none:"" }}</td>
