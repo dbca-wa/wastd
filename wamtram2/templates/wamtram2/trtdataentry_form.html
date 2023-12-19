@@ -53,9 +53,11 @@
 <div class="row g3">
       <div class="col-md-6">
       <h5>Entry Batch ID: {{ form.entry_batch.value }}</h5>
+      {% bootstrap_field form.entry_batch %}
       </div>
       <div class="col-md-6">
       <h5>Turtle ID: {{ form.turtle_id.value }}</h5>
+      {% bootstrap_field form.turtle_id %}
       </div>
 </div>
 <div class="row g3">

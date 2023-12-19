@@ -1,11 +1,10 @@
 from django import forms
-from django.forms import DateInput, DateTimeInput
+from django.forms import  DateTimeInput
 from easy_select2 import apply_select2
 from .models import TrtPersons,TrtDataEntry,TrtTags, TrtEntryBatches
 from django_select2.forms import ModelSelect2Widget
 from .models import TrtTags, TrtPitTags
-from django.core.exceptions import ValidationError
-from datetime import datetime
+
 
 
 tagWidget =  ModelSelect2Widget(
@@ -143,6 +142,8 @@ class TrtDataEntryForm(forms.ModelForm):
 
 
         widgets = {
+            'turtle_id': forms.HiddenInput(),
+            'entry_batch': forms.HiddenInput(),
             'observation_date': DateTimeInput(attrs={'type': 'datetime-local'}),
             "new_left_tag_id": unAssignedTagWidget,
             "new_left_tag_id_2": unAssignedTagWidget,
@@ -170,8 +171,6 @@ class TrtDataEntryForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.batch_id = kwargs.pop('batch_id', None)
         super().__init__(*args, **kwargs)
-        self.fields['entry_batch'].disabled = True
-        self.fields['turtle_id'].disabled = True
         self.fields['observation_date'].required = True
         self.fields['recapture_pittag_id'].label = "Recapture Left PIT Tag"
         self.fields['recapture_pittag_id_2'].label = "Recapture Right PIT Tag"
@@ -188,6 +187,7 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields['new_right_tag_id'].label = "New Right Tag"
         self.fields['new_right_tag_id_2'].label = "New Right Tag 2"
         self.fields['tagscarnotchecked'].label = "Didn't check for tag scars"
+        self.fields['didnotcheckforinjury'].label = "Didn't check for injury"
         
 
         # Disable all fields if there is an observation_id as it already in the database
@@ -215,7 +215,7 @@ class TrtDataEntryForm(forms.ModelForm):
         if instance.measured_recorded_by_id:
             person = TrtPersons.objects.get(person_id=instance.measured_recorded_by_id.person_id)
             instance.measured_recorded_by = "{} {}".format(person.first_name,person.surname)
-        
+
 
         # Set the observation_time to the same value as the observation_date
         instance.observation_time = instance.observation_date
