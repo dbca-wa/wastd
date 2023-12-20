@@ -122,6 +122,8 @@
                 <th>ID</th>
                 <th>Date Entered</th>
                 <th>Turtle ID</th>
+                <th>Recapture Tags</th>
+                <th>New Tags</th>
                 <th>Error Message</th>
                 <th>Enterer</th>
                 <th>comments</th>
@@ -133,6 +135,22 @@
                 <td><a href="{% url 'wamtram2:trtdataentry' obj.data_entry_id %}">{{ obj.data_entry_id }}</a></td>
                 <td>{{ obj.entry_date|date:"j M Y" }}</td>
                 <td>{% if obj.turtle_id %}<a href="{% url 'wamtram2:turtle_detail' obj.turtle_id %}">{{obj.turtle_id}}</a>{% endif %}</td>
+                <td>{% if obj.recapture_left_tag_id %}{{ obj.recapture_left_tag_id }} {% endif %}
+                    {% if obj.recapture_left_tag_id_2 %}{{ obj.recapture_left_tag_id_2 }} {% endif %}
+                    {% if obj.recapture_left_tag_id_3 %}{{ obj.recapture_left_tag_id_3 }} {% endif %}
+                    {% if obj.recapture_right_tag_id %}{{ obj.recapture_right_tag_id }} {% endif %}
+                    {% if obj.recapture_right_tag_id_2 %}{{ obj.recapture_right_tag_id_2 }} {% endif %}
+                    {% if obj.recapture_right_tag_id_3 %}{{ obj.recapture_right_tag_id_3 }} {% endif %}
+                    {% if obj.recapture_pittag_id %}{{ obj.recapture_pittag_id }} {% endif %}
+                    {% if obj.recapture_pittag_id_2 %}{{ obj.recapture_pittag_id_2 }} {% endif %}
+                </td>
+                <td>{% if obj.new_left_tag_id %}{{ obj.new_left_tag_id }} {% endif %}
+                    {% if obj.new_left_tag_id_2 %}{{ obj.new_left_tag_id_2 }} {% endif %}
+                    {% if obj.new_right_tag_id %}{{ obj.new_right_tag_id }} {% endif %}
+                    {% if obj.new_right_tag_id_2 %}{{ obj.new_right_tag_id_2 }} {% endif %}
+                    {% if obj.new_pittag_id %}{{ obj.new_pittag_id }} {% endif %}
+                    {% if obj.new_pittag_id_2 %}{{ obj.new_pittag_id_2 }} {% endif %}
+                </td> 
                 <td>{{ obj.error_message }}</td>
                 <td>
                     {% with persons|get:obj.user_entry_id as person %}
