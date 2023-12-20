@@ -4,6 +4,7 @@ from easy_select2 import apply_select2
 from .models import TrtPersons,TrtDataEntry,TrtTags, TrtEntryBatches
 from django_select2.forms import ModelSelect2Widget
 from .models import TrtTags, TrtPitTags
+from django.core.exceptions import ValidationError
 
 
 
@@ -172,6 +173,7 @@ class TrtDataEntryForm(forms.ModelForm):
         self.batch_id = kwargs.pop('batch_id', None)
         super().__init__(*args, **kwargs)
         self.fields['observation_date'].required = True
+        self.fields['activity_code'].required = True
         self.fields['recapture_pittag_id'].label = "Recapture Left PIT Tag"
         self.fields['recapture_pittag_id_2'].label = "Recapture Right PIT Tag"
         self.fields['new_pittag_id'].label = "New Left PIT Tag"
@@ -188,6 +190,8 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields['new_right_tag_id_2'].label = "New Right Tag 2"
         self.fields['tagscarnotchecked'].label = "Didn't check for tag scars"
         self.fields['didnotcheckforinjury'].label = "Didn't check for injury"
+        self.fields['cc_length_not_measured'].label = "CCL not measured"
+        self.fields['cc_width_not_measured'].label = "CCW not measured"
         
 
         # Disable all fields if there is an observation_id as it already in the database
@@ -225,6 +229,42 @@ class TrtDataEntryForm(forms.ModelForm):
             instance.save()
 
         return instance
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        fields_to_check = [
+            'tagscarnotchecked',
+            'scars_left',
+            'scars_right',
+            'scars_left_scale_1',
+            'scars_right_scale_1',
+            'scars_left_scale_2',
+            'scars_right_scale_2',
+            'scars_left_scale_3',
+            'scars_right_scale_3',
+        ]
+
+        if not any(cleaned_data.get(field) for field in fields_to_check):
+            raise ValidationError("At least one of the tag scar fields must be selected.")
+        
+        fields_to_check = [
+            'cc_length_not_measured',
+            'curved_carapace_length',
+        ]
+        
+        if not any(cleaned_data.get(field) for field in fields_to_check):
+            raise ValidationError("Did you measure CCL?")
+        
+        fields_to_check = [
+            'cc_width_not_measured',
+            'curved_carapace_width',
+        ]
+        
+        if not any(cleaned_data.get(field) for field in fields_to_check):
+            raise ValidationError("Did you measure CCW?")
+
+        return cleaned_data
 
 
 class DataEntryUserModelForm(forms.ModelForm):

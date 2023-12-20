@@ -39,6 +39,7 @@
 <form action="{% url 'wamtram2:newtrtdataentry' batch_id %}" method="post"  class="container">
 {% endif %}
 {% csrf_token %}
+{% bootstrap_form_errors form %}
 {% if form.observation_id.value %}
 <div class="row">
 <h4>Observation has aleady been submitted: <a href="{% url 'wamtram2:observationdetail' pk=form.observation_id.value %}">view observation</a></h4> 
@@ -329,7 +330,7 @@
       </div>
     </div>
         
-    {% bootstrap_form_errors form %}
+    
     {% if not form.observation_id.value %}
     {% bootstrap_button "Save" button_type="submit" button_class="btn-primary" %}
     {% endif %}
