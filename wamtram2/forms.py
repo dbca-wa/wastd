@@ -174,6 +174,8 @@ class TrtDataEntryForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['observation_date'].required = True
         self.fields['activity_code'].required = True
+        self.fields['alive'].required = True
+        self.fields['nesting'].required = True
         self.fields['recapture_pittag_id'].label = "Recapture Left PIT Tag"
         self.fields['recapture_pittag_id_2'].label = "Recapture Right PIT Tag"
         self.fields['new_pittag_id'].label = "New Left PIT Tag"
@@ -263,6 +265,23 @@ class TrtDataEntryForm(forms.ModelForm):
         
         if not any(cleaned_data.get(field) for field in fields_to_check):
             raise ValidationError("Did you measure CCW?")
+        
+        fields_to_check = [
+                'didnotcheckforinjury',
+                'damage_carapace',
+                'damage_lff',
+                'damage_rff',
+                'damage_lhf',  
+                'damage_rhf',
+                'body_part_1',
+                'damage_code_1',
+                'body_part_2',
+                'damage_code_2',
+        ]
+        
+        if not any(cleaned_data.get(field) for field in fields_to_check):
+            raise ValidationError("At least one of the injury fields must be selected.")
+        
 
         return cleaned_data
 
