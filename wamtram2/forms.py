@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import  DateTimeInput
 from easy_select2 import apply_select2
-from .models import TrtPersons,TrtDataEntry,TrtTags, TrtEntryBatches
+from .models import TrtPersons,TrtDataEntry,TrtTags, TrtEntryBatches,TrtPlaces
 from django_select2.forms import ModelSelect2Widget
 from .models import TrtTags, TrtPitTags
 from django.core.exceptions import ValidationError
@@ -40,6 +40,13 @@ personWidget =  ModelSelect2Widget(
     queryset = TrtPersons.objects.all() ,
     model = TrtPersons,
     search_fields = [ "first_name__icontains","surname__icontains" ]
+    
+)
+
+placeWidget =  ModelSelect2Widget(
+    queryset = TrtPlaces.objects.all() ,
+    model = TrtPlaces,
+    search_fields = [ "place_name__icontains","location_code__location_name__icontains" ]
     
 )
 
@@ -166,6 +173,7 @@ class TrtDataEntryForm(forms.ModelForm):
             "tagged_by_id": personWidget,
             "entered_by_id": personWidget,
             "measured_recorded_by_id": personWidget,
+            "place_code": placeWidget,
         }
   
 
@@ -176,6 +184,7 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields['activity_code'].required = True
         self.fields['alive'].required = True
         self.fields['nesting'].required = True
+        self.fields['nesting'].label = "Did nesting complete?"
         self.fields['species_code'].required = True 
         self.fields['place_code'].required = True 
         self.fields['sex'].required = True 

@@ -57,7 +57,7 @@
       {% bootstrap_field form.entry_batch %}
       </div>
       <div class="col-md-6">
-      <h5>Turtle ID: {{ form.turtle_id.value }}</h5>
+      <h5>Turtle ID: {% if form.turtle_id.value %} <a href="{% url 'wamtram2:turtle_detail' form.turtle_id.value %}">{{ form.turtle_id.value }}</a> {% endif %} </h5>
       {% bootstrap_field form.turtle_id %}
       </div>
 </div>

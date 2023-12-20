@@ -610,7 +610,7 @@ class TrtPitTagStatus(models.Model):
 class TrtPlaces(models.Model):
     place_code = models.CharField(db_column='PLACE_CODE', primary_key=True, max_length=4)  # Field name made lowercase.
     place_name = models.CharField(db_column='PLACE_NAME', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    location_code = models.CharField(db_column='LOCATION_CODE', max_length=2)  # Field name made lowercase.
+    location_code = models.ForeignKey('TrtLocations',models.DO_NOTHING, db_column='LOCATION_CODE') #fake foreign key #models.CharField(db_column='LOCATION_CODE', max_length=2)  # Field name made lowercase.
     rookery = models.CharField(db_column='ROOKERY', max_length=1, blank=True, null=True)  # Field name made lowercase.
     beach_approach = models.CharField(db_column='BEACH_APPROACH', max_length=50, blank=True, null=True)  # Field name made lowercase.
     aspect = models.CharField(db_column='ASPECT', max_length=3, blank=True, null=True)  # Field name made lowercase.
@@ -624,7 +624,7 @@ class TrtPlaces(models.Model):
         db_table = 'TRT_PLACES'
         ordering = ['place_name']
     def __str__(self):
-        return f"{self.place_name}"
+        return f"{self.location_code} - {self.place_name}"
 
 class TrtRecordedIdentification(models.Model):
     recorded_identification_id = models.AutoField(db_column='RECORDED_IDENTIFICATION_ID', primary_key=True)  # Field name made lowercase.

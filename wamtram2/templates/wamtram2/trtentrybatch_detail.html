@@ -121,6 +121,7 @@
             <tr>
                 <th>ID</th>
                 <th>Date Entered</th>
+                <th>Observation date</th>
                 <th>Turtle ID</th>
                 <th>Recapture Tags</th>
                 <th>New Tags</th>
@@ -134,6 +135,7 @@
             <tr>
                 <td><a href="{% url 'wamtram2:trtdataentry' obj.data_entry_id %}">{{ obj.data_entry_id }}</a></td>
                 <td>{{ obj.entry_date|date:"j M Y" }}</td>
+                <td>{{ obj.observation_date|date:"j M Y H:i" }}</td>
                 <td>{% if obj.turtle_id %}<a href="{% url 'wamtram2:turtle_detail' obj.turtle_id %}">{{obj.turtle_id}}</a>{% endif %}</td>
                 <td>{% if obj.recapture_left_tag_id %}{{ obj.recapture_left_tag_id }} {% endif %}
                     {% if obj.recapture_left_tag_id_2 %}{{ obj.recapture_left_tag_id_2 }} {% endif %}
