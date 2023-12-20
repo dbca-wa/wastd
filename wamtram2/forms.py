@@ -176,6 +176,9 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields['activity_code'].required = True
         self.fields['alive'].required = True
         self.fields['nesting'].required = True
+        self.fields['species_code'].required = True 
+        self.fields['place_code'].required = True 
+        self.fields['sex'].required = True 
         self.fields['recapture_pittag_id'].label = "Recapture Left PIT Tag"
         self.fields['recapture_pittag_id_2'].label = "Recapture Right PIT Tag"
         self.fields['new_pittag_id'].label = "New Left PIT Tag"
