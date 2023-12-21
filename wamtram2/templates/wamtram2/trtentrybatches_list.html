@@ -58,7 +58,18 @@
     </div>
 </div>
 {% endblock pagination_row %}
-<a href="{% url 'wamtram2:new_batch_detail' %}" class="btn btn-primary">Create a new entry batch</a>
+<div class="d-flex justify-content-between align-items-center">
+    <a href="{% url 'wamtram2:new_batch_detail' %}" class="btn btn-primary">Create a new entry batch</a> 
+    <form method="get" class="form-inline">
+        <div class="form-group">
+            <label class="mr-1" for="filter">Filter</label>
+            <select name="filter" class="form-control" onchange="this.form.submit()">
+                <option value="">All</option>
+                <option value="no_observation_id" {% if request.GET.filter == "no_observation_id" %}selected{% endif %}>Has unprocessed observations</option>
+            </select>
+        </div>
+    </form>
+</div>
 {% if object_list %}
 <div class="row mt-3">
   <div class="col">
@@ -74,7 +85,7 @@
         <tbody>
             {% for obj in object_list %}
             <tr>
-                <td><a href="{% url 'wamtram2:entry_batch_detail' obj.pk %}">{{ obj.pk }}</a></td>
+                <td>{% if request.GET.filter == "no_observation_id" %}<a href="{% url 'wamtram2:entry_batch_detail' obj.pk %}?filter=no_observation_id">{% else %}<a href="{% url 'wamtram2:entry_batch_detail' obj.pk %}">{% endif %}{{ obj.pk }}</a></td>
                 <td>{{ obj.entry_date|date:"j M Y" }}</td>
                 <td>
                     {{ obj.entered_person_id }}           

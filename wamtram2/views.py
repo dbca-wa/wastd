@@ -17,7 +17,7 @@ from django.db import connections
 from django.views.generic import ListView
 from django.contrib import messages
 from django.db import DatabaseError
-from django.db.models import Q
+from django.db.models import Q , Exists, OuterRef
 
 from django.views.generic import TemplateView
 
@@ -60,6 +60,15 @@ class EntryBatchesListView(LoginRequiredMixin,ListView):
             QuerySet: The queryset of objects.
         """
         queryset = super().get_queryset()
+
+        # Check if the user has requested to filter by TrtEntryBatches that have TrtDataEntrys with no observation_id
+        if 'filter' in self.request.GET and self.request.GET['filter'] == 'no_observation_id':
+            # Subquery that checks if a TrtDataEntry with no observation_id exists for a TrtEntryBatch
+            has_dataentry_no_observation_id = Exists(TrtDataEntry.objects.filter(entry_batch_id=OuterRef('pk'), observation_id__isnull=True))
+
+            # Filter the queryset
+            queryset = queryset.filter(has_dataentry_no_observation_id)
+
         return queryset.order_by('-entry_batch_id')
     
     def get_context_data(self, **kwargs):
@@ -115,6 +124,8 @@ class EntryBatchDetailView(LoginRequiredMixin,FormMixin,generic.ListView):
             self.kwargs['batch_id'] = new_batch.entry_batch_id
         return super().get(request, *args, **kwargs)
         
+
+
     def get_queryset(self):
         """
         Returns the queryset of TrtDataEntry objects filtered by entry_batch_id.
@@ -125,7 +136,15 @@ class EntryBatchDetailView(LoginRequiredMixin,FormMixin,generic.ListView):
         """
         queryset = super().get_queryset()
         batch_id = self.kwargs.get('batch_id')
-        return queryset.filter(entry_batch_id=batch_id).order_by('-data_entry_id')
+
+        # Check if the user has requested to filter by TrtDataEntrys with no observation_id
+        if 'filter' in self.request.GET and self.request.GET['filter'] == 'no_observation_id':
+            # Filter the queryset
+            queryset = queryset.filter(entry_batch_id=batch_id, observation_id__isnull=True)
+        else:
+            queryset = queryset.filter(entry_batch_id=batch_id)
+
+        return queryset.order_by('-data_entry_id')
 
     def get_context_data(self, **kwargs):
         """

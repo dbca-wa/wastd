@@ -225,6 +225,7 @@ class TrtDataEntry(models.Model):
         managed = False
         db_table = 'TRT_DATA_ENTRY'
         unique_together = (('entry_batch', 'user_entry_id'),)
+        ordering = ['-data_entry_id']
         
 
     def __str__(self):

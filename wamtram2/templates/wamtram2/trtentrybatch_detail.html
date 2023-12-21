@@ -110,6 +110,17 @@
     <a href="{% url 'wamtram2:process_data_entry_batch' batch_id=batch.entry_batch_id %}" class="btn btn-primary" onclick="return confirm('Are you sure you want to add this batch?\nOnce the observations are added you will not be able to edit them.\nObservations that have already been added will not be processed.');">3. Add this batch to the database</a>
     {% endif %}
     </div>
+    <div class="col">
+    <form method="get" class="form-inline float-right">
+        <div class="form-group">
+            <label class="mr-1" for="filter">Filter</label>
+            <select name="filter" class="form-control" onchange="this.form.submit()">
+                <option value="">All</option>
+                <option value="no_observation_id" {% if request.GET.filter == "no_observation_id" %}selected{% endif %}>Unprocessed observations</option>
+            </select>
+        </div>
+    </form>
+    </div>
 </div>
 
 
