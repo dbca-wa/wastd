@@ -45,6 +45,7 @@ class AdminDashboard(Dashboard):
                         "Turtle management",
                         models=(
                             "wamtram2.models.TrtTurtles",
+                            "wamtram2.models.TrtObservations",
                             "wamtram2.models.TrtPersons",
                         ),
                     ),

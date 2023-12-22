@@ -70,9 +70,10 @@ class TrtTurtlesAdmin(ImportExportModelAdmin,nested_admin.NestedModelAdmin):
 @admin.register(TrtObservations)
 class TrtObservationsAdmin(nested_admin.NestedModelAdmin):
     autocomplete_fields= ['turtle']
-    list_display = ('observation_id','turtle','observation_date')
+    list_display = ('observation_id','turtle','observation_date','entry_batch')
     date_hierarchy = "observation_date"
     list_filter = ['turtle__species_code','place_code']
+    search_fields = ['observation_id','entry_batch__entry_batch_id']
     inlines = [TrtMeasurementsInline,TrtDamageInline]
     
     
