@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1
 # Prepare the base environment.
 FROM python:3.10.12-slim-bullseye as builder_base_wastd
 # NOTE: we're constrained to using the version(s) of Debian which the Microsoft ODBC driver supports.
@@ -24,10 +25,10 @@ RUN curl -s https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
 FROM builder_base_wastd as python_libs_wastd
 WORKDIR /app
 ENV POETRY_VERSION=1.7.1
-RUN pip install --upgrade pip && pip install "poetry==$POETRY_VERSION"
-COPY poetry.lock pyproject.toml /app/
+RUN pip install poetry=="${POETRY_VERSION}"
+COPY poetry.lock pyproject.toml ./
 RUN poetry config virtualenvs.create false \
-  && poetry install --no-interaction --no-ansi --without dev
+  && poetry install --no-interaction --no-ansi --only main
 
 # Install the project.
 FROM python_libs_wastd
@@ -37,6 +38,7 @@ COPY users ./users
 COPY wastd ./wastd
 COPY wamtram ./wamtram
 COPY turtle_tags ./turtle_tags
+COPY marine_mammal_incidents ./marine_mammal_incidents
 RUN python manage.py collectstatic --noinput
 
 # Run the application as the www-data user.

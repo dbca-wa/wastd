@@ -16,7 +16,7 @@
                 <a class="dropdown-item" href="{% url 'observations:turtlenestencounter-list' %}?encounter_type=tracks&nest_type=false-crawl"
                     title="Browse tracks without nests">
                     <i class="fa-solid fa-table" aria-hidden="true"></i>
-                    Tracks without nests
+                    Tracks without nests (false crawl)
                 </a>
                 <a class="dropdown-item" href="{% url 'observations:turtlenestencounter-list' %}?encounter_type=nest&disturbance=present"
                     title="Browse disturbed or predated nests">
@@ -76,6 +76,12 @@
                     title="Review records with no site">
                     <i class="fa-solid fa-table" aria-hidden="true"></i>
                     Track/nest encounters with no site
+                </a>
+                <a class="dropdown-item"
+                    href="{% url 'observations:turtlenestencounter-list' %}?survey=null"
+                    title="No Survey">
+                    <i class="fa-solid fa-table" aria-hidden="true"></i>
+                    Track/nest encounters with no survey
                 </a>
             </div>
         </li>

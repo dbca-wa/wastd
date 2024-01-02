@@ -191,6 +191,13 @@ class TurtleNestEncounterFilter(FilterSet):
         label="Observed by",
         queryset=User.objects.filter(is_active=True).order_by("name"),
     )
+    survey = ChoiceFilter(
+        field_name="survey",
+        choices=(
+          ("null","<No survey>"),
+        ),
+        label="Survey",
+    )
     encounter_type = ChoiceFilter(
         field_name="encounter_type",
         choices=(
@@ -203,7 +210,7 @@ class TurtleNestEncounterFilter(FilterSet):
         field_name="nest_type",
         choices=(
             ("successful-crawl", "Track with nest"),
-            ("false-crawl", "Track without nest"),
+            ("false-crawl", "Track without nest (false crawl)"),
             ("track-not-assessed", "Track, not checked for nest"),
             ("nest", "Nest, unhatched, no track"),
             ("hatched-nest", "Nest, hatched"),

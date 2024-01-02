@@ -36,7 +36,6 @@ else:
     AZURE_URL_EXPIRATION_SECS = os.environ.get('AZURE_URL_EXPIRATION_SECS', 3600)  # Default one hour.
 
 
-
 # Application settings
 INSTALLED_APPS = [
     "whitenoise.runserver_nostatic",
@@ -55,6 +54,7 @@ INSTALLED_APPS = [
     "django_fsm_log",
     "fsm_admin",
     "reversion",
+    'mapwidgets',
     "leaflet",
     "phonenumber_field",
     "crispy_forms",
@@ -73,8 +73,8 @@ INSTALLED_APPS = [
     "users",
     "observations",
     "wamtram",  # Legacy WAMTRAM database
-    #"tagging",  # Temporary turtle tagging data
     "turtle_tags",
+    "marine_mammal_incidents"
 ]
 MIDDLEWARE = [
     "wastd.middleware.HealthCheckMiddleware",
@@ -109,7 +109,7 @@ if DEBUG:
         "django.middleware.clickjacking.XFrameOptionsMiddleware",
         "reversion.middleware.RevisionMiddleware",
         "dbca_utils.middleware.SSOLoginMiddleware",
-        
+
     ]
 
     DEBUG_TOOLBAR_PANELS = [
@@ -170,6 +170,23 @@ TEMPLATES = [
     },
 ]
 
+MAP_WIDGETS = {
+    "MapboxPointFieldWidget": {
+        "access_token": os.environ.get("MAPBOX_TOKEN", ""),
+        "markerFitZoom": 12,
+        "mapOptions": {
+            "animate": True,
+            "zoom": 10,
+            "center": (-31.996226, 115.883947),
+            "scrollZoom": True,
+        },
+        "geocoderOptions": {
+            "zoom": 7,
+            "countries": "au"
+        }
+    }
+}
+
 #REST_FRAMEWORK = {
 #    'DEFAULT_PERMISSION_CLASSES': [
 #        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
@@ -178,7 +195,7 @@ TEMPLATES = [
 #        'rest_framework.renderers.JSONRenderer',
 #    ]
 #}
-
+IMPORT_EXPORT_SKIP_ADMIN_CONFIRM = True
 
 # Use the customised User model
 AUTH_USER_MODEL = "users.User"
@@ -198,7 +215,7 @@ LOGIN_REDIRECT_URL = '/'
 SITE_NAME = os.environ.get("SITE_NAME", "Turtles Database")
 SITE_TITLE = os.environ.get("SITE_TITLE", "Turtles Database")
 SITE_CODE = os.environ.get("SITE_CODE", "Turtles")
-VERSION_NO = "1.0.7"
+VERSION_NO = "1.0.8"
 
 
 # Database configuration
@@ -251,8 +268,11 @@ UTC = ZoneInfo("UTC")
 EMAIL_HOST = os.environ.get("EMAIL_HOST", "email.host")
 EMAIL_PORT = os.environ.get("EMAIL_PORT", 25)
 DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "noreply@dbca.wa.gov.au")
+SERVER_EMAIL = DEFAULT_FROM_EMAIL
 EMAIL_SUBJECT_PREFIX = os.environ.get("EMAIL_SUBJECT_PREFIX", "[Turtles DB] ")
 ADMIN_EMAILS = os.environ.get("ADMIN_EMAILS", "").split(",")
+if not DEBUG:
+    ADMINS = [("Admin",os.environ.get("ADMIN_EMAILS", ""))]
 
 
 # Static files (CSS, JavaScript, Images)
@@ -281,6 +301,11 @@ LOGGING = {
             "stream": sys.stdout,
             "level": "WARNING",
         },
+        "mail_admins": {
+            "level": "ERROR",
+            "class": "django.utils.log.AdminEmailHandler",
+            "formatter": "verbose",
+        },
         "turtles": {
             "class": "logging.StreamHandler",
             "formatter": "verbose",
@@ -290,7 +315,7 @@ LOGGING = {
     },
     "loggers": {
         "django": {
-            "handlers": ["console"],
+            "handlers": ["console","mail_admins"],
             "level": "ERROR",
         },
         "turtles": {
