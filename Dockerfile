@@ -23,7 +23,7 @@ RUN curl -s https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
 # Install Python libs using Poetry.
 FROM builder_base_wastd as python_libs_wastd
 WORKDIR /app
-ENV POETRY_VERSION=1.5.1
+ENV POETRY_VERSION=1.7.1
 RUN pip install --upgrade pip && pip install "poetry==$POETRY_VERSION"
 COPY poetry.lock pyproject.toml /app/
 RUN poetry config virtualenvs.create false \
