@@ -25,7 +25,7 @@
                     <td><a href="{% url 'wamtram2:turtle_detail' observation.turtle.pk %}">{{ observation.turtle.pk }}</a></td>
                 <tr>
                     <th>Date observed</th>
-                    <td>{{ object.observation_date|date:"j M Y" }}</td>
+                    <td>{{ object.observation_date|date:"j M Y" }} {{ object.observation_time|date:"H:m" }} </td>
                 </tr>
                 <tr>
                     <th>Entered by</th>
@@ -43,6 +43,76 @@
                     <th>Loacation</th>
                     <td>{{ object.place_code|default_if_none:"" }}</td>
                 </tr>
+                <tr>
+                    <th>Alive</th>
+                    <td>{{ object.alive }}</td>
+                </tr>
+                <tr>
+                    <th>Activity</th>
+                    <td>{{ object.activity_code }}</td>
+                </tr>
+                
+                <tr>
+                    <th>Measurer Person</th>
+                    <td>{{ object.measurer_person|default_if_none:"" }}</td>
+                </tr>
+                <tr>
+                    <th>Measurer Reporter Person</th>
+                    <td>{{ object.measurer_reporter_person|default_if_none:"" }}</td>
+                </tr>
+                <tr>
+                    <th>Tagger Person</th>
+                    <td>{{ object.tagger_person|default_if_none:"" }}</td>
+                </tr>
+                <tr>
+                    <th>Reporter Person</th>
+                    <td>{{ object.reporter_person|default_if_none:"" }}</td>
+                </tr>
+                <tr>
+                    <th>Place Code</th>
+                    <td>{{ object.place_code|default_if_none:"" }}</td>
+                </tr>
+                <tr>
+                    <th>Latitude</th>
+                    <td>{{ object.latitude|default_if_none:"" }}</td>
+                </tr>
+                <tr>
+                    <th>Longitude</th>
+                    <td>{{ object.longitude|default_if_none:"" }}</td>
+                </tr>
+                <tr>
+                    <th>Scars Left</th>
+                    <td>{{ object.scars_left|default_if_none:"" }}</td>
+                </tr>
+                <tr>
+                    <th>Scars Right</th>
+                    <td>{{ object.scars_right|default_if_none:"" }}</td>
+                </tr>
+                <tr>
+                    <th>Scars Left Scale 1</th>
+                    <td>{{ object.scars_left_scale_1|default_if_none:"" }}</td>
+                </tr>
+                <tr>
+                    <th>Scars Left Scale 2</th>
+                    <td>{{ object.scars_left_scale_2|default_if_none:"" }}</td>
+                </tr>
+                <tr>
+                    <th>Scars Left Scale 3</th>
+                    <td>{{ object.scars_left_scale_3|default_if_none:"" }}</td>
+                </tr>
+                <tr>
+                    <th>Scars Right Scale 1</th>
+                    <td>{{ object.scars_right_scale_1|default_if_none:"" }}</td>
+                </tr>
+                <tr>
+                    <th>Scars Right Scale 2</th>
+                    <td>{{ object.scars_right_scale_2|default_if_none:"" }}</td>
+                </tr>
+                <tr>
+                    <th>Scars Right Scale 3</th>
+                    <td>{{ object.scars_right_scale_3|default_if_none:"" }}</td>
+                </tr>
+  
                 <tr>
                     <th>Comments</th>
                     <td>{{ object.comments|default_if_none:"" }}</td>
@@ -84,6 +154,38 @@
                     <td>{{ tag.pittag_id }}</td>
                     <td></td>
                     <td>{{ tag.comments|default_if_none:"" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% else %}
+<p>None recorded</p>
+{% endif %}
+
+<div class="row">
+    <div class="col">
+        <h3>Measurements</h3>
+    </div>
+</div>
+{% if measurements %}
+<div class="row">
+    <div class="col">
+        <table class="table table-striped table-bordered table-sm">
+            <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Value</th>
+                    <th>Comments</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for measurement in measurements %}
+                <tr>
+                    <td>{{ measurement.measurement_type }}</td>
+                    <td>{{ measurement.measurement_value }}</td>
+                    <td>{{ measurement.comments }}</td>
                 </tr>
                 {% endfor %}
             </tbody>

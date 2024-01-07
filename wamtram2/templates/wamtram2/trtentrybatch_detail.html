@@ -1,15 +1,13 @@
 {% extends "base_wastd.html" %}
+{% load static bootstrap4 %}
+{% bootstrap_css %}
 {% load static dict_filter %}
 {% block extra_style %}
 {{ block.super }}
 {{ form.media.css }}
 <style>
-  input, select {width: 200px}
-  .center-form {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
+  .select2 {
+    width: 100% !important;
   }
   </style>
   {% endblock %}
@@ -76,20 +74,34 @@
     </div>
 </div>
 {% endblock pagination_row %}
-<div class="row mt-3">
-    <div class="col">
-    <form action="{% url 'wamtram2:entry_batch_detail' batch_id=batch.entry_batch_id %}" method="post">
+
+    <form action="{% url 'wamtram2:entry_batch_detail' batch_id=batch.entry_batch_id %}" method="post" class="row g3">
         {% csrf_token %}
-        <label for="{{ form.entered_person_id.id_for_label }}">{{ form.entered_person_id.label }}</label>
-        {{ form.entered_person_id }}
-        <label for="{{ form.comments.id_for_label }}">{{ form.comments.label }}</label>
-        {{ form.comments }}
-        <button class="btn btn-primary" type="submit">Save</button>
+        <div class="col-md-6">
+            <div>
+                {% bootstrap_label form.entered_person_id.label label_for="entered_person_id" %}
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="flex-grow-1">
+                    {% bootstrap_field form.entered_person_id show_label=False %}
+                </div>
+                <button type="button" class="btn-secondary" onClick="window.open('{% url 'admin:wamtram2_trtpersons_add' %}');">+</button>
+            </div>
+          </div>
+        <div class="col-md-6">
+        {% bootstrap_field form.comments %}
+        </div>
+        <div class="col-md-6">
+        {% bootstrap_button "Save batch details" button_type="submit" button_class="btn-primary" %}
+        </div>
+        <div class="col-md-6">
+            <a href="{% url 'wamtram2:delete_batch' batch_id=batch.entry_batch_id %}" class="btn btn-danger float-right" onclick="return confirm('Are you sure you want to delete this batch?\nThis will not delete observations that have already been added to the database.');">Delete Batch</a>
+        </div> 
     </form>
     {{ form.media.js }}
-</div>
-<a href="{% url 'wamtram2:delete_batch' batch_id=batch.entry_batch_id %}" class="btn btn-danger float-right" onclick="return confirm('Are you sure you want to delete this batch?\nThis will not delete observations that have already been added to the database.');">Delete Batch</a>
-</div>
+        
+       
+
 <div class="row mt-3">
     <div class="col">
     <a href="{% url 'wamtram2:find_turtle' batch_id=batch.entry_batch_id %}" class="btn btn-primary">1. Create a new entry</a> ->
@@ -97,6 +109,17 @@
     <a href="{% url 'wamtram2:validate_data_entry_batch' batch_id=batch.entry_batch_id %}" class="btn btn-primary">2. Validate this Batch</a> ->
     <a href="{% url 'wamtram2:process_data_entry_batch' batch_id=batch.entry_batch_id %}" class="btn btn-primary" onclick="return confirm('Are you sure you want to add this batch?\nOnce the observations are added you will not be able to edit them.\nObservations that have already been added will not be processed.');">3. Add this batch to the database</a>
     {% endif %}
+    </div>
+    <div class="col">
+    <form method="get" class="form-inline float-right">
+        <div class="form-group">
+            <label class="mr-1" for="filter">Filter</label>
+            <select name="filter" class="form-control" onchange="this.form.submit()">
+                <option value="">All</option>
+                <option value="no_observation_id" {% if request.GET.filter == "no_observation_id" %}selected{% endif %}>Unprocessed observations</option>
+            </select>
+        </div>
+    </form>
     </div>
 </div>
 
@@ -108,8 +131,11 @@
         <thead>
             <tr>
                 <th>ID</th>
-                <th>Date Entered</th>
+                <th>Saved Observation</th>
+                <th>Observation date</th>
                 <th>Turtle ID</th>
+                <th>Recapture Tags</th>
+                <th>New Tags</th>
                 <th>Error Message</th>
                 <th>Enterer</th>
                 <th>comments</th>
@@ -119,8 +145,25 @@
             {% for obj in object_list %}
             <tr>
                 <td><a href="{% url 'wamtram2:trtdataentry' obj.data_entry_id %}">{{ obj.data_entry_id }}</a></td>
-                <td>{{ obj.entry_date|date:"j M Y" }}</td>
+                <td>{% if obj.observation_id %}<a href="{% url 'wamtram2:observationdetail' pk=obj.observation_id.pk %}">{{ obj.observation_id.pk }}</a>{% endif %}</td>
+                <td>{{ obj.observation_date|date:"j M Y H:i" }}</td>
                 <td>{% if obj.turtle_id %}<a href="{% url 'wamtram2:turtle_detail' obj.turtle_id %}">{{obj.turtle_id}}</a>{% endif %}</td>
+                <td>{% if obj.recapture_left_tag_id %}{{ obj.recapture_left_tag_id }} {% endif %}
+                    {% if obj.recapture_left_tag_id_2 %}{{ obj.recapture_left_tag_id_2 }} {% endif %}
+                    {% if obj.recapture_left_tag_id_3 %}{{ obj.recapture_left_tag_id_3 }} {% endif %}
+                    {% if obj.recapture_right_tag_id %}{{ obj.recapture_right_tag_id }} {% endif %}
+                    {% if obj.recapture_right_tag_id_2 %}{{ obj.recapture_right_tag_id_2 }} {% endif %}
+                    {% if obj.recapture_right_tag_id_3 %}{{ obj.recapture_right_tag_id_3 }} {% endif %}
+                    {% if obj.recapture_pittag_id %}{{ obj.recapture_pittag_id }} {% endif %}
+                    {% if obj.recapture_pittag_id_2 %}{{ obj.recapture_pittag_id_2 }} {% endif %}
+                </td>
+                <td>{% if obj.new_left_tag_id %}{{ obj.new_left_tag_id }} {% endif %}
+                    {% if obj.new_left_tag_id_2 %}{{ obj.new_left_tag_id_2 }} {% endif %}
+                    {% if obj.new_right_tag_id %}{{ obj.new_right_tag_id }} {% endif %}
+                    {% if obj.new_right_tag_id_2 %}{{ obj.new_right_tag_id_2 }} {% endif %}
+                    {% if obj.new_pittag_id %}{{ obj.new_pittag_id }} {% endif %}
+                    {% if obj.new_pittag_id_2 %}{{ obj.new_pittag_id_2 }} {% endif %}
+                </td> 
                 <td>{{ obj.error_message }}</td>
                 <td>
                     {% with persons|get:obj.user_entry_id as person %}

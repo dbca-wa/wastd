@@ -45,6 +45,7 @@ class AdminDashboard(Dashboard):
                         "Turtle management",
                         models=(
                             "wamtram2.models.TrtTurtles",
+                            "wamtram2.models.TrtObservations",
                             "wamtram2.models.TrtPersons",
                         ),
                     ),
@@ -81,6 +82,19 @@ class AdminDashboard(Dashboard):
                             "users.models.Organisation",
                         ),
                     ),
+                ],
+            )
+        )
+        self.children.append(
+            modules.LinkList(
+                "Authentication",
+                column=3,
+                children=[
+                    {
+                        "title": "Groups",
+                        "url": "/admin/auth/group/",
+                        "external": False,
+                    },
                 ],
             )
         )
