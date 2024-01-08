@@ -6,7 +6,7 @@ LABEL org.opencontainers.image.source https://github.com/dbca-wa/wastd
 
 RUN apt-get update -y \
   && apt-get upgrade -y \
-  && apt-get install -y libmagic-dev gcc binutils gdal-bin proj-bin python3-dev libpq-dev gzip curl gnupg2
+  && apt-get install -y memcached libmagic-dev gcc binutils gdal-bin proj-bin python3-dev libpq-dev gzip curl gnupg2
 
 # Install the Microsoft ODBC driver for SQL Server.
 # Reference: https://learn.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server?view=sql-server-ver16#debian18
@@ -31,16 +31,16 @@ RUN poetry config virtualenvs.create false \
 
 # Install the project.
 FROM python_libs_wastd
-COPY gunicorn.py manage.py ./
+COPY gunicorn.py manage.py run.sh ./
+RUN chmod +x run.sh
 COPY observations ./observations
 COPY users ./users
 COPY wastd ./wastd
-COPY wamtram ./wamtram
-COPY turtle_tags ./turtle_tags
+COPY wamtram2 ./wamtram2
 COPY marine_mammal_incidents ./marine_mammal_incidents
 RUN python manage.py collectstatic --noinput
 
 # Run the application as the www-data user.
 USER www-data
 EXPOSE 8080
-CMD ["gunicorn", "wastd.wsgi", "--config", "gunicorn.py"]
+ENTRYPOINT [ "sh","run.sh" ]

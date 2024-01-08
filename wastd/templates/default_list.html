@@ -1,5 +1,5 @@
 {% extends "base_wastd.html" %}
-{% load static bootstrap4 bootstrap_pagination export_download %}
+{% load static bootstrap4 export_download %}
 
 {% block extra_style %}
 {{ block.super }}
@@ -20,11 +20,45 @@
 
 {% block pagination_row %}
 <div class="row" id="pagination-row">
-    <div class="col">
+  <div class="col">
+  {% if is_paginated %}
+    {% load proper_paginate %}
+    {% load url_replace %}
+    <ul class="pagination">
+        {% if page_obj.number == 1 %}
+            <li class="page-item disabled"><span class="page-link">⇤</span></li>
+        {% else %}
+            <li class="page-item"><a class="page-link" href="?{% url_replace request 'page' 1 %}">⇤</a></li>
+        {% endif %}
+        {% if page_obj.has_previous %}
+            <li class="page-item"><a class="page-link" href="?{% url_replace request 'page' page_obj.previous_page_number %}">&laquo;</a></li>
+        {% else %}
+            <li class="page-item disabled""><span class="page-link">&laquo;</span></li>
+        {% endif %}
+        {% for i in paginator|proper_paginate:page_obj.number %}
+            {% if page_obj.number == i %}
+                <li class="page-item active"><span class="page-link">{{ i }} <span class="sr-only">(current)</span></span></li>
+            {% else %}
+                <li class="page-item"><a class="page-link" href="?{% url_replace request 'page' i %}">{{ i }}</a></li>
+            {% endif %}
+        {% endfor %}
+        {% if page_obj.has_next %}
+            <li class="page-item"><a class="page-link" href="?{% url_replace request 'page' page_obj.next_page_number %}">&raquo;</a></li>
+        {% else %}
+            <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+        {% endif %}
+        {% if page_obj.number == paginator.num_pages %}
+            <li class="page-item disabled"><span class="page-link">⇥</span></li>
+        {% else %}
+            <li class="page-item"><a class="page-link" href="?{% url_replace request 'page' paginator.num_pages %}">⇥</a></li>
+        {% endif %}
+    </ul>
+{% endif %}
+   
     {% if object_list %}
         <span class="float-right">{% resource_download_menu %}</span>
         {% if object_count %}<div>Found {{ object_count }} records</div>{% endif %}
-        {% if page_obj.has_other_pages %}<div>{% bootstrap_paginate page_obj range=10 show_prev_next="true" show_first_last="true" %}</div>{% endif %}
+        
     {% endif %}
     </div>
 </div>
@@ -64,13 +98,7 @@
 
 </div><!-- /#data-row-->
 
-{% block pagination_row_bottom %}
-<div class="row">
-    <div class="col">
-        {% if page_obj.has_other_pages %}<div>{% bootstrap_paginate page_obj range=10 show_prev_next="true" show_first_last="true" %}</div>{% endif %}
-    </div>
-</div>
-{% endblock pagination_row_bottom %}
+
 
 {% endblock page_content_inner %}
 

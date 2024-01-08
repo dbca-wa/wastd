@@ -32,20 +32,20 @@ from observations.api import (
     LightSourceObservationListResource,
     LightSourceObservationDetailResource,
 )
-from turtle_tags.api import (
-    TurtleListResource,
-    TurtleDetailResource,
-    TurtleTagListResource,
-    TurtleTagDetailResource,
-)
+# from turtle_tags.api import (
+#     TurtleListResource,
+#     TurtleDetailResource,
+#     TurtleTagListResource,
+#     TurtleTagDetailResource,
+# )
 from users.api import UserListResource, UserDetailResource
 from observations import views
-from turtle_tags import views as tagviews
+#from turtle_tags import views as tagviews
 
 urlpatterns = [
     # observations
     path('nestAndTracks/', views.nestAndTracks, name='nestAndTracks'),
-    path('taggedTurtles/', tagviews.taggedTurtles, name='taggedTurtles'),
+    #path('taggedTurtles/', tagviews.taggedTurtles, name='taggedTurtles'),
     path("users/", UserListResource.as_view(), name="user_list_resource"),
     path("users/<int:pk>/", UserDetailResource.as_view(), name="user_detail_resource"),
     path("areas/", AreaListResource.as_view(), name="area_list_resource"),
@@ -79,8 +79,8 @@ urlpatterns = [
     path("light-source-observations/", LightSourceObservationListResource.as_view(), name="light_source_list_resource"),
     path("light-source-observations/<int:pk>/", LightSourceObservationDetailResource.as_view(), name="light_source_detail_resource"),
     # turtle_tags
-    path("turtles/", TurtleListResource.as_view(), name="turtle_list_resource"),
-    path("turtles/<int:pk>/", TurtleDetailResource.as_view(), name="turtle_detail_resource"),
-    path("turtle-tags/", TurtleTagListResource.as_view(), name="turtle_tag_list_resource"),
-    path("turtle-tags/<int:pk>/", TurtleTagDetailResource.as_view(), name="turtle_tag_detail_resource"),
+    # path("turtles/", TurtleListResource.as_view(), name="turtle_list_resource"),
+    # path("turtles/<int:pk>/", TurtleDetailResource.as_view(), name="turtle_detail_resource"),
+    # path("turtle-tags/", TurtleTagListResource.as_view(), name="turtle_tag_list_resource"),
+    # path("turtle-tags/<int:pk>/", TurtleTagDetailResource.as_view(), name="turtle_tag_detail_resource"),
 ]
