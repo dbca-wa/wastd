@@ -6,6 +6,11 @@ logging.disable(logging.CRITICAL)
 DEBUG = False
 TEMPLATES[0]['OPTIONS'] = {
     'debug': False,
+     "libraries" : { 
+                "proper_paginate": "wastd.templatetags.proper_paginate",
+                "url_replace": "wastd.templatetags.url_replace",
+                "dict_filter": "wastd.templatetags.dict_filter",
+                },
     'context_processors': [
         'django.contrib.auth.context_processors.auth',
         'django.template.context_processors.media',
