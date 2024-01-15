@@ -25,7 +25,7 @@
                     <td><a href="{% url 'wamtram2:turtle_detail' observation.turtle.pk %}">{{ observation.turtle.pk }}</a></td>
                 <tr>
                     <th>Date observed</th>
-                    <td>{{ object.observation_date|date:"j M Y" }} {{ object.observation_time|date:"H:m" }} </td>
+                    <td>{{ object.observation_date|date:"j M Y" }} {{ object.observation_time|date:"H:i" }} </td>
                 </tr>
                 <tr>
                     <th>Entered by</th>
