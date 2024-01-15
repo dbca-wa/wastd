@@ -116,7 +116,7 @@
             <tbody>
                 {% for observation in observations %}
                 <tr>
-                    <td><a href="{% url 'wamtram2:observationdetail' pk=observation.observation_id %}">{{ observation.observation_date|date:"D, j M Y H:i" }}</a></td>
+                    <td><a href="{% url 'wamtram2:observationdetail' pk=observation.observation_id %}">{{ observation.observation_date|date:"j M Y" }} {{ observation.observation_time|date:"H:i" }}</a></td>
                     <td>{{ observation.reporter_person }}</td>
                     <td>{{ observation.measurer_person }}</td>
                     <td>{{ observation.place_code }}</td>

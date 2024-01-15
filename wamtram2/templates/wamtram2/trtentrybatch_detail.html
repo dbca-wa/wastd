@@ -146,7 +146,7 @@
             <tr>
                 <td><a href="{% url 'wamtram2:trtdataentry' obj.data_entry_id %}">{{ obj.data_entry_id }}</a></td>
                 <td>{% if obj.observation_id %}<a href="{% url 'wamtram2:observationdetail' pk=obj.observation_id.pk %}">{{ obj.observation_id.pk }}</a>{% endif %}</td>
-                <td>{{ obj.observation_date|date:"j M Y H:i" }}</td>
+                <td>{{ obj.observation_date|date:"j M Y" }} {{ obj.observation_time|date:"H:i" }}</td>
                 <td>{% if obj.turtle_id %}<a href="{% url 'wamtram2:turtle_detail' obj.turtle_id %}">{{obj.turtle_id}}</a>{% endif %}</td>
                 <td>{% if obj.recapture_left_tag_id %}{{ obj.recapture_left_tag_id }} {% endif %}
                     {% if obj.recapture_left_tag_id_2 %}{{ obj.recapture_left_tag_id_2 }} {% endif %}
