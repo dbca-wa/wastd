@@ -97,7 +97,7 @@
   <p>
   {% endcomment %}
 
-  {% if request.user.is_staff %}
+  {% if perms.wamtram2.add_trtentrybatches %}
   <p>
     <a class="btn btn-success btn-block"
       href="{% url 'wamtram2:entry_batches'%}"
