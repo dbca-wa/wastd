@@ -211,7 +211,7 @@ CSRF_TRUSTED_ORIGINS = ["https://turtles-uat.dbca.wa.gov.au","https://turtles.db
 SITE_NAME = os.environ.get("SITE_NAME", "Turtles Database")
 SITE_TITLE = os.environ.get("SITE_TITLE", "Turtles Database")
 SITE_CODE = os.environ.get("SITE_CODE", "Turtles")
-VERSION_NO = "2.0.0BETA"
+VERSION_NO = "2.0.0"
 
 
 # Database configuration
