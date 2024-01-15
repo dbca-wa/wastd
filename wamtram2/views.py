@@ -5,7 +5,7 @@ from django.urls import reverse
 from django.views import generic
 from django.conf import settings
 from wastd.utils import  Breadcrumb
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponseForbidden
 
 from .models import TrtTurtles,TrtTags,TrtPitTags, TrtEntryBatches,TrtDataEntry,TrtPersons,TrtObservations
 from .forms import TrtDataEntryForm, SearchForm, TrtEntryBatchesForm
@@ -51,6 +51,12 @@ class EntryBatchesListView(LoginRequiredMixin,ListView):
     template_name = 'trtentrybatches_list.html'  
     context_object_name = 'batches'
     paginate_by = 50
+
+    def dispatch(self, request, *args, **kwargs):
+        # FIXME: Permission check
+        if not (request.user.groups.filter(name='Tagging Data Entry').exists() or request.user.groups.filter(name='Tagging Data Curation').exists() or request.user.is_superuser):
+            return HttpResponseForbidden("You do not have permission to view this record")
+        return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
         """
@@ -103,6 +109,12 @@ class EntryBatchDetailView(LoginRequiredMixin,FormMixin,generic.ListView):
     context_object_name = 'batch'
     paginate_by = 50
     form_class = TrtEntryBatchesForm
+    
+    def dispatch(self, request, *args, **kwargs):
+        # FIXME: Permission check
+        if not (request.user.groups.filter(name='Tagging Data Entry').exists() or request.user.groups.filter(name='Tagging Data Curation').exists() or request.user.is_superuser):
+            return HttpResponseForbidden("You do not have permission to view this record")
+        return super().dispatch(request, *args, **kwargs)
     
     def get(self, request, *args, **kwargs):
         """
@@ -208,6 +220,12 @@ class TrtDataEntryForm(LoginRequiredMixin, generic.FormView):
     template_name = 'wamtram2/trtdataentry_form.html'
     form_class = TrtDataEntryForm
 
+    def dispatch(self, request, *args, **kwargs):
+        # FIXME: Permission check
+        if not (request.user.groups.filter(name='Tagging Data Entry').exists() or request.user.groups.filter(name='Tagging Data Curation').exists() or request.user.is_superuser):
+            return HttpResponseForbidden("You do not have permission to view this record")
+        return super().dispatch(request, *args, **kwargs)
+    
     def get_form_kwargs(self):
         """
         Returns the keyword arguments for instantiating the form.
@@ -343,13 +361,19 @@ class TrtDataEntryForm(LoginRequiredMixin, generic.FormView):
     
 
 
-class DeleteBatchView(View):
+class DeleteBatchView(LoginRequiredMixin,View):
+    def dispatch(self, request, *args, **kwargs):
+        # FIXME: Permission check
+        if not (request.user.groups.filter(name='Tagging Data Entry').exists() or request.user.groups.filter(name='Tagging Data Curation').exists() or request.user.is_superuser):
+            return HttpResponseForbidden("You do not have permission to view this record")
+        return super().dispatch(request, *args, **kwargs)
+    
     def get(self, request, batch_id):
         batch = get_object_or_404(TrtEntryBatches, entry_batch_id=batch_id)
         batch.delete()
         return redirect('wamtram2:entry_batches')
 
-class ValidateDataEntryBatchView(View):
+class ValidateDataEntryBatchView(LoginRequiredMixin,View):
     """
     View class for validating a data entry batch.
 
@@ -366,7 +390,12 @@ class ValidateDataEntryBatchView(View):
         - args: Additional positional arguments passed to the view.
         - kwargs: Additional keyword arguments passed to the view.
     """
-
+    def dispatch(self, request, *args, **kwargs):
+        # FIXME: Permission check
+        if not (request.user.groups.filter(name='Tagging Data Entry').exists() or request.user.groups.filter(name='Tagging Data Curation').exists() or request.user.is_superuser):
+            return HttpResponseForbidden("You do not have permission to view this record")
+        return super().dispatch(request, *args, **kwargs)
+    
     def get(self, request, *args, **kwargs):
         try:
             with connections['wamtram2'].cursor() as cursor:
@@ -377,7 +406,7 @@ class ValidateDataEntryBatchView(View):
         return redirect('wamtram2:entry_batch_detail', batch_id=self.kwargs['batch_id'])
 
 
-class ProcessDataEntryBatchView(View):
+class ProcessDataEntryBatchView(LoginRequiredMixin,View):
     """
     View class for processing a data entry batch.
 
@@ -399,6 +428,12 @@ class ProcessDataEntryBatchView(View):
         HttpResponseRedirect: Redirects the user to the detail page of the
         processed batch.
     """
+    def dispatch(self, request, *args, **kwargs):
+        # FIXME: Permission check
+        if not (request.user.groups.filter(name='Tagging Data Entry').exists() or request.user.groups.filter(name='Tagging Data Curation').exists() or request.user.is_superuser):
+            return HttpResponseForbidden("You do not have permission to view this record")
+        return super().dispatch(request, *args, **kwargs)
+    
     def get(self, request, *args, **kwargs):
         try:
             with connections['wamtram2'].cursor() as cursor:
@@ -412,6 +447,11 @@ class FindTurtleView(LoginRequiredMixin,View):
     """
     View class for finding a turtle based on tag and pit tag ID.
     """
+    def dispatch(self, request, *args, **kwargs):
+        # FIXME: Permission check
+        if not (request.user.groups.filter(name='Tagging Data Entry').exists() or request.user.groups.filter(name='Tagging Data Curation').exists() or request.user.is_superuser):
+            return HttpResponseForbidden("You do not have permission to view this record")
+        return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         batch_id = kwargs.get('batch_id')
@@ -451,7 +491,7 @@ class FindTurtleView(LoginRequiredMixin,View):
 class ObservationDetailView(LoginRequiredMixin, generic.DetailView):
     model = TrtObservations
     template_name = 'wamtram2/observation_detail.html'
-
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         obj = get_object_or_404(TrtObservations, observation_id=self.kwargs.get('pk'))
