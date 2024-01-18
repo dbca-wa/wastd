@@ -544,7 +544,7 @@ class TurtleListView(LoginRequiredMixin, generic.ListView):
         # General-purpose search uses the `q` parameter.
         if "q" in self.request.GET and self.request.GET["q"]:
             q = self.request.GET["q"]
-            qs = qs.filter(Q(pk__icontains=q) | Q(turtle_name__icontains=q) | Q(trttags__tag_id__icontains=q) | Q(trtpittags__pittag_id__icontains=q)).distinct()
+            qs = qs.filter(Q(pk__icontains=q) | Q(trttags__tag_id__icontains=q) | Q(trtpittags__pittag_id__icontains=q)).distinct()
 
         return qs.order_by("pk")
 
