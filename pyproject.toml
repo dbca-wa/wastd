@@ -32,7 +32,7 @@ django-select2 = "8.0.0"
 django-geojson = "^4.0.0"
 django-import-export = "^3.1.0"
 django-export-download = "^0.2.3"
-pillow = "^10.0.1"
+pillow = "^10.2.0"
 whitenoise = {version = "^6.3.0", extras = ["brotli"]}
 phonenumbers = "^8.13.3"
 django-phonenumber-field = "^7.0.1"
