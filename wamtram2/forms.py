@@ -248,6 +248,20 @@ class TrtDataEntryForm(forms.ModelForm):
         cleaned_data = super().clean()
 
         fields_to_check = [
+            'recapture_left_tag_id',
+            'recapture_left_tag_id_2',
+            'recapture_left_tag_id_3',
+            'recapture_right_tag_id',
+            'recapture_right_tag_id_2',
+            'recapture_right_tag_id_3',
+            'recapture_pittag_id',
+            'recapture_pittag_id_2',
+        ]
+        if (cleaned_data.get('turtle_id')):
+            if not any(cleaned_data.get(field) for field in fields_to_check):
+                raise ValidationError("No recapture tags have been entered for a recaptured turtle.")
+
+        fields_to_check = [
             'tagscarnotchecked',
             'scars_left',
             'scars_right',
