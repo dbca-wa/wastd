@@ -20,7 +20,7 @@ from django.conf import settings
 from django.contrib.gis.db import models
 from django.template import loader
 from django.urls import reverse
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.utils.safestring import mark_safe
 from django_fsm import FSMField, transition
 from django_fsm_log.decorators import fsm_log_by, fsm_log_description
@@ -814,7 +814,7 @@ class SurveyMediaAttachment(LegacySourceMixin, models.Model):
     def filepath(self):
         """The path to attached file."""
         try:
-            fpath = force_text(self.attachment.file)
+            fpath = force_str(self.attachment.file)
         except BaseException:
             fpath = None
         return fpath
@@ -1271,8 +1271,8 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
             "-".join(
                 [
                     self.when.astimezone(tz.tzlocal()).strftime("%Y-%m-%d %H:%M %Z"),
-                    force_text(round(self.longitude, 4)).replace(".", "-"),
-                    force_text(round(self.latitude, 4)).replace(".", "-"),
+                    force_str(round(self.longitude, 4)).replace(".", "-"),
+                    force_str(round(self.latitude, 4)).replace(".", "-"),
                 ]
             )
         )
@@ -1686,8 +1686,8 @@ class AnimalEncounter(Encounter):
         """
         nameparts = [
             self.when.astimezone(tz.tzlocal()).strftime("%Y-%m-%d %H:%M %Z"),
-            force_text(round(self.longitude, 4)).replace(".", "-"),
-            force_text(round(self.latitude, 4)).replace(".", "-"),
+            force_str(round(self.longitude, 4)).replace(".", "-"),
+            force_str(round(self.latitude, 4)).replace(".", "-"),
             self.health,
             self.maturity,
             self.sex,
@@ -1868,8 +1868,8 @@ class TurtleNestEncounter(Encounter):
         """
         nameparts = [
             self.when.astimezone(tz.tzlocal()).strftime("%Y-%m-%d %H:%M %Z"),
-            force_text(round(self.longitude, 4)).replace(".", "-"),
-            force_text(round(self.latitude, 4)).replace(".", "-"),
+            force_str(round(self.longitude, 4)).replace(".", "-"),
+            force_str(round(self.latitude, 4)).replace(".", "-"),
             self.nest_age,
             self.species,
         ]
@@ -2025,7 +2025,7 @@ class MediaAttachment(Observation):
     def filepath(self):
         """The path to attached file."""
         try:
-            fpath = force_text(self.attachment.file)
+            fpath = force_str(self.attachment.file)
         except BaseException:
             fpath = None
         return fpath
@@ -3117,8 +3117,8 @@ class LineTransectEncounter(Encounter):
         """
         nameparts = [
             self.when.astimezone(tz.tzlocal()).strftime("%Y-%m-%d %H:%M %Z"),
-            force_text(round(self.longitude, 4)).replace(".", "-"),
-            force_text(round(self.latitude, 4)).replace(".", "-"),
+            force_str(round(self.longitude, 4)).replace(".", "-"),
+            force_str(round(self.latitude, 4)).replace(".", "-"),
         ]
         if self.name is not None:
             nameparts.append(self.name)

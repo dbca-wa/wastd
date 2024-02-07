@@ -776,9 +776,9 @@ def import_site_visit_end(form_id="site_visit_end", duration_hr=8, auth_headers=
                 msg.send(fail_silently=True)
 
     #send an email with errors if needed
-    if emailText != None:
-        msg = EmailMultiAlternatives("Wastd import Errors", emailText, settings.DEFAULT_FROM_EMAIL, settings.ADMIN_EMAILS)
-        msg.send(fail_silently=True)
+    # if emailText != None:
+    #     msg = EmailMultiAlternatives("Wastd import Errors", emailText, settings.DEFAULT_FROM_EMAIL, settings.ADMIN_EMAILS)
+    #     msg.send(fail_silently=True)
 
 
 def import_marine_wildlife_incident(form_id="marine_wildlife_incident", auth_headers=None):

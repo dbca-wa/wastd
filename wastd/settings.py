@@ -35,6 +35,13 @@ else:
     AZURE_CONTAINER = os.environ.get('AZURE_CONTAINER', 'container')
     AZURE_URL_EXPIRATION_SECS = os.environ.get('AZURE_URL_EXPIRATION_SECS', 3600)  # Default one hour.
 
+if not DEBUG:
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.memcached.PyMemcacheCache",
+            "LOCATION": "127.0.0.1:11211",
+        },
+    }
 
 # Application settings
 INSTALLED_APPS = [
@@ -44,6 +51,7 @@ INSTALLED_APPS = [
     "grappelli.dashboard",
     "grappelli",
     "django.contrib.admin",
+    "nested_admin",
     "django.contrib.auth",
     "django.contrib.gis",
     "django.contrib.sessions",
@@ -59,7 +67,6 @@ INSTALLED_APPS = [
     "phonenumber_field",
     "crispy_forms",
     "bootstrap4",
-    "bootstrap_pagination",
     "webtemplate_dbca",
     "django_filters",
     "export_download",
@@ -72,9 +79,8 @@ INSTALLED_APPS = [
     # Local apps
     "users",
     "observations",
-    "wamtram",  # Legacy WAMTRAM database
-    "turtle_tags",
-    "marine_mammal_incidents"
+    "marine_mammal_incidents",
+    "wamtram2"
 ]
 MIDDLEWARE = [
     "wastd.middleware.HealthCheckMiddleware",
@@ -90,60 +96,44 @@ MIDDLEWARE = [
     "dbca_utils.middleware.SSOLoginMiddleware",
 ]
 
-if DEBUG:
-    # Application settings
-    INSTALLED_APPS = INSTALLED_APPS + [
-        "debug_toolbar",
-    ]
-    #need to redefined as the order is important for the debug toolbar
-    MIDDLEWARE = [
-        "wastd.middleware.HealthCheckMiddleware",
-        "django.middleware.security.SecurityMiddleware",
-        "whitenoise.middleware.WhiteNoiseMiddleware",
-        "django.contrib.sessions.middleware.SessionMiddleware",
-        "django.middleware.common.CommonMiddleware",
-        "debug_toolbar.middleware.DebugToolbarMiddleware",
-        "django.middleware.csrf.CsrfViewMiddleware",
-        "django.contrib.auth.middleware.AuthenticationMiddleware",
-        "django.contrib.messages.middleware.MessageMiddleware",
-        "django.middleware.clickjacking.XFrameOptionsMiddleware",
-        "reversion.middleware.RevisionMiddleware",
-        "dbca_utils.middleware.SSOLoginMiddleware",
+# if DEBUG:
+#     # Application settings
+#     INSTALLED_APPS = INSTALLED_APPS + [
+#         "debug_toolbar",
+#     ]
+#     #need to redefined as the order is important for the debug toolbar
+#     MIDDLEWARE = [
+#         "wastd.middleware.HealthCheckMiddleware",
+#         "django.middleware.security.SecurityMiddleware",
+#         "whitenoise.middleware.WhiteNoiseMiddleware",
+#         "django.contrib.sessions.middleware.SessionMiddleware",
+#         "django.middleware.common.CommonMiddleware",
+#         "debug_toolbar.middleware.DebugToolbarMiddleware",
+#         "django.middleware.csrf.CsrfViewMiddleware",
+#         "django.contrib.auth.middleware.AuthenticationMiddleware",
+#         "django.contrib.messages.middleware.MessageMiddleware",
+#         "django.middleware.clickjacking.XFrameOptionsMiddleware",
+#         "reversion.middleware.RevisionMiddleware",
+#         "dbca_utils.middleware.SSOLoginMiddleware",
 
-    ]
+#     ]
 
-    DEBUG_TOOLBAR_PANELS = [
-        'debug_toolbar.panels.history.HistoryPanel',
-        'debug_toolbar.panels.versions.VersionsPanel',
-        'debug_toolbar.panels.timer.TimerPanel',
-        'debug_toolbar.panels.settings.SettingsPanel',
-        'debug_toolbar.panels.headers.HeadersPanel',
-        'debug_toolbar.panels.request.RequestPanel',
-        'debug_toolbar.panels.sql.SQLPanel',
-        'debug_toolbar.panels.staticfiles.StaticFilesPanel',
-        'debug_toolbar.panels.templates.TemplatesPanel',
-        'debug_toolbar.panels.cache.CachePanel',
-        'debug_toolbar.panels.signals.SignalsPanel',
-        'debug_toolbar.panels.redirects.RedirectsPanel',
-        'debug_toolbar.panels.profiling.ProfilingPanel',
-        "wastd.middleware.FileInterceptsPanel"
-    ]
-    DEBUG_TOOLBAR_PANELS = [
-        'debug_toolbar.panels.history.HistoryPanel',
-        'debug_toolbar.panels.versions.VersionsPanel',
-        'debug_toolbar.panels.timer.TimerPanel',
-        'debug_toolbar.panels.settings.SettingsPanel',
-        'debug_toolbar.panels.headers.HeadersPanel',
-        'debug_toolbar.panels.request.RequestPanel',
-        'debug_toolbar.panels.sql.SQLPanel',
-        'debug_toolbar.panels.staticfiles.StaticFilesPanel',
-        'debug_toolbar.panels.templates.TemplatesPanel',
-        'debug_toolbar.panels.cache.CachePanel',
-        'debug_toolbar.panels.signals.SignalsPanel',
-        'debug_toolbar.panels.redirects.RedirectsPanel',
-        'debug_toolbar.panels.profiling.ProfilingPanel',
-        "wastd.middleware.FileInterceptsPanel"
-    ]
+#     DEBUG_TOOLBAR_PANELS = [
+#         'debug_toolbar.panels.history.HistoryPanel',
+#         'debug_toolbar.panels.versions.VersionsPanel',
+#         'debug_toolbar.panels.timer.TimerPanel',
+#         'debug_toolbar.panels.settings.SettingsPanel',
+#         'debug_toolbar.panels.headers.HeadersPanel',
+#         'debug_toolbar.panels.request.RequestPanel',
+#         'debug_toolbar.panels.sql.SQLPanel',
+#         'debug_toolbar.panels.staticfiles.StaticFilesPanel',
+#         'debug_toolbar.panels.templates.TemplatesPanel',
+#         'debug_toolbar.panels.cache.CachePanel',
+#         'debug_toolbar.panels.signals.SignalsPanel',
+#         'debug_toolbar.panels.redirects.RedirectsPanel',
+#         'debug_toolbar.panels.profiling.ProfilingPanel',
+#         "wastd.middleware.FileInterceptsPanel"
+#     ]
 
 TEMPLATES = [
     {
@@ -154,6 +144,11 @@ TEMPLATES = [
         "APP_DIRS": True,
         "OPTIONS": {
             "debug": DEBUG,
+            "libraries": {
+                "proper_paginate": "wastd.templatetags.proper_paginate",
+                "url_replace": "wastd.templatetags.url_replace",
+                "dict_filter": "wastd.templatetags.dict_filter",
+            },
             "context_processors": [
                 "django.contrib.auth.context_processors.auth",
                 "django.template.context_processors.debug",
@@ -210,32 +205,33 @@ LOCAL_USERGROUPS = [
 ]
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
+CSRF_TRUSTED_ORIGINS = ["https://turtles-uat.dbca.wa.gov.au","https://turtles.dbca.wa.gov.au"]
 
 # Branding
 SITE_NAME = os.environ.get("SITE_NAME", "Turtles Database")
 SITE_TITLE = os.environ.get("SITE_TITLE", "Turtles Database")
 SITE_CODE = os.environ.get("SITE_CODE", "Turtles")
-VERSION_NO = "1.0.8"
+VERSION_NO = "2.0.0"
 
 
 # Database configuration
 DATABASES = {
     # Defined in DATABASE_URL env variable.
     "default": dj_database_url.config(),
-    "wamtram": {
-        'ENGINE': os.environ.get('DB_ENGINE', 'mssql'),
+    "wamtram2": {
+        'ENGINE': 'mssql',
         'HOST': os.environ.get('DB_HOST', 'host'),
         'NAME': os.environ.get('DB_NAME', 'database'),
         'PORT': os.environ.get('DB_PORT', 1234),
         'USER': os.environ.get('DB_USERNAME', 'user'),
-        'PASSWORD': os.environ.get('DB_PASSWORD', 'pass'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', 'user'),
         'OPTIONS': {
             'driver': os.environ.get('DB_DRIVER', 'ODBC Driver 17 for SQL Server'),
             'extra_params': os.environ.get('DB_EXTRA_PARAMS', ''),
         },
-    }
+    },
 }
-DATABASE_ROUTERS = ['wamtram.routers.WamtramRouter']
+DATABASE_ROUTERS = ['wamtram2.routers.Wamtram2Router']
 
 
 # Internationalisation.
