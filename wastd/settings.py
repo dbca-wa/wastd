@@ -115,7 +115,7 @@ MIDDLEWARE = [
 #         "django.middleware.clickjacking.XFrameOptionsMiddleware",
 #         "reversion.middleware.RevisionMiddleware",
 #         "dbca_utils.middleware.SSOLoginMiddleware",
-        
+
 #     ]
 
 #     DEBUG_TOOLBAR_PANELS = [
@@ -144,11 +144,11 @@ TEMPLATES = [
         "APP_DIRS": True,
         "OPTIONS": {
             "debug": DEBUG,
-            "libraries" : { 
+            "libraries": {
                 "proper_paginate": "wastd.templatetags.proper_paginate",
                 "url_replace": "wastd.templatetags.url_replace",
                 "dict_filter": "wastd.templatetags.dict_filter",
-                },
+            },
             "context_processors": [
                 "django.contrib.auth.context_processors.auth",
                 "django.template.context_processors.debug",
@@ -190,7 +190,7 @@ MAP_WIDGETS = {
 #        'rest_framework.renderers.JSONRenderer',
 #    ]
 #}
-IMPORT_EXPORT_SKIP_ADMIN_CONFIRM=True
+IMPORT_EXPORT_SKIP_ADMIN_CONFIRM = True
 
 # Use the customised User model
 AUTH_USER_MODEL = "users.User"
@@ -268,7 +268,7 @@ SERVER_EMAIL = DEFAULT_FROM_EMAIL
 EMAIL_SUBJECT_PREFIX = os.environ.get("EMAIL_SUBJECT_PREFIX", "[Turtles DB] ")
 ADMIN_EMAILS = os.environ.get("ADMIN_EMAILS", "").split(",")
 if not DEBUG:
-    ADMINS =[("Admin",os.environ.get("ADMIN_EMAILS", ""))]
+    ADMINS = [("Admin",os.environ.get("ADMIN_EMAILS", ""))]
 
 
 # Static files (CSS, JavaScript, Images)
@@ -381,4 +381,3 @@ PHONENUMBER_DB_FORMAT = "INTERNATIONAL"
 BOOTSTRAP4 = {
     'success_css_class': '',  # Don't add `is-valid` to every form field by default.
 }
-

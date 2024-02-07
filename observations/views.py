@@ -14,7 +14,6 @@ import json
 import datetime
 
 
-
 from .admin import (
     EncounterAdmin,
     AnimalEncounterAdmin,
@@ -303,13 +302,13 @@ class LineTransectEncounterDetail(DetailViewBreadcrumbMixin, DetailView):
 #This just dumps the database as json for use by external tools such as PowerBI or Shiny
 def nestAndTracks(request):
     query = '''
-SELECT 
+SELECT
     e."id" as encounter_id,
     e."status",
     org."label" AS "data_owner",
     TO_CHAR(e."when" AT TIME ZONE \'Australia/Perth\', \'YYYY-MM-DD\') AS "date",
     TO_CHAR(e."when" AT TIME ZONE \'Australia/Perth\', \'HH24:MI:SS\') AS "time",
-    CASE 
+    CASE
         WHEN EXTRACT(HOUR FROM e."when" AT TIME ZONE \'Australia/Perth\') < 12 THEN
             TO_CHAR(e."when" AT TIME ZONE \'Australia/Perth\' - INTERVAL \'1 day\', \'YYYY-MM-DD\')
         ELSE
@@ -367,42 +366,43 @@ SELECT
     tag."flipper_tag_id",
     TO_CHAR(tag."date_nest_laid" AT TIME ZONE \'Australia/Perth\', \'YYYY-MM-DD\') AS "date_nest_laid",
     tag."tag_label"
-FROM 
+FROM
     "observations_turtlenestencounter" t
-INNER JOIN 
+INNER JOIN
     "observations_encounter" e ON (t."encounter_ptr_id" = e."id")
-LEFT JOIN 
+LEFT JOIN
     "observations_area" area ON (e."area_id" = area."id")
-LEFT JOIN 
+LEFT JOIN
     "observations_area" site ON (e."site_id" = site."id")
-LEFT JOIN 
+LEFT JOIN
     "observations_survey" survey ON (e."survey_id" = survey."id")
-LEFT JOIN 
+LEFT JOIN
     "users_user" obs ON (e."observer_id" = obs."id")
-LEFT JOIN 
+LEFT JOIN
     "users_user" rep ON (e."reporter_id" = rep."id")
-LEFT JOIN 
+LEFT JOIN
     "observations_observation" o ON (e."id" = o."encounter_id" AND o."polymorphic_ctype_id" IN (26))
-LEFT JOIN 
+LEFT JOIN
     "observations_turtlenestobservation" n ON (o."id" = n."observation_ptr_id")
-LEFT JOIN 
+LEFT JOIN
     "observations_observation" obs_tag ON (e."id" = obs_tag."encounter_id" AND obs_tag."polymorphic_ctype_id" IN (38))
-LEFT JOIN 
+LEFT JOIN
     "observations_nesttagobservation" tag ON (obs_tag."id" = tag."observation_ptr_id")
-LEFT JOIN 
+LEFT JOIN
     "observations_observation" obs_hatch ON (e."id" = obs_hatch."encounter_id" AND obs_hatch."polymorphic_ctype_id" IN (279))
-LEFT JOIN 
+LEFT JOIN
     "observations_turtlehatchlingemergenceobservation" hatch ON (obs_hatch."id" = hatch."observation_ptr_id")
-LEFT JOIN 
+LEFT JOIN
   "observations_campaign" c ON (e."campaign_id" = c."id")
-LEFT JOIN 
+LEFT JOIN
   "users_organisation" org ON (c."owner_id" = org."id")
-ORDER BY 
+ORDER BY
     e."when" DESC
     '''
- 
+
     response = StreamingHttpResponse(stream_data(query), content_type="application/json")
     return response
+
 
 class DateTimeEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -410,13 +410,14 @@ class DateTimeEncoder(json.JSONEncoder):
             return obj.isoformat()
         return super(DateTimeEncoder, self).default(obj)
 
+
 def stream_data(query):
     with connection.cursor() as cursor:
         cursor.execute(query)
-        
+
         # Get column names from cursor.description
         columns = [col[0] for col in cursor.description]
-        
+
         yield '['  # Start of JSON array
         first_row = True
         row = cursor.fetchone()
@@ -425,12 +426,12 @@ def stream_data(query):
                 yield ','
             else:
                 first_row = False
-            
+
             # Convert row data to dictionary with column names as keys
             row_dict = dict(zip(columns, row))
-            
+
             # Convert the dictionary to JSON and yield
             yield json.dumps(row_dict, cls=DateTimeEncoder)
-            
+
             row = cursor.fetchone()
         yield ']'  # End of JSON array

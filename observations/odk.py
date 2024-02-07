@@ -2,7 +2,6 @@ from datetime import datetime, timedelta
 from dateutil import parser
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
-import json
 import logging
 from . import lookups
 
@@ -580,7 +579,7 @@ def import_turtle_track_or_nest_simple(form_id="beach_tracks_nest_simple", auth_
                     track_observation.save()
                     LOGGER.info(f'Created TurtleTrackObservation {track_observation}')
 
-            
+
             #for this simple form we are just assuming tracks are a low disturbance event, with no other information collected
             #these are retrieved as a space delimited string "fox cat dog"
             if submission['details']['disturbance_cause']:
@@ -646,7 +645,7 @@ def import_site_visit_start(form_id="site_visit_start", initial_duration_hr=8, a
             survey.area = survey.guess_area
             survey.site = survey.guess_site
             survey.end_time = survey.start_time + timedelta(hours=initial_duration_hr)
-        
+
             #set training surveys to non production
             if survey.site != None:
                 if 'training' in survey.site.name.lower() or 'testing' in survey.site.name.lower():
@@ -701,7 +700,7 @@ def import_site_visit_end(form_id="site_visit_end", duration_hr=8, auth_headers=
     submissions = get_form_submission_data(auth_headers, project_id, form_id)
     #email content if any errors
     emailText = None
-   
+
     for submission in submissions:
         try:
             instance_id = submission['meta']['instanceID']
@@ -731,7 +730,7 @@ def import_site_visit_end(form_id="site_visit_end", duration_hr=8, auth_headers=
                 end_time = parser.isoparse(visit['survey_end_time']) #new forms allow editing of time in case submitted after the fact
             else:
                 end_time = parser.isoparse(submission['end_time']) #old forms
-           
+
             start_time_earliest = end_time - timedelta(hours=duration_hr)
             surveys = Survey.objects.filter(
                 site=site, start_time__lt=end_time, start_time__gte=start_time_earliest,
@@ -769,13 +768,13 @@ def import_site_visit_end(form_id="site_visit_end", duration_hr=8, auth_headers=
                 photo.save()
                 LOGGER.info(f'Created SurveyMediaAttachment {photo}')
 
-       
+
         except Exception as e:  # catches all exceptions and send an email, also log the exception type
                 exception_message = f"{e.__class__.__name__}: {e}"
                 LOGGER.error(f"An error occurred: {exception_message}")
                 msg = EmailMultiAlternatives("Wastd survey end import failed!", f"An error occurred, a survey end record was not imported: {exception_message}", settings.DEFAULT_FROM_EMAIL, settings.ADMIN_EMAILS)
                 msg.send(fail_silently=True)
-        
+
     #send an email with errors if needed
     # if emailText != None:
     #     msg = EmailMultiAlternatives("Wastd import Errors", emailText, settings.DEFAULT_FROM_EMAIL, settings.ADMIN_EMAILS)
@@ -1047,7 +1046,7 @@ def import_marine_wildlife_incident(form_id="marine_wildlife_incident", auth_hea
             exception_message = f"{e.__class__.__name__}: {e}"
             LOGGER.error(f"An error occurred: {exception_message}")
             msg = EmailMultiAlternatives("Wastd marine wildlife incident import failed!", f"An error occurred, a marine wildlife incident record was not imported: {exception_message}", settings.DEFAULT_FROM_EMAIL, settings.ADMIN_EMAILS)
-            msg.send(fail_silently=True)    
+            msg.send(fail_silently=True)
 
 
 def import_turtle_sighting(form_id="turtle_sighting", auth_headers=None):
