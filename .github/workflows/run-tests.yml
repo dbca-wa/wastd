@@ -85,4 +85,4 @@ jobs:
           source .venv/bin/activate
           python manage.py collectstatic --noinput
           # NOTE: we can't run tests in parallel, because setup() may break DB constraints.
-          python manage.py test --noinput --failfast --verbosity 0 --settings wastd.settings-test
+          python manage.py test --noinput --failfast --verbosity 0 --settings wastd.test-settings
