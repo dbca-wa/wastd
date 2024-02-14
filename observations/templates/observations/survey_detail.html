@@ -1,14 +1,18 @@
 {% extends "base_wastd.html" %}
-{% load leaflet_tags geojson_tags static observations %}
+{% load geojson_tags static observations %}
 
 {% block extra_style %}
 {{ block.super }}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" integrity="sha512-h9FcoyWjHcOcmEVkxOfTLnmZFWIH0iZhZT1H2TbOq55xssQGEJHEaIm+PgoUaZbRvQTNTluNOEfb1ZRy6D3BOw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css" integrity="sha256-EFpFyBbuttUJtoocYzsBnERPWee2JYz4cn5nkUBjW0A=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.fullscreen/3.0.1/Control.FullScreen.min.css" integrity="sha512-icRYRbqvwyLFADCizHy+7d4vVNnzF92F0ADsgIlPU2eegXZJ9iHtF1BMi7xdgo1lSyd0nsyI5Lvxhhlxx7WxZg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <style>
-.leaflet-popup, .leaflet-popup-content-wrapper, .leaflet-popup-content {
-    width: 350px; /* narrower popup */
-    padding: -10px;  /* fix close button position */
-}
-.leaflet-tooltip { width: 200px; word-wrap: break-word; }
+    #map {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 100%;
+    }
 </style>
 {% endblock %}
 
@@ -130,8 +134,8 @@
     {% endblock survey_detail %}
 
     {% block survey_map %}
-    <div class="col-sm-12 col-md-6 col-lg-4" id="svy-map">
-        {% leaflet_map "detailmap" callback="window.map_init" %}
+    <div class="col-sm-12 col-md-6 col-lg-4 px-0" id="svy-map">
+        <div id="map"></div>
     </div><!-- /.col#svy-map -->
     {% endblock survey_map %}
 </div><!-- .row#row-svy-detail -->
@@ -165,9 +169,11 @@
 
 {% block extra_js %}
 {{ block.super }}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" integrity="sha512-puJW3E/qXDqYp9IfhAI54BJEaWIfloJ7JWs7OeD5i6ruC9JZL1gERT1wjtwXFlh7CjE7ZJ+/vcRZRkIYIb6p4g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.min.js" integrity="sha256-IqiRR5X1QtAdcq5lG4vBB1/WxwrRCkkjno4pfvWyag0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.fullscreen/3.0.1/Control.FullScreen.min.js" integrity="sha512-h/AgOL3/GaN95r67NWhssa2HgUk/+zfZsSkS/TU/rj0RPdQv9BMVq7BSKuUew5R68pDSFbOWydkIex28J7gy9g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="{% static 'js/turtles_map.js' %}"></script>
 <script type="text/javascript">
-function map_init(map, options) {
-  {% include "shared/styles.js" %}
 
   $.getJSON("{% url 'sites_geojson' %}", function(data) {
       L.geoJson(data, {
@@ -211,6 +217,5 @@ function map_init(map, options) {
     map.flyTo([this.dataset.lat, this.dataset.lon], 18, {animate: true});
   });
 
-};
 </script>
 {% endblock %}

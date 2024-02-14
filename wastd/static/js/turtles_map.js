@@ -1,16 +1,17 @@
+"use strict";
 /* Point style */
-var pointstyle = {
+const pointstyle = {
     "clickable": true
 };
 
 /* Polygon style */
-var polystyle = {
+const polystyle = {
     "color": "#0009ff",
     "weight": 1,
     "opacity": 0.65
 };
 
-var polystyle_red = {
+const polystyle_red = {
     "color": "#ff2200",
     "weight": 1,
     "opacity": 0.65
@@ -77,7 +78,6 @@ function ptl_sve(feature, latlng) {
 /* Actions taken on each feature: title, popup, info preview */
 function oef(feature, layer) {
   layer.bindTooltip(feature.properties.leaflet_title);
-  //layer.bindPopup(feature.properties.label);
 }
 
 function oef_wideTT(feature, layer) {
@@ -106,3 +106,112 @@ function oef_rel(feature, layer) {
   layer.bindTooltip(feature.properties.label);
   layer.bindPopup(feature.properties.as_html);
 }
+
+// NOTE: some global variables are set in the base template:
+// mapproxy_url
+
+// Define baselayer tile layers.
+const aerialImagery = L.tileLayer.wms(mapproxy_url, {
+  layers: 'mapbox-satellite',
+  tileSize: 1024,
+  zoomOffset: -2,
+});
+const mapboxStreets = L.tileLayer.wms(mapproxy_url, {
+  layers: 'mapbox-streets',
+  format: 'image/png',
+  tileSize: 1024,
+  zoomOffset: -2,
+});
+const waCoast = L.tileLayer.wms(mapproxy_url, {
+  layers: 'wa-coast',
+  format: 'image/png',
+  tileSize: 1024,
+  zoomOffset: -2,
+});
+
+// Define overlay tile layers.
+const dbcaRegions = L.tileLayer.wms(mapproxy_url, {
+  layers: 'dbca-regions',
+  format: 'image/png',
+  transparent: true,
+  opacity: 0.75,
+  tileSize: 1024,
+  zoomOffset: -2,
+});
+const dbcaDistricts = L.tileLayer.wms(mapproxy_url, {
+  layers: 'dbca-districts',
+  format: 'image/png',
+  transparent: true,
+  opacity: 0.75,
+  tileSize: 1024,
+  zoomOffset: -2,
+});
+const dbcaTenure = L.tileLayer.wms(mapproxy_url, {
+  layers: 'dbca-tenure',
+  format: 'image/png',
+  transparent: true,
+  opacity: 0.75,
+  tileSize: 1024,
+  zoomOffset: -2,
+});
+const ucl = L.tileLayer.wms(mapproxy_url, {
+  layers: 'ucl',
+  format: 'image/png',
+  transparent: true,
+  opacity: 0.75,
+  tileSize: 1024,
+  zoomOffset: -2,
+});
+const ibra = L.tileLayer.wms(mapproxy_url, {
+  layers: 'ibra7-aust',
+  format: 'image/png',
+  transparent: true,
+  opacity: 0.75,
+  tileSize: 1024,
+  zoomOffset: -2,
+});
+const lgaBoundaries = L.tileLayer.wms(mapproxy_url, {
+  layers: 'lga-boundaries',
+  format: 'image/png',
+  transparent: true,
+  opacity: 0.75,
+  tileSize: 1024,
+  zoomOffset: -2,
+});
+
+// Define map.
+var map = L.map('map', {
+    crs: L.CRS.EPSG4326,
+    center: [-31.96, 115.87],
+    minZoom: 4,
+    maxZoom: 18,
+    layers: [aerialImagery],  // Sets default selections.
+});
+
+// Define layer groups.
+var baseMaps = {
+    "Aerial imagery": aerialImagery,
+    "Place names": mapboxStreets,
+    "WA coast": waCoast,
+};
+var overlayMaps = {
+    "DBCA regions": dbcaRegions,
+    "DBCA districts": dbcaDistricts,
+    "DBCA tenure": dbcaTenure,
+    "Unallocated Crown Land": ucl,
+    "IBRA 7 boundaries": ibra,
+    "LGA boundaries": lgaBoundaries,
+};
+
+// Define layer control.
+L.control.layers(baseMaps, overlayMaps).addTo(map);
+
+// Define scale bar
+L.control.scale({maxWidth: 500, imperial: false}).addTo(map);
+
+// Log zoom level to console.
+//map.on('zoomend', function (e) {console.log(e.target._zoom)});
+
+  // Add a fullscreen control to the map.
+const fullScreen = new L.control.fullscreen();
+map.addControl(fullScreen);
