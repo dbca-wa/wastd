@@ -41,7 +41,7 @@ django-storages = {version = "^1.13.2", extras = ["azure"]}
 django-map-widgets = "^0.4.2"
 django-nested-admin = "^4.0.2"
 django-grappelli = "^3.0.8"
-django-bootstrap4 = "^23.2"
+django-bootstrap4 = "^24.1"
 django-easy-select2 = "^1.5.8"
 pymemcache = "^4.0.0"
 
