@@ -2,6 +2,7 @@ import dj_database_url
 import os
 from pathlib import Path
 import sys
+import tomli
 from zoneinfo import ZoneInfo
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, 'subdir')
@@ -211,7 +212,8 @@ CSRF_TRUSTED_ORIGINS = ["https://turtles-uat.dbca.wa.gov.au","https://turtles.db
 SITE_NAME = os.environ.get("SITE_NAME", "Turtles Database")
 SITE_TITLE = os.environ.get("SITE_TITLE", "Turtles Database")
 SITE_CODE = os.environ.get("SITE_CODE", "Turtles")
-VERSION_NO = "2.0.0"
+project = tomli.load(open(os.path.join(BASE_DIR, "pyproject.toml"), "rb"))
+VERSION_NO = project["tool"]["poetry"]["version"]
 
 
 # Database configuration
