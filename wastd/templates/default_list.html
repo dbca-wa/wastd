@@ -9,9 +9,6 @@
 <link rel="stylesheet" href="{% static 'css/select2_bootstrap4.css' %}" />
 {% endblock %}
 
-{% block leaflet_style %}{% endblock %}
-{% block leaflet_js %}{% endblock %}
-
 {% block breadcrumbs %}
 {% include 'breadcrumbs.html' %}
 {% endblock breadcrumbs %}
@@ -54,11 +51,11 @@
         {% endif %}
     </ul>
 {% endif %}
-   
+
     {% if object_list %}
         <span class="float-right">{% resource_download_menu %}</span>
         {% if object_count %}<div>Found {{ object_count }} records</div>{% endif %}
-        
+
     {% endif %}
     </div>
 </div>

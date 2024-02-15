@@ -47,6 +47,11 @@ from .resources import (
 class MapView(TemplateView):
     template_name = "observations/map.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["mapproxy_url"] = settings.MAPPROXY_URL
+        return context
+
 
 class SurveyList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
     model = Survey

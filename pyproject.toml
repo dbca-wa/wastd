@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "wastd"
-version = "1.0.8"
+version = "2.0.1"
 description = "Western Australian Sea Turtles Database"
 authors = ["Florian Mayer <florian.mayer@dbca.wa.gov.au>", "Ashley Felton <ashley.felton@dbca.wa.gov.au>","Evan Hallein <evan.hallein@dbca.wa.gov.au>"]
 license = "MIT"
@@ -8,13 +8,13 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-django = "4.2.8"
+django = "4.2.10"
 django-extensions = "3.2.3"
 psycopg2 = "^2.9.6"
 dj-database-url = "^2.0.0"
 gunicorn = "^20.1.0"
 python-dotenv = "^0.21.0"
-dbca-utils = "1.1.6"
+dbca-utils = "2.0.0"
 django-fsm = "^2.8.1"
 django-fsm-log = "^3.1.0"
 django-fsm-admin = { git = "https://github.com/gadventures/django-fsm-admin.git" }
@@ -23,7 +23,6 @@ python-slugify = "^8.0.1"
 django-filter = "^23.5"
 django-polymorphic = "^3.1.0"
 django-reversion = "^5.0.4"
-django-leaflet = "^0.28.3"
 django-crispy-forms = "^1.14.0"
 xmltodict = "^0.13.0"
 pandas = "^1.5.2"
@@ -47,13 +46,14 @@ django-easy-select2 = "^1.5.8"
 pymemcache = "^4.0.0"
 
 [tool.poetry.group.dev.dependencies]
-ipython = "^8.14.0"
+ipython = "^8.21.0"
 ipdb = "^0.13.9"
 black = "^22.10.0"
 ruff = "^0.0.285"
 sphinx = "^7.0.1"
 vulture = "^2.7"
 django-debug-toolbar = "^4.2.0"
+pre-commit = "^3.6.1"
 
 [build-system]
 requires = ["poetry-core"]

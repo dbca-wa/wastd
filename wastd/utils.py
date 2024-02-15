@@ -18,7 +18,6 @@ from django_filters import CharFilter
 from functools import reduce
 from import_export.formats import base_formats
 from import_export.resources import Resource
-from leaflet.forms.widgets import LeafletWidget
 import re
 from urllib import parse
 import uuid
@@ -881,20 +880,7 @@ class CurationMixin(models.Model):
 
 
 S2ATTRS = {"data-width": "50em"}
-LEAFLET_WIDGET_ATTRS = {
-    "map_height": "500px",
-    "map_width": "50%",
-    "display_raw": "true",
-    "map_srid": 4326,
-}
-LEAFLET_SETTINGS = {"widget": LeafletWidget(attrs=LEAFLET_WIDGET_ATTRS)}
 FORMFIELD_OVERRIDES = {
-    models.PointField: LEAFLET_SETTINGS,
-    models.MultiPointField: LEAFLET_SETTINGS,
-    models.LineStringField: LEAFLET_SETTINGS,
-    models.MultiLineStringField: LEAFLET_SETTINGS,
-    models.PolygonField: LEAFLET_SETTINGS,
-    models.MultiPolygonField: LEAFLET_SETTINGS,
     models.ImageField: {"widget": AdminImageWidget},
     models.FileField: {"widget": AdminImageWidget},
 }
@@ -915,35 +901,30 @@ FILTER_OVERRIDES = {
         "filter_class": CharFilter,
         "extra": lambda f: {
             "lookup_expr": "intersects",
-            "widget": LeafletWidget(attrs=LEAFLET_SETTINGS),
         },
     },
     models.LineStringField: {
         "filter_class": CharFilter,
         "extra": lambda f: {
             "lookup_expr": "intersects",
-            "widget": LeafletWidget(attrs=LEAFLET_SETTINGS),
         },
     },
     models.MultiLineStringField: {
         "filter_class": CharFilter,
         "extra": lambda f: {
             "lookup_expr": "intersects",
-            "widget": LeafletWidget(attrs=LEAFLET_SETTINGS),
         },
     },
     models.PolygonField: {
         "filter_class": CharFilter,
         "extra": lambda f: {
             "lookup_expr": "intersects",
-            "widget": LeafletWidget(attrs=LEAFLET_SETTINGS),
         },
     },
     models.MultiPolygonField: {
         "filter_class": CharFilter,
         "extra": lambda f: {
             "lookup_expr": "intersects",
-            "widget": LeafletWidget(attrs=LEAFLET_SETTINGS),
         },
     },
 }

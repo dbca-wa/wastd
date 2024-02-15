@@ -9,5 +9,6 @@ def template_context(request):
         "site_title": settings.SITE_TITLE,
         "site_acronym": settings.SITE_CODE,
         "APPLICATION_VERSION_NO": settings.VERSION_NO,
+        "mapproxy_url": settings.MAPPROXY_URL,
     }
     return context

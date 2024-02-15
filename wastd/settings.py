@@ -62,8 +62,7 @@ INSTALLED_APPS = [
     "django_fsm_log",
     "fsm_admin",
     "reversion",
-    'mapwidgets',
-    "leaflet",
+    "mapwidgets",
     "phonenumber_field",
     "crispy_forms",
     "bootstrap4",
@@ -181,6 +180,7 @@ MAP_WIDGETS = {
         }
     }
 }
+MAPPROXY_URL = os.environ.get("MAPPROXY_URL", "")
 
 #REST_FRAMEWORK = {
 #    'DEFAULT_PERMISSION_CLASSES': [
@@ -337,41 +337,6 @@ ODK_API_EMAIL = os.environ.get("ODK_API_EMAIL", "email")
 ODK_API_PASSWORD = os.environ.get("ODK_API_PASSWORD", "pass")
 ODK_API_PROJECTID = os.environ.get("ODK_API_PROJECTID", "-1")
 
-# Leaflet map widgets
-LEAFLET_CONFIG = {
-    "SPATIAL_EXTENT": (-180, -90, 180, 90),
-    "DEFAULT_CENTER": (-25, 120),
-    "DEFAULT_ZOOM": 4,
-    "MAX_ZOOM": 17,
-    "SCALE": "metric",
-    "MINIMAP": False,
-    "PLUGINS": {
-        "forms": {"auto-include": True},
-        "markers": {"auto-include": True},
-        "label": {"auto-include": True},
-        "fullscreen": {"auto-include": True},
-        "markercluster": {"auto-include": True},
-        "tilelayer": {
-            "auto-include": True
-        },
-    },
-    "TILES": [
-        (
-            "Aerial Image",
-            "//server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-            {
-                "attribution": "Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community"
-            },
-        ),
-        (
-            "Place names",
-            "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-            {
-                "attribution": '&copy; <a href="//www.openstreetmap.org/copyright">OpenStreetMap</a>'
-            },
-        ),
-    ],
-}
 
 # Phone number
 PHONENUMBER_DB_FORMAT = "INTERNATIONAL"
