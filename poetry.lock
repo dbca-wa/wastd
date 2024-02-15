@@ -512,17 +512,16 @@ test-randomorder = ["pytest-randomly"]
 
 [[package]]
 name = "dbca-utils"
-version = "1.1.6"
+version = "2.0.0"
 description = "Utilities for Django/Python apps"
 optional = false
 python-versions = "*"
 files = [
-    {file = "dbca-utils-1.1.6.tar.gz", hash = "sha256:12e101e905aecc1d622a4271f0f4b3ff830cff224238177b5223bae5c5357240"},
+    {file = "dbca-utils-2.0.0.tar.gz", hash = "sha256:b10e395e0eb9fed109816a85efb35636b2c4e82a84810b50a5ab41f0efb39121"},
 ]
 
 [package.dependencies]
-Django = ">=2.1"
-requests = "*"
+Django = ">=3.2"
 
 [[package]]
 name = "decorator"
@@ -2347,4 +2346,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "80bc352301e3eeafb105bb70f188a0d07d61662ddd04796dd7e10ac92618c45a"
+content-hash = "0ee2811db1ca9742c04078676482f5873f5429aa4df91fea2005bc888b6d24d0"
