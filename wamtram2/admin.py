@@ -1,11 +1,10 @@
 from django.contrib import admin
 import nested_admin
-from .models import TrtPersons,TrtTurtles, TrtObservations, TrtTags,TrtPitTags,TrtMeasurements,TrtDamage,TrtDataEntry ,TrtEntryBatches, TrtTagOrders
+from .models import TrtPersons,TrtTurtles, TrtObservations, TrtTags,TrtPitTags,TrtMeasurements,TrtDamage,TrtDataEntry,TrtEntryBatches, TrtTagOrders
 from import_export.admin import ImportExportModelAdmin
-#from easy_select2 import select2_modelform
 from .forms import DataEntryUserModelForm, EnterUserModelForm
-        
-#nested admin forms
+
+
 class TrtMeasurementsInline(nested_admin.NestedTabularInline):
     model = TrtMeasurements
     #form = TrtMeasurementsForm
@@ -18,23 +17,25 @@ class TrtObservationsInline(nested_admin.NestedStackedInline):
     inlines = [TrtMeasurementsInline]
     verbose_name = "Observation"  # Singular name for one object
     extra = 0
-    
+
 
 class TrtTagsInline(nested_admin.NestedStackedInline):
     model = TrtTags
     verbose_name = "Flipper Tag"  # Singular name for one object
     extra = 0
-    #form = select2_modelform(TrtTags, attrs={'width': '250px'})
+
 
 class TrtPitTagsInline(nested_admin.NestedStackedInline):
     model = TrtPitTags
     verbose_name = "Pit Tag"  # Singular name for one object
     extra = 0
 
+
 class TrtDamageInline(nested_admin.NestedStackedInline):
     model = TrtDamage
     verbose_name = "Damage"  # Singular name for one object
     extra = 0
+
 
 class TrtDataEntryInline(admin.StackedInline):
     model = TrtDataEntry
@@ -42,12 +43,14 @@ class TrtDataEntryInline(admin.StackedInline):
     form = DataEntryUserModelForm
     extra = 0
 
+
 @admin.register(TrtEntryBatches)
 class TrtEntryBatchesAdmin(admin.ModelAdmin):
     list_display = ('entry_batch_id','entry_date','entered_person_id','comments')
     ordering = ["-entry_batch_id"]
     inlines = [TrtDataEntryInline]
     form = EnterUserModelForm
+
 
 @admin.register(TrtDataEntry)
 class TrtDataEntryAdmin(admin.ModelAdmin):
@@ -57,9 +60,10 @@ class TrtDataEntryAdmin(admin.ModelAdmin):
         """
         return {}
 
+
 @admin.register(TrtTurtles)
 class TrtTurtlesAdmin(ImportExportModelAdmin,nested_admin.NestedModelAdmin):
-    
+
     list_display = ('turtle_id','species_code','turtle_name')
     date_hierarchy = "date_entered"
     ordering = ["date_entered"]
@@ -67,16 +71,16 @@ class TrtTurtlesAdmin(ImportExportModelAdmin,nested_admin.NestedModelAdmin):
     search_fields = ['turtle_id']
     inlines = [TrtObservationsInline,TrtTagsInline,TrtPitTagsInline]
 
+
 @admin.register(TrtObservations)
 class TrtObservationsAdmin(nested_admin.NestedModelAdmin):
-    autocomplete_fields= ['turtle']
+    autocomplete_fields = ['turtle']
     list_display = ('observation_id','turtle','observation_date','entry_batch')
     date_hierarchy = "observation_date"
     list_filter = ['turtle__species_code','place_code']
     search_fields = ['observation_id','entry_batch__entry_batch_id']
     inlines = [TrtMeasurementsInline,TrtDamageInline]
-    
-    
+
 
 @admin.register(TrtMeasurements)
 class TrtMeasurementsdmin(admin.ModelAdmin):
@@ -93,11 +97,13 @@ class TrtTagsAdmin(ImportExportModelAdmin):
     list_filter = ['tag_status']
     search_fields = ['tag_id']
 
+
 @admin.register(TrtPitTags)
-class TrtTagsAdmin(ImportExportModelAdmin):
+class TrtPitTagsAdmin(ImportExportModelAdmin):
     list_display = ('pittag_id','turtle','pit_tag_status')
     list_filter = ['pit_tag_status']
     search_fields = ['pittag_id']
+
 
 @admin.register(TrtTagOrders)
 class TrtTagOrdersAdmin(ImportExportModelAdmin):
@@ -107,7 +113,7 @@ class TrtTagOrdersAdmin(ImportExportModelAdmin):
     verbose_name = "Tag Order"  # Singular name for one object
     verbose_name_plural = "Tag Orders"
 
+
 @admin.register(TrtPersons)
 class TrtPersonsAdmin(ImportExportModelAdmin):
     search_fields = ['first_name','surname','email']
-
