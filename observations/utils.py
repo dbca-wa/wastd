@@ -36,7 +36,7 @@ def reconstruct_missing_surveys(buffer_mins=30):
     Crosstab: See pandas
     """
     encounters_no_survey = Encounter.objects.exclude(site=None).filter(survey=None)
-    LOGGER.info("Found {} orphans Encounters without survey".format(encounters_no_survey.count()))
+    LOGGER.info("Found {} orphan Encounters without survey".format(encounters_no_survey.count()))
     LOGGER.info("Inferring missing survey data...")
     tne_all = [[t.site.id, t.when.date(), t.when, t.reporter] for t in encounters_no_survey]
     tne_idx = [[t[0], t[1]] for t in tne_all]
