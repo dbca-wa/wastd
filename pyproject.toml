@@ -35,7 +35,7 @@ pillow = "^10.0.1"
 whitenoise = {version = "^6.3.0", extras = ["brotli"]}
 phonenumbers = "^8.13.3"
 django-phonenumber-field = "^7.0.1"
-mssql-django = { git = "https://github.com/microsoft/mssql-django.git" }
+mssql-django = "1.4.1"
 webtemplate-dbca = "1.5.1"
 django-storages = {version = "^1.13.2", extras = ["azure"]}
 django-map-widgets = "^0.4.2"
