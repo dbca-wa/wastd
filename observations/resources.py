@@ -1,8 +1,7 @@
+from datetime import timedelta
+from dateutil import tz
 from import_export.fields import Field
 from import_export.resources import ModelResource
-
-from datetime import datetime, timedelta
-from dateutil import tz
 
 from .lookups import NA_VALUE
 from .models import (
@@ -67,7 +66,7 @@ class EncounterResource(ModelResource):
     #split out lat long
     latitude = Field(column_name='latitude')
     longitude = Field(column_name='longitude')
-    
+
     #split the date
     day = Field(column_name='day')
     month = Field(column_name='month')
@@ -75,9 +74,6 @@ class EncounterResource(ModelResource):
     time = Field(column_name='time')
     #Turtle time
     turtle_time_day = Field(column_name='turtle_time_day')
-    
-
-
 
     class Meta:
         model = Encounter
@@ -130,20 +126,19 @@ class EncounterResource(ModelResource):
 
     def dehydrate_encounter_type(self, obj):
         return obj.get_encounter_type_display()
-    
+
     #split lat long
     def dehydrate_latitude(self, obj):
-         return obj.latitude
+        return obj.latitude
 
     def dehydrate_longitude(self, obj):
         return obj.longitude
-    
-    #excel can't deal with timezone objects so convert to a string. 
+
+    #excel can't deal with timezone objects so convert to a string.
     #Note this displayed using the Django set timezone NOT the timezone the encouter happened - this is potetially bad if it is different. Really should be showing the timezone of collection
     def dehydrate_when(self, obj):
         return obj.when.astimezone(tz.tzlocal()).strftime("%d-%b-%Y %H:%M:%S")
 
-    
     #split the date
     def dehydrate_day(self, obj):
         if obj.when:
@@ -159,32 +154,29 @@ class EncounterResource(ModelResource):
         if obj.when:
             return obj.when.astimezone(tz.tzlocal()).year
         return ''
-    
+
     #Note this displayed using the Django set timezone NOT the timezone the encouter happened - this is potetially bad if it is different. Really should be showing the timezone of collection
     def dehydrate_time(self, obj):
         if obj.when:
             return obj.when.astimezone(tz.tzlocal()).strftime("%H:%M:%S")
         return ''
-    
+
     #from 12pm to 12pm then next day, the date stays the same i.e 11:59am on 3/12/23 is 2/12/23
     #Note this displayed using the Django set timezone NOT the timezone the encouter happened - this is potetially bad if it is different. Really should be showing the timezone of collection
     def dehydrate_turtle_time_day(self, obj):
         if obj.when:
             if obj.when.astimezone(tz.tzlocal()).hour < 12:
-                adjusted_date =  obj.when.astimezone(tz.tzlocal()) - timedelta(days=1)
+                adjusted_date = obj.when.astimezone(tz.tzlocal()) - timedelta(days=1)
                 return adjusted_date.strftime("%d-%b-%Y")
             return obj.when.strftime("%d-%b-%Y")
         return ''
-        
-
-
 
 
 class AnimalEncounterResource(EncounterResource):
 
     class Meta:
         model = AnimalEncounter
-        fields =  EncounterResource.Meta.fields + [
+        fields = EncounterResource.Meta.fields + [
             "id",
             "source",
             "source_id",
@@ -216,12 +208,8 @@ class AnimalEncounterResource(EncounterResource):
         ]
 
 
-
-
 class TurtleNestEncounterResource(EncounterResource):
-    #def get_queryset(self):
-    #        return TurtleNestEncounter.objects.select_related('eggs_laid')
-    
+
     # Construct fields that belong to child TurtleNestObservation objects.
     eggs_laid = Field(column_name='Eggs laid?')
     egg_count = Field(column_name='Eggs count')
@@ -448,7 +436,6 @@ class TurtleNestEncounterResource(EncounterResource):
         obs = self._get_or_cache_observation(encounter, 'hatchling_emergence_observation')
 
         return self.get_child_observation_output(obs, 'bearing_to_water_degrees')
-    
 
     def dehydrate_bearing_leftmost_track_degrees(self, encounter):
         obs = self._get_or_cache_observation(encounter, 'hatchling_emergence_observation')
@@ -485,12 +472,12 @@ class TurtleNestEncounterResource(EncounterResource):
     def dehydrate_light_sources_present(self, encounter):
         obs = self._get_or_cache_observation(encounter, 'hatchling_emergence_observation')
         return self.get_child_observation_output(obs, 'light_sources_present')
-    
+
     #assumed recored in AWST then stored in UTC
     def dehydrate_hatchling_emergence_time(self, encounter):
         obs = self._get_or_cache_observation(encounter, 'hatchling_emergence_observation')
         if obs:
-            atime =  self.get_child_observation_output(obs, 'hatchling_emergence_time')
+            atime = self.get_child_observation_output(obs, 'hatchling_emergence_time')
             if atime:
                 return atime.astimezone(tz.tzlocal()).strftime("%d-%b-%Y %H:%M:%S")
         else:
@@ -499,7 +486,6 @@ class TurtleNestEncounterResource(EncounterResource):
     def dehydrate_hatchling_emergence_time_accuracy(self, encounter):
         obs = self._get_or_cache_observation(encounter, 'hatchling_emergence_observation')
         return self.get_child_observation_output(obs, 'hatchling_emergence_time_accuracy')
-
 
     def dehydrate_cloud_cover_at_emergence_known(self, encounter):
         obs = self._get_or_cache_observation(encounter, 'hatchling_emergence_observation')
@@ -522,12 +508,11 @@ class TurtleNestEncounterResource(EncounterResource):
             return obs.flipper_tag_id
         else:
             return ''
-    
-    
+
     def dehydrate_date_nest_laid(self, encounter):
         obs = self._get_or_cache_observation(encounter,'nesttag_observation')
         if obs and obs.date_nest_laid:
-            return obs.date_nest_laid.strftime("%Y-%m-%d") #no timezone stored in object as it's only a date object
+            return obs.date_nest_laid.strftime("%Y-%m-%d")  # No timezone stored in object as it's only a date object
         else:
             return ''
 
@@ -537,7 +522,7 @@ class TurtleNestEncounterResource(EncounterResource):
             return obs.tag_label or ''
         else:
             return ''
-    
+
     #only call the database if we haven't got the observation yet
     def _get_or_cache_observation(self, encounter, obs_type):
         cache_attr = f"_cached_{obs_type}"

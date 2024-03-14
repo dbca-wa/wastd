@@ -1,3 +1,4 @@
+from dbca_utils.utils import env
 import dj_database_url
 import os
 from pathlib import Path
@@ -5,13 +6,19 @@ import sys
 import tomli
 from zoneinfo import ZoneInfo
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, 'subdir')
+# Build paths inside the project like this: os.path.join(BASE_DIR, "subdir")
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # Settings defined in environment variables.
-DEBUG = os.environ.get("DEBUG", False) == "True"
-SECRET_KEY = os.environ.get("SECRET_KEY", "PlaceholderSecretKey")
+DEBUG = env("DEBUG", False)
+SECRET_KEY = env("SECRET_KEY", "PlaceholderSecretKey")
+CSRF_COOKIE_SECURE = env("CSRF_COOKIE_SECURE", False)
+CSRF_TRUSTED_ORIGINS = env("CSRF_TRUSTED_ORIGINS", "http://127.0.0.1").split(",")
+SESSION_COOKIE_SECURE = env("SESSION_COOKIE_SECURE", False)
+SECURE_SSL_REDIRECT = env("SECURE_SSL_REDIRECT", False)
+SECURE_REFERRER_POLICY = env("SECURE_REFERRER_POLICY", None)
+SECURE_HSTS_SECONDS = env("SECURE_HSTS_SECONDS", 0)
 if not DEBUG:
     ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(",")
 else:
@@ -20,6 +27,7 @@ INTERNAL_IPS = ["127.0.0.1", "::1"]
 ROOT_URLCONF = "wastd.urls"
 WSGI_APPLICATION = "wastd.wsgi.application"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
 # This is required to add context variables to all templates:
 STATIC_CONTEXT_VARS = {}
 FIXTURE_DIRS = [os.path.join(BASE_DIR, "wastd", "fixtures")]
@@ -28,13 +36,13 @@ FIXTURE_DIRS = [os.path.join(BASE_DIR, "wastd", "fixtures")]
 LOCAL_MEDIA_STORAGE = os.environ.get("LOCAL_MEDIA_STORAGE", False)
 if LOCAL_MEDIA_STORAGE:
     DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
-    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+    MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 else:
-    DEFAULT_FILE_STORAGE = 'storages.backends.azure_storage.AzureStorage'
-    AZURE_ACCOUNT_NAME = os.environ.get('AZURE_ACCOUNT_NAME', 'name')
-    AZURE_ACCOUNT_KEY = os.environ.get('AZURE_ACCOUNT_KEY', 'key')
-    AZURE_CONTAINER = os.environ.get('AZURE_CONTAINER', 'container')
-    AZURE_URL_EXPIRATION_SECS = os.environ.get('AZURE_URL_EXPIRATION_SECS', 3600)  # Default one hour.
+    DEFAULT_FILE_STORAGE = "storages.backends.azure_storage.AzureStorage"
+    AZURE_ACCOUNT_NAME = os.environ.get("AZURE_ACCOUNT_NAME", "name")
+    AZURE_ACCOUNT_KEY = os.environ.get("AZURE_ACCOUNT_KEY", "key")
+    AZURE_CONTAINER = os.environ.get("AZURE_CONTAINER", "container")
+    AZURE_URL_EXPIRATION_SECS = os.environ.get("AZURE_URL_EXPIRATION_SECS", 3600)  # Default one hour.
 
 # Application settings
 INSTALLED_APPS = [
@@ -88,45 +96,6 @@ MIDDLEWARE = [
     "dbca_utils.middleware.SSOLoginMiddleware",
 ]
 
-# if DEBUG:
-#     # Application settings
-#     INSTALLED_APPS = INSTALLED_APPS + [
-#         "debug_toolbar",
-#     ]
-#     #need to redefined as the order is important for the debug toolbar
-#     MIDDLEWARE = [
-#         "wastd.middleware.HealthCheckMiddleware",
-#         "django.middleware.security.SecurityMiddleware",
-#         "whitenoise.middleware.WhiteNoiseMiddleware",
-#         "django.contrib.sessions.middleware.SessionMiddleware",
-#         "django.middleware.common.CommonMiddleware",
-#         "debug_toolbar.middleware.DebugToolbarMiddleware",
-#         "django.middleware.csrf.CsrfViewMiddleware",
-#         "django.contrib.auth.middleware.AuthenticationMiddleware",
-#         "django.contrib.messages.middleware.MessageMiddleware",
-#         "django.middleware.clickjacking.XFrameOptionsMiddleware",
-#         "reversion.middleware.RevisionMiddleware",
-#         "dbca_utils.middleware.SSOLoginMiddleware",
-
-#     ]
-
-#     DEBUG_TOOLBAR_PANELS = [
-#         'debug_toolbar.panels.history.HistoryPanel',
-#         'debug_toolbar.panels.versions.VersionsPanel',
-#         'debug_toolbar.panels.timer.TimerPanel',
-#         'debug_toolbar.panels.settings.SettingsPanel',
-#         'debug_toolbar.panels.headers.HeadersPanel',
-#         'debug_toolbar.panels.request.RequestPanel',
-#         'debug_toolbar.panels.sql.SQLPanel',
-#         'debug_toolbar.panels.staticfiles.StaticFilesPanel',
-#         'debug_toolbar.panels.templates.TemplatesPanel',
-#         'debug_toolbar.panels.cache.CachePanel',
-#         'debug_toolbar.panels.signals.SignalsPanel',
-#         'debug_toolbar.panels.redirects.RedirectsPanel',
-#         'debug_toolbar.panels.profiling.ProfilingPanel',
-#         "wastd.middleware.FileInterceptsPanel"
-#     ]
-
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -174,15 +143,6 @@ MAP_WIDGETS = {
     }
 }
 MAPPROXY_URL = os.environ.get("MAPPROXY_URL", "")
-
-#REST_FRAMEWORK = {
-#    'DEFAULT_PERMISSION_CLASSES': [
-#        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
-#    ],
-#    'DEFAULT_RENDERER_CLASSES': [
-#        'rest_framework.renderers.JSONRenderer',
-#    ]
-#}
 IMPORT_EXPORT_SKIP_ADMIN_CONFIRM = True
 
 # Use the customised User model
@@ -196,9 +156,8 @@ LOCAL_USERGROUPS = [
     "data entry",
     "api",
 ]
-LOGIN_URL = '/login/'
-LOGIN_REDIRECT_URL = '/'
-CSRF_TRUSTED_ORIGINS = ["https://turtles-uat.dbca.wa.gov.au","https://turtles.dbca.wa.gov.au"]
+LOGIN_URL = "/login/"
+LOGIN_REDIRECT_URL = "/"
 
 # Branding
 SITE_NAME = os.environ.get("SITE_NAME", "Turtles Database")
@@ -213,26 +172,25 @@ DATABASES = {
     # Defined in DATABASE_URL env variable.
     "default": dj_database_url.config(),
     "wamtram2": {
-        'ENGINE': 'mssql',
-        'HOST': os.environ.get('DB_HOST', 'host'),
-        'NAME': os.environ.get('DB_NAME', 'database'),
-        'PORT': os.environ.get('DB_PORT', 1234),
-        'USER': os.environ.get('DB_USERNAME', 'user'),
-        'PASSWORD': os.environ.get('DB_PASSWORD', 'user'),
-        'OPTIONS': {
-            'driver': os.environ.get('DB_DRIVER', 'ODBC Driver 17 for SQL Server'),
-            'extra_params': os.environ.get('DB_EXTRA_PARAMS', ''),
+        "ENGINE": "mssql",
+        "HOST": os.environ.get("DB_HOST", "host"),
+        "NAME": os.environ.get("DB_NAME", "database"),
+        "PORT": os.environ.get("DB_PORT", 1234),
+        "USER": os.environ.get("DB_USERNAME", "user"),
+        "PASSWORD": os.environ.get("DB_PASSWORD", "user"),
+        "OPTIONS": {
+            "driver": os.environ.get("DB_DRIVER", "ODBC Driver 17 for SQL Server"),
+            "extra_params": os.environ.get("DB_EXTRA_PARAMS", ""),
         },
     },
 }
-DATABASE_ROUTERS = ['wamtram2.routers.Wamtram2Router']
+DATABASE_ROUTERS = ["wamtram2.routers.Wamtram2Router"]
 
 
 # Internationalisation.
 USE_I18N = False
 USE_L10N = True
 USE_TZ = True
-TIME_ZONE = "Australia/Perth"
 LANGUAGE_CODE = "en-us"
 DATE_INPUT_FORMATS = (
     "%d/%m/%Y",
@@ -250,7 +208,8 @@ DATETIME_INPUT_FORMATS = (
     "%d-%m-%Y %H:%M",
     "%d-%m-%y %H:%M",
 )
-AWST = ZoneInfo(TIME_ZONE)
+TIME_ZONE = "Australia/Perth"
+TZ = ZoneInfo(TIME_ZONE)
 UTC = ZoneInfo("UTC")
 
 

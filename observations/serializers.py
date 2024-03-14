@@ -1,9 +1,5 @@
 from django.conf import settings
-from django.utils import timezone
 from typing import Dict, Any
-
-
-TZ = timezone.get_current_timezone()
 
 
 def area_serializer(obj) -> Dict[str, Any]:
@@ -51,14 +47,14 @@ def survey_serializer(obj) -> Dict[str, Any]:
             'site_id': obj.site.pk if obj.site else None,
             'reporter_id': obj.reporter.pk if obj.reporter else None,
             'start_location_accuracy_m': obj.start_location_accuracy_m,
-            'start_time': obj.start_time.astimezone(TZ).isoformat(),
+            'start_time': obj.start_time.astimezone(settings.TZ).isoformat(),
             'start_photo': settings.MEDIA_URL + obj.start_photo.name if obj.start_photo else None,  # FIXME: absolute URL
             'start_comments': obj.start_comments,
             'end_source_id': obj.end_source_id,
             'end_device_id': obj.end_device_id,
             'end_location': obj.end_location.wkt if obj.end_location else None,
             'end_location_accuracy_m': obj.end_location_accuracy_m,
-            'end_time': obj.end_time.astimezone(TZ).isoformat(),
+            'end_time': obj.end_time.astimezone(settings.TZ).isoformat(),
             'end_photo': settings.MEDIA_URL + obj.end_photo.name if obj.end_photo else None,  # FIXME: absolute URL
             'end_comments': obj.end_comments,
             'production': obj.production,
@@ -113,7 +109,7 @@ def encounter_serializer(obj) -> Dict[str, Any]:
             'site_id': obj.site.pk if obj.site else None,
             'source': obj.get_source_display(),
             'source_id': obj.source_id,
-            'when': obj.when.astimezone(TZ).isoformat(),
+            'when': obj.when.astimezone(settings.TZ).isoformat(),
             'location_accuracy': obj.location_accuracy,
             'location_accuracy_m': obj.location_accuracy_m,
             'name': obj.name,
@@ -144,7 +140,7 @@ def animalencounter_serializer(obj) -> Dict[str, Any]:
         #'sighting_status': obj.get_sighting_status_display(),
         #'sighting_status_reason': obj.sighting_status_reason,
         #'identifiers': obj.identifiers,
-        #'datetime_of_last_sighting': obj.datetime_of_last_sighting.astimezone(TZ).isoformat() if obj.datetime_of_last_sighting else None,
+        #'datetime_of_last_sighting': obj.datetime_of_last_sighting.astimezone(settings.TZ).isoformat() if obj.datetime_of_last_sighting else None,
         #'site_of_last_sighting_id': obj.site_of_last_sighting.pk if obj.site_of_last_sighting else None,
         #'site_of_first_sighting_id': obj.site_of_first_sighting.pk if obj.site_of_first_sighting else None,
         'nesting_event': obj.get_nesting_event_display(),
@@ -268,7 +264,7 @@ def turtle_hatchling_emergence_observation_serializer(obj) -> Dict[str, Any]:
         'hatchling_emergence_time_known': obj.get_hatchling_emergence_time_known_display(),
         'cloud_cover_at_emergence_known': obj.get_cloud_cover_at_emergence_known_display(),
         'light_sources_present': obj.get_light_sources_present_display(),
-        'hatchling_emergence_time': obj.hatchling_emergence_time.astimezone(TZ).isoformat() if obj.hatchling_emergence_time else None,
+        'hatchling_emergence_time': obj.hatchling_emergence_time.astimezone(settings.TZ).isoformat() if obj.hatchling_emergence_time else None,
         'hatchling_emergence_time_accuracy': obj.hatchling_emergence_time_accuracy,
         'cloud_cover_at_emergence': obj.cloud_cover_at_emergence,
     }
