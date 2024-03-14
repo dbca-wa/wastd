@@ -4,7 +4,7 @@ from django.views.generic.edit import FormMixin
 from django.urls import reverse
 from django.views import generic
 from django.conf import settings
-from wastd.utils import  Breadcrumb
+from wastd.utils import Breadcrumb
 from django.http import HttpResponseRedirect, HttpResponseForbidden
 
 from .models import TrtTurtles,TrtTags,TrtPitTags, TrtEntryBatches,TrtDataEntry,TrtPersons,TrtObservations
@@ -17,9 +17,10 @@ from django.db import connections
 from django.views.generic import ListView
 from django.contrib import messages
 from django.db import DatabaseError
-from django.db.models import Q , Exists, OuterRef
+from django.db.models import Q, Exists, OuterRef
 
 from django.views.generic import TemplateView
+
 
 class HomePageView(LoginRequiredMixin,TemplateView):
     """
@@ -48,7 +49,7 @@ class EntryBatchesListView(LoginRequiredMixin,ListView):
     """
 
     model = TrtEntryBatches
-    template_name = 'trtentrybatches_list.html'  
+    template_name = 'trtentrybatches_list.html'
     context_object_name = 'batches'
     paginate_by = 50
 
@@ -76,7 +77,7 @@ class EntryBatchesListView(LoginRequiredMixin,ListView):
             queryset = queryset.filter(has_dataentry_no_observation_id)
 
         return queryset.order_by('-entry_batch_id')
-    
+
     def get_context_data(self, **kwargs):
         """
         Returns the context data for rendering the list view.
@@ -87,6 +88,7 @@ class EntryBatchesListView(LoginRequiredMixin,ListView):
         context = super().get_context_data(**kwargs)
         context['persons'] = {person.person_id: person for person in TrtPersons.objects.all()}
         return context
+
 
 class EntryBatchDetailView(LoginRequiredMixin,FormMixin,generic.ListView):
     """
@@ -104,18 +106,18 @@ class EntryBatchDetailView(LoginRequiredMixin,FormMixin,generic.ListView):
 
     """
 
-    model = TrtDataEntry    
-    template_name = 'wamtram2/trtentrybatch_detail.html'  
+    model = TrtDataEntry
+    template_name = 'wamtram2/trtentrybatch_detail.html'
     context_object_name = 'batch'
     paginate_by = 50
     form_class = TrtEntryBatchesForm
-    
+
     def dispatch(self, request, *args, **kwargs):
         # FIXME: Permission check
         if not (request.user.groups.filter(name='Tagging Data Entry').exists() or request.user.groups.filter(name='Tagging Data Curation').exists() or request.user.is_superuser):
             return HttpResponseForbidden("You do not have permission to view this record")
         return super().dispatch(request, *args, **kwargs)
-    
+
     def get(self, request, *args, **kwargs):
         """
         Handle GET requests.
@@ -132,11 +134,9 @@ class EntryBatchDetailView(LoginRequiredMixin,FormMixin,generic.ListView):
             The response returned by the 'get' method of the parent class.
         """
         if 'batch_id' not in kwargs:
-            new_batch = TrtEntryBatches.objects.create(pr_date_convention=False) #all dates should be entered as calander dates
+            new_batch = TrtEntryBatches.objects.create(pr_date_convention=False)  # All dates should be entered as calander dates
             self.kwargs['batch_id'] = new_batch.entry_batch_id
         return super().get(request, *args, **kwargs)
-        
-
 
     def get_queryset(self):
         """
@@ -175,7 +175,7 @@ class EntryBatchDetailView(LoginRequiredMixin,FormMixin,generic.ListView):
         context['batch'] = batch  # add the batch to the context
         context['form'] = TrtEntryBatchesForm(instance=batch)  # Add the form to the context data
         return context
-    
+
     """
     FormMixin provides the following methods:
     """
@@ -205,11 +205,12 @@ class EntryBatchDetailView(LoginRequiredMixin,FormMixin,generic.ListView):
 
         # Redirect to the success URL
         return HttpResponseRedirect(self.get_success_url())
-    
+
     def get_success_url(self):
-        batch_id = self.kwargs.get('batch_id') 
+        batch_id = self.kwargs.get('batch_id')
         return reverse('wamtram2:entry_batch_detail', args=[batch_id])
-    
+
+
 class TrtDataEntryForm(LoginRequiredMixin, generic.FormView):
     """
     A form view for entering TRT data.
@@ -225,7 +226,7 @@ class TrtDataEntryForm(LoginRequiredMixin, generic.FormView):
         if not (request.user.groups.filter(name='Tagging Data Entry').exists() or request.user.groups.filter(name='Tagging Data Curation').exists() or request.user.is_superuser):
             return HttpResponseForbidden("You do not have permission to view this record")
         return super().dispatch(request, *args, **kwargs)
-    
+
     def get_form_kwargs(self):
         """
         Returns the keyword arguments for instantiating the form.
@@ -242,7 +243,7 @@ class TrtDataEntryForm(LoginRequiredMixin, generic.FormView):
         if entry_id:
             entry = get_object_or_404(TrtDataEntry, data_entry_id=entry_id)
             kwargs['instance'] = entry
-        
+
         return kwargs
 
     def get_initial(self):
@@ -255,11 +256,11 @@ class TrtDataEntryForm(LoginRequiredMixin, generic.FormView):
         #starting a new observation in a batch
         if batch_id:
             initial['entry_batch'] = get_object_or_404(TrtEntryBatches, entry_batch_id=batch_id)
-        
+
         #starting a new observation with an existing turtle
         if turtle_id:
             turtle = get_object_or_404(TrtTurtles, turtle_id=turtle_id)
-            initial['turtle_id'] = turtle_id 
+            initial['turtle_id'] = turtle_id
 
             initial['species_code'] = turtle.species_code
 
@@ -272,16 +273,16 @@ class TrtDataEntryForm(LoginRequiredMixin, generic.FormView):
             # initial['recapture_right_tag_id_2'] = turtle.trttags_set.filter(side='L').all().order_by('tag_order_id')[2] if turtle.trttags_set.filter(side='L').count() > 2 else None
 
             # initial['recapture_right_tag_id'] = turtle.trttags_set.filter(side='R').all().order_by('tag_order_id')[0] if turtle.trttags_set.filter(side='R').count() > 0 else None
-    
+
             # initial['recapture_right_tag_id_2'] = turtle.trttags_set.filter(side='R').all().order_by('tag_order_id')[1] if turtle.trttags_set.filter(side='R').count() > 1 else None
-    
+
             # initial['recapture_right_tag_id_3'] = turtle.trttags_set.filter(side='R').all().order_by('tag_order_id')[2] if turtle.trttags_set.filter(side='R').count() > 2 else None
 
             # initial['recapture_pittag_id'] = turtle.trtpittags_set.all().order_by('tag_order_id')[0] if turtle.trtpittags_set.count() > 0 else None
 
             # initial['recapture_pittag_id_2'] = turtle.trtpittags_set.all().order_by('tag_order_id')[1] if turtle.trtpittags_set.count() > 1 else None
-        
-        #editing an existing observation we need to populate the person id fields from the strings stored 
+
+        #editing an existing observation we need to populate the person id fields from the strings stored
         #using the old MS Access system
         if entry_id:
             trtdataentry = get_object_or_404(TrtDataEntry, data_entry_id=entry_id)
@@ -289,7 +290,7 @@ class TrtDataEntryForm(LoginRequiredMixin, generic.FormView):
             recorded_by = trtdataentry.recorded_by
             tagged_by = trtdataentry.tagged_by
             entered_by = trtdataentry.entered_by
-            measured_recorded_by = trtdataentry.measured_recorded_by         
+            measured_recorded_by = trtdataentry.measured_recorded_by
 
             if measured_by:
                 first_name, last_name = measured_by.split(' ')
@@ -318,7 +319,7 @@ class TrtDataEntryForm(LoginRequiredMixin, generic.FormView):
                     initial['measured_recorded_by_id'] = person.person_id
 
         return initial
-        
+
     def form_valid(self, form):
         """
         Saves the form and returns the success URL.
@@ -331,14 +332,14 @@ class TrtDataEntryForm(LoginRequiredMixin, generic.FormView):
         """
         form.save()
 
-        # Get the batch_id 
+        # Get the batch_id
         batch_id = form.cleaned_data['entry_batch'].entry_batch_id
 
         # Set the success URL
         self.success_url = reverse('wamtram2:entry_batch_detail', args=[batch_id])
-        
+
         return super().form_valid(form)
-    
+
     def get_context_data(self, **kwargs):
         """
         Returns the context data for rendering the template.
@@ -352,26 +353,27 @@ class TrtDataEntryForm(LoginRequiredMixin, generic.FormView):
         entry_id = self.kwargs.get('entry_id')
         batch_id = self.kwargs.get('batch_id')
         if entry_id:
-            context['entry_id'] = entry_id #editing existing entry
+            context['entry_id'] = entry_id  # Editing existing entry
             context['entry'] = get_object_or_404(TrtDataEntry, data_entry_id=entry_id)
         if batch_id:
-            context['batch_id'] = batch_id #creating new entry in batch
-          
+            context['batch_id'] = batch_id  # Creating new entry in batch
+
         return context
-    
 
 
 class DeleteBatchView(LoginRequiredMixin,View):
+
     def dispatch(self, request, *args, **kwargs):
         # FIXME: Permission check
         if not (request.user.groups.filter(name='Tagging Data Entry').exists() or request.user.groups.filter(name='Tagging Data Curation').exists() or request.user.is_superuser):
             return HttpResponseForbidden("You do not have permission to view this record")
         return super().dispatch(request, *args, **kwargs)
-    
+
     def get(self, request, batch_id):
         batch = get_object_or_404(TrtEntryBatches, entry_batch_id=batch_id)
         batch.delete()
         return redirect('wamtram2:entry_batches')
+
 
 class ValidateDataEntryBatchView(LoginRequiredMixin,View):
     """
@@ -395,7 +397,7 @@ class ValidateDataEntryBatchView(LoginRequiredMixin,View):
         if not (request.user.groups.filter(name='Tagging Data Entry').exists() or request.user.groups.filter(name='Tagging Data Curation').exists() or request.user.is_superuser):
             return HttpResponseForbidden("You do not have permission to view this record")
         return super().dispatch(request, *args, **kwargs)
-    
+
     def get(self, request, *args, **kwargs):
         try:
             with connections['wamtram2'].cursor() as cursor:
@@ -433,7 +435,7 @@ class ProcessDataEntryBatchView(LoginRequiredMixin,View):
         if not (request.user.groups.filter(name='Tagging Data Entry').exists() or request.user.groups.filter(name='Tagging Data Curation').exists() or request.user.is_superuser):
             return HttpResponseForbidden("You do not have permission to view this record")
         return super().dispatch(request, *args, **kwargs)
-    
+
     def get(self, request, *args, **kwargs):
         try:
             with connections['wamtram2'].cursor() as cursor:
@@ -442,6 +444,7 @@ class ProcessDataEntryBatchView(LoginRequiredMixin,View):
         except DatabaseError as e:
             messages.add_message(request, messages.ERROR, 'Database error: {}'.format(e))
         return redirect('wamtram2:entry_batch_detail', batch_id=self.kwargs['batch_id'])
+
 
 class FindTurtleView(LoginRequiredMixin,View):
     """
@@ -481,17 +484,17 @@ class FindTurtleView(LoginRequiredMixin,View):
                 else:
                     raise TrtTags.DoesNotExist
 
-               
             except TrtTags.DoesNotExist:
                 form.add_error(None, 'No Turtle found with the given tag id.')
                 no_turtle_found = True
 
         return render(request, 'wamtram2/find_turtle.html', {'form': form, 'no_turtle_found': no_turtle_found})
 
+
 class ObservationDetailView(LoginRequiredMixin, generic.DetailView):
     model = TrtObservations
     template_name = 'wamtram2/observation_detail.html'
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         obj = get_object_or_404(TrtObservations, observation_id=self.kwargs.get('pk'))
@@ -529,7 +532,7 @@ class TurtleListView(LoginRequiredMixin, generic.ListView):
             context["query_string"] = self.request.GET["q"]
         context["breadcrumbs"] = (
             Breadcrumb("Home", reverse("home")),
-            Breadcrumb("turtles", None),
+            Breadcrumb("Tagged turtles", None),
         )
         return context
 
@@ -547,6 +550,7 @@ class TurtleListView(LoginRequiredMixin, generic.ListView):
             qs = qs.filter(Q(pk__icontains=q) | Q(trttags__tag_id__icontains=q) | Q(trtpittags__pittag_id__icontains=q)).distinct()
 
         return qs.order_by("pk")
+
 
 class TurtleDetailView(LoginRequiredMixin,generic.DetailView):
     """
