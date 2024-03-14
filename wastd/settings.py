@@ -179,7 +179,7 @@ DATABASES = {
         "USER": os.environ.get("DB_USERNAME", "user"),
         "PASSWORD": os.environ.get("DB_PASSWORD", "user"),
         "OPTIONS": {
-            "driver": os.environ.get("DB_DRIVER", "ODBC Driver 17 for SQL Server"),
+            "driver": os.environ.get("DB_DRIVER", "ODBC Driver 18 for SQL Server"),
             "extra_params": os.environ.get("DB_EXTRA_PARAMS", ""),
         },
     },
