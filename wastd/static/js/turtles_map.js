@@ -186,6 +186,7 @@ var map = L.map('map', {
     minZoom: 4,
     maxZoom: 18,
     layers: [aerialImagery],  // Sets default selections.
+    attributionControl: false,
 });
 
 // Define layer groups.
