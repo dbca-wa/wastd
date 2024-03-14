@@ -8,6 +8,9 @@ secretGenerator:
       - .env
 resources:
   - ../../base
+  - cronjobs/automated-qa
+  - cronjobs/download-odk
+  - cronjobs/reconstruct-missing-surveys
   - ingress.yaml
   - pdb.yaml
 labels:

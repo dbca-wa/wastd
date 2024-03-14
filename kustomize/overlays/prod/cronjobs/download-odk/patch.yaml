@@ -18,45 +18,45 @@ spec:
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
-                  name: turtles-env-uat
+                  name: turtles-env-prod
                   key: DATABASE_URL
             - name: ADMIN_EMAILS
               valueFrom:
                 secretKeyRef:
-                  name: turtles-env-uat
+                  name: turtles-env-prod
                   key: ADMIN_EMAILS
             - name: AZURE_ACCOUNT_NAME
               valueFrom:
                 secretKeyRef:
-                  name: turtles-env-uat
+                  name: turtles-env-prod
                   key: AZURE_ACCOUNT_NAME
             - name: AZURE_ACCOUNT_KEY
               valueFrom:
                 secretKeyRef:
-                  name: turtles-env-uat
+                  name: turtles-env-prod
                   key: AZURE_ACCOUNT_KEY
             - name: AZURE_CONTAINER
               valueFrom:
                 secretKeyRef:
-                  name: turtles-env-uat
+                  name: turtles-env-prod
                   key: AZURE_CONTAINER
             - name: ODK_API_PROJECTID
               valueFrom:
                 secretKeyRef:
-                  name: turtles-env-uat
+                  name: turtles-env-prod
                   key: ODK_API_PROJECTID
             - name: ODK_API_URL
               valueFrom:
                 secretKeyRef:
-                  name: turtles-env-uat
+                  name: turtles-env-prod
                   key: ODK_API_URL
             - name: ODK_API_EMAIL
               valueFrom:
                 secretKeyRef:
-                  name: turtles-env-uat
+                  name: turtles-env-prod
                   key: ODK_API_EMAIL
             - name: ODK_API_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: turtles-env-uat
+                  name: turtles-env-prod
                   key: ODK_API_PASSWORD
