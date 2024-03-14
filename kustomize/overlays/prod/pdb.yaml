@@ -7,4 +7,4 @@ spec:
   selector:
     matchLabels:
       app: turtles-deployment
-      variant: uat
+      variant: prod

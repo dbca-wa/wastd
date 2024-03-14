@@ -6,4 +6,4 @@ spec:
   type: ClusterIP
   selector:
     app: turtles-deployment
-    variant: uat
+    variant: prod

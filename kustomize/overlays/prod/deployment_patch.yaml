@@ -17,13 +17,13 @@ spec:
       - name: turtles
         env:
         - name: MAPPROXY_URL
-          value: "https://mapproxy.dbca.wa.gov.au/service"
+          value: "https://mapproxy.dbca.wa.gov.au"
         - name: SITE_CODE
-          value: "Turtles UAT"
+          value: "Turtles"
         - name: SITE_NAME
-          value: "Turtles Database UAT"
+          value: "Turtles Database"
         - name: SITE_TITLE
-          value: "Turtles Database UAT"
+          value: "Turtles Database"
         - name: DATABASE_URL
           valueFrom:
             secretKeyRef:
