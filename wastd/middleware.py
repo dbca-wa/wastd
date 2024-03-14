@@ -15,9 +15,9 @@ class HealthCheckMiddleware(object):
 
     def __call__(self, request):
         if request.method == "GET":
-            if request.path == "/readiness":
+            if request.path == "/readyz":
                 return self.readiness(request)
-            elif request.path == "/liveness":
+            elif request.path == "/livez":
                 return self.liveness(request)
         return self.get_response(request)
 
@@ -45,7 +45,7 @@ class HealthCheckMiddleware(object):
         return HttpResponse("OK")
 
 if settings.DEBUG:
-    #Create a debug panel to catch file downloads, allows profiling 
+    #Create a debug panel to catch file downloads, allows profiling
     #from https://stackoverflow.com/a/74223126
     class FileInterceptsPanel(Panel):
         has_content = False

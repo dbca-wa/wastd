@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: turtles-ingress
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: turtles-uat.dbca.wa.gov.au
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: turtles-clusterip-uat
+            port:
+              number: 8080
