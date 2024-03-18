@@ -1,0 +1,39 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: turtles-cronjob
+  labels:
+    app: turtles-cronjob
+spec:
+  schedule: ""
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      parallelism: 1
+      activeDeadlineSeconds: 300
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+          - name: turtles-cronjob
+            image: ghcr.io/dbca-wa/wastd
+            command: ["python"]
+            args: ["--version"]
+            env:
+            - name: TZ
+              value: "Australia/Perth"
+            securityContext:
+              runAsNonRoot: true
+              privileged: false
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop:
+                  - ALL
+              readOnlyRootFilesystem: true
+            volumeMounts:
+              - mountPath: /tmp
+                name: tmpfs-ram
+          volumes:
+            - name: tmpfs-ram
+              emptyDir:
+                medium: "Memory"

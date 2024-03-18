@@ -16,6 +16,7 @@ class UploadedFileInline(admin.StackedInline):
     verbose_name_plural = "Files and photos"  # Plural name for more than one object
     extra = 0
 
+
 # Define a custom resource class for the Incident model
 class IncidentResource(resources.ModelResource):
     species_name = Field(attribute='species', column_name='species',widget=ForeignKeyWidget(Species, field='scientific_name'))
@@ -27,32 +28,29 @@ class IncidentResource(resources.ModelResource):
 
     def dehydrate_longitude(self, incident):
         return incident.geo_location.x if incident.geo_location else None
-    
+
     class Meta:
         model = Incident
         #exclude = ('geo_location',)
         import_id_fields = ['id']
         fields = [field.name for field in model._meta.fields if field.name != 'species']
-    
+
     def before_import_row(self, row, **kwargs):
         # Convert latitude and longitude to Point
         latitude = row.get('latitude')
         longitude = row.get('longitude')
         if latitude and longitude:
             row['geo_location'] = Point(float(longitude), float(latitude))
-        
-    
-    
-        
+
+
 @admin.register(Incident)
 class IncidentAdmin(ImportExportModelAdmin):
-    
-    #list_display = ('id','species','incident_date')
+
     date_hierarchy = "incident_date"
     inlines = [UploadedFileInline]
     resource_class = IncidentResource  # Use the custom resource class
     list_filter = ['species__common_name','species__scientific_name','incident_date','mass_incident','sex','age_class','condition_when_found','outcome','post_mortem']
-    #search_fields = ('comments',)
+
     def __init__(self, model, admin_site):
         super().__init__(model, admin_site)
         self.list_display = [field.name for field in model._meta.fields] + ['latitude', 'longitude']
@@ -71,9 +69,11 @@ class IncidentAdmin(ImportExportModelAdmin):
         models.PointField: {"widget": MapboxPointFieldWidget}
     }
 
+
 @admin.register(Species)
 class SpeciesAdmin(ImportExportModelAdmin):
     list_display = ('common_name', 'scientific_name')
+
 
 @admin.register(Uploaded_file)
 class UploadedFileAdmin(admin.ModelAdmin):

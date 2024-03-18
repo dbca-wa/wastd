@@ -146,10 +146,12 @@ class TurtleNestObservationInline(StackedInline):
     model = TurtleNestObservation
     classes = ("grp-collapse grp-open",)
 
+
 class TurtleTrackObservationInline(admin.TabularInline):
     extra = 0
     model = TurtleTrackObservation
     classes = ("grp-collapse grp-open",)
+
 
 class TurtleNestDisturbanceObservationInline(admin.TabularInline):
     """Admin for TurtleNestDisturbanceObservation."""
@@ -478,6 +480,7 @@ class TurtleDamageObservationAdmin(ObservationAdminMixin):
             )
         )
 
+
 @register(TurtleTrackObservation)
 class TurtleTrackObservationAdmin(ObservationAdminMixin):
     list_display = (
@@ -491,7 +494,6 @@ class TurtleTrackObservationAdmin(ObservationAdminMixin):
         + ObservationAdminMixin.LIST_LAST
     )
 
-
     def get_queryset(self, request):
         return (
             super()
@@ -504,6 +506,7 @@ class TurtleTrackObservationAdmin(ObservationAdminMixin):
                 "encounter__site",
             )
         )
+
 
 @register(TurtleNestDisturbanceObservation)
 class TurtleNestDisturbanceObservationAdmin(ObservationAdminMixin):

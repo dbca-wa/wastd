@@ -100,9 +100,9 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=Non
 
             #check for new forms
             if 'survey_start_time' in submission['details']:
-                startTime = parser.isoparse(submission['details']['survey_start_time']) #new forms allow editing of time in case submitted after the fact
+                startTime = parser.isoparse(submission['details']['survey_start_time'])  # New forms allow editing of time in case submitted after the fact
             else:
-                startTime = parser.isoparse(submission['start_time']) #old forms
+                startTime = parser.isoparse(submission['start_time'])  # Old forms
 
             # Confusingly, TurtleNestEncounter objects cover nest, track and nest & track encounters.
             encounter = TurtleNestEncounter(
@@ -506,9 +506,9 @@ def import_turtle_track_or_nest_simple(form_id="beach_tracks_nest_simple", auth_
 
             #check for new forms
             if 'survey_start_time' in submission['details']:
-                startTime = parser.isoparse(submission['details']['survey_start_time']) #new forms allow editing of time in case submitted after the fact
+                startTime = parser.isoparse(submission['details']['survey_start_time'])  # New forms allow editing of time in case submitted after the fact
             else:
-                startTime = parser.isoparse(submission['start_time']) #old forms
+                startTime = parser.isoparse(submission['start_time'])  # Old forms
 
             # Confusingly, TurtleNestEncounter objects cover nest, track and nest & track encounters.
             encounter = TurtleNestEncounter(
@@ -579,9 +579,8 @@ def import_turtle_track_or_nest_simple(form_id="beach_tracks_nest_simple", auth_
                     track_observation.save()
                     LOGGER.info(f'Created TurtleTrackObservation {track_observation}')
 
-
-            #for this simple form we are just assuming tracks are a low disturbance event, with no other information collected
-            #these are retrieved as a space delimited string "fox cat dog"
+            # For this simple form we are just assuming tracks are a low disturbance event, with no other information collected
+            # these are retrieved as a space delimited string "fox cat dog"
             if submission['details']['disturbance_cause']:
                 disturbances = submission['details']['disturbance_cause'].split()
                 for aDisturbance in disturbances:
@@ -598,7 +597,6 @@ def import_turtle_track_or_nest_simple(form_id="beach_tracks_nest_simple", auth_
             LOGGER.error(f"An error occurred: {exception_message}")
             msg = EmailMultiAlternatives("Wastd turtle track or nest simple import failed!", f"An error occurred, a turtle track or nest simple record was not imported: {exception_message}", settings.DEFAULT_FROM_EMAIL, settings.ADMIN_EMAILS)
             msg.send(fail_silently=True)
-
 
 
 def import_site_visit_start(form_id="site_visit_start", initial_duration_hr=8, auth_headers=None):
@@ -625,9 +623,9 @@ def import_site_visit_start(form_id="site_visit_start", initial_duration_hr=8, a
             visit = submission['site_visit']
             #check for new forms
             if 'survey_start_time' in visit:
-                startTime = parser.isoparse(visit['survey_start_time']) #new forms allow editing of time in case submitted after the fact
+                startTime = parser.isoparse(visit['survey_start_time'])  # New forms allow editing of time in case submitted after the fact
             else:
-                startTime = parser.isoparse(submission['start_time']) #old forms
+                startTime = parser.isoparse(submission['start_time'])  # Old forms
 
             survey = Survey(
                 status='imported',
@@ -647,7 +645,7 @@ def import_site_visit_start(form_id="site_visit_start", initial_duration_hr=8, a
             survey.end_time = survey.start_time + timedelta(hours=initial_duration_hr)
 
             #set training surveys to non production
-            if survey.site != None:
+            if survey.site is not None:
                 if 'training' in survey.site.name.lower() or 'testing' in survey.site.name.lower():
                     survey.production = False
                     LOGGER.info(survey.site.name + " set as not production.")
@@ -716,7 +714,7 @@ def import_site_visit_end(form_id="site_visit_end", duration_hr=8, auth_headers=
                 # Send a warning to the admins to investigate & address.
                 log = (f"Site Visit End form: unable to match a site for survey end at {location.wkt}")
                 LOGGER.warning(log)
-                if(emailText == None):
+                if emailText is None:
                     emailText = log
                 else:
                     emailText = emailText + "\n\n" + log
@@ -727,9 +725,9 @@ def import_site_visit_end(form_id="site_visit_end", duration_hr=8, auth_headers=
             # greater than `duration_hr` hours.
             #check for new forms
             if 'survey_start_time' in visit:
-                end_time = parser.isoparse(visit['survey_end_time']) #new forms allow editing of time in case submitted after the fact
+                end_time = parser.isoparse(visit['survey_end_time'])  # New forms allow editing of time in case submitted after the fact
             else:
-                end_time = parser.isoparse(submission['end_time']) #old forms
+                end_time = parser.isoparse(submission['end_time'])  # Old forms
 
             start_time_earliest = end_time - timedelta(hours=duration_hr)
             surveys = Survey.objects.filter(
@@ -738,7 +736,7 @@ def import_site_visit_end(form_id="site_visit_end", duration_hr=8, auth_headers=
             if surveys.count() != 1:
                 log = (f"Site Visit End form: unable to match a single Survey (matched {surveys.count()})")
                 LOGGER.warning(log)
-                if(emailText == None):
+                if emailText is None:
                     emailText = log
                 else:
                     emailText = emailText + "\n\n" + log
@@ -767,7 +765,6 @@ def import_site_visit_end(form_id="site_visit_end", duration_hr=8, auth_headers=
                 )
                 photo.save()
                 LOGGER.info(f'Created SurveyMediaAttachment {photo}')
-
 
         except Exception as e:  # catches all exceptions and send an email, also log the exception type
                 exception_message = f"{e.__class__.__name__}: {e}"

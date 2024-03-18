@@ -1,0 +1,22 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+nameSuffix: -uat
+secretGenerator:
+  - name: turtles-env
+    type: Opaque
+    envs:
+      - .env
+resources:
+  - ../../base
+  - cronjobs/automated-qa
+  - cronjobs/download-odk
+  - cronjobs/reconstruct-missing-surveys
+  - ingress.yaml
+  - pdb.yaml
+labels:
+  - pairs:
+      variant: uat
+    includeSelectors: true
+patches:
+  - path: deployment_patch.yaml
+  - path: service_patch.yaml
