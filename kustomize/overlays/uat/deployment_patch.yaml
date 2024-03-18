@@ -2,16 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: turtles-deployment
-  labels:
-    app: turtles-deployment
 spec:
-  selector:
-    matchLabels:
-      app: turtles-deployment
   template:
-    metadata:
-      labels:
-        app: turtles-deployment
     spec:
       containers:
       - name: turtles

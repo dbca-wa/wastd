@@ -2,11 +2,19 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: turtles-deployment
+  labels:
+    app: turtles-deployment
 spec:
+  selector:
+    matchLabels:
+      app: turtles-deployment
   replicas: 2
   strategy:
     type: RollingUpdate
   template:
+    metadata:
+      labels:
+        app: turtles-deployment
     spec:
       containers:
       - name: turtles
