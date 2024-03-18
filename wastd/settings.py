@@ -3,7 +3,7 @@ import dj_database_url
 import os
 from pathlib import Path
 import sys
-import tomli
+import tomllib
 from zoneinfo import ZoneInfo
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, "subdir")
@@ -163,7 +163,7 @@ LOGIN_REDIRECT_URL = "/"
 SITE_NAME = os.environ.get("SITE_NAME", "Turtles Database")
 SITE_TITLE = os.environ.get("SITE_TITLE", "Turtles Database")
 SITE_CODE = os.environ.get("SITE_CODE", "Turtles")
-project = tomli.load(open(os.path.join(BASE_DIR, "pyproject.toml"), "rb"))
+project = tomllib.load(open(os.path.join(BASE_DIR, "pyproject.toml"), "rb"))
 VERSION_NO = project["tool"]["poetry"]["version"]
 
 
@@ -299,3 +299,22 @@ PHONENUMBER_DB_FORMAT = "INTERNATIONAL"
 BOOTSTRAP4 = {
     'success_css_class': '',  # Don't add `is-valid` to every form field by default.
 }
+
+
+# Sentry settings
+SENTRY_DSN = env("SENTRY_DSN", None)
+SENTRY_SAMPLE_RATE = env("SENTRY_SAMPLE_RATE", 1.0)  # Error sampling rate
+SENTRY_TRANSACTION_SAMPLE_RATE = env("SENTRY_TRANSACTION_SAMPLE_RATE", 0.0)  # Transaction sampling
+SENTRY_PROFILES_SAMPLE_RATE = env("SENTRY_PROFILES_SAMPLE_RATE", 0.0)  # Proportion of sampled transactions to profile.
+SENTRY_ENVIRONMENT = env("SENTRY_ENVIRONMENT", None)
+if SENTRY_DSN and SENTRY_ENVIRONMENT:
+    import sentry_sdk
+
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        sample_rate=SENTRY_SAMPLE_RATE,
+        traces_sample_rate=SENTRY_TRANSACTION_SAMPLE_RATE,
+        profiles_sample_rate=SENTRY_PROFILES_SAMPLE_RATE,
+        environment=SENTRY_ENVIRONMENT,
+        release=VERSION_NO,
+    )

@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 # Prepare the base environment.
-FROM python:3.10.12-slim-bullseye as builder_base_wastd
+FROM python:3.11.8-slim as builder_base_wastd
 # NOTE: we're constrained to using the version(s) of Debian which the Microsoft ODBC driver supports.
 MAINTAINER asi@dbca.wa.gov.au
 LABEL org.opencontainers.image.source https://github.com/dbca-wa/wastd
@@ -9,10 +9,11 @@ RUN apt-get update -y \
   && apt-get upgrade -y \
   && apt-get install -y libmagic-dev gcc binutils gdal-bin proj-bin python3-dev libpq-dev gzip curl gnupg2
 
-# Install the Microsoft ODBC driver for SQL Server.
-# Reference: https://learn.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server?view=sql-server-ver16#debian18
-RUN curl -s https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
-  && curl -s https://packages.microsoft.com/config/debian/11/prod.list > /etc/apt/sources.list.d/mssql-release.list\
+# Install the Microsoft ODBC driver for SQL Server. References:
+# - https://learn.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server
+# - https://learn.microsoft.com/en-us/answers/questions/1328834/debian-12-public-key-is-not-available
+RUN curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg \
+  && curl https://packages.microsoft.com/config/debian/12/prod.list | tee /etc/apt/sources.list.d/mssql-release.list \
   && apt-get update -y \
   && ACCEPT_EULA=Y apt-get install -y msodbcsql18 \
   # Change the OpenSSL config to allow old TLS versions, because our database host is outdated.

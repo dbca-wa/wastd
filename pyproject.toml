@@ -7,7 +7,7 @@ license = "MIT"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.11"
 django = "4.2.10"
 django-extensions = "3.2.3"
 psycopg2 = "2.9.9"
@@ -43,7 +43,7 @@ django-nested-admin = "^4.0.2"
 django-grappelli = "3.0.8"
 django-bootstrap4 = "24.1"
 django-easy-select2 = "1.5.8"
-tomli = "2.0.1"
+sentry-sdk = {version = "1.42.0", extras = ["django"]}
 
 [tool.poetry.group.dev.dependencies]
 ipython = "^8.21.0"
