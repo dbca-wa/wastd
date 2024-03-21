@@ -48,7 +48,7 @@ sentry-sdk = {version = "1.42.0", extras = ["django"]}
 [tool.poetry.group.dev.dependencies]
 ipython = "^8.21.0"
 ipdb = "^0.13.9"
-black = "^22.10.0"
+black = "^24.3.0"
 ruff = "^0.0.285"
 sphinx = "^7.0.1"
 vulture = "^2.7"
