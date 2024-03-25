@@ -8,8 +8,7 @@ Sea Turtles Database corporate application.
 - `wastd`: the core Django project directory, containing common settings, configuration and templates.
 - `observations`: the primary data model for the project, defining the `Encounter` and `Observation` models and subclasses.
 - `users`: an extension of the Django `contrib.auth.models.User` class, customised for this project.
-- `wamtram`: auto-generated model classes to provide readonly ORM utility for the legacy WAMTRAM database.
-- `tagging`: an "interim" application to save data from the WAMTRAM database locally, prior to a future refactor of that data model into the `observations` application.
+- `wamtram2`: auto-generated model classes to provide readonly ORM utility for the legacy WAMTRAM database.
 
 The intent is for this project to replace the WAMTRAM legacy project and to act as the repository for
 turtle tagging data. The `wamtram` application was created to ease access to the legacy database, and

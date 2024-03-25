@@ -8,7 +8,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
-django = "4.2.10"
+django = "4.2.11"
 django-extensions = "3.2.3"
 psycopg2 = "2.9.9"
 dj-database-url = "2.1.0"
@@ -46,14 +46,14 @@ django-easy-select2 = "1.5.8"
 sentry-sdk = {version = "1.42.0", extras = ["django"]}
 
 [tool.poetry.group.dev.dependencies]
-ipython = "^8.21.0"
-ipdb = "^0.13.9"
-black = "^22.10.0"
-ruff = "^0.0.285"
+ipython = "^8.22.2"
+ipdb = "^0.13.13"
+black = "^24.3.0"
+ruff = "^0.3.3"
 sphinx = "^7.0.1"
 vulture = "^2.7"
 django-debug-toolbar = "^4.2.0"
-pre-commit = "^3.6.1"
+pre-commit = "^3.6.2"
 
 [build-system]
 requires = ["poetry-core"]

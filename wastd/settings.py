@@ -75,7 +75,6 @@ INSTALLED_APPS = [
     "easy_select2",
     "djgeojson",
     "import_export",
-    #'rest_framework',
     # Local apps
     "users",
     "observations",

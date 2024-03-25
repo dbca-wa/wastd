@@ -17,7 +17,7 @@ urlpatterns = [
     path("logout/", LogoutView.as_view(template_name="logged_out.html"), name="logout"),
     path("grappelli/", include("grappelli.urls")),
     #path("grappelli-docs/", include('grappelli.urls_docs')),
-    path('_nested_admin/', include('nested_admin.urls')), 
+    path('_nested_admin/', include('nested_admin.urls')),
     path("admin/", admin.site.urls),
     #path("ajax_select/", include("ajax_select.urls")),
     path("select2/", include("django_select2.urls")),
