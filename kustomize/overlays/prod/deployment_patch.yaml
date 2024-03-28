@@ -9,7 +9,7 @@ spec:
       - name: turtles
         env:
         - name: MAPPROXY_URL
-          value: "https://mapproxy.dbca.wa.gov.au"
+          value: "https://mapproxy.dbca.wa.gov.au/service"
         - name: SITE_CODE
           value: "Turtles"
         - name: SITE_NAME
