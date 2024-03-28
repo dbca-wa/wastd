@@ -7,8 +7,6 @@ spec:
   schedule: "0 4 * * *"
   jobTemplate:
     spec:
-      # Allow up to 15 minutes for completion.
-      activeDeadlineSeconds: 900
       template:
         spec:
           containers:
