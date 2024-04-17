@@ -1076,7 +1076,7 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
     def status_colour(self):
         """Return a Bootstrap4 CSS colour class for each status."""
         return self.STATUS_LABELS[self.status]
-    
+
     @property
     def latitude(self):
         """Return the WGS 84 DD latitude."""
@@ -1198,8 +1198,6 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
     def get_flag_url(self):
         return reverse("observations:animalencounter-flag", kwargs={"pk": self.pk})
 
-    # -------------------------------------------------------------------------
-    # Derived properties
     def can_change(self):
         # Returns True if editing this object is permitted, False otherwise.
         # Determined by the object's QA status.
@@ -1412,9 +1410,6 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         """
         return False
 
-    # HTML popup -------------------------------------------------------------#
-    
-
     def get_popup(self):
         """Generate HTML popup content."""
         t = loader.get_template("popup/{}.html".format(self._meta.model_name))
@@ -1424,26 +1419,16 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         """Generate an HTML report of the Encounter."""
         t = loader.get_template("reports/{}.html".format(self._meta.model_name))
         return mark_safe(t.render({"original": self}))
-    
+
     @property
     def wkt(self):
         """Return the point coordinates as Well Known Text (WKT)."""
         return self.where.wkt
-    
+
     @property
     def observation_set(self):
         """Manually implement the backwards relation to the Observation model."""
         return Observation.objects.filter(encounter=self)
-
-    @property
-    def latitude(self):
-        """Return the WGS 84 DD latitude."""
-        return self.where.y
-
-    @property
-    def longitude(self):
-        """Return the WGS 84 DD longitude."""
-        return self.where.x
 
     @property
     def crs(self):
@@ -1697,7 +1682,6 @@ class AnimalEncounter(Encounter):
             nameparts.append(self.name)
         return slugify("-".join(nameparts))
 
-
     @property
     def is_stranding(self):
         """Return whether the Encounters is stranding or tagging.
@@ -1911,7 +1895,7 @@ class TurtleNestEncounter(Encounter):
         """A turtle nest encounter should be associated with 0-1 NestTagObservation objects.
         Returns the related NestTagObservation or None.
         """
-        
+
         observation = self.observation_set.instance_of(NestTagObservation).first()
         return observation
 
@@ -2730,10 +2714,10 @@ class TurtleNestDisturbanceObservation(Observation):
     """
 
     NEST_VIABILITY_CHOICES = (
-        ("negligible", "negligible disturbance"),
-        ("partly", "nest partly destroyed"),
-        ("completely", "nest completely destroyed"),
-        (lookups.NA_VALUE, "nest in indeterminate condition"),
+        ("negligible", "Negligible disturbance"),
+        ("partly", "Nest partly destroyed"),
+        ("completely", "Nest completely destroyed"),
+        (lookups.NA_VALUE, "Nest in indeterminate condition"),
     )
 
     disturbance_cause = models.CharField(
