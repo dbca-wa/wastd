@@ -45,6 +45,7 @@ from .resources import (
     AnimalEncounterResource,
     TurtleNestEncounterResource,
     LineTransectEncounterResource,
+    TurtleNestDisturbanceObservationResource,
 )
 
 
@@ -509,7 +510,7 @@ class TurtleTrackObservationAdmin(ObservationAdminMixin):
 
 
 @register(TurtleNestDisturbanceObservation)
-class TurtleNestDisturbanceObservationAdmin(ObservationAdminMixin):
+class TurtleNestDisturbanceObservationAdmin(ExportActionMixin, ObservationAdminMixin):
 
     list_display = (
         ObservationAdminMixin.LIST_FIRST
@@ -525,6 +526,7 @@ class TurtleNestDisturbanceObservationAdmin(ObservationAdminMixin):
         "disturbance_cause_confidence",
         "disturbance_severity",
     )
+    resource_classes = [TurtleNestDisturbanceObservationResource]
 
     def get_queryset(self, request):
         return (

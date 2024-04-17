@@ -1,5 +1,5 @@
 from datetime import timedelta
-from dateutil import tz
+from django.conf import settings
 from import_export.fields import Field
 from import_export.resources import ModelResource
 
@@ -10,6 +10,8 @@ from .models import (
     TurtleNestEncounter,
     LineTransectEncounter,
     Survey,
+    Observation,
+    TurtleNestDisturbanceObservation,
 )
 
 
@@ -137,36 +139,36 @@ class EncounterResource(ModelResource):
     #excel can't deal with timezone objects so convert to a string.
     #Note this displayed using the Django set timezone NOT the timezone the encouter happened - this is potetially bad if it is different. Really should be showing the timezone of collection
     def dehydrate_when(self, obj):
-        return obj.when.astimezone(tz.tzlocal()).strftime("%d-%b-%Y %H:%M:%S")
+        return obj.when.astimezone(settings.TZ).strftime("%d-%b-%Y %H:%M:%S")
 
     #split the date
     def dehydrate_day(self, obj):
         if obj.when:
-            return obj.when.astimezone(tz.tzlocal()).day
+            return obj.when.astimezone(settings.TZ).day
         return ''
 
     def dehydrate_month(self, obj):
         if obj.when:
-            return obj.when.astimezone(tz.tzlocal()).month
+            return obj.when.astimezone(settings.TZ).month
         return ''
 
     def dehydrate_year(self, obj):
         if obj.when:
-            return obj.when.astimezone(tz.tzlocal()).year
+            return obj.when.astimezone(settings.TZ).year
         return ''
 
     #Note this displayed using the Django set timezone NOT the timezone the encouter happened - this is potetially bad if it is different. Really should be showing the timezone of collection
     def dehydrate_time(self, obj):
         if obj.when:
-            return obj.when.astimezone(tz.tzlocal()).strftime("%H:%M:%S")
+            return obj.when.astimezone(settings.TZ).strftime("%H:%M:%S")
         return ''
 
     #from 12pm to 12pm then next day, the date stays the same i.e 11:59am on 3/12/23 is 2/12/23
     #Note this displayed using the Django set timezone NOT the timezone the encouter happened - this is potetially bad if it is different. Really should be showing the timezone of collection
     def dehydrate_turtle_time_day(self, obj):
         if obj.when:
-            if obj.when.astimezone(tz.tzlocal()).hour < 12:
-                adjusted_date = obj.when.astimezone(tz.tzlocal()) - timedelta(days=1)
+            if obj.when.astimezone(settings.TZ).hour < 12:
+                adjusted_date = obj.when.astimezone(settings.TZ) - timedelta(days=1)
                 return adjusted_date.strftime("%d-%b-%Y")
             return obj.when.strftime("%d-%b-%Y")
         return ''
@@ -479,7 +481,7 @@ class TurtleNestEncounterResource(EncounterResource):
         if obs:
             atime = self.get_child_observation_output(obs, 'hatchling_emergence_time')
             if atime:
-                return atime.astimezone(tz.tzlocal()).strftime("%d-%b-%Y %H:%M:%S")
+                return atime.astimezone(settings.TZ).strftime("%d-%b-%Y %H:%M:%S")
         else:
             return ''
 
@@ -562,3 +564,72 @@ class LineTransectEncounterResource(ModelResource):
             "encounter_type",
             "transect",
         ]
+
+
+class ObservationResource(ModelResource):
+
+    encounter_id = Field(column_name="encounter_id")
+    area = Field(column_name="area")
+    site = Field(column_name="site")
+    date = Field(column_name="date_awst")
+    latitude = Field(column_name="latitude")
+    longitude = Field(column_name="longitude")
+    encounter_status = Field(column_name="qa_status")
+
+    class Meta:
+        model = Observation
+        fields = [
+            "id",
+            "encounter_id",
+            "area",
+            "site",
+            "date",
+            "latitude",
+            "longitude",
+            "encounter_status",
+        ]
+
+    def get_export_order(self):
+        return self._meta.fields
+
+    def dehydrate_encounter_id(self, obj):
+        return obj.encounter_id
+
+    def dehydrate_area(self, obj):
+        return obj.encounter.area.name if obj.encounter.area else ""
+
+    def dehydrate_date(self, obj):
+        return obj.encounter.when.astimezone(settings.TZ).strftime("%d-%b-%Y %H:%M:%S")
+
+    def dehydrate_site(self, obj):
+        return obj.encounter.site.name if obj.encounter.site else ""
+
+    def dehydrate_latitude(self, obj):
+        return obj.encounter.latitude
+
+    def dehydrate_longitude(self, obj):
+        return obj.encounter.longitude
+
+    def dehydrate_encounter_status(self, obj):
+        return obj.encounter.get_status_display()
+
+
+class TurtleNestDisturbanceObservationResource(ObservationResource):
+
+    class Meta:
+        model = TurtleNestDisturbanceObservation
+        fields = ObservationResource.Meta.fields + [
+            "disturbance_cause",
+            "disturbance_cause_confidence",
+            "disturbance_severity",
+            "comments",
+        ]
+
+    def dehydrate_disturbance_cause(self, obj):
+        return obj.get_disturbance_cause_display()
+
+    def dehydrate_disturbance_cause_confidence(self, obj):
+        return obj.get_disturbance_cause_confidence_display()
+
+    def dehydrate_disturbance_severity(self, obj):
+        return obj.get_disturbance_severity_display()
