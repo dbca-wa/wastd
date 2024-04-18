@@ -12,6 +12,7 @@ from .models import (
     Survey,
     Observation,
     TurtleNestDisturbanceObservation,
+    TurtleTrackObservation,
 )
 
 
@@ -633,3 +634,31 @@ class TurtleNestDisturbanceObservationResource(ObservationResource):
 
     def dehydrate_disturbance_severity(self, obj):
         return obj.get_disturbance_severity_display()
+
+
+class TurtleTrackObservationResource(ObservationResource):
+
+    class Meta:
+        model = TurtleTrackObservation
+        fields = ObservationResource.Meta.fields + [
+            "max_track_width_front",
+            "max_track_width_rear",
+            "carapace_drag_width",
+            "step_length",
+            "tail_pokes",
+        ]
+
+    def dehydrate_max_track_width_front(self, obj):
+        return obj.max_track_width_front
+
+    def dehydrate_max_track_width_rear(self, obj):
+        return obj.max_track_width_rear
+
+    def dehydrate_carapace_drag_width(self, obj):
+        return obj.carapace_drag_width
+
+    def dehydrate_step_length(self, obj):
+        return obj.step_length
+
+    def dehydrate_tail_pokes(self, obj):
+        return obj.get_tail_pokes_display() if obj.tail_pokes else ""
