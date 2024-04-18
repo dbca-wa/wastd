@@ -104,7 +104,7 @@ class EncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
     paginate_by = 20
     filter_class = EncounterFilter
     resource_class = EncounterResource
-    resource_formats = ['csv', 'xlsx']
+    resource_formats = ["csv", "xlsx"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -237,10 +237,8 @@ class TurtleNestEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, Li
     template_name = "default_list.html"
     paginate_by = 20
     filter_class = TurtleNestEncounterFilter
-    resource_class = [
-        TurtleNestEncounterResource,
-    ]
-    resource_formats = ['csv', 'xlsx']
+    resource_class = TurtleNestEncounterResource
+    resource_formats = ["csv", "xlsx"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -287,7 +285,7 @@ class LineTransectEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, 
     paginate_by = 20
     filter_class = LineTransectEncounterFilter
     resource_class = LineTransectEncounterResource
-    resource_formats = ['csv', 'xlsx']
+    resource_formats = ["csv", "xlsx"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
