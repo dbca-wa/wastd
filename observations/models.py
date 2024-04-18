@@ -14,7 +14,6 @@ event (e.g. one encounter with a nesting turtle might result in observations abo
 the turtle's morphometrics, physical damage, and nesting success).
 """
 from datetime import timedelta
-from dateutil import tz
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.contrib.gis.db import models
@@ -274,10 +273,10 @@ class Campaign(models.Model):
             "-" if not self.destination else self.destination.name,
             "na"
             if not self.start_time
-            else self.start_time.astimezone(tz.tzlocal()).strftime("%Y-%m-%d"),
+            else self.start_time.astimezone(settings.TZ).strftime("%Y-%m-%d"),
             "na"
             if not self.end_time
-            else self.end_time.astimezone(tz.tzlocal()).strftime("%Y-%m-%d"),
+            else self.end_time.astimezone(settings.TZ).strftime("%Y-%m-%d"),
         )
 
     @property
@@ -528,9 +527,9 @@ class Survey(QualityControlMixin, UrlsMixin, models.Model):
         return "Survey {} of {} on {} from {} to {}".format(
             self.pk,
             "unknown site" if not self.site else self.site.name,
-            "NA" if not self.start_time else self.start_time.astimezone(tz.tzlocal()).strftime("%d-%b-%Y"),
-            "" if not self.start_time else self.start_time.astimezone(tz.tzlocal()).strftime("%H:%M"),
-            "" if not self.end_time else self.end_time.astimezone(tz.tzlocal()).strftime("%H:%M %Z"),
+            "NA" if not self.start_time else self.start_time.astimezone(settings.TZ).strftime("%d-%b-%Y"),
+            "" if not self.start_time else self.start_time.astimezone(settings.TZ).strftime("%H:%M"),
+            "" if not self.end_time else self.end_time.astimezone(settings.TZ).strftime("%H:%M %Z"),
         )
 
     def label_short(self):
@@ -553,7 +552,7 @@ class Survey(QualityControlMixin, UrlsMixin, models.Model):
     @property
     def start_date(self):
         """The calendar date of the survey's start time in the local timezone."""
-        return self.start_time.astimezone(tz.tzlocal()).date()
+        return self.start_time.astimezone(settings.TZ).date()
 
     @property
     def duplicate_surveys(self):
@@ -622,25 +621,25 @@ class Survey(QualityControlMixin, UrlsMixin, models.Model):
 
             msg += " {0} combined Encounters were found from duplicates between {1} and {2}.".format(
                 all_encounters.count(),
-                earliest_enc.astimezone(tz.tzlocal()).strftime("%Y-%m-%d %H:%M %Z"),
-                latest_enc.astimezone(tz.tzlocal()).strftime("%Y-%m-%d %H:%M %Z"),
+                earliest_enc.astimezone(settings.TZ).strftime("%Y-%m-%d %H:%M %Z"),
+                latest_enc.astimezone(settings.TZ).strftime("%Y-%m-%d %H:%M %Z"),
             )
             if earliest_enc < self.start_time:
                 msg += " Adjusted Survey start time from {0} to 30 mins before earliest Encounter, {1}.".format(
-                    self.start_time.astimezone(tz.tzlocal()).strftime(
+                    self.start_time.astimezone(settings.TZ).strftime(
                         "%Y-%m-%d %H:%M %Z"
                     ),
-                    earliest_buffered.astimezone(tz.tzlocal()).strftime(
+                    earliest_buffered.astimezone(settings.TZ).strftime(
                         "%Y-%m-%d %H:%M %Z"
                     ),
                 )
                 self.start_time = earliest_buffered
             if latest_enc > self.end_time:
                 msg += " Adjusted Survey end time from {0} to 30 mins after latest Encounter, {1}.".format(
-                    self.end_time.astimezone(tz.tzlocal()).strftime(
+                    self.end_time.astimezone(settings.TZ).strftime(
                         "%Y-%m-%d %H:%M %Z"
                     ),
-                    latest_buffered.astimezone(tz.tzlocal()).strftime(
+                    latest_buffered.astimezone(settings.TZ).strftime(
                         "%Y-%m-%d %H:%M %Z"
                     ),
                 )
@@ -1217,7 +1216,7 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
     def leaflet_title(self):
         """A string for Leaflet map marker titles. Cache me as field."""
         return "{} {} {}".format(
-            self.when.astimezone(tz.tzlocal()).strftime("%d-%b-%Y %H:%M:%S") if self.when else "",
+            self.when.astimezone(settings.TZ).strftime("%d-%b-%Y %H:%M:%S") if self.when else "",
             self.get_encounter_type_display(),
             self.name or "",
         ).strip()
@@ -1268,7 +1267,7 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         return slugify(
             "-".join(
                 [
-                    self.when.astimezone(tz.tzlocal()).strftime("%Y-%m-%d %H:%M %Z"),
+                    self.when.astimezone(settings.TZ).strftime("%Y-%m-%d %H:%M %Z"),
                     force_str(round(self.longitude, 4)).replace(".", "-"),
                     force_str(round(self.latitude, 4)).replace(".", "-"),
                 ]
@@ -1616,7 +1615,7 @@ class AnimalEncounter(Encounter):
         tpl = "AnimalEncounter {} on {} by {} of {}, {} {} {} on {}"
         return tpl.format(
             self.pk,
-            self.when.astimezone(tz.tzlocal()).strftime("%Y-%m-%d %H:%M %Z"),
+            self.when.astimezone(settings.TZ).strftime("%Y-%m-%d %H:%M %Z"),
             self.observer.name,
             self.get_species_display(),
             self.get_health_display(),
@@ -1670,7 +1669,7 @@ class AnimalEncounter(Encounter):
         animals of the same species and deadness.
         """
         nameparts = [
-            self.when.astimezone(tz.tzlocal()).strftime("%Y-%m-%d %H:%M %Z"),
+            self.when.astimezone(settings.TZ).strftime("%Y-%m-%d %H:%M %Z"),
             force_str(round(self.longitude, 4)).replace(".", "-"),
             force_str(round(self.latitude, 4)).replace(".", "-"),
             self.health,
@@ -1851,7 +1850,7 @@ class TurtleNestEncounter(Encounter):
         The short_name could be non-unique.
         """
         nameparts = [
-            self.when.astimezone(tz.tzlocal()).strftime("%Y-%m-%d %H:%M %Z"),
+            self.when.astimezone(settings.TZ).strftime("%Y-%m-%d %H:%M %Z"),
             force_str(round(self.longitude, 4)).replace(".", "-"),
             force_str(round(self.latitude, 4)).replace(".", "-"),
             self.nest_age,
@@ -3100,7 +3099,7 @@ class LineTransectEncounter(Encounter):
         The short_name could be non-unique.
         """
         nameparts = [
-            self.when.astimezone(tz.tzlocal()).strftime("%Y-%m-%d %H:%M %Z"),
+            self.when.astimezone(settings.TZ).strftime("%Y-%m-%d %H:%M %Z"),
             force_str(round(self.longitude, 4)).replace(".", "-"),
             force_str(round(self.latitude, 4)).replace(".", "-"),
         ]
