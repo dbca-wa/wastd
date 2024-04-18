@@ -1,0 +1,28 @@
+{% load observations bootstrap4 fsm_admin %}
+<div class="card bg-light mb-1">
+    <div class="card-header">
+        <div>
+            <span class="float-right badge badge-{{ object.encounter.status_colour|default:'secondary' }}">
+                QA status: {{ object.encounter.get_status_display }}
+            </span>
+            <h5 class="card-title">{{ object }}</h5>
+        </div>
+        <div>
+            <h6 class="card-title text-muted">
+                <i class="fa-solid fa-calendar-days" title="When" aria-hidden="true"></i>
+                {{ object.encounter.when|date:'d M Y H:i' }}
+                {% if object.encounter.site %}
+                <i class="fa-solid fa-map"></i>
+                {{ object.encounter.site.name }}
+                {% endif %}
+                <span class="float-right">
+                    <a href="{{ object.encounter.get_absolute_url }}" title="{{ object.encounter }}" class="badge badge-primary">
+                        <i class="fa-regular fa-folder-open" aria-hidden="true"></i> Turtle nest encounter {{ object.encounter.pk }}
+                    </a>
+                </span>
+            </h6>
+            <i class="fa-solid fa-person-circle-question" title="Confidence"></i>
+            {{ object.get_disturbance_cause_confidence_display }}
+        </div>
+    </div><!-- /.card-header -->
+</div><!-- /.card -->

@@ -662,3 +662,6 @@ class TurtleTrackObservationResource(ObservationResource):
 
     def dehydrate_tail_pokes(self, obj):
         return obj.get_tail_pokes_display() if obj.tail_pokes else ""
+
+
+# TODO: HatchlingMorphometricObservation, LightSourceObservation, LoggerObservation

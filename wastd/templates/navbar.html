@@ -51,8 +51,10 @@
                     <i class="fa-solid fa-table" aria-hidden="true"></i>
                     Nests with fan angles
                 </a>
+
                 <div class="dropdown-divider"></div>
                 <h6 class="dropdown-header">QA shortlists</h6>
+
                 <a class="dropdown-item"
                     href="{% url 'observations:turtlenestencounter-list' %}?status=flagged"
                     title="Flagged records">
@@ -83,6 +85,15 @@
                     <i class="fa-solid fa-table" aria-hidden="true"></i>
                     Track/nest encounters with no survey
                 </a>
+
+                <div class="dropdown-divider"></div>
+                <h6 class="dropdown-header">Observations</h6>
+
+                <a class="dropdown-item" href="{% url 'observations:turtlenestdisturbanceobservation-list' %}"
+                    title="Turtle nest disturbance observations">
+                    <i class="fa-solid fa-table" aria-hidden="true"></i>
+                    Turtle nest disturbance observations
+                </a>
             </div>
         </li>
 
@@ -95,7 +106,7 @@
                 <a class="dropdown-item" href="{% url 'wamtram2:turtle_list' %}" title="Browse, filter and search all tagged turtles">
                     <i class="fa-solid fa-table" aria-hidden="true"></i>
                     <span class="align-left">Tagged turtles</span>
-                </a>                
+                </a>
             </div>
         </li>
 

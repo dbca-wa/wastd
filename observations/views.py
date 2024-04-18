@@ -19,6 +19,7 @@ from .admin import (
     AnimalEncounterAdmin,
     TurtleNestEncounterAdmin,
     LineTransectEncounterAdmin,
+    TurtleNestDisturbanceObservationAdmin,
 )
 from .filters import (
     SurveyFilter,
@@ -26,6 +27,7 @@ from .filters import (
     AnimalEncounterFilter,
     TurtleNestEncounterFilter,
     LineTransectEncounterFilter,
+    TurtleNestDisturbanceObservationFilter,
 )
 from .models import (
     Survey,
@@ -34,6 +36,7 @@ from .models import (
     TurtleNestEncounter,
     LineTransectEncounter,
     TagObservation,
+    TurtleNestDisturbanceObservation,
 )
 from .resources import (
     SurveyResource,
@@ -41,6 +44,7 @@ from .resources import (
     AnimalEncounterResource,
     TurtleNestEncounterResource,
     LineTransectEncounterResource,
+    TurtleNestDisturbanceObservationResource,
 )
 
 
@@ -277,6 +281,28 @@ class TurtleNestEncounterFlag(EncounterFlag):
 
 class TurtleNestEncounterReject(EncounterReject):
     model = TurtleNestEncounter
+
+
+class TurtleNestDisturbanceObservationList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
+    model = TurtleNestDisturbanceObservation
+    template_name = "default_list.html"
+    paginate_by = 20
+    filter_class = TurtleNestDisturbanceObservationFilter
+    resource_class = TurtleNestDisturbanceObservationResource
+    resource_formats = ["csv", "xlsx"]
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        qs = self.get_queryset()
+        context["list_filter"] = TurtleNestDisturbanceObservationFilter(self.request.GET, queryset=qs)
+        context["model_admin"] = TurtleNestDisturbanceObservationAdmin
+        context["object_count"] = qs.count()
+        context["page_title"] = f"{settings.SITE_CODE} | Turtle nest disturbances"
+        return context
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        return TurtleNestDisturbanceObservationFilter(self.request.GET, queryset=qs).qs
 
 
 class LineTransectEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):

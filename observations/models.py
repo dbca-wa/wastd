@@ -2744,7 +2744,10 @@ class TurtleNestDisturbanceObservation(Observation):
     )
 
     def __str__(self):
-        return f"{self.pk}: Nest disturbance {self.disturbance_severity} by {self.disturbance_cause}"
+        return f"{self.pk}: Nest disturbance by {self.get_disturbance_cause_display().lower()}, {self.get_disturbance_severity_display().lower()}"
+
+    def card_template(self):
+        return "observations/turtle_nest_disturbance_observation_card.html"
 
 
 class TurtleTrackObservation(Observation):

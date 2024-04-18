@@ -4,7 +4,6 @@ from django.contrib.auth import get_user_model
 from django.contrib.admin import register, ModelAdmin, StackedInline, SimpleListFilter
 from django.contrib.admin.filters import RelatedFieldListFilter
 from django.utils.safestring import mark_safe
-from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 from django_select2.forms import ModelSelect2Widget
 from easy_select2 import select2_modelform as s2form
@@ -247,43 +246,36 @@ class ObservationAdminMixin(VersionAdmin, ModelAdmin):
     formfield_overrides = FORMFIELD_OVERRIDES
 
     def area(self, obj):
-        """Make data source readable."""
         return obj.encounter.area
 
     area.short_description = "Area"
 
     def site(self, obj):
-        """Make data source readable."""
         return obj.encounter.site
 
     site.short_description = "Site"
 
     def status(self, obj):
-        """Make health status human readable."""
         return obj.encounter.get_status_display()
 
     status.short_description = "Status"
 
     def latitude(self, obj):
-        """Make data source readable."""
         return obj.encounter.latitude
 
     latitude.short_description = "Latitude"
 
     def longitude(self, obj):
-        """Make data source readable."""
         return obj.encounter.longitude
 
     longitude.short_description = "Longitude"
 
     def date(self, obj):
-        """Make data source readable."""
         return obj.encounter.when
 
     date.short_description = "Date"
 
     def encounter_link(self, obj):
-        """A link to the encounter."""
         return mark_safe(
             '<a href="{0}">{1}</a>'.format(
                 obj.encounter.absolute_admin_url, obj.encounter.__str__()
@@ -294,7 +286,6 @@ class ObservationAdminMixin(VersionAdmin, ModelAdmin):
     encounter_link.allow_tags = True
 
     def encounter_status(self, obj):
-        """A link to the encounter."""
         return obj.encounter.get_status_display()
 
     encounter_status.short_description = "QA status"
@@ -432,19 +423,16 @@ class TagObservationAdmin(ObservationAdminMixin):
     form = s2form(TagObservation, attrs=S2ATTRS)
 
     def type_display(self, obj):
-        """Make tag type human readable."""
         return obj.get_tag_type_display()
 
     type_display.short_description = "Tag Type"
 
     def tag_location_display(self, obj):
-        """Make tag side human readable."""
         return obj.get_tag_location_display()
 
     tag_location_display.short_description = "Tag Location"
 
     def animal_name(self, obj):
-        """Animal name."""
         return obj.encounter.name
 
     animal_name.short_description = "Animal Name"
@@ -526,6 +514,7 @@ class TurtleNestDisturbanceObservationAdmin(ExportActionMixin, ObservationAdminM
         + ObservationAdminMixin.LIST_LAST
     )
     list_filter = ObservationAdminMixin.LIST_FILTER + (
+        "disturbance_cause",
         "disturbance_cause_confidence",
         "disturbance_severity",
     )
@@ -606,7 +595,6 @@ class NestTagObservationAdmin(ObservationAdminMixin):
     search_fields = ("flipper_tag_id", "date_nest_laid", "tag_label", "comments")
 
     def tag_name(self, obj):
-        """Nest tag name."""
         return obj.name
 
     tag_name.short_description = "Complete Nest Tag"
@@ -897,7 +885,7 @@ class SurveyAdmin(ExportActionMixin, FSMTransitionMixin, VersionAdmin):
     resource_classes = [SurveyResource]
     fieldsets = (
         (
-            _("Device"),
+            "Device",
             {
                 "classes": ("grp-collapse", "grp-open", "wide", "extrapretty"),
                 "fields": (
@@ -911,7 +899,7 @@ class SurveyAdmin(ExportActionMixin, FSMTransitionMixin, VersionAdmin):
             },
         ),
         (
-            _("Location"),
+            "Location",
             {
                 "classes": ("grp-collapse", "grp-open", "wide", "extrapretty"),
                 "fields": (
@@ -924,7 +912,7 @@ class SurveyAdmin(ExportActionMixin, FSMTransitionMixin, VersionAdmin):
             },
         ),
         (
-            _("Time"),
+            "Time",
             {
                 "classes": ("grp-collapse", "grp-open", "wide", "extrapretty"),
                 "fields": (
@@ -934,14 +922,14 @@ class SurveyAdmin(ExportActionMixin, FSMTransitionMixin, VersionAdmin):
             },
         ),
         (
-            _("Campaign"),
+            "Campaign",
             {
                 "classes": ("grp-collapse", "grp-open", "wide", "extrapretty"),
                 "fields": ("campaign",),
             },
         ),
         (
-            _("Team"),
+            "Team",
             {
                 "classes": ("grp-collapse", "grp-open", "wide", "extrapretty"),
                 "fields": (
@@ -1061,12 +1049,12 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
 
         def lookups(self, request, model_admin):
             return (
-                (Encounter.STATUS_NEW, _("New")),
-                (Encounter.STATUS_IMPORTED, _("Imported")),
-                (Encounter.STATUS_MANUAL_INPUT, _("Manual input")),
-                (Encounter.STATUS_CURATED, _("Curated")),
-                (Encounter.STATUS_FLAGGED, _("Flagged")),
-                (Encounter.STATUS_REJECTED, _("Rejected")),
+                (Encounter.STATUS_NEW, "New"),
+                (Encounter.STATUS_IMPORTED, "Imported"),
+                (Encounter.STATUS_MANUAL_INPUT, "Manual input"),
+                (Encounter.STATUS_CURATED, "Curated"),
+                (Encounter.STATUS_FLAGGED, "Flagged"),
+                (Encounter.STATUS_REJECTED, "Rejected"),
             )
 
         def queryset(self, request, queryset):
