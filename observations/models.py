@@ -2005,7 +2005,7 @@ class MediaAttachment(Observation):
     )
 
     def __str__(self):
-        return f"Media attachment {self.pk} for encounter {self.encounter.pk}: {self.attachment.name}"
+        return f"Media attachment {self.pk} for encounter {self.encounter.pk}"
 
     @property
     def filepath(self):

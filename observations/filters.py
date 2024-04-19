@@ -316,7 +316,7 @@ class TurtleNestDisturbanceObservationFilter(FilterSet):
             "area",
             "site",
             "status",
+            "disturbance_severity",
             "disturbance_cause",
             "disturbance_cause_confidence",
-            "disturbance_severity",
         ]
