@@ -16,7 +16,7 @@
 {% block page_content_inner %}
 
 {% block pagination_row %}
-<div class="row" id="pagination-row">
+<div class="row pb-1" id="pagination-row">
   <div class="col">
   {% if is_paginated %}
     {% load proper_paginate %}
@@ -50,15 +50,14 @@
             <li class="page-item"><a class="page-link" href="?{% url_replace request 'page' paginator.num_pages %}">⇥</a></li>
         {% endif %}
     </ul>
-{% endif %}
+  {% endif %}
 
-    {% if object_list %}
-        <span class="float-right">{% resource_download_menu %}</span>
-        {% if object_count %}<div>Found {{ object_count }} records</div>{% endif %}
-
-    {% endif %}
-    </div>
-</div>
+  {% if object_list %}
+    <span class="float-right">{% resource_download_menu 'btn-secondary' %}</span>
+    {% if object_count %}<div>Found {{ object_count }} records</div>{% endif %}
+  {% endif %}
+  </div><!-- /.col -->
+</div><!-- /.row -->
 {% endblock pagination_row %}
 
 <div class="row" id="data-row">
