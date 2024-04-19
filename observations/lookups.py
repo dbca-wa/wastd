@@ -314,6 +314,7 @@ CAUSE_OF_DEATH_CHOICES = NA + (
 
 CONFIDENCE_CHOICES = NA + (
     ("guess", "Guess based on insufficient evidence"),
+    ("certain", "Certainty based on local evidence"),
     ("expert-opinion", "Expert opinion based on available evidence"),
     ("validated", "Validated by authoritative source"),
 )

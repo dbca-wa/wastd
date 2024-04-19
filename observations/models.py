@@ -1920,6 +1920,9 @@ class Observation(PolymorphicModel, LegacySourceMixin, models.Model):
         help_text="The Encounter during which the observation was made",
     )
 
+    class Meta:
+        ordering = ("-pk",)
+
     def __str__(self):
         return f"Observation {self.pk} for {self.encounter}"
 
