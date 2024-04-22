@@ -427,8 +427,8 @@ NEST_TYPE_CHOICES = (
 
 OBSERVATION_CHOICES = (
     (NA_VALUE, "Not applicable"),
-    ("absent", "Absent"),
-    ("present", "Present"),
+    #("absent", "Absent"),
+    #("present", "Present"),
     ("yes", "Yes"),
     ("no", "No"),
 )
