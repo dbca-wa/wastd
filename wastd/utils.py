@@ -18,6 +18,7 @@ from django_filters import CharFilter
 from functools import reduce
 from import_export.formats import base_formats
 from import_export.resources import Resource
+from mapwidgets.widgets import MapboxPointFieldWidget
 import re
 from urllib import parse
 import uuid
@@ -883,6 +884,7 @@ S2ATTRS = {"data-width": "50em"}
 FORMFIELD_OVERRIDES = {
     models.ImageField: {"widget": AdminImageWidget},
     models.FileField: {"widget": AdminImageWidget},
+    models.PointField: {"widget": MapboxPointFieldWidget},
 }
 FILTER_OVERRIDES = {
     models.CharField: {

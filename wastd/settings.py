@@ -134,6 +134,7 @@ MAP_WIDGETS = {
             "zoom": 10,
             "center": (-31.996226, 115.883947),
             "scrollZoom": True,
+            "style": "mapbox://styles/dpawasi/ckigwmxrx606g19msw0g882gj",
         },
         "geocoderOptions": {
             "zoom": 7,
