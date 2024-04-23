@@ -8,8 +8,6 @@ spec:
       containers:
       - name: turtles
         env:
-        - name: MAPPROXY_URL
-          value: "https://mapproxy.dbca.wa.gov.au/service"
         - name: SITE_CODE
           value: "Turtles"
         - name: SITE_NAME
@@ -31,6 +29,16 @@ spec:
             secretKeyRef:
               name: turtles-env-prod
               key: SECRET_KEY
+        - name: MAPPROXY_URL
+          valueFrom:
+            secretKeyRef:
+              name: turtles-env-prod
+              key: MAPPROXY_URL
+        - name: MAPBOX_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: turtles-env-prod
+              key: MAPBOX_TOKEN
         - name: AZURE_ACCOUNT_NAME
           valueFrom:
             secretKeyRef:
