@@ -426,11 +426,11 @@ NEST_TYPE_CHOICES = (
 )
 
 OBSERVATION_CHOICES = (
-    (NA_VALUE, "Not applicable"),
     #("absent", "Absent"),
     #("present", "Present"),
     ("yes", "Yes"),
     ("no", "No"),
+    (NA_VALUE, "NA (not applicable)"),
 )
 
 OBSERVATION_ICONS = {
