@@ -6,13 +6,14 @@ const pointstyle = {
 
 /* Polygon style */
 const polystyle = {
-    "color": "#0009ff",
+    "color": "#0000ff",
     "weight": 1,
     "opacity": 0.65
 };
 
-const polystyle_lightblue = {
-    "color": "#add8e6",
+const polystyle_cornflower_blue = {
+    "color": "#6495ed",
+    "fillColor": "#6495ed",
     "weight": 1,
     "opacity": 0.65
 };
@@ -197,7 +198,7 @@ var map = L.map('map', {
 
 // Add the (initially) empty Turtles DB localities layer to the map.
 const turtlesLocalities = L.geoJSON(null, {
-    style: polystyle_lightblue,
+    style: polystyle_cornflower_blue,
     onEachFeature: oef
 });
 // Query the API endpoint for localities data.
