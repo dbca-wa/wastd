@@ -2,18 +2,25 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect, HttpResponseForbidden
+from django.shortcuts import redirect
+from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import View, TemplateView, ListView, DetailView
+from django.views.generic import View, TemplateView, ListView, DetailView, FormView
 from django.views.generic.detail import SingleObjectMixin
 from django_fsm_log.models import StateLog
-from wastd.utils import ListViewBreadcrumbMixin, DetailViewBreadcrumbMixin, ResourceDownloadMixin
 from django.db import connection
 from django.http import StreamingHttpResponse
 import json
 import datetime
 
-
+from wastd.utils import (
+    ListViewBreadcrumbMixin,
+    BreadcrumbContextMixin,
+    DetailViewBreadcrumbMixin,
+    ResourceDownloadMixin,
+    Breadcrumb,
+)
 from .admin import (
     EncounterAdmin,
     AnimalEncounterAdmin,
@@ -28,6 +35,9 @@ from .filters import (
     TurtleNestEncounterFilter,
     LineTransectEncounterFilter,
     TurtleNestDisturbanceObservationFilter,
+)
+from .forms import (
+    SurveyMergeForm,
 )
 from .models import (
     Survey,
@@ -86,6 +96,55 @@ class SurveyDetail(DetailViewBreadcrumbMixin, DetailView):
         obj = self.get_object()
         context["page_title"] = f"{settings.SITE_CODE} | Survey {obj.pk}"
         return context
+
+
+class SurveyMergeView(BreadcrumbContextMixin, FormView):
+    """Merge a survey into another.
+    """
+    template_name = "users/user_form.html"
+    form_class = SurveyMergeForm
+
+    def get_object(self):
+        return Survey.objects.get(pk=self.kwargs["pk"])
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["survey"] = self.get_object()
+        return kwargs
+
+    def get_breadcrumbs(self, request, obj=None, add=False):
+        return (
+            Breadcrumb("Home", reverse("home")),
+            Breadcrumb("Surveys", reverse("observations:survey-list")),
+            Breadcrumb(self.get_object().pk, self.get_object().get_absolute_url()),
+            Breadcrumb("Merge duplicates", None),
+        )
+
+    def get_success_url(self):
+        return self.get_object().get_absolute_url()
+
+    def post(self, request, *args, **kwargs):
+        # If the user clicked Cancel, redirect back to the survey detail.
+        if request.POST.get("cancel"):
+            return redirect(self.get_success_url())
+        return super().post(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        """Update encounters for the merged survey, display success message, return to survey detail.
+        """
+        survey = self.get_object()
+        survey_to_merge = form.cleaned_data["survey_duplicates"]
+        encounters = Encounter.objects.filter(survey=survey_to_merge)
+        for encounter in encounters:
+            encounter.survey = survey
+            encounter.save()
+
+        # Update the merged survey to be non-production.
+        survey_to_merge.production = False
+        survey_to_merge.save()
+
+        messages.success(self.request, f"Merged encounters for survey {survey_to_merge.pk} to survey {survey.pk}")
+        return super().form_valid(form)
 
 
 def close_survey_duplicates(request, pk):
