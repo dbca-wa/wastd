@@ -41,6 +41,7 @@ from .forms import (
 )
 from .models import (
     Survey,
+    SurveyMediaAttachment,
     Encounter,
     AnimalEncounter,
     TurtleNestEncounter,
@@ -134,16 +135,24 @@ class SurveyMergeView(BreadcrumbContextMixin, FormView):
         """
         survey = self.get_object()
         survey_to_merge = form.cleaned_data["survey_duplicates"]
+
+        # Merge any Encounters on the old survey.
         encounters = Encounter.objects.filter(survey=survey_to_merge)
         for encounter in encounters:
             encounter.survey = survey
             encounter.save()
 
+        # Merge any media attachments on the old survey.
+        attachments = SurveyMediaAttachment.objects.filter(survey=survey_to_merge)
+        for media in attachments:
+            media.survey = survey
+            media.save()
+
         # Update the merged survey to be non-production.
         survey_to_merge.production = False
         survey_to_merge.save()
 
-        messages.success(self.request, f"Merged encounters for survey {survey_to_merge.pk} to survey {survey.pk}")
+        messages.success(self.request, f"Merged encounters and attachments for survey {survey_to_merge.pk} to survey {survey.pk}")
         return super().form_valid(form)
 
 
