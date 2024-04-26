@@ -556,9 +556,9 @@ class Survey(QualityControlMixin, UrlsMixin, models.Model):
 
     @property
     def duplicate_surveys(self):
-        """A queryset of other surveys on the same date and site with intersecting durations."""
+        """A queryset of other production surveys on the same date and site with intersecting durations."""
         return (
-            Survey.objects.filter(site=self.site, start_time__date=self.start_date)
+            Survey.objects.filter(site=self.site, start_time__date=self.start_date, production=True)
             .exclude(pk=self.pk)
             .exclude(start_time__gte=self.end_time)  # surveys starting after self
             .exclude(end_time__lte=self.start_time)  # surveys ending before self

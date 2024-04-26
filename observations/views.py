@@ -54,6 +54,7 @@ class MapView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["mapproxy_url"] = settings.MAPPROXY_URL
+        context["page_title"] = f"{settings.SITE_CODE} | Map"
         return context
 
 
