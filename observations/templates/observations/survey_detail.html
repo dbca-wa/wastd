@@ -175,7 +175,7 @@
 <script src="{% static 'js/turtles_map.js' %}"></script>
 <script type="text/javascript">
 
-  $.getJSON("{% url 'sites_geojson' %}", function(data) {
+  $.getJSON(sitesGeoJSONUrl, function(data) {
       L.geoJson(data, {
         style: polystyle,
         onEachFeature: oef

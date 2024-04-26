@@ -219,7 +219,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.fullscreen/3.0.1/Control.FullScreen.min.js" integrity="sha512-h/AgOL3/GaN95r67NWhssa2HgUk/+zfZsSkS/TU/rj0RPdQv9BMVq7BSKuUew5R68pDSFbOWydkIex28J7gy9g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="{% static 'js/turtles_map.js' %}"></script>
 <script type="text/javascript">
-    $.getJSON("{% url 'sites_geojson' %}", function (data) {
+    $.getJSON(sitesGeoJSONUrl, function (data) {
         L.geoJson(data, {style: polystyle, onEachFeature: oef}).addTo(map);
     });
 

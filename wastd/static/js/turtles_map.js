@@ -11,6 +11,12 @@ const polystyle = {
     "opacity": 0.65
 };
 
+const polystyle_lightblue = {
+    "color": "#add8e6",
+    "weight": 1,
+    "opacity": 0.65
+};
+
 const polystyle_red = {
     "color": "#ff2200",
     "weight": 1,
@@ -189,6 +195,16 @@ var map = L.map('map', {
     attributionControl: false,
 });
 
+// Add the (initially) empty Turtles DB localities layer to the map.
+const turtlesLocalities = L.geoJSON(null, {
+    style: polystyle_lightblue,
+    onEachFeature: oef
+});
+// Query the API endpoint for localities data.
+$.getJSON(localitiesGeoJSONUrl, function(data) {
+    turtlesLocalities.addData(data);
+});
+
 // Define layer groups.
 var baseMaps = {
     "Aerial imagery": aerialImagery,
@@ -196,6 +212,7 @@ var baseMaps = {
     "WA coast": waCoast,
 };
 var overlayMaps = {
+    "Localities (Turtles DB)": turtlesLocalities,
     "DBCA regions": dbcaRegions,
     "DBCA districts": dbcaDistricts,
     "DBCA tenure": dbcaTenure,
@@ -213,6 +230,6 @@ L.control.scale({maxWidth: 500, imperial: false}).addTo(map);
 // Log zoom level to console.
 //map.on('zoomend', function (e) {console.log(e.target._zoom)});
 
-  // Add a fullscreen control to the map.
+// Add a fullscreen control to the map.
 const fullScreen = new L.control.fullscreen();
 map.addControl(fullScreen);
