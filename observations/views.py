@@ -19,6 +19,7 @@ from wastd.utils import (
     BreadcrumbContextMixin,
     DetailViewBreadcrumbMixin,
     ResourceDownloadMixin,
+    PaginateMixin,
     Breadcrumb,
 )
 from .admin import (
@@ -69,7 +70,7 @@ class MapView(TemplateView):
         return context
 
 
-class SurveyList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
+class SurveyList(ListViewBreadcrumbMixin, ResourceDownloadMixin, PaginateMixin, ListView):
     model = Survey
     template_name = "default_list.html"
     paginate_by = 20
@@ -80,7 +81,6 @@ class SurveyList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["list_filter"] = SurveyFilter(self.request.GET, queryset=self.get_queryset())
-        context["object_count"] = self.get_queryset().count()
         context["page_title"] = f"{settings.SITE_CODE} | Surveys"
         return context
 
@@ -171,7 +171,7 @@ def close_survey_duplicates(request, pk):
     return HttpResponseRedirect(s.get_absolute_url())
 
 
-class EncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
+class EncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, PaginateMixin, ListView):
     model = Encounter
     template_name = "default_list.html"
     paginate_by = 20
@@ -259,7 +259,7 @@ class EncounterReject(LoginRequiredMixin, SingleObjectMixin, View):
         return HttpResponseRedirect(obj.get_absolute_url())
 
 
-class AnimalEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
+class AnimalEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, PaginateMixin, ListView):
     model = AnimalEncounter
     template_name = "default_list.html"
     paginate_by = 20
@@ -269,10 +269,8 @@ class AnimalEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListVi
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        qs = self.get_queryset()
-        context["list_filter"] = AnimalEncounterFilter(self.request.GET, queryset=qs)
+        context["list_filter"] = AnimalEncounterFilter(self.request.GET, queryset=self.get_queryset())
         context["model_admin"] = AnimalEncounterAdmin
-        context["object_count"] = qs.count()
         context["page_title"] = f"{settings.SITE_CODE} | Animal encounters"
         return context
 
@@ -305,7 +303,7 @@ class AnimalEncounterReject(EncounterReject):
     model = AnimalEncounter
 
 
-class TurtleNestEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
+class TurtleNestEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, PaginateMixin, ListView):
     model = TurtleNestEncounter
     template_name = "default_list.html"
     paginate_by = 20
@@ -315,10 +313,8 @@ class TurtleNestEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, Li
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        qs = self.get_queryset()
-        context["list_filter"] = TurtleNestEncounterFilter(self.request.GET, queryset=qs)
+        context["list_filter"] = TurtleNestEncounterFilter(self.request.GET, queryset=self.get_queryset())
         context["model_admin"] = TurtleNestEncounterAdmin
-        context["object_count"] = qs.count()
         context["page_title"] = f"{settings.SITE_CODE} | Turtle nest encounters"
         return context
 
@@ -352,7 +348,7 @@ class TurtleNestEncounterReject(EncounterReject):
     model = TurtleNestEncounter
 
 
-class TurtleNestDisturbanceObservationList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
+class TurtleNestDisturbanceObservationList(ListViewBreadcrumbMixin, ResourceDownloadMixin, PaginateMixin, ListView):
     model = TurtleNestDisturbanceObservation
     template_name = "default_list.html"
     paginate_by = 20
@@ -362,10 +358,8 @@ class TurtleNestDisturbanceObservationList(ListViewBreadcrumbMixin, ResourceDown
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        qs = self.get_queryset()
-        context["list_filter"] = TurtleNestDisturbanceObservationFilter(self.request.GET, queryset=qs)
+        context["list_filter"] = TurtleNestDisturbanceObservationFilter(self.request.GET, queryset=self.get_queryset())
         context["model_admin"] = TurtleNestDisturbanceObservationAdmin
-        context["object_count"] = qs.count()
         context["page_title"] = f"{settings.SITE_CODE} | Turtle nest disturbances"
         return context
 
@@ -374,7 +368,7 @@ class TurtleNestDisturbanceObservationList(ListViewBreadcrumbMixin, ResourceDown
         return TurtleNestDisturbanceObservationFilter(self.request.GET, queryset=qs).qs
 
 
-class LineTransectEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, ListView):
+class LineTransectEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, PaginateMixin, ListView):
     model = LineTransectEncounter
     template_name = "default_list.html"
     paginate_by = 20

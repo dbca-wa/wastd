@@ -1,25 +1,18 @@
-from django.shortcuts import render
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic.edit import FormMixin
-from django.urls import reverse
-from django.views import generic
 from django.conf import settings
-from wastd.utils import Breadcrumb
+from django.contrib import messages
+from django.db import connections, DatabaseError
+from django.db.models import Q, Exists, OuterRef
 from django.http import HttpResponseRedirect, HttpResponseForbidden
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
+from django.views import View
+from django.views.generic.edit import FormMixin
+from django.views.generic import TemplateView, ListView, DetailView, FormView
 
+from wastd.utils import Breadcrumb, PaginateMixin
 from .models import TrtTurtles,TrtTags,TrtPitTags, TrtEntryBatches,TrtDataEntry,TrtPersons,TrtObservations
 from .forms import TrtDataEntryForm, SearchForm, TrtEntryBatchesForm
-from django.shortcuts import get_object_or_404
-
-from django.views import View
-from django.shortcuts import redirect
-from django.db import connections
-from django.views.generic import ListView
-from django.contrib import messages
-from django.db import DatabaseError
-from django.db.models import Q, Exists, OuterRef
-
-from django.views.generic import TemplateView
 
 
 class HomePageView(LoginRequiredMixin,TemplateView):
@@ -90,7 +83,7 @@ class EntryBatchesListView(LoginRequiredMixin,ListView):
         return context
 
 
-class EntryBatchDetailView(LoginRequiredMixin,FormMixin,generic.ListView):
+class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
     """
     A view for displaying list of a batch of TrtDataEntry objects.
 
@@ -176,9 +169,6 @@ class EntryBatchDetailView(LoginRequiredMixin,FormMixin,generic.ListView):
         context['form'] = TrtEntryBatchesForm(instance=batch)  # Add the form to the context data
         return context
 
-    """
-    FormMixin provides the following methods:
-    """
     def post(self, request, *args, **kwargs):
         form = self.get_form()
         form.instance.entry_batch_id = self.kwargs.get('batch_id')
@@ -211,13 +201,10 @@ class EntryBatchDetailView(LoginRequiredMixin,FormMixin,generic.ListView):
         return reverse('wamtram2:entry_batch_detail', args=[batch_id])
 
 
-class TrtDataEntryForm(LoginRequiredMixin, generic.FormView):
+class TrtDataEntryForm(LoginRequiredMixin, FormView):
     """
     A form view for entering TRT data.
-
-    Inherits from LoginRequiredMixin and generic.FormView.
     """
-
     template_name = 'wamtram2/trtdataentry_form.html'
     form_class = TrtDataEntryForm
 
@@ -491,7 +478,7 @@ class FindTurtleView(LoginRequiredMixin,View):
         return render(request, 'wamtram2/find_turtle.html', {'form': form, 'no_turtle_found': no_turtle_found})
 
 
-class ObservationDetailView(LoginRequiredMixin, generic.DetailView):
+class ObservationDetailView(LoginRequiredMixin, DetailView):
     model = TrtObservations
     template_name = 'wamtram2/observation_detail.html'
 
@@ -505,7 +492,7 @@ class ObservationDetailView(LoginRequiredMixin, generic.DetailView):
         return context
 
 
-class TurtleListView(LoginRequiredMixin, generic.ListView):
+class TurtleListView(LoginRequiredMixin, PaginateMixin, ListView):
     """
     View class for displaying a list of turtles.
 
@@ -525,7 +512,6 @@ class TurtleListView(LoginRequiredMixin, generic.ListView):
             dict: The context data.
         """
         context = super().get_context_data(**kwargs)
-        context["object_count"] = self.get_queryset().count()
         context["page_title"] = f"{settings.SITE_CODE} | WAMTRAM2"
         # Pass in any query string
         if "q" in self.request.GET:
@@ -552,7 +538,7 @@ class TurtleListView(LoginRequiredMixin, generic.ListView):
         return qs.order_by("pk")
 
 
-class TurtleDetailView(LoginRequiredMixin,generic.DetailView):
+class TurtleDetailView(LoginRequiredMixin, DetailView):
     """
     View class for displaying the details of a turtle.
 

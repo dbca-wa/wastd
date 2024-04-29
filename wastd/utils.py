@@ -90,7 +90,7 @@ class BreadcrumbContextMixin(ContextMixin):
 
     def get_context_data(self, **kwargs):
         """Custom context."""
-        context = super(BreadcrumbContextMixin, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context["breadcrumbs"] = self.get_breadcrumbs(self.request)
         return context
 
@@ -365,7 +365,7 @@ class AdminImageWidget(AdminFileWidget):
                 f'style="object-fit: cover;"/> </a>'
             )
 
-        output.append(super(AdminFileWidget, self).render(name, value, attrs, renderer))
+        output.append(super().render(name, value, attrs, renderer))
         return mark_safe("".join(output))
 
 
@@ -956,3 +956,42 @@ def get_query(query_string, search_fields):
         else:
             query = query & or_query
     return query
+
+
+def get_previous_pages(page_num, count=5):
+    """Convenience function to take a Paginator page object and return the previous `count`
+    page numbers, to a minimum of 1.
+    """
+    prev_page_numbers = []
+
+    if page_num and page_num.has_previous():
+        for i in range(page_num.previous_page_number(), page_num.previous_page_number() - count, -1):
+            if i >= 1:
+                prev_page_numbers.append(i)
+
+    prev_page_numbers.reverse()
+    return prev_page_numbers
+
+
+def get_next_pages(page_num, count=5):
+    """Convenience function to take a Paginator page object and return the next `count`
+    page numbers, to a maximum of the paginator page count.
+    """
+    next_page_numbers = []
+
+    if page_num and page_num.has_next():
+        for i in range(page_num.next_page_number(), page_num.next_page_number() + count):
+            if i <= page_num.paginator.num_pages:
+                next_page_numbers.append(i)
+
+    return next_page_numbers
+
+
+class PaginateMixin(ListView):
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["object_count"] = self.get_queryset().count()
+        context["previous_pages"] = get_previous_pages(context["page_obj"])
+        context["next_pages"] = get_next_pages(context["page_obj"])
+        return context
