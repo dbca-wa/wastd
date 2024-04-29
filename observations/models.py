@@ -875,6 +875,7 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
     ENCOUNTER_TRACKS = "tracks"
     ENCOUNTER_TAG = "tag-management"
     ENCOUNTER_LOGGER = "logger"
+    ENCOUNTER_DISTURBANCE = "disturbance"
     ENCOUNTER_OTHER = "other"
 
     ENCOUNTER_TYPES = (
@@ -883,8 +884,9 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         (ENCOUNTER_NEST, "Nest"),
         (ENCOUNTER_TRACKS, "Tracks"),
         (ENCOUNTER_INWATER, "In water"),
-        (ENCOUNTER_TAG, "Tag Management"),
+        (ENCOUNTER_TAG, "Tag management"),
         (ENCOUNTER_LOGGER, "Logger"),
+        (ENCOUNTER_DISTURBANCE, "Disturbance/predator"),
         (ENCOUNTER_OTHER, "Other"),
     )
 
@@ -3195,3 +3197,29 @@ class TurtleNestDisturbanceTallyObservation(Observation):
 
     def __str__(self):
         return f"Nest Damage Tally: {self.no_nests_disturbed} nests of {self.species} showing disturbance by {self.disturbance_cause}"
+
+
+class DisturbanceObservation(Observation):
+    """Disturbance/predator observation, unrelated to a turtle nest.
+    """
+
+    disturbance_cause = models.CharField(
+        max_length=300,
+        choices=lookups.NEST_DAMAGE_CHOICES,
+        help_text="The cause of the disturbance.",
+    )
+    disturbance_cause_confidence = models.CharField(
+        max_length=300,
+        verbose_name="Disturbance cause choice confidence",
+        choices=lookups.CONFIDENCE_CHOICES,
+        default=lookups.NA_VALUE,
+        help_text="What is the choice of disturbance cause based on?",
+    )
+    comments = models.TextField(
+        blank=True,
+        null=True,
+        help_text="Any other comments or notes.",
+    )
+
+    def __str__(self):
+        return f"{self.pk}: Disturbance/predator ({self.get_disturbance_cause_display().lower()}), {self.get_disturbance_confidence_display().lower()}"
