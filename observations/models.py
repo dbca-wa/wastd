@@ -3222,4 +3222,4 @@ class DisturbanceObservation(Observation):
     )
 
     def __str__(self):
-        return f"{self.pk}: Disturbance/predator ({self.get_disturbance_cause_display().lower()}), {self.get_disturbance_confidence_display().lower()}"
+        return f"{self.pk}: Disturbance/predator ({self.get_disturbance_cause_display().lower()}), {self.get_disturbance_cause_confidence_display().lower()}"
