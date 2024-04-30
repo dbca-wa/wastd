@@ -2,7 +2,6 @@ from datetime import datetime, timedelta
 from dateutil import parser
 from django.conf import settings
 import logging
-from . import lookups
 
 from users.models import User
 from wastd.odk import (
@@ -12,7 +11,7 @@ from wastd.odk import (
     parse_geopoint_accuracy,
     get_submission_attachment,
 )
-from .lookups import TURTLE_INTERACTION_CHOICES
+from .lookups import NA_VALUE, TURTLE_INTERACTION_CHOICES
 from .models import (
     Area,
     Survey,
@@ -101,9 +100,9 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=Non
 
             #check for new forms
             if "survey_start_time" in submission["details"]:
-                startTime = parser.isoparse(submission["details"]["survey_start_time"])  # New forms allow editing of time in case submitted after the fact
+                start_time = parser.isoparse(submission["details"]["survey_start_time"])  # New forms allow editing of time in case submitted after the fact
             else:
-                startTime = parser.isoparse(submission["start_time"])  # Old forms
+                start_time = parser.isoparse(submission["start_time"])  # Old forms
 
             # Confusingly, TurtleNestEncounter objects cover nest, track and nest & track encounters.
             encounter = TurtleNestEncounter(
@@ -111,7 +110,7 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=Non
                 source="odk",
                 source_id=instance_id,
                 where=parse_geopoint(submission["details"]["observed_at"]),
-                when=startTime,
+                when=start_time,
                 observer=user,
                 reporter=user,
                 comments=f"Device ID {submission['device_id']}",
@@ -503,9 +502,9 @@ def import_turtle_track_or_nest_simple(form_id="beach_tracks_nest_simple", auth_
 
             #check for new forms
             if 'survey_start_time' in submission['details']:
-                startTime = parser.isoparse(submission['details']['survey_start_time'])  # New forms allow editing of time in case submitted after the fact
+                start_time = parser.isoparse(submission['details']['survey_start_time'])  # New forms allow editing of time in case submitted after the fact
             else:
-                startTime = parser.isoparse(submission['start_time'])  # Old forms
+                start_time = parser.isoparse(submission['start_time'])  # Old forms
 
             # Confusingly, TurtleNestEncounter objects cover nest, track and nest & track encounters.
             encounter = TurtleNestEncounter(
@@ -513,7 +512,7 @@ def import_turtle_track_or_nest_simple(form_id="beach_tracks_nest_simple", auth_
                 source='odk',
                 source_id=instance_id,
                 where=parse_geopoint(submission['details']['observed_at']),
-                when=startTime,
+                when=start_time,
                 observer=user,
                 reporter=user,
                 comments=f'{submission["details"]["comments"]} (Device ID {submission["device_id"]})',
@@ -615,11 +614,11 @@ def import_site_visit_start(form_id="site_visit_start", initial_duration_hr=8, a
             user = get_user(reporter)
 
             visit = submission['site_visit']
-            #check for new forms
+            # Check for new forms
             if 'survey_start_time' in visit:
-                startTime = parser.isoparse(visit['survey_start_time'])  # New forms allow editing of time in case submitted after the fact
+                start_time = parser.isoparse(visit['survey_start_time'])  # New forms allow editing of time in case submitted after the fact
             else:
-                startTime = parser.isoparse(submission['start_time'])  # Old forms
+                start_time = parser.isoparse(submission['start_time'])  # Old forms
 
             survey = Survey(
                 status='imported',
@@ -629,7 +628,7 @@ def import_site_visit_start(form_id="site_visit_start", initial_duration_hr=8, a
                 reporter=user,
                 start_location=parse_geopoint(visit['location']),
                 start_location_accuracy_m=parse_geopoint_accuracy(visit['location']),
-                start_time=startTime,
+                start_time=start_time,
             )
 
             # Guess the area & site, and plug in an initial estimated end_time.
@@ -638,7 +637,7 @@ def import_site_visit_start(form_id="site_visit_start", initial_duration_hr=8, a
             survey.site = survey.guess_site
             survey.end_time = survey.start_time + timedelta(hours=initial_duration_hr)
 
-            #set training surveys to non production
+            # Set training surveys to non production
             if survey.site is not None:
                 if 'training' in survey.site.name.lower() or 'testing' in survey.site.name.lower():
                     survey.production = False
@@ -687,38 +686,31 @@ def import_site_visit_end(form_id="site_visit_end", duration_hr=8, auth_headers=
     project_id = settings.ODK_API_PROJECTID
     LOGGER.info(f"Downloading {form_id} submission data")
     submissions = get_form_submission_data(auth_headers, project_id, form_id)
-    #email content if any errors
-    emailText = None
 
     for submission in submissions:
         try:
-            instance_id = submission['meta']['instanceID']
-            if Survey.objects.filter(source='odk', end_source_id=instance_id):
+            instance_id = submission["meta"]["instanceID"]
+            if Survey.objects.filter(source="odk", end_source_id=instance_id):
                 continue  # Skip records already imported.
 
             # Try to match a site by location (just use the first one returned by the database).
-            visit = submission['site_visit']
-            location = parse_geopoint(visit['location'])
+            visit = submission["site_visit"]
+            location = parse_geopoint(visit["location"])
             site = Area.objects.filter(area_type=Area.AREATYPE_SITE, geom__covers=location).first()
 
             if not site:
                 # Send a warning to the admins to investigate & address.
                 log = (f"Site Visit End form: unable to match a site for survey end at {location.wkt}")
                 LOGGER.warning(log)
-                if emailText is None:
-                    emailText = log
-                else:
-                    emailText = emailText + "\n\n" + log
                 continue
 
             # Try to match one (only) existing Survey object.
             # Algorithm: filter Surveys in the same Site, having a start_time not before end_time by
             # greater than `duration_hr` hours.
-            #check for new forms
-            if 'survey_start_time' in visit:
-                end_time = parser.isoparse(visit['survey_end_time'])  # New forms allow editing of time in case submitted after the fact
+            if "survey_start_time" in visit:
+                end_time = parser.isoparse(visit["survey_end_time"])  # New forms allow editing of time in case submitted after the fact
             else:
-                end_time = parser.isoparse(submission['end_time'])  # Old forms
+                end_time = parser.isoparse(submission["end_time"])  # Old forms
 
             start_time_earliest = end_time - timedelta(hours=duration_hr)
             surveys = Survey.objects.filter(
@@ -727,35 +719,31 @@ def import_site_visit_end(form_id="site_visit_end", duration_hr=8, auth_headers=
             if surveys.count() != 1:
                 log = (f"Site Visit End form: unable to match a single Survey (matched {surveys.count()})")
                 LOGGER.warning(log)
-                if emailText is None:
-                    emailText = log
-                else:
-                    emailText = emailText + "\n\n" + log
                 continue
             else:
                 survey = surveys.first()
 
             survey.end_source_id = instance_id
             survey.end_location = location
-            survey.end_location_accuracy_m = parse_geopoint_accuracy(visit['location'])
+            survey.end_location_accuracy_m = parse_geopoint_accuracy(visit["location"])
             survey.end_time = end_time
-            survey.end_comments = visit['comments']
+            survey.end_comments = visit["comments"]
             survey.save()
 
-            LOGGER.info(f'Updated Survey {survey}')
+            LOGGER.info(f"Updated Survey {survey}")
 
-            if visit['site_conditions']:
-                filename = visit['site_conditions']
+            if visit["site_conditions"]:
+                filename = visit["site_conditions"]
                 LOGGER.info(f"Downloading {filename}")
                 attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
                 photo = SurveyMediaAttachment(
                     survey=survey,
-                    media_type='photograph',
-                    title=f'Photo of site visit end {filename}',
+                    media_type="photograph",
+                    title=f"Photo of site visit end {filename}",
                     attachment=attachment,
                 )
                 photo.save()
-                LOGGER.info(f'Created SurveyMediaAttachment {photo}')
+                LOGGER.info(f"Created SurveyMediaAttachment {photo}")
         except:
             LOGGER.error(f"Exception during import of ODK {form_id} submission {instance_id}")
 
@@ -789,7 +777,7 @@ def import_marine_wildlife_incident(form_id="marine_wildlife_incident", auth_hea
             if site_visit['habitat']:
                 habitat = site_visit['habitat']
             else:
-                habitat = lookups.NA_VALUE
+                habitat = NA_VALUE
             encounter = AnimalEncounter(
                 status='imported',
                 source='odk',
