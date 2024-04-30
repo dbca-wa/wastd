@@ -898,6 +898,7 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         ENCOUNTER_TAG: "cog",
         ENCOUNTER_INWATER: "water",
         ENCOUNTER_LOGGER: "tablet",
+        ENCOUNTER_DISTURBANCE: "circle-exclamation",
         ENCOUNTER_OTHER: "circle-question",
     }
 
@@ -909,6 +910,7 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         ENCOUNTER_TRACKS: "cadetblue",
         ENCOUNTER_TAG: "darkpuple",
         ENCOUNTER_LOGGER: "orange",
+        ENCOUNTER_DISTURBANCE: "red",
         ENCOUNTER_OTHER: "purple",
     }
 
@@ -3223,3 +3225,6 @@ class DisturbanceObservation(Observation):
 
     def __str__(self):
         return f"{self.pk}: Disturbance/predator ({self.get_disturbance_cause_display().lower()}), {self.get_disturbance_cause_confidence_display().lower()}"
+
+    def card_template(self):
+        return "observations/disturbance_observation_card.html"

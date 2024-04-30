@@ -1,0 +1,4 @@
+{% with original as o %}
+<i class="fa-solid fa-house-crack"></i>
+{{ o.get_disturbance_cause_display }} ({{ o.get_disturbance_cause_confidence_display|lower }})
+{% endwith %}

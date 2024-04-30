@@ -1,0 +1,37 @@
+{% load observations bootstrap4 %}
+<div class="card bg-light mb-1">
+    <div class="card-header">
+        <div>
+            <span class="float-right badge badge-{{ object.encounter.status_colour|default:'secondary' }}">
+                QA status: {{ object.encounter.get_status_display }}
+            </span>
+            <h5 class="card-title">{{ object.pk}}: {{ object.get_disturbance_cause_display }}</h5>
+        </div>
+        <div>
+            <h6 class="card-title text-muted">
+                <i class="fa-solid fa-calendar-days" title="When" aria-hidden="true"></i>
+                {{ object.encounter.when|date:'d M Y H:i' }}
+                {% if object.encounter.site %}
+                <i class="fa-solid fa-map" title="Where" aria-hidden="true"></i>
+                {{ object.encounter.site.name }}
+                {% endif %}
+                <span class="float-right">
+                    <a href="{{ object.encounter.get_absolute_url }}" title="{{ object.encounter }}" class="badge badge-primary">
+                        <i class="fa-solid fa-link" aria-hidden="true"></i> Encounter {{ object.encounter.pk }}
+                    </a>
+                </span>
+            </h6>
+        </div>
+    </div><!-- /.card-header -->
+    <div class="card-body">
+        <div class="card-text">
+            <i class="fa-solid fa-person-circle-question" title="Confidence" aria-hidden="true"></i>
+            {{ object.get_disturbance_cause_confidence_display }}
+        </div>
+        {% if object.comments %}
+        <div class="card-text">
+            {{ object.comments }}
+        </div>
+        {% endif %}
+    </div><!-- /.card-body -->
+</div><!-- /.card -->

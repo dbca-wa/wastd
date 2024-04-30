@@ -37,7 +37,8 @@ from .models import (
     TurtleHatchlingEmergenceObservation,
     TurtleHatchlingEmergenceOutlierObservation,
     LightSourceObservation,
-    LoggerObservation
+    LoggerObservation,
+    DisturbanceObservation,
 )
 from .resources import (
     SurveyResource,
@@ -46,6 +47,7 @@ from .resources import (
     LineTransectEncounterResource,
     TurtleNestDisturbanceObservationResource,
     TurtleTrackObservationResource,
+    DisturbanceObservationResource,
 )
 
 
@@ -519,6 +521,38 @@ class TurtleNestDisturbanceObservationAdmin(ExportActionMixin, ObservationAdminM
         "disturbance_severity",
     )
     resource_classes = [TurtleNestDisturbanceObservationResource]
+
+    def get_queryset(self, request):
+        return (
+            super()
+            .get_queryset(request)
+            .prefetch_related(
+                "encounter",
+                "encounter__reporter",
+                "encounter__observer",
+                "encounter__area",
+                "encounter__site",
+            )
+        )
+
+
+@register(DisturbanceObservation)
+class DisturbanceObservationAdmin(ExportActionMixin, ObservationAdminMixin):
+
+    list_display = (
+        ObservationAdminMixin.LIST_FIRST
+        + (
+            "disturbance_cause",
+            "disturbance_cause_confidence",
+            "comments",
+        )
+        + ObservationAdminMixin.LIST_LAST
+    )
+    list_filter = ObservationAdminMixin.LIST_FILTER + (
+        "disturbance_cause",
+        "disturbance_cause_confidence",
+    )
+    resource_classes = [DisturbanceObservationResource]
 
     def get_queryset(self, request):
         return (

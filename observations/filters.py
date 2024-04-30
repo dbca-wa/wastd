@@ -15,6 +15,7 @@ from .models import (
     TurtleNestEncounter,
     LineTransectEncounter,
     TurtleNestDisturbanceObservation,
+    DisturbanceObservation,
 )
 from .lookups import (
     HEALTH_CHOICES,
@@ -317,6 +318,21 @@ class TurtleNestDisturbanceObservationFilter(FilterSet):
             "site",
             "status",
             "disturbance_severity",
+            "disturbance_cause",
+            "disturbance_cause_confidence",
+        ]
+
+
+class DisturbanceObservationFilter(TurtleNestDisturbanceObservationFilter):
+
+    class Meta:
+        model = DisturbanceObservation
+        fields = [
+            "date_from",
+            "date_to",
+            "area",
+            "site",
+            "status",
             "disturbance_cause",
             "disturbance_cause_confidence",
         ]

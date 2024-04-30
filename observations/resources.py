@@ -13,6 +13,7 @@ from .models import (
     Observation,
     TurtleNestDisturbanceObservation,
     TurtleTrackObservation,
+    DisturbanceObservation,
 )
 
 
@@ -634,6 +635,23 @@ class TurtleNestDisturbanceObservationResource(ObservationResource):
 
     def dehydrate_disturbance_severity(self, obj):
         return obj.get_disturbance_severity_display()
+
+
+class DisturbanceObservationResource(ObservationResource):
+
+    class Meta:
+        model = DisturbanceObservation
+        fields = ObservationResource.Meta.fields + [
+            "disturbance_cause",
+            "disturbance_cause_confidence",
+            "comments",
+        ]
+
+    def dehydrate_disturbance_cause(self, obj):
+        return obj.get_disturbance_cause_display()
+
+    def dehydrate_disturbance_cause_confidence(self, obj):
+        return obj.get_disturbance_cause_confidence_display()
 
 
 class TurtleTrackObservationResource(ObservationResource):

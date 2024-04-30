@@ -28,6 +28,7 @@ from .admin import (
     TurtleNestEncounterAdmin,
     LineTransectEncounterAdmin,
     TurtleNestDisturbanceObservationAdmin,
+    DisturbanceObservationAdmin,
 )
 from .filters import (
     SurveyFilter,
@@ -36,6 +37,7 @@ from .filters import (
     TurtleNestEncounterFilter,
     LineTransectEncounterFilter,
     TurtleNestDisturbanceObservationFilter,
+    DisturbanceObservationFilter,
 )
 from .forms import (
     SurveyMergeForm,
@@ -49,6 +51,7 @@ from .models import (
     LineTransectEncounter,
     TagObservation,
     TurtleNestDisturbanceObservation,
+    DisturbanceObservation,
 )
 from .resources import (
     SurveyResource,
@@ -57,6 +60,7 @@ from .resources import (
     TurtleNestEncounterResource,
     LineTransectEncounterResource,
     TurtleNestDisturbanceObservationResource,
+    DisturbanceObservationResource,
 )
 
 
@@ -360,12 +364,32 @@ class TurtleNestDisturbanceObservationList(ListViewBreadcrumbMixin, ResourceDown
         context = super().get_context_data(**kwargs)
         context["list_filter"] = TurtleNestDisturbanceObservationFilter(self.request.GET, queryset=self.get_queryset())
         context["model_admin"] = TurtleNestDisturbanceObservationAdmin
-        context["page_title"] = f"{settings.SITE_CODE} | Turtle nest disturbances"
+        context["page_title"] = f"{settings.SITE_CODE} | Turtle nest disturbance observations"
         return context
 
     def get_queryset(self):
         qs = super().get_queryset()
         return TurtleNestDisturbanceObservationFilter(self.request.GET, queryset=qs).qs
+
+
+class DisturbanceObservationList(ListViewBreadcrumbMixin, ResourceDownloadMixin, PaginateMixin, ListView):
+    model = DisturbanceObservation
+    template_name = "default_list.html"
+    paginate_by = 20
+    filter_class = DisturbanceObservationFilter
+    resource_class = DisturbanceObservationResource
+    resource_formats = ["csv", "xlsx"]
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["list_filter"] = DisturbanceObservationFilter(self.request.GET, queryset=self.get_queryset())
+        context["model_admin"] = DisturbanceObservationAdmin
+        context["page_title"] = f"{settings.SITE_CODE} | Predators / disturbance observations"
+        return context
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        return DisturbanceObservationFilter(self.request.GET, queryset=qs).qs
 
 
 class LineTransectEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, PaginateMixin, ListView):
