@@ -619,19 +619,27 @@ class Survey(QualityControlMixin, UrlsMixin, models.Model):
         )
 
         # All duplicate Surveys shall be closed (not production) and own no Encounters
-        for d in self.duplicate_surveys.all():
-            LOGGER.info("Closing Survey {0} with actor {1}".format(d.pk, curator))
-            d.production = False
-            d.save()
-            if d.status != QualityControlMixin.STATUS_CURATED:
-                d.curate(by=curator)
-                d.save()
-            for a in d.attachments.all():
-                a.survey = self
-                a.save()
+        for duplicate in self.duplicate_surveys.all():
+            LOGGER.info("Closing Survey {0} with actor {1}".format(duplicate.pk, curator))
+            duplicate.production = False
+            duplicate.save()
+            if duplicate.status != QualityControlMixin.STATUS_CURATED:
+                duplicate.curate(by=curator)
+                duplicate.save()
+            # Merge any media attachments on the duplicate survey.
+            attachments = SurveyMediaAttachment.objects.filter(survey=duplicate)
+            for media in attachments:
+                media.survey = self
+                media.save()
 
-        # From all Encounters (if any), adjust duration
-        if all_encounters.count() > 0:
+        # From all Encounters (if any), adjust Survey duration
+        if all_encounters.exists():
+
+            # Merge any Encounters on the old survey.
+            for encounter in all_encounters:
+                encounter.survey = self
+                encounter.save()
+
             earliest_enc = min([e.when for e in all_encounters])
             earliest_buffered = earliest_enc - timedelta(minutes=30)
             latest_enc = max([e.when for e in all_encounters])
@@ -663,7 +671,7 @@ class Survey(QualityControlMixin, UrlsMixin, models.Model):
                 )
                 self.end_time = latest_buffered
 
-        # This Survey is the production survey owning all Encounters
+        # This Survey is the production survey, owning all Encounters.
         self.production = True
         self.save()
         if self.status != QualityControlMixin.STATUS_CURATED:
@@ -671,13 +679,13 @@ class Survey(QualityControlMixin, UrlsMixin, models.Model):
             self.save()
 
         # ...except cuckoo Encounters
-        if all_encounters.count() > 0 and self.site is not None:
+        if all_encounters.exists() and self.site is not None:
             cuckoo_encounters = all_encounters.exclude(where__coveredby=self.site.geom)
             for e in cuckoo_encounters:
                 e.site = None
                 e.survey = None
                 e.save()
-            msg += " Evicted {0} cuckoo Encounters observed outside the site.".format(
+            msg += " Evicted {0} cuckoo Encounters observed outside the survey site.".format(
                 cuckoo_encounters.count()
             )
 
