@@ -33,12 +33,16 @@
         {% include "observations/survey_site_visit_start_end.html" with survey=object %}
         {% if request.user.is_staff %}
             <a href="{{ object.absolute_admin_url }}" title="Edit this survey in the data curation portal">
-              <span class="badge badge-{{ object.status_colour|default:'secondary' }}">
+              <span class="badge badge-secondary">
                 <i class="fa-solid fa-pencil" aria-hidden="true"></i> Edit
               </span>
             </a>
             {% if not object.production %}
-            {% include "observations/survey_make_production.html" with survey=object %}
+            <a href="{% url 'observations:survey-make-production' pk=object.pk %}" title="Mark this Survey as a production survey">
+                <span class="badge badge-secondary">
+                    <i class="fa-solid fa-ribbon" aria-hidden="true"></i> Make production
+                </span>
+            </a>
             {% endif %}
         {% endif %}
         <br>
@@ -97,15 +101,27 @@
                         Duplicate surveys
                     </th>
                     <td>
-                        {% if object.production and object.has_duplicates %}
+                        {% if object.has_duplicates %}
+
                         {% for survey in object.duplicate_surveys.all %}
-                        <div><a href="{{ survey.get_absolute_url }}">{{ survey }}</a></div>
+                        <div><a href="{{ survey.get_absolute_url }}">{{ survey.pk }} ({% if survey.production %}production{% else %}non-production{% endif %})</a></div>
                         {% endfor %}
-                        <a href="{% url 'observations:survey-merge' pk=object.pk %}" title="Merge duplicate surveys">
+
+                        {% if object.production %}
+                        <a href="{% url 'observations:survey-merge' pk=object.pk %}" title="Merge duplicate survey into this survey">
                           <span class="badge badge-secondary">
-                            <i class="fa-solid fa-pencil" aria-hidden="true"></i> Merge duplicates
+                            <i class="fa-solid fa-object-ungroup"aria-hidden="true"></i> Merge duplicate
                           </span>
                         </a>
+                        {% if object.has_production_duplicates %}
+                        <a href="{% url 'observations:survey-close-duplicates' pk=object.pk %}" title="Mark this Survey as the only production survey among its duplicates. Mark all other duplicates as non-production and adopt their Encounters.">
+                            <span class="badge badge-warning">
+                                <i class="fa-solid fa-circle-xmark" aria-hidden="true"></i> Close all duplicates
+                            </span>
+                        </a>
+                        {% endif %}
+                        {% endif %}
+
                         {% endif %}
                     </td>
                 </tr>

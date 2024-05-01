@@ -6,7 +6,7 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import View, TemplateView, ListView, DetailView, FormView
+from django.views.generic import View, TemplateView, ListView, DetailView, FormView, UpdateView
 from django.views.generic.detail import SingleObjectMixin
 from django_fsm_log.models import StateLog
 from django.db import connection
@@ -41,6 +41,8 @@ from .filters import (
 )
 from .forms import (
     SurveyMergeForm,
+    SurveyCloseDuplicatesForm,
+    SurveyMakeProductionForm,
 )
 from .models import (
     Survey,
@@ -103,10 +105,10 @@ class SurveyDetail(DetailViewBreadcrumbMixin, DetailView):
         return context
 
 
-class SurveyMergeView(BreadcrumbContextMixin, FormView):
+class SurveyMerge(BreadcrumbContextMixin, FormView):
     """Merge a survey into another.
     """
-    template_name = "users/user_form.html"
+    template_name = "observations/survey_form.html"
     form_class = SurveyMergeForm
 
     def get_object(self):
@@ -160,19 +162,60 @@ class SurveyMergeView(BreadcrumbContextMixin, FormView):
         return super().form_valid(form)
 
 
-def close_survey_duplicates(request, pk):
-    """Close duplicates for a given Survey PK with the request user as actor.
+class SurveyCloseDuplicates(BreadcrumbContextMixin, UpdateView):
+    model = Survey
+    template_name = "observations/survey_form.html"
+    form_class = SurveyCloseDuplicatesForm
 
-    All duplicate Surveys will be curated and marked as "not production".
-    The given Survey will be curated and marked as "production",
-    adopt all Encounters from all duplicate surveys, and adjust its duration.
+    def get_breadcrumbs(self, request, obj=None, add=False):
+        return (
+            Breadcrumb("Home", reverse("home")),
+            Breadcrumb("Surveys", reverse("observations:survey-list")),
+            Breadcrumb(self.get_object().pk, self.get_object().get_absolute_url()),
+            Breadcrumb("Close duplicates", None),
+        )
 
-    See Survey.close_duplicates() for implementation details.
+    def get_success_url(self):
+        return self.get_object().get_absolute_url()
+
+    def post(self, request, *args, **kwargs):
+        # If the user clicked Cancel, redirect back to the survey detail.
+        if request.POST.get("cancel"):
+            return redirect(self.get_success_url())
+        return super().post(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        """Close duplicates for a given Survey PK with the request user as actor.
+
+        All duplicate Surveys will be curated and marked as "not production".
+        The given Survey will be curated and marked as "production",
+        adopt all Encounters from all duplicate surveys, and adjust its duration.
+
+        See Survey.close_duplicates() for implementation details.
+        """
+        survey = self.get_object()
+        msg = survey.close_duplicates(actor=self.request.user)
+        messages.success(self.request, msg)
+        return HttpResponseRedirect(self.get_success_url())
+
+
+class SurveyMakeProduction(SurveyCloseDuplicates):
+    form_class = SurveyMakeProductionForm
+
+    def form_valid(self, form):
+        survey = self.get_object()
+        msg = survey.make_production()
+        messages.success(self.request, msg)
+        return HttpResponseRedirect(self.get_success_url())
+
+
+def survey_make_production(request, pk):
+    """Update a given Survey as 'production'.
     """
-    s = Survey.objects.get(pk=pk)
-    msg = s.close_duplicates(actor=request.user)
+    survey = Survey.objects.get(pk=pk)
+    msg = survey.make_production()
     messages.success(request, msg)
-    return HttpResponseRedirect(s.get_absolute_url())
+    return HttpResponseRedirect(survey.get_absolute_url())
 
 
 class EncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, PaginateMixin, ListView):

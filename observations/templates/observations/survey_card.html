@@ -28,19 +28,34 @@
     <div>
         {% include "toggle_details.html" with object=object %}
         <a href="{{ object.get_absolute_url }}" title="Open record {{ object.pk }}">
-          <span class="badge badge-{{ object.status_colour|default:'secondary' }}">
+          <span class="badge badge-secondary">
             <i class="fa-regular fa-folder-open" aria-hidden="true"></i> Open
           </span>
         </a>
         {% if request.user.is_staff %}
+
         <a href="{{ object.absolute_admin_url }}" title="Edit this survey in the data curation portal">
-          <span class="badge badge-{{ object.status_colour|default:'secondary' }}">
+          <span class="badge badge-secondary">
             <i class="fa-solid fa-pencil" aria-hidden="true"></i> Edit
           </span>
         </a>
-        {% if not object.production %}
-        {% include "observations/survey_make_production.html" with survey=object %}
+
+        {% if object.production and object.has_production_duplicates %}
+        <a href="{% url 'observations:survey-close-duplicates' pk=object.pk %}" title="Mark this Survey as the only production survey among its duplicates. Mark all other duplicates as non-production and adopt their Encounters.">
+            <span class="badge badge-warning">
+                <i class="fa-solid fa-circle-xmark" aria-hidden="true"></i> Close duplicates
+            </span>
+        </a>
         {% endif %}
+
+        {% if not object.production %}
+        <a href="{% url 'observations:survey-make-production' pk=object.pk %}" title="Mark this Survey as a production survey">
+            <span class="badge badge-secondary">
+                <i class="fa-solid fa-ribbon" aria-hidden="true"></i> Make production
+            </span>
+        </a>
+        {% endif %}
+
         {% endif %}
     </div>
   </div>
