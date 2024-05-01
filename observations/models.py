@@ -521,7 +521,7 @@ class Survey(QualityControlMixin, UrlsMixin, models.Model):
         unique_together = ("source", "source_id")
 
     def __str__(self):
-        return self.label or str(self.pk)
+        return self.label_short()
 
     def make_label(self):
         return "Survey {} of {} on {} from {} to {}".format(

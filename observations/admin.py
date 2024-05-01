@@ -1134,7 +1134,6 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
         QAStatusFilter,
         "observer",
         "reporter",
-        #"location_accuracy",
         "encounter_type",
         "source",
     )
@@ -1145,9 +1144,6 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
         "encounter_type",
         "latitude",
         "longitude",
-        #"location_accuracy",
-        #"location_accuracy_m",
-        #"name_link",
     )
     LAST_COLS = (
         "observer",
@@ -1173,7 +1169,7 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
     # UserWidget excludes inactive users
     observer = forms.ChoiceField(widget=UserWidget())
     reporter = forms.ChoiceField(widget=UserWidget())
-    readonly_fields = ("name",)
+    readonly_fields = ("name", "survey")
 
     # Django-fsm transitions config
     fsm_field = ["status"]
