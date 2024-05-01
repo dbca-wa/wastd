@@ -561,6 +561,7 @@ class QualityControlMixin(models.Model):
         """Return true if this document can be proofread."""
         return True
 
+    # New -> Proofread
     @fsm_log_by
     @transition(
         field=status,
@@ -591,6 +592,7 @@ class QualityControlMixin(models.Model):
         """Return true if this document can be proofread."""
         return True
 
+    # Proofread -> New
     @fsm_log_by
     @transition(
         field=status,
@@ -619,10 +621,11 @@ class QualityControlMixin(models.Model):
         """Return true if this record can be accepted."""
         return True
 
+    # New|Imported|Proofread|Manual input|Flagged -> Curated
     @fsm_log_by
     @transition(
         field=status,
-        source=[STATUS_NEW, STATUS_PROOFREAD, STATUS_FLAGGED],
+        source=[STATUS_NEW, STATUS_IMPORTED, STATUS_PROOFREAD, STATUS_MANUAL_INPUT, STATUS_FLAGGED],
         target=STATUS_CURATED,
         conditions=[can_curate],
         # permission=lambda instance, user: user in instance.all_permitted,
@@ -644,10 +647,11 @@ class QualityControlMixin(models.Model):
         """Return true if curated status can be revoked."""
         return True
 
+    # New|Imported|Manual input|Curated -> Flagged
     @fsm_log_by
     @transition(
         field=status,
-        source=STATUS_CURATED,
+        source=[STATUS_NEW, STATUS_IMPORTED, STATUS_MANUAL_INPUT, STATUS_CURATED],
         target=STATUS_FLAGGED,
         conditions=[can_flag],
         # permission=lambda instance, user: user in instance.all_permitted,
@@ -672,10 +676,11 @@ class QualityControlMixin(models.Model):
         """Return true if the record can be rejected as entirely wrong."""
         return True
 
+    # New|Imported|Manual input|Proofread|Curated|Flagged -> Rejected
     @fsm_log_by
     @transition(
         field=status,
-        source=[STATUS_PROOFREAD, STATUS_CURATED, STATUS_FLAGGED],
+        source=[STATUS_NEW, STATUS_IMPORTED, STATUS_MANUAL_INPUT, STATUS_PROOFREAD, STATUS_CURATED, STATUS_FLAGGED],
         target=STATUS_REJECTED,
         conditions=[can_flag],
         # permission=lambda instance, user: user in instance.all_permitted,
@@ -693,6 +698,7 @@ class QualityControlMixin(models.Model):
         """Return true if the record QA status can be reset."""
         return True
 
+    # Rejected -> New
     @fsm_log_by
     @transition(
         field=status,

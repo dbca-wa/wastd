@@ -533,7 +533,10 @@ class Survey(QualityControlMixin, UrlsMixin, models.Model):
         )
 
     def label_short(self):
-        return "Survey {} of {}".format(self.pk, "unknown site" if not self.site else self.site.name)
+        if not self.production:
+            return "Survey {} of {} (non-production)".format(self.pk, "unknown site" if not self.site else self.site.name)
+        else:
+            return "Survey {} of {}".format(self.pk, "unknown site" if not self.site else self.site.name)
 
     @property
     def as_html(self):
@@ -556,9 +559,9 @@ class Survey(QualityControlMixin, UrlsMixin, models.Model):
 
     @property
     def duplicate_surveys(self):
-        """A queryset of other production surveys on the same date and site with intersecting durations."""
+        """A queryset of other surveys on the same date and site with intersecting durations."""
         return (
-            Survey.objects.filter(site=self.site, start_time__date=self.start_date, production=True)
+            Survey.objects.filter(site=self.site, start_time__date=self.start_date)
             .exclude(pk=self.pk)
             .exclude(start_time__gte=self.end_time)  # surveys starting after self
             .exclude(end_time__lte=self.start_time)  # surveys ending before self
@@ -572,7 +575,22 @@ class Survey(QualityControlMixin, UrlsMixin, models.Model):
     @property
     def has_duplicates(self):
         """Whether there are duplicate surveys."""
-        return self.no_duplicates > 0
+        return self.duplicate_surveys.exists()
+
+    def has_production_duplicates(self):
+        """Whether there are duplicate production surveys.
+        """
+        return (
+            Survey.objects.filter(site=self.site, start_time__date=self.start_date, production=True)
+            .exclude(pk=self.pk)
+            .exclude(start_time__gte=self.end_time)  # surveys starting after self
+            .exclude(end_time__lte=self.start_time)  # surveys ending before self
+        ).exists()
+
+    def make_production(self):
+        self.production = True
+        self.save()
+        return f"Marking {self} as production"
 
     def close_duplicates(self, actor=None):
         """Mark this Survey as the only production survey, others as training and adopt all Encounters.
@@ -663,7 +681,7 @@ class Survey(QualityControlMixin, UrlsMixin, models.Model):
                 cuckoo_encounters.count()
             )
 
-        # Post-save runs claim_encounters
+        # Post-save runs claim_encounters in signals.
         self.save()
         LOGGER.info(msg)
         return msg

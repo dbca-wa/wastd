@@ -38,6 +38,7 @@ from .models import (
     TurtleHatchlingEmergenceOutlierObservation,
     LightSourceObservation,
     LoggerObservation,
+    TissueSampleObservation,
     DisturbanceObservation,
 )
 from .resources import (
@@ -843,7 +844,7 @@ class LoggerObservationAdmin(ObservationAdminMixin):
 
     list_display = (
         ObservationAdminMixin.LIST_FIRST
-        + ("logger_type", "deployment_status", "logger_id", "comments")
+        + ("logger_type", "deployment_status", "logger_id")
         + ObservationAdminMixin.LIST_LAST
     )
     list_filter = ObservationAdminMixin.LIST_FILTER + (
@@ -853,6 +854,36 @@ class LoggerObservationAdmin(ObservationAdminMixin):
     search_fields = (
         "logger_id",
         "comments",
+    )
+
+    def get_queryset(self, request):
+        return (
+            super()
+            .get_queryset(request)
+            .prefetch_related(
+                "encounter",
+                "encounter__reporter",
+                "encounter__observer",
+                "encounter__area",
+                "encounter__site",
+            )
+        )
+
+
+@register(TissueSampleObservation)
+class TissueSampleObservationAdmin(ObservationAdminMixin):
+
+    list_display = (
+        ObservationAdminMixin.LIST_FIRST
+        + ("sample_type", "serial")
+        + ObservationAdminMixin.LIST_LAST
+    )
+    list_filter = ObservationAdminMixin.LIST_FILTER + (
+        "sample_type",
+    )
+    search_fields = (
+        "serial",
+        "description",
     )
 
     def get_queryset(self, request):
