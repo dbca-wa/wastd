@@ -390,3 +390,21 @@ def light_source_observation_serializer(obj) -> Dict[str, Any]:
 class LightSourceObservationSerializer(object):
     def serialize(obj):
         return light_source_observation_serializer(obj)
+
+
+def disturbance_observation_serializer(obj) -> Dict[str, Any]:
+    d = {
+        'disturbance_cause': obj.get_disturbance_cause_display(),
+        'disturbance_cause_confidence': obj.get_disturbance_cause_confidence_display(),
+        'comments': obj.comments,
+    }
+    obj = observation_serializer(obj)
+    # Extend the serialised object.
+    obj['properties'].update(d)
+
+    return obj
+
+
+class DisturbanceObservationSerializer(object):
+    def serialize(obj):
+        return disturbance_observation_serializer(obj)
