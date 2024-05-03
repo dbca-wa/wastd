@@ -24,6 +24,7 @@ class AdminDashboard(Dashboard):
                             "observations.models.TurtleNestEncounter",
                             "observations.models.TurtleNestDisturbanceObservation",
                             "observations.models.TurtleTrackObservation",
+                            "observations.models.DisturbanceObservation",
                         ),
                     ),
                 ],
