@@ -248,6 +248,22 @@ class ObservationAdminMixin(VersionAdmin, ModelAdmin):
     )
     formfield_overrides = FORMFIELD_OVERRIDES
 
+    def has_change_permission(self, request, obj=None):
+        """Basic authorisation model: only staff can update/change these objects.
+        """
+        if request.user.is_staff:
+            return True
+        else:
+            return False
+
+    def has_delete_permission(self, request, obj=None):
+        """Basic authorisation model: only superusers can delete these objects.
+        """
+        if request.user.is_superuser:
+            return True
+        else:
+            return False
+
     def area(self, obj):
         return obj.encounter.area
 
@@ -1013,6 +1029,22 @@ class SurveyAdmin(ExportActionMixin, FSMTransitionMixin, VersionAdmin):
         CustomStateLogInline,
     ]
 
+    def has_change_permission(self, request, obj=None):
+        """Basic authorisation model: only staff can update/change these objects.
+        """
+        if request.user.is_staff:
+            return True
+        else:
+            return False
+
+    def has_delete_permission(self, request, obj=None):
+        """Basic authorisation model: only superusers can delete these objects.
+        """
+        if request.user.is_superuser:
+            return True
+        else:
+            return False
+
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "area":
             kwargs["queryset"] = Area.objects.filter(area_type=Area.AREATYPE_LOCALITY)
@@ -1036,8 +1068,8 @@ class SurveyAdmin(ExportActionMixin, FSMTransitionMixin, VersionAdmin):
 class AreaAdmin(ModelAdmin):
 
     list_display = (
-        "area_type",
         "name",
+        "area_type",
         "w2_location_code",
         "w2_place_code",
         "northern_extent",
@@ -1051,6 +1083,30 @@ class AreaAdmin(ModelAdmin):
     )
     form = s2form(Area, attrs=S2ATTRS)
     formfield_overrides = FORMFIELD_OVERRIDES
+
+    def has_add_permission(self, request):
+        """Basic authorisation model: only superusers can create these objects.
+        """
+        if request.user.is_superuser:
+            return True
+        else:
+            return False
+
+    def has_change_permission(self, request, obj=None):
+        """Basic authorisation model: only superusers can update/change these objects.
+        """
+        if request.user.is_superuser:
+            return True
+        else:
+            return False
+
+    def has_delete_permission(self, request, obj=None):
+        """Basic authorisation model: only superusers can delete these objects.
+        """
+        if request.user.is_superuser:
+            return True
+        else:
+            return False
 
 
 @register(Campaign)
@@ -1101,6 +1157,30 @@ class CampaignAdmin(ModelAdmin):
         if db_field.name == "destination":
             kwargs["queryset"] = Area.objects.filter(area_type=Area.AREATYPE_LOCALITY)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    def has_add_permission(self, request):
+        """Basic authorisation model: only superusers can create these objects.
+        """
+        if request.user.is_superuser:
+            return True
+        else:
+            return False
+
+    def has_change_permission(self, request, obj=None):
+        """Basic authorisation model: only superusers can update/change these objects.
+        """
+        if request.user.is_superuser:
+            return True
+        else:
+            return False
+
+    def has_delete_permission(self, request, obj=None):
+        """Basic authorisation model: only superusers can delete these objects.
+        """
+        if request.user.is_superuser:
+            return True
+        else:
+            return False
 
 
 @register(Encounter)
@@ -1161,11 +1241,11 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
         "reporter__username",
         "source_id",
     )
-    list_select_related = ("area", "site", "survey", "observer", "reporter", "campaign")
+    list_select_related = ("area", "site", "observer", "reporter", "campaign")
 
     form = s2form(Encounter, attrs=S2ATTRS)
     formfield_overrides = FORMFIELD_OVERRIDES
-    autocomplete_fields = ["area", "site", "survey", "campaign"]
+    autocomplete_fields = ["area", "site", "campaign"]
     # UserWidget excludes inactive users
     observer = forms.ChoiceField(widget=UserWidget())
     reporter = forms.ChoiceField(widget=UserWidget())
@@ -1220,12 +1300,28 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
         CustomStateLogInline,
     ]
 
+    def has_change_permission(self, request, obj=None):
+        """Basic authorisation model: only staff can update/change these objects.
+        """
+        if request.user.is_staff:
+            return True
+        else:
+            return False
+
+    def has_delete_permission(self, request, obj=None):
+        """Basic authorisation model: only superusers can delete these objects.
+        """
+        if request.user.is_superuser:
+            return True
+        else:
+            return False
+
     def get_queryset(self, request):
         return (
             super()
             .get_queryset(request)
             .prefetch_related(
-                "observer", "reporter", "area", "site", "survey", "campaign"
+                "observer", "reporter", "area", "site", "campaign"
             )
         )
 
@@ -1359,7 +1455,6 @@ class AnimalEncounterAdmin(ExportActionMixin, EncounterAdmin):
     list_select_related = (
         "area",
         "site",
-        "survey",
         "observer",
         "reporter",
         "site_of_first_sighting",
@@ -1397,6 +1492,7 @@ class AnimalEncounterAdmin(ExportActionMixin, EncounterAdmin):
         "datetime_of_last_sighting",
         "site_of_first_sighting",
         "site_of_last_sighting",
+        "survey",
     )
     fieldsets = EncounterAdmin.fieldsets + (
         (
@@ -1456,7 +1552,6 @@ class AnimalEncounterAdmin(ExportActionMixin, EncounterAdmin):
                 "reporter",
                 "area",
                 "site",
-                "survey",
                 "campaign",
                 "site_of_first_sighting",
                 "site_of_last_sighting",
@@ -1620,7 +1715,6 @@ class LineTransectEncounterAdmin(ExportActionMixin, EncounterAdmin):
     list_select_related = (
         "area",
         "site",
-        "survey",
     )
     fieldsets = EncounterAdmin.fieldsets + (
         (
