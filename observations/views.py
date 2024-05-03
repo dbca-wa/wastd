@@ -43,6 +43,7 @@ from .forms import (
     SurveyMergeForm,
     SurveyCloseDuplicatesForm,
     SurveyMakeProductionForm,
+    EncounterUpdateSurveyForm,
 )
 from .models import (
     Survey,
@@ -113,11 +114,6 @@ class SurveyMerge(BreadcrumbContextMixin, FormView):
 
     def get_object(self):
         return Survey.objects.get(pk=self.kwargs["pk"])
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs["survey"] = self.get_object()
-        return kwargs
 
     def get_breadcrumbs(self, request, obj=None, add=False):
         return (
@@ -209,13 +205,35 @@ class SurveyMakeProduction(SurveyCloseDuplicates):
         return HttpResponseRedirect(self.get_success_url())
 
 
-def survey_make_production(request, pk):
-    """Update a given Survey as 'production'.
-    """
-    survey = Survey.objects.get(pk=pk)
-    msg = survey.make_production()
-    messages.success(request, msg)
-    return HttpResponseRedirect(survey.get_absolute_url())
+class EncounterUpdateSurvey(BreadcrumbContextMixin, UpdateView):
+    model = Encounter
+    template_name = "observations/encounter_form.html"
+    form_class = EncounterUpdateSurveyForm
+
+    def get_breadcrumbs(self, request, obj=None, add=False):
+        return (
+            Breadcrumb("Home", reverse("home")),
+            Breadcrumb("Encounters", reverse("observations:encounter-list")),
+            Breadcrumb(self.get_object().pk, self.get_object().get_absolute_url()),
+            Breadcrumb("Update survey", None),
+        )
+
+    def get_success_url(self):
+        return self.get_object().get_absolute_url()
+
+    def post(self, request, *args, **kwargs):
+        # If the user clicked Cancel, redirect back to the object detail view.
+        if request.POST.get("cancel"):
+            return redirect(self.get_success_url())
+        return super().post(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        encounter = self.get_object()
+        # Note that we don't have form.cleaned_data, because we bypass validation in this form.
+        if "survey" in form.data and form.data["survey"]:
+            encounter.survey = Survey.objects.get(pk=form.data["survey"])
+            encounter.save()
+        return HttpResponseRedirect(self.get_success_url())
 
 
 class EncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, PaginateMixin, ListView):

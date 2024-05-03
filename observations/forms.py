@@ -1,8 +1,9 @@
 from django import forms
+from django.conf import settings
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Div, Fieldset, Field, Submit, HTML
 
-from .models import Survey
+from .models import Survey, Encounter
 
 
 class SurveyChoiceField(forms.ModelChoiceField):
@@ -19,15 +20,15 @@ class SurveyMergeForm(forms.Form):
     save_button = Submit("save", "Merge duplicate", css_class="btn-lg")
     cancel_button = Submit("cancel", "Cancel", css_class="btn-secondary")
 
-    def __init__(self, survey, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["survey_duplicates"].queryset = survey.duplicate_surveys
-
+        instance = kwargs["instance"]
+        self.fields["survey_duplicates"].queryset = instance.duplicate_surveys
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Div(
                 Fieldset(
-                    f"{survey.label_short()} - merge duplicate survey",
+                    f"{instance.label_short()} - merge duplicate survey",
                     HTML(f"<div>Merge the selected survey below into this one and adopt any encounters from the duplicate.</div>"),
                     Field("survey_duplicates"),
                 ),
@@ -91,3 +92,41 @@ class SurveyMakeProductionForm(SurveyCloseDuplicatesForm):
                 ),
             ),
         )
+
+
+class EncounterUpdateSurveyForm(forms.ModelForm):
+    survey = SurveyChoiceField(
+        label="Survey candidates",
+        queryset=Survey.objects.none(),
+        required=False,
+    )
+    save_button = Submit("save", "Save", css_class="btn-lg")
+    cancel_button = Submit("cancel", "Cancel", css_class="btn-secondary")
+
+    class Meta:
+        model = Encounter
+        exclude = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        instance = kwargs["instance"]
+        self.fields["survey"].queryset = instance.get_survey_candidates()
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Div(
+                Fieldset(
+                    f"Encounter {instance.pk} - update survey",
+                    HTML(f"<div>{ instance } at { instance.when.astimezone(settings.TZ).strftime('%d-%b-%Y %H:%M %Z') }</div>"),
+                    Field("survey"),
+                ),
+                Div(
+                    self.save_button,
+                    self.cancel_button,
+                    css_class='pb-2',
+                ),
+            ),
+        )
+
+    def is_valid(self):
+        # Bypass all form validation.
+        return True

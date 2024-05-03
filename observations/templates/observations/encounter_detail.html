@@ -95,7 +95,19 @@
                     <td>
                         {% if object.survey %}
                         <a href="{{ object.survey.get_absolute_url }}">{{ object.survey.label_short }}</a>
+                        {% else %}
+                        {% if object.get_survey_candidates.exists %}
+                        <a href="{% url 'observations:encounter-update-survey' pk=object.pk %}">{{ object.get_survey_candidates.count }} candidate(s)</a>
                         {% endif %}
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Locality
+                    </th>
+                    <td>
+                        {{ object.area.name|default_if_none:"" }}
                     </td>
                 </tr>
                 <tr>
@@ -103,11 +115,7 @@
                         Site
                     </th>
                     <td>
-                        {% if object.survey %}
-                        {{ object.survey.site.name }}
-                        {% else %}
-                        {{ object.guess_site.name }}
-                        {% endif %}
+                        {{ object.site.name|default_if_none:"" }}
                     </td>
                 </tr>
                 <tr>
@@ -115,9 +123,7 @@
                         Comments
                     </th>
                     <td>
-                        {% if object.comments %}
-                        {{ object.comments }}
-                        {% endif %}
+                        {{ object.comments|default_if_none:"" }}
                     </td>
                 </tr>
                 {% block extra_encounter_details %}{% endblock %}

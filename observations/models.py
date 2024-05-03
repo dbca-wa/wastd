@@ -1246,7 +1246,7 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
     def leaflet_title(self):
         """A string for Leaflet map marker titles. Cache me as field."""
         return "{} {} {}".format(
-            self.when.astimezone(settings.TZ).strftime("%d-%b-%Y %H:%M:%S") if self.when else "",
+            self.when.astimezone(settings.TZ).strftime("%d-%b-%Y %H:%M") if self.when else "",
             self.get_encounter_type_display(),
             self.name or "",
         ).strip()
@@ -1303,21 +1303,6 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
                 ]
             )
         )
-
-    @property
-    def date(self):
-        """Return the date component of Encounter.when."""
-        return self.when.date()
-
-    @property
-    def date_string(self):
-        """Return the date as string."""
-        return str(self.when.date())
-
-    @property
-    def datetime(self):
-        """Return the full datetime of the Encounter."""
-        return self.when
 
     @property
     def season(self):
@@ -1481,6 +1466,25 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         """
         t = loader.get_template("popup/{}.html".format(self._meta.model_name))
         return mark_safe(t.render({"original": self}))
+
+    def get_survey_candidates(self):
+        """Return the queryset of surveys that this encounter might belong to. Rules:
+            - Production survey
+            - Same area (locality)
+            - Survey start time >= 8h before encounter.when
+            - Survey end time <= 8h after encounter.when
+        """
+        if not self.area:
+            return Survey.objects.none()
+
+        earliest = self.when - timedelta(hours=8)
+        latest = self.when + timedelta(hours=8)
+        return Survey.objects.filter(
+            production=True,
+            area=self.area,
+            start_time__gte=earliest,
+            end_time__lte=latest,
+        )
 
 
 class AnimalEncounter(Encounter):
@@ -1989,10 +1993,6 @@ class Observation(PolymorphicModel, LegacySourceMixin, models.Model):
     def longitude(self):
         """The encounter's longitude."""
         return self.encounter.where.x or ""
-
-    def datetime(self):
-        """The encounter's timestamp."""
-        return self.encounter.when or ""
 
     @property
     def absolute_admin_url(self):
