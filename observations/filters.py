@@ -14,6 +14,8 @@ from .models import (
     AnimalEncounter,
     TurtleNestEncounter,
     LineTransectEncounter,
+    TurtleNestDisturbanceObservation,
+    DisturbanceObservation,
 )
 from .lookups import (
     HEALTH_CHOICES,
@@ -168,7 +170,6 @@ class AnimalEncounterFilter(FilterSet):
             "site",
             "species",
             "health",
-            #"checked_for_flipper_tags",
         ]
 
 
@@ -194,7 +195,7 @@ class TurtleNestEncounterFilter(FilterSet):
     survey = ChoiceFilter(
         field_name="survey",
         choices=(
-          ("null","<No survey>"),
+            ("null","<No survey>"),
         ),
         label="Survey",
     )
@@ -269,4 +270,69 @@ class LineTransectEncounterFilter(EncounterFilter):
         model = LineTransectEncounter
         fields = EncounterFilter._meta.fields + [
             "transect",
+        ]
+
+
+class TurtleNestDisturbanceObservationFilter(FilterSet):
+    date_from = DateFilter(
+        field_name="encounter__when",
+        lookup_expr="date__gte",
+        label="Date from",
+        input_formats=settings.DATE_INPUT_FORMATS,
+    )
+    date_to = DateFilter(
+        field_name="encounter__when",
+        lookup_expr="date__lte",
+        label="Date to",
+        input_formats=settings.DATE_INPUT_FORMATS,
+    )
+    area = ModelChoiceFilter(
+        field_name="encounter__area",
+        label="Locality",
+        queryset=Area.objects.filter(area_type__in=[Area.AREATYPE_LOCALITY]).order_by("name"),
+    )
+    site = ModelChoiceFilter(
+        field_name="encounter__site",
+        label="Site",
+        queryset=Area.objects.filter(area_type__in=[Area.AREATYPE_SITE]).order_by("name"),
+        null_label="<No site>",
+    )
+    status = ChoiceFilter(
+        field_name="encounter__status",
+        choices=(
+            (Encounter.STATUS_IMPORTED, "Imported"),
+            (Encounter.STATUS_MANUAL_INPUT, "Manual input"),
+            (Encounter.STATUS_CURATED, "Curated"),
+            (Encounter.STATUS_FLAGGED, "Flagged"),
+            (Encounter.STATUS_REJECTED, "Rejected"),
+        ),
+        label="QA status",
+    )
+
+    class Meta:
+        model = TurtleNestDisturbanceObservation
+        fields = [
+            "date_from",
+            "date_to",
+            "area",
+            "site",
+            "status",
+            "disturbance_severity",
+            "disturbance_cause",
+            "disturbance_cause_confidence",
+        ]
+
+
+class DisturbanceObservationFilter(TurtleNestDisturbanceObservationFilter):
+
+    class Meta:
+        model = DisturbanceObservation
+        fields = [
+            "date_from",
+            "date_to",
+            "area",
+            "site",
+            "status",
+            "disturbance_cause",
+            "disturbance_cause_confidence",
         ]

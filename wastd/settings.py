@@ -50,7 +50,7 @@ INSTALLED_APPS = [
     "polymorphic",  # Before django.contrib.contenttypes
     "django.contrib.contenttypes",
     "grappelli.dashboard",
-    "grappelli",
+    "grappelli",  # Before django.contrib.admin
     "django.contrib.admin",
     "nested_admin",
     "django.contrib.auth",
@@ -134,6 +134,7 @@ MAP_WIDGETS = {
             "zoom": 10,
             "center": (-31.996226, 115.883947),
             "scrollZoom": True,
+            "style": "mapbox://styles/dpawasi/ckigwmxrx606g19msw0g882gj",
         },
         "geocoderOptions": {
             "zoom": 7,
@@ -219,8 +220,6 @@ DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "noreply@dbca.wa.gov.a
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
 EMAIL_SUBJECT_PREFIX = os.environ.get("EMAIL_SUBJECT_PREFIX", "[Turtles DB] ")
 ADMIN_EMAILS = os.environ.get("ADMIN_EMAILS", "").split(",")
-if not DEBUG:
-    ADMINS = [("Admin",os.environ.get("ADMIN_EMAILS", ""))]
 
 
 # Static files (CSS, JavaScript, Images)

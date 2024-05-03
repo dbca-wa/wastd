@@ -1,0 +1,25 @@
+{% if resources %}
+  <div class="btn-group" role="group">
+  {% for format_name, format in resources.items %}
+      {% for f in format %}
+          {% if forloop.first %}
+          <a type="button" class="btn {{ button_class }}" href="{{ f.0 }}" title="Download {{ format_name|upper }}">
+              <i class="fa-solid fa-download" aria-hidden="true"></i>
+              {{ format_name|upper }}
+          </a>
+          {% else %}
+              {% if forloop.counter0 == 1 %}
+                  <button type="button" class="btn {{ button_class }} dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                      <span class="caret"></span>&nbsp
+                  </button>
+                  <ul class="dropdown-menu" role="menu">
+              {% endif %}
+              <li><a href="{{ f.0 }}">{{ f.1 }}</a></li>
+              {% if forloop.last %}
+                  </ul>
+              {% endif %}
+          {% endif %}
+      {% endfor %}
+  {% endfor %}
+  </div>
+{% endif %}

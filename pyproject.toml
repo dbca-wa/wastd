@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "wastd"
-version = "2.0.1"
+version = "2.0.2"
 description = "Western Australian Sea Turtles Database"
 authors = ["Florian Mayer <florian.mayer@dbca.wa.gov.au>", "Ashley Felton <ashley.felton@dbca.wa.gov.au>","Evan Hallein <evan.hallein@dbca.wa.gov.au>"]
 license = "MIT"
@@ -12,7 +12,7 @@ django = "4.2.11"
 django-extensions = "3.2.3"
 psycopg2 = "2.9.9"
 dj-database-url = "2.1.0"
-gunicorn = "21.2.0"
+gunicorn = "22.0.0"
 python-dotenv = "1.0.1"
 dbca-utils = "2.0.2"
 django-fsm = "2.8.1"
@@ -31,7 +31,7 @@ django-select2 = "8.0.0"
 django-geojson = "4.0.0"
 django-import-export = "3.3.7"
 django-export-download = "0.2.3"
-pillow = "10.2.0"
+pillow = "10.3.0"
 whitenoise = {version = "6.6.0", extras = ["brotli"]}
 phonenumbers = "8.13.32"
 django-phonenumber-field = "7.3.0"
@@ -43,17 +43,17 @@ django-nested-admin = "^4.0.2"
 django-grappelli = "3.0.8"
 django-bootstrap4 = "24.1"
 django-easy-select2 = "1.5.8"
-sentry-sdk = {version = "1.42.0", extras = ["django"]}
+sentry-sdk = {version = "1.45.0", extras = ["django"]}
 
 [tool.poetry.group.dev.dependencies]
-ipython = "^8.22.2"
+ipython = "^8.23.0"
 ipdb = "^0.13.13"
 black = "^24.3.0"
 ruff = "^0.3.3"
 sphinx = "^7.0.1"
 vulture = "^2.7"
 django-debug-toolbar = "^4.2.0"
-pre-commit = "^3.6.2"
+pre-commit = "^3.7.0"
 
 [build-system]
 requires = ["poetry-core"]

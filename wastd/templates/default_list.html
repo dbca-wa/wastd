@@ -16,49 +16,19 @@
 {% block page_content_inner %}
 
 {% block pagination_row %}
-<div class="row" id="pagination-row">
+
+<div class="row pb-1" id="pagination-row">
   <div class="col">
   {% if is_paginated %}
-    {% load proper_paginate %}
-    {% load url_replace %}
-    <ul class="pagination">
-        {% if page_obj.number == 1 %}
-            <li class="page-item disabled"><span class="page-link">⇤</span></li>
-        {% else %}
-            <li class="page-item"><a class="page-link" href="?{% url_replace request 'page' 1 %}">⇤</a></li>
-        {% endif %}
-        {% if page_obj.has_previous %}
-            <li class="page-item"><a class="page-link" href="?{% url_replace request 'page' page_obj.previous_page_number %}">&laquo;</a></li>
-        {% else %}
-            <li class="page-item disabled""><span class="page-link">&laquo;</span></li>
-        {% endif %}
-        {% for i in paginator|proper_paginate:page_obj.number %}
-            {% if page_obj.number == i %}
-                <li class="page-item active"><span class="page-link">{{ i }} <span class="sr-only">(current)</span></span></li>
-            {% else %}
-                <li class="page-item"><a class="page-link" href="?{% url_replace request 'page' i %}">{{ i }}</a></li>
-            {% endif %}
-        {% endfor %}
-        {% if page_obj.has_next %}
-            <li class="page-item"><a class="page-link" href="?{% url_replace request 'page' page_obj.next_page_number %}">&raquo;</a></li>
-        {% else %}
-            <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
-        {% endif %}
-        {% if page_obj.number == paginator.num_pages %}
-            <li class="page-item disabled"><span class="page-link">⇥</span></li>
-        {% else %}
-            <li class="page-item"><a class="page-link" href="?{% url_replace request 'page' paginator.num_pages %}">⇥</a></li>
-        {% endif %}
-    </ul>
-{% endif %}
+  {% include "pagination.html" %}
+  {% endif %}
 
-    {% if object_list %}
-        <span class="float-right">{% resource_download_menu %}</span>
-        {% if object_count %}<div>Found {{ object_count }} records</div>{% endif %}
-
-    {% endif %}
-    </div>
-</div>
+  {% if object_list %}
+    <span class="float-right">{% resource_download_menu 'btn-secondary' %}</span>
+    {% if object_count %}<div>Found {{ object_count }} records</div>{% endif %}
+  {% endif %}
+  </div><!-- /.col -->
+</div><!-- /.row -->
 {% endblock pagination_row %}
 
 <div class="row" id="data-row">
@@ -92,10 +62,17 @@
       </button>
     </form>
   </div><!-- /#filters-column -->
-
 </div><!-- /#data-row-->
 
-
+{% block pagination_row_bottom %}
+{% if is_paginated %}
+<div class="row">
+    <div class="col">
+    {% include "pagination.html" %}
+    </div><!-- /.col -->
+</div><!-- /.row -->
+{% endif %}
+{% endblock pagination_row_bottom %}
 
 {% endblock page_content_inner %}
 

@@ -75,6 +75,9 @@
 
 {% block extra_js %}
 <script>
+    // JS constants available in all templates.
     const mapproxy_url = '{{ mapproxy_url }}';
+    const localitiesGeoJSONUrl = "{% url 'localities_geojson' %}";
+    const sitesGeoJSONUrl = "{% url 'sites_geojson' %}";
 </script>
 {% endblock extra_js %}

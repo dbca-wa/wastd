@@ -313,7 +313,8 @@ CAUSE_OF_DEATH_CHOICES = NA + (
 )
 
 CONFIDENCE_CHOICES = NA + (
-    ("guess", "Guess based on insuffient evidence"),
+    ("guess", "Guess based on insufficient evidence"),
+    ("certain", "Certainty based on local evidence"),
     ("expert-opinion", "Expert opinion based on available evidence"),
     ("validated", "Validated by authoritative source"),
 )
@@ -425,11 +426,11 @@ NEST_TYPE_CHOICES = (
 )
 
 OBSERVATION_CHOICES = (
-    (NA_VALUE, "Not applicable"),
-    ("absent", "Absent"),
-    ("present", "Present"),
+    #("absent", "Absent"),
+    #("present", "Present"),
     ("yes", "Yes"),
     ("no", "No"),
+    (NA_VALUE, "NA (not applicable)"),
 )
 
 OBSERVATION_ICONS = {
@@ -506,12 +507,12 @@ NEST_DAMAGE_CHOICES = (
     (NEST_DAMAGE_DEFAULT, "Other turtle"),
     ("bandicoot", "Bandicoot predation"),
     ("bird", "Bird predation"),
+    ("cat", "Cat predation"),
     ("crab", "Crab predation"),
     ("croc", "Croc predation"),
     ("cyclone", "Cyclone disturbance"),
     ("dingo", "Dingo predation"),
     ("dog", "Dog predation"),
-    ("cat", "Cat predation"),
     ("fox", "Fox predation"),
     ("goanna", "Goanna predation"),
     ("human", "Human"),

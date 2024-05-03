@@ -16,6 +16,7 @@ from .models import (
     HatchlingMorphometricObservation,
     TurtleHatchlingEmergenceOutlierObservation,
     LightSourceObservation,
+    DisturbanceObservation,
 )
 from .serializers import (
     AreaSerializer,
@@ -33,6 +34,7 @@ from .serializers import (
     HatchlingMorphometricObservationSerializer,
     TurtleHatchlingEmergenceOutlierObservationSerializer,
     LightSourceObservationSerializer,
+    DisturbanceObservationSerializer,
 )
 
 
@@ -224,3 +226,13 @@ class LightSourceObservationListResource(ObservationListResource):
 class LightSourceObservationDetailResource(DetailResourceView):
     model = LightSourceObservation
     serializer = LightSourceObservationSerializer
+
+
+class DisturbanceObservationListResource(ObservationListResource):
+    model = DisturbanceObservation
+    serializer = DisturbanceObservationSerializer
+
+
+class DisturbanceObservationDetailResource(DetailResourceView):
+    model = DisturbanceObservation
+    serializer = DisturbanceObservationSerializer

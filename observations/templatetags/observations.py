@@ -11,7 +11,7 @@ register = template.Library()
 
 @register.simple_tag
 def get_verbose_name(object):
-    return object._meta.verbose_name
+    return object._meta.verbose_name.capitalize()
 
 
 @register.inclusion_tag("tx_logs.html", takes_context=False)

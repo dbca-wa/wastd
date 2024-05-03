@@ -4,7 +4,6 @@ from django.contrib.auth import get_user_model
 from django.contrib.admin import register, ModelAdmin, StackedInline, SimpleListFilter
 from django.contrib.admin.filters import RelatedFieldListFilter
 from django.utils.safestring import mark_safe
-from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 from django_select2.forms import ModelSelect2Widget
 from easy_select2 import select2_modelform as s2form
@@ -38,13 +37,18 @@ from .models import (
     TurtleHatchlingEmergenceObservation,
     TurtleHatchlingEmergenceOutlierObservation,
     LightSourceObservation,
-    LoggerObservation
+    LoggerObservation,
+    TissueSampleObservation,
+    DisturbanceObservation,
 )
 from .resources import (
     SurveyResource,
     AnimalEncounterResource,
     TurtleNestEncounterResource,
     LineTransectEncounterResource,
+    TurtleNestDisturbanceObservationResource,
+    TurtleTrackObservationResource,
+    DisturbanceObservationResource,
 )
 
 
@@ -244,44 +248,53 @@ class ObservationAdminMixin(VersionAdmin, ModelAdmin):
     )
     formfield_overrides = FORMFIELD_OVERRIDES
 
+    def has_change_permission(self, request, obj=None):
+        """Basic authorisation model: only staff can update/change these objects.
+        """
+        if request.user.is_staff:
+            return True
+        else:
+            return False
+
+    def has_delete_permission(self, request, obj=None):
+        """Basic authorisation model: only superusers can delete these objects.
+        """
+        if request.user.is_superuser:
+            return True
+        else:
+            return False
+
     def area(self, obj):
-        """Make data source readable."""
         return obj.encounter.area
 
     area.short_description = "Area"
 
     def site(self, obj):
-        """Make data source readable."""
         return obj.encounter.site
 
     site.short_description = "Site"
 
     def status(self, obj):
-        """Make health status human readable."""
         return obj.encounter.get_status_display()
 
     status.short_description = "Status"
 
     def latitude(self, obj):
-        """Make data source readable."""
         return obj.encounter.latitude
 
     latitude.short_description = "Latitude"
 
     def longitude(self, obj):
-        """Make data source readable."""
         return obj.encounter.longitude
 
     longitude.short_description = "Longitude"
 
     def date(self, obj):
-        """Make data source readable."""
         return obj.encounter.when
 
     date.short_description = "Date"
 
     def encounter_link(self, obj):
-        """A link to the encounter."""
         return mark_safe(
             '<a href="{0}">{1}</a>'.format(
                 obj.encounter.absolute_admin_url, obj.encounter.__str__()
@@ -292,7 +305,6 @@ class ObservationAdminMixin(VersionAdmin, ModelAdmin):
     encounter_link.allow_tags = True
 
     def encounter_status(self, obj):
-        """A link to the encounter."""
         return obj.encounter.get_status_display()
 
     encounter_status.short_description = "QA status"
@@ -430,19 +442,16 @@ class TagObservationAdmin(ObservationAdminMixin):
     form = s2form(TagObservation, attrs=S2ATTRS)
 
     def type_display(self, obj):
-        """Make tag type human readable."""
         return obj.get_tag_type_display()
 
     type_display.short_description = "Tag Type"
 
     def tag_location_display(self, obj):
-        """Make tag side human readable."""
         return obj.get_tag_location_display()
 
     tag_location_display.short_description = "Tag Location"
 
     def animal_name(self, obj):
-        """Animal name."""
         return obj.encounter.name
 
     animal_name.short_description = "Animal Name"
@@ -482,7 +491,7 @@ class TurtleDamageObservationAdmin(ObservationAdminMixin):
 
 
 @register(TurtleTrackObservation)
-class TurtleTrackObservationAdmin(ObservationAdminMixin):
+class TurtleTrackObservationAdmin(ExportActionMixin, ObservationAdminMixin):
     list_display = (
         ObservationAdminMixin.LIST_FIRST
         + (
@@ -490,9 +499,11 @@ class TurtleTrackObservationAdmin(ObservationAdminMixin):
             "max_track_width_rear",
             "carapace_drag_width",
             "step_length",
+            "tail_pokes",
         )
         + ObservationAdminMixin.LIST_LAST
     )
+    resource_classes = [TurtleTrackObservationResource]
 
     def get_queryset(self, request):
         return (
@@ -509,7 +520,7 @@ class TurtleTrackObservationAdmin(ObservationAdminMixin):
 
 
 @register(TurtleNestDisturbanceObservation)
-class TurtleNestDisturbanceObservationAdmin(ObservationAdminMixin):
+class TurtleNestDisturbanceObservationAdmin(ExportActionMixin, ObservationAdminMixin):
 
     list_display = (
         ObservationAdminMixin.LIST_FIRST
@@ -522,9 +533,43 @@ class TurtleNestDisturbanceObservationAdmin(ObservationAdminMixin):
         + ObservationAdminMixin.LIST_LAST
     )
     list_filter = ObservationAdminMixin.LIST_FILTER + (
+        "disturbance_cause",
         "disturbance_cause_confidence",
         "disturbance_severity",
     )
+    resource_classes = [TurtleNestDisturbanceObservationResource]
+
+    def get_queryset(self, request):
+        return (
+            super()
+            .get_queryset(request)
+            .prefetch_related(
+                "encounter",
+                "encounter__reporter",
+                "encounter__observer",
+                "encounter__area",
+                "encounter__site",
+            )
+        )
+
+
+@register(DisturbanceObservation)
+class DisturbanceObservationAdmin(ExportActionMixin, ObservationAdminMixin):
+
+    list_display = (
+        ObservationAdminMixin.LIST_FIRST
+        + (
+            "disturbance_cause",
+            "disturbance_cause_confidence",
+            "comments",
+        )
+        + ObservationAdminMixin.LIST_LAST
+    )
+    list_filter = ObservationAdminMixin.LIST_FILTER + (
+        "disturbance_cause",
+        "disturbance_cause_confidence",
+    )
+    resource_classes = [DisturbanceObservationResource]
 
     def get_queryset(self, request):
         return (
@@ -601,7 +646,6 @@ class NestTagObservationAdmin(ObservationAdminMixin):
     search_fields = ("flipper_tag_id", "date_nest_laid", "tag_label", "comments")
 
     def tag_name(self, obj):
-        """Nest tag name."""
         return obj.name
 
     tag_name.short_description = "Complete Nest Tag"
@@ -816,7 +860,7 @@ class LoggerObservationAdmin(ObservationAdminMixin):
 
     list_display = (
         ObservationAdminMixin.LIST_FIRST
-        + ("logger_type", "deployment_status", "logger_id", "comments")
+        + ("logger_type", "deployment_status", "logger_id")
         + ObservationAdminMixin.LIST_LAST
     )
     list_filter = ObservationAdminMixin.LIST_FILTER + (
@@ -826,6 +870,36 @@ class LoggerObservationAdmin(ObservationAdminMixin):
     search_fields = (
         "logger_id",
         "comments",
+    )
+
+    def get_queryset(self, request):
+        return (
+            super()
+            .get_queryset(request)
+            .prefetch_related(
+                "encounter",
+                "encounter__reporter",
+                "encounter__observer",
+                "encounter__area",
+                "encounter__site",
+            )
+        )
+
+
+@register(TissueSampleObservation)
+class TissueSampleObservationAdmin(ObservationAdminMixin):
+
+    list_display = (
+        ObservationAdminMixin.LIST_FIRST
+        + ("sample_type", "serial")
+        + ObservationAdminMixin.LIST_LAST
+    )
+    list_filter = ObservationAdminMixin.LIST_FILTER + (
+        "sample_type",
+    )
+    search_fields = (
+        "serial",
+        "description",
     )
 
     def get_queryset(self, request):
@@ -892,7 +966,7 @@ class SurveyAdmin(ExportActionMixin, FSMTransitionMixin, VersionAdmin):
     resource_classes = [SurveyResource]
     fieldsets = (
         (
-            _("Device"),
+            "Device",
             {
                 "classes": ("grp-collapse", "grp-open", "wide", "extrapretty"),
                 "fields": (
@@ -906,7 +980,7 @@ class SurveyAdmin(ExportActionMixin, FSMTransitionMixin, VersionAdmin):
             },
         ),
         (
-            _("Location"),
+            "Location",
             {
                 "classes": ("grp-collapse", "grp-open", "wide", "extrapretty"),
                 "fields": (
@@ -919,7 +993,7 @@ class SurveyAdmin(ExportActionMixin, FSMTransitionMixin, VersionAdmin):
             },
         ),
         (
-            _("Time"),
+            "Time",
             {
                 "classes": ("grp-collapse", "grp-open", "wide", "extrapretty"),
                 "fields": (
@@ -929,14 +1003,14 @@ class SurveyAdmin(ExportActionMixin, FSMTransitionMixin, VersionAdmin):
             },
         ),
         (
-            _("Campaign"),
+            "Campaign",
             {
                 "classes": ("grp-collapse", "grp-open", "wide", "extrapretty"),
                 "fields": ("campaign",),
             },
         ),
         (
-            _("Team"),
+            "Team",
             {
                 "classes": ("grp-collapse", "grp-open", "wide", "extrapretty"),
                 "fields": (
@@ -954,6 +1028,22 @@ class SurveyAdmin(ExportActionMixin, FSMTransitionMixin, VersionAdmin):
         SurveyMediaAttachmentInline,
         CustomStateLogInline,
     ]
+
+    def has_change_permission(self, request, obj=None):
+        """Basic authorisation model: only staff can update/change these objects.
+        """
+        if request.user.is_staff:
+            return True
+        else:
+            return False
+
+    def has_delete_permission(self, request, obj=None):
+        """Basic authorisation model: only superusers can delete these objects.
+        """
+        if request.user.is_superuser:
+            return True
+        else:
+            return False
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "area":
@@ -978,8 +1068,8 @@ class SurveyAdmin(ExportActionMixin, FSMTransitionMixin, VersionAdmin):
 class AreaAdmin(ModelAdmin):
 
     list_display = (
-        "area_type",
         "name",
+        "area_type",
         "w2_location_code",
         "w2_place_code",
         "northern_extent",
@@ -993,6 +1083,30 @@ class AreaAdmin(ModelAdmin):
     )
     form = s2form(Area, attrs=S2ATTRS)
     formfield_overrides = FORMFIELD_OVERRIDES
+
+    def has_add_permission(self, request):
+        """Basic authorisation model: only superusers can create these objects.
+        """
+        if request.user.is_superuser:
+            return True
+        else:
+            return False
+
+    def has_change_permission(self, request, obj=None):
+        """Basic authorisation model: only superusers can update/change these objects.
+        """
+        if request.user.is_superuser:
+            return True
+        else:
+            return False
+
+    def has_delete_permission(self, request, obj=None):
+        """Basic authorisation model: only superusers can delete these objects.
+        """
+        if request.user.is_superuser:
+            return True
+        else:
+            return False
 
 
 @register(Campaign)
@@ -1044,6 +1158,30 @@ class CampaignAdmin(ModelAdmin):
             kwargs["queryset"] = Area.objects.filter(area_type=Area.AREATYPE_LOCALITY)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
+    def has_add_permission(self, request):
+        """Basic authorisation model: only superusers can create these objects.
+        """
+        if request.user.is_superuser:
+            return True
+        else:
+            return False
+
+    def has_change_permission(self, request, obj=None):
+        """Basic authorisation model: only superusers can update/change these objects.
+        """
+        if request.user.is_superuser:
+            return True
+        else:
+            return False
+
+    def has_delete_permission(self, request, obj=None):
+        """Basic authorisation model: only superusers can delete these objects.
+        """
+        if request.user.is_superuser:
+            return True
+        else:
+            return False
+
 
 @register(Encounter)
 class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
@@ -1056,12 +1194,12 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
 
         def lookups(self, request, model_admin):
             return (
-                (Encounter.STATUS_NEW, _("New")),
-                (Encounter.STATUS_IMPORTED, _("Imported")),
-                (Encounter.STATUS_MANUAL_INPUT, _("Manual input")),
-                (Encounter.STATUS_CURATED, _("Curated")),
-                (Encounter.STATUS_FLAGGED, _("Flagged")),
-                (Encounter.STATUS_REJECTED, _("Rejected")),
+                (Encounter.STATUS_NEW, "New"),
+                (Encounter.STATUS_IMPORTED, "Imported"),
+                (Encounter.STATUS_MANUAL_INPUT, "Manual input"),
+                (Encounter.STATUS_CURATED, "Curated"),
+                (Encounter.STATUS_FLAGGED, "Flagged"),
+                (Encounter.STATUS_REJECTED, "Rejected"),
             )
 
         def queryset(self, request, queryset):
@@ -1076,7 +1214,6 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
         QAStatusFilter,
         "observer",
         "reporter",
-        #"location_accuracy",
         "encounter_type",
         "source",
     )
@@ -1087,9 +1224,6 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
         "encounter_type",
         "latitude",
         "longitude",
-        #"location_accuracy",
-        #"location_accuracy_m",
-        #"name_link",
     )
     LAST_COLS = (
         "observer",
@@ -1107,15 +1241,15 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
         "reporter__username",
         "source_id",
     )
-    list_select_related = ("area", "site", "survey", "observer", "reporter", "campaign")
+    list_select_related = ("area", "site", "observer", "reporter", "campaign")
 
     form = s2form(Encounter, attrs=S2ATTRS)
     formfield_overrides = FORMFIELD_OVERRIDES
-    autocomplete_fields = ["area", "site", "survey", "campaign"]
+    autocomplete_fields = ["area", "site", "campaign"]
     # UserWidget excludes inactive users
     observer = forms.ChoiceField(widget=UserWidget())
     reporter = forms.ChoiceField(widget=UserWidget())
-    readonly_fields = ("name",)
+    readonly_fields = ("name", "survey")
 
     # Django-fsm transitions config
     fsm_field = ["status"]
@@ -1166,12 +1300,28 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
         CustomStateLogInline,
     ]
 
+    def has_change_permission(self, request, obj=None):
+        """Basic authorisation model: only staff can update/change these objects.
+        """
+        if request.user.is_staff:
+            return True
+        else:
+            return False
+
+    def has_delete_permission(self, request, obj=None):
+        """Basic authorisation model: only superusers can delete these objects.
+        """
+        if request.user.is_superuser:
+            return True
+        else:
+            return False
+
     def get_queryset(self, request):
         return (
             super()
             .get_queryset(request)
             .prefetch_related(
-                "observer", "reporter", "area", "site", "survey", "campaign"
+                "observer", "reporter", "area", "site", "campaign"
             )
         )
 
@@ -1305,7 +1455,6 @@ class AnimalEncounterAdmin(ExportActionMixin, EncounterAdmin):
     list_select_related = (
         "area",
         "site",
-        "survey",
         "observer",
         "reporter",
         "site_of_first_sighting",
@@ -1343,6 +1492,7 @@ class AnimalEncounterAdmin(ExportActionMixin, EncounterAdmin):
         "datetime_of_last_sighting",
         "site_of_first_sighting",
         "site_of_last_sighting",
+        "survey",
     )
     fieldsets = EncounterAdmin.fieldsets + (
         (
@@ -1402,7 +1552,6 @@ class AnimalEncounterAdmin(ExportActionMixin, EncounterAdmin):
                 "reporter",
                 "area",
                 "site",
-                "survey",
                 "campaign",
                 "site_of_first_sighting",
                 "site_of_last_sighting",
@@ -1566,7 +1715,6 @@ class LineTransectEncounterAdmin(ExportActionMixin, EncounterAdmin):
     list_select_related = (
         "area",
         "site",
-        "survey",
     )
     fieldsets = EncounterAdmin.fieldsets + (
         (

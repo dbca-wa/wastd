@@ -14,6 +14,7 @@ from observations.models import Encounter
 ODK_API_URL = settings.ODK_API_URL
 logger = logging.getLogger('turtles')
 
+
 def get_auth_headers(email=None, password=None):
     """Returns a dict containing authorization headers for ODK.
     """
@@ -64,13 +65,13 @@ def get_submission(auth_headers, project_id, form_id, instance_id):
     """
     resp = requests.get(f"{ODK_API_URL}/projects/{project_id}/forms/{form_id}/submissions/{instance_id}.xml", headers=auth_headers)
     resp.raise_for_status()
-    
+
     try:
         data = xmltodict.parse(resp.content, xml_attribs=False)['data']
     except Exception as e:
-        print(str(e)) # print the exception message
+        print(str(e))
         return []
-    
+
     return data
 
 
@@ -81,18 +82,18 @@ def get_form_submission_data(auth_headers, project_id, form_id, skip_existing=Tr
     """
     # Get submission metadata for the form.
     submissions_metadata = get_submissions_metadata(auth_headers, project_id, form_id)
-    
+
     # Get individual submission data records.
     submission_data = []
     for metadata in submissions_metadata:
         if skip_existing:  # Check to see if record is already present in the local database.
             if Encounter.objects.filter(source='odk', source_id=metadata["instanceId"]).exists():
                 continue
-        
+
         if skip_rejected and metadata["reviewState"] == "rejected":
             logger.info("skipping rejected: " + metadata["instanceId"])
             continue
-        
+
         submission = get_submission(auth_headers, project_id, form_id, metadata["instanceId"])
         submission_data.append(submission)
 

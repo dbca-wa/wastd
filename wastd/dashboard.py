@@ -22,6 +22,9 @@ class AdminDashboard(Dashboard):
                         models=(
                             "observations.models.AnimalEncounter",
                             "observations.models.TurtleNestEncounter",
+                            "observations.models.TurtleNestDisturbanceObservation",
+                            "observations.models.TurtleTrackObservation",
+                            "observations.models.DisturbanceObservation",
                         ),
                     ),
                 ],

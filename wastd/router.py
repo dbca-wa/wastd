@@ -31,6 +31,8 @@ from observations.api import (
     TurtleHatchlingEmergenceOutlierObservationDetailResource,
     LightSourceObservationListResource,
     LightSourceObservationDetailResource,
+    DisturbanceObservationListResource,
+    DisturbanceObservationDetailResource,
 )
 # from turtle_tags.api import (
 #     TurtleListResource,
@@ -78,6 +80,8 @@ urlpatterns = [
     path("turtle-hatchling-emergence-outlier-observations/<int:pk>/", TurtleHatchlingEmergenceOutlierObservationDetailResource.as_view(), name="turtle_hatchling_emergence_outlier_observation_detail_resource"),
     path("light-source-observations/", LightSourceObservationListResource.as_view(), name="light_source_list_resource"),
     path("light-source-observations/<int:pk>/", LightSourceObservationDetailResource.as_view(), name="light_source_detail_resource"),
+    path("disturbance-observations/", DisturbanceObservationListResource.as_view(), name="disturbance_list_resource"),
+    path("disturbance-observations/<int:pk>/", DisturbanceObservationDetailResource.as_view(), name="disturbance_detail_resource"),
     # turtle_tags
     # path("turtles/", TurtleListResource.as_view(), name="turtle_list_resource"),
     # path("turtles/<int:pk>/", TurtleDetailResource.as_view(), name="turtle_detail_resource"),

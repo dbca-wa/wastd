@@ -18,6 +18,7 @@ from django_filters import CharFilter
 from functools import reduce
 from import_export.formats import base_formats
 from import_export.resources import Resource
+from mapwidgets.widgets import MapboxPointFieldWidget
 import re
 from urllib import parse
 import uuid
@@ -89,7 +90,7 @@ class BreadcrumbContextMixin(ContextMixin):
 
     def get_context_data(self, **kwargs):
         """Custom context."""
-        context = super(BreadcrumbContextMixin, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context["breadcrumbs"] = self.get_breadcrumbs(self.request)
         return context
 
@@ -364,7 +365,7 @@ class AdminImageWidget(AdminFileWidget):
                 f'style="object-fit: cover;"/> </a>'
             )
 
-        output.append(super(AdminFileWidget, self).render(name, value, attrs, renderer))
+        output.append(super().render(name, value, attrs, renderer))
         return mark_safe("".join(output))
 
 
@@ -560,6 +561,7 @@ class QualityControlMixin(models.Model):
         """Return true if this document can be proofread."""
         return True
 
+    # New -> Proofread
     @fsm_log_by
     @transition(
         field=status,
@@ -590,6 +592,7 @@ class QualityControlMixin(models.Model):
         """Return true if this document can be proofread."""
         return True
 
+    # Proofread -> New
     @fsm_log_by
     @transition(
         field=status,
@@ -618,10 +621,11 @@ class QualityControlMixin(models.Model):
         """Return true if this record can be accepted."""
         return True
 
+    # New|Imported|Proofread|Manual input|Flagged -> Curated
     @fsm_log_by
     @transition(
         field=status,
-        source=[STATUS_NEW, STATUS_PROOFREAD, STATUS_FLAGGED],
+        source=[STATUS_NEW, STATUS_IMPORTED, STATUS_PROOFREAD, STATUS_MANUAL_INPUT, STATUS_FLAGGED],
         target=STATUS_CURATED,
         conditions=[can_curate],
         # permission=lambda instance, user: user in instance.all_permitted,
@@ -643,10 +647,11 @@ class QualityControlMixin(models.Model):
         """Return true if curated status can be revoked."""
         return True
 
+    # New|Imported|Manual input|Curated -> Flagged
     @fsm_log_by
     @transition(
         field=status,
-        source=STATUS_CURATED,
+        source=[STATUS_NEW, STATUS_IMPORTED, STATUS_MANUAL_INPUT, STATUS_CURATED],
         target=STATUS_FLAGGED,
         conditions=[can_flag],
         # permission=lambda instance, user: user in instance.all_permitted,
@@ -671,10 +676,11 @@ class QualityControlMixin(models.Model):
         """Return true if the record can be rejected as entirely wrong."""
         return True
 
+    # New|Imported|Manual input|Proofread|Curated|Flagged -> Rejected
     @fsm_log_by
     @transition(
         field=status,
-        source=[STATUS_PROOFREAD, STATUS_CURATED, STATUS_FLAGGED],
+        source=[STATUS_NEW, STATUS_IMPORTED, STATUS_MANUAL_INPUT, STATUS_PROOFREAD, STATUS_CURATED, STATUS_FLAGGED],
         target=STATUS_REJECTED,
         conditions=[can_flag],
         # permission=lambda instance, user: user in instance.all_permitted,
@@ -692,6 +698,7 @@ class QualityControlMixin(models.Model):
         """Return true if the record QA status can be reset."""
         return True
 
+    # Rejected -> New
     @fsm_log_by
     @transition(
         field=status,
@@ -883,6 +890,7 @@ S2ATTRS = {"data-width": "50em"}
 FORMFIELD_OVERRIDES = {
     models.ImageField: {"widget": AdminImageWidget},
     models.FileField: {"widget": AdminImageWidget},
+    models.PointField: {"widget": MapboxPointFieldWidget},
 }
 FILTER_OVERRIDES = {
     models.CharField: {
@@ -954,3 +962,42 @@ def get_query(query_string, search_fields):
         else:
             query = query & or_query
     return query
+
+
+def get_previous_pages(page_num, count=5):
+    """Convenience function to take a Paginator page object and return the previous `count`
+    page numbers, to a minimum of 1.
+    """
+    prev_page_numbers = []
+
+    if page_num and page_num.has_previous():
+        for i in range(page_num.previous_page_number(), page_num.previous_page_number() - count, -1):
+            if i >= 1:
+                prev_page_numbers.append(i)
+
+    prev_page_numbers.reverse()
+    return prev_page_numbers
+
+
+def get_next_pages(page_num, count=5):
+    """Convenience function to take a Paginator page object and return the next `count`
+    page numbers, to a maximum of the paginator page count.
+    """
+    next_page_numbers = []
+
+    if page_num and page_num.has_next():
+        for i in range(page_num.next_page_number(), page_num.next_page_number() + count):
+            if i <= page_num.paginator.num_pages:
+                next_page_numbers.append(i)
+
+    return next_page_numbers
+
+
+class PaginateMixin(ListView):
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["object_count"] = self.get_queryset().count()
+        context["previous_pages"] = get_previous_pages(context["page_obj"])
+        context["next_pages"] = get_next_pages(context["page_obj"])
+        return context

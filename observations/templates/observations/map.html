@@ -40,9 +40,6 @@
         map.addLayer(markers);
     });
 
-    $.getJSON("{% url 'localities_geojson' %}", function(data) {
-        L.geoJson(data, {style: polystyle, onEachFeature: oef}).addTo(map);
-    });
     map.setView([-28, 118], 4);
 </script>
 {% endblock %}

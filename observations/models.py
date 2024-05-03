@@ -14,7 +14,6 @@ event (e.g. one encounter with a nesting turtle might result in observations abo
 the turtle's morphometrics, physical damage, and nesting success).
 """
 from datetime import timedelta
-from dateutil import tz
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.contrib.gis.db import models
@@ -274,10 +273,10 @@ class Campaign(models.Model):
             "-" if not self.destination else self.destination.name,
             "na"
             if not self.start_time
-            else self.start_time.astimezone(tz.tzlocal()).strftime("%Y-%m-%d"),
+            else self.start_time.astimezone(settings.TZ).strftime("%Y-%m-%d"),
             "na"
             if not self.end_time
-            else self.end_time.astimezone(tz.tzlocal()).strftime("%Y-%m-%d"),
+            else self.end_time.astimezone(settings.TZ).strftime("%Y-%m-%d"),
         )
 
     @property
@@ -522,19 +521,22 @@ class Survey(QualityControlMixin, UrlsMixin, models.Model):
         unique_together = ("source", "source_id")
 
     def __str__(self):
-        return self.label or str(self.pk)
+        return self.label_short()
 
     def make_label(self):
         return "Survey {} of {} on {} from {} to {}".format(
             self.pk,
             "unknown site" if not self.site else self.site.name,
-            "NA" if not self.start_time else self.start_time.astimezone(tz.tzlocal()).strftime("%d-%b-%Y"),
-            "" if not self.start_time else self.start_time.astimezone(tz.tzlocal()).strftime("%H:%M"),
-            "" if not self.end_time else self.end_time.astimezone(tz.tzlocal()).strftime("%H:%M %Z"),
+            "NA" if not self.start_time else self.start_time.astimezone(settings.TZ).strftime("%d-%b-%Y"),
+            "" if not self.start_time else self.start_time.astimezone(settings.TZ).strftime("%H:%M"),
+            "" if not self.end_time else self.end_time.astimezone(settings.TZ).strftime("%H:%M %Z"),
         )
 
     def label_short(self):
-        return "Survey {} of {}".format(self.pk, "unknown site" if not self.site else self.site.name)
+        if not self.production:
+            return "Survey {} of {} (non-production)".format(self.pk, "unknown site" if not self.site else self.site.name)
+        else:
+            return "Survey {} of {}".format(self.pk, "unknown site" if not self.site else self.site.name)
 
     @property
     def as_html(self):
@@ -553,7 +555,7 @@ class Survey(QualityControlMixin, UrlsMixin, models.Model):
     @property
     def start_date(self):
         """The calendar date of the survey's start time in the local timezone."""
-        return self.start_time.astimezone(tz.tzlocal()).date()
+        return self.start_time.astimezone(settings.TZ).date()
 
     @property
     def duplicate_surveys(self):
@@ -573,7 +575,22 @@ class Survey(QualityControlMixin, UrlsMixin, models.Model):
     @property
     def has_duplicates(self):
         """Whether there are duplicate surveys."""
-        return self.no_duplicates > 0
+        return self.duplicate_surveys.exists()
+
+    def has_production_duplicates(self):
+        """Whether there are duplicate production surveys.
+        """
+        return (
+            Survey.objects.filter(site=self.site, start_time__date=self.start_date, production=True)
+            .exclude(pk=self.pk)
+            .exclude(start_time__gte=self.end_time)  # surveys starting after self
+            .exclude(end_time__lte=self.start_time)  # surveys ending before self
+        ).exists()
+
+    def make_production(self):
+        self.production = True
+        self.save()
+        return f"Marking {self} as production"
 
     def close_duplicates(self, actor=None):
         """Mark this Survey as the only production survey, others as training and adopt all Encounters.
@@ -602,19 +619,27 @@ class Survey(QualityControlMixin, UrlsMixin, models.Model):
         )
 
         # All duplicate Surveys shall be closed (not production) and own no Encounters
-        for d in self.duplicate_surveys.all():
-            LOGGER.info("Closing Survey {0} with actor {1}".format(d.pk, curator))
-            d.production = False
-            d.save()
-            if d.status != QualityControlMixin.STATUS_CURATED:
-                d.curate(by=curator)
-                d.save()
-            for a in d.attachments.all():
-                a.survey = self
-                a.save()
+        for duplicate in self.duplicate_surveys.all():
+            LOGGER.info("Closing Survey {0} with actor {1}".format(duplicate.pk, curator))
+            duplicate.production = False
+            duplicate.save()
+            if duplicate.status != QualityControlMixin.STATUS_CURATED:
+                duplicate.curate(by=curator)
+                duplicate.save()
+            # Merge any media attachments on the duplicate survey.
+            attachments = SurveyMediaAttachment.objects.filter(survey=duplicate)
+            for media in attachments:
+                media.survey = self
+                media.save()
 
-        # From all Encounters (if any), adjust duration
-        if all_encounters.count() > 0:
+        # From all Encounters (if any), adjust Survey duration
+        if all_encounters.exists():
+
+            # Merge any Encounters on the old survey.
+            for encounter in all_encounters:
+                encounter.survey = self
+                encounter.save()
+
             earliest_enc = min([e.when for e in all_encounters])
             earliest_buffered = earliest_enc - timedelta(minutes=30)
             latest_enc = max([e.when for e in all_encounters])
@@ -622,31 +647,31 @@ class Survey(QualityControlMixin, UrlsMixin, models.Model):
 
             msg += " {0} combined Encounters were found from duplicates between {1} and {2}.".format(
                 all_encounters.count(),
-                earliest_enc.astimezone(tz.tzlocal()).strftime("%Y-%m-%d %H:%M %Z"),
-                latest_enc.astimezone(tz.tzlocal()).strftime("%Y-%m-%d %H:%M %Z"),
+                earliest_enc.astimezone(settings.TZ).strftime("%Y-%m-%d %H:%M %Z"),
+                latest_enc.astimezone(settings.TZ).strftime("%Y-%m-%d %H:%M %Z"),
             )
             if earliest_enc < self.start_time:
                 msg += " Adjusted Survey start time from {0} to 30 mins before earliest Encounter, {1}.".format(
-                    self.start_time.astimezone(tz.tzlocal()).strftime(
+                    self.start_time.astimezone(settings.TZ).strftime(
                         "%Y-%m-%d %H:%M %Z"
                     ),
-                    earliest_buffered.astimezone(tz.tzlocal()).strftime(
+                    earliest_buffered.astimezone(settings.TZ).strftime(
                         "%Y-%m-%d %H:%M %Z"
                     ),
                 )
                 self.start_time = earliest_buffered
             if latest_enc > self.end_time:
                 msg += " Adjusted Survey end time from {0} to 30 mins after latest Encounter, {1}.".format(
-                    self.end_time.astimezone(tz.tzlocal()).strftime(
+                    self.end_time.astimezone(settings.TZ).strftime(
                         "%Y-%m-%d %H:%M %Z"
                     ),
-                    latest_buffered.astimezone(tz.tzlocal()).strftime(
+                    latest_buffered.astimezone(settings.TZ).strftime(
                         "%Y-%m-%d %H:%M %Z"
                     ),
                 )
                 self.end_time = latest_buffered
 
-        # This Survey is the production survey owning all Encounters
+        # This Survey is the production survey, owning all Encounters.
         self.production = True
         self.save()
         if self.status != QualityControlMixin.STATUS_CURATED:
@@ -654,17 +679,17 @@ class Survey(QualityControlMixin, UrlsMixin, models.Model):
             self.save()
 
         # ...except cuckoo Encounters
-        if all_encounters.count() > 0 and self.site is not None:
+        if all_encounters.exists() and self.site is not None:
             cuckoo_encounters = all_encounters.exclude(where__coveredby=self.site.geom)
             for e in cuckoo_encounters:
                 e.site = None
                 e.survey = None
                 e.save()
-            msg += " Evicted {0} cuckoo Encounters observed outside the site.".format(
+            msg += " Evicted {0} cuckoo Encounters observed outside the survey site.".format(
                 cuckoo_encounters.count()
             )
 
-        # Post-save runs claim_encounters
+        # Post-save runs claim_encounters in signals.
         self.save()
         LOGGER.info(msg)
         return msg
@@ -876,6 +901,7 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
     ENCOUNTER_TRACKS = "tracks"
     ENCOUNTER_TAG = "tag-management"
     ENCOUNTER_LOGGER = "logger"
+    ENCOUNTER_DISTURBANCE = "disturbance"
     ENCOUNTER_OTHER = "other"
 
     ENCOUNTER_TYPES = (
@@ -884,8 +910,9 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         (ENCOUNTER_NEST, "Nest"),
         (ENCOUNTER_TRACKS, "Tracks"),
         (ENCOUNTER_INWATER, "In water"),
-        (ENCOUNTER_TAG, "Tag Management"),
+        (ENCOUNTER_TAG, "Tag management"),
         (ENCOUNTER_LOGGER, "Logger"),
+        (ENCOUNTER_DISTURBANCE, "Disturbance/predator"),
         (ENCOUNTER_OTHER, "Other"),
     )
 
@@ -897,6 +924,7 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         ENCOUNTER_TAG: "cog",
         ENCOUNTER_INWATER: "water",
         ENCOUNTER_LOGGER: "tablet",
+        ENCOUNTER_DISTURBANCE: "circle-exclamation",
         ENCOUNTER_OTHER: "circle-question",
     }
 
@@ -908,6 +936,7 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         ENCOUNTER_TRACKS: "cadetblue",
         ENCOUNTER_TAG: "darkpuple",
         ENCOUNTER_LOGGER: "orange",
+        ENCOUNTER_DISTURBANCE: "red",
         ENCOUNTER_OTHER: "purple",
     }
 
@@ -1076,7 +1105,7 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
     def status_colour(self):
         """Return a Bootstrap4 CSS colour class for each status."""
         return self.STATUS_LABELS[self.status]
-    
+
     @property
     def latitude(self):
         """Return the WGS 84 DD latitude."""
@@ -1198,8 +1227,6 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
     def get_flag_url(self):
         return reverse("observations:animalencounter-flag", kwargs={"pk": self.pk})
 
-    # -------------------------------------------------------------------------
-    # Derived properties
     def can_change(self):
         # Returns True if editing this object is permitted, False otherwise.
         # Determined by the object's QA status.
@@ -1219,7 +1246,7 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
     def leaflet_title(self):
         """A string for Leaflet map marker titles. Cache me as field."""
         return "{} {} {}".format(
-            self.when.astimezone(tz.tzlocal()).strftime("%d-%b-%Y %H:%M:%S") if self.when else "",
+            self.when.astimezone(settings.TZ).strftime("%d-%b-%Y %H:%M") if self.when else "",
             self.get_encounter_type_display(),
             self.name or "",
         ).strip()
@@ -1270,27 +1297,12 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         return slugify(
             "-".join(
                 [
-                    self.when.astimezone(tz.tzlocal()).strftime("%Y-%m-%d %H:%M %Z"),
+                    self.when.astimezone(settings.TZ).strftime("%Y-%m-%d %H:%M %Z"),
                     force_str(round(self.longitude, 4)).replace(".", "-"),
                     force_str(round(self.latitude, 4)).replace(".", "-"),
                 ]
             )
         )
-
-    @property
-    def date(self):
-        """Return the date component of Encounter.when."""
-        return self.when.date()
-
-    @property
-    def date_string(self):
-        """Return the date as string."""
-        return str(self.when.date())
-
-    @property
-    def datetime(self):
-        """Return the full datetime of the Encounter."""
-        return self.when
 
     @property
     def season(self):
@@ -1412,9 +1424,6 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         """
         return False
 
-    # HTML popup -------------------------------------------------------------#
-    
-
     def get_popup(self):
         """Generate HTML popup content."""
         t = loader.get_template("popup/{}.html".format(self._meta.model_name))
@@ -1424,26 +1433,16 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         """Generate an HTML report of the Encounter."""
         t = loader.get_template("reports/{}.html".format(self._meta.model_name))
         return mark_safe(t.render({"original": self}))
-    
+
     @property
     def wkt(self):
         """Return the point coordinates as Well Known Text (WKT)."""
         return self.where.wkt
-    
+
     @property
     def observation_set(self):
         """Manually implement the backwards relation to the Observation model."""
         return Observation.objects.filter(encounter=self)
-
-    @property
-    def latitude(self):
-        """Return the WGS 84 DD latitude."""
-        return self.where.y
-
-    @property
-    def longitude(self):
-        """Return the WGS 84 DD longitude."""
-        return self.where.x
 
     @property
     def crs(self):
@@ -1467,6 +1466,25 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         """
         t = loader.get_template("popup/{}.html".format(self._meta.model_name))
         return mark_safe(t.render({"original": self}))
+
+    def get_survey_candidates(self):
+        """Return the queryset of surveys that this encounter might belong to. Rules:
+            - Production survey
+            - Same area (locality)
+            - Survey start time >= 8h before encounter.when
+            - Survey end time <= 8h after encounter.when
+        """
+        if not self.area:
+            return Survey.objects.none()
+
+        earliest = self.when - timedelta(hours=8)
+        latest = self.when + timedelta(hours=8)
+        return Survey.objects.filter(
+            production=True,
+            area=self.area,
+            start_time__gte=earliest,
+            end_time__lte=latest,
+        )
 
 
 class AnimalEncounter(Encounter):
@@ -1631,7 +1649,7 @@ class AnimalEncounter(Encounter):
         tpl = "AnimalEncounter {} on {} by {} of {}, {} {} {} on {}"
         return tpl.format(
             self.pk,
-            self.when.astimezone(tz.tzlocal()).strftime("%Y-%m-%d %H:%M %Z"),
+            self.when.astimezone(settings.TZ).strftime("%Y-%m-%d %H:%M %Z"),
             self.observer.name,
             self.get_species_display(),
             self.get_health_display(),
@@ -1685,7 +1703,7 @@ class AnimalEncounter(Encounter):
         animals of the same species and deadness.
         """
         nameparts = [
-            self.when.astimezone(tz.tzlocal()).strftime("%Y-%m-%d %H:%M %Z"),
+            self.when.astimezone(settings.TZ).strftime("%Y-%m-%d %H:%M %Z"),
             force_str(round(self.longitude, 4)).replace(".", "-"),
             force_str(round(self.latitude, 4)).replace(".", "-"),
             self.health,
@@ -1696,7 +1714,6 @@ class AnimalEncounter(Encounter):
         if self.name is not None:
             nameparts.append(self.name)
         return slugify("-".join(nameparts))
-
 
     @property
     def is_stranding(self):
@@ -1867,7 +1884,7 @@ class TurtleNestEncounter(Encounter):
         The short_name could be non-unique.
         """
         nameparts = [
-            self.when.astimezone(tz.tzlocal()).strftime("%Y-%m-%d %H:%M %Z"),
+            self.when.astimezone(settings.TZ).strftime("%Y-%m-%d %H:%M %Z"),
             force_str(round(self.longitude, 4)).replace(".", "-"),
             force_str(round(self.latitude, 4)).replace(".", "-"),
             self.nest_age,
@@ -1911,7 +1928,7 @@ class TurtleNestEncounter(Encounter):
         """A turtle nest encounter should be associated with 0-1 NestTagObservation objects.
         Returns the related NestTagObservation or None.
         """
-        
+
         observation = self.observation_set.instance_of(NestTagObservation).first()
         return observation
 
@@ -1936,6 +1953,9 @@ class Observation(PolymorphicModel, LegacySourceMixin, models.Model):
         related_name="observations",
         help_text="The Encounter during which the observation was made",
     )
+
+    class Meta:
+        ordering = ("-pk",)
 
     def __str__(self):
         return f"Observation {self.pk} for {self.encounter}"
@@ -1973,10 +1993,6 @@ class Observation(PolymorphicModel, LegacySourceMixin, models.Model):
     def longitude(self):
         """The encounter's longitude."""
         return self.encounter.where.x or ""
-
-    def datetime(self):
-        """The encounter's timestamp."""
-        return self.encounter.when or ""
 
     @property
     def absolute_admin_url(self):
@@ -2019,7 +2035,7 @@ class MediaAttachment(Observation):
     )
 
     def __str__(self):
-        return f"Media attachment {self.pk} for encounter {self.encounter.pk}: {self.attachment.name}"
+        return f"Media attachment {self.pk} for encounter {self.encounter.pk}"
 
     @property
     def filepath(self):
@@ -2730,10 +2746,10 @@ class TurtleNestDisturbanceObservation(Observation):
     """
 
     NEST_VIABILITY_CHOICES = (
-        ("negligible", "negligible disturbance"),
-        ("partly", "nest partly destroyed"),
-        ("completely", "nest completely destroyed"),
-        (lookups.NA_VALUE, "nest in indeterminate condition"),
+        ("negligible", "Negligible disturbance"),
+        ("partly", "Nest partly destroyed"),
+        ("completely", "Nest completely destroyed"),
+        (lookups.NA_VALUE, "Nest in indeterminate condition"),
     )
 
     disturbance_cause = models.CharField(
@@ -2761,7 +2777,10 @@ class TurtleNestDisturbanceObservation(Observation):
     )
 
     def __str__(self):
-        return f"{self.pk}: Nest disturbance {self.disturbance_severity} by {self.disturbance_cause}"
+        return f"{self.pk}: Nest disturbance by {self.get_disturbance_cause_display().lower()}, {self.get_disturbance_severity_display().lower()}"
+
+    def card_template(self):
+        return "observations/turtle_nest_disturbance_observation_card.html"
 
 
 class TurtleTrackObservation(Observation):
@@ -3116,7 +3135,7 @@ class LineTransectEncounter(Encounter):
         The short_name could be non-unique.
         """
         nameparts = [
-            self.when.astimezone(tz.tzlocal()).strftime("%Y-%m-%d %H:%M %Z"),
+            self.when.astimezone(settings.TZ).strftime("%Y-%m-%d %H:%M %Z"),
             force_str(round(self.longitude, 4)).replace(".", "-"),
             force_str(round(self.latitude, 4)).replace(".", "-"),
         ]
@@ -3206,3 +3225,32 @@ class TurtleNestDisturbanceTallyObservation(Observation):
 
     def __str__(self):
         return f"Nest Damage Tally: {self.no_nests_disturbed} nests of {self.species} showing disturbance by {self.disturbance_cause}"
+
+
+class DisturbanceObservation(Observation):
+    """Disturbance/predator observation, unrelated to a turtle nest.
+    """
+
+    disturbance_cause = models.CharField(
+        max_length=300,
+        choices=lookups.NEST_DAMAGE_CHOICES,
+        help_text="The cause of the disturbance.",
+    )
+    disturbance_cause_confidence = models.CharField(
+        max_length=300,
+        verbose_name="Disturbance cause choice confidence",
+        choices=lookups.CONFIDENCE_CHOICES,
+        default=lookups.NA_VALUE,
+        help_text="What is the choice of disturbance cause based on?",
+    )
+    comments = models.TextField(
+        blank=True,
+        null=True,
+        help_text="Any other comments or notes.",
+    )
+
+    def __str__(self):
+        return f"{self.pk}: Disturbance/predator ({self.get_disturbance_cause_display().lower()}), {self.get_disturbance_cause_confidence_display().lower()}"
+
+    def card_template(self):
+        return "observations/disturbance_observation_card.html"
