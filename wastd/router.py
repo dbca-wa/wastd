@@ -33,6 +33,7 @@ from observations.api import (
     LightSourceObservationDetailResource,
     DisturbanceObservationListResource,
     DisturbanceObservationDetailResource,
+    #nests_tracks_streaming_json,
 )
 # from turtle_tags.api import (
 #     TurtleListResource,
@@ -41,12 +42,11 @@ from observations.api import (
 #     TurtleTagDetailResource,
 # )
 from users.api import UserListResource, UserDetailResource
-from observations import views
 #from turtle_tags import views as tagviews
 
 urlpatterns = [
     # observations
-    path('nestAndTracks/', views.nestAndTracks, name='nestAndTracks'),
+    #path('nestAndTracks/', nests_tracks_streaming_json, name='nestAndTracks'),
     #path('taggedTurtles/', tagviews.taggedTurtles, name='taggedTurtles'),
     path("users/", UserListResource.as_view(), name="user_list_resource"),
     path("users/<int:pk>/", UserDetailResource.as_view(), name="user_detail_resource"),
