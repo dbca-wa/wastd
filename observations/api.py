@@ -1,6 +1,8 @@
 import datetime
 from django.db import connection
-from django.http import HttpResponseBadRequest, StreamingHttpResponse
+from django.http import HttpResponseBadRequest, StreamingHttpResponse, JsonResponse
+from django.urls import reverse
+from django.views.generic.base import View
 import json
 from wastd.utils import ListResourceView, DetailResourceView
 
@@ -40,6 +42,40 @@ from .serializers import (
     LightSourceObservationSerializer,
     DisturbanceObservationSerializer,
 )
+
+
+class ObservationsResourceSummary(View):
+    """A custom view to return a list of resource API endpoints.
+    """
+    http_method_names = ["get"]
+
+    def get(self, request, *args, **kwargs):
+        # Generate a list of resources and endpoints.
+        resources = [
+            ("area", "area_list_resource"),
+            ("survey", "survey_list_resource"),
+            ("survey-media-attachment", "survey_media_attachment_list_resource"),
+            ("encounter", "encounter_list_resource"),
+            ("animal-encounter", "animal_encounter_list_resource"),
+            ("turtle-nest-encounter", "turtle_nest_encounter_list_resource"),
+            ("media-attachment", "media_attachment_list_resource"),
+            ("turtle-nest-observation", "turtle_nest_observation_list_resource"),
+            ("turtle-hatchling-emergence-observation", "turtle_hatchling_emergence_observation_list_resource"),
+            ("nest-tag-observation", "nest_tag_observation_list_resource"),
+            ("turtle-nest-disturbance-observation", "turtle_nest_disturbance_observation_list_resource"),
+            ("logger-observation", "logger_observation_list_resource"),
+            ("hatchling-morphometric-observation", "hatchling_morphometric_observation_list_resource"),
+            ("turtle-hatchling-emergence-outlier-observation", "turtle_hatchling_emergence_outlier_observation_list_resource"),
+            ("light-source-observation", "light_source_observation_list_resource"),
+            ("disturbance-observation", "disturbance_observation_list_resource"),
+        ]
+        endpoints = []
+
+        for resource in resources:
+            endpoints.append(
+                {"resource": resource[0], "endpoint_url": request.build_absolute_uri(reverse(f"api:{resource[1]}"))}
+            )
+        return JsonResponse(endpoints, safe=False)
 
 
 class AreaListResource(ListResourceView):
