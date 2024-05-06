@@ -14,8 +14,10 @@ from .models import (
     AnimalEncounter,
     TurtleNestEncounter,
     LineTransectEncounter,
+    Observation,
     TurtleNestDisturbanceObservation,
     DisturbanceObservation,
+    TrackTallyObservation,
 )
 from .lookups import (
     HEALTH_CHOICES,
@@ -273,7 +275,7 @@ class LineTransectEncounterFilter(EncounterFilter):
         ]
 
 
-class TurtleNestDisturbanceObservationFilter(FilterSet):
+class ObservationFilter(FilterSet):
     date_from = DateFilter(
         field_name="encounter__when",
         lookup_expr="date__gte",
@@ -310,6 +312,19 @@ class TurtleNestDisturbanceObservationFilter(FilterSet):
     )
 
     class Meta:
+        model = Observation
+        fields = [
+            "date_from",
+            "date_to",
+            "area",
+            "site",
+            "status",
+        ]
+
+
+class TurtleNestDisturbanceObservationFilter(ObservationFilter):
+
+    class Meta:
         model = TurtleNestDisturbanceObservation
         fields = [
             "date_from",
@@ -323,7 +338,7 @@ class TurtleNestDisturbanceObservationFilter(FilterSet):
         ]
 
 
-class DisturbanceObservationFilter(TurtleNestDisturbanceObservationFilter):
+class DisturbanceObservationFilter(ObservationFilter):
 
     class Meta:
         model = DisturbanceObservation
@@ -335,4 +350,20 @@ class DisturbanceObservationFilter(TurtleNestDisturbanceObservationFilter):
             "status",
             "disturbance_cause",
             "disturbance_cause_confidence",
+        ]
+
+
+class TrackTallyObservationFilter(ObservationFilter):
+
+    class Meta:
+        model = TrackTallyObservation
+        fields = [
+            "date_from",
+            "date_to",
+            "area",
+            "site",
+            "status",
+            "species",
+            "nest_age",
+            "nest_type",
         ]

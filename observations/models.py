@@ -3104,7 +3104,7 @@ class LineTransectEncounter(Encounter):
     )
 
     def __str__(self):
-        return f"Line tx {self.pk}"
+        return f"Line transect {self.pk}"
 
     def inferred_name(self):
         """Return an empty string."""
@@ -3188,6 +3188,9 @@ class TrackTallyObservation(Observation):
 
     def __str__(self):
         return f"TrackTally: {self.tally} {self.nest_age} {self.nest_type}s of {self.species}"
+
+    def card_template(self):
+        return "observations/track_tally_observation_card.html"
 
 
 class TurtleNestDisturbanceTallyObservation(Observation):

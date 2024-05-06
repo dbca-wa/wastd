@@ -14,6 +14,7 @@ from .models import (
     TurtleNestDisturbanceObservation,
     TurtleTrackObservation,
     DisturbanceObservation,
+    TrackTallyObservation,
 )
 
 
@@ -680,6 +681,27 @@ class TurtleTrackObservationResource(ObservationResource):
 
     def dehydrate_tail_pokes(self, obj):
         return obj.get_tail_pokes_display() if obj.tail_pokes else ""
+
+
+class TrackTallyObservationResource(ObservationResource):
+
+    class Meta:
+        model = TrackTallyObservation
+        fields = ObservationResource.Meta.fields + [
+            "species",
+            "nest_age",
+            "nest_type",
+            "tally",
+        ]
+
+    def dehydrate_species(self, obj):
+        return obj.get_species_display()
+
+    def dehydrate_nest_age(self, obj):
+        return obj.get_nest_age_display()
+
+    def dehydrate_nest_type(self, obj):
+        return obj.get_nest_type_display()
 
 
 # TODO: HatchlingMorphometricObservation, LightSourceObservation, LoggerObservation

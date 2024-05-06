@@ -12,7 +12,15 @@
                     <i class="fa-solid fa-table" aria-hidden="true"></i>
                     Browse all turtle track/nest encounters
                 </a>
+
+                <a class="dropdown-item" href="{% url 'observations:linetransectencounter-list' %}"
+                    title="Browse all turtle transect encounters">
+                    <i class="fa-solid fa-table" aria-hidden="true"></i>
+                    Browse all line transect encounters
+                </a>
+
                 <div class="dropdown-divider"></div>
+
                 <a class="dropdown-item" href="{% url 'observations:turtlenestencounter-list' %}?encounter_type=tracks&nest_type=false-crawl"
                     title="Browse tracks without nests">
                     <i class="fa-solid fa-table" aria-hidden="true"></i>
@@ -99,6 +107,12 @@
                     title="Predator / disturbance observations">
                     <i class="fa-solid fa-table" aria-hidden="true"></i>
                     Predator / disturbance observations
+                </a>
+
+                <a class="dropdown-item" href="{% url 'observations:tracktallyobservation-list' %}"
+                    title="Turtle track tally observations">
+                    <i class="fa-solid fa-table" aria-hidden="true"></i>
+                    Turtle track tally observations
                 </a>
             </div>
         </li>

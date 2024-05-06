@@ -9,10 +9,6 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View, TemplateView, ListView, DetailView, FormView, UpdateView
 from django.views.generic.detail import SingleObjectMixin
 from django_fsm_log.models import StateLog
-from django.db import connection
-from django.http import StreamingHttpResponse
-import json
-import datetime
 
 from wastd.utils import (
     ListViewBreadcrumbMixin,
@@ -29,6 +25,7 @@ from .admin import (
     LineTransectEncounterAdmin,
     TurtleNestDisturbanceObservationAdmin,
     DisturbanceObservationAdmin,
+    TrackTallyObservationAdmin,
 )
 from .filters import (
     SurveyFilter,
@@ -38,6 +35,7 @@ from .filters import (
     LineTransectEncounterFilter,
     TurtleNestDisturbanceObservationFilter,
     DisturbanceObservationFilter,
+    TrackTallyObservationFilter,
 )
 from .forms import (
     SurveyMergeForm,
@@ -55,6 +53,7 @@ from .models import (
     TagObservation,
     TurtleNestDisturbanceObservation,
     DisturbanceObservation,
+    TrackTallyObservation,
 )
 from .resources import (
     SurveyResource,
@@ -64,6 +63,7 @@ from .resources import (
     LineTransectEncounterResource,
     TurtleNestDisturbanceObservationResource,
     DisturbanceObservationResource,
+    TrackTallyObservationResource,
 )
 
 
@@ -476,139 +476,21 @@ class LineTransectEncounterDetail(DetailViewBreadcrumbMixin, DetailView):
     model = LineTransectEncounter
 
 
-#This just dumps the database as json for use by external tools such as PowerBI or Shiny
-def nestAndTracks(request):
-    query = '''
-SELECT
-    e."id" as encounter_id,
-    e."status",
-    org."label" AS "data_owner",
-    TO_CHAR(e."when" AT TIME ZONE \'Australia/Perth\', \'YYYY-MM-DD\') AS "date",
-    TO_CHAR(e."when" AT TIME ZONE \'Australia/Perth\', \'HH24:MI:SS\') AS "time",
-    CASE
-        WHEN EXTRACT(HOUR FROM e."when" AT TIME ZONE \'Australia/Perth\') < 12 THEN
-            TO_CHAR(e."when" AT TIME ZONE \'Australia/Perth\' - INTERVAL \'1 day\', \'YYYY-MM-DD\')
-        ELSE
-            TO_CHAR(e."when" AT TIME ZONE \'Australia/Perth\', \'YYYY-MM-DD\')
-    END AS "turtle_date",
-    site."name" AS "site_name",
-    ST_Y(e."where") as latitude,
-    ST_X(e."where") as longitude,
-    area."name" AS "area_name",
-    e."name" AS encounter_name,
-    obs."name" AS "observer",
-    rep."name" AS "reporter",
-    e."encounter_type",
-    e."comments",
-    t."nest_age",
-    t."nest_type",
-    t."species",
-    t."habitat",
-    t."disturbance",
-    t."nest_tagged",
-    t."logger_found",
-    t."eggs_counted",
-    t."hatchlings_measured",
-    t."fan_angles_measured",
-    n."eggs_laid",
-    n."egg_count",
-    n."no_egg_shells",
-    n."no_live_hatchlings_neck_of_nest",
-    n."no_live_hatchlings",
-    n."no_dead_hatchlings",
-    n."no_undeveloped_eggs",
-    n."no_unhatched_eggs",
-    n."no_unhatched_term",
-    n."no_depredated_eggs",
-    n."nest_depth_top",
-    n."nest_depth_bottom",
-    n."sand_temp",
-    n."air_temp",
-    n."water_temp",
-    n."egg_temp",
-    n."comments" AS "turtle_observation_comments",
-    tag."comments" AS "tag_observation_comments",
-    hatch."bearing_to_water_degrees",
-    hatch."bearing_leftmost_track_degrees",
-    hatch."bearing_rightmost_track_degrees",
-    hatch."no_tracks_main_group_max",
-    hatch."outlier_tracks_present",
-    hatch."path_to_sea_comments",
-    hatch."hatchling_emergence_time_known",
-    hatch."hatchling_emergence_time",
-    hatch."hatchling_emergence_time_accuracy",
-    hatch."cloud_cover_at_emergence_known",
-    hatch."cloud_cover_at_emergence",
-    tag."status" AS "nest_tag_status",
-    tag."flipper_tag_id",
-    TO_CHAR(tag."date_nest_laid" AT TIME ZONE \'Australia/Perth\', \'YYYY-MM-DD\') AS "date_nest_laid",
-    tag."tag_label"
-FROM
-    "observations_turtlenestencounter" t
-INNER JOIN
-    "observations_encounter" e ON (t."encounter_ptr_id" = e."id")
-LEFT JOIN
-    "observations_area" area ON (e."area_id" = area."id")
-LEFT JOIN
-    "observations_area" site ON (e."site_id" = site."id")
-LEFT JOIN
-    "observations_survey" survey ON (e."survey_id" = survey."id")
-LEFT JOIN
-    "users_user" obs ON (e."observer_id" = obs."id")
-LEFT JOIN
-    "users_user" rep ON (e."reporter_id" = rep."id")
-LEFT JOIN
-    "observations_observation" o ON (e."id" = o."encounter_id" AND o."polymorphic_ctype_id" IN (26))
-LEFT JOIN
-    "observations_turtlenestobservation" n ON (o."id" = n."observation_ptr_id")
-LEFT JOIN
-    "observations_observation" obs_tag ON (e."id" = obs_tag."encounter_id" AND obs_tag."polymorphic_ctype_id" IN (38))
-LEFT JOIN
-    "observations_nesttagobservation" tag ON (obs_tag."id" = tag."observation_ptr_id")
-LEFT JOIN
-    "observations_observation" obs_hatch ON (e."id" = obs_hatch."encounter_id" AND obs_hatch."polymorphic_ctype_id" IN (279))
-LEFT JOIN
-    "observations_turtlehatchlingemergenceobservation" hatch ON (obs_hatch."id" = hatch."observation_ptr_id")
-LEFT JOIN
-  "observations_campaign" c ON (e."campaign_id" = c."id")
-LEFT JOIN
-  "users_organisation" org ON (c."owner_id" = org."id")
-ORDER BY
-    e."when" DESC
-    '''
+class TrackTallyObservationList(ListViewBreadcrumbMixin, ResourceDownloadMixin, PaginateMixin, ListView):
+    model = TrackTallyObservation
+    template_name = "default_list.html"
+    paginate_by = 20
+    filter_class = TrackTallyObservationFilter
+    resource_class = TrackTallyObservationResource
+    resource_formats = ["csv", "xlsx"]
 
-    response = StreamingHttpResponse(stream_data(query), content_type="application/json")
-    return response
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["list_filter"] = TrackTallyObservationFilter(self.request.GET, queryset=self.get_queryset())
+        context["model_admin"] = TrackTallyObservationAdmin
+        context["page_title"] = f"{settings.SITE_CODE} | Turtle track tally observations"
+        return context
 
-
-class DateTimeEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, datetime.datetime):
-            return obj.isoformat()
-        return super(DateTimeEncoder, self).default(obj)
-
-
-def stream_data(query):
-    with connection.cursor() as cursor:
-        cursor.execute(query)
-
-        # Get column names from cursor.description
-        columns = [col[0] for col in cursor.description]
-
-        yield '['  # Start of JSON array
-        first_row = True
-        row = cursor.fetchone()
-        while row:
-            if not first_row:
-                yield ','
-            else:
-                first_row = False
-
-            # Convert row data to dictionary with column names as keys
-            row_dict = dict(zip(columns, row))
-
-            # Convert the dictionary to JSON and yield
-            yield json.dumps(row_dict, cls=DateTimeEncoder)
-
-            row = cursor.fetchone()
-        yield ']'  # End of JSON array
+    def get_queryset(self):
+        qs = super().get_queryset()
+        return TrackTallyObservationFilter(self.request.GET, queryset=qs).qs
