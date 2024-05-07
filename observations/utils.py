@@ -5,17 +5,17 @@ import pandas
 from .models import (
     Area,
     Survey,
-    Encounter,
+    TurtleNestEncounter,
 )
 
 LOGGER = logging.getLogger("turtles")
 
 
 def claim_encounters(survey):
-    """For a Survey, update any 'orphan' Encounters within the same site and the same
+    """For a Survey, update any 'orphan' TurtleNestEncounters within the same site and the same
     start & end times to be associated with that survey.
     """
-    encounters = Encounter.objects.filter(
+    encounters = TurtleNestEncounter.objects.filter(
         survey__isnull=True,
         where__coveredby=survey.site.geom,
         when__gte=survey.start_time,
@@ -28,14 +28,14 @@ def claim_encounters(survey):
 def reconstruct_missing_surveys(buffer_mins=30):
     """Create missing surveys.
 
-    Find Encounters with missing survey but existing site,
+    Find TurtleNestEncounters with missing survey but existing site,
     group by date and site, aggregate datetime ("when") into earliest and latest record,
     buffer earliest and latest record by given minutes (default: 30),
     create a Survey with aggregated data.
 
     Crosstab: See pandas
     """
-    encounters_no_survey = Encounter.objects.exclude(site=None).filter(survey=None)
+    encounters_no_survey = TurtleNestEncounter.objects.exclude(site=None).filter(survey=None)
     LOGGER.info("Found {} orphan Encounters without survey".format(encounters_no_survey.count()))
     LOGGER.info("Inferring missing survey data...")
     tne_all = [[t.site.id, t.when.date(), t.when, t.reporter] for t in encounters_no_survey]
@@ -53,15 +53,15 @@ def reconstruct_missing_surveys(buffer_mins=30):
         "Creating {} missing surveys...".format(len(missing_surveys))
     )
 
-    bfr = timedelta(minutes=buffer_mins)
+    buffer = timedelta(minutes=buffer_mins)
     for idx, row in missing_surveys.iterrows():
         LOGGER.debug(
             "Missing Survey on {} at {} by {} from {}-{}".format(
                 idx[0],
                 idx[1],
                 row["reporter"]["first"],
-                row["datetime"]["min"] - bfr,
-                row["datetime"]["max"] + bfr,
+                row["datetime"]["min"] - buffer,
+                row["datetime"]["max"] + buffer,
             )
         )
         ste = Area.objects.get(id=idx[1])
@@ -69,16 +69,16 @@ def reconstruct_missing_surveys(buffer_mins=30):
             source="reconstructed",
             site=ste,
             start_location=ste.centroid,
-            start_time=row["datetime"]["min"] - bfr,
-            end_time=row["datetime"]["max"] + bfr,
+            start_time=row["datetime"]["min"] - buffer,
+            end_time=row["datetime"]["max"] + buffer,
             end_location=ste.centroid,
             reporter=row["reporter"]["first"],
-            start_comments="[QA][AUTO] Reconstructed by WAStD from Encounters without surveys.",
+            start_comments="[QA] Reconstructed automatically from Turtle Nest Encounters without surveys",
         )
         s.save()
     LOGGER.info("Created {} surveys to adopt {} orphaned Encounters.".format(len(missing_surveys), encounters_no_survey.count()))
 
-    encounters_no_survey = Encounter.objects.exclude(site=None).filter(survey=None)
-    LOGGER.info("Remaining Encounters without survey: {}".format(encounters_no_survey.count()))
+    encounters_no_survey = TurtleNestEncounter.objects.exclude(site=None).filter(survey=None)
+    LOGGER.info("Remaining TurtleNestEncounters without survey: {}".format(encounters_no_survey.count()))
 
     return None
