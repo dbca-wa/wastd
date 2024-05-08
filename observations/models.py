@@ -2000,6 +2000,18 @@ class Observation(PolymorphicModel, LegacySourceMixin, models.Model):
         """
         return reverse("admin:{}_{}_change".format(self._meta.app_label, self._meta.model_name), args=[self.pk])
 
+    def can_change(self):
+        # Returns True if editing this object is permitted, False otherwise.
+        # Determined by the object's parent encounter QA status.
+        if self.encounter.status in [
+            Encounter.STATUS_NEW,
+            Encounter.STATUS_IMPORTED,
+            Encounter.STATUS_MANUAL_INPUT,
+            Encounter.STATUS_FLAGGED,
+        ]:
+            return True
+        return False
+
 
 class MediaAttachment(Observation):
     """A media attachment to an Encounter.
