@@ -1251,7 +1251,7 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
     # UserWidget excludes inactive users
     observer = forms.ChoiceField(widget=UserWidget())
     reporter = forms.ChoiceField(widget=UserWidget())
-    readonly_fields = ("name", "survey")
+    readonly_fields = ("name", "survey", "source_id")
 
     # Django-fsm transitions config
     fsm_field = ["status"]

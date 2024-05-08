@@ -15,6 +15,13 @@
                 <i class="fa-solid fa-map" title="Where" aria-hidden="true"></i>
                 {{ object.encounter.site.name }}
                 {% endif %}
+                {% if object.can_change %}
+                <a href="{{ object.absolute_admin_url }}" title="Edit this record in the data curation portal">
+                    <span class="badge badge-secondary }}">
+                        <i class="fa-solid fa-pencil" aria-hidden="true"></i> Edit
+                    </span>
+                </a>
+                {% endif %}
                 <span class="float-right">
                     <a href="{{ object.encounter.get_absolute_url }}" title="{{ object.encounter }}" class="badge badge-primary">
                         <i class="fa-solid fa-link" aria-hidden="true"></i> Encounter {{ object.encounter.pk }}
@@ -30,6 +37,7 @@
         </div>
         {% if object.comments %}
         <div class="card-text">
+            <i class="fa-solid fa-comment" title="Comments" aria-hidden="true"></i>
             {{ object.comments }}
         </div>
         {% endif %}
