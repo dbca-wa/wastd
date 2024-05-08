@@ -1099,7 +1099,7 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         return self._meta
 
     def __str__(self):
-        when = self.when.strftime("%d/%b/%Y %H:%M")
+        when = self.when.astimezone(settings.TZ).strftime("%d-%b-%Y %H:%M")
         if self.encounter_type:
             return f"{self.get_encounter_type_display().capitalize()} encounter on {when} by {self.observer.name}"
         else:
