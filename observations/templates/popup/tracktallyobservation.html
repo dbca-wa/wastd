@@ -1,9 +1,5 @@
-{% load observations %}
 {% with original as o %}
-<div class="row">
-    <span class="oi oi-bar-chart"></span>&nbsp;
-   {{o.tally}}
-   {{o.get_nest_age_display}}
-   {{o.get_nest_type_display}} of {{o.get_species_display }}
-</div>
+    {{ o.tally|default_if_none:"Unknown" }},
+    {{ o.get_nest_type_display|lower }} of {{ o.get_species_display }},
+    {{ o.get_nest_age_display|lower }}
 {% endwith %}

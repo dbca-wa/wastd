@@ -11,6 +11,7 @@ from wastd.odk import (
     parse_geopoint_accuracy,
     get_submission_attachment,
 )
+from wastd.utils import LegacySourceMixin
 from .lookups import NA_VALUE, TURTLE_INTERACTION_CHOICES
 from .models import (
     Area,
@@ -144,6 +145,7 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=Non
                         attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
                         photo = MediaAttachment(
                             encounter=encounter,
+                            source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
                             media_type="photograph",
                             title=f"Photo of nest {filename}",
                             attachment=attachment,
@@ -157,6 +159,7 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=Non
                         attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
                         photo = MediaAttachment(
                             encounter=encounter,
+                            source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
                             media_type="photograph",
                             title=f"Photo of nest {filename}",
                             attachment=attachment,
@@ -170,6 +173,7 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=Non
                         attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
                         photo = MediaAttachment(
                             encounter=encounter,
+                            source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
                             media_type="photograph",
                             title=f"Photo of nest {filename}",
                             attachment=attachment,
@@ -182,6 +186,7 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=Non
                 observation = submission["egg_count"]
                 nest_observation = TurtleNestObservation(
                     encounter=encounter,
+                    source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
                     no_egg_shells=int(observation["no_egg_shells"]),
                     no_live_hatchlings=int(observation["no_live_hatchlings"]),
                     no_dead_hatchlings=int(observation["no_dead_hatchlings"]),
@@ -204,6 +209,7 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=Non
                 attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
                 photo = MediaAttachment(
                     encounter=encounter,
+                    source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
                     media_type="photograph",
                     title=f"Photo of nest eggs {filename}",
                     attachment=attachment,
@@ -222,6 +228,7 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=Non
                 for observation in observations:
                     disturbance = TurtleNestDisturbanceObservation(
                         encounter=encounter,
+                        source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
                         disturbance_cause=observation["disturbance_cause"],
                         disturbance_cause_confidence=observation["disturbance_cause_confidence"],
                         disturbance_severity=observation["disturbance_severity"],
@@ -236,6 +243,7 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=Non
                     attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
                     photo = MediaAttachment(
                         encounter=encounter,
+                        source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
                         media_type="photograph",
                         title=f"Photo of nest disturbance {filename}",
                         attachment=attachment,
@@ -252,6 +260,7 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=Non
                     attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
                     photo = MediaAttachment(
                         encounter=encounter,
+                        source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
                         media_type="photograph",
                         title=f"Photo of track {filename}",
                         attachment=attachment,
@@ -264,6 +273,7 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=Non
                     attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
                     photo = MediaAttachment(
                         encounter=encounter,
+                        source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
                         media_type="photograph",
                         title=f"Photo of track {filename}",
                         attachment=attachment,
@@ -279,6 +289,7 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=Non
                 ]):
                     track_observation = TurtleTrackObservation(
                         encounter=encounter,
+                        source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
                         max_track_width_front=int(track_observation["max_track_width_front"]) if track_observation["max_track_width_front"] else None,
                         max_track_width_rear=int(track_observation["max_track_width_rear"]) if track_observation["max_track_width_rear"] else None,
                         carapace_drag_width=int(track_observation["carapace_drag_width"]) if track_observation["carapace_drag_width"] else None,
@@ -292,6 +303,7 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=Non
             if "nest_tag" in submission:
                 tag_observation = NestTagObservation(
                     encounter=encounter,
+                    source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
                     status=submission["nest_tag"]["tag_status"],
                     flipper_tag_id=submission["nest_tag"]["flipper_tag_id"],
                     date_nest_laid=datetime.strptime(submission["nest_tag"]["date_nest_laid"], "%Y-%m-%d").date() if submission["nest_tag"]["date_nest_laid"] else None,
@@ -307,6 +319,7 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=Non
                     attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
                     photo = MediaAttachment(
                         encounter=encounter,
+                        source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
                         media_type="photograph",
                         title=f"Photo of nest tag {filename}",
                         attachment=attachment,
@@ -324,6 +337,7 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=Non
                 for logger in loggers:
                     logger_observation = LoggerObservation(
                         encounter=encounter,
+                        source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
                         logger_type=logger["logger_type"],
                         deployment_status=logger["logger_status"],
                         logger_id=logger["logger_id"],
@@ -338,6 +352,7 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=Non
                         attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
                         photo = MediaAttachment(
                             encounter=encounter,
+                            source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
                             media_type="photograph",
                             title=f"Photo of logger {filename}",
                             attachment=attachment,
@@ -355,6 +370,7 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=Non
                 for hatchling in hatchlings:
                     hatchling_measurement = HatchlingMorphometricObservation(
                         encounter=encounter,
+                        source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
                         straight_carapace_length_mm=int(hatchling["straight_carapace_length_mm"]) if hatchling["straight_carapace_length_mm"] else None,
                         straight_carapace_width_mm=int(hatchling["straight_carapace_width_mm"]) if hatchling["straight_carapace_width_mm"] else None,
                         body_weight_g=int(hatchling["body_weight_g"]) if hatchling["body_weight_g"] else None,
@@ -372,6 +388,7 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=Non
                 attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
                 photo = MediaAttachment(
                     encounter=encounter,
+                    source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
                     media_type="photograph",
                     title=f"Seawards photo of fan angles {filename}",
                     attachment=attachment,
@@ -385,6 +402,7 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=Non
                 attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
                 photo = MediaAttachment(
                     encounter=encounter,
+                    source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
                     media_type="photograph",
                     title=f"Relief photo of fan angles {filename}",
                     attachment=attachment,
@@ -394,6 +412,7 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=Non
 
                 emergence_obs = TurtleHatchlingEmergenceObservation(
                     encounter=encounter,
+                    source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
                     bearing_to_water_degrees=float(fan["bearing_to_water_manual"]) if fan["bearing_to_water_manual"] else None,
                     bearing_leftmost_track_degrees=float(fan["leftmost_track_manual"]) if fan["leftmost_track_manual"] else None,
                     bearing_rightmost_track_degrees=float(fan["rightmost_track_manual"]) if fan["rightmost_track_manual"] else None,
@@ -425,6 +444,7 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=Non
                     for outlier in outliers:
                         outlier_obs = TurtleHatchlingEmergenceOutlierObservation(
                             encounter=encounter,
+                            source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
                             bearing_outlier_track_degrees=float(outlier["outlier_track_bearing_manual"]) if outlier["outlier_track_bearing_manual"] else None,
                             outlier_group_size=int(outlier["outlier_group_size"]) if outlier["outlier_group_size"] else None,
                             outlier_track_comment=outlier["outlier_track_comment"],
@@ -437,6 +457,7 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=Non
                         attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
                         photo = MediaAttachment(
                             encounter=encounter,
+                            source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
                             media_type="photograph",
                             title=f"Outlier track of fan angles {filename}",
                             attachment=attachment,
@@ -453,6 +474,7 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=Non
                     for source in light_sources:
                         source_obs = LightSourceObservation(
                             encounter=encounter,
+                            source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
                             bearing_light_degrees=int(source["light_bearing_manual"]) if source["light_bearing_manual"] else None,
                             light_source_type=source["light_source_type"],
                             light_source_description=source["light_source_description"],
@@ -466,6 +488,7 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=Non
                         attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
                         photo = MediaAttachment(
                             encounter=encounter,
+                            source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
                             media_type="photograph",
                             title=f"Light source photo {filename}",
                             attachment=attachment,
@@ -545,6 +568,7 @@ def import_turtle_track_or_nest_simple(form_id="beach_tracks_nest_simple", auth_
                     attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
                     photo = MediaAttachment(
                         encounter=encounter,
+                        source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
                         media_type='photograph',
                         title=f'Photo of track {filename}',
                         attachment=attachment,
@@ -557,6 +581,7 @@ def import_turtle_track_or_nest_simple(form_id="beach_tracks_nest_simple", auth_
                     attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
                     photo = MediaAttachment(
                         encounter=encounter,
+                        source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
                         media_type='photograph',
                         title=f'Photo of track {filename}',
                         attachment=attachment,
@@ -569,6 +594,7 @@ def import_turtle_track_or_nest_simple(form_id="beach_tracks_nest_simple", auth_
                 ]):
                     track_observation = TurtleTrackObservation(
                         encounter=encounter,
+                        source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
                         max_track_width_front=int(track_observation['max_track_width_front']) if track_observation['max_track_width_front'] else None,
                         tail_pokes=track_observation['tail_pokes'],
                     )
@@ -579,12 +605,11 @@ def import_turtle_track_or_nest_simple(form_id="beach_tracks_nest_simple", auth_
             # these are retrieved as a space delimited string "fox cat dog"
             if submission['details']['disturbance_cause']:
                 disturbances = submission['details']['disturbance_cause'].split()
-                for aDisturbance in disturbances:
+                for disturbance in disturbances:
                     disturbance = TurtleNestDisturbanceObservation(
                         encounter=encounter,
-                        disturbance_cause=aDisturbance,
-                        #disturbance_cause_confidence=observation['disturbance_cause_confidence'],
-                        #disturbance_severity=observation['disturbance_severity'],
+                        source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
+                        disturbance_cause=disturbance,
                     )
                     disturbance.save()
                     LOGGER.info(f'Created TurtleNestDisturbanceObservation: {disturbance}')
@@ -664,6 +689,7 @@ def import_site_visit_start(form_id="site_visit_start", initial_duration_hr=8, a
                 LOGGER.info(f"Downloading {filename}")
                 attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
                 photo = SurveyMediaAttachment(
+                    source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
                     survey=survey,
                     media_type='photograph',
                     title=f'Photo of site visit start {filename}',
@@ -737,6 +763,7 @@ def import_site_visit_end(form_id="site_visit_end", duration_hr=8, auth_headers=
                 LOGGER.info(f"Downloading {filename}")
                 attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
                 photo = SurveyMediaAttachment(
+                    source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
                     survey=survey,
                     media_type="photograph",
                     title=f"Photo of site visit end {filename}",
@@ -826,6 +853,7 @@ def import_marine_wildlife_incident(form_id="marine_wildlife_incident", auth_hea
                 attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
                 photo = MediaAttachment(
                     encounter=encounter,
+                    source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
                     media_type='photograph',
                     title=f'Habitate photo {filename}',
                     attachment=attachment,
@@ -839,6 +867,7 @@ def import_marine_wildlife_incident(form_id="marine_wildlife_incident", auth_hea
                 attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
                 photo = MediaAttachment(
                     encounter=encounter,
+                    source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
                     media_type='photograph',
                     title=f'Carapace photo {filename}',
                     attachment=attachment,
@@ -852,6 +881,7 @@ def import_marine_wildlife_incident(form_id="marine_wildlife_incident", auth_hea
                 attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
                 photo = MediaAttachment(
                     encounter=encounter,
+                    source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
                     media_type='photograph',
                     title=f'Head top photo {filename}',
                     attachment=attachment,
@@ -865,6 +895,7 @@ def import_marine_wildlife_incident(form_id="marine_wildlife_incident", auth_hea
                 attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
                 photo = MediaAttachment(
                     encounter=encounter,
+                    source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
                     media_type='photograph',
                     title=f'Head side photo {filename}',
                     attachment=attachment,
@@ -878,6 +909,7 @@ def import_marine_wildlife_incident(form_id="marine_wildlife_incident", auth_hea
                 attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
                 photo = MediaAttachment(
                     encounter=encounter,
+                    source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
                     media_type='photograph',
                     title=f'Head front photo {filename}',
                     attachment=attachment,
@@ -891,6 +923,7 @@ def import_marine_wildlife_incident(form_id="marine_wildlife_incident", auth_hea
                 attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
                 photo = MediaAttachment(
                     encounter=encounter,
+                    source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
                     media_type='photograph',
                     title=f'Scene photo {filename}',
                     attachment=attachment,
@@ -904,6 +937,7 @@ def import_marine_wildlife_incident(form_id="marine_wildlife_incident", auth_hea
                 attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
                 photo = MediaAttachment(
                     encounter=encounter,
+                    source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
                     media_type='photograph',
                     title=f'Scene photo {filename}',
                     attachment=attachment,
@@ -917,6 +951,7 @@ def import_marine_wildlife_incident(form_id="marine_wildlife_incident", auth_hea
                 attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
                 photo = MediaAttachment(
                     encounter=encounter,
+                    source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
                     media_type='photograph',
                     title=f'Scene photo {filename}',
                     attachment=attachment,
@@ -934,6 +969,7 @@ def import_marine_wildlife_incident(form_id="marine_wildlife_incident", auth_hea
                 for obs in damage_observations:
                     damage_observation = TurtleDamageObservation(
                         encounter=encounter,
+                        source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
                         body_part=obs['body_part'],
                         damage_type=obs['damage_type'],
                         damage_age=obs['damage_age'],
@@ -948,6 +984,7 @@ def import_marine_wildlife_incident(form_id="marine_wildlife_incident", auth_hea
                         attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
                         photo = MediaAttachment(
                             encounter=encounter,
+                            source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
                             media_type='photograph',
                             title=f'Animal damage photo {filename}',
                             attachment=attachment,
@@ -965,6 +1002,7 @@ def import_marine_wildlife_incident(form_id="marine_wildlife_incident", auth_hea
                 for obs in tag_observations:
                     tag_observation = TagObservation(
                         encounter=encounter,
+                        source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
                         tag_type=obs['tag_type'],
                         tag_location=obs['tag_location'],
                         name=obs['tag_id'],
@@ -981,6 +1019,7 @@ def import_marine_wildlife_incident(form_id="marine_wildlife_incident", auth_hea
                         attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
                         photo = MediaAttachment(
                             encounter=encounter,
+                            source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
                             media_type='photograph',
                             title=f'Tag photo {filename}',
                             attachment=attachment,
@@ -998,6 +1037,7 @@ def import_marine_wildlife_incident(form_id="marine_wildlife_incident", auth_hea
             ]):
                 morphometric_obs = TurtleMorphometricObservation(
                     encounter=encounter,
+                    source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
                     curved_carapace_length_mm=morph['curved_carapace_length_mm'],
                     curved_carapace_length_accuracy=morph['curved_carapace_length_accuracy'],
                     curved_carapace_width_mm=morph['curved_carapace_width_mm'],
@@ -1108,6 +1148,7 @@ def import_predator_or_disturbance(form_id="predator_or_disturbance", auth_heade
             attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
             photo = MediaAttachment(
                 encounter=encounter,
+                source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
                 media_type="photograph",
                 title=f"Disturbance/predator photo {filename}",
                 attachment=attachment,
@@ -1118,6 +1159,7 @@ def import_predator_or_disturbance(form_id="predator_or_disturbance", auth_heade
             # DisturbanceObservation object.
             disturbance_observation = DisturbanceObservation(
                 encounter=encounter,
+                source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
                 disturbance_cause=disturbance["cause"],
                 disturbance_cause_confidence=disturbance["confidence"],
                 comments=disturbance["comments"],

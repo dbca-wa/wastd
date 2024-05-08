@@ -12,7 +12,15 @@
                     <i class="fa-solid fa-table" aria-hidden="true"></i>
                     Browse all turtle track/nest encounters
                 </a>
+
+                <a class="dropdown-item" href="{% url 'observations:linetransectencounter-list' %}"
+                    title="Browse all line transect encounters">
+                    <i class="fa-solid fa-table" aria-hidden="true"></i>
+                    Browse all line transect encounters
+                </a>
+
                 <div class="dropdown-divider"></div>
+
                 <a class="dropdown-item" href="{% url 'observations:turtlenestencounter-list' %}?encounter_type=tracks&nest_type=false-crawl"
                     title="Browse tracks without nests">
                     <i class="fa-solid fa-table" aria-hidden="true"></i>
@@ -95,10 +103,10 @@
                     Turtle nest disturbance observations
                 </a>
 
-                <a class="dropdown-item" href="{% url 'observations:disturbanceobservation-list' %}"
-                    title="Predator / disturbance observations">
+                <a class="dropdown-item" href="{% url 'observations:tracktallyobservation-list' %}"
+                    title="Turtle track tally observations">
                     <i class="fa-solid fa-table" aria-hidden="true"></i>
-                    Predator / disturbance observations
+                    Turtle track tally observations
                 </a>
             </div>
         </li>
@@ -112,6 +120,11 @@
                 <a class="dropdown-item" href="{% url 'wamtram2:turtle_list' %}" title="Browse, filter and search all tagged turtles">
                     <i class="fa-solid fa-table" aria-hidden="true"></i>
                     <span class="align-left">Tagged turtles</span>
+                </a>
+
+                <a class="dropdown-item" href="{% url 'wamtram2:entry_batches' %}" title="Browse entry batches">
+                    <i class="fa-solid fa-table" aria-hidden="true"></i>
+                    <span class="align-left">Entry batches</span>
                 </a>
             </div>
         </li>
@@ -160,13 +173,24 @@
                     <i class="fa-solid fa-table" aria-hidden="true"></i>
                     <span class="align-left">In-water encounters</span>
                 </a>
+
                 <div class="dropdown-divider"></div>
                 <h6 class="dropdown-header">QA shortlists</h6>
+
                 <a class="dropdown-item"
                     href="{% url 'observations:animalencounter-list' %}?status=flagged"
                     title="Flagged records">
                     <i class="fa-solid fa-table" aria-hidden="true"></i>
                     Flagged records
+                </a>
+
+                <div class="dropdown-divider"></div>
+                <h6 class="dropdown-header">Observations</h6>
+
+                <a class="dropdown-item" href="{% url 'observations:disturbanceobservation-list' %}"
+                    title="Predator / disturbance observations">
+                    <i class="fa-solid fa-table" aria-hidden="true"></i>
+                    Predator / disturbance observations
                 </a>
             </div>
         </li>

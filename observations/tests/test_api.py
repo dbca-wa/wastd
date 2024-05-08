@@ -152,7 +152,7 @@ class ApiTests(ViewsTestCase):
         self.assertContains(response, self.outlier.source_id)
 
     def test_lightsourceobservation_api_list(self):
-        list_url = reverse("api:light_source_list_resource")
+        list_url = reverse("api:light_source_observation_list_resource")
         response = self.client.get(list_url)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.light_source.source_id)

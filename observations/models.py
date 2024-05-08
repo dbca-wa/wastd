@@ -2000,6 +2000,18 @@ class Observation(PolymorphicModel, LegacySourceMixin, models.Model):
         """
         return reverse("admin:{}_{}_change".format(self._meta.app_label, self._meta.model_name), args=[self.pk])
 
+    def can_change(self):
+        # Returns True if editing this object is permitted, False otherwise.
+        # Determined by the object's parent encounter QA status.
+        if self.encounter.status in [
+            Encounter.STATUS_NEW,
+            Encounter.STATUS_IMPORTED,
+            Encounter.STATUS_MANUAL_INPUT,
+            Encounter.STATUS_FLAGGED,
+        ]:
+            return True
+        return False
+
 
 class MediaAttachment(Observation):
     """A media attachment to an Encounter.
@@ -3104,7 +3116,7 @@ class LineTransectEncounter(Encounter):
     )
 
     def __str__(self):
-        return f"Line tx {self.pk}"
+        return f"Line transect {self.pk}"
 
     def inferred_name(self):
         """Return an empty string."""
@@ -3188,6 +3200,9 @@ class TrackTallyObservation(Observation):
 
     def __str__(self):
         return f"TrackTally: {self.tally} {self.nest_age} {self.nest_type}s of {self.species}"
+
+    def card_template(self):
+        return "observations/track_tally_observation_card.html"
 
 
 class TurtleNestDisturbanceTallyObservation(Observation):

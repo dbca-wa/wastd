@@ -2,7 +2,7 @@
 {% load observations %}
 
 {% block title_row %}
-{{ object }}
+{{ object.pk }}: Line transect ({{ object.get_encounter_type }})
 {% endblock %}
 
 {% block title_labels %}

@@ -5,7 +5,7 @@
             <span class="float-right badge badge-{{ object.encounter.status_colour|default:'secondary' }}">
                 QA status: {{ object.encounter.get_status_display }}
             </span>
-            <h5 class="card-title">{{ object.pk}}: {{ object.get_disturbance_cause_display }}</h5>
+            <h5 class="card-title">{{ object.pk}}: Track tally for {{ object.get_species_display }} {{ object.get_nest_type_display|lower }}</h5>
         </div>
         <div>
             <h6 class="card-title text-muted">
@@ -14,13 +14,6 @@
                 {% if object.encounter.site %}
                 <i class="fa-solid fa-map" title="Where" aria-hidden="true"></i>
                 {{ object.encounter.site.name }}
-                {% endif %}
-                {% if object.can_change %}
-                <a href="{{ object.absolute_admin_url }}" title="Edit this record in the data curation portal">
-                    <span class="badge badge-secondary }}">
-                        <i class="fa-solid fa-pencil" aria-hidden="true"></i> Edit
-                    </span>
-                </a>
                 {% endif %}
                 <span class="float-right">
                     <a href="{{ object.encounter.get_absolute_url }}" title="{{ object.encounter }}" class="badge badge-primary">
@@ -32,14 +25,8 @@
     </div><!-- /.card-header -->
     <div class="card-body">
         <div class="card-text">
-            <i class="fa-solid fa-person-circle-question" title="Confidence" aria-hidden="true"></i>
-            {{ object.get_disturbance_cause_confidence_display }}
+            <i class="fa-regular fa-hashtag" title="Tally" aria-hidden="true"></i>
+            {{ object.tally|default_if_none:"0" }}, {{ object.get_nest_age_display|lower }}
         </div>
-        {% if object.comments %}
-        <div class="card-text">
-            <i class="fa-solid fa-comment" title="Comments" aria-hidden="true"></i>
-            {{ object.comments }}
-        </div>
-        {% endif %}
     </div><!-- /.card-body -->
 </div><!-- /.card -->
