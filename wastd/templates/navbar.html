@@ -103,12 +103,6 @@
                     Turtle nest disturbance observations
                 </a>
 
-                <a class="dropdown-item" href="{% url 'observations:disturbanceobservation-list' %}"
-                    title="Predator / disturbance observations">
-                    <i class="fa-solid fa-table" aria-hidden="true"></i>
-                    Predator / disturbance observations
-                </a>
-
                 <a class="dropdown-item" href="{% url 'observations:tracktallyobservation-list' %}"
                     title="Turtle track tally observations">
                     <i class="fa-solid fa-table" aria-hidden="true"></i>
@@ -179,13 +173,24 @@
                     <i class="fa-solid fa-table" aria-hidden="true"></i>
                     <span class="align-left">In-water encounters</span>
                 </a>
+
                 <div class="dropdown-divider"></div>
                 <h6 class="dropdown-header">QA shortlists</h6>
+
                 <a class="dropdown-item"
                     href="{% url 'observations:animalencounter-list' %}?status=flagged"
                     title="Flagged records">
                     <i class="fa-solid fa-table" aria-hidden="true"></i>
                     Flagged records
+                </a>
+
+                <div class="dropdown-divider"></div>
+                <h6 class="dropdown-header">Observations</h6>
+
+                <a class="dropdown-item" href="{% url 'observations:disturbanceobservation-list' %}"
+                    title="Predator / disturbance observations">
+                    <i class="fa-solid fa-table" aria-hidden="true"></i>
+                    Predator / disturbance observations
                 </a>
             </div>
         </li>
