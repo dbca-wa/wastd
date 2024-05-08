@@ -144,7 +144,8 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
         """
         Handle GET requests.
 
-        This method checks if a 'batch_id' is in 'kwargs'. If not, it creates a new TrtEntryBatches object and sets the 'batch_id' key in 'kwargs' to the newly created batch's entry_batch_id.
+        This method checks if a 'batch_id' is in 'kwargs'. If not, it creates a new TrtEntryBatches object
+        and sets the 'batch_id' key in 'kwargs' to the newly created batch's entry_batch_id.
         Then, it calls the 'get' method of the parent class using 'super()' and returns the result.
 
         Args:
