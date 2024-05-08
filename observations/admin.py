@@ -1,8 +1,17 @@
 from django import forms
-from django.contrib import admin, messages
+from django.contrib import messages
 from django.contrib.auth import get_user_model
-from django.contrib.admin import register, ModelAdmin, StackedInline, SimpleListFilter
-from django.contrib.admin.filters import RelatedFieldListFilter
+from django.contrib.admin import (
+    register,
+    ModelAdmin,
+    TabularInline,
+    StackedInline,
+)
+from django.contrib.admin.filters import (
+    RelatedFieldListFilter,
+    SimpleListFilter,
+    DateFieldListFilter,
+)
 from django.utils.safestring import mark_safe
 from django.urls import reverse
 from django_select2.forms import ModelSelect2Widget
@@ -68,19 +77,17 @@ class SiteFilter(RelatedFieldListFilter):
         )
 
 
-class MediaAttachmentInline(admin.TabularInline):
-    """TabularInlineAdmin for MediaAttachment."""
-
+class MediaAttachmentInline(TabularInline):
     extra = 0
+    exclude = ("source_id",)
     model = MediaAttachment
     classes = ("grp-collapse grp-open",)
     formfield_overrides = FORMFIELD_OVERRIDES
 
 
-class TagObservationInline(admin.TabularInline):
-    """TabularInlineAdmin for TagObservation."""
-
+class TagObservationInline(StackedInline):
     extra = 0
+    exclude = ("source_id",)
     model = TagObservation
     classes = ("grp-collapse grp-open",)
     # DO NOT ENABLE s2form or else EncounterAdmin will time out
@@ -88,119 +95,113 @@ class TagObservationInline(admin.TabularInline):
 
 
 class NestTagObservationInline(StackedInline):
-    """TabularInlineAdmin for NestTagObservation."""
-
     extra = 0
+    exclude = ("source_id",)
     model = NestTagObservation
     classes = ("grp-collapse grp-open",)
 
 
 class TurtleMorphometricObservationInline(StackedInline):
-    """Admin for TurtleMorphometricObservation."""
-
     extra = 0
+    exclude = ("source_id",)
     model = TurtleMorphometricObservation
     classes = ("grp-collapse grp-open",)
 
 
-class HatchlingMorphometricObservationInline(admin.TabularInline):
-    """Admin for HatchlingMorphometricObservation."""
-
+class HatchlingMorphometricObservationInline(TabularInline):
     extra = 0
+    exclude = ("source_id",)
     model = HatchlingMorphometricObservation
     classes = ("grp-collapse grp-open",)
 
 
-class ManagementActionInline(admin.TabularInline):
-    """TabularInlineAdmin for ManagementAction."""
-
+class ManagementActionInline(TabularInline):
     extra = 0
+    exclude = ("source_id",)
     model = ManagementAction
     classes = ("grp-collapse grp-open",)
 
 
-class TurtleDamageObservationInline(admin.TabularInline):
-    """Admin for TurtleDamageObservation."""
-
+class TurtleDamageObservationInline(TabularInline):
     extra = 0
+    exclude = ("source_id",)
     model = TurtleDamageObservation
     classes = ("grp-collapse grp-open",)
 
 
-class TrackTallyObservationInline(admin.TabularInline):
-    """Admin for TrackTallyObservation."""
-
+class TrackTallyObservationInline(TabularInline):
     extra = 0
+    exclude = ("source_id",)
     model = TrackTallyObservation
     classes = ("grp-collapse grp-open",)
 
 
-class TurtleNestDisturbanceTallyObservationInline(admin.TabularInline):
-    """Admin for TurtleNestDisturbanceTallyObservation."""
-
+class TurtleNestDisturbanceTallyObservationInline(TabularInline):
     extra = 0
+    exclude = ("source_id",)
     model = TurtleNestDisturbanceTallyObservation
     classes = ("grp-collapse grp-open",)
 
 
 class TurtleNestObservationInline(StackedInline):
-    """Admin for TurtleNestObservation."""
-
     extra = 0
+    exclude = ("source_id",)
     model = TurtleNestObservation
     classes = ("grp-collapse grp-open",)
 
 
-class TurtleTrackObservationInline(admin.TabularInline):
+class TurtleTrackObservationInline(TabularInline):
     extra = 0
+    exclude = ("source_id",)
     model = TurtleTrackObservation
     classes = ("grp-collapse grp-open",)
 
 
-class TurtleNestDisturbanceObservationInline(admin.TabularInline):
-    """Admin for TurtleNestDisturbanceObservation."""
-
+class TurtleNestDisturbanceObservationInline(TabularInline):
     extra = 0
+    exclude = ("source_id",)
     model = TurtleNestDisturbanceObservation
     classes = ("grp-collapse grp-open",)
 
 
 class TurtleHatchlingEmergenceObservationInline(StackedInline):
-    """Admin for TurtleHatchlingEmergenceObservation."""
-
     extra = 0
+    exclude = ("source_id",)
     model = TurtleHatchlingEmergenceObservation
     classes = ("grp-collapse grp-open",)
 
 
-class TurtleHatchlingEmergenceOutlierObservationInline(admin.TabularInline):
-    """Admin for TurtleHatchlingEmergenceOutlierObservation."""
-
+class TurtleHatchlingEmergenceOutlierObservationInline(TabularInline):
     extra = 0
+    exclude = ("source_id",)
     model = TurtleHatchlingEmergenceOutlierObservation
     classes = ("grp-collapse grp-open",)
 
 
-class LightSourceObservationObservationInline(admin.TabularInline):
-    """Admin for LightSourceObservation."""
-
+class LightSourceObservationObservationInline(TabularInline):
     extra = 0
+    exclude = ("source_id",)
     model = LightSourceObservation
     classes = ("grp-collapse grp-open",)
 
 
-class LoggerObservationInline(admin.TabularInline):
-    """Admin for LoggerObservation."""
-
+class LoggerObservationInline(TabularInline):
     extra = 0
+    exclude = ("source_id",)
     model = LoggerObservation
     classes = ("grp-collapse grp-open",)
 
 
-class SurveyMediaAttachmentInline(admin.TabularInline):
-    """Admin for SurveyMediaAttachment."""
-
+class DisturbanceObservationInline(TabularInline):
     extra = 0
+    exclude = ("source_id",)
+    model = DisturbanceObservation
+    classes = ("grp-collapse grp-open",)
+
+
+class SurveyMediaAttachmentInline(TabularInline):
+    extra = 0
+    exclude = ("source_id",)
     model = SurveyMediaAttachment
     classes = ("grp-collapse grp-open",)
     formfield_overrides = FORMFIELD_OVERRIDES
@@ -211,7 +212,7 @@ class ObservationAdminMixin(VersionAdmin, ModelAdmin):
     save_on_top = True
     date_hierarchy = "encounter__when"
     LIST_FIRST = (
-        "pk",
+        "__str__",
         "area",
         "site",
         "latitude",
@@ -229,7 +230,7 @@ class ObservationAdminMixin(VersionAdmin, ModelAdmin):
         "encounter__encounter_type",
     )
     search_fields = ("comments",)
-    readonly_fields = ("encounter",)
+    readonly_fields = ("encounter", "source_id")
     area = forms.ChoiceField(
         widget=ModelSelect2Widget(
             model=Area,
@@ -1218,6 +1219,7 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
         "source",
     )
     FIRST_COLS = (
+        "pk",
         "when",
         "area",
         "site",
@@ -1274,7 +1276,6 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
                     "encounter_type",
                     "source",
                     "source_id",
-                    #"name",
                 ),
             },
         ),
@@ -1297,6 +1298,7 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
         TurtleHatchlingEmergenceOutlierObservationInline,
         LightSourceObservationObservationInline,
         LoggerObservationInline,
+        DisturbanceObservationInline,
         CustomStateLogInline,
     ]
 
@@ -1628,7 +1630,7 @@ class TurtleNestEncounterAdmin(ExportActionMixin, EncounterAdmin):
     )
     list_select_related = True
     list_filter = (
-        ('when', admin.DateFieldListFilter),
+        ('when', DateFieldListFilter),
         "campaign__owner",
         ("area", AreaFilter),
         ("site", SiteFilter),
