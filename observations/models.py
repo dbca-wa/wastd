@@ -1099,7 +1099,11 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         return self._meta
 
     def __str__(self):
-        return f"Encounter {self.pk} on {self.when} by {self.observer}"
+        when = self.when.strftime("%d/%b/%Y %H:%M")
+        if self.encounter_type:
+            return f"{self.get_encounter_type_display().capitalize()} encounter on {when} by {self.observer.name}"
+        else:
+            return f"Encounter {self.pk} on {when} by {self.observer.name}"
 
     @property
     def status_colour(self):
