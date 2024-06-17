@@ -1,4 +1,6 @@
 from dbca_utils.utils import env
+from django.core.exceptions import DisallowedHost
+from django.db.utils import OperationalError
 import dj_database_url
 import os
 from pathlib import Path
@@ -299,7 +301,24 @@ BOOTSTRAP4 = {
 }
 
 
-# Sentry settings
+def sentry_excluded_exceptions(event, hint):
+    """Exclude defined class(es) of Exception from being reported to Sentry.
+    These exception classes are generally related to operational or configuration issues,
+    and they are not errors that we want to capture.
+    https://docs.sentry.io/platforms/python/configuration/filtering/#filtering-error-events
+    """
+    if "exc_info" in hint and hint["exc_info"]:
+        # Exclude database-related errors (connection error, timeout, DNS failure, etc.)
+        if hint["exc_info"][0] is OperationalError:
+            return None
+        # Exclude exceptions related to host requests not in ALLOWED_HOSTS.
+        elif hint["exc_info"][0] is DisallowedHost:
+            return None
+
+    return event
+
+
+# Sentry config
 SENTRY_DSN = env("SENTRY_DSN", None)
 SENTRY_SAMPLE_RATE = env("SENTRY_SAMPLE_RATE", 1.0)  # Error sampling rate
 SENTRY_TRANSACTION_SAMPLE_RATE = env("SENTRY_TRANSACTION_SAMPLE_RATE", 0.0)  # Transaction sampling
@@ -315,4 +334,5 @@ if SENTRY_DSN and SENTRY_ENVIRONMENT:
         profiles_sample_rate=SENTRY_PROFILES_SAMPLE_RATE,
         environment=SENTRY_ENVIRONMENT,
         release=VERSION_NO,
+        before_send=sentry_excluded_exceptions,
     )
