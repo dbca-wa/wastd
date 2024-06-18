@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgis/postgis
+    platform: linux/amd64
+    environment:
+      POSTGRES_DB: test_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres_password 
+      POSTGRES_INITDB_ARGS: "--auth-local=trust --auth-host=trust"
+    ports:
+      - "5431:5432"
+    volumes:
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql

@@ -54,6 +54,7 @@ sphinx = "^7.0.1"
 vulture = "^2.7"
 django-debug-toolbar = "^4.2.0"
 pre-commit = "^3.7.0"
+coverage = "^7.5.3"
 
 [build-system]
 requires = ["poetry-core"]
