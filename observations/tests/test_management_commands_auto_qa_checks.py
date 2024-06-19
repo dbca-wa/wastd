@@ -304,10 +304,14 @@ class AutomatedQAChecksCommandTests(TestCase):
         AnimalEncounter.objects.create(
             site=self.area,
             status=Encounter.STATUS_IMPORTED,
+            species=TURTLE_SPECIES,
+            nest_age=NEST_AGE,
+            nest_type=NEST_TYPE,
             reporter=self.unknown_user,
             when=datetime.now(pytz.utc),
             where=Point(0.0, 0.0)
         )
 
         call_command('automated_qa_checks')
+        print(mock_logger.info.call_args_list)
         mock_logger.info.assert_any_call('Flagging 1 animal encounters for curation due to unknown reporter')
