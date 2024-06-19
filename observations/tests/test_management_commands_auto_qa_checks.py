@@ -229,7 +229,7 @@ class AutomatedQAChecksCommandTests(TestCase):
             nest_age=NEST_AGE,
             nest_type=NEST_TYPE,
             status=Encounter.STATUS_IMPORTED,
-            species="dermochelys-coriacea",  # Leatherback turtle
+            species=TURTLE_SPECIFIC_SPECIES,  # Leatherback turtle
             when=datetime.now(pytz.utc),
             where=Point(0.0, 0.0)
         )
@@ -250,7 +250,7 @@ class AutomatedQAChecksCommandTests(TestCase):
             nest_age=NEST_AGE,
             nest_type=NEST_TYPE,
             status=Encounter.STATUS_IMPORTED,
-            species="dermochelys-coriacea",
+            species=TURTLE_SPECIFIC_SPECIES,
             when=datetime.now(pytz.utc),
             where=Point(0.0, 0.0)
         )
