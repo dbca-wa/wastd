@@ -1,7 +1,7 @@
 from django.core.management import call_command
 from django.test import TestCase
 from unittest.mock import patch, MagicMock
-from observations.models import TurtleNestEncounter, TurtleNestDisturbanceObservation, TurtleNestDisturbanceTallyObservation, TrackTallyObservation, AnimalEncounter, Area, User, Encounter
+from observations.models import TurtleNestEncounter, TurtleNestDisturbanceObservation, TurtleNestDisturbanceTallyObservation, AnimalEncounter, Area, User, Encounter
 from observations.lookups import TURTLE_SPECIES_DEFAULT, NEST_TYPE_TRACK_UNSURE, NEST_AGE_DEFAULT
 from django.contrib.gis.geos import Polygon, Point
 from datetime import datetime
@@ -40,7 +40,7 @@ TURTLE_SPECIES = 'chelonia-mydas'
 NEST_AGE = 'fresh'
 NEST_TYPE = 'nest'
 LOCALITY = 'Port Hedland'
-TURTLE_SPECIFIC_SPECIES = "dermochelys-coriacea",  # Leatherback turtle
+TURTLE_SPECIFIC_SPECIES = "dermochelys-coriacea"  # Leatherback turtle
 
 class AutomatedQAChecksCommandTests(TestCase):
     def setUp(self):
