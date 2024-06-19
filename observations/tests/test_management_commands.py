@@ -1,17 +1,45 @@
 from django.core.management import call_command
 from django.test import TestCase
 from unittest.mock import patch, MagicMock
-from observations.models import TurtleNestEncounter, TurtleNestDisturbanceObservation, TurtleNestDisturbanceTallyObservation, Area, User, Encounter, AnimalEncounter
+from observations.models import TurtleNestEncounter, TurtleNestDisturbanceObservation, TurtleNestDisturbanceTallyObservation, TrackTallyObservation, AnimalEncounter, Area, User, Encounter
 from observations.lookups import TURTLE_SPECIES_DEFAULT, NEST_TYPE_TRACK_UNSURE, NEST_AGE_DEFAULT
 from django.contrib.gis.geos import Polygon, Point
 from datetime import datetime
 import pytz
+
+"""
+Unit Test Suite for Automated QA/QC Checks Management Command
+
+This test suite is designed to validate the functionality of the `automated_qa_checks`
+management command in the `observations` application. The command performs various 
+automated QA/QC checks on turtle nest encounters and flags records for manual curation 
+based on different criteria.
+
+Tests include:
+1. Flagging turtle nest encounters with site labels containing specific terms 
+   (e.g., "training", "testing").
+2. Flagging turtle nest encounters with uncertain species, nesting outcomes, nest ages, 
+   and predation.
+3. Flagging turtle nest encounters using test species.
+4. Flagging turtle nest encounters and animal encounters reported by an unknown user.
+5. Marking all imported turtle nest encounters as curated if they pass all QA/QC checks.
+6. Flagging turtle nest encounters with specific species in specific areas, 
+   including Ningaloo and other specified localities.
+7. Validating the command's behavior with multiple records (test_flag_multiple_nests_with_training_in_site_name).
+
+Each test uses the `unittest.mock` library to patch the logging mechanism, ensuring 
+that the command logs the expected messages. The tests create necessary data in the 
+database, execute the command, and then verify that the correct log messages are 
+produced, indicating that the appropriate records were flagged or marked as curated.
+"""
+
 
 TEST_SPECIES = 'test-turtle'
 TURTLE_SPECIES = 'chelonia-mydas'
 NEST_AGE = 'fresh'
 NEST_TYPE = 'nest'
 LOCALITY = 'Port Hedland'
+TURTLE_SPECIFIC_SPECIES = "dermochelys-coriacea",  # Leatherback turtle
 
 class AutomatedQAChecksCommandTests(TestCase):
     def setUp(self):
@@ -54,6 +82,28 @@ class AutomatedQAChecksCommandTests(TestCase):
         )
         call_command('automated_qa_checks')
         mock_logger.info.assert_any_call('Flagging 1 turtle nest encounters for curation due to site containing "Training"')
+        
+    @patch('logging.getLogger')
+    def test_flag_multiple_nests_with_training_in_site_name(self, mock_get_logger):
+        mock_logger = MagicMock()
+        mock_get_logger.return_value = mock_logger
+
+        training_area = Area.objects.create(
+            name="training site",
+            area_type="Locality",
+            geom=Polygon(((0.0, 0.0), (0.0, 1.0), (1.1, 1.0), (1.0, 0.0), (0.0, 0.0))),
+        )
+
+        for _ in range(3):
+            TurtleNestEncounter.objects.create(
+                site=training_area,
+                status=Encounter.STATUS_IMPORTED,
+                when=datetime.now(pytz.utc),
+                where=Point(0.0, 0.0)
+            )
+        call_command('automated_qa_checks')
+        mock_logger.info.assert_any_call('Flagging 3 turtle nest encounters for curation due to site containing "Training"')
+
 
     @patch('logging.getLogger')
     def test_flag_nests_with_testing_in_site_name(self, mock_get_logger):
@@ -205,58 +255,6 @@ class AutomatedQAChecksCommandTests(TestCase):
 
         call_command('automated_qa_checks')
         mock_logger.info.assert_any_call('Flagging 1 turtle nest encounters for curation: Dermochelys coriacea (Leatherback turtle) at Ningaloo')
-        
-    @patch('logging.getLogger')
-    def test_flag_imported_nests_with_unknown_reporter(self, mock_get_logger):
-        mock_logger = MagicMock()
-        mock_get_logger.return_value = mock_logger
-
-        TurtleNestEncounter.objects.create(
-            site=self.area,
-            status=Encounter.STATUS_IMPORTED,
-            reporter=self.unknown_user,
-            when=datetime.now(pytz.utc),
-            where=Point(0.0, 0.0)
-        )
-
-        call_command('automated_qa_checks')
-        print(mock_logger.info.call_args_list)
-        mock_logger.info.assert_any_call('Flagging 1 turtle nest encounters for curation due to unknown reporter')
-
-    @patch('logging.getLogger')
-    def test_mark_imported_nests_as_curated(self, mock_get_logger):
-        mock_logger = MagicMock()
-        mock_get_logger.return_value = mock_logger
-
-        TurtleNestEncounter.objects.create(
-            site=self.area,
-            status=Encounter.STATUS_IMPORTED,
-            reporter=self.system_user,
-            when=datetime.now(pytz.utc),
-            where=Point(0.0, 0.0)
-        )
-
-        call_command('automated_qa_checks')
-        mock_logger.info.assert_any_call('Marking 1 imported turtle nest encounters as curated (passed QA/QC checks)')
-
-    @patch('logging.getLogger')
-    def test_flag_imported_animal_encounters_with_unknown_reporter(self, mock_get_logger):
-        mock_logger = MagicMock()
-        mock_get_logger.return_value = mock_logger
-
-        AnimalEncounter.objects.create(
-            site=self.area,
-            status=Encounter.STATUS_IMPORTED,
-            species=TURTLE_SPECIES,
-            nest_age=NEST_AGE,
-            nest_type=NEST_TYPE,
-            reporter=self.unknown_user,
-            when=datetime.now(pytz.utc),
-            where=Point(0.0, 0.0)
-        )
-
-        call_command('automated_qa_checks')
-        mock_logger.info.assert_any_call('Flagging 1 animal encounters for curation due to unknown reporter')
         
     @patch('logging.getLogger')
     def test_flag_imported_nests_with_unknown_reporter(self, mock_get_logger):
