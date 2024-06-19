@@ -6,6 +6,7 @@ from observations.lookups import TURTLE_SPECIES_DEFAULT, NEST_TYPE_TRACK_UNSURE,
 from django.contrib.gis.geos import Polygon, Point
 from datetime import datetime
 import pytz
+import uuid
 
 """
 Unit Test Suite for Automated QA/QC Checks Management Command
@@ -99,7 +100,8 @@ class AutomatedQAChecksCommandTests(TestCase):
                 site=training_area,
                 status=Encounter.STATUS_IMPORTED,
                 when=datetime.now(pytz.utc),
-                where=Point(0.0, 0.0)
+                where=Point(0.0, 0.0),
+                source_id=str(uuid.uuid4())  # Ensure unique source_id
             )
         call_command('automated_qa_checks')
         mock_logger.info.assert_any_call('Flagging 3 turtle nest encounters for curation due to site containing "Training"')
