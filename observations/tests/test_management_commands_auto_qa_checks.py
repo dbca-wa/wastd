@@ -275,7 +275,7 @@ class AutomatedQAChecksCommandTests(TestCase):
         )
 
         call_command('automated_qa_checks')
-        mock_logger.info.assert_any_call('Flagging 1 turtle nest encounters for curation due to unknown reporter')
+        mock_logger.info.assert_any_call('Flagging 1 turtle nest encounters for curation: unknown reporter')
 
     @patch('logging.getLogger')
     def test_mark_imported_nests_as_curated(self, mock_get_logger):
