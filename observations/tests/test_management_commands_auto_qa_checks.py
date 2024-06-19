@@ -305,8 +305,6 @@ class AutomatedQAChecksCommandTests(TestCase):
             site=self.area,
             status=Encounter.STATUS_IMPORTED,
             species=TURTLE_SPECIES,
-            nest_age=NEST_AGE,
-            nest_type=NEST_TYPE,
             reporter=self.unknown_user,
             when=datetime.now(pytz.utc),
             where=Point(0.0, 0.0)
