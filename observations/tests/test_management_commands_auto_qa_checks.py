@@ -9,11 +9,11 @@ import pytz
 import uuid
 
 """
-Unit Test Suite for Automated QA/QC Checks Management Command
+Unit Test Suite for Automated QA Checks Management Command
 
 This test suite is designed to validate the functionality of the `automated_qa_checks`
 management command in the `observations` application. The command performs various 
-automated QA/QC checks on turtle nest encounters and flags records for manual curation 
+automated QA checks on turtle nest encounters and flags records for manual curation 
 based on different criteria.
 
 Tests include:
@@ -23,7 +23,7 @@ Tests include:
    and predation.
 3. Flagging turtle nest encounters using test species.
 4. Flagging turtle nest encounters and animal encounters reported by an unknown user.
-5. Marking all imported turtle nest encounters as curated if they pass all QA/QC checks.
+5. Marking all imported turtle nest encounters as curated if they pass all QA checks.
 6. Flagging turtle nest encounters with specific species in specific areas, 
    including Ningaloo and other specified localities.
 7. Validating the command's behavior with multiple records (test_flag_multiple_nests_with_training_in_site_name).
