@@ -50,7 +50,7 @@ RUN groupadd -g "${GID}" appuser \
 # Install the project.
 FROM python_libs_wastd
 
-# 安装 psql 工具
+# Install psql tool
 RUN apt-get update -y && apt-get install -y postgresql-client
 
 COPY entrypoint.sh /app/entrypoint.sh
@@ -62,6 +62,9 @@ COPY users ./users
 COPY wastd ./wastd
 COPY wamtram2 ./wamtram2
 COPY marine_mammal_incidents ./marine_mammal_incidents
+
+# Convert line endings from CRLF to LF
+RUN dos2unix /app/entrypoint.sh /app/wait-for-db.sh /app/createsuperuser.sh
 
 USER ${UID}
 EXPOSE 8080
