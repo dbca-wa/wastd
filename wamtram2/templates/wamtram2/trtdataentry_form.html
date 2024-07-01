@@ -61,241 +61,246 @@
       {% bootstrap_field form.turtle_id %}
       </div>
 </div>
+
 <div class="container mt-4">
+
   <div id="First part Info" class="card border-dark">
-    <div class="card-body">
-      <div class="row">
-        <div class="col-md-8">
-          <form>
-            <div class="form-group row">
-              <div class="col-md-6">
-                {% bootstrap_field form.place_code %}
-              </div>
-            </div>
-            <div class="form-group row">
-              <div class="col-md-6">
-                {% bootstrap_field form.latitude %}
-              </div>
-              <div class="col-md-6">
-                {% bootstrap_field form.longitude %}
-              </div>
-            </div>
-            <div class="form-group row">
-              <div class="col-md-6">
-                {% bootstrap_field form.observation_date %}
-              </div>
-            </div>
-            <div class="form-group row">
-              <div class="col-md-6">
-                <div>
-                  {% bootstrap_label form.entered_by_id.label label_for="entered_by_id" %}
-                </div>
-                <div class="d-flex justify-content-between align-items-center">
-                  <div class="flex-grow-1">
-                    {% bootstrap_field form.entered_by_id show_label=False %}
-                  </div>
-                  <button type="button" class="btn-secondary" onClick="window.open('{% url 'admin:wamtram2_trtpersons_add' %}');">+</button>
-                </div>
-              </div>
-            </div>
-          </form>
+     <div class="card-body">
+        <div class="row">
+           <div class="col-md-8">
+              <form>
+                 <div class="form-group row">
+                    <div class="col-md-6">
+                       {% bootstrap_field form.place_code %}
+                    </div>
+                 </div>
+                 <div class="form-group row">
+                    <div class="col-md-6">
+                       {% bootstrap_field form.latitude %}
+                    </div>
+                    <div class="col-md-6">
+                       {% bootstrap_field form.longitude %}
+                    </div>
+                 </div>
+                 <div class="form-group row">
+                    <div class="col-md-6">
+                       {% bootstrap_field form.observation_date %}
+                    </div>
+                 </div>
+                 <div class="form-group row">
+                    <div class="col-md-6">
+                       <div>
+                          {% bootstrap_label form.entered_by_id.label label_for="entered_by_id" %}
+                       </div>
+                       <div class="d-flex justify-content-between align-items-center">
+                          <div class="flex-grow-1">
+                             {% bootstrap_field form.entered_by_id show_label=False %}
+                          </div>
+                          <button type="button" class="btn-secondary" onClick="window.open(adminUrl);">+</button>
+                       </div>
+                    </div>
+                 </div>
+              </form>
+           </div>
+           <div class="col-md-4">
+              <form>
+                 <div class="form-group row">
+                    <div class="col-md-6">
+                       {% bootstrap_field form.species_code %}
+                    </div>
+                 </div>
+                 <div class="form-group row">
+                    <div class="col-md-6">
+                       {% bootstrap_field form.sex %}
+                    </div>
+                 </div>
+              </form>
+           </div>
         </div>
-        <div class="col-md-4">
-          <form>
-            <div class="form-group row">
-              <div class="col-md-6">
-                {% bootstrap_field form.species_code %}
-              </div>
-            </div>
-            <div class="form-group row">
-              <div class="col-md-6">
-                {% bootstrap_field form.sex %}
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
+     </div>
   </div>
 
   <div id="Second part Tags" class="card border-dark">
-    <div class="card-body">
-      <div class="row">
-        <div class="col-md-12">
-          <form>
-            <div class="form-group row">
-              <label class="col-sm-2 col-form-label">FLIPPER Tag(s)</label>
-              <label class="col-sm-4 col-form-label">Does turtle have old FLIPPER tag(s)?</label>
-              <div class="col-sm-4">
-                <select class="form-control" id="flipperTags" onchange="showContentBasedOnSelection()">
-                  <option value="" disabled selected>Select</option>
-                  <option value="Yes">Yes</option>
-                  <option value="No">No</option>
-                  <option value="did not check">Did not check</option>
-                </select>
-              </div>
-            </div>
-            <div id="recaptureTags" style="display: none;">
-              <div class="form-group row">
-                <div class="col-md-6">
-                  {% bootstrap_field form.recapture_left_tag_id %}
-                </div>
-                <div class="col-md-6">
-                  {% bootstrap_field form.recapture_right_tag_id %}
-                </div>
-              </div>
-              <div class="form-group row">
-                <button id="addRecaptureTagButton" type="button" class="btn btn-primary col-md-6" onclick="addRecaptureTag()">Add more recapture Tags</button>
-                <button id="addRecaptureNewTagButton" type="button" class="btn btn-primary col-md-6" onclick="addRecaptureNewTag()">Add more new Tags</button>
-              </div>
-              <div id="additionalRecaptureTags" style="display: none;">
-                <div class="form-group row">
-                  <div class="col-md-6">
-                    {% bootstrap_field form.recapture_left_tag_id_2 %}
-                  </div>
-                  <div class="col-md-6">
-                    {% bootstrap_field form.recapture_right_tag_id_2 %}
-                  </div>
-                </div>
-              </div>
-              <div id="additionalRecaptureNewTags" style="display: none;">
-                <div class="form-group row">
-                  <div class="col-md-6">
-                    {% bootstrap_field form.new_left_tag_id %}
-                  </div>
-                  <div class="col-md-6">
-                    {% bootstrap_field form.new_right_tag_id %}
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div id="newTags" style="display: none;">
-              <div class="form-group row">
-                <div class="col-md-6">
-                  {% bootstrap_field form.new_left_tag_id %}
-                </div>
-                <div class="col-md-6">
-                  {% bootstrap_field form.new_right_tag_id %}
-                </div>
-              </div>
-              <div class="form-group row">
-                <button id="addNewTagButton" type="button" class="btn btn-primary" onclick="addNewTag()">Add more new Tags</button>
-                <div class="col-md-12" id="additionalNewTags" style="display: none;">
-                  <div class="col-md-6">
-                    {% bootstrap_field form.new_left_tag_id_2 %}
-                  </div>
-                  <div class="col-md-6">
-                    {% bootstrap_field form.new_right_tag_id_2 %}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </form>
+     <div class="card-body">
+        <div class="row">
+           <div class="col-md-12">
+              <form>
+                 <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">FLIPPER Tag(s)</label>
+                    <label class="col-sm-4 col-form-label">Does turtle have old FLIPPER tag(s)?</label>
+                    <div class="col-sm-4">
+                       <select class="form-control" id="flipperTags" onchange="showContentBasedOnSelection()">
+                          <option value="" disabled selected>Select</option>
+                          <option value="Yes">Yes</option>
+                          <option value="No">No</option>
+                          <option value="did not check">Did not check</option>
+                       </select>
+                    </div>
+                 </div>
+                 <div id="recaptureTags" style="display: none;">
+                    <div class="form-group row">
+                       <div class="col-md-6">
+                          {% bootstrap_field form.recapture_left_tag_id %}
+                       </div>
+                       <div class="col-md-6">
+                          {% bootstrap_field form.recapture_right_tag_id %}
+                       </div>
+                    </div>
+                    <div class="form-group row">
+                       <button id="addRecaptureTagButton" type="button" class="btn btn-primary col-md-6" onclick="addRecaptureTag()">Add more recapture Tags</button>
+                       <button id="addRecaptureNewTagButton" type="button" class="btn btn-primary col-md-6" onclick="addRecaptureNewTag()">Add more new Tags</button>
+                    </div>
+                    <div id="additionalRecaptureTags" style="display: none;">
+                       <div class="form-group row">
+                          <div class="col-md-6">
+                             {% bootstrap_field form.recapture_left_tag_id_2 %}
+                          </div>
+                          <div class="col-md-6">
+                             {% bootstrap_field form.recapture_right_tag_id_2 %}
+                          </div>
+                       </div>
+                    </div>
+                    <div id="additionalRecaptureNewTags" style="display: none;">
+                       <div class="form-group row">
+                          <div class="col-md-6">
+                             {% bootstrap_field form.new_left_tag_id %}
+                          </div>
+                          <div class="col-md-6">
+                             {% bootstrap_field form.new_right_tag_id %}
+                          </div>
+                       </div>
+                    </div>
+                 </div>
+                 <div id="newTags" style="display: none;">
+                    <div class="form-group row">
+                       <div class="col-md-6">
+                          {% bootstrap_field form.new_left_tag_id %}
+                       </div>
+                       <div class="col-md-6">
+                          {% bootstrap_field form.new_right_tag_id %}
+                       </div>
+                    </div>
+                    <div class="form-group row">
+                       <button id="addNewTagButton" type="button" class="btn btn-primary" onclick="addNewTag()">Add more new Tags</button>
+                       <div class="col-md-12" id="additionalNewTags" style="display: none;">
+                          <div class="col-md-6">
+                             {% bootstrap_field form.new_left_tag_id_2 %}
+                          </div>
+                          <div class="col-md-6">
+                             {% bootstrap_field form.new_right_tag_id_2 %}
+                          </div>
+                       </div>
+                    </div>
+                 </div>
+              </form>
+           </div>
         </div>
-      </div>
-
-      <div class="row">
-        <div class="col-md-12">
-          <form>
-            <div class="form-group row">
-              <label class="col-sm-2 col-form-label">PIT tag present?</label>
-              <div class="col-sm-4">
-                <select class="form-control" id="PITTags" onchange="showPITContentBasedOnSelection()">
-                  <option value="" disabled selected>Select</option>
-                  <option value="Yes">Yes</option>
-                  <option value="No">No</option>
-                  <option value="did not check">Did not check</option>
-                </select>
-              </div>
-            </div>
-            <div id="recapturePIT" style="display: none;">
-              <div class="form-group row">
-                <div class="col-md-6">
-                  {% bootstrap_field form.recapture_pittag_id %}
-                </div>
-                <div class="col-md-6">
-                  {% bootstrap_field form.recapture_pittag_id_2 %}
-                </div>
-              </div>
-            </div>
-            <div id="newPIT" style="display: none;">
-              <div class="form-group row">
-                <div class="col-md-6">
-                  {% bootstrap_field form.new_pittag_id %}
-                </div>
-                <div class="col-md-6">
-                  {% bootstrap_field form.new_pittag_id_2 %}
-                </div>
-              </div>
-            </div>
-            <div class="form-group row">
-              <div class="col-md-6">
-                <div>
-                  {% bootstrap_label form.tagged_by_id.label label_for="tagged_by_id" %}
-                </div>
-                <div class="d-flex justify-content-between align-items-center">
-                  <div class="flex-grow-1">
-                    {% bootstrap_field form.tagged_by_id show_label=False %}
-                  </div>
-                  <button type="button" class="btn-secondary" onClick="window.open('{% url 'admin:wamtram2_trtpersons_add' %}');">+</button>
-                </div>
-              </div>
-          </form>
+        <div class="row">
+           <div class="col-md-12">
+              <form>
+                 <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">PIT tag present?</label>
+                    <div class="col-sm-4">
+                       <select class="form-control" id="PITTags" onchange="showPITContentBasedOnSelection()">
+                          <option value="" disabled selected>Select</option>
+                          <option value="Yes">Yes</option>
+                          <option value="No">No</option>
+                          <option value="did not check">Did not check</option>
+                       </select>
+                    </div>
+                 </div>
+                 <div id="recapturePIT" style="display: none;">
+                    <div class="form-group row">
+                       <div class="col-md-6">
+                          {% bootstrap_field form.recapture_pittag_id %}
+                       </div>
+                       <div class="col-md-6">
+                          {% bootstrap_field form.recapture_pittag_id_2 %}
+                       </div>
+                    </div>
+                 </div>
+                 <div id="newPIT" style="display: none;">
+                    <div class="form-group row">
+                       <div class="col-md-6">
+                          {% bootstrap_field form.new_pittag_id %}
+                       </div>
+                       <div class="col-md-6">
+                          {% bootstrap_field form.new_pittag_id_2 %}
+                       </div>
+                    </div>
+                 </div>
+                 <div class="form-group row">
+                    <div class="col-md-6">
+                       <div>
+                          {% bootstrap_label form.tagged_by_id.label label_for="tagged_by_id" %}
+                       </div>
+                       <div class="d-flex justify-content-between align-items-center">
+                          <div class="flex-grow-1">
+                             {% bootstrap_field form.tagged_by_id show_label=False %}
+                          </div>
+                          <button type="button" class="btn-secondary" onClick="window.open(adminUrl);">+</button>
+                       </div>
+                    </div>
+                 </div>
+              </form>
+           </div>
         </div>
-      </div>
-    </div>
+     </div>
   </div>
 
   <div id="Third part Measurements" class="card border-dark">
-    <div class="card-body">
-      <div class="row">
-        <div class="col-md-12">
-          <form>
-            <div class="form-group row">
-              <div class="col-md-3">
-                {% bootstrap_field form.curved_carapace_length %}
-              </div>
-              <div class="col-md-3">
-                <div>
-                    {% bootstrap_label form.measured_by_id.label label_for="measured_by_id" %}
-                </div>
-                <div class="d-flex justify-content-between align-items-center">
-                    <div class="flex-grow-1">
-                        {% bootstrap_field form.measured_by_id show_label=False %}
+     <div class="card-body">
+        <div class="row">
+           <div class="col-md-12">
+              <form>
+                 <div class="form-group row">
+                    <div class="col-md-3">
+                       {% bootstrap_field form.curved_carapace_length %}
                     </div>
-                    <button type="button" class="btn-secondary" onClick="window.open('{% url 'admin:wamtram2_trtpersons_add' %}');">+</button>
-                </div>
-              </div>
-              <div class="col-md-3">
-                <div>
-                    {% bootstrap_label form.measured_recorded_by_id.label label_for="measured_recorded_by_id" %}
-                </div>
-                <div class="d-flex justify-content-between align-items-center">
-                    <div class="flex-grow-1">
-                        {% bootstrap_field form.measured_recorded_by_id show_label=False %}
+                    <div class="col-md-3">
+                       <div>
+                          {% bootstrap_label form.measured_by_id.label label_for="measured_by_id" %}
+                       </div>
+                       <div class="d-flex justify-content-between align-items-center">
+                          <div class="flex-grow-1">
+                             {% bootstrap_field form.measured_by_id show_label=False %}
+                          </div>
+                          <button type="button" class="btn-secondary" onClick="window.open(adminUrl);">+</button>
+                       </div>
                     </div>
-                    <button type="button" class="btn-secondary" onClick="window.open('{% url 'admin:wamtram2_trtpersons_add' %}');">+</button>
-                </div>
-              </div>
-              <button id="addMeasurementButton" type="button" class="btn btn-primary col-md-6" onclick="addMeasurement()">Add more Measurements</button>
-              <div id="moreMeasurement" class="form-group row" style="display: none;">        
-                <div class="col-md-6">
-                  {% bootstrap_field form.measurement_value_1 %}
-                </div>
-                <div class="col-md-6">
-                  {% bootstrap_field form.measurement_type_1 %}
-                </div>
-                <div class="col-md-6">
-                  {% bootstrap_field form.measurement_value_2 %}
-                </div>
-                <div class="col-md-6">
-                  {% bootstrap_field form.measurement_type_2 %}
-                </div>
-              </div>
-            </div>
-          </form>
+                    <div class="col-md-3">
+                       <div>
+                          {% bootstrap_label form.measured_recorded_by_id.label label_for="measured_recorded_by_id" %}
+                       </div>
+                       <div class="d-flex justify-content-between align-items-center">
+                          <div class="flex-grow-1">
+                             {% bootstrap_field form.measured_recorded_by_id show_label=False %}
+                          </div>
+                          <button type="button" class="btn-secondary" onClick="window.open(adminUrl);">+</button>
+                       </div>
+                    </div>
+                    <div class="col-md-3">
+                       <button id="addMeasurementButton" type="button" class="btn btn-primary" onclick="addMeasurement()">Add more Measurements</button>
+                    </div>
+                 </div>
+                 <div id="moreMeasurement" class="form-group row" style="display: none;">
+                    <div class="col-md-6">
+                       {% bootstrap_field form.measurement_value_1 %}
+                    </div>
+                    <div class="col-md-6">
+                       {% bootstrap_field form.measurement_type_1 %}
+                    </div>
+                    <div class="col-md-6">
+                       {% bootstrap_field form.measurement_value_2 %}
+                    </div>
+                    <div class="col-md-6">
+                       {% bootstrap_field form.measurement_type_2 %}
+                    </div>
+                 </div>
+              </form>
+           </div>
         </div>
-      </div>
+     </div>
   </div>
 
   <div id="Fourth part Nest" class="card border-dark">
@@ -316,47 +321,56 @@
       </div>
     </div>
   </div>
-  
+ 
   <div id="Fifth part Injuries" class="card border-dark">
     <div class="card-body">
       <div class="row">
-        <div class="col-md-12">
-          <form>
-            <div class="form-group row" style="display: none;">
-              <div class="col-md-6">
-                {% bootstrap_field form.damage_carapace %}
-              </div>
-              <div class="col-md-6">
-                {% bootstrap_field form.damage_lff %}
-              </div>
-              <div class="col-md-6">
-                {% bootstrap_field form.damage_rff %}
-              </div>
-              <div class="col-md-6">
-                {% bootstrap_field form.damage_lhf %}
-              </div>
-              <div class="col-md-6">
-                {% bootstrap_field form.damage_rhf %}
-              </div>
-              <div class="col-md-6">
-                {% bootstrap_field form.damage_code_1 %}
-              </div>
-              <div class="col-md-6">
-                {% bootstrap_field form.body_part_1 %}
-              </div>
-              <div class="col-md-6">
-                {% bootstrap_field form.damage_code_2 %}
-              </div>
-              <div class="col-md-6">
-                {% bootstrap_field form.body_part_2 %}
-              </div>
-            </div>
-          </form>
+        <div class="col-md-6">
+           {% bootstrap_field form.didnotcheckforinjury %}
         </div>
-      </div>
+     </div>
+     <div id="injuryDetails">
+        <div class="row">
+           <div class="col-md-6">
+              {% bootstrap_field form.damage_carapace %}
+           </div>
+           <div class="col-md-6">
+              {% bootstrap_field form.damage_lff %}
+           </div>
+        </div>
+        <div class="row">
+           <div class="col-md-6">
+              {% bootstrap_field form.damage_rff %}
+           </div>
+           <div class="col-md-6">
+              {% bootstrap_field form.damage_lhf %}
+           </div>
+        </div>
+        <div class="row">
+           <div class="col-md-6">
+              {% bootstrap_field form.damage_rhf %}
+           </div>
+        </div>
+        <div class="row">
+           <div class="col-md-6">
+              {% bootstrap_field form.body_part_1 %}
+           </div>
+           <div class="col-md-6">
+              {% bootstrap_field form.damage_code_1 %}
+           </div>
+        </div>
+        <div class="row">
+           <div class="col-md-6">
+              {% bootstrap_field form.body_part_2 %}
+           </div>
+           <div class="col-md-6">
+              {% bootstrap_field form.damage_code_2 %}
+           </div>
+        </div>
+     </div>
     </div>
   </div>
-
+ 
   <div id="Sixth part Bio" class="card border-dark">
     <div class="card-body">
       <div class="row">
@@ -382,290 +396,23 @@
     </div>
   </div>
 
+  <div class="row">
+    <div class="col-md-6">
+      {% if not form.observation_id.value %}
+      {% bootstrap_button "Save" button_type="submit" button_class="btn-primary" %}
+      {% endif %}
+    </div>
+  </div>
+
 </div>
 
-  {% if not form.observation_id.value %}
-  {% bootstrap_button "Save" button_type="submit" button_class="btn-primary" %}
-  {% endif %}
+
+  
                  
-{% comment %} 
-<div class="row g3">
-      <div class="col-md-6">
-        {% bootstrap_field form.observation_date %}
-      </div>
-      <div class="col-md-6">
-        {% bootstrap_field form.species_code %}
-      </div>
-      <div class="col-md-6">
-        {% bootstrap_field form.sex %}
-      </div>
-      <div class="col-md-6">
-        {% bootstrap_field form.place_code %}
-      </div>
-      <div class="col-md-6">
-        {% bootstrap_field form.latitude %}
-      </div>
-      <div class="col-md-6">
-        {% bootstrap_field form.longitude %}
-      </div>
-      <div class="col-md-6">
-        <div>
-            {% bootstrap_label form.recorded_by_id.label label_for="recorded_by_id" %}
-        </div>
-        <div class="d-flex justify-content-between align-items-center">
-            <div class="flex-grow-1">
-                {% bootstrap_field form.recorded_by_id show_label=False %}
-            </div>
-            <button type="button" class="btn-secondary" onClick="window.open('{% url 'admin:wamtram2_trtpersons_add' %}');">+</button>
-        </div>
-      </div>
-      <div class="col-md-6">
-        <div>
-            {% bootstrap_label form.entered_by_id.label label_for="entered_by_id" %}
-        </div>
-        <div class="d-flex justify-content-between align-items-center">
-            <div class="flex-grow-1">
-                {% bootstrap_field form.entered_by_id show_label=False %}
-            </div>
-            <button type="button" class="btn-secondary" onClick="window.open('{% url 'admin:wamtram2_trtpersons_add' %}');">+</button>
-        </div>
-      </div>
-</div> {% endcomment %}
-
-{% comment %} <div class="row">
-  <h4>Recapture Tags</h4>
-</div>
-<div class="row g3">
-    <div class="col-md-6">
-        {% bootstrap_field form.recapture_left_tag_id %}
-      </div>
-      <div class="col-md-6">
-        {% bootstrap_field form.recapture_right_tag_id %}
-      </div>
-      <div class="col-md-6">
-        {% bootstrap_field form.recapture_left_tag_id_2 %}
-      </div>
-      <div class="col-md-6">
-        {% bootstrap_field form.recapture_right_tag_id_2 %}
-      </div>
-      <div class="col-md-6">
-        {% bootstrap_field form.recapture_left_tag_id_3 %}
-      </div>          
-      <div class="col-md-6">
-        {% bootstrap_field form.recapture_right_tag_id_3 %}
-      </div>
-      <div class="col-md-6">
-        {% bootstrap_field form.recapture_pittag_id %}
-      </div>
-      <div class="col-md-6">
-        {% bootstrap_field form.recapture_pittag_id_2 %}
-      </div>
-</div>
-
-<div class="row"><h4>New Tags</h4></div>
-<div class="row g3">
-      <div class="col-md-6">
-        {% bootstrap_field form.new_left_tag_id %}
-      </div>
-      <div class="col-md-6">
-        {% bootstrap_field form.new_right_tag_id %}
-      </div>
-      <div class="col-md-6">
-        {% bootstrap_field form.new_left_tag_id_2 %}
-      </div>      
-      <div class="col-md-6">
-        {% bootstrap_field form.new_right_tag_id_2 %}
-      </div>
-      <div class="col-md-6">
-        {% bootstrap_field form.new_pittag_id %}
-      </div>
-      <div class="col-md-6">
-        {% bootstrap_field form.new_pittag_id_2 %}
-    </div>
-    <div class="col-md-6">
-      <div>
-          {% bootstrap_label form.tagged_by_id.label label_for="tagged_by_id" %}
-      </div>
-      <div class="d-flex justify-content-between align-items-center">
-          <div class="flex-grow-1">
-              {% bootstrap_field form.tagged_by_id show_label=False %}
-          </div>
-          <button type="button" class="btn-secondary" onClick="window.open('{% url 'admin:wamtram2_trtpersons_add' %}');">+</button>
-      </div>
-    </div>
-</div>
-{% endcomment %}
-
-{% comment %} <div class="row"> <h4>Tag scars</h4></div>
-<div class="row g3">
-    <div class="col-md-6">
-      {% bootstrap_field form.tagscarnotchecked %}
-    </div>
-    <div class="col-md-6"></div>
-    <div class="col-md-6">
-      {% bootstrap_field form.scars_left %}
-    </div>
-    <div class="col-md-6">
-      {% bootstrap_field form.scars_right %}
-    </div>
-    <div class="col-md-6">
-      {% bootstrap_field form.scars_left_scale_1 %}
-    </div>
-    <div class="col-md-6">
-      {% bootstrap_field form.scars_right_scale_1 %}
-    </div>
-    <div class="col-md-6">
-      {% bootstrap_field form.scars_left_scale_2 %}
-    </div>
-    <div class="col-md-6">
-      {% bootstrap_field form.scars_right_scale_2 %}
-    </div>
-    <div class="col-md-6">
-      {% bootstrap_field form.scars_left_scale_3 %}
-    </div>
-    <div class="col-md-6">
-      {% bootstrap_field form.scars_right_scale_3 %}
-    </div>
-
-
-
-</div>
-
-    <div class="row">
-    <h4>Measurements</h4>
-    </div>
-    <div class="row g3">
-      <div class="col-md-6">
-        <div>
-            {% bootstrap_label form.measured_by_id.label label_for="measured_by_id" %}
-        </div>
-        <div class="d-flex justify-content-between align-items-center">
-            <div class="flex-grow-1">
-                {% bootstrap_field form.measured_by_id show_label=False %}
-            </div>
-            <button type="button" class="btn-secondary" onClick="window.open('{% url 'admin:wamtram2_trtpersons_add' %}');">+</button>
-        </div>
-      </div>
-      <div class="col-md-6">
-        <div>
-            {% bootstrap_label form.measured_recorded_by_id.label label_for="measured_recorded_by_id" %}
-        </div>
-        <div class="d-flex justify-content-between align-items-center">
-            <div class="flex-grow-1">
-                {% bootstrap_field form.measured_recorded_by_id show_label=False %}
-            </div>
-            <button type="button" class="btn-secondary" onClick="window.open('{% url 'admin:wamtram2_trtpersons_add' %}');">+</button>
-        </div>
-      </div>
-      <div class="col-md-6">
-        {% bootstrap_field form.cc_length_not_measured %}
-      </div>
-      <div class="col-md-6">
-        {% bootstrap_field form.cc_width_not_measured %}
-      </div>
-      <div class="col-md-6">
-        {% bootstrap_field form.curved_carapace_length %}
-      </div>
-      
-      
-      <div class="col-md-6">
-        {% bootstrap_field form.curved_carapace_width %}
-      </div>
-      <div class="col-md-6">
-        {% bootstrap_field form.cc_notch_length_not_measured %}
-      </div>
-      <div class="col-md-6"></div>
-      <div class="col-md-6">
-        {% bootstrap_field form.measurement_value_1 %}
-      </div>
-      <div class="col-md-6">
-        {% bootstrap_field form.measurement_type_1 %}
-      </div>
-      <div class="col-md-6">
-        {% bootstrap_field form.measurement_value_2 %}
-      </div>
-      <div class="col-md-6">
-        {% bootstrap_field form.measurement_type_2 %}
-      </div>
-    </div>
-
-    <div class="row">
-        <h4>Injuries</h4>
-      </div>
-    <div class="row g3">
-      <div class="col-md-6">
-        {% bootstrap_field form.didnotcheckforinjury %}
-      </div>
-      <div class="col-md-6"></div>
-      <div class="col-md-6">
-        {% bootstrap_field form.alive %}
-      </div>
-      <div class="col-md-6">
-        {% bootstrap_field form.damage_carapace %}
-      </div>
-      <div class="col-md-6">
-        {% bootstrap_field form.damage_lff %}
-      </div>
-      <div class="col-md-6">
-        {% bootstrap_field form.damage_rff %}
-      </div>
-      <div class="col-md-6">
-        {% bootstrap_field form.damage_lhf %}
-      </div>
-      <div class="col-md-6">
-        {% bootstrap_field form.damage_rhf %}
-      </div>
-      <div class="col-md-6">
-        {% bootstrap_field form.damage_code_1 %}
-      </div>
-      <div class="col-md-6">
-        {% bootstrap_field form.body_part_1 %}
-      </div>
-      <div class="col-md-6">
-        {% bootstrap_field form.damage_code_2 %}
-      </div>
-      <div class="col-md-6">
-        {% bootstrap_field form.body_part_2 %}
-      </div>
-    </div>
-
-<div class="row">
-  <h4>Activity</h4>
-</div>
-    <div class="row g3">        
-      <div class="col-md-6">
-        {% bootstrap_field form.activity_code %}
-      </div>
-      <div class="col-md-6">
-        {% bootstrap_field form.nesting %}
-      </div>
-      <div class="row">
-        <h4>Samples</h4>
-      </div>
-    </div>  
-
-    <div class="row g3">
-      <div class="col-md-6">
-        {% bootstrap_field form.sample_label_1 %}
-      </div>
-      <div class="col-md-6">
-        {% bootstrap_field form.tissue_type_1 %}
-      </div>
-      <div class="col-md-6">
-        {% bootstrap_field form.sample_label_2 %}
-      </div>
-      <div class="col-md-6">
-        {% bootstrap_field form.tissue_type_2 %}
-      </div>
-    </div>
-        
-    
-    {% if not form.observation_id.value %}
-    {% bootstrap_button "Save" button_type="submit" button_class="btn-primary" %}
-    {% endif %} {% endcomment %}
-
 
 <script>
+  var adminUrl = "{% url 'admin:wamtram2_trtpersons_add' %}";
+
   function showContentBasedOnSelection() {
     var selectElement = document.getElementById('flipperTags');
     var recaptureTags = document.getElementById('recaptureTags');
@@ -720,13 +467,31 @@
     }
   }
 
-  fuction addMeasurement() {
+  function addMeasurement() {
     var moreMeasurement = document.getElementById('moreMeasurement');
     moreMeasurement.style.display = 'block';
 
     var addMeasurementButton = document.getElementById('addMeasurementButton');
     addMeasurementButton.style.display = 'none';
   }
+
+  document.addEventListener('DOMContentLoaded', function() {
+  var didNotCheckCheckbox = document.getElementById('{{ form.didnotcheckforinjury.auto_id }}');
+  var injuryDetails = document.getElementById('injuryDetails');
+ 
+  function toggleInjuryDetails() {
+    if (didNotCheckCheckbox.checked) {
+      injuryDetails.style.display = 'none';
+    } else {
+      injuryDetails.style.display = 'block';
+    }
+  }
+ 
+  didNotCheckCheckbox.addEventListener('change', toggleInjuryDetails);
+ 
+  toggleInjuryDetails();
+  });
+
 </script>
 
 {% endblock %}
