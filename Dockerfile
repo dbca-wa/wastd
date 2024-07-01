@@ -66,6 +66,13 @@ COPY marine_mammal_incidents ./marine_mammal_incidents
 # Convert line endings from CRLF to LF
 RUN dos2unix /app/entrypoint.sh /app/wait-for-db.sh /app/createsuperuser.sh
 
+# Ensure scripts have execution permissions
+RUN chmod +x /app/entrypoint.sh /app/wait-for-db.sh /app/createsuperuser.sh
+
+# List files and check file format
+RUN ls -l /app
+RUN file /app/entrypoint.sh
+
 USER ${UID}
 EXPOSE 8080
 
