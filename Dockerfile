@@ -51,7 +51,7 @@ RUN groupadd -g "${GID}" appuser \
 FROM python_libs_wastd
 
 # Install psql tool
-RUN apt-get update -y && apt-get install -y postgresql-client
+RUN apt-get update -y && apt-get install -y postgresql-client dos2unix
 
 COPY entrypoint.sh /app/entrypoint.sh
 COPY wait-for-db.sh /app/wait-for-db.sh
