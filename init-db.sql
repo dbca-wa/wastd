@@ -24,15 +24,15 @@ $$;
 -- Connect to test_db as the superuser
 \c test_db
 
--- Ensure PostGIS extension is installed
-DO
-$$
-BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'postgis') THEN
-        CREATE EXTENSION postgis;
-    END IF;
-END
-$$;
+-- -- Ensure PostGIS extension is installed
+-- DO
+-- $$
+-- BEGIN
+--     IF NOT EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'postgis') THEN
+--         CREATE EXTENSION postgis;
+--     END IF;
+-- END
+-- $$;
 
 -- Grant all privileges on test_db to test_user
 GRANT ALL PRIVILEGES ON DATABASE test_db TO test_user;

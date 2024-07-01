@@ -170,7 +170,7 @@ VERSION_NO = project["tool"]["poetry"]["version"]
 # Database configuration
 DATABASES = {
     # Defined in DATABASE_URL env variable.
-    "default": dj_database_url.config(),
+    'default': dj_database_url.config(default=os.getenv('DATABASE_URL')),
     "wamtram2": {
         "ENGINE": "mssql",
         "HOST": os.environ.get("DB_HOST", "host"),
