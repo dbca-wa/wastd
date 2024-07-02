@@ -7,6 +7,7 @@
 {{ form.media.css }}
 <style>
   .select2 {
+<<<<<<< HEAD
     width: 100% !important;
   }
 
@@ -14,11 +15,18 @@
       display: flex;
       width: 100%;
       min-width: 280px;
+=======
+      width: 100% !important;
+>>>>>>> 779495f91ab509f01dfdeb835333a258dcaf60da
   }
     
   .input-group .form-control {
       flex: 1;
       height: 28px;
+<<<<<<< HEAD
+=======
+      width-min:320px;
+>>>>>>> 779495f91ab509f01dfdeb835333a258dcaf60da
   }
   .add-person-btn {
       height: 28px;  
@@ -126,12 +134,12 @@
            <div class="col-md-4">
               <form>
                  <div class="form-group row">
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                        {% bootstrap_field form.species_code %}
                     </div>
                  </div>
                  <div class="form-group row">
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                        {% bootstrap_field form.sex %}
                     </div>
                  </div>
@@ -162,9 +170,11 @@
               <div class="form-group row">
                 <div class="col-md-6">
                   {% bootstrap_field form.recapture_left_tag_id %}
+                  <span id="left-tag-validation-message"></span>
                 </div>
                 <div class="col-md-6">
                   {% bootstrap_field form.recapture_right_tag_id %}
+                  <span id="right-tag-validation-message"></span>
                 </div>
               </div>
               <div class="form-group row">
@@ -430,73 +440,155 @@
   </div>
 
 </div>
+                
+{% endblock %}
 
+{% block extra_js %}
+
+{{ form.media.js }}
 
 <script>
   var adminUrl = "{% url 'admin:wamtram2_trtpersons_add' %}";
-  
+
   function showContentBasedOnSelection() {
     var selectElement = document.getElementById('flipperTags');
     var recaptureTags = document.getElementById('recaptureTags');
     var newTags = document.getElementById('newTags');
-  
+
     recaptureTags.style.display = 'none';
     newTags.style.display = 'none';
-  
+
     if (selectElement.value === 'Yes') {
       recaptureTags.style.display = 'block';
     } else if (selectElement.value === 'No') {
       newTags.style.display = 'block';
     }
   }
-  
+
   function addRecaptureTag() {
     var additionalRecaptureTags = document.getElementById('additionalRecaptureTags');
     additionalRecaptureTags.style.display = 'block';
-  
+
     var addRecaptureTagButton = document.getElementById('addRecaptureTagButton');
     addRecaptureTagButton.style.display = 'none';
   }
-  
+
   function addNewTag() {
     var additionalNewTags = document.getElementById('additionalNewTags');
     additionalNewTags.style.display = 'block';
-  
+
     var addNewTagButton = document.getElementById('addNewTagButton');
     addNewTagButton.style.display = 'none';
   }
-  
+
   function addRecaptureAdditionalTag() {
     var additionalRecaptureNewTags = document.getElementById('additionalRecaptureNewTags');
     additionalRecaptureNewTags.style.display = 'block';
-  
+
     var addRecaptureAdditionalTagButton = document.getElementById('addRecaptureAdditionalTagButton');
     addRecaptureAdditionalTagButton.style.display = 'none';
   }
-  
+
   function showPITContentBasedOnSelection() {
     var selectElement = document.getElementById('PITTags');
     var recapturePIT = document.getElementById('recapturePIT');
     var newPIT = document.getElementById('newPIT');
-  
+
     recapturePIT.style.display = 'none';
     newPIT.style.display = 'none';
-  
+
     if (selectElement.value === 'Yes') {
       recapturePIT.style.display = 'block';
     } else if (selectElement.value === 'No') {
       newPIT.style.display = 'block';
     }
   }
-  
+
   function addMeasurement() {
     var moreMeasurement = document.getElementById('moreMeasurement');
     moreMeasurement.style.display = 'block';
-  
+
     var addMeasurementButton = document.getElementById('addMeasurementButton');
     addMeasurementButton.style.display = 'none';
   }
-  
+
+  function debounce(func, wait) {
+    let timeout;
+    return function(...args) {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => func.apply(this, args), wait);
+    };
+  }
+  document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOMContentLoaded event fired');
+
+    const turtleIdInput = document.getElementById('id_turtle_id');
+    const recaptureLeftTagInput = document.getElementById('id_recapture_left_tag_id');
+    const recaptureRightTagInput = document.getElementById('id_recapture_right_tag_id');
+    const leftValidationMessage = document.getElementById('left-tag-validation-message');
+    const rightValidationMessage = document.getElementById('right-tag-validation-message');
+
+    console.log('Turtle ID input:', turtleIdInput);
+    console.log('Left tag input:', recaptureLeftTagInput);
+    console.log('Right tag input:', recaptureRightTagInput);
+
+    function validateTag(tagInput, validationMessage) {
+        console.log('validateTag function called');
+        const turtleId = turtleIdInput.value;
+        const tagId = tagInput.value;
+        console.log('Turtle ID:', turtleId, 'Tag ID:', tagId);
+
+        if (turtleId && tagId) {
+            console.log('Sending fetch request');
+            fetch(`/wamtram2/validate-turtle-tag/?turtle_id=${turtleId}&tag=${tagId}`)
+                .then(response => {
+                    console.log('Fetch response received:', response);
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Validation data:', data);
+                    if (data.valid) {
+                        validationMessage.textContent = '✓ Valid tag';
+                        validationMessage.style.color = 'green';
+                    } else {
+                        validationMessage.textContent = '✗ Invalid tag';
+                        validationMessage.style.color = 'red';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    validationMessage.textContent = 'Error validating tag';
+                    validationMessage.style.color = 'red';
+                });
+        } else {
+            console.log('Turtle ID or Tag ID is missing');
+            validationMessage.textContent = '';
+        }
+    }
+
+    if (recaptureLeftTagInput) {
+        console.log('Adding event listener to left tag input');
+        recaptureLeftTagInput.addEventListener('blur', function() {
+            console.log('Left tag input blur event triggered');
+            validateTag(this, leftValidationMessage);
+        });
+    } else {
+        console.error('Left tag input not found');
+    }
+
+    if (recaptureRightTagInput) {
+        console.log('Adding event listener to right tag input');
+        recaptureRightTagInput.addEventListener('blur', function() {
+            console.log('Right tag input blur event triggered');
+            validateTag(this, rightValidationMessage);
+        });
+    } else {
+        console.error('Right tag input not found');
+    }
+
+    console.log('Event listeners setup complete');
+  });
+
   document.addEventListener('DOMContentLoaded', function() {
     var didNotCheckCheckbox = document.getElementById('{{ form.didnotcheckforinjury.auto_id }}');
     var injuryDetails = document.getElementById('injuryDetails');
@@ -513,96 +605,6 @@
   
     toggleInjuryDetails();
   });
-  </script>
-                 
+</script>
 
-{% comment %} <script>
-  var adminUrl = "{% url 'admin:wamtram2_trtpersons_add' %}";
-
-  function showContentBasedOnSelection() {
-    var selectElement = document.getElementById('flipperTags');
-    var recaptureTags = document.getElementById('recaptureTags');
-    var newTags = document.getElementById('newTags');
-
-    recaptureTags.style.display = 'none';
-    newTags.style.display = 'none';
-
-    if (selectElement.value === 'Yes') {
-      recaptureTags.style.display = 'block';
-    } else if (selectElement.value === 'No') {
-      newTags.style.display = 'block';
-    }
-  }
-
-  function addRecaptureTag() {
-    var additionalRecaptureTags = document.getElementById('additionalRecaptureTags');
-    additionalRecaptureTags.style.display = 'block';
-
-    var addRecaptureTagButton = document.getElementById('addRecaptureTagButton');
-    addRecaptureTagButton.style.display = 'none';
-  }
-
-  function addNewTag() {
-    var additionalNewTags = document.getElementById('additionalNewTags');
-    additionalNewTags.style.display = 'block';
-
-    var addNewTagButton = document.getElementById('addNewTagButton');
-    addNewTagButton.style.display = 'none';
-  }
-
-  function addRecaptureNewTag() {
-    var additionalRecaptureNewTags = document.getElementById('additionalRecaptureNewTags');
-    additionalRecaptureNewTags.style.display = 'block';
-
-    var addRecaptureNewTagButton = document.getElementById('addRecaptureNewTagButton');
-    addRecaptureNewTagButton.style.display = 'none';
-  }
-
-  function showPITContentBasedOnSelection() {
-    var selectElement = document.getElementById('PITTags');
-    var recapturePIT = document.getElementById('recapturePIT');
-    var newPIT = document.getElementById('newPIT');
-
-    recapturePIT.style.display = 'none';
-    newPIT.style.display = 'none';
-
-    if (selectElement.value === 'Yes') {
-      recapturePIT.style.display = 'block';
-    } else if (selectElement.value === 'No') {
-      newPIT.style.display = 'block';
-    }
-  }
-
-  function addMeasurement() {
-    var moreMeasurement = document.getElementById('moreMeasurement');
-    moreMeasurement.style.display = 'block';
-
-    var addMeasurementButton = document.getElementById('addMeasurementButton');
-    addMeasurementButton.style.display = 'none';
-  }
-
-  document.addEventListener('DOMContentLoaded', function() {
-  var didNotCheckCheckbox = document.getElementById('{{ form.didnotcheckforinjury.auto_id }}');
-  var injuryDetails = document.getElementById('injuryDetails');
- 
-  function toggleInjuryDetails() {
-    if (didNotCheckCheckbox.checked) {
-      injuryDetails.style.display = 'none';
-    } else {
-      injuryDetails.style.display = 'block';
-    }
-  }
- 
-  didNotCheckCheckbox.addEventListener('change', toggleInjuryDetails);
- 
-  toggleInjuryDetails();
-  });
-
-</script> {% endcomment %}
-
-{% endblock %}
-
-{% block extra_js %}
-
-{{ form.media.js }}
 {% endblock %}

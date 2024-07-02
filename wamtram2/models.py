@@ -1,6 +1,5 @@
 from django.contrib.gis.db import models
 
-
 class TrtActivities(models.Model):
     activity_code = models.CharField(
         db_column="ACTIVITY_CODE", primary_key=True, max_length=1
