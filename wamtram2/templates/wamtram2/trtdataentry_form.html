@@ -7,12 +7,18 @@
 {{ form.media.css }}
 <style>
   .select2 {
-    /* width: 100% !important; */
+    width: 100% !important;
+  }
+
+  .input-group {
+      display: flex;
+      width: 100%;
+      min-width: 280px;
   }
     
   .input-group .form-control {
+      flex: 1;
       height: 28px;
-      width: 280PX;
   }
   .add-person-btn {
       height: 28px;  
@@ -252,7 +258,7 @@
               <div class="col-md-6">
                 <label for="{{ form.tagged_by_id.label }}">{{ form.tagged_by_id.label }}</label>
                 <div class="input-group">
-                    {% bootstrap_field form.tagged_by_id show_label=False %}
+                  {% bootstrap_field form.tagged_by_id show_label=False %}
                   <div class="input-group-append">
                     <button type="button" class="btn btn-outline-primary add-person-btn" onClick="window.open(adminUrl);" title="Add new person">
                         <i class="fas fa-plus"></i>
@@ -277,34 +283,26 @@
                        {% bootstrap_field form.curved_carapace_length %}
                     </div>
                     <div class="col-md-3">
-                       <div>
-                          {% bootstrap_label form.measured_by_id.label label_for="measured_by_id" %}
-                       </div>
-                       <div class="d-flex justify-content-between align-items-center">
-                          <div class="flex-grow-1">
-                             {% bootstrap_field form.measured_by_id show_label=False %}
-                          </div>
-                          <div class="input-group-append">
-                            <button type="button" class="btn btn-outline-primary add-person-btn" onClick="window.open(adminUrl);" title="Add new person">
-                                <i class="fas fa-plus"></i>
-                            </button>
+                      <label for="{{ form.measured_by_id.label }}">{{ form.measured_by_id.label }}</label>
+                      <div class="input-group">
+                        {% bootstrap_field form.measured_by_id show_label=False %}
+                        <div class="input-group-append">
+                          <button type="button" class="btn btn-outline-primary add-person-btn" onClick="window.open(adminUrl);" title="Add new person">
+                            <i class="fas fa-plus"></i>
+                          </button>
                         </div>
-                       </div>
+                      </div>
                     </div>
                     <div class="col-md-3">
-                       <div>
-                          {% bootstrap_label form.measured_recorded_by_id.label label_for="measured_recorded_by_id" %}
-                       </div>
-                       <div class="d-flex justify-content-between align-items-center">
-                          <div class="flex-grow-1">
-                             {% bootstrap_field form.measured_recorded_by_id show_label=False %}
-                          </div>
-                          <div class="input-group-append">
-                            <button type="button" class="btn btn-outline-primary add-person-btn" onClick="window.open(adminUrl);" title="Add new person">
-                                <i class="fas fa-plus"></i>
-                            </button>
+                      <label for="{{ form.measured_recorded_by_id.label }}">{{ form.measured_recorded_by_id.label }}</label>
+                      <div class="input-group">
+                        {% bootstrap_field form.measured_recorded_by_id show_label=False %}
+                        <div class="input-group-append">
+                          <button type="button" class="btn btn-outline-primary add-person-btn" onClick="window.open(adminUrl);" title="Add new person">
+                              <i class="fas fa-plus"></i>
+                          </button>
                         </div>
-                       </div>
+                      </div>
                     </div>
                     <div class="col-md-3">
                        <button id="addMeasurementButton" type="button" class="btn btn-primary" onclick="addMeasurement()">Add more Measurements</button>
