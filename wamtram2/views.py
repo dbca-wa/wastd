@@ -9,6 +9,7 @@ from django.urls import reverse
 from django.views import View
 from django.views.generic.edit import FormMixin
 from django.views.generic import TemplateView, ListView, DetailView, FormView
+from django.http import JsonResponse
 
 from wastd.utils import Breadcrumb, PaginateMixin
 from .models import (
@@ -676,3 +677,41 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
         context["pittags"] = obj.trtpittags_set.all()
         context["observations"] = obj.trtobservations_set.all()
         return context
+
+
+def validate_turtle_tag(request):
+    """
+    Validates if a given tag matches the turtle ID.
+
+    This method retrieves the turtle ID and tag from the GET parameters and checks 
+    if the tag belongs to the specified turtle. It returns a JSON response indicating 
+    whether the tag is valid for the turtle.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        JsonResponse: A JSON response containing the validation result. The response 
+                      includes a 'valid' key with a boolean value indicating if the 
+                      tag is valid, and a 'message' key with an error message if applicable.
+
+    Example:
+        GET /validate-turtle-tag?turtle_id=1&tag=1234
+
+        Response:
+        {
+            "valid": true
+        }
+    """
+    turtle_id = request.GET.get('turtle_id')
+    tag = request.GET.get('tag')
+    
+    if not turtle_id or not tag:
+        return JsonResponse({'valid': False, 'message': 'Missing parameters'})
+
+    try:
+        turtle = TrtTurtles.objects.get(turtle_id=turtle_id)
+        is_valid = turtle.trttags_set.filter(tag_id=tag).exists()
+        return JsonResponse({'valid': is_valid})
+    except TrtTurtles.DoesNotExist:
+        return JsonResponse({'valid': False, 'message': 'Turtle not found'})
