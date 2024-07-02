@@ -158,12 +158,12 @@ class TrtDataEntryForm(forms.ModelForm):
             "new_right_tag_id_2": unAssignedTagWidget,
             "new_pittag_id": unassignedPitTagWidget,
             "new_pittag_id_2": unassignedPitTagWidget,
-            "recapture_left_tag_id": tagWidget,
-            "recapture_left_tag_id_2": tagWidget,
-            "recapture_left_tag_id_3": tagWidget,
-            "recapture_right_tag_id": tagWidget,
-            "recapture_right_tag_id_2": tagWidget,
-            "recapture_right_tag_id_3": tagWidget,
+            #"recapture_left_tag_id": tagWidget,
+            #"recapture_left_tag_id_2": tagWidget,
+            #"recapture_left_tag_id_3": tagWidget,
+            #"recapture_right_tag_id": tagWidget,
+            #"recapture_right_tag_id_2": tagWidget,
+            #"recapture_right_tag_id_3": tagWidget,
             "recapture_pittag_id": pitTagWidget,
             "recapture_pittag_id_2": pitTagWidget,
             "user_entry_id": personWidget,
@@ -204,6 +204,13 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["didnotcheckforinjury"].label = "Didn't check for injury"
         self.fields["cc_length_not_measured"].label = "CCL not measured"
         self.fields["cc_width_not_measured"].label = "CCW not measured"
+        
+        self.fields['recapture_left_tag_id'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        self.fields['recapture_left_tag_id_2'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        self.fields['recapture_left_tag_id_3'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        self.fields['recapture_right_tag_id'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        self.fields['recapture_right_tag_id_2'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        self.fields['recapture_right_tag_id_3'].widget = forms.TextInput(attrs={'class': 'form-control'})
 
         # Disable all fields if there is an observation_id as it already in the database
         if self.instance.observation_id:
