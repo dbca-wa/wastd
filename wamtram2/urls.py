@@ -19,4 +19,5 @@ urlpatterns = [
     path("validate-data-entry-batch/<int:batch_id>/", views.ValidateDataEntryBatchView.as_view(), name="validate_data_entry_batch"),
     path("process-data-entry-batch/<int:batch_id>/", views.ProcessDataEntryBatchView.as_view(), name="process_data_entry_batch"),
     path("observations/<int:pk>/", views.ObservationDetailView.as_view(), name="observationdetail"),
+    path('validate-turtle-tag/', views.validate_turtle_tag, name='validate_turtle_tag'),
 ]
