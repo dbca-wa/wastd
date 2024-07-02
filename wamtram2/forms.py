@@ -186,6 +186,10 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["species_code"].required = True
         self.fields["place_code"].required = True
         self.fields["sex"].required = True
+        self.fields["place_code"].label = "Location/Beach"
+        self.fields["species_code"].label = "Species"
+        self.fields["observation_date"].label = "Observation Date & Time"
+        self.fields["entered_by_id"].label = "Data captured by"
         self.fields["recapture_pittag_id"].label = "Recapture Left PIT Tag"
         self.fields["recapture_pittag_id_2"].label = "Recapture Right PIT Tag"
         self.fields["new_pittag_id"].label = "New Left PIT Tag"
@@ -204,6 +208,7 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["didnotcheckforinjury"].label = "Didn't check for injury"
         self.fields["cc_length_not_measured"].label = "CCL not measured"
         self.fields["cc_width_not_measured"].label = "CCW not measured"
+        self.fields["curved_carapace_length"].label = "Curved carapace length (mm)"
         
         self.fields['recapture_left_tag_id'].widget = forms.TextInput(attrs={'class': 'form-control'})
         self.fields['recapture_left_tag_id_2'].widget = forms.TextInput(attrs={'class': 'form-control'})
@@ -216,6 +221,11 @@ class TrtDataEntryForm(forms.ModelForm):
         if self.instance.observation_id:
             for field in self.fields:
                 self.fields[field].disabled = True
+                
+        for field_name in self.fields:
+            field = self.fields[field_name]
+            if field.required:
+                field.widget.attrs['class'] = field.widget.attrs.get('class', '') + ' required-field'
 
     # saves the people names as well as the person_id for use in MS Access front end
     def save(self, commit=True):
