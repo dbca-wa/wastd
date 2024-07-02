@@ -7,22 +7,23 @@
 {{ form.media.css }}
 <style>
   .select2 {
-    width: 100% !important;
+    /* width: 100% !important; */
+  }
     
   .input-group .form-control {
-      height: 38px;  /* 调整此值以匹配您的输入框高度 */
+      height: 28px;
+      width: 280PX;
   }
   .add-person-btn {
-      height: 38px;  /* 确保与输入框高度一致 */
-      width: 38px;  /* 保持按钮为正方形 */
+      height: 28px;  
+      width: 28px;  
       padding: 0;
       display: flex;
       align-items: center;
       justify-content: center;
   }
   .add-person-btn i {
-      font-size: 14px;  /* 调整图标大小 */
-  }
+      font-size: 14px;  
   }
 
 </style>
@@ -107,7 +108,7 @@
                       <div class="input-group">
                           {% bootstrap_field form.entered_by_id show_label=False %}
                           <div class="input-group-append">
-                              <button type="button" class="btn btn-outline-secondary add-person-btn" onClick="window.open(adminUrl);" title="Add new person">
+                              <button type="button" class="btn btn-outline-primary add-person-btn" onClick="window.open(adminUrl);" title="Add new person">
                                   <i class="fas fa-plus"></i>
                               </button>
                           </div>
@@ -249,14 +250,14 @@
             </div>
             <div class="form-group row">
               <div class="col-md-6">
-                <div>
-                  {% bootstrap_label form.tagged_by_id.label label_for="tagged_by_id" %}
-                </div>
-                <div class="d-flex justify-content-between align-items-center">
-                  <div class="flex-grow-1">
+                <label for="{{ form.tagged_by_id.label }}">{{ form.tagged_by_id.label }}</label>
+                <div class="input-group">
                     {% bootstrap_field form.tagged_by_id show_label=False %}
+                  <div class="input-group-append">
+                    <button type="button" class="btn btn-outline-primary add-person-btn" onClick="window.open(adminUrl);" title="Add new person">
+                        <i class="fas fa-plus"></i>
+                    </button>
                   </div>
-                  <button type="button" class="btn-secondary" onClick="window.open(adminUrl);">+</button>
                 </div>
               </div>
             </div>
@@ -283,7 +284,11 @@
                           <div class="flex-grow-1">
                              {% bootstrap_field form.measured_by_id show_label=False %}
                           </div>
-                          <button type="button" class="btn-secondary" onClick="window.open(adminUrl);">+</button>
+                          <div class="input-group-append">
+                            <button type="button" class="btn btn-outline-primary add-person-btn" onClick="window.open(adminUrl);" title="Add new person">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
                        </div>
                     </div>
                     <div class="col-md-3">
@@ -294,7 +299,11 @@
                           <div class="flex-grow-1">
                              {% bootstrap_field form.measured_recorded_by_id show_label=False %}
                           </div>
-                          <button type="button" class="btn-secondary" onClick="window.open(adminUrl);">+</button>
+                          <div class="input-group-append">
+                            <button type="button" class="btn btn-outline-primary add-person-btn" onClick="window.open(adminUrl);" title="Add new person">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
                        </div>
                     </div>
                     <div class="col-md-3">
