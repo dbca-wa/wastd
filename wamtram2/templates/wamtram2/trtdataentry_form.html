@@ -17,6 +17,10 @@
   .required-field {
     background-color: #ccffcc !important;
   }
+
+  .select2-container--default.required-field .select2-selection--single {
+    background-color: #ccffcc !important;
+  }
 </style>
 {% endblock %}  
 
@@ -264,6 +268,54 @@
               <button type="button" class="btn btn-outline-primary add-person-btn" onClick="window.open(adminUrl);" title="Add new person">
               <i class="fas fa-plus"></i>
               </button>
+            </div>
+          </div><div class="row g-3">
+            <div class="col-12">
+              {% bootstrap_field form.tagscarnotchecked %}
+            </div>
+            <div class="col-12">
+              <div class="row align-items-center mb-2">
+                <div class="col-auto">
+                  {% bootstrap_field form.scars_left %}
+                </div>
+                <div class="col-auto">
+                  <div class="form-check form-check-inline">
+                    {% bootstrap_field form.scars_left_scale_1 %}
+                  </div>
+                </div>
+                <div class="col-auto">
+                  <div class="form-check form-check-inline">
+                    {% bootstrap_field form.scars_left_scale_2 %}
+                  </div>
+                </div>
+                <div class="col-auto">
+                  <div class="form-check form-check-inline">
+                    {% bootstrap_field form.scars_left_scale_3 %}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="row align-items-center">
+                <div class="col-auto">
+                  {% bootstrap_field form.scars_right %}
+                </div>
+                <div class="col-auto">
+                  <div class="form-check form-check-inline">
+                    {% bootstrap_field form.scars_right_scale_1 %}
+                  </div>
+                </div>
+                <div class="col-auto">
+                  <div class="form-check form-check-inline">
+                    {% bootstrap_field form.scars_right_scale_2 %}
+                  </div>
+                </div>
+                <div class="col-auto">
+                  <div class="form-check form-check-inline">
+                    {% bootstrap_field form.scars_right_scale_3 %}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -595,6 +647,18 @@
     didNotCheckCheckbox.addEventListener('change', toggleInjuryDetails);
   
     toggleInjuryDetails();
+  });
+
+  document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+        var placeCodeSelect = document.querySelector('select[name="place_code"][data-required="true"]');
+        if (placeCodeSelect) {
+            var select2Container = placeCodeSelect.nextElementSibling;
+            if (select2Container && select2Container.classList.contains('select2-container')) {
+                select2Container.querySelector('.select2-selection').classList.add('required-field');
+            }
+        }
+    }, 100);
   });
 </script>
 

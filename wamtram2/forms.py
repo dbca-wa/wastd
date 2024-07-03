@@ -49,6 +49,7 @@ placeWidget = ModelSelect2Widget(
     queryset=TrtPlaces.objects.all(),
     model=TrtPlaces,
     search_fields=["place_name__icontains", "location_code__location_name__icontains"],
+    attrs={'data-required': 'true'} 
 )
 
 
@@ -178,14 +179,14 @@ class TrtDataEntryForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.batch_id = kwargs.pop("batch_id", None)
         super().__init__(*args, **kwargs)
-        # self.fields["observation_date"].required = True
+
         # self.fields["activity_code"].required = True
         # self.fields["alive"].required = True
         # self.fields["nesting"].required = True
-        
-        # self.fields["species_code"].required = True
-        # self.fields["place_code"].required = True
-        # self.fields["sex"].required = True
+        self.fields["observation_date"].required = True
+        self.fields["species_code"].required = True
+        self.fields["place_code"].required = True
+        self.fields["sex"].required = True
         
         self.fields["nesting"].label = "Did nesting complete?"
         self.fields["entered_by_id"].label = "Entered by"
@@ -207,6 +208,12 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["new_left_tag_id_2"].label = "New Left Tag 2"
         self.fields["new_right_tag_id"].label = "New Right Tag"
         self.fields["new_right_tag_id_2"].label = "New Right Tag 2"
+        self.fields["scars_left_scale_1"].label = "1"
+        self.fields["scars_left_scale_2"].label = "2"
+        self.fields["scars_left_scale_3"].label = "3"
+        self.fields["scars_right_scale_1"].label = "1"
+        self.fields["scars_right_scale_2"].label = "2"
+        self.fields["scars_right_scale_3"].label = "3"
         self.fields["tagscarnotchecked"].label = "Didn't check for tag scars"
         self.fields["didnotcheckforinjury"].label = "Didn't check for injury"
         self.fields["cc_length_not_measured"].label = "CCL not measured"
