@@ -1,10 +1,9 @@
 from django import forms
 from django.forms import DateTimeInput
 from easy_select2 import apply_select2
-from .models import TrtPersons, TrtDataEntry, TrtTags, TrtEntryBatches, TrtPlaces
+from .models import TrtPersons, TrtDataEntry, TrtTags, TrtEntryBatches, TrtPlaces, TrtPitTags, TrtRecordedTags, TrtTagStatus
 from django_select2.forms import ModelSelect2Widget
 from .models import TrtPitTags
-from django.core.exceptions import ValidationError
 
 
 tagWidget = ModelSelect2Widget(
@@ -79,6 +78,30 @@ class TrtEntryBatchesForm(forms.ModelForm):
 
 class TrtDataEntryForm(forms.ModelForm):
 
+    # recapture_left_tag_state = forms.ModelChoiceField(
+    #     queryset=TrtTagStatus.objects.all(),
+    #     required=False,
+    #     to_field_name="tag_status"
+    # )
+    # recapture_left_tag_barnacles = forms.BooleanField(required=False)
+    # recapture_right_tag_state = forms.ModelChoiceField(
+    #     queryset=TrtTagStatus.objects.all(),
+    #     required=False,
+    #     to_field_name="tag_status"
+    # )
+    # recapture_right_tag_barnacles = forms.BooleanField(required=False)
+    # new_left_tag_state = forms.ModelChoiceField(
+    #     queryset=TrtTagStatus.objects.all(),
+    #     required=False,
+    #     to_field_name="tag_status"
+    # )
+    # new_left_tag_barnacles = forms.BooleanField(required=False)
+    # new_right_tag_state = forms.ModelChoiceField(
+    #     queryset=TrtTagStatus.objects.all(),
+    #     required=False,
+    #     to_field_name="tag_status"
+    # )
+    # new_right_tag_barnacles = forms.BooleanField(required=False)
     class Meta:
         model = TrtDataEntry
         fields = [
@@ -188,6 +211,8 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["place_code"].required = True
         self.fields["sex"].required = True
         
+        self.fields["latitude"].label = "Latitude (-xx.xxxxxx)"
+        self.fields["longitude"].label = "Longitude (xxx.xxxxxx)"
         self.fields["nesting"].label = "Did nesting complete?"
         self.fields["entered_by_id"].label = "Entered by"
         self.fields["place_code"].label = "Location/Beach"
@@ -226,6 +251,24 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields['recapture_right_tag_id'].widget = forms.TextInput(attrs={'class': 'form-control'})
         self.fields['recapture_right_tag_id_2'].widget = forms.TextInput(attrs={'class': 'form-control'})
         self.fields['recapture_right_tag_id_3'].widget = forms.TextInput(attrs={'class': 'form-control'})
+
+
+        # # Set the initial values for the tag state and barnacles fields
+        # tag_fields = [
+        #     ('recapture_left_tag', 'Recapture Left Tag'),
+        #     ('recapture_right_tag', 'Recapture Right Tag'),
+        #     ('new_left_tag', 'New Left Tag'),
+        #     ('new_right_tag', 'New Right Tag'),
+        # ]
+        
+        # for field_prefix, label_prefix in tag_fields:
+        #     state_field = f'{field_prefix}_state'
+        #     barnacles_field = f'{field_prefix}_barnacles'
+            
+        #     self.fields[state_field].label = f"{label_prefix} State"
+        #     self.fields[state_field].widget.attrs['class'] = 'form-control'
+        #     self.fields[barnacles_field].label = f"{label_prefix} Barnacles"
+        #     self.fields[barnacles_field].widget.attrs['class'] = 'form-check-input'
 
         # Disable all fields if there is an observation_id as it already in the database
         if self.instance.observation_id:
@@ -269,7 +312,29 @@ class TrtDataEntryForm(forms.ModelForm):
             instance.save()
 
         return instance
-
+    
+    # def save_tag_info(self, instance):
+    #     tag_fields = [
+    #         ('recapture_left_tag_id', 'recapture_left_tag_state', 'recapture_left_tag_barnacles', 'L'),
+    #         ('recapture_right_tag_id', 'recapture_right_tag_state', 'recapture_right_tag_barnacles', 'R'),
+    #         ('new_left_tag_id', 'new_left_tag_state', 'new_left_tag_barnacles', 'L'),
+    #         ('new_right_tag_id', 'new_right_tag_state', 'new_right_tag_barnacles', 'R'),
+    #     ]
+        
+    #     for tag_id_field, state_field, barnacles_field, side in tag_fields:
+    #         tag_id = self.cleaned_data.get(tag_id_field)
+    #         if tag_id:
+    #             TrtRecordedTags.objects.update_or_create(
+    #                 observation_id=instance.observation_id,
+    #                 tag_id=tag_id,
+    #                 defaults={
+    #                     'side': side,
+    #                     'tag_state': self.cleaned_data.get(state_field),
+    #                     'barnacles': self.cleaned_data.get(barnacles_field),
+    #                     'turtle_id': instance.turtle_id.turtle_id if instance.turtle_id else None,  # 修改这里
+    #                 }
+    #             )
+                
     def clean(self):
         cleaned_data = super().clean()
 
@@ -339,6 +404,19 @@ class TrtDataEntryForm(forms.ModelForm):
         #     raise ValidationError("At least one of the injury fields must be selected.")
 
         return cleaned_data
+
+
+# class TrtRecordedTagsForm(forms.ModelForm):
+#     class Meta:
+#         model = TrtRecordedTags
+#         fields = [
+#             'tag_state',
+#             'barnacles',
+#         ]
+#         widgets = {
+#             'tag_state': forms.TextInput(attrs={'class': 'form-control'}),
+#             'barnacles': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+#         }
 
 
 class DataEntryUserModelForm(forms.ModelForm):

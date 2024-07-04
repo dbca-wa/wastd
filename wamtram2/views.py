@@ -378,8 +378,12 @@ class TrtDataEntryForm(LoginRequiredMixin, FormView):
         Returns:
             str: The success URL.
         """
+        # instance = form.save(commit=False)
+        # if 'turtle_id' in self.kwargs:
+        #     instance.turtle_id = TrtTurtles.objects.get(turtle_id=self.kwargs['turtle_id'])
+        #     instance.save()
+        # form.save_tag_info(instance) 
         form.save()
-
         # Get the batch_id
         batch_id = form.cleaned_data["entry_batch"].entry_batch_id
 
@@ -407,7 +411,6 @@ class TrtDataEntryForm(LoginRequiredMixin, FormView):
             context["batch_id"] = batch_id  # Creating new entry in batch
 
         return context
-
 
 class DeleteBatchView(LoginRequiredMixin, View):
 
