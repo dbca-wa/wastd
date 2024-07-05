@@ -1,193 +1,320 @@
 {% extends "base_wastd.html" %}
-{% load static bootstrap4 %}
-{% bootstrap_css %}
-{% load static dict_filter %}
+{% load static bootstrap4 dict_filter %}
+
 {% block extra_style %}
-{{ block.super }}
-{{ form.media.css }}
-<style>
-  .select2 {
-    width: 100% !important;
-  }
-  </style>
-  {% endblock %}
-{% block extra_head %}
-  {# Select2 widgets need jQuery to be loaded at the top of the template, so we move it here. #}
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
-  {{ form.media }} 
-  {% endblock extra_head %}
-{% block breadcrumbs %}
-<nav aria-label="breadcrumb">
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-        <li class="breadcrumb-item"><a href="{% url 'wamtram2:entry_batches' %}">Entry batches</a></li>
-        <li class="breadcrumb-item active">{{ batch.entry_batch_id }}</li>
-    </ol>
-</nav>
+    {{ block.super }}
+    {{ form.media.css }}
+    <style>
+        /* Ensure Select2 dropdowns are full width */
+        .select2 { width: 100% !important; }
+
+        .add-person-btn {
+            height: 28px;
+            width: 28px;
+            padding: 0;
+        }
+        .step-container {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .step-header {
+            background-color: #f8f9fa;
+            padding: 10px;
+            margin: -15px -15px 15px -15px;
+            border-bottom: 1px solid #ddd;
+            font-weight: bold;
+        }
+        .danger-zone {
+            border: 2px solid #dc3545;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 30px;
+        }
+        .danger-zone-header {
+            background-color: #dc3545;
+            color: white;
+            padding: 10px;
+            margin: -15px -15px 15px -15px;
+            font-weight: bold;
+        }
+    </style>
 {% endblock %}
 
+{% block extra_head %}
+    {# Load jQuery for Select2 widgets #}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+    {{ form.media }} 
+{% endblock extra_head %}
+
+{% block breadcrumbs %}
+    {# Breadcrumb navigation #}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'wamtram2:entry_batches' %}">Entry batches</a></li>
+            <li class="breadcrumb-item active">{{ batch.entry_batch_id }}</li>
+        </ol>
+    </nav>
+{% endblock %}
 
 {% block page_content_inner %}
-
-{% block pagination_row %}
-<div class="row" id="pagination-row">
-  <div class="col">
-  {% if is_paginated %}
-    {% load proper_paginate %}
-    {% load url_replace %}
-    <ul class="pagination">
-        {% if page_obj.number == 1 %}
-            <li class="page-item disabled"><span class="page-link">⇤</span></li>
-        {% else %}
-            <li class="page-item"><a class="page-link" href="?{% url_replace request 'page' 1 %}">⇤</a></li>
-        {% endif %}
-        {% if page_obj.has_previous %}
-            <li class="page-item"><a class="page-link" href="?{% url_replace request 'page' page_obj.previous_page_number %}">&laquo;</a></li>
-        {% else %}
-            <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
-        {% endif %}
-        {% for i in paginator|proper_paginate:page_obj.number %}
-            {% if page_obj.number == i %}
-                <li class="page-item active"><span class="page-link">{{ i }} <span class="sr-only">(current)</span></span></li>
-            {% else %}
-                <li class="page-item"><a class="page-link" href="?{% url_replace request 'page' i %}">{{ i }}</a></li>
-            {% endif %}
-        {% endfor %}
-        {% if page_obj.has_next %}
-            <li class="page-item"><a class="page-link" href="?{% url_replace request 'page' page_obj.next_page_number %}">&raquo;</a></li>
-        {% else %}
-            <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
-        {% endif %}
-        {% if page_obj.number == paginator.num_pages %}
-            <li class="page-item disabled"><span class="page-link">⇥</span></li>
-        {% else %}
-            <li class="page-item"><a class="page-link" href="?{% url_replace request 'page' paginator.num_pages %}">⇥</a></li>
-        {% endif %}
-    </ul>
-{% endif %}
+    {% block pagination_row %}
+        {# Pagination controls #}
+        <div class="row" id="pagination-row">
+            <div class="col">
+                {% if is_paginated %}
+                    {% load proper_paginate %}
+                    {% load url_replace %}
+                    <ul class="pagination">
+                        {# Pagination links #}
+                        {% if page_obj.number == 1 %}
+                            <li class="page-item disabled"><span class="page-link">⇤</span></li>
+                        {% else %}
+                            <li class="page-item"><a class="page-link" href="?{% url_replace request 'page' 1 %}">⇤</a></li>
+                        {% endif %}
+                        {% if page_obj.has_previous %}
+                            <li class="page-item"><a class="page-link" href="?{% url_replace request 'page' page_obj.previous_page_number %}">&laquo;</a></li>
+                        {% else %}
+                            <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+                        {% endif %}
+                        {% for i in paginator|proper_paginate:page_obj.number %}
+                            {% if page_obj.number == i %}
+                                <li class="page-item active"><span class="page-link">{{ i }} <span class="sr-only">(current)</span></span></li>
+                            {% else %}
+                                <li class="page-item"><a class="page-link" href="?{% url_replace request 'page' i %}">{{ i }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+                        {% if page_obj.has_next %}
+                            <li class="page-item"><a class="page-link" href="?{% url_replace request 'page' page_obj.next_page_number %}">&raquo;</a></li>
+                        {% else %}
+                            <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+                        {% endif %}
+                        {% if page_obj.number == paginator.num_pages %}
+                            <li class="page-item disabled"><span class="page-link">⇥</span></li>
+                        {% else %}
+                            <li class="page-item"><a class="page-link" href="?{% url_replace request 'page' paginator.num_pages %}">⇥</a></li>
+                        {% endif %}
+                    </ul>
+                {% endif %}
    
-    {% if object_list %}
-
-        {% if object_count %}<div>Found {{ object_count }} records</div>{% endif %}
-        
-    {% endif %}
-    </div>
-</div>
-{% endblock pagination_row %}
-
-    <form action="{% url 'wamtram2:entry_batch_detail' batch_id=batch.entry_batch_id %}" method="post" class="row g3">
-        {% csrf_token %}
-        <div class="col-md-6">
-            <div>
-                {% bootstrap_label form.entered_person_id.label label_for="entered_person_id" %}
+                {% if object_list %}
+                    {% if object_count %}<div>Found {{ object_count }} records</div>{% endif %}
+                {% endif %}
             </div>
-            <div class="d-flex justify-content-between align-items-center">
-                <div class="flex-grow-1">
-                    {% bootstrap_field form.entered_person_id show_label=False %}
+        </div>
+    {% endblock pagination_row %}
+    <div class="step-container">
+        <div class="step-header">Step 1: Batch Details</div>
+        <form action="{% url 'wamtram2:entry_batch_detail' batch_id=batch.entry_batch_id %}" method="post" class="row">
+            {% csrf_token %}
+            <div class="col-md-4">
+                <div class="d-flex align-items-end">
+                    {% bootstrap_field form.entered_person_id show_label=True form_group_class="flex-grow-1 mr-2" %}
+                    <button type="button" class="btn btn-outline-primary add-person-btn align-self-end" onClick="window.open(adminUrl);" title="Add new person">
+                        <i class="fas fa-plus"></i>
+                    </button>
                 </div>
-                <button type="button" class="btn-secondary" onClick="window.open('{% url 'admin:wamtram2_trtpersons_add' %}');">+</button>
             </div>
-          </div>
-        <div class="col-md-6">
-        {% bootstrap_field form.comments %}
-        </div>
-        <div class="col-md-6">
-        {% bootstrap_button "Save batch details" button_type="submit" button_class="btn-primary" %}
-        </div>
-        <div class="col-md-6">
-            <a href="{% url 'wamtram2:delete_batch' batch_id=batch.entry_batch_id %}" class="btn btn-danger float-right" onclick="return confirm('Are you sure you want to delete this batch?\nThis will not delete observations that have already been added to the database.');">Delete Batch</a>
-        </div> 
-    </form>
-    {{ form.media.js }}
-        
-       
+            <div class="col-md-6">
+                {% bootstrap_field form.comments %}
+            </div>
+            <div class="col-md-2 mt-4">
+                {% bootstrap_button "Save batch details" button_type="submit" button_class="btn-primary" %}
+            </div>
+        </form>
+    </div>
 
-<div class="row mt-3">
-    <div class="col">
-    <a href="{% url 'wamtram2:find_turtle' batch_id=batch.entry_batch_id %}" class="btn btn-primary">1. Create a new entry</a> ->
+    <div class="step-container">
+        <div class="step-header">Step 2: Create New Entry</div>
+        <div class="row align-items-end">
+            <div class="col-md-6">
+                <select id="templateSelector" class="form-control">
+                    <option value="">Select a template</option>
+                    {% for key, template in templates.items %}
+                        <option value="{{ key }}">{{ template.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="setDefaultEnterer">
+                    <label class="form-check-label" for="setDefaultEnterer">
+                        Set batch enterer as default entry enterer
+                    </label>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <a href="{% url 'wamtram2:find_turtle' batch_id=batch.entry_batch_id %}" id="createEntryBtn" class="btn btn-secondary">Create a new entry</a>
+            </div>
+        </div>
+        <div id="templateSelectedMessage" class="mt-2 text-success" style="display: none;">Template selected</div>
+    </div>
+
+    <div class="step-container">
+        <div class="step-header">Step 3: Batch Actions</div>
+        <div class="row">
+            <div class="col-md-8">
+                {% if object_list %}
+                    <a href="{% url 'wamtram2:validate_data_entry_batch' batch_id=batch.entry_batch_id %}" class="btn btn-primary mr-2">Validate this Batch</a>
+                    <a href="{% url 'wamtram2:process_data_entry_batch' batch_id=batch.entry_batch_id %}" class="btn btn-primary" onclick="return confirm('Are you sure you want to add this batch?\nOnce the observations are added you will not be able to edit them.\nObservations that have already been added will not be processed.');">Add this batch to the database</a>
+                {% endif %}
+            </div>
+            <div class="col-md-4">
+                <form method="get" class="form-inline float-right">
+                    <div class="form-group">
+                        <label class="mr-2" for="filter">Filter</label>
+                        <select name="filter" class="form-control" onchange="this.form.submit()">
+                            <option value="">All</option>
+                            <option value="no_observation_id" {% if request.GET.filter == "no_observation_id" %}selected{% endif %}>Unprocessed observations</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {# Data entries table #}
     {% if object_list %}
-    <a href="{% url 'wamtram2:validate_data_entry_batch' batch_id=batch.entry_batch_id %}" class="btn btn-primary">2. Validate this Batch</a> ->
-    <a href="{% url 'wamtram2:process_data_entry_batch' batch_id=batch.entry_batch_id %}" class="btn btn-primary" onclick="return confirm('Are you sure you want to add this batch?\nOnce the observations are added you will not be able to edit them.\nObservations that have already been added will not be processed.');">3. Add this batch to the database</a>
+        <div class="row mt-3">
+            <div class="col">
+                <table class="table table-striped table-bordered table-sm table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Saved Observation</th>
+                            <th>Observation date</th>
+                            <th>Turtle ID</th>
+                            <th>Recapture Tags</th>
+                            <th>New Tags</th>
+                            <th>Error Message</th>
+                            <th>Enterer</th>
+                            <th>Comments</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for obj in object_list %}
+                        <tr>
+                            <td><a href="{% url 'wamtram2:trtdataentry' obj.data_entry_id %}">{{ obj.data_entry_id }}</a></td>
+                            <td>{% if obj.observation_id %}<a href="{% url 'wamtram2:observationdetail' pk=obj.observation_id.pk %}">{{ obj.observation_id.pk }}</a>{% endif %}</td>
+                            <td>{{ obj.observation_date|date:"j M Y" }} {{ obj.observation_time|date:"H:i" }}</td>
+                            <td>{% if obj.turtle_id %}<a href="{% url 'wamtram2:turtle_detail' obj.turtle_id %}">{{obj.turtle_id}}</a>{% endif %}</td>
+                            <td>
+                                {% if obj.recapture_left_tag_id %}{{ obj.recapture_left_tag_id }} {% endif %}
+                                {% if obj.recapture_left_tag_id_2 %}{{ obj.recapture_left_tag_id_2 }} {% endif %}
+                                {% if obj.recapture_left_tag_id_3 %}{{ obj.recapture_left_tag_id_3 }} {% endif %}
+                                {% if obj.recapture_right_tag_id %}{{ obj.recapture_right_tag_id }} {% endif %}
+                                {% if obj.recapture_right_tag_id_2 %}{{ obj.recapture_right_tag_id_2 }} {% endif %}
+                                {% if obj.recapture_right_tag_id_3 %}{{ obj.recapture_right_tag_id_3 }} {% endif %}
+                                {% if obj.recapture_pittag_id %}{{ obj.recapture_pittag_id }} {% endif %}
+                                {% if obj.recapture_pittag_id_2 %}{{ obj.recapture_pittag_id_2 }} {% endif %}
+                            </td>
+                            <td>
+                                {% if obj.new_left_tag_id %}{{ obj.new_left_tag_id }} {% endif %}
+                                {% if obj.new_left_tag_id_2 %}{{ obj.new_left_tag_id_2 }} {% endif %}
+                                {% if obj.new_right_tag_id %}{{ obj.new_right_tag_id }} {% endif %}
+                                {% if obj.new_right_tag_id_2 %}{{ obj.new_right_tag_id_2 }} {% endif %}
+                                {% if obj.new_pittag_id %}{{ obj.new_pittag_id }} {% endif %}
+                                {% if obj.new_pittag_id_2 %}{{ obj.new_pittag_id_2 }} {% endif %}
+                            </td> 
+                            <td>{{ obj.error_message }}</td>
+                            <td>
+                                {% with persons|get:obj.user_entry_id as person %}
+                                    {{ person.first_name }} {{ person.surname }}
+                                {% endwith %}
+                            </td>
+                            <td>{{ obj.comments}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% else %}
+        <div class="row mt-3">
+            <div class="col">
+                <p>No data entries found.</p>
+            </div>
+        </div>
     {% endif %}
-    </div>
-    <div class="col">
-    <form method="get" class="form-inline float-right">
-        <div class="form-group">
-            <label class="mr-1" for="filter">Filter</label>
-            <select name="filter" class="form-control" onchange="this.form.submit()">
-                <option value="">All</option>
-                <option value="no_observation_id" {% if request.GET.filter == "no_observation_id" %}selected{% endif %}>Unprocessed observations</option>
-            </select>
-        </div>
-    </form>
-    </div>
-</div>
 
-
-{% if object_list %}
-<div class="row mt-3">
-  <div class="col">
-    <table class="table table-striped table-bordered table-sm table-hover">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Saved Observation</th>
-                <th>Observation date</th>
-                <th>Turtle ID</th>
-                <th>Recapture Tags</th>
-                <th>New Tags</th>
-                <th>Error Message</th>
-                <th>Enterer</th>
-                <th>comments</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for obj in object_list %}
-            <tr>
-                <td><a href="{% url 'wamtram2:trtdataentry' obj.data_entry_id %}">{{ obj.data_entry_id }}</a></td>
-                <td>{% if obj.observation_id %}<a href="{% url 'wamtram2:observationdetail' pk=obj.observation_id.pk %}">{{ obj.observation_id.pk }}</a>{% endif %}</td>
-                <td>{{ obj.observation_date|date:"j M Y" }} {{ obj.observation_time|date:"H:i" }}</td>
-                <td>{% if obj.turtle_id %}<a href="{% url 'wamtram2:turtle_detail' obj.turtle_id %}">{{obj.turtle_id}}</a>{% endif %}</td>
-                <td>{% if obj.recapture_left_tag_id %}{{ obj.recapture_left_tag_id }} {% endif %}
-                    {% if obj.recapture_left_tag_id_2 %}{{ obj.recapture_left_tag_id_2 }} {% endif %}
-                    {% if obj.recapture_left_tag_id_3 %}{{ obj.recapture_left_tag_id_3 }} {% endif %}
-                    {% if obj.recapture_right_tag_id %}{{ obj.recapture_right_tag_id }} {% endif %}
-                    {% if obj.recapture_right_tag_id_2 %}{{ obj.recapture_right_tag_id_2 }} {% endif %}
-                    {% if obj.recapture_right_tag_id_3 %}{{ obj.recapture_right_tag_id_3 }} {% endif %}
-                    {% if obj.recapture_pittag_id %}{{ obj.recapture_pittag_id }} {% endif %}
-                    {% if obj.recapture_pittag_id_2 %}{{ obj.recapture_pittag_id_2 }} {% endif %}
-                </td>
-                <td>{% if obj.new_left_tag_id %}{{ obj.new_left_tag_id }} {% endif %}
-                    {% if obj.new_left_tag_id_2 %}{{ obj.new_left_tag_id_2 }} {% endif %}
-                    {% if obj.new_right_tag_id %}{{ obj.new_right_tag_id }} {% endif %}
-                    {% if obj.new_right_tag_id_2 %}{{ obj.new_right_tag_id_2 }} {% endif %}
-                    {% if obj.new_pittag_id %}{{ obj.new_pittag_id }} {% endif %}
-                    {% if obj.new_pittag_id_2 %}{{ obj.new_pittag_id_2 }} {% endif %}
-                </td> 
-                <td>{{ obj.error_message }}</td>
-                <td>
-                    {% with persons|get:obj.user_entry_id as person %}
-                        {{ person.first_name }} {{ person.surname }}
-                    {% endwith %}
-                </td>
-                <td>{{ obj.comments}}</td>
-           
-        
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-  </div>
-</div>
-{% else %}
-<div class="row mt-3">
-    <div class="col">
-            <p>No data entries found.</p>
-        </div>
+    <div class="danger-zone">
+        <div class="danger-zone-header">Danger Zone</div>
+        <p>Deleting this batch cannot be undone. This will permanently delete the batch and all its associated data.</p>
+        <a href="{% url 'wamtram2:delete_batch' batch_id=batch.entry_batch_id %}" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this batch?\nThis will not delete observations that have already been added to the database.');">Delete Batch</a>
     </div>
-{% endif %}
-
+    
 {% endblock page_content_inner %}
 
-
-
+{% block extra_js %}
+    {{ block.super }}
+    <script>
+        var adminUrl = "{% url 'admin:wamtram2_trtpersons_add' %}";
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            const templateSelector = document.getElementById('templateSelector');
+            const setDefaultEnterer = document.getElementById('setDefaultEnterer');
+        
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+        
+                const templateInput = document.createElement('input');
+                templateInput.type = 'hidden';
+                templateInput.name = 'selected_template';
+                templateInput.value = templateSelector.value;
+                form.appendChild(templateInput);
+        
+                const defaultEntererInput = document.createElement('input');
+                defaultEntererInput.type = 'hidden';
+                defaultEntererInput.name = 'use_default_enterer';
+                defaultEntererInput.value = setDefaultEnterer.checked;
+                form.appendChild(defaultEntererInput);
+        
+                form.submit();
+            });
+        });
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const templateSelector = document.getElementById('templateSelector');
+            const createEntryBtn = document.getElementById('createEntryBtn');
+            const templateSelectedMessage = document.getElementById('templateSelectedMessage');
+            const setDefaultEnterer = document.getElementById('setDefaultEnterer');
+            const enteredPersonId = document.getElementById('id_entered_person_id');
+            const templates = {{ templates|safe }};
+        
+            function updateCreateEntryButton() {
+                let currentHref = new URL(createEntryBtn.getAttribute('href'), window.location.origin);
+                const selectedTemplate = templates[templateSelector.value];
+        
+                if (selectedTemplate) {
+                    currentHref.searchParams.set('place_code', selectedTemplate.place_code);
+                    currentHref.searchParams.set('species_code', selectedTemplate.species_code);
+                    currentHref.searchParams.set('sex', selectedTemplate.sex);
+                    createEntryBtn.classList.remove('btn-secondary');
+                    createEntryBtn.classList.add('btn-success');
+                    templateSelectedMessage.style.display = 'block';
+                } else {
+                    currentHref.searchParams.delete('place_code');
+                    currentHref.searchParams.delete('species_code');
+                    currentHref.searchParams.delete('sex');
+                    createEntryBtn.classList.remove('btn-success');
+                    createEntryBtn.classList.add('btn-secondary');
+                    templateSelectedMessage.style.display = 'none';
+                }
+        
+                if (setDefaultEnterer.checked && enteredPersonId.value) {
+                    currentHref.searchParams.set('default_enterer', enteredPersonId.value);
+                } else {
+                    currentHref.searchParams.delete('default_enterer');
+                }
+        
+                createEntryBtn.setAttribute('href', currentHref.toString());
+            }
+        
+            templateSelector.addEventListener('change', updateCreateEntryButton);
+            setDefaultEnterer.addEventListener('change', updateCreateEntryButton);
+        });
+    </script>
+{% endblock %}

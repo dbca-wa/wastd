@@ -1,0 +1,20 @@
+{
+    "template1": {
+        "name": "Port Bremer area - FlatbackV1",
+        "place_code": "DHT2",
+        "species_code": "GN",
+        "sex": "M"
+    },
+    "template2": {
+        "name": "Port Bremer area - Flatback",
+        "place_code": "DHT2",
+        "species_code": "GN",
+        "sex": "M"
+    },
+    "template3": {
+        "name": "213123",
+        "place_code": "DHT2",
+        "species_code": "?",
+        "sex": "M"
+    }
+}

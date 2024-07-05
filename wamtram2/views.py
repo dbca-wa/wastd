@@ -9,7 +9,10 @@ from django.urls import reverse
 from django.views import View
 from django.views.generic.edit import FormMixin
 from django.views.generic import TemplateView, ListView, DetailView, FormView
-from django.http import JsonResponse
+from django.http import JsonResponse, QueryDict
+from .models import TrtPlaces, TrtSpecies
+import os
+import json
 
 from wastd.utils import Breadcrumb, PaginateMixin
 from .models import (
@@ -20,8 +23,9 @@ from .models import (
     TrtDataEntry,
     TrtPersons,
     TrtObservations,
+    Template
 )
-from .forms import TrtDataEntryForm, SearchForm, TrtEntryBatchesForm
+from .forms import TrtDataEntryForm, SearchForm, TrtEntryBatchesForm, TemplateForm
 
 
 class HomePageView(LoginRequiredMixin, TemplateView):
@@ -120,6 +124,7 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
     Methods:
         get_queryset(): Returns the queryset of TrtDataEntry objects filtered by entry_batch_id.
         get_context_data(**kwargs): Returns the context data for rendering the template, including the persons dictionary.
+        load_templates(): Loads the templates from the templates.json file.
 
     """
 
@@ -128,6 +133,14 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
     context_object_name = "batch"
     paginate_by = 50
     form_class = TrtEntryBatchesForm
+    
+    def load_templates(self):
+        """
+        Loads the templates from the templates.json file.
+        """
+        json_file_path = os.path.join(settings.BASE_DIR, 'wamtram2', 'templates.json')
+        with open(json_file_path, 'r') as file:
+            return json.load(file)
 
     def dispatch(self, request, *args, **kwargs):
         # FIXME: Permission check
@@ -209,13 +222,22 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
         context["form"] = TrtEntryBatchesForm(
             instance=batch
         )  # Add the form to the context data
+        
+        # Add the templates to the context data
+        context['templates'] = self.load_templates()
+        context['selected_template'] = self.request.session.get('selected_template')
+        context['use_default_enterer'] = self.request.session.get('use_default_enterer', False)
         return context
 
     def post(self, request, *args, **kwargs):
         form = self.get_form()
         form.instance.entry_batch_id = self.kwargs.get("batch_id")
         if form.is_valid():
-            return self.form_valid(form)
+            result = self.form_valid(form)
+            request.session['selected_template'] = request.POST.get('selected_template')
+            request.session['use_default_enterer'] = request.POST.get('use_default_enterer') == 'on'
+        
+            return result
         else:
             return self.form_invalid(form)
 
@@ -243,7 +265,7 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
         return reverse("wamtram2:entry_batch_detail", args=[batch_id])
 
 
-class TrtDataEntryForm(LoginRequiredMixin, FormView):
+class TrtDataEntryFormView(LoginRequiredMixin, FormView):
     """
     A form view for entering TRT data.
     """
@@ -281,6 +303,16 @@ class TrtDataEntryForm(LoginRequiredMixin, FormView):
             kwargs["instance"] = entry
 
         return kwargs
+    
+    def merge_data(self, template_data, turtle_data):
+        """
+        Merges the template data with the turtle data.
+        """
+        merged_data = turtle_data.copy()
+        for key, value in template_data.items():
+            if value:
+                merged_data[key] = value
+        return merged_data
 
     def get_initial(self):
 
@@ -288,6 +320,27 @@ class TrtDataEntryForm(LoginRequiredMixin, FormView):
         batch_id = self.kwargs.get("batch_id")
         turtle_id = self.kwargs.get("turtle_id")
         entry_id = self.kwargs.get("entry_id")
+        
+        selected_template = self.request.GET.get('selected_template')
+        use_default_enterer = self.request.GET.get('use_default_enterer', False)
+        
+        # Get the template data
+        template_data = {
+            'place_code': self.request.GET.get('place_code'),
+            'species_code': self.request.GET.get('species_code'),
+            'sex': self.request.GET.get('sex'),
+            'entered_by_id': self.request.GET.get('default_enterer'),
+        }
+        
+        # Set the initial values for the form fields
+        initial.update({
+            'place_code': self.request.GET.get('place_code'),
+            'species_code': self.request.GET.get('species_code'),
+            'sex': self.request.GET.get('sex'),
+            'default_enterer': self.request.GET.get('default_enterer'),
+            'selected_template': selected_template,
+            'use_default_enterer': use_default_enterer,
+        })
 
         # starting a new observation in a batch
         if batch_id:
@@ -298,12 +351,14 @@ class TrtDataEntryForm(LoginRequiredMixin, FormView):
         # starting a new observation with an existing turtle
         if turtle_id:
             turtle = get_object_or_404(TrtTurtles, turtle_id=turtle_id)
-            initial["turtle_id"] = turtle_id
-
-            initial["species_code"] = turtle.species_code
-
-            initial["sex"] = turtle.sex
-
+            turtle_data = {
+                "turtle_id": turtle_id,
+                "species_code": turtle.species_code,
+                "sex": turtle.sex,
+            }
+            initial.update(self.merge_data(template_data, turtle_data))
+        else:
+            initial.update(template_data)
             # initial['recapture_left_tag_id'] = turtle.trttags_set.filter(side='L').all().order_by('tag_order_id')[0] if turtle.trttags_set.filter(side='L').count() > 0 else None
 
             # initial['recapture_left_tag_id_2'] = turtle.trttags_set.filter(side='L').all().order_by('tag_order_id')[1] if turtle.trttags_set.filter(side='L').count() > 1 else None
@@ -322,6 +377,7 @@ class TrtDataEntryForm(LoginRequiredMixin, FormView):
 
         # editing an existing observation we need to populate the person id fields from the strings stored
         # using the old MS Access system
+        
         if entry_id:
             trtdataentry = get_object_or_404(TrtDataEntry, data_entry_id=entry_id)
             measured_by = trtdataentry.measured_by
@@ -411,6 +467,7 @@ class TrtDataEntryForm(LoginRequiredMixin, FormView):
             context["batch_id"] = batch_id  # Creating new entry in batch
 
         return context
+
 
 class DeleteBatchView(LoginRequiredMixin, View):
 
@@ -546,12 +603,32 @@ class FindTurtleView(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         batch_id = kwargs.get("batch_id")
-        form = SearchForm(initial={"batch_id": batch_id})
-        return render(request, "wamtram2/find_turtle.html", {"form": form})
-
+        default_enterer = request.GET.get('default_enterer')
+        # selected_template = request.session.get('selected_template')
+        # use_default_enterer = request.session.get('use_default_enterer', False)
+        template_data = {
+            "place_code": request.GET.get('place_code'),
+            "species_code": request.GET.get('species_code'),
+            "sex": request.GET.get('sex'),
+            "default_enterer": default_enterer,
+        }
+        form = SearchForm(initial={
+            "batch_id": batch_id,
+            "selected_template": request.GET.get('selected_template'),
+            "use_default_enterer": request.GET.get('use_default_enterer', False),
+            **template_data
+        })
+        return render(request, "wamtram2/find_turtle.html", {"form": form, "template_data": template_data})
     def post(self, request, *args, **kwargs):
         batch_id = kwargs.get("batch_id")
-        form = SearchForm(request.POST, initial={"batch_id": batch_id})
+        form = SearchForm(request.POST, initial={
+            "batch_id": batch_id,
+            "place_code": request.GET.get('place_code'),
+            "species_code": request.GET.get('species_code'),
+            "sex": request.GET.get('sex'),
+            "selected_template": request.GET.get('selected_template'),
+            "use_default_enterer": request.GET.get('use_default_enterer', False)
+        })
         if form.is_valid():
             tag_id = form.cleaned_data["tag_id"]
             try:
@@ -567,7 +644,15 @@ class FindTurtleView(LoginRequiredMixin, View):
                 if turtle:
                     tags = TrtTags.objects.filter(turtle=turtle)
                     pittags = TrtPitTags.objects.filter(turtle=turtle)
-                    # Pass the turtle variable to the template
+                    
+                    # Get the template data
+                    template_data = {
+                        'place_code': form.initial.get('place_code'),
+                        'species_code': form.initial.get('species_code'),
+                        'sex': form.initial.get('sex'),
+                        'default_enterer': form.initial.get('default_enterer'),
+                    }
+                    
                     return render(
                         request,
                         "wamtram2/find_turtle.html",
@@ -576,6 +661,7 @@ class FindTurtleView(LoginRequiredMixin, View):
                             "turtle": turtle,
                             "tags": tags,
                             "pittags": pittags,
+                            "template_data": template_data,  # transfer the template data to the template
                         },
                     )
                 else:
@@ -695,8 +781,8 @@ def validate_turtle_tag(request):
 
     Returns:
         JsonResponse: A JSON response containing the validation result. The response 
-                      includes a 'valid' key with a boolean value indicating if the 
-                      tag is valid, and a 'message' key with an error message if applicable.
+                    includes a 'valid' key with a boolean value indicating if the 
+                    tag is valid, and a 'message' key with an error message if applicable.
 
     Example:
         GET /validate-turtle-tag?turtle_id=1&tag=1234
@@ -717,4 +803,160 @@ def validate_turtle_tag(request):
         is_valid = turtle.trttags_set.filter(tag_id=tag).exists()
         return JsonResponse({'valid': is_valid})
     except TrtTurtles.DoesNotExist:
-        return JsonResponse({'valid': False, 'message': 'Turtle not found'})
+        return JsonResponse({'valid': False, 'message': 'Turtle not found'})    
+
+
+SEX_CHOICES = [
+    ("M", "Male"),
+    ("F", "Female"),
+    ("I", "Indeterminate"),
+]
+
+
+import json
+import os
+import re
+from django.conf import settings
+from django.http import JsonResponse, QueryDict
+from django.shortcuts import render, redirect
+from django.views import View
+from .forms import TemplateForm
+from .models import TrtPlaces, TrtSpecies
+
+SEX_CHOICES = [
+    ("M", "Male"),
+    ("F", "Female"),
+    ("I", "Indeterminate"),
+]
+
+class TemplateManageView(View):
+
+    def get_json_path(self):
+        return os.path.join(settings.BASE_DIR, 'wamtram2', 'templates.json')
+
+    def load_templates_from_json(self):
+        try:
+            with open(self.get_json_path(), 'r') as file:
+                data = json.load(file)
+            return data
+        except FileNotFoundError:
+            return {}
+        except json.JSONDecodeError as e:
+            # Log error and return empty dictionary
+            print(f"Error decoding JSON: {e}")
+            return {}
+
+    def save_templates_to_json(self, templates):
+        try:
+            with open(self.get_json_path(), 'w') as file:
+                json.dump(templates, file, indent=4)
+        except IOError as e:
+            print(f"Error writing to JSON file: {e}")
+            raise
+
+    def get_next_template_key(self, templates):
+        max_key = 0
+        template_key_pattern = re.compile(r'^template(\d+)$')
+        for key in templates.keys():
+            match = template_key_pattern.match(key)
+            if match:
+                max_key = max(max_key, int(match.group(1)))
+        return f"template{max_key + 1}"
+
+    def get(self, request):
+        templates = self.load_templates_from_json()
+        form = TemplateForm()
+        places = TrtPlaces.objects.all()
+        species = TrtSpecies.objects.all()
+        return render(request, 'wamtram2/template_manage.html', {
+            'templates': templates, 
+            'form': form, 
+            'places': places, 
+            'species': species,
+            'sex_choices': SEX_CHOICES
+        })
+
+    def post(self, request):
+        form = TemplateForm(request.POST)
+        if form.is_valid():
+            new_template = form.save(commit=False)
+            templates = self.load_templates_from_json()
+            new_template_data = {
+                'name': new_template.name,
+                'place_code': request.POST.get('place_code'),
+                'species_code': request.POST.get('species_code'),
+                'sex': request.POST.get('sex')
+            }
+            template_key = self.get_next_template_key(templates)
+            templates[template_key] = new_template_data
+            try:
+                self.save_templates_to_json(templates)
+                return redirect('wamtram2:template_manage')
+            except Exception as e:
+                return render(request, 'wamtram2/template_manage.html', {
+                    'form': form,
+                    'templates': templates,
+                    'places': TrtPlaces.objects.all(),
+                    'species': TrtSpecies.objects.all(),
+                    'sex_choices': SEX_CHOICES,
+                    'error_message': f"Error saving template: {e}"
+                })
+        else:
+            return render(request, 'wamtram2/template_manage.html', {
+                'form': form, 
+                'templates': self.load_templates_from_json(), 
+                'places': TrtPlaces.objects.all(), 
+                'species': TrtSpecies.objects.all(),
+                'sex_choices': SEX_CHOICES,
+                'error_message': "Invalid form data. Please correct the errors below."
+            })
+
+    def put(self, request, template_key):
+        templates = self.load_templates_from_json()
+        template_data = templates.get(template_key)
+        if not template_data:
+            return JsonResponse({'error': 'Template not found'}, status=404)
+
+        put_data = QueryDict(request.body)
+        
+        template_instance = Template(
+            name=template_data['name'],
+            place_code=template_data['place_code'],
+            species_code=template_data['species_code'],
+            sex=template_data['sex']
+        )
+        
+        form = TemplateForm(put_data, instance=template_instance)
+        if form.is_valid():
+            updated_template = form.save(commit=False)
+            updated_template_data = {
+                'name': updated_template.name,
+                'place_code': put_data.get('place_code'),
+                'species_code': put_data.get('species_code'),
+                'sex': put_data.get('sex')
+            }
+            templates[template_key] = updated_template_data
+            try:
+                self.save_templates_to_json(templates)
+                return JsonResponse(updated_template_data)
+            except Exception as e:
+                return JsonResponse({'error': f"Error saving template: {e}"}, status=500)
+        return JsonResponse({'errors': form.errors}, status=400)
+
+    def delete(self, request, template_key):
+        templates = self.load_templates_from_json()
+        if template_key in templates:
+            del templates[template_key]
+            try:
+                self.save_templates_to_json(templates)
+                return JsonResponse({'message': 'Template deleted'})
+            except Exception as e:
+                return JsonResponse({'error': f"Error deleting template: {e}"}, status=500)
+        return JsonResponse({'error': 'Template not found'}, status=404)
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.method == 'PUT':
+            return self.put(request, *args, **kwargs)
+        elif request.method == 'DELETE':
+            return self.delete(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)

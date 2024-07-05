@@ -2044,6 +2044,15 @@ class TrtYesNo(models.Model):
     def __str__(self):
         return f"{self.description}"
 
+# local models templates.json
+class Template(models.Model):
+    name = models.CharField(max_length=255)
+    place_code = models.CharField(max_length=50)
+    species_code = models.CharField(max_length=50)
+    sex = models.CharField(max_length=1)
+
+    def __str__(self):
+        return self.name
 
 # class Tbldamage(models.Model):
 #     observation_id = models.IntegerField(db_column='OBSERVATION_ID')  # Field name made lowercase.

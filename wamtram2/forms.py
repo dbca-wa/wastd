@@ -1,9 +1,8 @@
 from django import forms
 from django.forms import DateTimeInput
 from easy_select2 import apply_select2
-from .models import TrtPersons, TrtDataEntry, TrtTags, TrtEntryBatches, TrtPlaces, TrtPitTags, TrtRecordedTags, TrtTagStatus
+from .models import TrtPersons, TrtDataEntry, TrtTags, TrtEntryBatches, TrtPlaces, TrtPitTags, TrtPitTags, Template
 from django_select2.forms import ModelSelect2Widget
-from .models import TrtPitTags
 
 
 tagWidget = ModelSelect2Widget(
@@ -67,6 +66,13 @@ class CustomModelSelect2Widget(ModelSelect2Widget):
 class SearchForm(forms.Form):
     batch_id = forms.IntegerField(disabled=True)
     tag_id = forms.CharField(widget=CustomModelSelect2Widget)
+    place_code = forms.CharField(widget=forms.HiddenInput(), required=False)
+    species_code = forms.CharField(widget=forms.HiddenInput(), required=False)
+    sex = forms.CharField(widget=forms.HiddenInput(), required=False)
+    default_enterer = forms.CharField(widget=forms.HiddenInput(), required=False)
+    selected_template = forms.CharField(required=False, widget=forms.HiddenInput())
+    use_default_enterer = forms.BooleanField(required=False, widget=forms.HiddenInput())
+    
 
 
 class TrtEntryBatchesForm(forms.ModelForm):
@@ -451,3 +457,8 @@ class EnterUserModelForm(forms.ModelForm):
     #         raise forms.ValidationError("Choice must be an integer.")
 
     #     return cleaned_data
+    
+class TemplateForm(forms.ModelForm):
+    class Meta:
+        model = Template
+        fields = ['name', 'place_code', 'species_code', 'sex']
