@@ -33,8 +33,8 @@
       <div class="col col-12 mb-3">
         <div class="card card-lg shadow-lg">
           <div class="card-body">
-            <div class="text-center mt-5">
-              <a href="{% url 'wamtram2:newtrtdataentry' form.batch_id.value %}?place_code={{ form.initial.place_code }}&species_code={{ form.initial.species_code }}&sex={{ form.initial.sex }}&default_enterer={{ form.default_enterer.value }}&selected_template={{ form.selected_template.value }}&use_default_enterer={{ form.use_default_enterer.value }}" class="btn btn-primary">Create New Untagged Turtle</a>
+            <div class="text-center mt-3">
+              <a href="{% url 'wamtram2:newtrtdataentry' batch_id=form.batch_id.value %}" class="btn btn-primary">Create New Untagged Turtle</a>
             </div>
             <div class="text-center mt-4">or</div>
             <h5 class="text-center mt-4">Search for a Tagged Turtle</h5>
@@ -55,10 +55,9 @@
                   <div class="col-md-auto"><strong>Species:</strong> {{ turtle.species_code }}</div>
                   <div class="col-md-auto"><strong>Status:</strong> {{ turtle.turtle_status }}</div>
                 </div>
-                <div class="text-center mt-3">
-                  {% comment %} <a href="{% url 'wamtram2:existingtrtdataentry' batch_id=form.batch_id.value turtle_id=turtle.turtle_id %}?place_code={{ form.initial.place_code }}&species_code={{ form.initial.species_code }}&sex={{ form.initial.sex }}" class="btn btn-primary">Create New Observation for turtle {{ turtle.turtle_id }}</a> {% endcomment %}
-                  <a href="{% url 'wamtram2:existingtrtdataentry' batch_id=form.batch_id.value turtle_id=turtle.turtle_id %}?place_code={{ form.place_code.value }}&species_code={{ form.species_code.value }}&sex={{ form.sex.value }}&default_enterer={{ form.default_enterer.value }}&selected_template={{ form.selected_template.value }}&use_default_enterer={{ form.use_default_enterer.value }}" class="btn btn-primary">Create New Observation for turtle {{ turtle.turtle_id }}</a>
-                </div>
+              </div>
+              <div class="text-center mt-5">
+                <a href="{% url 'wamtram2:existingtrtdataentry' batch_id=form.batch_id.value turtle_id=turtle.turtle_id %}" class="btn btn-primary">Create New Observation for turtle {{ turtle.turtle_id }}</a>
               </div>
             {% endif %}
           </div>
@@ -79,5 +78,11 @@
       }
       return true;
     }
+
+    console.log("Django session data:", 
+            "{{ request.session.selected_template }}",
+            "{{ request.session.use_default_enterer }}",
+            "{{ request.session.default_enterer }}");
+            
   </script>
 {% endblock %}

@@ -11,6 +11,8 @@ from django.views.generic.edit import FormMixin
 from django.views.generic import TemplateView, ListView, DetailView, FormView
 from django.http import JsonResponse, QueryDict
 from .models import TrtPlaces, TrtSpecies
+from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_protect
 import os
 import json
 
@@ -134,6 +136,16 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
     paginate_by = 50
     form_class = TrtEntryBatchesForm
     
+    def get_initial(self):
+        initial = super().get_initial()
+        default_enterer = self.request.session.get('default_enterer')
+        use_default_enterer = self.request.session.get('use_default_enterer', False)
+        
+        if use_default_enterer and default_enterer:
+            initial['entered_person_id'] = default_enterer
+        
+        return initial
+        
     def load_templates(self):
         """
         Loads the templates from the templates.json file.
@@ -219,8 +231,10 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
         }
         batch = TrtEntryBatches.objects.get(entry_batch_id=self.kwargs.get("batch_id"))
         context["batch"] = batch  # add the batch to the context
+        initial = self.get_initial()
         context["form"] = TrtEntryBatchesForm(
-            instance=batch
+            instance=batch,
+            initial=initial
         )  # Add the form to the context data
         
         # Add the templates to the context data
@@ -233,10 +247,14 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
         form = self.get_form()
         form.instance.entry_batch_id = self.kwargs.get("batch_id")
         if form.is_valid():
+            batch = form.save()
             result = self.form_valid(form)
             request.session['selected_template'] = request.POST.get('selected_template')
             request.session['use_default_enterer'] = request.POST.get('use_default_enterer') == 'on'
-        
+            request.session['default_enterer'] = batch.entered_person_id.person_id if batch.entered_person_id else None
+
+            request.session.modified = True
+            
             return result
         else:
             return self.form_invalid(form)
@@ -304,15 +322,11 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
 
         return kwargs
     
-    def merge_data(self, template_data, turtle_data):
-        """
-        Merges the template data with the turtle data.
-        """
-        merged_data = turtle_data.copy()
-        for key, value in template_data.items():
-            if value:
-                merged_data[key] = value
-        return merged_data
+    def get_template_data(self, template_key):
+        json_file_path = os.path.join(settings.BASE_DIR, 'wamtram2', 'templates.json')
+        with open(json_file_path, 'r') as file:
+            templates = json.load(file)
+        return templates.get(template_key)
 
     def get_initial(self):
 
@@ -321,44 +335,32 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         turtle_id = self.kwargs.get("turtle_id")
         entry_id = self.kwargs.get("entry_id")
         
-        selected_template = self.request.GET.get('selected_template')
-        use_default_enterer = self.request.GET.get('use_default_enterer', False)
-        
-        # Get the template data
-        template_data = {
-            'place_code': self.request.GET.get('place_code'),
-            'species_code': self.request.GET.get('species_code'),
-            'sex': self.request.GET.get('sex'),
-            'entered_by_id': self.request.GET.get('default_enterer'),
-        }
-        
-        # Set the initial values for the form fields
-        initial.update({
-            'place_code': self.request.GET.get('place_code'),
-            'species_code': self.request.GET.get('species_code'),
-            'sex': self.request.GET.get('sex'),
-            'default_enterer': self.request.GET.get('default_enterer'),
-            'selected_template': selected_template,
-            'use_default_enterer': use_default_enterer,
-        })
+        selected_template = self.request.session.get('selected_template')
+        use_default_enterer = self.request.session.get('use_default_enterer', False)
+        default_enterer = self.request.session.get('default_enterer', None)
 
-        # starting a new observation in a batch
+        # If a template is selected, populate the form with the template data
+        if selected_template:
+            template_data = self.get_template_data(selected_template)
+            if template_data:
+                initial.update({
+                    'place_code': template_data.get('place_code'),
+                    'species_code': template_data.get('species_code'),
+                    'sex': template_data.get('sex'),
+                })
         if batch_id:
-            initial["entry_batch"] = get_object_or_404(
-                TrtEntryBatches, entry_batch_id=batch_id
-            )
+            initial["entry_batch"] = get_object_or_404(TrtEntryBatches, entry_batch_id=batch_id)
+            if use_default_enterer and default_enterer:
+                initial['entered_by_id'] = default_enterer
 
-        # starting a new observation with an existing turtle
         if turtle_id:
             turtle = get_object_or_404(TrtTurtles, turtle_id=turtle_id)
-            turtle_data = {
-                "turtle_id": turtle_id,
-                "species_code": turtle.species_code,
-                "sex": turtle.sex,
-            }
-            initial.update(self.merge_data(template_data, turtle_data))
-        else:
-            initial.update(template_data)
+            initial["turtle_id"] = turtle_id
+            if not initial['species_code']:
+                initial['species_code'] = turtle.species_code
+            if not initial['sex']:
+                initial['sex'] = turtle.sex
+        
             # initial['recapture_left_tag_id'] = turtle.trttags_set.filter(side='L').all().order_by('tag_order_id')[0] if turtle.trttags_set.filter(side='L').count() > 0 else None
 
             # initial['recapture_left_tag_id_2'] = turtle.trttags_set.filter(side='L').all().order_by('tag_order_id')[1] if turtle.trttags_set.filter(side='L').count() > 1 else None
@@ -465,6 +467,9 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
             context["entry"] = get_object_or_404(TrtDataEntry, data_entry_id=entry_id)
         if batch_id:
             context["batch_id"] = batch_id  # Creating new entry in batch
+            context["selected_template"] = self.request.session.get('selected_template')
+            context["use_default_enterer"] = self.request.session.get('use_default_enterer', False)
+            context["default_enterer"] = self.request.session.get('default_enterer', None)
 
         return context
 
@@ -603,32 +608,14 @@ class FindTurtleView(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         batch_id = kwargs.get("batch_id")
-        default_enterer = request.GET.get('default_enterer')
-        # selected_template = request.session.get('selected_template')
-        # use_default_enterer = request.session.get('use_default_enterer', False)
-        template_data = {
-            "place_code": request.GET.get('place_code'),
-            "species_code": request.GET.get('species_code'),
-            "sex": request.GET.get('sex'),
-            "default_enterer": default_enterer,
-        }
+
         form = SearchForm(initial={
             "batch_id": batch_id,
-            "selected_template": request.GET.get('selected_template'),
-            "use_default_enterer": request.GET.get('use_default_enterer', False),
-            **template_data
         })
-        return render(request, "wamtram2/find_turtle.html", {"form": form, "template_data": template_data})
+        return render(request, "wamtram2/find_turtle.html", {"form": form})
     def post(self, request, *args, **kwargs):
         batch_id = kwargs.get("batch_id")
-        form = SearchForm(request.POST, initial={
-            "batch_id": batch_id,
-            "place_code": request.GET.get('place_code'),
-            "species_code": request.GET.get('species_code'),
-            "sex": request.GET.get('sex'),
-            "selected_template": request.GET.get('selected_template'),
-            "use_default_enterer": request.GET.get('use_default_enterer', False)
-        })
+        form = SearchForm(request.POST, initial={"batch_id": batch_id})
         if form.is_valid():
             tag_id = form.cleaned_data["tag_id"]
             try:
@@ -644,15 +631,6 @@ class FindTurtleView(LoginRequiredMixin, View):
                 if turtle:
                     tags = TrtTags.objects.filter(turtle=turtle)
                     pittags = TrtPitTags.objects.filter(turtle=turtle)
-                    
-                    # Get the template data
-                    template_data = {
-                        'place_code': form.initial.get('place_code'),
-                        'species_code': form.initial.get('species_code'),
-                        'sex': form.initial.get('sex'),
-                        'default_enterer': form.initial.get('default_enterer'),
-                    }
-                    
                     return render(
                         request,
                         "wamtram2/find_turtle.html",
@@ -661,7 +639,6 @@ class FindTurtleView(LoginRequiredMixin, View):
                             "turtle": turtle,
                             "tags": tags,
                             "pittags": pittags,
-                            "template_data": template_data,  # transfer the template data to the template
                         },
                     )
                 else:
@@ -960,3 +937,24 @@ class TemplateManageView(View):
         elif request.method == 'DELETE':
             return self.delete(request, *args, **kwargs)
         return super().dispatch(request, *args, **kwargs)
+    
+
+
+import logging
+
+logger = logging.getLogger(__name__)
+
+@require_POST
+@csrf_protect
+def update_session(request):
+    data = json.loads(request.body)
+    logger.info(f"Received data for session update: {data}")
+    
+    request.session['selected_template'] = data.get('selected_template', '')
+    request.session['use_default_enterer'] = data.get('use_default_enterer', False)
+    request.session['default_enterer'] = data.get('default_enterer')
+    request.session.modified = True
+    print(f"Updated session: {dict(request.session)}")
+    logger.info(f"Updated session: {dict(request.session)}")
+    
+    return JsonResponse({'success': True})

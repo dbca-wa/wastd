@@ -317,3 +317,6 @@ if SENTRY_DSN and SENTRY_ENVIRONMENT:
         environment=SENTRY_ENVIRONMENT,
         release=VERSION_NO,
     )
+
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'

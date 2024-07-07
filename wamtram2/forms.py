@@ -281,6 +281,7 @@ class TrtDataEntryForm(forms.ModelForm):
             for field in self.fields:
                 self.fields[field].disabled = True
                 
+        # Set the required fields to have a class of 'required-field'
         for field_name in self.fields:
             field = self.fields[field_name]
             if field.required:
@@ -410,19 +411,6 @@ class TrtDataEntryForm(forms.ModelForm):
         #     raise ValidationError("At least one of the injury fields must be selected.")
 
         return cleaned_data
-
-
-# class TrtRecordedTagsForm(forms.ModelForm):
-#     class Meta:
-#         model = TrtRecordedTags
-#         fields = [
-#             'tag_state',
-#             'barnacles',
-#         ]
-#         widgets = {
-#             'tag_state': forms.TextInput(attrs={'class': 'form-control'}),
-#             'barnacles': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
-#         }
 
 
 class DataEntryUserModelForm(forms.ModelForm):

@@ -679,6 +679,12 @@
         speciesSelect.dispatchEvent(event);
     }
     console.log( initialSpecies );
+
+    console.log("Django session data:", 
+    "{{ request.session.selected_template }}",
+    "{{ request.session.use_default_enterer }}",
+    "{{ request.session.default_enterer }}");
+    
   }); 
 
 </script>
