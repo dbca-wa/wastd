@@ -4,11 +4,11 @@ from django.db import migrations
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
 
-def create_enterer_group(apps, schema_editor):
-    # Create Enterer group
-    enterer_group, created = Group.objects.get_or_create(name='Enterer')
+def create_tagging_data_entry_group(apps, schema_editor):
+    # Create Tagging Data Entry group
+    tagging_data_entry_group, created = Group.objects.get_or_create(name='Tagging Data Entry')
 
-    # Get content types for TrtEntryBatches and TrtDataEntry
+    # Get content types for models
     TrtEntryBatches = apps.get_model('wamtram2', 'TrtEntryBatches')
     TrtDataEntry = apps.get_model('wamtram2', 'TrtDataEntry')
     TrtTurtles = apps.get_model('wamtram2', 'TrtTurtles')
@@ -32,12 +32,16 @@ def create_enterer_group(apps, schema_editor):
     permissions_to_add.extend([
         get_or_create_permission(TrtEntryBatches, 'add_trtentrybatches', 'Can add TRT entry batches'),
         get_or_create_permission(TrtEntryBatches, 'change_trtentrybatches', 'Can change TRT entry batches'),
+        get_or_create_permission(TrtEntryBatches, 'view_trtentrybatches', 'Can view TRT entry batches'),
+        get_or_create_permission(TrtEntryBatches, 'delete_trtentrybatches', 'Can delete TRT entry batches'),
     ])
 
     # Create or get permissions for TrtDataEntry
     permissions_to_add.extend([
         get_or_create_permission(TrtDataEntry, 'add_trtdataentry', 'Can add TRT data entry'),
         get_or_create_permission(TrtDataEntry, 'change_trtdataentry', 'Can change TRT data entry'),
+        get_or_create_permission(TrtDataEntry, 'view_trtdataentry', 'Can view TRT data entry'),
+        get_or_create_permission(TrtDataEntry, 'delete_trtdataentry', 'Can delete TRT data entry'),
     ])
 
     # Create or get permissions for TrtTurtles
@@ -59,11 +63,11 @@ def create_enterer_group(apps, schema_editor):
     ])
 
     # Add permissions to the group
-    enterer_group.permissions.add(*permissions_to_add)
+    tagging_data_entry_group.permissions.add(*permissions_to_add)
 
-def remove_enterer_group(apps, schema_editor):
-    # Remove Enterer group
-    Group.objects.filter(name='Enterer').delete()
+def remove_tagging_data_entry_group(apps, schema_editor):
+    # Remove Tagging Data Entry group
+    Group.objects.filter(name='Tagging Data Entry').delete()
 
 class Migration(migrations.Migration):
 
@@ -72,5 +76,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(create_enterer_group, remove_enterer_group),
+        migrations.RunPython(create_tagging_data_entry_group, remove_tagging_data_entry_group),
     ]

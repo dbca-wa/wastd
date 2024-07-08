@@ -4,7 +4,7 @@
 
 set -e
 
-# Create the Enterer user
+# Create the Data Entry user
 python manage.py shell << END
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
@@ -21,14 +21,15 @@ try:
         role='Data Enterer',
     )
     
-    enterer_group, created = Group.objects.get_or_create(name='Enterer')
-    user.groups.add(enterer_group)
+    # Add user to Tagging Data Entry group
+    tagging_data_entry_group, created = Group.objects.get_or_create(name='Tagging Data Entry')
+    user.groups.add(tagging_data_entry_group)
     
-    print("Enterer user created successfully")
+    print("Data Entry user created successfully and added to Tagging Data Entry group")
 except IntegrityError:
-    print("Enterer user already exists")
+    print("Data Entry user already exists")
 except Group.DoesNotExist:
-    print("Enterer group does not exist. Please run migrations first.")
+    print("Tagging Data Entry group does not exist. Please check your group configurations.")
 except Exception as e:
-    print(f"Error creating Enterer user: {str(e)}")
+    print(f"Error creating Data Entry user: {str(e)}")
 END
