@@ -268,7 +268,8 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
         existing_batch = TrtEntryBatches.objects.get(entry_batch_id=batch_id)
 
         # Update the PR_DATE_CONVENTION field with the existing value
-        batch.pr_date_convention = existing_batch.pr_date_convention
+        if 'pr_date_convention' not in form.cleaned_data:
+            batch.pr_date_convention = existing_batch.pr_date_convention
         batch.entry_date = existing_batch.entry_date
         batch.filename = existing_batch.filename
 

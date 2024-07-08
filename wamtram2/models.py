@@ -981,7 +981,7 @@ class TrtEntryBatches(models.Model):
         db_column="COMMENTS", max_length=255, blank=True, null=True
     )  # Field name made lowercase.
     pr_date_convention = models.BooleanField(
-        db_column="PR_DATE_CONVENTION"
+        db_column="PR_DATE_CONVENTION",default=False
     )  # Field name made lowercase.
 
     class Meta:
