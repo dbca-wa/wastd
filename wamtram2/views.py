@@ -138,8 +138,10 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
     
     def get_initial(self):
         initial = super().get_initial()
-        default_enterer = self.request.session.get('default_enterer')
-        use_default_enterer = self.request.session.get('use_default_enterer', False)
+        batch_id = self.kwargs.get("batch_id")
+        session_key_prefix = batch_id
+        default_enterer = self.request.session.get(f'{session_key_prefix}_default_enterer')
+        use_default_enterer = self.request.session.get(f'{session_key_prefix}_use_default_enterer', False)
         
         if use_default_enterer and default_enterer:
             initial['entered_person_id'] = default_enterer
@@ -238,9 +240,14 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
         )  # Add the form to the context data
         
         # Add the templates to the context data
+        session_key_prefix = self.kwargs.get("batch_id")
+        context['selected_template'] = self.request.session.get(f'{session_key_prefix}_selected_template', '')
+        context['use_default_enterer'] = self.request.session.get(f'{session_key_prefix}_use_default_enterer', False)
+        context['default_enterer'] = self.request.session.get(f'{session_key_prefix}_default_enterer', None)
+        
+        context['session_key_prefix'] = session_key_prefix
+        context['default_enterer_value'] = context['default_enterer']
         context['templates'] = self.load_templates()
-        context['selected_template'] = self.request.session.get('selected_template')
-        context['use_default_enterer'] = self.request.session.get('use_default_enterer', False)
         return context
 
     def post(self, request, *args, **kwargs):
@@ -249,12 +256,12 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
         if form.is_valid():
             batch = form.save()
             result = self.form_valid(form)
-            request.session['selected_template'] = request.POST.get('selected_template')
-            request.session['use_default_enterer'] = request.POST.get('use_default_enterer') == 'on'
-            request.session['default_enterer'] = batch.entered_person_id.person_id if batch.entered_person_id else None
-
+            batch_id = self.kwargs.get("batch_id")
+            session_key_prefix = batch_id
+            request.session[f'{session_key_prefix}_selected_template'] = request.POST.get('selected_template')
+            request.session[f'{session_key_prefix}_use_default_enterer'] = request.POST.get('use_default_enterer') == 'on'
+            request.session[f'{session_key_prefix}_default_enterer'] = batch.entered_person_id.person_id if batch.entered_person_id else None
             request.session.modified = True
-            
             return result
         else:
             return self.form_invalid(form)
@@ -330,25 +337,27 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         return templates.get(template_key)
 
     def get_initial(self):
-
         initial = super().get_initial()
         batch_id = self.kwargs.get("batch_id")
         turtle_id = self.kwargs.get("turtle_id")
         entry_id = self.kwargs.get("entry_id")
         
-        selected_template = self.request.session.get('selected_template')
-        use_default_enterer = self.request.session.get('use_default_enterer', False)
-        default_enterer = self.request.session.get('default_enterer', None)
+        session_key_prefix = batch_id
+
+        selected_template = self.request.session.get(f'{session_key_prefix}_selected_template')
+        use_default_enterer = self.request.session.get(f'{session_key_prefix}_use_default_enterer', False)
+        default_enterer = self.request.session.get(f'{session_key_prefix}_default_enterer', None)
 
         # If a template is selected, populate the form with the template data
         if selected_template:
             template_data = self.get_template_data(selected_template)
             if template_data:
-                initial.update({
-                    'place_code': template_data.get('place_code'),
-                    'species_code': template_data.get('species_code'),
-                    'sex': template_data.get('sex'),
-                })
+                initial['place_code'] = template_data.get('place_code')
+                # Only set species_code and sex from template if turtle_id is not present
+                if not turtle_id:
+                    initial['species_code'] = template_data.get('species_code')
+                    initial['sex'] = template_data.get('sex')
+                    
         if batch_id:
             initial["entry_batch"] = get_object_or_404(TrtEntryBatches, entry_batch_id=batch_id)
             if use_default_enterer and default_enterer:
@@ -357,10 +366,8 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         if turtle_id:
             turtle = get_object_or_404(TrtTurtles, turtle_id=turtle_id)
             initial["turtle_id"] = turtle_id
-            if not initial['species_code']:
-                initial['species_code'] = turtle.species_code
-            if not initial['sex']:
-                initial['sex'] = turtle.sex
+            initial["species_code"] = turtle.species_code
+            initial["sex"] = turtle.sex
         
             # initial['recapture_left_tag_id'] = turtle.trttags_set.filter(side='L').all().order_by('tag_order_id')[0] if turtle.trttags_set.filter(side='L').count() > 0 else None
 
@@ -463,14 +470,15 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         context = super().get_context_data(**kwargs)
         entry_id = self.kwargs.get("entry_id")
         batch_id = self.kwargs.get("batch_id")
+        session_key_prefix = batch_id
         if entry_id:
             context["entry_id"] = entry_id  # Editing existing entry
             context["entry"] = get_object_or_404(TrtDataEntry, data_entry_id=entry_id)
         if batch_id:
             context["batch_id"] = batch_id  # Creating new entry in batch
-            context["selected_template"] = self.request.session.get('selected_template')
-            context["use_default_enterer"] = self.request.session.get('use_default_enterer', False)
-            context["default_enterer"] = self.request.session.get('default_enterer', None)
+            context["selected_template"] = self.request.session.get(f'{session_key_prefix}_selected_template')
+            context["use_default_enterer"] = self.request.session.get(f'{session_key_prefix}_use_default_enterer', False)
+            context["default_enterer"] = self.request.session.get(f'{session_key_prefix}_default_enterer', None)
 
         return context
 
@@ -941,21 +949,20 @@ class TemplateManageView(View):
     
 
 
-import logging
-
-logger = logging.getLogger(__name__)
 
 @require_POST
 @csrf_protect
 def update_session(request):
     data = json.loads(request.body)
-    logger.info(f"Received data for session update: {data}")
-    
-    request.session['selected_template'] = data.get('selected_template', '')
-    request.session['use_default_enterer'] = data.get('use_default_enterer', False)
-    request.session['default_enterer'] = data.get('default_enterer')
+
+    batch_id = data.get('batch_id')
+    session_key_prefix = batch_id
+
+    request.session[f'{session_key_prefix}_selected_template'] = data.get('selected_template', '')
+    request.session[f'{session_key_prefix}_use_default_enterer'] = data.get('use_default_enterer', False)
+    request.session[f'{session_key_prefix}_default_enterer'] = data.get('default_enterer')
     request.session.modified = True
+
     print(f"Updated session: {dict(request.session)}")
-    logger.info(f"Updated session: {dict(request.session)}")
-    
+
     return JsonResponse({'success': True})

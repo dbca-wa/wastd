@@ -246,13 +246,14 @@
     </div>
     
 {% endblock page_content_inner %}
-
 {% block extra_js %}
     {{ block.super }}
     <script>
         // Get the URL for adding a new person in the admin page
         var adminUrl = "{% url 'admin:wamtram2_trtpersons_add' %}";
-        
+        var batchId = "{{ batch.entry_batch_id }}";
+        var defaultEnterer = "{{ default_enterer_value }}";
+
         document.addEventListener('DOMContentLoaded', function() {
             // Get necessary DOM elements
             const form = document.querySelector('form');
@@ -261,10 +262,9 @@
             const createEntryBtn = document.getElementById('createEntryBtn');
             const enteredPersonId = document.getElementById('id_entered_person_id');
 
+
             // Delay execution to ensure DOM elements are fully loaded
             setTimeout(function() {
-                const defaultEnterer = '{{ request.session.default_enterer }}';
-
                 // Set default value if entered person ID and default enterer option exist
                 if (enteredPersonId && setDefaultEnterer.checked && defaultEnterer) {
                     enteredPersonId.value = defaultEnterer;
@@ -273,27 +273,27 @@
             }, 200);
 
             console.log('DOM content loaded');
-        
+
             // Form submission event handler
             if (form) {
                 form.addEventListener('submit', function(e) {
                     e.preventDefault();
                     console.log('Form submitted');
-            
+
                     // Create and add hidden template input field
                     const templateInput = document.createElement('input');
                     templateInput.type = 'hidden';
                     templateInput.name = 'selected_template';
                     templateInput.value = templateSelector.value;
                     form.appendChild(templateInput);
-            
+
                     // Create and add hidden default enterer option field
                     const defaultEntererInput = document.createElement('input');
                     defaultEntererInput.type = 'hidden';
                     defaultEntererInput.name = 'use_default_enterer';
                     defaultEntererInput.value = setDefaultEnterer.checked;
                     form.appendChild(defaultEntererInput);
-            
+
                     console.log('Form inputs added:', templateInput.value, defaultEntererInput.value);
                     form.submit();
                 });
@@ -308,11 +308,12 @@
                 const defaultEnterer = useDefaultEnterer ? enteredPersonId.value : null;
 
                 console.log('Updating session with:', {
+                    batch_id: batchId,
                     selected_template: selectedTemplate,
                     use_default_enterer: useDefaultEnterer,
                     default_enterer: defaultEnterer
                 });
-        
+
                 // Send AJAX request to update session data
                 fetch('{% url "wamtram2:update_session" %}', {
                     method: 'POST',
@@ -321,6 +322,7 @@
                         'X-CSRFToken': '{{ csrf_token }}'
                     },
                     body: JSON.stringify({
+                        batch_id: batchId,
                         selected_template: selectedTemplate,
                         use_default_enterer: useDefaultEnterer,
                         default_enterer: defaultEnterer
@@ -338,12 +340,12 @@
                         console.error('Error updating session:', error);
                     });
             }
-        
+
             // Add event listeners for session update
             if (templateSelector) templateSelector.addEventListener('change', updateSession);
             if (setDefaultEnterer) setDefaultEnterer.addEventListener('change', updateSession);
             if (enteredPersonId) enteredPersonId.addEventListener('change', updateSession);
-        
+
             // Create entry button click event handler
             if (createEntryBtn) {
                 createEntryBtn.addEventListener('click', function(e) {
@@ -358,5 +360,6 @@
                 });
             }
         });
+
     </script>
 {% endblock %}

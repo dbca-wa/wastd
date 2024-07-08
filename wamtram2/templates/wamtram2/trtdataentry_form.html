@@ -584,7 +584,6 @@
   }
 
   document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOMContentLoaded event fired');
 
     const turtleIdInput = document.getElementById('id_turtle_id');
     const recaptureLeftTagInput = document.getElementById('id_recapture_left_tag_id');
@@ -669,23 +668,6 @@
         }
     }, 100);
   });
-
-  document.addEventListener('DOMContentLoaded', function() {
-    var speciesSelect = document.querySelector('select[name="species_code"]');
-    var initialSpecies = '{{ form.initial.species_code }}';
-    if (speciesSelect && initialSpecies) {
-        speciesSelect.value = initialSpecies;
-        var event = new Event('change');
-        speciesSelect.dispatchEvent(event);
-    }
-    console.log( initialSpecies );
-
-    console.log("Django session data:", 
-    "{{ request.session.selected_template }}",
-    "{{ request.session.use_default_enterer }}",
-    "{{ request.session.default_enterer }}");
-    
-  }); 
 
 </script>
 
