@@ -15,6 +15,7 @@ from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_protect
 import os
 import json
+import re
 
 from wastd.utils import Breadcrumb, PaginateMixin
 from .models import (
@@ -325,7 +326,7 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         kwargs = super().get_form_kwargs()
         entry_id = self.kwargs.get("entry_id")
         if entry_id:
-            entry = get_object_or_404(TrtDataEntry, data_entry_id=entry_id)
+            entry = get_object_or_404(TrtDataEntry.objects.select_related('turtle').prefetch_related('trttags_set', 'trtpittags_set'), data_entry_id=entry_id)
             kwargs["instance"] = entry
 
         return kwargs
@@ -364,7 +365,7 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
                 initial['entered_by_id'] = default_enterer
 
         if turtle_id:
-            turtle = get_object_or_404(TrtTurtles, turtle_id=turtle_id)
+            turtle = get_object_or_404(TrtTurtles.objects.prefetch_related('trttags_set', 'trtpittags_set'), turtle_id=turtle_id)
             initial["turtle_id"] = turtle_id
             initial["species_code"] = turtle.species_code
             initial["sex"] = turtle.sex
@@ -473,7 +474,7 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         session_key_prefix = batch_id
         if entry_id:
             context["entry_id"] = entry_id  # Editing existing entry
-            context["entry"] = get_object_or_404(TrtDataEntry, data_entry_id=entry_id)
+            context["entry"] = get_object_or_404(TrtDataEntry.objects.select_related('turtle').prefetch_related('trttags_set', 'trtpittags_set'), data_entry_id=entry_id)
         if batch_id:
             context["batch_id"] = batch_id  # Creating new entry in batch
             context["selected_template"] = self.request.session.get(f'{session_key_prefix}_selected_template')
@@ -625,29 +626,33 @@ class FindTurtleView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         batch_id = kwargs.get("batch_id")
         form = SearchForm(request.POST, initial={"batch_id": batch_id})
+        no_turtle_found = False # Flag to indicate if no turtle was found
+
         if form.is_valid():
             tag_id = form.cleaned_data["tag_id"]
+            turtle = None
+
             try:
-                tag = TrtTags.objects.filter(tag_id=tag_id).first()
-                pit_tag = TrtPitTags.objects.filter(pittag_id=tag_id).first()
+                # Check if the tag is a turtle tag or a pit tag
+                tag = TrtTags.objects.select_related('turtle').filter(tag_id=tag_id).first()
                 if tag:
                     turtle = tag.turtle
-                elif pit_tag:
-                    turtle = pit_tag.turtle
                 else:
-                    raise TrtTags.DoesNotExist
+                    pit_tag = TrtPitTags.objects.select_related('turtle').filter(pittag_id=tag_id).first()
+                    if pit_tag:
+                        turtle = pit_tag.turtle
 
                 if turtle:
-                    tags = TrtTags.objects.filter(turtle=turtle)
-                    pittags = TrtPitTags.objects.filter(turtle=turtle)
+                    # Prefetch related tags and pit tags
+                    turtle = TrtTurtles.objects.prefetch_related('trttags_set', 'trtpittags_set').get(pk=turtle.pk)
                     return render(
                         request,
                         "wamtram2/find_turtle.html",
                         {
                             "form": form,
                             "turtle": turtle,
-                            "tags": tags,
-                            "pittags": pittags,
+                            "tags": turtle.trttags_set.all(),
+                            "pittags": turtle.trtpittags_set.all(),
                         },
                     )
                 else:
@@ -754,67 +759,11 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
         return context
 
 
-def validate_turtle_tag(request):
-    """
-    Validates if a given tag matches the turtle ID.
-
-    This method retrieves the turtle ID and tag from the GET parameters and checks 
-    if the tag belongs to the specified turtle. It returns a JSON response indicating 
-    whether the tag is valid for the turtle.
-
-    Args:
-        request (HttpRequest): The HTTP request object.
-
-    Returns:
-        JsonResponse: A JSON response containing the validation result. The response 
-                    includes a 'valid' key with a boolean value indicating if the 
-                    tag is valid, and a 'message' key with an error message if applicable.
-
-    Example:
-        GET /validate-turtle-tag?turtle_id=1&tag=1234
-
-        Response:
-        {
-            "valid": true
-        }
-    """
-    turtle_id = request.GET.get('turtle_id')
-    tag = request.GET.get('tag')
-    
-    if not turtle_id or not tag:
-        return JsonResponse({'valid': False, 'message': 'Missing parameters'})
-
-    try:
-        turtle = TrtTurtles.objects.get(turtle_id=turtle_id)
-        is_valid = turtle.trttags_set.filter(tag_id=tag).exists()
-        return JsonResponse({'valid': is_valid})
-    except TrtTurtles.DoesNotExist:
-        return JsonResponse({'valid': False, 'message': 'Turtle not found'})    
-
-
 SEX_CHOICES = [
     ("M", "Male"),
     ("F", "Female"),
     ("I", "Indeterminate"),
 ]
-
-
-import json
-import os
-import re
-from django.conf import settings
-from django.http import JsonResponse, QueryDict
-from django.shortcuts import render, redirect
-from django.views import View
-from .forms import TemplateForm
-from .models import TrtPlaces, TrtSpecies
-
-SEX_CHOICES = [
-    ("M", "Male"),
-    ("F", "Female"),
-    ("I", "Indeterminate"),
-]
-
 class TemplateManageView(View):
 
     def get_json_path(self):
@@ -852,8 +801,8 @@ class TemplateManageView(View):
     def get(self, request):
         templates = self.load_templates_from_json()
         form = TemplateForm()
-        places = TrtPlaces.objects.all()
-        species = TrtSpecies.objects.all()
+        places = list(TrtPlaces.objects.all())
+        species = list(TrtSpecies.objects.all())
         return render(request, 'wamtram2/template_manage.html', {
             'templates': templates, 
             'form': form, 
@@ -882,8 +831,8 @@ class TemplateManageView(View):
                 return render(request, 'wamtram2/template_manage.html', {
                     'form': form,
                     'templates': templates,
-                    'places': TrtPlaces.objects.all(),
-                    'species': TrtSpecies.objects.all(),
+                    'places': list(TrtPlaces.objects.all()), 
+                    'species': list(TrtSpecies.objects.all()),
                     'sex_choices': SEX_CHOICES,
                     'error_message': f"Error saving template: {e}"
                 })
@@ -891,8 +840,8 @@ class TemplateManageView(View):
             return render(request, 'wamtram2/template_manage.html', {
                 'form': form, 
                 'templates': self.load_templates_from_json(), 
-                'places': TrtPlaces.objects.all(), 
-                'species': TrtSpecies.objects.all(),
+                'places': list(TrtPlaces.objects.all()), 
+                'species': list(TrtSpecies.objects.all()),
                 'sex_choices': SEX_CHOICES,
                 'error_message': "Invalid form data. Please correct the errors below."
             })
@@ -948,8 +897,6 @@ class TemplateManageView(View):
         return super().dispatch(request, *args, **kwargs)
     
 
-
-
 @require_POST
 @csrf_protect
 def update_session(request):
@@ -966,3 +913,43 @@ def update_session(request):
     print(f"Updated session: {dict(request.session)}")
 
     return JsonResponse({'success': True})
+
+
+def validate_turtle_tag(request):
+    """
+    Validates if a given tag matches the turtle ID.
+
+    This method retrieves the turtle ID and tag from the GET parameters and checks 
+    if the tag belongs to the specified turtle. It returns a JSON response indicating 
+    whether the tag is valid for the turtle.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        JsonResponse: A JSON response containing the validation result. The response 
+                    includes a 'valid' key with a boolean value indicating if the 
+                    tag is valid, and a 'message' key with an error message if applicable.
+
+    Example:
+        GET /validate-turtle-tag?turtle_id=1&tag=1234
+
+        Response:
+        {
+            "valid": true
+        }
+    """
+    turtle_id = request.GET.get('turtle_id')
+    tag = request.GET.get('tag')
+    
+    if not turtle_id or not tag:
+        return JsonResponse({'valid': False, 'message': 'Missing parameters'})
+
+    try:
+        turtle = TrtTurtles.objects.get(turtle_id=turtle_id)
+        is_valid = turtle.trttags_set.filter(tag_id=tag).exists()
+        return JsonResponse({'valid': is_valid})
+    except TrtTurtles.DoesNotExist:
+        return JsonResponse({'valid': False, 'message': 'Turtle not found'})    
+
+
