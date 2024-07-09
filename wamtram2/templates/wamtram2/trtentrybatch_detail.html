@@ -225,15 +225,13 @@
                                         {% if person %}
                                             {{ person.first_name }} {{ person.surname }}
                                         {% else %}
-                                            <p>person not found for entered_by_id: {{ obj.entered_by_id }}</p>
+                                            {{ obj.entered_by }}
                                         {% endif %}
                                     {% endwith %}
+                                {% elif obj.entered_by %}
+                                    {{ obj.entered_by }}
                                 {% else %}
-                                    {% if obj.entered_by %}
-                                        {{ obj.entered_by }}
-                                    {% else %}
-                                        <p>No Enterer Assigned</p>
-                                    {% endif %}
+                                    <p>No Enterer Assigned</p>
                                 {% endif %}
                             </td>
                             <td>{{ obj.comments}}</td>
