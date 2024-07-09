@@ -177,26 +177,27 @@ class TrtDataEntryForm(forms.ModelForm):
             "sample_label_2",
             "tissue_type_2",
             "comments",
+            "clutch_completed",
         ]  # "__all__"
 
         widgets = {
             "turtle_id": forms.HiddenInput(),
             "entry_batch": forms.HiddenInput(),
             "observation_date": DateTimeInput(attrs={"type": "datetime-local"}),
-            "new_left_tag_id": unAssignedTagWidget,
-            "new_left_tag_id_2": unAssignedTagWidget,
-            "new_right_tag_id": unAssignedTagWidget,
-            "new_right_tag_id_2": unAssignedTagWidget,
-            "new_pittag_id": unassignedPitTagWidget,
-            "new_pittag_id_2": unassignedPitTagWidget,
+            # "new_left_tag_id": unAssignedTagWidget,
+            # "new_left_tag_id_2": unAssignedTagWidget,
+            # "new_right_tag_id": unAssignedTagWidget,
+            # "new_right_tag_id_2": unAssignedTagWidget,
+            # "new_pittag_id": unassignedPitTagWidget,
+            # "new_pittag_id_2": unassignedPitTagWidget,
             #"recapture_left_tag_id": tagWidget,
             #"recapture_left_tag_id_2": tagWidget,
             #"recapture_left_tag_id_3": tagWidget,
             #"recapture_right_tag_id": tagWidget,
             #"recapture_right_tag_id_2": tagWidget,
             #"recapture_right_tag_id_3": tagWidget,
-            "recapture_pittag_id": pitTagWidget,
-            "recapture_pittag_id_2": pitTagWidget,
+            # "recapture_pittag_id": pitTagWidget,
+            # "recapture_pittag_id_2": pitTagWidget,
             "user_entry_id": personWidget,
             "measured_by_id": personWidget,
             "recorded_by_id": personWidget,
@@ -205,6 +206,7 @@ class TrtDataEntryForm(forms.ModelForm):
             "measured_recorded_by_id": personWidget,
             "place_code": placeWidget,
             "comments": forms.Textarea(attrs={"rows": 3, "class": "form-control"}),
+            "clutch_completed": forms.Select(attrs={"class": "form-control"}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -261,6 +263,14 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields['recapture_right_tag_id'].widget = forms.TextInput(attrs={'class': 'form-control'})
         self.fields['recapture_right_tag_id_2'].widget = forms.TextInput(attrs={'class': 'form-control'})
         self.fields['recapture_right_tag_id_3'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        self.fields['new_left_tag_id'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        self.fields['new_left_tag_id_2'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        self.fields['new_right_tag_id'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        self.fields['new_right_tag_id_2'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        self.fields['recapture_pittag_id'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        self.fields['recapture_pittag_id_2'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        self.fields['new_pittag_id'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        self.fields['new_pittag_id_2'].widget = forms.TextInput(attrs={'class': 'form-control'})
 
 
         # # Set the initial values for the tag state and barnacles fields

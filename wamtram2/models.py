@@ -422,9 +422,17 @@ class TrtDataEntry(models.Model):
     egg_count_method = models.CharField(
         db_column="EGG_COUNT_METHOD", max_length=3, blank=True, null=True
     )  # Field name made lowercase.
-    clutch_completed = models.CharField(
-        db_column="CLUTCH_COMPLETED", max_length=1, blank=True, null=True
-    )  # Field name made lowercase.
+    clutch_completed = models.ForeignKey(
+        "TrtYesNo",
+        models.SET_NULL,
+        db_column="CLUTCH_COMPLETED",
+        blank=True,
+        null=True,
+        related_name="clutchcompleted"
+    )
+    # clutch_completed = models.CharField(
+    #     db_column="CLUTCH_COMPLETED", max_length=1, blank=True, null=True
+    # )  # Field name made lowercase.
     measured_by = models.CharField(
         db_column="MEASURED_BY", max_length=50, blank=True, null=True
     )  # Field name made lowercase. Used by old MSAccess frontend
@@ -2043,6 +2051,7 @@ class TrtYesNo(models.Model):
 
     def __str__(self):
         return f"{self.description}"
+
 
 # local models templates.json
 class Template(models.Model):
