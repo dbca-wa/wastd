@@ -150,8 +150,8 @@
     <div class="card-body">
       <div class="row">
         <div class="col-md-12">
-          <div class="row">
-            <label class="col-sm-2 col-form-label">FLIPPER Tag(s)</label>
+          <div class="row mt-2">
+            <label class="col-sm-2 col-form-label"><strong>PFLIPPER Tag(s)</strong></label>
             <label class="col-sm-4 col-form-label">Does turtle have old FLIPPER tag(s)?</label>
             <div class="col-sm-4">
               <select class="form-control" id="flipperTags" onchange="showContentBasedOnSelection()">
@@ -163,7 +163,7 @@
             </div>
           </div>
           <div id="recaptureTags" style="display: none;">
-            <div class="row">
+            <div class="row mt-2">
               <div class="col-md-6">
                 {% bootstrap_field form.recapture_left_tag_id %}
                 <span id="left-tag-validation-message"></span>
@@ -193,7 +193,33 @@
                 </div> {% endcomment %}
               </div>
             </div>
-            <div class="row">
+            <div class="row mt-2">
+              <div class="col-md-12">
+                <div id="additionalRecaptureTags" style="display: none;">
+                  <div class="row mt-2">
+                    <div class="col-md-6">
+                      {% bootstrap_field form.recapture_left_tag_id_2 %}
+                    </div>
+                    <div class="col-md-6">
+                      {% bootstrap_field form.recapture_right_tag_id_2 %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-12">
+                <div id="additionalRecaptureNewTags" style="display: none;">
+                  <div class="row mt-2">
+                    <div class="col-md-6">
+                      {% bootstrap_field form.new_left_tag_id %}
+                    </div>
+                    <div class="col-md-6">
+                      {% bootstrap_field form.new_right_tag_id %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row mt-2">
               <div class="col-md-6">
                   <button id="addRecaptureTagButton" type="button" class="btn btn-primary" onclick="addRecaptureTag()">Add more recapture Tags</button>
               </div>
@@ -201,30 +227,9 @@
                   <button id="addRecaptureAdditionalTagButton" type="button" class="btn btn-primary" onclick="addRecaptureAdditionalTag()">Add more new Tags</button>
               </div>
           </div>
-          
-            <div id="additionalRecaptureTags" style="display: none;">
-              <div class="row">
-                <div class="col-md-6">
-                  {% bootstrap_field form.recapture_left_tag_id_2 %}
-                </div>
-                <div class="col-md-6">
-                  {% bootstrap_field form.recapture_right_tag_id_2 %}
-                </div>
-              </div>
-            </div>
-            <div id="additionalRecaptureNewTags" style="display: none;">
-              <div class="row">
-                <div class="col-md-6">
-                  {% bootstrap_field form.new_left_tag_id %}
-                </div>
-                <div class="col-md-6">
-                  {% bootstrap_field form.new_right_tag_id %}
-                </div>
-              </div>
-            </div>
           </div>
           <div id="newTags" style="display: none;">
-            <div class="row">
+            <div class="row mt-2">
               <div class="col-md-6">
                 {% bootstrap_field form.new_left_tag_id %}
               </div>
@@ -232,13 +237,13 @@
                 {% bootstrap_field form.new_right_tag_id %}
               </div>
             </div>
-            <div class="row">
+            <div class="row mt-2">
               <div class="col-md-12">
                 <button id="addNewTagButton" type="button" class="btn btn-primary" onclick="addNewTag()">Add more new Tags</button>
               </div>
             </div>
             <div id="additionalNewTags" style="display: none;">
-              <div class="row">
+              <div class="row mt-2">
                 <div class="col-md-6">
                   {% bootstrap_field form.new_left_tag_id_2 %}
                 </div>
@@ -248,10 +253,10 @@
               </div>
             </div>
           </div>
-          <div class="row">
+          <div class="row mt-5">
             <div class="col-md-12">
-              <div class="row mt-3">
-                <label class="col-sm-2 col-form-label">PIT tag present?</label>
+              <div class="row">
+                <label class="col-sm-2 col-form-label"><strong>PIT tag present?</strong></label>
                 <label class="col-sm-4 col-form-label"></label>
                 <div class="col-sm-4">
                   <select class="form-control" id="PITTags" onchange="showPITContentBasedOnSelection()">
@@ -263,7 +268,7 @@
                 </div>
               </div>
               <div id="recapturePIT" style="display: none;">
-                <div class="row">
+                <div class="row mt-2">
                   <div class="col-md-6">
                     {% bootstrap_field form.recapture_pittag_id %}
                   </div>
@@ -273,7 +278,7 @@
                 </div>
               </div>
               <div id="newPIT" style="display: none;">
-                <div class="row">
+                <div class="row mt-2">
                   <div class="col-md-6">
                     {% bootstrap_field form.new_pittag_id %}
                   </div>
@@ -282,24 +287,11 @@
                   </div>
                 </div>
               </div>
-              <div class="row">
-                <div class="col-md-12">
-                  <label for="{{ form.tagged_by_id.label }}">{{ form.tagged_by_id.label }}</label>
-                </div>
-                <div class="col-md-4">
-                  {% bootstrap_field form.tagged_by_id show_label=False %}
-                </div>
-                <div class="col-md-2">
-                  <button type="button" class="btn btn-outline-primary add-person-btn" onClick="window.open(adminUrl);" title="Add new person">
-                  <i class="fas fa-plus"></i>
-                  </button>
-                </div>
-              </div>
-              <div class="row g-3">
+              <div class="row mt-2">
                 <div class="col-12">
                   {% bootstrap_field form.tagscarnotchecked %}
                 </div>
-                <div class="col-12">
+                <div class="col-12" id="scarsDetails">
                   <div class="row align-items-center mb-2">
                     <div class="col-auto">
                       {% bootstrap_field form.scars_left %}
@@ -321,7 +313,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="col-12">
+                <div class="col-12" id="scarsDetailsRight">
                   <div class="row align-items-center">
                     <div class="col-auto">
                       {% bootstrap_field form.scars_right %}
@@ -342,6 +334,19 @@
                       </div>
                     </div>
                   </div>
+                </div>
+              </div>              
+              <div class="row mt-2">
+                <div class="col-md-12">
+                  <label for="{{ form.tagged_by_id.label }}">{{ form.tagged_by_id.label }}</label>
+                </div>
+                <div class="col-md-4">
+                  {% bootstrap_field form.tagged_by_id show_label=False %}
+                </div>
+                <div class="col-md-2">
+                  <button type="button" class="btn btn-outline-primary add-person-btn" onClick="window.open(adminUrl);" title="Add new person">
+                  <i class="fas fa-plus"></i>
+                  </button>
                 </div>
               </div>
             </div>
@@ -419,7 +424,8 @@
         <div class="col-md-12">
           <div class="row">
             <div class="col-md-6">
-              {% bootstrap_field form.activity_code %}
+              {% comment %} {% bootstrap_field form.activity_code %} {% endcomment %}
+              {% bootstrap_field form.clutch_completed %}
             </div>
             <div class="col-md-6">
               {% bootstrap_field form.nesting %}
@@ -514,14 +520,29 @@
         </div>
     </div>
   </div>
-  <!-- Submit button -->
-  <div class="row">
+
+  <!-- Advanced Data Card -->
+  <div id="advancedDataCard" class="card border-dark mt-3" style="display: none;">
+    <div class="card-header">Advanced Data</div>
+    <div class="card-body">
+      <!-- 这里可以添加更多的高级数据字段 -->
+    </div>
+  </div>
+
+  <!-- Submit and Advanced Data buttons -->
+  <div class="row mt-4 mb-3">
     <div class="col-md-6">
       {% if not form.observation_id.value %}
-      {% bootstrap_button "Save" button_type="submit" button_class="btn-primary" %}
+      <button type="button" class="btn btn-secondary" id="advancedDataButton">Advanced Data</button>
+      {% endif %}
+    </div>
+    <div class="col-md-6 text-right">
+      {% if not form.observation_id.value %}
+      <button type="submit" class="btn btn-primary save-button">Save</button>
       {% endif %}
     </div>
   </div>
+
 </div>
 
 </form>
@@ -605,7 +626,7 @@
     };
   }
 
-  // 确保在 DOMContentLoaded 回调函数之前定义 updateBackgroundColor 函数
+  // Update the background color based on the value of the "Do not process" checkbox
   function updateBackgroundColor() {
     const bodyElement = document.body;
     const doNotProcessField = document.getElementById('{{ form.do_not_process.auto_id }}');
@@ -631,14 +652,18 @@
     const doNotProcessField = document.getElementById('{{ form.do_not_process.auto_id }}');
 
     function validateTag(tagInput, validationMessage, side) {
-        console.log(`Validating ${side} tag`);
+        console.log(`Validating ${side} tag with turtle ID: ${turtleIdInput.value} and tag ID: ${tagInput.value}`);
         const turtleId = turtleIdInput.value;
         const tagId = tagInput.value;
 
         if (turtleId && tagId) {
             fetch(`/wamtram2/validate-turtle-tag/?turtle_id=${turtleId}&tag=${tagId}&side=${side}`)
-                .then(response => response.json())
+                .then(response => {
+                    console.log('Response received');
+                    return response.json();
+                })
                 .then(data => {
+                    console.log('Data received:', data);
                     if (data.valid) {
                         validationMessage.textContent = '✓ Valid tag';
                         validationMessage.style.color = 'green';
@@ -694,6 +719,26 @@
   });
 
   document.addEventListener('DOMContentLoaded', function() {
+    var tagscarnotcheckedCheckbox = document.getElementById('{{ form.tagscarnotchecked.auto_id }}');
+    var scarsDetails = document.getElementById('scarsDetails');
+    var scarsDetailsRight = document.getElementById('scarsDetailsRight');
+  
+    function toggleScarsDetails() {
+      if (tagscarnotcheckedCheckbox.checked) {
+        scarsDetails.style.display = 'none';
+        scarsDetailsRight.style.display = 'none';
+      } else {
+        scarsDetails.style.display = 'block';
+        scarsDetailsRight.style.display = 'block';
+      }
+    }
+  
+    tagscarnotcheckedCheckbox.addEventListener('change', toggleScarsDetails);
+    toggleScarsDetails();
+  });
+  
+
+  document.addEventListener('DOMContentLoaded', function() {
     setTimeout(function() {
         var placeCodeSelect = document.querySelector('select[name="place_code"][data-required="true"]');
         if (placeCodeSelect) {
@@ -709,6 +754,16 @@
             }
         }
     }, 100);
+  });
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const advancedDataButton = document.getElementById('advancedDataButton');
+    const advancedDataCard = document.getElementById('advancedDataCard');
+  
+    advancedDataButton.addEventListener('click', function() {
+      advancedDataCard.style.display = 'block';
+      advancedDataButton.style.display = 'none';
+    });
   });
 
 </script>
