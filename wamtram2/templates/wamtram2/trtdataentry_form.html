@@ -17,6 +17,9 @@
   .required-field {
     background-color: #ccffcc !important;
   }
+  .bg-yellow {
+    background-color: #ffffe0 !important;
+  }
 
 </style>
 {% endblock %}  
@@ -38,7 +41,7 @@
 {% endblock %}
 
 {% block page_content_inner %}
-
+<body data-do-not-process="{{ form.do_not_process.value|yesno:"true,false" }}">
 {% if entry_id %}
 
 <form action="{% url 'wamtram2:trtdataentry' entry_id %}" method="post"  class="container">
@@ -191,9 +194,14 @@
               </div>
             </div>
             <div class="row">
-              <button id="addRecaptureTagButton" type="button" class="btn btn-primary col-md-6" onclick="addRecaptureTag()">Add more recapture Tags</button>
-              <button id="addRecaptureAdditionalTagButton" type="button" class="btn btn-primary col-md-6" onclick="addRecaptureAdditionalTag()">Add more new Tags</button>
-            </div>
+              <div class="col-md-6">
+                  <button id="addRecaptureTagButton" type="button" class="btn btn-primary" onclick="addRecaptureTag()">Add more recapture Tags</button>
+              </div>
+              <div class="col-md-6">
+                  <button id="addRecaptureAdditionalTagButton" type="button" class="btn btn-primary" onclick="addRecaptureAdditionalTag()">Add more new Tags</button>
+              </div>
+          </div>
+          
             <div id="additionalRecaptureTags" style="display: none;">
               <div class="row">
                 <div class="col-md-6">
@@ -385,7 +393,8 @@
                 <i class="fas fa-plus"></i>
                 </button>
               </div>
-            </div>
+             </div>
+            {% comment %}
             <div class="col-md-6">
               <label for="{{ form.measured_recorded_by_id.id_for_label }}">{{ form.measured_recorded_by_id.label }}</label>
               <div class="d-flex align-items-center">
@@ -396,7 +405,7 @@
                 <i class="fas fa-plus"></i>
                 </button>
               </div>
-            </div>
+            </div> {% endcomment %}
           </div>
         </div>
       </div>
@@ -494,6 +503,17 @@
       </div>
     </div>
   </div>
+  <!-- Seventh part: Comments -->
+  <div class="card border-dark mb-3">
+    <div class="card-header">Comments</div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-12">
+                {% bootstrap_field form.comments show_label=false%}
+            </div>
+        </div>
+    </div>
+  </div>
   <!-- Submit button -->
   <div class="row">
     <div class="col-md-6">
@@ -503,13 +523,15 @@
     </div>
   </div>
 </div>
+
+</form>
+</body>
                 
 {% endblock %}
 
 {% block extra_js %}
-
 {{ form.media.js }}
-
+{{ block.super }}
 <script>
   var adminUrl = "{% url 'admin:wamtram2_trtpersons_add' %}";
 
@@ -583,13 +605,30 @@
     };
   }
 
-  document.addEventListener('DOMContentLoaded', function() {
+  // 确保在 DOMContentLoaded 回调函数之前定义 updateBackgroundColor 函数
+  function updateBackgroundColor() {
+    const bodyElement = document.body;
+    const doNotProcessField = document.getElementById('{{ form.do_not_process.auto_id }}');
+    if (doNotProcessField.checked) {
+      bodyElement.classList.add('bg-yellow');
+    } else {
+      bodyElement.classList.remove('bg-yellow');
+    }
+  }
 
+  document.addEventListener('DOMContentLoaded', function() {
+    const doNotProcessField = document.getElementById('{{ form.do_not_process.auto_id }}');
+    doNotProcessField.addEventListener('change', updateBackgroundColor);
+    updateBackgroundColor(); // Initial call to set the background color on page load
+  });
+
+  document.addEventListener('DOMContentLoaded', function() {
     const turtleIdInput = document.getElementById('id_turtle_id');
     const recaptureLeftTagInput = document.getElementById('id_recapture_left_tag_id');
     const recaptureRightTagInput = document.getElementById('id_recapture_right_tag_id');
     const leftValidationMessage = document.getElementById('left-tag-validation-message');
     const rightValidationMessage = document.getElementById('right-tag-validation-message');
+    const doNotProcessField = document.getElementById('{{ form.do_not_process.auto_id }}');
 
     function validateTag(tagInput, validationMessage, side) {
         console.log(`Validating ${side} tag`);
@@ -603,13 +642,17 @@
                     if (data.valid) {
                         validationMessage.textContent = '✓ Valid tag';
                         validationMessage.style.color = 'green';
+                        doNotProcessField.checked = false;
                     } else if (data.wrong_side) {
                         validationMessage.textContent = '! Tag may be on the wrong side';
                         validationMessage.style.color = 'orange';
+                        doNotProcessField.checked = true;
                     } else {
                         validationMessage.textContent = '✗ Invalid tag';
                         validationMessage.style.color = 'red';
+                        doNotProcessField.checked = true;
                     }
+                    updateBackgroundColor();
                 })
                 .catch(error => {
                     console.error('Error:', error);
@@ -637,7 +680,7 @@
   document.addEventListener('DOMContentLoaded', function() {
     var didNotCheckCheckbox = document.getElementById('{{ form.didnotcheckforinjury.auto_id }}');
     var injuryDetails = document.getElementById('injuryDetails');
-  
+
     function toggleInjuryDetails() {
       if (didNotCheckCheckbox.checked) {
         injuryDetails.style.display = 'none';
@@ -645,9 +688,8 @@
         injuryDetails.style.display = 'block';
       }
     }
-  
+
     didNotCheckCheckbox.addEventListener('change', toggleInjuryDetails);
-  
     toggleInjuryDetails();
   });
 
@@ -670,5 +712,4 @@
   });
 
 </script>
-
 {% endblock %}

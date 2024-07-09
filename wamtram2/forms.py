@@ -176,6 +176,7 @@ class TrtDataEntryForm(forms.ModelForm):
             "tissue_type_1",
             "sample_label_2",
             "tissue_type_2",
+            "comments",
         ]  # "__all__"
 
         widgets = {
@@ -203,6 +204,7 @@ class TrtDataEntryForm(forms.ModelForm):
             "entered_by_id": personWidget,
             "measured_recorded_by_id": personWidget,
             "place_code": placeWidget,
+            "comments": forms.Textarea(attrs={"rows": 3, "class": "form-control"}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -245,6 +247,8 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["scars_right_scale_1"].label = "1"
         self.fields["scars_right_scale_2"].label = "2"
         self.fields["scars_right_scale_3"].label = "3"
+        self.fields["tagged_by_id"].label = "Tagged by"
+        self.fields["measured_by_id"].label = "Measured by"
         self.fields["tagscarnotchecked"].label = "Didn't check for tag scars"
         self.fields["didnotcheckforinjury"].label = "Didn't check for injury"
         self.fields["cc_length_not_measured"].label = "CCL not measured"
