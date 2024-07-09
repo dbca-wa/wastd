@@ -220,9 +220,11 @@
                             </td> 
                             <td>{{ obj.error_message }}</td>
                             <td>
-                                {% with persons|get:obj.user_entry_id as person %}
-                                    {{ person.first_name }} {{ person.surname }}
-                                {% endwith %}
+                                {% if obj.entered_by %}
+                                    {{ obj.entered_by }}
+                                {% else %}
+                                    <p>No Enterer Assigned</p>
+                                {% endif %}
                             </td>
                             <td>{{ obj.comments}}</td>
                         </tr>

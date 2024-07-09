@@ -232,6 +232,7 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
         context["persons"] = {
             person.person_id: person for person in TrtPersons.objects.all()
         }
+
         batch = TrtEntryBatches.objects.get(entry_batch_id=self.kwargs.get("batch_id"))
         context["batch"] = batch  # add the batch to the context
         initial = self.get_initial()
@@ -327,7 +328,7 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         kwargs = super().get_form_kwargs()
         entry_id = self.kwargs.get("entry_id")
         if entry_id:
-            entry = get_object_or_404(TrtDataEntry.objects.select_related('turtle').prefetch_related('trttags_set', 'trtpittags_set'), data_entry_id=entry_id)
+            entry = get_object_or_404(TrtDataEntry.objects.select_related('turtle_id'), data_entry_id=entry_id)
             kwargs["instance"] = entry
 
         return kwargs
@@ -366,7 +367,7 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
                 initial['entered_by_id'] = default_enterer
 
         if turtle_id:
-            turtle = get_object_or_404(TrtTurtles.objects.prefetch_related('trttags_set', 'trtpittags_set'), turtle_id=turtle_id)
+            turtle = get_object_or_404(TrtTurtles.objects.prefetch_related('trttags_set', 'trtpittags_set'), pk=turtle_id)
             initial["turtle_id"] = turtle_id
             initial["species_code"] = turtle.species_code
             initial["sex"] = turtle.sex
@@ -475,7 +476,7 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         cookies_key_prefix = batch_id
         if entry_id:
             context["entry_id"] = entry_id  # Editing existing entry
-            context["entry"] = get_object_or_404(TrtDataEntry.objects.select_related('turtle').prefetch_related('trttags_set', 'trtpittags_set'), data_entry_id=entry_id)
+            context["entry"] = get_object_or_404(TrtDataEntry.objects.select_related('turtle_id'), data_entry_id=entry_id)
         if batch_id:
             context["batch_id"] = batch_id  # Creating new entry in batch
             context["selected_template"] = self.request.COOKIES.get(f'{cookies_key_prefix}_selected_template')
