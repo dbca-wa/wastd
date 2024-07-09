@@ -246,120 +246,97 @@
     </div>
     
 {% endblock page_content_inner %}
+
 {% block extra_js %}
-    {{ block.super }}
-    <script>
-        // Get the URL for adding a new person in the admin page
-        var adminUrl = "{% url 'admin:wamtram2_trtpersons_add' %}";
-        var batchId = "{{ batch.entry_batch_id }}";
-        var defaultEnterer = "{{ default_enterer_value }}";
+{{ block.super }}
+<script>
+    // Get the URL for adding a new person in the admin page
+    var adminUrl = "{% url 'admin:wamtram2_trtpersons_add' %}";
+    var batchId = "{{ batch.entry_batch_id }}";
+    var defaultEnterer = "{{ default_enterer_value }}";
 
-        document.addEventListener('DOMContentLoaded', function() {
-            // Get necessary DOM elements
-            const form = document.querySelector('form');
-            const templateSelector = document.getElementById('templateSelector');
-            const setDefaultEnterer = document.getElementById('setDefaultEnterer');
-            const createEntryBtn = document.getElementById('createEntryBtn');
-            const enteredPersonId = document.getElementById('id_entered_person_id');
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get necessary DOM elements
+        const form = document.querySelector('form');
+        const templateSelector = document.getElementById('templateSelector');
+        const setDefaultEnterer = document.getElementById('setDefaultEnterer');
+        const createEntryBtn = document.getElementById('createEntryBtn');
+        const enteredPersonId = document.getElementById('id_entered_person_id');
 
-
-            // Delay execution to ensure DOM elements are fully loaded
-            setTimeout(function() {
-                // Set default value if entered person ID and default enterer option exist
-                if (enteredPersonId && setDefaultEnterer.checked && defaultEnterer) {
-                    enteredPersonId.value = defaultEnterer;
-                    $(enteredPersonId).trigger('change'); // Trigger change event to update UI
-                }
-            }, 200);
-
-            console.log('DOM content loaded');
-
-            // Form submission event handler
-            if (form) {
-                form.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    console.log('Form submitted');
-
-                    // Create and add hidden template input field
-                    const templateInput = document.createElement('input');
-                    templateInput.type = 'hidden';
-                    templateInput.name = 'selected_template';
-                    templateInput.value = templateSelector.value;
-                    form.appendChild(templateInput);
-
-                    // Create and add hidden default enterer option field
-                    const defaultEntererInput = document.createElement('input');
-                    defaultEntererInput.type = 'hidden';
-                    defaultEntererInput.name = 'use_default_enterer';
-                    defaultEntererInput.value = setDefaultEnterer.checked;
-                    form.appendChild(defaultEntererInput);
-
-                    console.log('Form inputs added:', templateInput.value, defaultEntererInput.value);
-                    form.submit();
-                });
-            } else {
-                console.error('Form not found');
+        // Delay execution to ensure DOM elements are fully loaded
+        setTimeout(function() {
+            // Set default value if entered person ID and default enterer option exist
+            if (enteredPersonId && setDefaultEnterer.checked && defaultEnterer) {
+                enteredPersonId.value = defaultEnterer;
+                $(enteredPersonId).trigger('change'); // Trigger change event to update UI
             }
+        }, 200);
 
-            // Function to update session data
-            function updateSession() {
-                const selectedTemplate = templateSelector.value;
-                const useDefaultEnterer = setDefaultEnterer.checked;
-                const defaultEnterer = useDefaultEnterer ? enteredPersonId.value : null;
+        console.log('DOM content loaded');
 
-                console.log('Updating session with:', {
-                    batch_id: batchId,
-                    selected_template: selectedTemplate,
-                    use_default_enterer: useDefaultEnterer,
-                    default_enterer: defaultEnterer
-                });
+        // Form submission event handler
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                console.log('Form submitted');
 
-                // Send AJAX request to update session data
-                fetch('{% url "wamtram2:update_session" %}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': '{{ csrf_token }}'
-                    },
-                    body: JSON.stringify({
-                        batch_id: batchId,
-                        selected_template: selectedTemplate,
-                        use_default_enterer: useDefaultEnterer,
-                        default_enterer: defaultEnterer
-                    })
-                }).then(response => response.json())
-                    .then(data => {
-                        console.log('Session update response:', data);
-                        if (data.success) {
-                            // Update create entry button style
-                            createEntryBtn.classList.remove('btn-secondary');
-                            createEntryBtn.classList.add('btn-success');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error updating session:', error);
-                    });
-            }
+                // Create and add hidden template input field
+                const templateInput = document.createElement('input');
+                templateInput.type = 'hidden';
+                templateInput.name = 'selected_template';
+                templateInput.value = templateSelector.value;
+                form.appendChild(templateInput);
 
-            // Add event listeners for session update
-            if (templateSelector) templateSelector.addEventListener('change', updateSession);
-            if (setDefaultEnterer) setDefaultEnterer.addEventListener('change', updateSession);
-            if (enteredPersonId) enteredPersonId.addEventListener('change', updateSession);
+                // Create and add hidden default enterer option field
+                const defaultEntererInput = document.createElement('input');
+                defaultEntererInput.type = 'hidden';
+                defaultEntererInput.name = 'use_default_enterer';
+                defaultEntererInput.value = setDefaultEnterer.checked;
+                form.appendChild(defaultEntererInput);
 
-            // Create entry button click event handler
-            if (createEntryBtn) {
-                createEntryBtn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    console.log('Create entry button clicked');
-                    updateSession();
-                    // Short delay before navigation to ensure session update is complete
-                    setTimeout(() => {
-                        console.log('Navigating to:', this.href);
-                        window.location.href = this.href;
-                    }, 100);
-                });
-            }
-        });
+                console.log('Form inputs added:', templateInput.value, defaultEntererInput.value);
+                form.submit();
+            });
+        } else {
+            console.error('Form not found');
+        }
 
-    </script>
+        // Function to update cookies data
+        function updateCookies() {
+            const selectedTemplate = templateSelector.value;
+            const useDefaultEnterer = setDefaultEnterer.checked;
+            const defaultEnterer = useDefaultEnterer ? enteredPersonId.value : null;
+
+            document.cookie = `${batchId}_selected_template=${selectedTemplate};path=/;max-age=18000`;
+            document.cookie = `${batchId}_use_default_enterer=${useDefaultEnterer};path=/;max-age=18000`;
+            document.cookie = `${batchId}_default_enterer=${defaultEnterer};path=/;max-age=18000`;
+
+            console.log('Updating cookies with:', {
+                batch_id: batchId,
+                selected_template: selectedTemplate,
+                use_default_enterer: useDefaultEnterer,
+                default_enterer: defaultEnterer
+            });
+        }
+
+        // Add event listeners for cookies update
+        if (templateSelector) templateSelector.addEventListener('change', updateCookies);
+        if (setDefaultEnterer) setDefaultEnterer.addEventListener('change', updateCookies);
+        if (enteredPersonId) enteredPersonId.addEventListener('change', updateCookies);
+
+        // Create entry button click event handler
+        if (createEntryBtn) {
+            createEntryBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log('Create entry button clicked');
+                updateCookies();
+                // Short delay before navigation to ensure cookies update is complete
+                setTimeout(() => {
+                    console.log('Navigating to:', this.href);
+                    window.location.href = this.href;
+                }, 100);
+            });
+        }
+    });
+</script>
 {% endblock %}

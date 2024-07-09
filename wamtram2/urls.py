@@ -22,5 +22,4 @@ urlpatterns = [
     path('validate-turtle-tag/', views.validate_turtle_tag, name='validate_turtle_tag'),
     path("template/manage/", views.TemplateManageView.as_view(), name="template_manage"),
     path("template/manage/<str:template_key>/", views.TemplateManageView.as_view(), name="template_manage_key"),
-    path('update-session/', views.update_session, name='update_session'),
 ]

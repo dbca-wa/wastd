@@ -140,10 +140,10 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
     def get_initial(self):
         initial = super().get_initial()
         batch_id = self.kwargs.get("batch_id")
-        session_key_prefix = batch_id
-        default_enterer = self.request.session.get(f'{session_key_prefix}_default_enterer')
-        use_default_enterer = self.request.session.get(f'{session_key_prefix}_use_default_enterer', False)
-        
+        cookies_key_prefix = batch_id
+        default_enterer = self.request.COOKIES.get(f'{cookies_key_prefix}_default_enterer')
+        use_default_enterer = self.request.COOKIES.get(f'{cookies_key_prefix}_use_default_enterer', False)
+
         if use_default_enterer and default_enterer:
             initial['entered_person_id'] = default_enterer
         
@@ -241,12 +241,12 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
         )  # Add the form to the context data
         
         # Add the templates to the context data
-        session_key_prefix = self.kwargs.get("batch_id")
-        context['selected_template'] = self.request.session.get(f'{session_key_prefix}_selected_template', '')
-        context['use_default_enterer'] = self.request.session.get(f'{session_key_prefix}_use_default_enterer', False)
-        context['default_enterer'] = self.request.session.get(f'{session_key_prefix}_default_enterer', None)
-        
-        context['session_key_prefix'] = session_key_prefix
+        cookies_key_prefix = self.kwargs.get("batch_id")
+        context['selected_template'] = self.request.COOKIES.get(f'{cookies_key_prefix}_selected_template', '')
+        context['use_default_enterer'] = self.request.COOKIES.get(f'{cookies_key_prefix}_use_default_enterer', False)
+        context['default_enterer'] = self.request.COOKIES.get(f'{cookies_key_prefix}_default_enterer', None)
+
+        context['cookies_key_prefix'] = cookies_key_prefix
         context['default_enterer_value'] = context['default_enterer']
         context['templates'] = self.load_templates()
         return context
@@ -258,11 +258,12 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
             batch = form.save()
             result = self.form_valid(form)
             batch_id = self.kwargs.get("batch_id")
-            session_key_prefix = batch_id
-            request.session[f'{session_key_prefix}_selected_template'] = request.POST.get('selected_template')
-            request.session[f'{session_key_prefix}_use_default_enterer'] = request.POST.get('use_default_enterer') == 'on'
-            request.session[f'{session_key_prefix}_default_enterer'] = batch.entered_person_id.person_id if batch.entered_person_id else None
-            request.session.modified = True
+            cookies_key_prefix = batch_id
+            response = result
+            response.set_cookie(f'{cookies_key_prefix}_selected_template', request.POST.get('selected_template'), max_age=3600)
+            response.set_cookie(f'{cookies_key_prefix}_use_default_enterer', request.POST.get('use_default_enterer') == 'on', max_age=3600)
+            response.set_cookie(f'{cookies_key_prefix}_default_enterer', batch.entered_person_id.person_id if batch.entered_person_id else None, max_age=3600)
+
             return result
         else:
             return self.form_invalid(form)
@@ -343,11 +344,11 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         turtle_id = self.kwargs.get("turtle_id")
         entry_id = self.kwargs.get("entry_id")
         
-        session_key_prefix = batch_id
+        cookies_key_prefix = batch_id
 
-        selected_template = self.request.session.get(f'{session_key_prefix}_selected_template')
-        use_default_enterer = self.request.session.get(f'{session_key_prefix}_use_default_enterer', False)
-        default_enterer = self.request.session.get(f'{session_key_prefix}_default_enterer', None)
+        selected_template = self.request.COOKIES.get(f'{cookies_key_prefix}_selected_template')
+        use_default_enterer = self.request.COOKIES.get(f'{cookies_key_prefix}_use_default_enterer', False)
+        default_enterer = self.request.COOKIES.get(f'{cookies_key_prefix}_default_enterer', None)
 
         # If a template is selected, populate the form with the template data
         if selected_template:
@@ -471,15 +472,15 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         context = super().get_context_data(**kwargs)
         entry_id = self.kwargs.get("entry_id")
         batch_id = self.kwargs.get("batch_id")
-        session_key_prefix = batch_id
+        cookies_key_prefix = batch_id
         if entry_id:
             context["entry_id"] = entry_id  # Editing existing entry
             context["entry"] = get_object_or_404(TrtDataEntry.objects.select_related('turtle').prefetch_related('trttags_set', 'trtpittags_set'), data_entry_id=entry_id)
         if batch_id:
             context["batch_id"] = batch_id  # Creating new entry in batch
-            context["selected_template"] = self.request.session.get(f'{session_key_prefix}_selected_template')
-            context["use_default_enterer"] = self.request.session.get(f'{session_key_prefix}_use_default_enterer', False)
-            context["default_enterer"] = self.request.session.get(f'{session_key_prefix}_default_enterer', None)
+            context["selected_template"] = self.request.COOKIES.get(f'{cookies_key_prefix}_selected_template')
+            context["use_default_enterer"] = self.request.COOKIES.get(f'{cookies_key_prefix}_use_default_enterer', False)
+            context["default_enterer"] = self.request.COOKIES.get(f'{cookies_key_prefix}_default_enterer', None)
 
         return context
 
@@ -896,24 +897,6 @@ class TemplateManageView(View):
             return self.delete(request, *args, **kwargs)
         return super().dispatch(request, *args, **kwargs)
     
-
-@require_POST
-@csrf_protect
-def update_session(request):
-    data = json.loads(request.body)
-
-    batch_id = data.get('batch_id')
-    session_key_prefix = batch_id
-
-    request.session[f'{session_key_prefix}_selected_template'] = data.get('selected_template', '')
-    request.session[f'{session_key_prefix}_use_default_enterer'] = data.get('use_default_enterer', False)
-    request.session[f'{session_key_prefix}_default_enterer'] = data.get('default_enterer')
-    request.session.modified = True
-
-    print(f"Updated session: {dict(request.session)}")
-
-    return JsonResponse({'success': True})
-
 
 def validate_turtle_tag(request):
     """
