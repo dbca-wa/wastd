@@ -39,6 +39,21 @@
             margin: -15px -15px 15px -15px;
             font-weight: bold;
         }
+
+        /* Loading spinner */
+        .loading-spinner {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+        }
+        .loading-spinner .spinner-border {
+            width: 5rem;
+            height: 5rem;
+            border-width: 0.5rem;
+        }
     </style>
 {% endblock %}
 
@@ -137,7 +152,7 @@
                     {% endfor %}
                 </select>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" id="setDefaultEnterer" {% if use_default_enterer %} checked {% endif %}>
                     <label class="form-check-label" for="setDefaultEnterer">
@@ -145,8 +160,8 @@
                     </label>
                 </div>
             </div>
-            <div class="col-md-3">
-                <a href="{% url 'wamtram2:find_turtle' batch_id=batch.entry_batch_id %}" id="createEntryBtn" class="btn btn-secondary">Create a new entry</a>
+            <div class="col-md-2">
+                <a href="{% url 'wamtram2:find_turtle' batch_id=batch.entry_batch_id %}" id="createEntryBtn" class="btn btn-primary">Create a new entry</a>
             </div>
         </div>
         <div id="templateSelectedMessage" class="mt-2 text-success" style="display: none;">Template selected</div>
@@ -247,7 +262,14 @@
                 <p>No data entries found.</p>
             </div>
         </div>
+        
     {% endif %}
+    <!-- Loading spinner -->
+    <div class="loading-spinner">
+        <div class="spinner-border text-primary" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
 
     <div class="danger-zone">
         <div class="danger-zone-header">Danger Zone</div>
@@ -348,5 +370,30 @@
             });
         }
     });
+
+    // Show loading spinner
+    function showLoadingSpinner() {
+        const loadingSpinner = document.querySelector('.loading-spinner');
+        if (loadingSpinner) {
+            loadingSpinner.style.display = 'block';
+        }
+    }
+
+    // Hide loading spinner
+    function hideLoadingSpinner() {
+        const loadingSpinner = document.querySelector('.loading-spinner');
+        if (loadingSpinner) {
+            loadingSpinner.style.display = 'none';
+        }
+    }
+
+    // Filter select change event handler
+    document.querySelector('select[name="filter"]').addEventListener('change', function() {
+        showLoadingSpinner();
+        this.form.submit();
+    });
+
+    // Show loading spinner on form submission
+    window.addEventListener('load', hideLoadingSpinner);
 </script>
 {% endblock %}
