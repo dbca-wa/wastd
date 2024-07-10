@@ -74,7 +74,6 @@ class SearchForm(forms.Form):
     use_default_enterer = forms.BooleanField(required=False, widget=forms.HiddenInput())
     
 
-
 class TrtEntryBatchesForm(forms.ModelForm):
     class Meta:
         model = TrtEntryBatches
@@ -83,31 +82,7 @@ class TrtEntryBatchesForm(forms.ModelForm):
 
 
 class TrtDataEntryForm(forms.ModelForm):
-
-    # recapture_left_tag_state = forms.ModelChoiceField(
-    #     queryset=TrtTagStatus.objects.all(),
-    #     required=False,
-    #     to_field_name="tag_status"
-    # )
-    # recapture_left_tag_barnacles = forms.BooleanField(required=False)
-    # recapture_right_tag_state = forms.ModelChoiceField(
-    #     queryset=TrtTagStatus.objects.all(),
-    #     required=False,
-    #     to_field_name="tag_status"
-    # )
-    # recapture_right_tag_barnacles = forms.BooleanField(required=False)
-    # new_left_tag_state = forms.ModelChoiceField(
-    #     queryset=TrtTagStatus.objects.all(),
-    #     required=False,
-    #     to_field_name="tag_status"
-    # )
-    # new_left_tag_barnacles = forms.BooleanField(required=False)
-    # new_right_tag_state = forms.ModelChoiceField(
-    #     queryset=TrtTagStatus.objects.all(),
-    #     required=False,
-    #     to_field_name="tag_status"
-    # )
-    # new_right_tag_barnacles = forms.BooleanField(required=False)
+    
     class Meta:
         model = TrtDataEntry
         fields = [
@@ -170,6 +145,8 @@ class TrtDataEntryForm(forms.ModelForm):
             "damage_code_1",
             "body_part_2",
             "damage_code_2",
+            "body_part_3",
+            "damage_code_3",
             "activity_code",
             "nesting",
             "sample_label_1",
@@ -178,12 +155,25 @@ class TrtDataEntryForm(forms.ModelForm):
             "tissue_type_2",
             "comments",
             "clutch_completed",
+            "egg_count",
+            "egg_count_method"
         ]  # "__all__"
 
         widgets = {
             "turtle_id": forms.HiddenInput(),
             "entry_batch": forms.HiddenInput(),
             "observation_date": DateTimeInput(attrs={"type": "datetime-local"}),
+            "user_entry_id": personWidget,
+            "measured_by_id": personWidget,
+            "recorded_by_id": personWidget,
+            "tagged_by_id": personWidget,
+            "entered_by_id": personWidget,
+            "measured_recorded_by_id": personWidget,
+            "place_code": placeWidget,
+            "comments": forms.Textarea(attrs={"rows": 3, "class": "form-control"}),
+            "clutch_completed": forms.Select(attrs={"class": "form-control"}),
+            "egg_count": forms.NumberInput(attrs={"class": "form-control"}),
+            "egg_count_method": forms.Select(attrs={"class": "form-control"}),
             # "new_left_tag_id": unAssignedTagWidget,
             # "new_left_tag_id_2": unAssignedTagWidget,
             # "new_right_tag_id": unAssignedTagWidget,
@@ -198,15 +188,6 @@ class TrtDataEntryForm(forms.ModelForm):
             #"recapture_right_tag_id_3": tagWidget,
             # "recapture_pittag_id": pitTagWidget,
             # "recapture_pittag_id_2": pitTagWidget,
-            "user_entry_id": personWidget,
-            "measured_by_id": personWidget,
-            "recorded_by_id": personWidget,
-            "tagged_by_id": personWidget,
-            "entered_by_id": personWidget,
-            "measured_recorded_by_id": personWidget,
-            "place_code": placeWidget,
-            "comments": forms.Textarea(attrs={"rows": 3, "class": "form-control"}),
-            "clutch_completed": forms.Select(attrs={"class": "form-control"}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -256,6 +237,14 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["cc_length_not_measured"].label = "CCL not measured"
         self.fields["cc_width_not_measured"].label = "CCW not measured"
         self.fields["curved_carapace_length"].label = "Curved carapace length (mm)"
+        self.fields["curved_carapace_width"].label = "Curved carapace width (mm)"
+        self.fields["clutch_completed"].label = "Did turtle lay?"
+        self.fields["damage_carapace"].label = "Carapace"
+        self.fields["damage_lff"].label = "Left front flipper"
+        self.fields["damage_rff"].label = "Right front flipper"
+        self.fields["damage_lhf"].label = "Left hind flipper"
+        self.fields["damage_rhf"].label = "Right hind flipper"
+        
         
         self.fields['recapture_left_tag_id'].widget = forms.TextInput(attrs={'class': 'form-control'})
         self.fields['recapture_left_tag_id_2'].widget = forms.TextInput(attrs={'class': 'form-control'})
@@ -271,24 +260,6 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields['recapture_pittag_id_2'].widget = forms.TextInput(attrs={'class': 'form-control'})
         self.fields['new_pittag_id'].widget = forms.TextInput(attrs={'class': 'form-control'})
         self.fields['new_pittag_id_2'].widget = forms.TextInput(attrs={'class': 'form-control'})
-
-
-        # # Set the initial values for the tag state and barnacles fields
-        # tag_fields = [
-        #     ('recapture_left_tag', 'Recapture Left Tag'),
-        #     ('recapture_right_tag', 'Recapture Right Tag'),
-        #     ('new_left_tag', 'New Left Tag'),
-        #     ('new_right_tag', 'New Right Tag'),
-        # ]
-        
-        # for field_prefix, label_prefix in tag_fields:
-        #     state_field = f'{field_prefix}_state'
-        #     barnacles_field = f'{field_prefix}_barnacles'
-            
-        #     self.fields[state_field].label = f"{label_prefix} State"
-        #     self.fields[state_field].widget.attrs['class'] = 'form-control'
-        #     self.fields[barnacles_field].label = f"{label_prefix} Barnacles"
-        #     self.fields[barnacles_field].widget.attrs['class'] = 'form-check-input'
 
         # Disable all fields if there is an observation_id as it already in the database
         if self.instance.observation_id:
@@ -333,28 +304,7 @@ class TrtDataEntryForm(forms.ModelForm):
             instance.save()
 
         return instance
-    
-    # def save_tag_info(self, instance):
-    #     tag_fields = [
-    #         ('recapture_left_tag_id', 'recapture_left_tag_state', 'recapture_left_tag_barnacles', 'L'),
-    #         ('recapture_right_tag_id', 'recapture_right_tag_state', 'recapture_right_tag_barnacles', 'R'),
-    #         ('new_left_tag_id', 'new_left_tag_state', 'new_left_tag_barnacles', 'L'),
-    #         ('new_right_tag_id', 'new_right_tag_state', 'new_right_tag_barnacles', 'R'),
-    #     ]
-        
-    #     for tag_id_field, state_field, barnacles_field, side in tag_fields:
-    #         tag_id = self.cleaned_data.get(tag_id_field)
-    #         if tag_id:
-    #             TrtRecordedTags.objects.update_or_create(
-    #                 observation_id=instance.observation_id,
-    #                 tag_id=tag_id,
-    #                 defaults={
-    #                     'side': side,
-    #                     'tag_state': self.cleaned_data.get(state_field),
-    #                     'barnacles': self.cleaned_data.get(barnacles_field),
-    #                     'turtle_id': instance.turtle_id.turtle_id if instance.turtle_id else None,  # 修改这里
-    #                 }
-    #             )
+
                 
     def clean(self):
         cleaned_data = super().clean()

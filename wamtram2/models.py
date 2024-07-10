@@ -419,8 +419,14 @@ class TrtDataEntry(models.Model):
     egg_count = models.IntegerField(
         db_column="EGG_COUNT", blank=True, null=True
     )  # Field name made lowercase.
-    egg_count_method = models.CharField(
-        db_column="EGG_COUNT_METHOD", max_length=3, blank=True, null=True
+    egg_count_method = models.ForeignKey(
+        "TrtEggCountMethods",
+        models.SET_NULL,
+        db_column="EGG_COUNT_METHOD", 
+        max_length=3, 
+        blank=True, 
+        null=True,
+        related_name="eggcountmethod",
     )  # Field name made lowercase.
     clutch_completed = models.ForeignKey(
         "TrtYesNo",
@@ -625,12 +631,22 @@ class TrtDataEntry(models.Model):
         null=True,
         related_name="recapturerighttag3",
     )  # fake foreign key #models.CharField(db_column='RECAPTURE_RIGHT_TAG_ID_3', max_length=10, blank=True, null=True)  # Field name made lowercase.
-    body_part_3 = models.CharField(
-        db_column="BODY_PART_3", max_length=1, blank=True, null=True
-    )  # Field name made lowercase.
-    damage_code_3 = models.CharField(
-        db_column="DAMAGE_CODE_3", max_length=1, blank=True, null=True
-    )  # Field name made lowercase.
+    body_part_3 = models.ForeignKey(
+        "TrtBodyParts",
+        models.SET_NULL,
+        db_column="BODY_PART_3",
+        blank=True,
+        null=True,
+        related_name="bp3",
+    )   # fake foreign key #models.CharField(db_column='BODY_PART_3', max_length=1, blank=True, null=True)  # Field name made lowercase.
+    damage_code_3 = models.ForeignKey(
+        "TrtDamageCodes",
+        models.SET_NULL,
+        db_column="DAMAGE_CODE_3",
+        blank=True,
+        null=True,
+        related_name="dc3",
+    )  # fake foreign key #models.CharField(db_column='DAMAGE_CODE_3', max_length=1, blank=True, null=True)  # Field name made lowercase.
     tissue_type_1 = models.ForeignKey(
         "TrtTissueTypes",
         models.SET_NULL,
