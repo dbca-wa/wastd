@@ -111,7 +111,12 @@ class TrtDamage(models.Model):
     class Meta:
         managed = False
         db_table = "TRT_DAMAGE"
-        UniqueConstraint = (("observation", "body_part", "body_part"),)
+        constraints = [
+            models.UniqueConstraint(
+                fields=["observation", "body_part"],
+                name="unique_observation_body_part"
+            )
+        ]
 
 
 class TrtDamageCause(models.Model):
@@ -692,7 +697,13 @@ class TrtDataEntry(models.Model):
     class Meta:
         managed = False
         db_table = "TRT_DATA_ENTRY"
-        UniqueConstraint = (("entry_batch", "user_entry_id"),)
+        constraints = [
+            models.UniqueConstraint(
+                fields=["entry_batch", "user_entry_id"],
+                name="unique_entry_batch_user_entry_id"
+            )
+        ]
+        
         ordering = ["-data_entry_id"]
 
     def __str__(self):
@@ -866,7 +877,12 @@ class TrtDataEntryExceptions(models.Model):
     class Meta:
         managed = False
         db_table = "TRT_DATA_ENTRY_EXCEPTIONS"
-        UniqueConstraint = (("entry_batch_id", "data_entry_id"),)
+        constraints = [
+            models.UniqueConstraint(
+                fields=["entry_batch_id", "data_entry_id"],
+                name="unique_entry_batch_data_entry"
+            )
+        ]
 
 
 class TrtDataEntryPersons(models.Model):
@@ -886,7 +902,12 @@ class TrtDataEntryPersons(models.Model):
     class Meta:
         managed = False
         db_table = "TRT_DATA_ENTRY_PERSONS"
-        UniqueConstraint = (("entry_batch", "person_name"),)
+        constraints = [
+            models.UniqueConstraint(
+                fields=["entry_batch", "person_name"],
+                name="unique_entry_batch_person"
+            )
+        ]
 
     # def __str__(self):
     #     return f"{self.person_name}"
@@ -1039,7 +1060,12 @@ class TrtIdentification(models.Model):
     class Meta:
         managed = False
         db_table = "TRT_IDENTIFICATION"
-        UniqueConstraint = (("turtle", "identification_type", "identifier"),)
+        constraints = [
+            models.UniqueConstraint(
+                fields=["turtle", "identification_type", "identifier"],
+                name="unique_turtle_identification"
+            )
+        ]
 
 
 class TrtIdentificationTypes(models.Model):
@@ -1089,7 +1115,12 @@ class TrtMeasurements(models.Model):
     class Meta:
         managed = False
         db_table = "TRT_MEASUREMENTS"
-        UniqueConstraint = (("observation", "measurement_type"),)
+        constraints = [
+            models.UniqueConstraint(
+                fields=["observation", "measurement_type"],
+                name="unique_observation_measurement_type"
+            )
+        ]
 
 
 class TrtMeasurementTypes(models.Model):
@@ -1134,7 +1165,12 @@ class TrtNesting(models.Model):
     class Meta:
         managed = False
         db_table = "TRT_NESTING"
-        UniqueConstraint = (("place_code", "species_code"),)
+        constraints = [
+            models.UniqueConstraint(
+                fields=["place_code", "species_code"],
+                name="unique_place_species"
+            )
+        ]
 
 
 class TrtNestingSeason(models.Model):
@@ -1386,7 +1422,12 @@ class TrtObservations(models.Model):
     class Meta:
         managed = False
         db_table = "TRT_OBSERVATIONS"
-        UniqueConstraint = (("observation_id", "turtle"),)
+        constraints = [
+            models.UniqueConstraint(
+                fields=["observation_id", "turtle"],
+                name="unique_observation_id_turtle"
+            )
+        ]
         verbose_name = "Observation"
         verbose_name_plural = "Observations"
 
@@ -1504,7 +1545,12 @@ class TrtPitTags(models.Model):
     class Meta:
         managed = False
         db_table = "TRT_PIT_TAGS"
-        UniqueConstraint = (("pittag_id", "turtle"),)
+        constraints = [
+            models.UniqueConstraint(
+                fields=["pittag_id", "turtle"],
+                name="unique_pittag_id_turtle"
+            )
+        ]
         verbose_name = "Pit tag"
         verbose_name_plural = "Pit tags"
         ordering = ["pittag_id"]
@@ -1855,7 +1901,12 @@ class TrtTags(models.Model):
     class Meta:
         managed = False
         db_table = "TRT_TAGS"
-        UniqueConstraint = (("tag_id", "turtle"),)
+        constraints = [
+            models.UniqueConstraint(
+                fields=["tag_id", "turtle"],
+                name="unique_tag_id_turtle"
+            )
+        ]
         verbose_name = "Flipper tag"
         verbose_name_plural = "Flipper tags"
         ordering = [
