@@ -178,9 +178,11 @@
                 <div class="row mt-2">
                   <div class="col-md-6">
                     {% bootstrap_field form.recapture_left_tag_id_2 %}
+                    <span id="left-tag-validation-message-2"></span>
                   </div>
                   <div class="col-md-6">
                     {% bootstrap_field form.recapture_right_tag_id_2 %}
+                    <span id="right-tag-validation-message-2"></span>  
                   </div>
                 </div>
               </div>
@@ -586,8 +588,12 @@
     const turtleIdInput = document.getElementById('id_turtle_id');
     const recaptureLeftTagInput = document.getElementById('id_recapture_left_tag_id');
     const recaptureRightTagInput = document.getElementById('id_recapture_right_tag_id');
+    const recaptureLeftTagInput2 = document.getElementById('id_recapture_left_tag_id_2');
+    const recaptureRightTagInput2 = document.getElementById('id_recapture_right_tag_id_2');
     const leftValidationMessage = document.getElementById('left-tag-validation-message');
     const rightValidationMessage = document.getElementById('right-tag-validation-message');
+    const leftValidationMessage2 = document.getElementById('left-tag-validation-message-2');
+    const rightValidationMessage2 = document.getElementById('right-tag-validation-message-2');
     const doNotProcessField = document.getElementById('{{ form.do_not_process.auto_id }}');
 
     function validateTag(tagInput, validationMessage, side) {
@@ -628,17 +634,18 @@
       }
     }
 
-    if (recaptureLeftTagInput) {
-      recaptureLeftTagInput.addEventListener('blur', function() {
-        validateTag(this, leftValidationMessage, 'left');
-      });
+    function addValidationListener(input, message, side) {
+      if (input) {
+        input.addEventListener('blur', function() {
+          validateTag(this, message, side);
+        });
+      }
     }
 
-    if (recaptureRightTagInput) {
-      recaptureRightTagInput.addEventListener('blur', function() {
-        validateTag(this, rightValidationMessage, 'right');
-      });
-    }
+    addValidationListener(recaptureLeftTagInput, leftValidationMessage, 'left');
+    addValidationListener(recaptureRightTagInput, rightValidationMessage, 'right');
+    addValidationListener(recaptureLeftTagInput2, leftValidationMessage2, 'left');
+    addValidationListener(recaptureRightTagInput2, rightValidationMessage2, 'right');
   });
 
   // Show or hide content based on PIT tag selection
@@ -738,7 +745,7 @@
     didNotCheckCheckbox.addEventListener('change', toggleInjuryDetails);
     toggleInjuryDetails();
   });
-  
+
   // Toggle injury fields and change button text
   function toggleInjuryFields() {
     var injuryAdditionalFields = document.getElementById('injuryAdditionalFields');
