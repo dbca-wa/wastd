@@ -111,7 +111,7 @@ class TrtDamage(models.Model):
     class Meta:
         managed = False
         db_table = "TRT_DAMAGE"
-        unique_together = (("observation", "body_part", "body_part"),)
+        UniqueConstraint = (("observation", "body_part", "body_part"),)
 
 
 class TrtDamageCause(models.Model):
@@ -692,7 +692,7 @@ class TrtDataEntry(models.Model):
     class Meta:
         managed = False
         db_table = "TRT_DATA_ENTRY"
-        unique_together = (("entry_batch", "user_entry_id"),)
+        UniqueConstraint = (("entry_batch", "user_entry_id"),)
         ordering = ["-data_entry_id"]
 
     def __str__(self):
@@ -866,7 +866,7 @@ class TrtDataEntryExceptions(models.Model):
     class Meta:
         managed = False
         db_table = "TRT_DATA_ENTRY_EXCEPTIONS"
-        unique_together = (("entry_batch_id", "data_entry_id"),)
+        UniqueConstraint = (("entry_batch_id", "data_entry_id"),)
 
 
 class TrtDataEntryPersons(models.Model):
@@ -886,7 +886,7 @@ class TrtDataEntryPersons(models.Model):
     class Meta:
         managed = False
         db_table = "TRT_DATA_ENTRY_PERSONS"
-        unique_together = (("entry_batch", "person_name"),)
+        UniqueConstraint = (("entry_batch", "person_name"),)
 
     # def __str__(self):
     #     return f"{self.person_name}"
@@ -1039,7 +1039,7 @@ class TrtIdentification(models.Model):
     class Meta:
         managed = False
         db_table = "TRT_IDENTIFICATION"
-        unique_together = (("turtle", "identification_type", "identifier"),)
+        UniqueConstraint = (("turtle", "identification_type", "identifier"),)
 
 
 class TrtIdentificationTypes(models.Model):
@@ -1089,7 +1089,7 @@ class TrtMeasurements(models.Model):
     class Meta:
         managed = False
         db_table = "TRT_MEASUREMENTS"
-        unique_together = (("observation", "measurement_type"),)
+        UniqueConstraint = (("observation", "measurement_type"),)
 
 
 class TrtMeasurementTypes(models.Model):
@@ -1134,7 +1134,7 @@ class TrtNesting(models.Model):
     class Meta:
         managed = False
         db_table = "TRT_NESTING"
-        unique_together = (("place_code", "species_code"),)
+        UniqueConstraint = (("place_code", "species_code"),)
 
 
 class TrtNestingSeason(models.Model):
@@ -1386,8 +1386,9 @@ class TrtObservations(models.Model):
     class Meta:
         managed = False
         db_table = "TRT_OBSERVATIONS"
-        unique_together = (("observation_id", "turtle"),)
+        UniqueConstraint = (("observation_id", "turtle"),)
         verbose_name = "Observation"
+        verbose_name_plural = "Observations"
 
     def __str__(self):
         return f"{self.observation_date}"
@@ -1503,8 +1504,9 @@ class TrtPitTags(models.Model):
     class Meta:
         managed = False
         db_table = "TRT_PIT_TAGS"
-        unique_together = (("pittag_id", "turtle"),)
+        UniqueConstraint = (("pittag_id", "turtle"),)
         verbose_name = "Pit tag"
+        verbose_name_plural = "Pit tags"
         ordering = ["pittag_id"]
 
     def __str__(self):
@@ -1853,8 +1855,9 @@ class TrtTags(models.Model):
     class Meta:
         managed = False
         db_table = "TRT_TAGS"
-        unique_together = (("tag_id", "turtle"),)
+        UniqueConstraint = (("tag_id", "turtle"),)
         verbose_name = "Flipper tag"
+        verbose_name_plural = "Flipper tags"
         ordering = [
             "tag_id",
         ]
@@ -2019,6 +2022,7 @@ class TrtTurtles(models.Model):
         managed = False
         db_table = "TRT_TURTLES"
         verbose_name = "Turtle"
+        verbose_name_plural = "Turtles"
         ordering = ["turtle_id"]
 
     def __str__(self):
