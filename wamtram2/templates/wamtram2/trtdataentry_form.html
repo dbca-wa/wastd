@@ -54,11 +54,6 @@
 <h4>Observation has aleady been submitted: <a href="{% url 'wamtram2:observationdetail' pk=form.observation_id.value %}">view observation</a></h4> 
 </div>
 {% endif %}
-<div class="row g-3">
-  <div class="col-md-6">
-    {% bootstrap_field form.do_not_process %}
-  </div>
-</div>
 
 <div class="row g-3">
       <div class="col-md-6">
@@ -508,18 +503,24 @@
     </div>
   </div>
   <!-- Submit and Advanced Data buttons -->
-  <div class="row mt-4 mb-3">
+  <div class="row mt-4 mb-3 d-flex">
     <div class="col-md-6">
       {% if not form.observation_id.value %}
       <button type="button" class="btn btn-secondary" id="advancedDataButton">Advanced Data</button>
       {% endif %}
     </div>
-    <div class="col-md-6 text-right">
+    <div class="col-md-3 text-right">
+      <div class="d-flex align-self-center">
+        {% bootstrap_field form.do_not_process %}
+      </div>
+    </div>
+    <div class="col-md-3 text-right">
       {% if not form.observation_id.value %}
       <button type="submit" class="btn btn-primary save-button">Save</button>
       {% endif %}
     </div>
   </div>
+  
 </div>
 </form>
 </body>
@@ -816,5 +817,6 @@
       }
     }, 100);
   });
+
 </script>
 {% endblock %}
