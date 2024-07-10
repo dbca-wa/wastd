@@ -143,6 +143,9 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
         cookies_key_prefix = batch_id
         default_enterer = self.request.COOKIES.get(f'{cookies_key_prefix}_default_enterer')
         use_default_enterer = self.request.COOKIES.get(f'{cookies_key_prefix}_use_default_enterer', False)
+        
+        if default_enterer == "None" or not default_enterer:
+            default_enterer = None
 
         if use_default_enterer and default_enterer:
             initial['entered_person_id'] = default_enterer
@@ -350,6 +353,9 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         selected_template = self.request.COOKIES.get(f'{cookies_key_prefix}_selected_template')
         use_default_enterer = self.request.COOKIES.get(f'{cookies_key_prefix}_use_default_enterer', False)
         default_enterer = self.request.COOKIES.get(f'{cookies_key_prefix}_default_enterer', None)
+        
+        if default_enterer == "None" or not default_enterer:
+            default_enterer = None
 
         # If a template is selected, populate the form with the template data
         if selected_template:
@@ -372,22 +378,6 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
             initial["species_code"] = turtle.species_code
             initial["sex"] = turtle.sex
         
-            # initial['recapture_left_tag_id'] = turtle.trttags_set.filter(side='L').all().order_by('tag_order_id')[0] if turtle.trttags_set.filter(side='L').count() > 0 else None
-
-            # initial['recapture_left_tag_id_2'] = turtle.trttags_set.filter(side='L').all().order_by('tag_order_id')[1] if turtle.trttags_set.filter(side='L').count() > 1 else None
-
-            # initial['recapture_right_tag_id_2'] = turtle.trttags_set.filter(side='L').all().order_by('tag_order_id')[2] if turtle.trttags_set.filter(side='L').count() > 2 else None
-
-            # initial['recapture_right_tag_id'] = turtle.trttags_set.filter(side='R').all().order_by('tag_order_id')[0] if turtle.trttags_set.filter(side='R').count() > 0 else None
-
-            # initial['recapture_right_tag_id_2'] = turtle.trttags_set.filter(side='R').all().order_by('tag_order_id')[1] if turtle.trttags_set.filter(side='R').count() > 1 else None
-
-            # initial['recapture_right_tag_id_3'] = turtle.trttags_set.filter(side='R').all().order_by('tag_order_id')[2] if turtle.trttags_set.filter(side='R').count() > 2 else None
-
-            # initial['recapture_pittag_id'] = turtle.trtpittags_set.all().order_by('tag_order_id')[0] if turtle.trtpittags_set.count() > 0 else None
-
-            # initial['recapture_pittag_id_2'] = turtle.trtpittags_set.all().order_by('tag_order_id')[1] if turtle.trtpittags_set.count() > 1 else None
-
         # editing an existing observation we need to populate the person id fields from the strings stored
         # using the old MS Access system
         

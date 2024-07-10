@@ -289,12 +289,8 @@ class TrtDataEntryForm(forms.ModelForm):
             person = TrtPersons.objects.get(person_id=instance.entered_by_id.person_id)
             instance.entered_by = "{} {}".format(person.first_name, person.surname)
         if instance.measured_recorded_by_id:
-            person = TrtPersons.objects.get(
-                person_id=instance.measured_recorded_by_id.person_id
-            )
-            instance.measured_recorded_by = "{} {}".format(
-                person.first_name, person.surname
-            )
+            person = TrtPersons.objects.get(person_id=instance.measured_recorded_by_id.person_id)
+            instance.measured_recorded_by = "{} {}".format(person.first_name, person.surname)
 
         # Set the observation_time to the same value as the observation_date
         instance.observation_time = instance.observation_date
@@ -304,77 +300,76 @@ class TrtDataEntryForm(forms.ModelForm):
             instance.save()
 
         return instance
-
                 
-    def clean(self):
-        cleaned_data = super().clean()
+        def clean(self):
+            cleaned_data = super().clean()
 
-        # fields_to_check = [
-        #     "recapture_left_tag_id",
-        #     "recapture_left_tag_id_2",
-        #     "recapture_left_tag_id_3",
-        #     "recapture_right_tag_id",
-        #     "recapture_right_tag_id_2",
-        #     "recapture_right_tag_id_3",
-        #     "recapture_pittag_id",
-        #     "recapture_pittag_id_2",
-        # ]
-        # if cleaned_data.get("turtle_id"):
-        #     if not any(cleaned_data.get(field) for field in fields_to_check):
-        #         raise ValidationError(
-        #             "No recapture tags have been entered for a recaptured turtle."
-        #         )
+            # fields_to_check = [
+            #     "recapture_left_tag_id",
+            #     "recapture_left_tag_id_2",
+            #     "recapture_left_tag_id_3",
+            #     "recapture_right_tag_id",
+            #     "recapture_right_tag_id_2",
+            #     "recapture_right_tag_id_3",
+            #     "recapture_pittag_id",
+            #     "recapture_pittag_id_2",
+            # ]
+            # if cleaned_data.get("turtle_id"):
+            #     if not any(cleaned_data.get(field) for field in fields_to_check):
+            #         raise ValidationError(
+            #             "No recapture tags have been entered for a recaptured turtle."
+            #         )
 
-        # fields_to_check = [
-        #     "tagscarnotchecked",
-        #     "scars_left",
-        #     "scars_right",
-        #     "scars_left_scale_1",
-        #     "scars_right_scale_1",
-        #     "scars_left_scale_2",
-        #     "scars_right_scale_2",
-        #     "scars_left_scale_3",
-        #     "scars_right_scale_3",
-        # ]
+            # fields_to_check = [
+            #     "tagscarnotchecked",
+            #     "scars_left",
+            #     "scars_right",
+            #     "scars_left_scale_1",
+            #     "scars_right_scale_1",
+            #     "scars_left_scale_2",
+            #     "scars_right_scale_2",
+            #     "scars_left_scale_3",
+            #     "scars_right_scale_3",
+            # ]
 
-        # if not any(cleaned_data.get(field) for field in fields_to_check):
-        #     raise ValidationError(
-        #         "At least one of the tag scar fields must be selected."
-        #     )
+            # if not any(cleaned_data.get(field) for field in fields_to_check):
+            #     raise ValidationError(
+            #         "At least one of the tag scar fields must be selected."
+            #     )
 
-        # fields_to_check = [
-        #     "cc_length_not_measured",
-        #     "curved_carapace_length",
-        # ]
+            # fields_to_check = [
+            #     "cc_length_not_measured",
+            #     "curved_carapace_length",
+            # ]
 
-        # if not any(cleaned_data.get(field) for field in fields_to_check):
-        #     raise ValidationError("Did you measure CCL?")
+            # if not any(cleaned_data.get(field) for field in fields_to_check):
+            #     raise ValidationError("Did you measure CCL?")
 
-        # fields_to_check = [
-        #     "cc_width_not_measured",
-        #     "curved_carapace_width",
-        # ]
+            # fields_to_check = [
+            #     "cc_width_not_measured",
+            #     "curved_carapace_width",
+            # ]
 
-        # if not any(cleaned_data.get(field) for field in fields_to_check):
-        #     raise ValidationError("Did you measure CCW?")
+            # if not any(cleaned_data.get(field) for field in fields_to_check):
+            #     raise ValidationError("Did you measure CCW?")
 
-        # fields_to_check = [
-        #     "didnotcheckforinjury",
-        #     "damage_carapace",
-        #     "damage_lff",
-        #     "damage_rff",
-        #     "damage_lhf",
-        #     "damage_rhf",
-        #     "body_part_1",
-        #     "damage_code_1",
-        #     "body_part_2",
-        #     "damage_code_2",
-        # ]
+            # fields_to_check = [
+            #     "didnotcheckforinjury",
+            #     "damage_carapace",
+            #     "damage_lff",
+            #     "damage_rff",
+            #     "damage_lhf",
+            #     "damage_rhf",
+            #     "body_part_1",
+            #     "damage_code_1",
+            #     "body_part_2",
+            #     "damage_code_2",
+            # ]
 
-        # if not any(cleaned_data.get(field) for field in fields_to_check):
-        #     raise ValidationError("At least one of the injury fields must be selected.")
+            # if not any(cleaned_data.get(field) for field in fields_to_check):
+            #     raise ValidationError("At least one of the injury fields must be selected.")
 
-        return cleaned_data
+            return cleaned_data
 
 
 class DataEntryUserModelForm(forms.ModelForm):
