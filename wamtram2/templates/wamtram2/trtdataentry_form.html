@@ -20,7 +20,6 @@
   .bg-yellow {
     background-color: #ffffe0 !important;
   }
-
 </style>
 {% endblock %}  
 
@@ -55,13 +54,13 @@
 <h4>Observation has aleady been submitted: <a href="{% url 'wamtram2:observationdetail' pk=form.observation_id.value %}">view observation</a></h4> 
 </div>
 {% endif %}
-<div class="row g3">
+<div class="row g-3">
   <div class="col-md-6">
     {% bootstrap_field form.do_not_process %}
   </div>
 </div>
 
-<div class="row g3">
+<div class="row g-3">
       <div class="col-md-6">
       <h5>Entry Batch ID: {{ form.entry_batch.value }}</h5>
       {% bootstrap_field form.entry_batch %}
@@ -71,6 +70,7 @@
       {% bootstrap_field form.turtle_id %}
       </div>
 </div>
+
 <div class="container mt-4">
   <!-- First part: Info -->
   <div class="card border-dark mb-3">
@@ -151,7 +151,7 @@
       <div class="row">
         <div class="col-md-12">
           <div class="row mt-2">
-            <label class="col-sm-2 col-form-label"><strong>PFLIPPER Tag(s)</strong></label>
+            <label class="col-sm-2 col-form-label"><strong>FLIPPER Tag(s)</strong></label>
             <label class="col-sm-4 col-form-label">Does turtle have old FLIPPER tag(s)?</label>
             <div class="col-sm-4">
               <select class="form-control" id="flipperTags" onchange="showContentBasedOnSelection()">
@@ -162,193 +162,152 @@
               </select>
             </div>
           </div>
-          <div id="recaptureTags" style="display: none;">
-            <div class="row mt-2">
-              <div class="col-md-6">
-                {% bootstrap_field form.recapture_left_tag_id %}
-                <span id="left-tag-validation-message"></span>
-                {% comment %} <div class="row">
-                  <div class="col-md-6">
-                    {% bootstrap_field form.recapture_left_tag_state %}
-                  </div>
-                  <div class="col-md-6">
-                    <div class="form-check">
-                      {% bootstrap_field form.recapture_left_tag_barnacles %}
-                    </div>
-                  </div>
-                </div> {% endcomment %}
-              </div>
-              <div class="col-md-6">
-                {% bootstrap_field form.recapture_right_tag_id %}
-                <span id="right-tag-validation-message"></span>
-                {% comment %} <div class="row">
-                  <div class="col-md-6">
-                    {% bootstrap_field form.recapture_right_tag_state %}
-                  </div>
-                  <div class="col-md-6">
-                    <div class="form-check">
-                      {% bootstrap_field form.recapture_right_tag_barnacles %}
-                    </div>
-                  </div>
-                </div> {% endcomment %}
-              </div>
-            </div>
-            <div class="row mt-2">
-              <div class="col-md-12">
-                <div id="additionalRecaptureTags" style="display: none;">
-                  <div class="row mt-2">
-                    <div class="col-md-6">
-                      {% bootstrap_field form.recapture_left_tag_id_2 %}
-                    </div>
-                    <div class="col-md-6">
-                      {% bootstrap_field form.recapture_right_tag_id_2 %}
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-12">
-                <div id="additionalRecaptureNewTags" style="display: none;">
-                  <div class="row mt-2">
-                    <div class="col-md-6">
-                      {% bootstrap_field form.new_left_tag_id %}
-                    </div>
-                    <div class="col-md-6">
-                      {% bootstrap_field form.new_right_tag_id %}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="row mt-2">
-              <div class="col-md-6">
-                  <button id="addRecaptureTagButton" type="button" class="btn btn-primary" onclick="addRecaptureTag()">Add more recapture Tags</button>
-              </div>
-              <div class="col-md-6">
-                  <button id="addRecaptureAdditionalTagButton" type="button" class="btn btn-primary" onclick="addRecaptureAdditionalTag()">Add more new Tags</button>
-              </div>
-          </div>
-          </div>
-          <div id="newTags" style="display: none;">
-            <div class="row mt-2">
-              <div class="col-md-6">
-                {% bootstrap_field form.new_left_tag_id %}
-              </div>
-              <div class="col-md-6">
-                {% bootstrap_field form.new_right_tag_id %}
-              </div>
-            </div>
-            <div class="row mt-2">
-              <div class="col-md-12">
-                <button id="addNewTagButton" type="button" class="btn btn-primary" onclick="addNewTag()">Add more new Tags</button>
-              </div>
-            </div>
-            <div id="additionalNewTags" style="display: none;">
+          <div id="tagDetails" style="display: none;">
+            <div id="recaptureTags" style="display: none;">
               <div class="row mt-2">
                 <div class="col-md-6">
-                  {% bootstrap_field form.new_left_tag_id_2 %}
+                  {% bootstrap_field form.recapture_left_tag_id %}
+                  <span id="left-tag-validation-message"></span>
                 </div>
                 <div class="col-md-6">
-                  {% bootstrap_field form.new_right_tag_id_2 %}
+                  {% bootstrap_field form.recapture_right_tag_id %}
+                  <span id="right-tag-validation-message"></span>
                 </div>
+              </div>
+              <div id="additionalRecaptureTags" style="display: none;">
+                <div class="row mt-2">
+                  <div class="col-md-6">
+                    {% bootstrap_field form.recapture_left_tag_id_2 %}
+                  </div>
+                  <div class="col-md-6">
+                    {% bootstrap_field form.recapture_right_tag_id_2 %}
+                  </div>
+                </div>
+              </div>
+              <div class="row mt-2">
+                <div class="col-md-6">
+                  <button type="button" class="btn btn-primary" id="toggleRecaptureTagsBtn" onclick="toggleRecaptureTags()">More Recapture Tags</button>
+                </div>
+              </div>
+            </div>
+            
+            <div id="newTags" style="display: none;">
+              <div class="row mt-2">
+                <div class="col-md-6">
+                  {% bootstrap_field form.new_left_tag_id %}
+                </div>
+                <div class="col-md-6">
+                  {% bootstrap_field form.new_right_tag_id %}
+                </div>
+              </div>
+              <div id="additionalNewTags" style="display: none;">
+                <div class="row mt-2">
+                  <div class="col-md-6">
+                    {% bootstrap_field form.new_left_tag_id_2 %}
+                  </div>
+                  <div class="col-md-6">
+                    {% bootstrap_field form.new_right_tag_id_2 %}
+                  </div>
+                </div>
+              </div>
+              <div class="row mt-2">
+                <div class="col-md-6">
+                  <button type="button" class="btn btn-primary" id="toggleNewTagsBtn" onclick="toggleNewTags()">More New Tags</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row mt-5">
+        <div class="col-md-12">
+          <div class="row">
+            <label class="col-sm-2 col-form-label"><strong>PIT tag present?</strong></label>
+            <label class="col-sm-4 col-form-label"></label>
+            <div class="col-sm-4">
+              <select class="form-control" id="PITTags" onchange="showPITContentBasedOnSelection()">
+                <option value="" disabled selected>Select</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+                <option value="did not check">Did not check</option>
+              </select>
+            </div>
+          </div>
+          <div id="recapturePIT" style="display: none;">
+            <div class="row mt-2">
+              <div class="col-md-6">
+                {% bootstrap_field form.recapture_pittag_id %}
+              </div>
+              <div class="col-md-6">
+                {% bootstrap_field form.recapture_pittag_id_2 %}
+              </div>
+            </div>
+          </div>
+          <div id="newPIT" style="display: none;">
+            <div class="row mt-2">
+              <div class="col-md-6">
+                {% bootstrap_field form.new_pittag_id %}
+              </div>
+              <div class="col-md-6">
+                {% bootstrap_field form.new_pittag_id_2 %}
               </div>
             </div>
           </div>
           <div class="row mt-5">
+            <div class="col-md-3">
+              <label><strong>Flipper Tags scars?</strong></label>
+            </div>
+            <div class="col-3">
+              {% bootstrap_field form.tagscarnotchecked %}
+            </div>
+            <div class="col-12" id="scarsDetails">
+              <div class="row align-items-center mb-2">
+                <div class="col-auto">
+                  {% bootstrap_field form.scars_left %}
+                </div>
+                <div class="col-auto d-flex align-items-center">
+                  <div class="form-check form-check-inline">
+                    {% bootstrap_field form.scars_left_scale_1 %}
+                  </div>
+                  <div class="form-check form-check-inline">
+                    {% bootstrap_field form.scars_left_scale_2 %}
+                  </div>
+                  <div class="form-check form-check-inline">
+                    {% bootstrap_field form.scars_left_scale_3 %}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-12" id="scarsDetailsRight">
+              <div class="row align-items-center">
+                <div class="col-auto">
+                  {% bootstrap_field form.scars_right %}
+                </div>
+                <div class="col-auto d-flex align-items-center">
+                  <div class="form-check form-check-inline">
+                    {% bootstrap_field form.scars_right_scale_1 %}
+                  </div>
+                  <div class="form-check form-check-inline">
+                    {% bootstrap_field form.scars_right_scale_2 %}
+                  </div>
+                  <div class="form-check form-check-inline">
+                    {% bootstrap_field form.scars_right_scale_3 %}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row mt-2">
             <div class="col-md-12">
-              <div class="row">
-                <label class="col-sm-2 col-form-label"><strong>PIT tag present?</strong></label>
-                <label class="col-sm-4 col-form-label"></label>
-                <div class="col-sm-4">
-                  <select class="form-control" id="PITTags" onchange="showPITContentBasedOnSelection()">
-                    <option value="" disabled selected>Select</option>
-                    <option value="Yes">Yes</option>
-                    <option value="No">No</option>
-                    <option value="did not check">Did not check</option>
-                  </select>
-                </div>
-              </div>
-              <div id="recapturePIT" style="display: none;">
-                <div class="row mt-2">
-                  <div class="col-md-6">
-                    {% bootstrap_field form.recapture_pittag_id %}
-                  </div>
-                  <div class="col-md-6">
-                    {% bootstrap_field form.recapture_pittag_id_2 %}
-                  </div>
-                </div>
-              </div>
-              <div id="newPIT" style="display: none;">
-                <div class="row mt-2">
-                  <div class="col-md-6">
-                    {% bootstrap_field form.new_pittag_id %}
-                  </div>
-                  <div class="col-md-6">
-                    {% bootstrap_field form.new_pittag_id_2 %}
-                  </div>
-                </div>
-              </div>
-              <div class="row mt-2">
-                <div class="col-12">
-                  {% bootstrap_field form.tagscarnotchecked %}
-                </div>
-                <div class="col-12" id="scarsDetails">
-                  <div class="row align-items-center mb-2">
-                    <div class="col-auto">
-                      {% bootstrap_field form.scars_left %}
-                    </div>
-                    <div class="col-auto">
-                      <div class="form-check form-check-inline">
-                        {% bootstrap_field form.scars_left_scale_1 %}
-                      </div>
-                    </div>
-                    <div class="col-auto">
-                      <div class="form-check form-check-inline">
-                        {% bootstrap_field form.scars_left_scale_2 %}
-                      </div>
-                    </div>
-                    <div class="col-auto">
-                      <div class="form-check form-check-inline">
-                        {% bootstrap_field form.scars_left_scale_3 %}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-12" id="scarsDetailsRight">
-                  <div class="row align-items-center">
-                    <div class="col-auto">
-                      {% bootstrap_field form.scars_right %}
-                    </div>
-                    <div class="col-auto">
-                      <div class="form-check form-check-inline">
-                        {% bootstrap_field form.scars_right_scale_1 %}
-                      </div>
-                    </div>
-                    <div class="col-auto">
-                      <div class="form-check form-check-inline">
-                        {% bootstrap_field form.scars_right_scale_2 %}
-                      </div>
-                    </div>
-                    <div class="col-auto">
-                      <div class="form-check form-check-inline">
-                        {% bootstrap_field form.scars_right_scale_3 %}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>              
-              <div class="row mt-2">
-                <div class="col-md-12">
-                  <label for="{{ form.tagged_by_id.label }}">{{ form.tagged_by_id.label }}</label>
-                </div>
-                <div class="col-md-4">
-                  {% bootstrap_field form.tagged_by_id show_label=False %}
-                </div>
-                <div class="col-md-2">
-                  <button type="button" class="btn btn-outline-primary add-person-btn" onClick="window.open(adminUrl);" title="Add new person">
-                  <i class="fas fa-plus"></i>
-                  </button>
-                </div>
-              </div>
+              <label for="{{ form.tagged_by_id.id_for_label }}">{{ form.tagged_by_id.label }}</label>
+            </div>
+            <div class="col-md-4">
+              {% bootstrap_field form.tagged_by_id show_label=False %}
+            </div>
+            <div class="col-md-2">
+              <button type="button" class="btn btn-outline-primary add-person-btn" onClick="window.open(adminUrl);" title="Add new person">
+              <i class="fas fa-plus"></i>
+              </button>
             </div>
           </div>
         </div>
@@ -363,10 +322,19 @@
         <div class="col-md-12">
           <div class="row">
             <div class="col-md-6">
+              {% bootstrap_field form.cc_length_not_measured %}
+            </div>
+            <div class="col-md-6">
               {% bootstrap_field form.curved_carapace_length %}
             </div>
+            <div class="col-md-6">
+              {% bootstrap_field form.cc_width_not_measured %}
+            </div>
+            <div class="col-md-6">
+              {% bootstrap_field form.curved_carapace_width %}
+            </div>
             <div class="col-md-6 pt-3 d-flex align-items-center">
-              <button id="addMeasurementButton" type="button" class="btn btn-primary" onclick="addMeasurement()">Add more Measurements</button>
+              <button id="addMeasurementButton" type="button" class="btn btn-primary" onclick="toggleMeasurement()">More Measurements</button>
             </div>
           </div>
           <div id="moreMeasurement" class="row" style="display: none;">
@@ -388,29 +356,17 @@
             </div>
           </div>
           <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-6 p-4">
               <label for="{{ form.measured_by_id.id_for_label }}">{{ form.measured_by_id.label }}</label>
               <div class="d-flex align-items-center">
                 <div class="flex-grow-1">
                   {% bootstrap_field form.measured_by_id show_label=False %}
                 </div>
                 <button type="button" class="btn btn-outline-primary add-person-btn ml-2 align-self-start" onClick="window.open(adminUrl);" title="Add new person">
-                <i class="fas fa-plus"></i>
+                  <i class="fas fa-plus"></i>
                 </button>
               </div>
-             </div>
-            {% comment %}
-            <div class="col-md-6">
-              <label for="{{ form.measured_recorded_by_id.id_for_label }}">{{ form.measured_recorded_by_id.label }}</label>
-              <div class="d-flex align-items-center">
-                <div class="flex-grow-1">
-                  {% bootstrap_field form.measured_recorded_by_id show_label=False %}
-                </div>
-                <button type="button" class="btn btn-outline-primary add-person-btn ml-2 align-self-start" onClick="window.open(adminUrl);" title="Add new person">
-                <i class="fas fa-plus"></i>
-                </button>
-              </div>
-            </div> {% endcomment %}
+            </div>
           </div>
         </div>
       </div>
@@ -424,7 +380,6 @@
         <div class="col-md-12">
           <div class="row">
             <div class="col-md-6">
-              {% comment %} {% bootstrap_field form.activity_code %} {% endcomment %}
               {% bootstrap_field form.clutch_completed %}
             </div>
             <div class="col-md-6">
@@ -439,50 +394,63 @@
   <div class="card border-dark mb-3">
     <div class="card-header">Injuries</div>
     <div class="card-body">
-      <div class="row">
-        <div class="col-md-6">
-          {% bootstrap_field form.didnotcheckforinjury %}
-        </div>
-      </div>
-      <div id="injuryDetails">
         <div class="row">
-          <div class="col-md-6">
-            {% bootstrap_field form.damage_carapace %}
-          </div>
-          <div class="col-md-6">
-            {% bootstrap_field form.damage_lff %}
-          </div>
+            <div class="col-md-6">
+                {% bootstrap_field form.didnotcheckforinjury %}
+            </div>
         </div>
-        <div class="row">
-          <div class="col-md-6">
-            {% bootstrap_field form.damage_rff %}
-          </div>
-          <div class="col-md-6">
-            {% bootstrap_field form.damage_lhf %}
-          </div>
+        <div id="injuryDetails">
+            <div class="row">
+                <div class="col-md-6">
+                    {% bootstrap_field form.damage_carapace %}
+                </div>
+                <div class="col-md-6">
+                    {% bootstrap_field form.damage_lff %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    {% bootstrap_field form.damage_rff %}
+                </div>
+                <div class="col-md-6">
+                    {% bootstrap_field form.damage_lhf %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    {% bootstrap_field form.damage_rhf %}
+                </div>
+                <div class="col-md-6 d-flex align-items-center">
+                    <button id="toggleInjuryFieldsButton" type="button" class="btn btn-primary" onclick="toggleInjuryFields()">More Injuries</button>
+                </div>
+            </div>
+            <div id="injuryAdditionalFields">
+                <div class="row">
+                    <div class="col-md-6">
+                        {% bootstrap_field form.body_part_1 %}
+                    </div>
+                    <div class="col-md-6">
+                        {% bootstrap_field form.damage_code_1 %}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        {% bootstrap_field form.body_part_2 %}
+                    </div>
+                    <div class="col-md-6">
+                        {% bootstrap_field form.damage_code_2 %}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        {% bootstrap_field form.body_part_3 %}
+                    </div>
+                    <div class="col-md-6">
+                        {% bootstrap_field form.damage_code_3 %}
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="row">
-          <div class="col-md-6">
-            {% bootstrap_field form.damage_rhf %}
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-6">
-            {% bootstrap_field form.body_part_1 %}
-          </div>
-          <div class="col-md-6">
-            {% bootstrap_field form.damage_code_1 %}
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-6">
-            {% bootstrap_field form.body_part_2 %}
-          </div>
-          <div class="col-md-6">
-            {% bootstrap_field form.damage_code_2 %}
-          </div>
-        </div>
-      </div>
     </div>
   </div>
   <!-- Sixth part: Bio -->
@@ -515,20 +483,28 @@
     <div class="card-body">
         <div class="row">
             <div class="col-md-12">
-                {% bootstrap_field form.comments show_label=false%}
+                {% bootstrap_field form.comments show_label=false %}
             </div>
         </div>
     </div>
   </div>
-
   <!-- Advanced Data Card -->
   <div id="advancedDataCard" class="card border-dark mt-3" style="display: none;">
     <div class="card-header">Advanced Data</div>
     <div class="card-body">
-      <!-- 这里可以添加更多的高级数据字段 -->
+      <div class="row">
+        <div class="col-md-12">
+          <label><strong>Egg</strong></label>
+        </div>
+        <div class="col-md-6">
+          {% bootstrap_field form.egg_count %}
+        </div>
+        <div class="col-md-6">
+          {% bootstrap_field form.egg_count_method %}
+        </div>
+      </div>
     </div>
   </div>
-
   <!-- Submit and Advanced Data buttons -->
   <div class="row mt-4 mb-3">
     <div class="col-md-6">
@@ -542,12 +518,9 @@
       {% endif %}
     </div>
   </div>
-
 </div>
-
 </form>
 </body>
-                
 {% endblock %}
 
 {% block extra_js %}
@@ -556,45 +529,119 @@
 <script>
   var adminUrl = "{% url 'admin:wamtram2_trtpersons_add' %}";
 
+  // Part 2: Tags
+  // Show or hide content based on flipper tag selection
   function showContentBasedOnSelection() {
     var selectElement = document.getElementById('flipperTags');
+    var tagDetails = document.getElementById('tagDetails');
     var recaptureTags = document.getElementById('recaptureTags');
     var newTags = document.getElementById('newTags');
-
+  
+    tagDetails.style.display = 'none';
     recaptureTags.style.display = 'none';
     newTags.style.display = 'none';
-
+  
     if (selectElement.value === 'Yes') {
+      tagDetails.style.display = 'block';
       recaptureTags.style.display = 'block';
+      newTags.style.display = 'block';
     } else if (selectElement.value === 'No') {
+      tagDetails.style.display = 'block';
       newTags.style.display = 'block';
     }
   }
-
-  function addRecaptureTag() {
+  
+  function toggleRecaptureTags() {
     var additionalRecaptureTags = document.getElementById('additionalRecaptureTags');
-    additionalRecaptureTags.style.display = 'block';
-
-    var addRecaptureTagButton = document.getElementById('addRecaptureTagButton');
-    addRecaptureTagButton.style.display = 'none';
+    var toggleBtn = document.getElementById('toggleRecaptureTagsBtn');
+    if (additionalRecaptureTags.style.display === 'none') {
+      additionalRecaptureTags.style.display = 'block';
+      toggleBtn.textContent = 'Less Recapture Tags';
+    } else {
+      additionalRecaptureTags.style.display = 'none';
+      toggleBtn.textContent = 'More Recapture Tags';
+    }
   }
-
-  function addNewTag() {
+  
+  function toggleNewTags() {
     var additionalNewTags = document.getElementById('additionalNewTags');
-    additionalNewTags.style.display = 'block';
-
-    var addNewTagButton = document.getElementById('addNewTagButton');
-    addNewTagButton.style.display = 'none';
+    var toggleBtn = document.getElementById('toggleNewTagsBtn');
+    if (additionalNewTags.style.display === 'none') {
+      additionalNewTags.style.display = 'block';
+      toggleBtn.textContent = 'Less New Tags';
+    } else {
+      additionalNewTags.style.display = 'none';
+      toggleBtn.textContent = 'More New Tags';
+    }
   }
+  
+  document.addEventListener('DOMContentLoaded', function() {
+    var selectElement = document.getElementById('flipperTags');
+    selectElement.addEventListener('change', showContentBasedOnSelection);
+    showContentBasedOnSelection();
+  });
 
-  function addRecaptureAdditionalTag() {
-    var additionalRecaptureNewTags = document.getElementById('additionalRecaptureNewTags');
-    additionalRecaptureNewTags.style.display = 'block';
+  // Tag validation
+  document.addEventListener('DOMContentLoaded', function() {
+    const turtleIdInput = document.getElementById('id_turtle_id');
+    const recaptureLeftTagInput = document.getElementById('id_recapture_left_tag_id');
+    const recaptureRightTagInput = document.getElementById('id_recapture_right_tag_id');
+    const leftValidationMessage = document.getElementById('left-tag-validation-message');
+    const rightValidationMessage = document.getElementById('right-tag-validation-message');
+    const doNotProcessField = document.getElementById('{{ form.do_not_process.auto_id }}');
 
-    var addRecaptureAdditionalTagButton = document.getElementById('addRecaptureAdditionalTagButton');
-    addRecaptureAdditionalTagButton.style.display = 'none';
-  }
+    function validateTag(tagInput, validationMessage, side) {
+      console.log(`Validating ${side} tag with turtle ID: ${turtleIdInput.value} and tag ID: ${tagInput.value}`);
+      const turtleId = turtleIdInput.value;
+      const tagId = tagInput.value;
 
+      if (turtleId && tagId) {
+        fetch(`/wamtram2/validate-turtle-tag/?turtle_id=${turtleId}&tag=${tagId}&side=${side}`)
+          .then(response => {
+            console.log('Response received');
+            return response.json();
+          })
+          .then(data => {
+            console.log('Data received:', data);
+            if (data.valid) {
+              validationMessage.textContent = '✓ Valid tag';
+              validationMessage.style.color = 'green';
+              doNotProcessField.checked = false;
+            } else if (data.wrong_side) {
+              validationMessage.textContent = '! Tag may be on the wrong side';
+              validationMessage.style.color = 'orange';
+              doNotProcessField.checked = true;
+            } else {
+              validationMessage.textContent = '✗ Invalid tag';
+              validationMessage.style.color = 'red';
+              doNotProcessField.checked = true;
+            }
+            updateBackgroundColor();
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            validationMessage.textContent = 'Error validating tag';
+            validationMessage.style.color = 'red';
+          });
+      } else {
+        validationMessage.textContent = '';
+      }
+    }
+
+    if (recaptureLeftTagInput) {
+      recaptureLeftTagInput.addEventListener('blur', function() {
+        validateTag(this, leftValidationMessage, 'left');
+      });
+    }
+
+    if (recaptureRightTagInput) {
+      recaptureRightTagInput.addEventListener('blur', function() {
+        validateTag(this, rightValidationMessage, 'right');
+      });
+    }
+  });
+
+  // Show or hide content based on PIT tag selection
   function showPITContentBasedOnSelection() {
     var selectElement = document.getElementById('PITTags');
     var recapturePIT = document.getElementById('recapturePIT');
@@ -610,98 +657,72 @@
     }
   }
 
-  function addMeasurement() {
+  document.addEventListener('DOMContentLoaded', function() {
+    var PITSelectElement = document.getElementById('PITTags');
+    PITSelectElement.addEventListener('change', showPITContentBasedOnSelection);
+    showPITContentBasedOnSelection(); // Initial call to set the display based on the initial value
+  });
+
+  // Toggle scars details based on checkbox
+  document.addEventListener('DOMContentLoaded', function() {
+    var tagscarnotcheckedCheckbox = document.getElementById('{{ form.tagscarnotchecked.auto_id }}');
+    var scarsDetails = document.getElementById('scarsDetails');
+    var scarsDetailsRight = document.getElementById('scarsDetailsRight');
+
+    function toggleScarsDetails() {
+      if (tagscarnotcheckedCheckbox.checked) {
+        scarsDetails.style.display = 'none';
+        scarsDetailsRight.style.display = 'none';
+      } else {
+        scarsDetails.style.display = 'block';
+        scarsDetailsRight.style.display = 'block';
+      }
+    }
+
+    tagscarnotcheckedCheckbox.addEventListener('change', toggleScarsDetails);
+    toggleScarsDetails();
+  });
+
+  // Part 3: Measurements
+  function toggleMeasurement() {
     var moreMeasurement = document.getElementById('moreMeasurement');
-    moreMeasurement.style.display = 'block';
-
     var addMeasurementButton = document.getElementById('addMeasurementButton');
-    addMeasurementButton.style.display = 'none';
-  }
-
-  function debounce(func, wait) {
-    let timeout;
-    return function(...args) {
-      clearTimeout(timeout);
-      timeout = setTimeout(() => func.apply(this, args), wait);
-    };
-  }
-
-  // Update the background color based on the value of the "Do not process" checkbox
-  function updateBackgroundColor() {
-    const bodyElement = document.body;
-    const doNotProcessField = document.getElementById('{{ form.do_not_process.auto_id }}');
-    if (doNotProcessField.checked) {
-      bodyElement.classList.add('bg-yellow');
+    if (moreMeasurement.style.display === 'none' || moreMeasurement.style.display === '') {
+      moreMeasurement.style.display = 'block';
+      addMeasurementButton.innerText = 'Less Measurements';
     } else {
-      bodyElement.classList.remove('bg-yellow');
+      moreMeasurement.style.display = 'none';
+      addMeasurementButton.innerText = 'More Measurements';
+    }
+  }
+
+  function toggleCurvedCarapaceLength() {
+    var curvedCarapaceLength = document.getElementById('{{ form.curved_carapace_length.auto_id }}').parentElement;
+    if (document.getElementById('{{ form.cc_length_not_measured.auto_id }}').checked) {
+      curvedCarapaceLength.style.display = 'none';
+    } else {
+      curvedCarapaceLength.style.display = 'block';
+    }
+  }
+
+  function toggleCurvedCarapaceWidth() {
+    var curvedCarapaceWidth = document.getElementById('{{ form.curved_carapace_width.auto_id }}').parentElement;
+    if (document.getElementById('{{ form.cc_width_not_measured.auto_id }}').checked) {
+      curvedCarapaceWidth.style.display = 'none';
+    } else {
+      curvedCarapaceWidth.style.display = 'block';
     }
   }
 
   document.addEventListener('DOMContentLoaded', function() {
-    const doNotProcessField = document.getElementById('{{ form.do_not_process.auto_id }}');
-    doNotProcessField.addEventListener('change', updateBackgroundColor);
-    updateBackgroundColor(); // Initial call to set the background color on page load
+    document.getElementById('{{ form.cc_length_not_measured.auto_id }}').addEventListener('change', toggleCurvedCarapaceLength);
+    document.getElementById('{{ form.cc_width_not_measured.auto_id }}').addEventListener('change', toggleCurvedCarapaceWidth);
+    toggleCurvedCarapaceLength(); 
+    toggleCurvedCarapaceWidth();
   });
 
-  document.addEventListener('DOMContentLoaded', function() {
-    const turtleIdInput = document.getElementById('id_turtle_id');
-    const recaptureLeftTagInput = document.getElementById('id_recapture_left_tag_id');
-    const recaptureRightTagInput = document.getElementById('id_recapture_right_tag_id');
-    const leftValidationMessage = document.getElementById('left-tag-validation-message');
-    const rightValidationMessage = document.getElementById('right-tag-validation-message');
-    const doNotProcessField = document.getElementById('{{ form.do_not_process.auto_id }}');
-
-    function validateTag(tagInput, validationMessage, side) {
-        console.log(`Validating ${side} tag with turtle ID: ${turtleIdInput.value} and tag ID: ${tagInput.value}`);
-        const turtleId = turtleIdInput.value;
-        const tagId = tagInput.value;
-
-        if (turtleId && tagId) {
-            fetch(`/wamtram2/validate-turtle-tag/?turtle_id=${turtleId}&tag=${tagId}&side=${side}`)
-                .then(response => {
-                    console.log('Response received');
-                    return response.json();
-                })
-                .then(data => {
-                    console.log('Data received:', data);
-                    if (data.valid) {
-                        validationMessage.textContent = '✓ Valid tag';
-                        validationMessage.style.color = 'green';
-                        doNotProcessField.checked = false;
-                    } else if (data.wrong_side) {
-                        validationMessage.textContent = '! Tag may be on the wrong side';
-                        validationMessage.style.color = 'orange';
-                        doNotProcessField.checked = true;
-                    } else {
-                        validationMessage.textContent = '✗ Invalid tag';
-                        validationMessage.style.color = 'red';
-                        doNotProcessField.checked = true;
-                    }
-                    updateBackgroundColor();
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    validationMessage.textContent = 'Error validating tag';
-                    validationMessage.style.color = 'red';
-                });
-        } else {
-            validationMessage.textContent = '';
-        }
-    }
-
-    if (recaptureLeftTagInput) {
-        recaptureLeftTagInput.addEventListener('blur', function() {
-            validateTag(this, leftValidationMessage, 'left');
-        });
-    }
-
-    if (recaptureRightTagInput) {
-        recaptureRightTagInput.addEventListener('blur', function() {
-            validateTag(this, rightValidationMessage, 'right');
-        });
-    }
-  });
-
+  // Part 5: Injuries
+  // Toggle injury details based on checkbox
   document.addEventListener('DOMContentLoaded', function() {
     var didNotCheckCheckbox = document.getElementById('{{ form.didnotcheckforinjury.auto_id }}');
     var injuryDetails = document.getElementById('injuryDetails');
@@ -717,54 +738,76 @@
     didNotCheckCheckbox.addEventListener('change', toggleInjuryDetails);
     toggleInjuryDetails();
   });
-
-  document.addEventListener('DOMContentLoaded', function() {
-    var tagscarnotcheckedCheckbox = document.getElementById('{{ form.tagscarnotchecked.auto_id }}');
-    var scarsDetails = document.getElementById('scarsDetails');
-    var scarsDetailsRight = document.getElementById('scarsDetailsRight');
   
-    function toggleScarsDetails() {
-      if (tagscarnotcheckedCheckbox.checked) {
-        scarsDetails.style.display = 'none';
-        scarsDetailsRight.style.display = 'none';
-      } else {
-        scarsDetails.style.display = 'block';
-        scarsDetailsRight.style.display = 'block';
-      }
+  // Toggle injury fields and change button text
+  function toggleInjuryFields() {
+    var injuryAdditionalFields = document.getElementById('injuryAdditionalFields');
+    var toggleButton = document.getElementById('toggleInjuryFieldsButton');
+
+    if (injuryAdditionalFields.style.display === 'none' || injuryAdditionalFields.style.display === '') {
+      injuryAdditionalFields.style.display = 'block';
+      toggleButton.innerText = 'Less Injuries';
+    } else {
+      injuryAdditionalFields.style.display = 'none';
+      toggleButton.innerText = 'More Injuries';
     }
-  
-    tagscarnotcheckedCheckbox.addEventListener('change', toggleScarsDetails);
-    toggleScarsDetails();
-  });
-  
+  }
 
+  // Initialize injury fields to be hidden
   document.addEventListener('DOMContentLoaded', function() {
-    setTimeout(function() {
-        var placeCodeSelect = document.querySelector('select[name="place_code"][data-required="true"]');
-        if (placeCodeSelect) {
-            var select2Container = placeCodeSelect.nextElementSibling;
-            if (select2Container && select2Container.classList.contains('select2-container')) {
-                select2Container.querySelector('.select2-selection').classList.add('required-field');
-            }
-            var placeCode = '{{ form.initial.place_code }}';
-            if (placeCode) {
-                placeCodeSelect.value = placeCode;
-                var event = new Event('change');
-                placeCodeSelect.dispatchEvent(event);
-            }
-        }
-    }, 100);
+    var injuryAdditionalFields = document.getElementById('injuryAdditionalFields');
+    injuryAdditionalFields.style.display = 'none';
   });
 
+
+
+  // Part 7: Show advanced data card
   document.addEventListener('DOMContentLoaded', function() {
     const advancedDataButton = document.getElementById('advancedDataButton');
     const advancedDataCard = document.getElementById('advancedDataCard');
-  
+
     advancedDataButton.addEventListener('click', function() {
       advancedDataCard.style.display = 'block';
       advancedDataButton.style.display = 'none';
     });
   });
 
+  // Page Setting
+  // Background color update
+  function updateBackgroundColor() {
+    const bodyElement = document.body;
+    const doNotProcessField = document.getElementById('{{ form.do_not_process.auto_id }}');
+    if (doNotProcessField.checked) {
+      bodyElement.classList.add('bg-yellow');
+    } else {
+      bodyElement.classList.remove('bg-yellow');
+    }
+  }
+
+  // Initialize background color on page load
+  document.addEventListener('DOMContentLoaded', function() {
+    const doNotProcessField = document.getElementById('{{ form.do_not_process.auto_id }}');
+    doNotProcessField.addEventListener('change', updateBackgroundColor);
+    updateBackgroundColor();
+  });
+
+  // Render required field background color
+  document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+      var placeCodeSelect = document.querySelector('select[name="place_code"][data-required="true"]');
+      if (placeCodeSelect) {
+        var select2Container = placeCodeSelect.nextElementSibling;
+        if (select2Container && select2Container.classList.contains('select2-container')) {
+          select2Container.querySelector('.select2-selection').classList.add('required-field');
+        }
+        var placeCode = '{{ form.initial.place_code }}';
+        if (placeCode) {
+          placeCodeSelect.value = placeCode;
+          var event = new Event('change');
+          placeCodeSelect.dispatchEvent(event);
+        }
+      }
+    }, 100);
+  });
 </script>
 {% endblock %}
