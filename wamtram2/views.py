@@ -10,7 +10,7 @@ from django.views import View
 from django.views.generic.edit import FormMixin
 from django.views.generic import TemplateView, ListView, DetailView, FormView
 from django.http import JsonResponse, QueryDict
-from .models import TrtPlaces, TrtSpecies
+from .models import TrtPlaces, TrtSpecies, TrtPitTagStatus
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_protect
 import os
@@ -144,7 +144,7 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
         default_enterer = self.request.COOKIES.get(f'{cookies_key_prefix}_default_enterer')
         use_default_enterer = self.request.COOKIES.get(f'{cookies_key_prefix}_use_default_enterer', False)
         
-        if default_enterer == "None" or not default_enterer:
+        if default_enterer == "None" or not default_enterer or default_enterer == "":
             default_enterer = None
 
         if use_default_enterer and default_enterer:
@@ -354,7 +354,7 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         use_default_enterer = self.request.COOKIES.get(f'{cookies_key_prefix}_use_default_enterer', False)
         default_enterer = self.request.COOKIES.get(f'{cookies_key_prefix}_default_enterer', None)
         
-        if default_enterer == "None" or not default_enterer:
+        if default_enterer == "None" or not default_enterer or default_enterer == "":
             default_enterer = None
 
         # If a template is selected, populate the form with the template data
@@ -889,13 +889,13 @@ class TemplateManageView(View):
         return super().dispatch(request, *args, **kwargs)
     
 
-def validate_turtle_tag(request):
+def validate_recaptured_tag(request):
     """
-    Validates if a given tag matches the turtle ID.
+    Validates if a given tag matches the turtle ID and side.
 
-    This method retrieves the turtle ID and tag from the GET parameters and checks 
-    if the tag belongs to the specified turtle. It returns a JSON response indicating 
-    whether the tag is valid for the turtle.
+    This method retrieves the turtle ID, tag, and side from the GET parameters and checks 
+    if the tag belongs to the specified turtle and if the side matches. It returns a JSON 
+    response indicating whether the tag is valid for the turtle and if it is on the correct side.
 
     Args:
         request (HttpRequest): The HTTP request object.
@@ -903,10 +903,155 @@ def validate_turtle_tag(request):
     Returns:
         JsonResponse: A JSON response containing the validation result. The response 
                     includes a 'valid' key with a boolean value indicating if the 
-                    tag is valid, and a 'message' key with an error message if applicable.
+                    tag is valid, a 'wrong_side' key indicating if the tag is on the 
+                    wrong side, the 'other_turtle_id' key if the tag belongs to another turtle, 
+                    and a 'message' key with an error message if applicable.
 
     Example:
-        GET /validate-turtle-tag?turtle_id=1&tag=1234
+        GET /validate-recaptured-tag?turtle_id=33137&tag=WA62239&side=L
+
+        Response:
+        {
+            "valid": true,
+            "wrong_side": false,
+            "other_turtle_id": 12345
+        }
+    """
+    turtle_id = request.GET.get('turtle_id')
+    tag = request.GET.get('tag')
+    side = request.GET.get('side')
+
+    if not turtle_id or not tag or not side:
+        return JsonResponse({'valid': False, 'wrong_side': False, 'message': 'Missing parameters'})
+
+    try:
+        # Convert turtle_id to integer for comparison
+        turtle_id = int(turtle_id)
+        
+        tag_obj = TrtTags.objects.filter(tag_id=tag).first()
+        
+        if tag_obj:
+            if tag_obj.turtle_id != turtle_id:
+                # Tag belongs to another turtle
+                return JsonResponse({
+                    'valid': False, 
+                    'wrong_side': False, 
+                    'message': 'Tag belongs to another turtle', 
+                    'other_turtle_id': tag_obj.turtle_id
+                })
+            else:
+                # Tag belongs to the specified turtle
+                is_valid = True
+                wrong_side = (tag_obj.side.lower() != side.lower())
+                return JsonResponse({'valid': is_valid, 'wrong_side': wrong_side})
+        else:
+            return JsonResponse({'valid': False, 'wrong_side': False, 'message': 'Tag not found'})
+    except TrtTurtles.DoesNotExist:
+        return JsonResponse({'valid': False, 'wrong_side': False, 'message': 'Turtle not found'})
+
+def validate_new_pit_tag(request):
+    """
+    Validates if a new PIT tag already exists and is unused.
+
+    This method retrieves the tag from the GET parameters and checks if the tag already exists
+    in the TrtPitTags model and if its status is 'U' (unused). It returns a JSON response 
+    indicating whether the tag exists and is unused.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        JsonResponse: A JSON response containing the validation result. The response 
+                    includes a 'valid' key with a boolean value indicating if the 
+                    tag is valid, and a 'status' key with the tag's current status if applicable.
+
+    Example:
+        GET /validate-new-pit-tag?tag=900006000070677
+
+        Response:
+        {
+            "valid": false, 
+            "status": "1 DUD - Tag U/s"
+        }
+    """
+    tag = request.GET.get('tag')
+    if not tag:
+        return JsonResponse({'valid': False, 'message': 'Missing tag parameter'})
+
+    try:
+        # Check if the tag exists
+        pit_tag = TrtPitTags.objects.filter(pittag_id=tag).select_related('pit_tag_status').first()
+        if pit_tag:
+            # Check if the status is 'U'
+            if pit_tag.pit_tag_status.pit_tag_status == 'U':
+                return JsonResponse({'valid': True})
+            else:
+                return JsonResponse({'valid': False, 'status': pit_tag.pit_tag_status.description})
+        else:
+            return JsonResponse({'valid': False, 'message': 'PIT tag not found'})
+    except Exception as e:
+        return JsonResponse({'valid': False, 'message': str(e)})
+
+def validate_new_tag(request):
+    """
+    Validates if a new tag already exists and is unused.
+
+    This method retrieves the tag from the GET parameters and checks if the tag already exists
+    in the TrtTags model and if its status is 'U' (unused). It returns a JSON response 
+    indicating whether the tag exists and is unused.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        JsonResponse: A JSON response containing the validation result. The response 
+                    includes an 'valid' key with a boolean value indicating if the 
+                    tag is valid, and a 'status' key with the tag's current status if applicable.
+
+    Example:
+        GET /validate-new-tag?tag=349
+
+        Response:
+        {
+            "valid": true
+        }
+    """
+    tag = request.GET.get('tag')
+    if not tag:
+        return JsonResponse({'valid': False, 'message': 'Missing tag parameter'})
+
+    try:
+        # Check if the tag exists
+        flipper_tag = TrtTags.objects.filter(tag_id=tag).select_related('tag_status').first()
+        if flipper_tag:
+            # Check if the status is 'U'
+            if flipper_tag.tag_status.tag_status == 'U':
+                return JsonResponse({'valid': True})
+            else:
+                return JsonResponse({'valid': False, 'status': flipper_tag.tag_status.description})
+        else:
+            return JsonResponse({'valid': False, 'message': 'Flipper tag not found'})
+    except Exception as e:
+        return JsonResponse({'valid': False, 'message': str(e)})
+
+def validate_recaptured_pit_tag(request):
+    """
+    Validates if a PIT tag matches the specific turtle.
+
+    This method retrieves the turtle_id and tag from the GET parameters and checks 
+    if the PIT tag is associated with the specified turtle. It returns a JSON response 
+    indicating whether the PIT tag is valid.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        JsonResponse: A JSON response containing the validation result. The response 
+                    includes a 'valid' key with a boolean value indicating if the 
+                    PIT tag is valid, and a 'message' key with an error message if applicable.
+
+    Example:
+        GET /validate-recaptured-pit-tag?turtle_id=33137&tag=900119000523275
 
         Response:
         {
@@ -915,15 +1060,16 @@ def validate_turtle_tag(request):
     """
     turtle_id = request.GET.get('turtle_id')
     tag = request.GET.get('tag')
-    
+
     if not turtle_id or not tag:
         return JsonResponse({'valid': False, 'message': 'Missing parameters'})
 
     try:
         turtle = TrtTurtles.objects.get(turtle_id=turtle_id)
-        is_valid = turtle.trttags_set.filter(tag_id=tag).exists()
+        is_valid = turtle.trtpittags_set.filter(pittag_id=tag).exists()
         return JsonResponse({'valid': is_valid})
     except TrtTurtles.DoesNotExist:
-        return JsonResponse({'valid': False, 'message': 'Turtle not found'})    
-
+        return JsonResponse({'valid': False, 'message': 'Turtle not found'})
+    except TrtPitTags.DoesNotExist:
+        return JsonResponse({'valid': False, 'message': 'PIT tag not found'})
 

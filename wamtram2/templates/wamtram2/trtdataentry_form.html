@@ -143,172 +143,197 @@
   <div class="card border-dark mb-3">
     <div class="card-header">Tags</div>
     <div class="card-body">
-      <div class="row">
-        <div class="col-md-12">
-          <div class="row mt-2">
-            <label class="col-sm-2 col-form-label"><strong>FLIPPER Tag(s)</strong></label>
-            <label class="col-sm-4 col-form-label">Does turtle have old FLIPPER tag(s)?</label>
-            <div class="col-sm-4">
-              <select class="form-control" id="flipperTags" onchange="showContentBasedOnSelection()">
-                <option value="" disabled selected>Select</option>
-                <option value="Yes">Yes</option>
-                <option value="No">No</option>
-                <option value="did not check">Did not check</option>
-              </select>
-            </div>
-          </div>
-          <div id="tagDetails" style="display: none;">
-            <div id="recaptureTags" style="display: none;">
-              <div class="row mt-2">
-                <div class="col-md-6">
-                  {% bootstrap_field form.recapture_left_tag_id %}
-                  <span id="left-tag-validation-message"></span>
-                </div>
-                <div class="col-md-6">
-                  {% bootstrap_field form.recapture_right_tag_id %}
-                  <span id="right-tag-validation-message"></span>
-                </div>
-              </div>
-              <div id="additionalRecaptureTags" style="display: none;">
+        <!-- Flipper Tags Section -->
+        <section class="row">
+            <div class="col-md-12">
                 <div class="row mt-2">
-                  <div class="col-md-6">
-                    {% bootstrap_field form.recapture_left_tag_id_2 %}
-                    <span id="left-tag-validation-message-2"></span>
-                  </div>
-                  <div class="col-md-6">
-                    {% bootstrap_field form.recapture_right_tag_id_2 %}
-                    <span id="right-tag-validation-message-2"></span>  
-                  </div>
+                    <label class="col-sm-2 col-form-label"><strong>FLIPPER Tag(s)</strong></label>
+                    <label class="col-sm-4 col-form-label">Does turtle have old FLIPPER tag(s)?</label>
+                    <div class="col-sm-4">
+                        <select class="form-control" id="flipperTags" onchange="showContentBasedOnSelection()">
+                            <option value="" disabled selected>Select</option>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                            <option value="did not check">Did not check</option>
+                        </select>
+                    </div>
                 </div>
-              </div>
-              <div class="row mt-2">
-                <div class="col-md-6">
-                  <button type="button" class="btn btn-primary" id="toggleRecaptureTagsBtn" onclick="toggleRecaptureTags()">More Recapture Tags</button>
+                
+                <div id="tagDetails" style="display: none;">
+                    <!-- Recapture Tags -->
+                    <div id="recaptureTags" style="display: none;">
+                        <div class="row mt-2">
+                            <div class="col-md-6">
+                                {% bootstrap_field form.recapture_left_tag_id %}
+                                <span id="left-tag-validation-message"></span>
+                                <span id="left-tag-message"></span>
+                            </div>
+                            <div class="col-md-6">
+                                {% bootstrap_field form.recapture_right_tag_id %}
+                                <span id="right-tag-validation-message"></span>
+                                <span id="right-tag-message"></span>
+                            </div>
+                        </div>
+                        <div id="additionalRecaptureTags" style="display: none;">
+                            <div class="row mt-2">
+                                <div class="col-md-6">
+                                    {% bootstrap_field form.recapture_left_tag_id_2 %}
+                                    <span id="left-tag-validation-message-2"></span>
+                                    <span id="left-tag-message-2"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    {% bootstrap_field form.recapture_right_tag_id_2 %}
+                                    <span id="right-tag-validation-message-2"></span>
+                                    <span id="right-tag-message-2"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-6">
+                                <button type="button" class="btn btn-primary" id="toggleRecaptureTagsBtn" onclick="toggleRecaptureTags()">More Recapture Tags</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- New Tags -->
+                    <div id="newTags" style="display: none;">
+                        <div class="row mt-2">
+                            <div class="col-md-6">
+                                {% bootstrap_field form.new_left_tag_id %}
+                                <span id="new-left-tag-validation-message"></span>
+                                <span id="new-left-tag-message"></span>
+                            </div>
+                            <div class="col-md-6">
+                                {% bootstrap_field form.new_right_tag_id %}
+                                <span id="new-right-tag-validation-message"></span>
+                                <span id="new-right-tag-message"></span>
+                            </div>
+                        </div>
+                        <div id="additionalNewTags" style="display: none;">
+                            <div class="row mt-2">
+                                <div class="col-md-6">
+                                    {% bootstrap_field form.new_left_tag_id_2 %}
+                                </div>
+                                <div class="col-md-6">
+                                    {% bootstrap_field form.new_right_tag_id_2 %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-6">
+                                <button type="button" class="btn btn-primary" id="toggleNewTagsBtn" onclick="toggleNewTags()">More New Tags</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-              </div>
             </div>
-            
-            <div id="newTags" style="display: none;">
-              <div class="row mt-2">
-                <div class="col-md-6">
-                  {% bootstrap_field form.new_left_tag_id %}
+        </section>
+
+        <!-- PIT Tags Section -->
+        <section class="row mt-5">
+            <div class="col-md-12">
+                <div class="row">
+                    <label class="col-sm-2 col-form-label"><strong>PIT tag present?</strong></label>
+                    <div class="col-sm-4 offset-sm-4">
+                        <select class="form-control" id="PITTags" onchange="showPITContentBasedOnSelection()">
+                            <option value="" disabled selected>Select</option>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                            <option value="did not check">Did not check</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="col-md-6">
-                  {% bootstrap_field form.new_right_tag_id %}
+                <div id="recapturePIT" style="display: none;">
+                    <div class="row mt-2">
+                        <div class="col-md-6">
+                            {% bootstrap_field form.recapture_pittag_id %}
+                            <span id="recapture-pit-tag-validation-message"></span>
+                            <span id="recapture-pit-tag-message"></span>
+                        </div>
+                        <div class="col-md-6">
+                            {% bootstrap_field form.recapture_pittag_id_2 %}
+                            <span id="recapture-pit-tag-validation-message-2"></span>
+                            <span id="recapture-pit-tag-message-2"></span>
+                        </div>
+                    </div>
                 </div>
-              </div>
-              <div id="additionalNewTags" style="display: none;">
-                <div class="row mt-2">
-                  <div class="col-md-6">
-                    {% bootstrap_field form.new_left_tag_id_2 %}
-                  </div>
-                  <div class="col-md-6">
-                    {% bootstrap_field form.new_right_tag_id_2 %}
-                  </div>
+                <div id="newPIT" style="display: none;">
+                    <div class="row mt-2">
+                        <div class="col-md-6">
+                            {% bootstrap_field form.new_pittag_id %}
+                            <span id="new-pit-tag-validation-message"></span>
+                            <span id="new-pit-tag-message"></span>
+                        </div>
+                        <div class="col-md-6">
+                            {% bootstrap_field form.new_pittag_id_2 %}
+                            <span id="new-pit-tag-validation-message-2"></span>
+                            <span id="new-pit-tag-message-2"></span>
+                        </div>
+                    </div>
                 </div>
-              </div>
-              <div class="row mt-2">
-                <div class="col-md-6">
-                  <button type="button" class="btn btn-primary" id="toggleNewTagsBtn" onclick="toggleNewTags()">More New Tags</button>
-                </div>
-              </div>
             </div>
-          </div>
-        </div>
-      </div>
-      <div class="row mt-5">
-        <div class="col-md-12">
-          <div class="row">
-            <label class="col-sm-2 col-form-label"><strong>PIT tag present?</strong></label>
-            <label class="col-sm-4 col-form-label"></label>
-            <div class="col-sm-4">
-              <select class="form-control" id="PITTags" onchange="showPITContentBasedOnSelection()">
-                <option value="" disabled selected>Select</option>
-                <option value="Yes">Yes</option>
-                <option value="No">No</option>
-                <option value="did not check">Did not check</option>
-              </select>
-            </div>
-          </div>
-          <div id="recapturePIT" style="display: none;">
-            <div class="row mt-2">
-              <div class="col-md-6">
-                {% bootstrap_field form.recapture_pittag_id %}
-              </div>
-              <div class="col-md-6">
-                {% bootstrap_field form.recapture_pittag_id_2 %}
-              </div>
-            </div>
-          </div>
-          <div id="newPIT" style="display: none;">
-            <div class="row mt-2">
-              <div class="col-md-6">
-                {% bootstrap_field form.new_pittag_id %}
-              </div>
-              <div class="col-md-6">
-                {% bootstrap_field form.new_pittag_id_2 %}
-              </div>
-            </div>
-          </div>
-          <div class="row mt-5">
+        </section>
+
+        <!-- Flipper Tags Scars Section -->
+        <section class="row mt-5">
             <div class="col-md-3">
-              <label><strong>Flipper Tags scars?</strong></label>
+                <label><strong>Flipper Tags scars?</strong></label>
             </div>
             <div class="col-3">
-              {% bootstrap_field form.tagscarnotchecked %}
+                {% bootstrap_field form.tagscarnotchecked %}
             </div>
             <div class="col-12" id="scarsDetails">
-              <div class="row align-items-center mb-2">
-                <div class="col-auto">
-                  {% bootstrap_field form.scars_left %}
+                <div class="row align-items-center mb-2">
+                    <div class="col-auto">
+                        {% bootstrap_field form.scars_left %}
+                    </div>
+                    <div class="col-auto d-flex align-items-center">
+                        <div class="form-check form-check-inline">
+                            {% bootstrap_field form.scars_left_scale_1 %}
+                        </div>
+                        <div class="form-check form-check-inline">
+                            {% bootstrap_field form.scars_left_scale_2 %}
+                        </div>
+                        <div class="form-check form-check-inline">
+                            {% bootstrap_field form.scars_left_scale_3 %}
+                        </div>
+                    </div>
                 </div>
-                <div class="col-auto d-flex align-items-center">
-                  <div class="form-check form-check-inline">
-                    {% bootstrap_field form.scars_left_scale_1 %}
-                  </div>
-                  <div class="form-check form-check-inline">
-                    {% bootstrap_field form.scars_left_scale_2 %}
-                  </div>
-                  <div class="form-check form-check-inline">
-                    {% bootstrap_field form.scars_left_scale_3 %}
-                  </div>
-                </div>
-              </div>
             </div>
             <div class="col-12" id="scarsDetailsRight">
-              <div class="row align-items-center">
-                <div class="col-auto">
-                  {% bootstrap_field form.scars_right %}
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        {% bootstrap_field form.scars_right %}
+                    </div>
+                    <div class="col-auto d-flex align-items-center">
+                        <div class="form-check form-check-inline">
+                            {% bootstrap_field form.scars_right_scale_1 %}
+                        </div>
+                        <div class="form-check form-check-inline">
+                            {% bootstrap_field form.scars_right_scale_2 %}
+                        </div>
+                        <div class="form-check form-check-inline">
+                            {% bootstrap_field form.scars_right_scale_3 %}
+                        </div>
+                    </div>
                 </div>
-                <div class="col-auto d-flex align-items-center">
-                  <div class="form-check form-check-inline">
-                    {% bootstrap_field form.scars_right_scale_1 %}
-                  </div>
-                  <div class="form-check form-check-inline">
-                    {% bootstrap_field form.scars_right_scale_2 %}
-                  </div>
-                  <div class="form-check form-check-inline">
-                    {% bootstrap_field form.scars_right_scale_3 %}
-                  </div>
-                </div>
-              </div>
             </div>
-          </div>
-          <div class="row mt-2">
+        </section>
+
+        <!-- Tagged By Section -->
+        <section class="row mt-2">
             <div class="col-md-12">
-              <label for="{{ form.tagged_by_id.id_for_label }}">{{ form.tagged_by_id.label }}</label>
+                <label for="{{ form.tagged_by_id.id_for_label }}">{{ form.tagged_by_id.label }}</label>
             </div>
             <div class="col-md-4">
-              {% bootstrap_field form.tagged_by_id show_label=False %}
+                {% bootstrap_field form.tagged_by_id show_label=False %}
             </div>
             <div class="col-md-2">
-              <button type="button" class="btn btn-outline-primary add-person-btn" onClick="window.open(adminUrl);" title="Add new person">
-              <i class="fas fa-plus"></i>
-              </button>
+                <button type="button" class="btn btn-outline-primary add-person-btn" onclick="window.open(adminUrl);" title="Add new person">
+                    <i class="fas fa-plus"></i>
+                </button>
             </div>
-          </div>
-        </div>
-      </div>
+        </section>
     </div>
   </div>
   <!-- Third part: Measurements -->
@@ -587,66 +612,127 @@
   // Tag validation
   document.addEventListener('DOMContentLoaded', function() {
     const turtleIdInput = document.getElementById('id_turtle_id');
-    const recaptureLeftTagInput = document.getElementById('id_recapture_left_tag_id');
-    const recaptureRightTagInput = document.getElementById('id_recapture_right_tag_id');
-    const recaptureLeftTagInput2 = document.getElementById('id_recapture_left_tag_id_2');
-    const recaptureRightTagInput2 = document.getElementById('id_recapture_right_tag_id_2');
-    const leftValidationMessage = document.getElementById('left-tag-validation-message');
-    const rightValidationMessage = document.getElementById('right-tag-validation-message');
-    const leftValidationMessage2 = document.getElementById('left-tag-validation-message-2');
-    const rightValidationMessage2 = document.getElementById('right-tag-validation-message-2');
     const doNotProcessField = document.getElementById('{{ form.do_not_process.auto_id }}');
 
-    function validateTag(tagInput, validationMessage, side) {
-      console.log(`Validating ${side} tag with turtle ID: ${turtleIdInput.value} and tag ID: ${tagInput.value}`);
-      const turtleId = turtleIdInput.value;
-      const tagId = tagInput.value;
+    // Define input fields and validation message elements
+    const tagInputs = {
+        recaptureLeftTagInput: document.getElementById('id_recapture_left_tag_id'),
+        recaptureRightTagInput: document.getElementById('id_recapture_right_tag_id'),
+        recaptureLeftTagInput2: document.getElementById('id_recapture_left_tag_id_2'),
+        recaptureRightTagInput2: document.getElementById('id_recapture_right_tag_id_2'),
+        newLeftTagInput: document.getElementById('id_new_left_tag_id'),
+        newRightTagInput: document.getElementById('id_new_right_tag_id'),
+        newPitTagInput: document.getElementById('id_new_pittag_id'),
+        newPitTagInput2: document.getElementById('id_new_pittag_id_2'),
+        recapturePitTagInput: document.getElementById('id_recapture_pittag_id'),
+        recapturePitTagInput2: document.getElementById('id_recapture_pittag_id_2')
+    };
 
-      if (turtleId && tagId) {
-        fetch(`/wamtram2/validate-turtle-tag/?turtle_id=${turtleId}&tag=${tagId}&side=${side}`)
-          .then(response => {
-            console.log('Response received');
-            return response.json();
-          })
-          .then(data => {
-            console.log('Data received:', data);
-            if (data.valid) {
-              validationMessage.textContent = '✓ Valid tag';
-              validationMessage.style.color = 'green';
-              doNotProcessField.checked = false;
-            } else if (data.wrong_side) {
-              validationMessage.textContent = '! Tag may be on the wrong side';
-              validationMessage.style.color = 'orange';
-              doNotProcessField.checked = true;
-            } else {
-              validationMessage.textContent = '✗ Invalid tag';
-              validationMessage.style.color = 'red';
-              doNotProcessField.checked = true;
+    const validationMessages = {
+        recaptureLeftTagMessage: document.getElementById('left-tag-validation-message'),
+        recaptureRightTagMessage: document.getElementById('right-tag-validation-message'),
+        recaptureLeftTagMessage2: document.getElementById('left-tag-validation-message-2'),
+        recaptureRightTagMessage2: document.getElementById('right-tag-validation-message-2'),
+        newLeftTagMessage: document.getElementById('new-left-tag-validation-message'),
+        newRightTagMessage: document.getElementById('new-right-tag-validation-message'),
+        newPitTagMessage: document.getElementById('new-pit-tag-validation-message'),
+        newPitTagMessage2: document.getElementById('new-pit-tag-validation-message-2'),
+        recapturePitTagMessage: document.getElementById('recapture-pit-tag-validation-message'),
+        recapturePitTagMessage2: document.getElementById('recapture-pit-tag-validation-message-2')
+    };
+
+    const detailedMessages = {
+        recaptureLeftTagDetailedMessage: document.getElementById('left-tag-message'),
+        recaptureRightTagDetailedMessage: document.getElementById('right-tag-message'),
+        recaptureLeftTagDetailedMessage2: document.getElementById('left-tag-message-2'),
+        recaptureRightTagDetailedMessage2: document.getElementById('right-tag-message-2'),
+        newLeftTagDetailedMessage: document.getElementById('new-left-tag-message'),
+        newRightTagDetailedMessage: document.getElementById('new-right-tag-message'),
+        newPitTagDetailedMessage: document.getElementById('new-pit-tag-message'),
+        newPitTagDetailedMessage2: document.getElementById('new-pit-tag-message-2'),
+        recapturePitTagDetailedMessage: document.getElementById('recapture-pit-tag-message'),
+        recapturePitTagDetailedMessage2: document.getElementById('recapture-pit-tag-message-2')
+    };
+
+    function validateTag(tagInput, validationMessage, detailedMessage, type, side) {
+        const turtleId = turtleIdInput.value;
+        const tagId = tagInput.value;
+
+        if (tagId) {
+            let url = `/wamtram2/validate-${type}-tag/?tag=${tagId}`;
+            if (type === 'recaptured') {
+                url += `&turtle_id=${turtleId}&side=${side}`;
+            } else if (type === 'recaptured-pit') {
+                url += `&turtle_id=${turtleId}`;
             }
-            updateBackgroundColor();
-          })
-          .catch(error => {
-            console.error('Error:', error);
-            validationMessage.textContent = 'Error validating tag';
-            validationMessage.style.color = 'red';
-          });
-      } else {
-        validationMessage.textContent = '';
-      }
+
+            fetch(url)
+                .then(response => {
+                    console.log('Response received for URL:', url);
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Data received:', data);
+                    if (data.valid && !data.wrong_side) {
+                        validationMessage.textContent = '✓ Valid tag';
+                        validationMessage.style.color = 'green';
+                        detailedMessage.textContent = '';
+                        if (type === 'recaptured') doNotProcessField.checked = false;
+                    } else if (data.wrong_side) {
+                        validationMessage.textContent = '! Tag may be on the wrong side';
+                        validationMessage.style.color = 'orange';
+                        detailedMessage.textContent = '';
+                        if (type === 'recaptured') doNotProcessField.checked = true;
+                    } else if (data.other_turtle_id) {
+                        validationMessage.textContent = '✗ Invalid tag';
+                        validationMessage.style.color = 'red';
+                        detailedMessage.textContent = `Tag belongs to another turtle (ID: ${data.other_turtle_id})`;
+                        detailedMessage.style.color = 'red';
+                        if (type === 'recaptured') doNotProcessField.checked = true;
+                    } else if (data.status) {
+                        validationMessage.textContent = '✗ Invalid tag';
+                        validationMessage.style.color = 'red';
+                        detailedMessage.textContent = `Tag status: ${data.status}`;
+                        detailedMessage.style.color = 'red';
+                    } else {
+                        validationMessage.textContent = '✗ Invalid tag';
+                        validationMessage.style.color = 'red';
+                        detailedMessage.textContent = '';
+                        if (type === 'recaptured') doNotProcessField.checked = true;
+                    }
+                    updateBackgroundColor();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    validationMessage.textContent = 'Error validating tag';
+                    validationMessage.style.color = 'red';
+                    detailedMessage.textContent = '';
+                });
+        } else {
+            validationMessage.textContent = '';
+            detailedMessage.textContent = '';
+        }
     }
 
-    function addValidationListener(input, message, side) {
-      if (input) {
-        input.addEventListener('blur', function() {
-          validateTag(this, message, side);
-        });
-      }
+    function addValidationListener(input, validationMessage, detailedMessage, type, side = '') {
+        if (input) {
+            input.addEventListener('blur', function() {
+                validateTag(this, validationMessage, detailedMessage, type, side);
+            });
+        }
     }
 
-    addValidationListener(recaptureLeftTagInput, leftValidationMessage, 'left');
-    addValidationListener(recaptureRightTagInput, rightValidationMessage, 'right');
-    addValidationListener(recaptureLeftTagInput2, leftValidationMessage2, 'left');
-    addValidationListener(recaptureRightTagInput2, rightValidationMessage2, 'right');
+    // Add validation listeners for each tag input
+    addValidationListener(tagInputs.recaptureLeftTagInput, validationMessages.recaptureLeftTagMessage, detailedMessages.recaptureLeftTagDetailedMessage, 'recaptured', 'L');
+    addValidationListener(tagInputs.recaptureRightTagInput, validationMessages.recaptureRightTagMessage, detailedMessages.recaptureRightTagDetailedMessage, 'recaptured', 'R');
+    addValidationListener(tagInputs.recaptureLeftTagInput2, validationMessages.recaptureLeftTagMessage2, detailedMessages.recaptureLeftTagDetailedMessage2, 'recaptured', 'L');
+    addValidationListener(tagInputs.recaptureRightTagInput2, validationMessages.recaptureRightTagMessage2, detailedMessages.recaptureRightTagDetailedMessage2, 'recaptured', 'R');
+    addValidationListener(tagInputs.newLeftTagInput, validationMessages.newLeftTagMessage, detailedMessages.newLeftTagDetailedMessage, 'new');
+    addValidationListener(tagInputs.newRightTagInput, validationMessages.newRightTagMessage, detailedMessages.newRightTagDetailedMessage, 'new');
+    addValidationListener(tagInputs.newPitTagInput, validationMessages.newPitTagMessage, detailedMessages.newPitTagDetailedMessage, 'new-pit');
+    addValidationListener(tagInputs.newPitTagInput2, validationMessages.newPitTagMessage2, detailedMessages.newPitTagDetailedMessage2, 'new-pit');
+    addValidationListener(tagInputs.recapturePitTagInput, validationMessages.recapturePitTagMessage, detailedMessages.recapturePitTagDetailedMessage, 'recaptured-pit');
+    addValidationListener(tagInputs.recapturePitTagInput2, validationMessages.recapturePitTagMessage2, detailedMessages.recapturePitTagDetailedMessage2, 'recaptured-pit');
   });
 
   // Show or hide content based on PIT tag selection
