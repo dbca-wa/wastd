@@ -113,7 +113,6 @@
                         {% endif %}
                     </ul>
                 {% endif %}
-   
                 {% if object_list %}
                     {% if object_count %}<div>Found {{ object_count }} records</div>{% endif %}
                 {% endif %}
@@ -183,6 +182,7 @@
                         <select name="filter" class="form-control" onchange="this.form.submit()">
                             <option value="">All</option>
                             <option value="no_observation_id" {% if request.GET.filter == "no_observation_id" %}selected{% endif %}>Unprocessed observations</option>
+                            <option value="not_processed" {% if request.GET.filter == "not_processed" %}selected{% endif %}>Not Processed</option>
                         </select>
                     </div>
                 </form>
@@ -192,78 +192,80 @@
 
     {# Data entries table #}
     {% if object_list %}
-        <div class="row mt-3">
-            <div class="col">
-                <table class="table table-striped table-bordered table-sm table-hover">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Saved Observation</th>
-                            <th>Observation date</th>
-                            <th>Turtle ID</th>
-                            <th>Recapture Tags</th>
-                            <th>New Tags</th>
-                            <th>Error Message</th>
-                            <th>Enterer</th>
-                            <th>Comments</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for obj in object_list %}
-                        <tr>
-                            <td><a href="{% url 'wamtram2:trtdataentry' obj.data_entry_id %}">{{ obj.data_entry_id }}</a></td>
-                            <td>{% if obj.observation_id %}<a href="{% url 'wamtram2:observationdetail' pk=obj.observation_id.pk %}">{{ obj.observation_id.pk }}</a>{% endif %}</td>
-                            <td>{{ obj.observation_date|date:"j M Y" }} {{ obj.observation_time|date:"H:i" }}</td>
-                            <td>{% if obj.turtle_id %}<a href="{% url 'wamtram2:turtle_detail' obj.turtle_id %}">{{obj.turtle_id}}</a>{% endif %}</td>
-                            <td>
-                                {% if obj.recapture_left_tag_id %}{{ obj.recapture_left_tag_id }} {% endif %}
-                                {% if obj.recapture_left_tag_id_2 %}{{ obj.recapture_left_tag_id_2 }} {% endif %}
-                                {% if obj.recapture_left_tag_id_3 %}{{ obj.recapture_left_tag_id_3 }} {% endif %}
-                                {% if obj.recapture_right_tag_id %}{{ obj.recapture_right_tag_id }} {% endif %}
-                                {% if obj.recapture_right_tag_id_2 %}{{ obj.recapture_right_tag_id_2 }} {% endif %}
-                                {% if obj.recapture_right_tag_id_3 %}{{ obj.recapture_right_tag_id_3 }} {% endif %}
-                                {% if obj.recapture_pittag_id %}{{ obj.recapture_pittag_id }} {% endif %}
-                                {% if obj.recapture_pittag_id_2 %}{{ obj.recapture_pittag_id_2 }} {% endif %}
-                            </td>
-                            <td>
-                                {% if obj.new_left_tag_id %}{{ obj.new_left_tag_id }} {% endif %}
-                                {% if obj.new_left_tag_id_2 %}{{ obj.new_left_tag_id_2 }} {% endif %}
-                                {% if obj.new_right_tag_id %}{{ obj.new_right_tag_id }} {% endif %}
-                                {% if obj.new_right_tag_id_2 %}{{ obj.new_right_tag_id_2 }} {% endif %}
-                                {% if obj.new_pittag_id %}{{ obj.new_pittag_id }} {% endif %}
-                                {% if obj.new_pittag_id_2 %}{{ obj.new_pittag_id_2 }} {% endif %}
-                            </td> 
-                            <td>{{ obj.error_message }}</td>
-                            <td>
-                                {% if obj.entered_by_id %}
-                                    {% with persons|get:obj.entered_by_id as person %}
-                                        {% if person %}
-                                            {{ person.first_name }} {{ person.surname }}
-                                        {% else %}
-                                            {{ obj.entered_by }}
-                                        {% endif %}
-                                    {% endwith %}
-                                {% elif obj.entered_by %}
-                                    {{ obj.entered_by }}
-                                {% else %}
-                                    <p>No Enterer Assigned</p>
-                                {% endif %}
-                            </td>
-                            <td>{{ obj.comments}}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+    <div class="row mt-3">
+        <div class="col">
+            <table class="table table-striped table-bordered table-sm table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Saved Observation</th>
+                        <th>Observation date</th>
+                        <th>Turtle ID</th>
+                        <th>Recapture Tags</th>
+                        <th>New Tags</th>
+                        <th>Error Message</th>
+                        <th>Enterer</th>
+                        <th>Do Not Process</th>
+                        <th>Comments</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for obj in object_list %}
+                    <tr>
+                        <td><a href="{% url 'wamtram2:trtdataentry' obj.data_entry_id %}">{{ obj.data_entry_id }}</a></td>
+                        <td>{% if obj.observation_id %}<a href="{% url 'wamtram2:observationdetail' pk=obj.observation_id.pk %}">{{ obj.observation_id.pk }}</a>{% endif %}</td>
+                        <td>{{ obj.observation_date|date:"j M Y" }} {{ obj.observation_time|date:"H:i" }}</td>
+                        <td>{% if obj.turtle_id %}<a href="{% url 'wamtram2:turtle_detail' obj.turtle_id %}">{{obj.turtle_id}}</a>{% endif %}</td>
+                        <td>
+                            {% if obj.recapture_left_tag_id %}{{ obj.recapture_left_tag_id }} {% endif %}
+                            {% if obj.recapture_left_tag_id_2 %}{{ obj.recapture_left_tag_id_2 }} {% endif %}
+                            {% if obj.recapture_left_tag_id_3 %}{{ obj.recapture_left_tag_id_3 }} {% endif %}
+                            {% if obj.recapture_right_tag_id %}{{ obj.recapture_right_tag_id }} {% endif %}
+                            {% if obj.recapture_right_tag_id_2 %}{{ obj.recapture_right_tag_id_2 }} {% endif %}
+                            {% if obj.recapture_right_tag_id_3 %}{{ obj.recapture_right_tag_id_3 }} {% endif %}
+                            {% if obj.recapture_pittag_id %}{{ obj.recapture_pittag_id }} {% endif %}
+                            {% if obj.recapture_pittag_id_2 %}{{ obj.recapture_pittag_id_2 }} {% endif %}
+                        </td>
+                        <td>
+                            {% if obj.new_left_tag_id %}{{ obj.new_left_tag_id }} {% endif %}
+                            {% if obj.new_left_tag_id_2 %}{{ obj.new_left_tag_id_2 }} {% endif %}
+                            {% if obj.new_right_tag_id %}{{ obj.new_right_tag_id }} {% endif %}
+                            {% if obj.new_right_tag_id_2 %}{{ obj.new_right_tag_id_2 }} {% endif %}
+                            {% if obj.new_pittag_id %}{{ obj.new_pittag_id }} {% endif %}
+                            {% if obj.new_pittag_id_2 %}{{ obj.new_pittag_id_2 }} {% endif %}
+                        </td> 
+                        <td>{{ obj.error_message }}</td>
+                        <td>
+                            {% if obj.entered_by_id %}
+                                {% with persons|get:obj.entered_by_id as person %}
+                                    {% if person %}
+                                        {{ person.first_name }} {{ person.surname }}
+                                    {% else %}
+                                        {{ obj.entered_by }}
+                                    {% endif %}
+                                {% endwith %}
+                            {% elif obj.entered_by %}
+                                {{ obj.entered_by }}
+                            {% else %}
+                                <p>No Enterer Assigned</p>
+                            {% endif %}
+                        </td>
+                        <td>{% if obj.do_not_process %}Yes{% else %}No{% endif %}</td>
+                        <td>{{ obj.comments }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
-    {% else %}
-        <div class="row mt-3">
-            <div class="col">
-                <p>No data entries found.</p>
-            </div>
+    </div>
+{% else %}
+    <div class="row mt-3">
+        <div class="col">
+            <p>No data entries found.</p>
         </div>
-        
-    {% endif %}
+    </div>
+{% endif %}
+
     <!-- Loading spinner -->
     <div class="loading-spinner">
         <div class="spinner-border text-primary" role="status">

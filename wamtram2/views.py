@@ -201,100 +201,67 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
 
         Returns:
             queryset (QuerySet): The filtered queryset of TrtDataEntry objects.
-
         """
         queryset = super().get_queryset()
         batch_id = self.kwargs.get("batch_id")
 
-        # Check if the user has requested to filter by TrtDataEntrys with no observation_id
-        if (
-            "filter" in self.request.GET
-            and self.request.GET["filter"] == "no_observation_id"
-        ):
-            # Filter the queryset
-            queryset = queryset.filter(
-                entry_batch_id=batch_id, observation_id__isnull=True
-            )
+        filter_value = self.request.GET.get("filter")
+        if filter_value == "processed":
+            queryset = queryset.filter(entry_batch_id=batch_id, do_not_process=False)
+        elif filter_value == "not_processed":
+            queryset = queryset.filter(entry_batch_id=batch_id, do_not_process=True)
         else:
             queryset = queryset.filter(entry_batch_id=batch_id)
 
         return queryset.order_by("-data_entry_id")
 
     def get_context_data(self, **kwargs):
-        """
-        Returns the context data for rendering the template, including the persons dictionary.
+            """
+            Returns the context data for rendering the template, including the persons dictionary.
 
-        Args:
-            **kwargs: Additional keyword arguments.
+            Args:
+                **kwargs: Additional keyword arguments.
 
-        Returns:
-            context (dict): The context data for rendering the template.
+            Returns:
+                context (dict): The context data for rendering the template.
 
-        """
-        context = super().get_context_data(**kwargs)
-        context["persons"] = {
-            person.person_id: person for person in TrtPersons.objects.all()
-        }
+            """
+            context = super().get_context_data(**kwargs)
+            context["persons"] = {
+                person.person_id: person for person in TrtPersons.objects.all()
+            }
 
-        batch = TrtEntryBatches.objects.get(entry_batch_id=self.kwargs.get("batch_id"))
-        context["batch"] = batch  # add the batch to the context
-        initial = self.get_initial()
-        context["form"] = TrtEntryBatchesForm(
-            instance=batch,
-            initial=initial
-        )  # Add the form to the context data
-        
-        # Add the templates to the context data
-        cookies_key_prefix = self.kwargs.get("batch_id")
-        context['selected_template'] = self.request.COOKIES.get(f'{cookies_key_prefix}_selected_template', '')
-        context['use_default_enterer'] = self.request.COOKIES.get(f'{cookies_key_prefix}_use_default_enterer', False)
-        context['default_enterer'] = self.request.COOKIES.get(f'{cookies_key_prefix}_default_enterer', None)
+            batch = TrtEntryBatches.objects.get(entry_batch_id=self.kwargs.get("batch_id"))
+            context["batch"] = batch  # add the batch to the context
+            initial = self.get_initial()
+            context["form"] = TrtEntryBatchesForm(
+                instance=batch,
+                initial=initial
+            )  # Add the form to the context data
+            
+            # Add the templates to the context data
+            cookies_key_prefix = self.kwargs.get("batch_id")
+            context['selected_template'] = self.request.COOKIES.get(f'{cookies_key_prefix}_selected_template', '')
+            context['use_default_enterer'] = self.request.COOKIES.get(f'{cookies_key_prefix}_use_default_enterer', False)
+            context['default_enterer'] = self.request.COOKIES.get(f'{cookies_key_prefix}_default_enterer', None)
 
-        context['cookies_key_prefix'] = cookies_key_prefix
-        context['default_enterer_value'] = context['default_enterer']
-        context['templates'] = self.load_templates()
-        return context
-
-    def post(self, request, *args, **kwargs):
-        form = self.get_form()
-        form.instance.entry_batch_id = self.kwargs.get("batch_id")
-        if form.is_valid():
-            batch = form.save()
-            result = self.form_valid(form)
-            batch_id = self.kwargs.get("batch_id")
-            cookies_key_prefix = batch_id
-            response = result
-            response.set_cookie(f'{cookies_key_prefix}_selected_template', request.POST.get('selected_template'), max_age=3600)
-            response.set_cookie(f'{cookies_key_prefix}_use_default_enterer', request.POST.get('use_default_enterer') == 'on', max_age=3600)
-            response.set_cookie(f'{cookies_key_prefix}_default_enterer', batch.entered_person_id.person_id if batch.entered_person_id else None, max_age=3600)
-
-            return result
-        else:
-            return self.form_invalid(form)
-
-    def form_valid(self, form):
-        batch = form.save(commit=False)
-
-        batch_id = batch.entry_batch_id
-
-        # Get the existing instance from the database
-        existing_batch = TrtEntryBatches.objects.get(entry_batch_id=batch_id)
-
-        # Update the PR_DATE_CONVENTION field with the existing value
-        if 'pr_date_convention' not in form.cleaned_data:
-            batch.pr_date_convention = existing_batch.pr_date_convention
-        batch.entry_date = existing_batch.entry_date
-        batch.filename = existing_batch.filename
-
-        # Save the batch instance
-        batch.save()
-
-        # Redirect to the success URL
-        return HttpResponseRedirect(self.get_success_url())
-
-    def get_success_url(self):
-        batch_id = self.kwargs.get("batch_id")
-        return reverse("wamtram2:entry_batch_detail", args=[batch_id])
+            context['cookies_key_prefix'] = cookies_key_prefix
+            context['default_enterer_value'] = context['default_enterer']
+            context['templates'] = self.load_templates()
+            
+            # Add entries with do_not_process = True to the context
+            context["do_not_process_entries"] = TrtDataEntry.objects.filter(
+                entry_batch_id=batch.entry_batch_id,
+                do_not_process=True
+            ).order_by("-data_entry_id")
+            
+            # Add entries with do_not_process = False to the context
+            context["process_entries"] = TrtDataEntry.objects.filter(
+                entry_batch_id=batch.entry_batch_id,
+                do_not_process=False
+            ).order_by("-data_entry_id")
+            
+            return context
 
 
 class TrtDataEntryFormView(LoginRequiredMixin, FormView):
