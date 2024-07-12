@@ -723,7 +723,9 @@ SEX_CHOICES = [
     ("F", "Female"),
     ("I", "Indeterminate"),
 ]
-class TemplateManageView(View):
+class TemplateManageView(LoginRequiredMixin, FormView):
+    template_name = 'wamtram2/template_manage.html'
+    form_class = TemplateForm
 
     def get_json_path(self):
         return os.path.join(settings.BASE_DIR, 'wamtram2', 'templates.json')
@@ -736,7 +738,6 @@ class TemplateManageView(View):
         except FileNotFoundError:
             return {}
         except json.JSONDecodeError as e:
-            # Log error and return empty dictionary
             print(f"Error decoding JSON: {e}")
             return {}
 
@@ -757,53 +758,37 @@ class TemplateManageView(View):
                 max_key = max(max_key, int(match.group(1)))
         return f"template{max_key + 1}"
 
-    def get(self, request):
+    def form_valid(self, form):
+        new_template = form.save(commit=False)
         templates = self.load_templates_from_json()
-        form = TemplateForm()
-        places = list(TrtPlaces.objects.all())
-        species = list(TrtSpecies.objects.all())
-        return render(request, 'wamtram2/template_manage.html', {
-            'templates': templates, 
-            'form': form, 
-            'places': places, 
-            'species': species,
-            'sex_choices': SEX_CHOICES
-        })
-
-    def post(self, request):
-        form = TemplateForm(request.POST)
-        if form.is_valid():
-            new_template = form.save(commit=False)
-            templates = self.load_templates_from_json()
-            new_template_data = {
-                'name': new_template.name,
-                'place_code': request.POST.get('place_code'),
-                'species_code': request.POST.get('species_code'),
-                'sex': request.POST.get('sex')
-            }
-            template_key = self.get_next_template_key(templates)
-            templates[template_key] = new_template_data
-            try:
-                self.save_templates_to_json(templates)
-                return redirect('wamtram2:template_manage')
-            except Exception as e:
-                return render(request, 'wamtram2/template_manage.html', {
-                    'form': form,
-                    'templates': templates,
-                    'places': list(TrtPlaces.objects.all()), 
-                    'species': list(TrtSpecies.objects.all()),
-                    'sex_choices': SEX_CHOICES,
-                    'error_message': f"Error saving template: {e}"
-                })
-        else:
-            return render(request, 'wamtram2/template_manage.html', {
-                'form': form, 
-                'templates': self.load_templates_from_json(), 
+        new_template_data = {
+            'name': new_template.name,
+            'place_code': self.request.POST.get('place_code'),
+            'species_code': self.request.POST.get('species_code'),
+            'sex': self.request.POST.get('sex')
+        }
+        template_key = self.get_next_template_key(templates)
+        templates[template_key] = new_template_data
+        try:
+            self.save_templates_to_json(templates)
+            return redirect('wamtram2:template_manage')
+        except Exception as e:
+            return render(self.request, 'wamtram2/template_manage.html', {
+                'form': form,
+                'templates': templates,
                 'places': list(TrtPlaces.objects.all()), 
                 'species': list(TrtSpecies.objects.all()),
                 'sex_choices': SEX_CHOICES,
-                'error_message': "Invalid form data. Please correct the errors below."
+                'error_message': f"Error saving template: {e}"
             })
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['templates'] = self.load_templates_from_json()
+        context['places'] = list(TrtPlaces.objects.all())
+        context['species'] = list(TrtSpecies.objects.all())
+        context['sex_choices'] = SEX_CHOICES
+        return context
 
     def put(self, request, template_key):
         templates = self.load_templates_from_json()
@@ -849,13 +834,16 @@ class TemplateManageView(View):
         return JsonResponse({'error': 'Template not found'}, status=404)
 
     def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_superuser:
+            return HttpResponseForbidden("You do not have permission to access this page.")
+        
         if request.method == 'PUT':
             return self.put(request, *args, **kwargs)
         elif request.method == 'DELETE':
             return self.delete(request, *args, **kwargs)
         return super().dispatch(request, *args, **kwargs)
     
-
+    
 def validate_recaptured_tag(request):
     """
     Validates if a given tag matches the turtle ID and side.
