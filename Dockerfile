@@ -31,9 +31,6 @@ COPY poetry.lock pyproject.toml ./
 RUN poetry config virtualenvs.create false \
   && poetry install --no-interaction --no-ansi --only main
 
-# Ensure compatible versions of numpy and pandas
-RUN pip install --upgrade numpy pandas
-
 # Create a non-root user.
 ARG UID=10001
 ARG GID=10001
