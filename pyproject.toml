@@ -2,7 +2,7 @@
 name = "wastd"
 version = "2.0.3"
 description = "Western Australian Sea Turtles Database"
-authors = ["Florian Mayer <florian.mayer@dbca.wa.gov.au>", "Ashley Felton <ashley.felton@dbca.wa.gov.au>","Evan Hallein <evan.hallein@dbca.wa.gov.au>"]
+authors = ["Florian Mayer <florian.mayer@dbca.wa.gov.au>", "Ashley Felton <ashley.felton@dbca.wa.gov.au>","Evan Hallein <evan.hallein@dbca.wa.gov.au>","Rick Wang <rick.wang@dbca.wa.gov.au>"]
 license = "MIT"
 readme = "README.md"
 
