@@ -2127,6 +2127,7 @@ class TrtYesNo(models.Model):
 # local models templates.json
 class Template(models.Model):
     name = models.CharField(max_length=255)
+    location_code = models.CharField(max_length=50)
     place_code = models.CharField(max_length=50)
     species_code = models.CharField(max_length=50)
     sex = models.CharField(max_length=1)

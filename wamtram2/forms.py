@@ -408,4 +408,4 @@ class EnterUserModelForm(forms.ModelForm):
 class TemplateForm(forms.ModelForm):
     class Meta:
         model = Template
-        fields = ['name', 'place_code', 'species_code', 'sex']
+        fields = ['name', 'location_code', 'place_code', 'species_code', 'sex']

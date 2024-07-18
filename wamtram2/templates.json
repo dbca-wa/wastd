@@ -1,20 +1,23 @@
 {
-    "template1": {
-        "name": "Port Bremer area - FlatbackV1",
+    "template6": {
+        "name": "1131123",
+        "location_code": "DH",
         "place_code": "DHT2",
+        "species_code": "0",
+        "sex": "M"
+    },
+    "template8": {
+        "name": "123123",
+        "location_code": "BZ",
+        "place_code": "BZIL",
         "species_code": "GN",
         "sex": "M"
     },
-    "template2": {
-        "name": "Port Bremer area - Flatback",
-        "place_code": "DHT2",
+    "template9": {
+        "name": "231",
+        "location_code": "AR",
+        "place_code": "ARMI",
         "species_code": "GN",
-        "sex": "M"
-    },
-    "template3": {
-        "name": "213123",
-        "place_code": "DHT2",
-        "species_code": "?",
-        "sex": "M"
+        "sex": "F"
     }
 }

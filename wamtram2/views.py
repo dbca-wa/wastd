@@ -2,7 +2,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.db import connections, DatabaseError
 from django.db.models import Q, Exists, OuterRef
-from django.http import HttpResponseRedirect, HttpResponseForbidden
+from django.http import HttpResponseForbidden
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse, reverse_lazy
@@ -10,9 +10,9 @@ from django.views import View
 from django.views.generic.edit import FormMixin
 from django.views.generic import TemplateView, ListView, DetailView, FormView, DeleteView
 from django.http import JsonResponse, QueryDict
-from .models import TrtPlaces, TrtSpecies, TrtPitTagStatus
-from django.views.decorators.http import require_POST
-from django.views.decorators.csrf import csrf_protect
+from .models import TrtPlaces, TrtSpecies, TrtLocations
+from django.views.decorators.http import require_http_methods
+from django.utils.decorators import method_decorator
 import os
 import json
 import re
@@ -772,10 +772,24 @@ class TemplateManageView(LoginRequiredMixin, FormView):
         templates = self.load_templates_from_json()
         new_template_data = {
             'name': new_template.name,
+            'location_code': self.request.POST.get('location_code'),
             'place_code': self.request.POST.get('place_code'),
             'species_code': self.request.POST.get('species_code'),
             'sex': self.request.POST.get('sex')
         }
+        
+        # # 检查新模板数据是否完整
+        # if not all(new_template_data.values()):
+        #     return render(self.request, 'wamtram2/template_manage.html', {
+        #         'form': form,
+        #         'templates': templates,
+        #         'locations': list(TrtLocations.objects.all()),
+        #         'places': list(TrtPlaces.objects.all()), 
+        #         'species': list(TrtSpecies.objects.all()),
+        #         'sex_choices': SEX_CHOICES,
+        #         'error_message': "All fields are required."
+        #     })
+        
         template_key = self.get_next_template_key(templates)
         templates[template_key] = new_template_data
         try:
@@ -785,51 +799,22 @@ class TemplateManageView(LoginRequiredMixin, FormView):
             return render(self.request, 'wamtram2/template_manage.html', {
                 'form': form,
                 'templates': templates,
+                'locations': list(TrtLocations.objects.all()),
                 'places': list(TrtPlaces.objects.all()), 
                 'species': list(TrtSpecies.objects.all()),
                 'sex_choices': SEX_CHOICES,
                 'error_message': f"Error saving template: {e}"
             })
 
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['templates'] = self.load_templates_from_json()
+        context['locations'] = list(TrtLocations.objects.all())
         context['places'] = list(TrtPlaces.objects.all())
         context['species'] = list(TrtSpecies.objects.all())
         context['sex_choices'] = SEX_CHOICES
         return context
-
-    def put(self, request, template_key):
-        templates = self.load_templates_from_json()
-        template_data = templates.get(template_key)
-        if not template_data:
-            return JsonResponse({'error': 'Template not found'}, status=404)
-
-        put_data = QueryDict(request.body)
-        
-        template_instance = Template(
-            name=template_data['name'],
-            place_code=template_data['place_code'],
-            species_code=template_data['species_code'],
-            sex=template_data['sex']
-        )
-        
-        form = TemplateForm(put_data, instance=template_instance)
-        if form.is_valid():
-            updated_template = form.save(commit=False)
-            updated_template_data = {
-                'name': updated_template.name,
-                'place_code': put_data.get('place_code'),
-                'species_code': put_data.get('species_code'),
-                'sex': put_data.get('sex')
-            }
-            templates[template_key] = updated_template_data
-            try:
-                self.save_templates_to_json(templates)
-                return JsonResponse(updated_template_data)
-            except Exception as e:
-                return JsonResponse({'error': f"Error saving template: {e}"}, status=500)
-        return JsonResponse({'errors': form.errors}, status=400)
 
     def delete(self, request, template_key):
         templates = self.load_templates_from_json()
@@ -850,9 +835,52 @@ class TemplateManageView(LoginRequiredMixin, FormView):
             return self.put(request, *args, **kwargs)
         elif request.method == 'DELETE':
             return self.delete(request, *args, **kwargs)
+        elif request.method == 'GET' and 'location_code' in request.GET:
+            return self.get_places(request)
         return super().dispatch(request, *args, **kwargs)
-
-
+    
+    def get_places(self, request):
+        location_code = request.GET.get('location_code')
+        places = TrtPlaces.objects.filter(location_code=location_code)
+        places_list = list(places.values('place_code', 'place_name'))
+        return JsonResponse(places_list, safe=False)
+    
+    def put(self, request, template_key):
+        templates = self.load_templates_from_json()
+        template_data = templates.get(template_key)
+        if not template_data:
+            return JsonResponse({'error': 'Template not found'}, status=404)
+        
+        put_data = QueryDict(request.body)
+    
+        # 调试输出接收到的数据
+        print(put_data)
+        
+        template_instance = Template(
+            name=template_data['name'],
+            location_code=template_data['location_code'],
+            place_code=template_data['place_code'],
+            species_code=template_data['species_code'],
+            sex=template_data['sex']
+        )
+        
+        form = TemplateForm(put_data, instance=template_instance)
+        if form.is_valid():
+            updated_template = form.save(commit=False)
+            updated_template_data = {
+                'name': updated_template.name,
+                'location_code': put_data.get('location_code'),
+                'place_code': put_data.get('place_code'),
+                'species_code': put_data.get('species_code'),
+                'sex': put_data.get('sex')
+            }
+            templates[template_key] = updated_template_data
+            try:
+                self.save_templates_to_json(templates)
+                return JsonResponse(updated_template_data)
+            except Exception as e:
+                return JsonResponse({'error': f"Error saving template: {e}"}, status=500)
+        return JsonResponse({'errors': form.errors}, status=400)
 
 def validate_recaptured_tag(request):
     """

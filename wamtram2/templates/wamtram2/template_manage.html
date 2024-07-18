@@ -41,6 +41,25 @@
         .template-form-row {
             margin-bottom: 10px;
         }
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+
+        /* Loading spinner */
+        .loading-spinner {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+        }
+        .loading-spinner .spinner-border {
+            width: 5rem;
+            height: 5rem;
+            border-width: 0.5rem;
+        }
     </style>
 {% endblock %}
 
@@ -71,9 +90,16 @@
             <div class="step-header">Create New Template</div>
             <form id="templateForm" method="post" class="row">
                 {% csrf_token %}
-                <input type="hidden" id="csrfToken" value="{{ csrf_token }}">
-                <div class="col-md-3">
+                <div class="col-md-12">
                     {% bootstrap_field form.name show_label=True %}
+                </div>
+                <div class="col-md-3">
+                    <label for="location_code">Location</label>
+                    <select class="form-control" id="location_code" name="location_code">
+                        {% for location in locations %}
+                            <option value="{{ location.location_code }}">{{ location.location_name }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
                 <div class="col-md-3">
                     <label for="place_code">Place</label>
@@ -99,8 +125,8 @@
                         {% endfor %}
                     </select>
                 </div>
-                <div class="col-md-12 mt-2">
-                    <button type="button" class="btn btn-primary" onclick="createTemplate()">Create</button>
+                <div class="col-md-2 mt-3">
+                    <button type="button" class="btn btn-primary btn-block" onclick="createTemplate()">Create</button>
                 </div>
             </form>
         </div>
@@ -119,7 +145,15 @@
                                 <div class="form-group col-md-10">
                                     <input type="text" class="form-control" id="name_{{ key }}" name="name" value="{{ template.name }}">
                                 </div>
-                                <div class="form-group col-md-4">
+                                <div class="form-group col-md-3">
+                                    <label for="location_code_{{ key }}">Location</label>
+                                    <select class="form-control" id="location_code_{{ key }}" name="location_code">
+                                        {% for location in locations %}
+                                            <option value="{{ location.location_code }}" {% if location.location_code == template.location_code %}selected{% endif %}>{{ location.location_name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-3">
                                     <label for="place_code_{{ key }}">Place</label>
                                     <select class="form-control" id="place_code_{{ key }}" name="place_code">
                                         {% for place in places %}
@@ -127,7 +161,7 @@
                                         {% endfor %}
                                     </select>
                                 </div>
-                                <div class="form-group col-md-4">
+                                <div class="form-group col-md-3">
                                     <label for="species_code_{{ key }}">Species</label>
                                     <select class="form-control" id="species_code_{{ key }}" name="species_code">
                                         {% for specie in species %}
@@ -135,7 +169,7 @@
                                         {% endfor %}
                                     </select>
                                 </div>
-                                <div class="form-group col-md-4">
+                                <div class="form-group col-md-3">
                                     <label for="sex_{{ key }}">Sex</label>
                                     <select class="form-control" id="sex_{{ key }}" name="sex">
                                         {% for code, name in sex_choices %}
@@ -158,6 +192,13 @@
                 <hr>
             {% endfor %}
         </div>
+
+        <!-- Loading spinner -->
+        <div class="loading-spinner">
+            <div class="spinner-border text-primary" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
     </div>
 {% endblock page_content_inner %}
 
@@ -165,7 +206,7 @@
     {{ block.super }}
     <script>
         function getCSRFToken() {
-            return document.getElementById('csrfToken').value;
+            return document.querySelector('[name=csrfmiddlewaretoken]').value;
         }
 
         function showMessage(message, type) {
@@ -180,11 +221,31 @@
             }, 3000);
         }
 
+        function showLoadingSpinner() {
+            const loadingSpinner = document.querySelector('.loading-spinner');
+            if (loadingSpinner) {
+                loadingSpinner.style.display = 'block';
+            }
+        }
+
+        function hideLoadingSpinner() {
+            const loadingSpinner = document.querySelector('.loading-spinner');
+            if (loadingSpinner) {
+                loadingSpinner.style.display = 'none';
+            }
+        }
+
         function updateTemplate(templateKey) {
-            var formData = $('#templateForm-' + templateKey).serialize();
+            var formData = $('#templateForm-' + templateKey).serialize(); // 使用serialize()创建URL编码的字符串
+
+            console.log(formData);
+
+            showLoadingSpinner();
+        
             $.ajax({
-                url: "/wamtram2/template/manage/" + templateKey + "/",
+                url: "{% url 'wamtram2:template_manage_key' 'dummy_key' %}".replace('dummy_key', templateKey),
                 type: "PUT",
+                contentType: "application/x-www-form-urlencoded",
                 data: formData,
                 beforeSend: function(xhr) {
                     xhr.setRequestHeader("X-CSRFToken", getCSRFToken());
@@ -193,16 +254,28 @@
                     showMessage('Template updated successfully', 'success');
                     location.reload();
                 },
-                error: function(data) {
-                    showMessage('Error updating template: ' + JSON.stringify(data.responseJSON.errors), 'danger');
+                error: function(xhr, status, error) {
+                    var errorMessage = 'Error updating template';
+                    if (xhr.responseJSON && xhr.responseJSON.errors) {
+                        errorMessage += ': ' + JSON.stringify(xhr.responseJSON.errors);
+                    } else if (xhr.responseJSON && xhr.responseJSON.error) {
+                        errorMessage += ': ' + xhr.responseJSON.error;
+                    } else {
+                        errorMessage += '. Please check the server logs for more details.';
+                    }
+                    showMessage(errorMessage, 'danger');
+                },
+                complete: function() {
+                    hideLoadingSpinner();
                 }
             });
         }
 
         function deleteTemplate(templateKey) {
             if (confirm('Are you sure you want to delete this template?')) {
+                showLoadingSpinner();
                 $.ajax({
-                    url: "/wamtram2/template/manage/" + templateKey + "/",
+                    url: "{% url 'wamtram2:template_manage' %}" + templateKey + "/",
                     type: "DELETE",
                     beforeSend: function(xhr) {
                         xhr.setRequestHeader("X-CSRFToken", getCSRFToken());
@@ -213,6 +286,9 @@
                     },
                     error: function(data) {
                         showMessage('Error deleting template: ' + JSON.stringify(data.responseJSON.errors), 'danger');
+                    },
+                    complete: function() {
+                        hideLoadingSpinner();
                     }
                 });
             }
@@ -220,8 +296,9 @@
 
         function createTemplate() {
             var formData = $('#templateForm').serialize();
+            showLoadingSpinner();
             $.ajax({
-                url: "/wamtram2/template/manage/",
+                url: "{% url 'wamtram2:template_manage' %}",
                 type: "POST",
                 data: formData,
                 success: function(data) {
@@ -230,8 +307,55 @@
                 },
                 error: function(data) {
                     showMessage('Error creating template: ' + JSON.stringify(data.responseJSON.errors), 'danger');
+                },
+                complete: function() {
+                    hideLoadingSpinner();
                 }
             });
         }
+
+        function loadPlaces(locationCode, targetElement) {
+            showLoadingSpinner();
+            $.ajax({
+                url: "{% url 'wamtram2:get_places' %}",
+                type: 'GET',
+                data: { location_code: locationCode },
+                dataType: 'json', 
+                success: function(data) {
+                    var placeSelect = $(targetElement);
+                    placeSelect.empty();
+                    if (Array.isArray(data)) {
+                        $.each(data, function(index, place) {
+                            placeSelect.append('<option value="' + place.place_code + '">' + place.place_name + '</option>');
+                        });
+                    } else {
+                        console.error('Unexpected data format:', data);
+                        showMessage('Error loading places: Unexpected data format', 'danger');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching places:', xhr.responseText);
+                    showMessage('Error loading places. Please try again.', 'danger');
+                },
+                complete: function() {
+                    hideLoadingSpinner();
+                }
+            });
+        }
+
+        $(document).ready(function() {
+            $('#location_code').change(function() {
+                var locationCode = $(this).val();
+                loadPlaces(locationCode, '#place_code');
+            });
+
+            {% for key, template in templates.items %}
+                $('#location_code_{{ key }}').change(function() {
+                    var locationCode = $(this).val();
+                    loadPlaces(locationCode, '#place_code_{{ key }}');
+                });
+            {% endfor %}
+        });
     </script>
 {% endblock %}
+

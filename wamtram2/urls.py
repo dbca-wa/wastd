@@ -24,6 +24,7 @@ urlpatterns = [
     path("validate-new-tag/", views.validate_new_tag, name="validate_new_tag"),
     path("validate-recaptured-tag/", views.validate_recaptured_tag, name="validate_recaptured_tag"),
     path("validate-recaptured-pit-tag/", views.validate_recaptured_pit_tag, name="validate_recaptured_pit_tag"),
-    path("template/manage/", views.TemplateManageView.as_view(), name="template_manage"),
-    path("template/manage/<str:template_key>/", views.TemplateManageView.as_view(), name="template_manage_key"),
+    path("templates-manage/", views.TemplateManageView.as_view(), name="template_manage"),
+    path("templates-manage/<str:template_key>/", views.TemplateManageView.as_view(), name="template_manage_key"),
+    path('templates-manage/get-places/', views.TemplateManageView.as_view(), name='get_places'),
 ]
