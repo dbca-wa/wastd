@@ -5,10 +5,10 @@ from django.db.models import Q, Exists, OuterRef
 from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect, get_object_or_404
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.views.generic.edit import FormMixin
-from django.views.generic import TemplateView, ListView, DetailView, FormView
+from django.views.generic import TemplateView, ListView, DetailView, FormView, DeleteView
 from django.http import JsonResponse, QueryDict
 from .models import TrtPlaces, TrtSpecies, TrtPitTagStatus
 from django.views.decorators.http import require_POST
@@ -508,6 +508,15 @@ class ValidateDataEntryBatchView(LoginRequiredMixin, View):
         return redirect("wamtram2:entry_batch_detail", batch_id=self.kwargs["batch_id"])
 
 
+class DeleteEntryView(DeleteView):
+    model = TrtDataEntry
+    template_name = 'your_app/delete_entry_confirm.html'
+    success_url = reverse_lazy('wamtram2:entry_batches')
+
+    def get_success_url(self):
+        batch_id = self.kwargs['batch_id']
+        return reverse_lazy('wamtram2:entry_batch_detail', kwargs={'batch_id': batch_id})
+
 class ProcessDataEntryBatchView(LoginRequiredMixin, View):
     """
     View class for processing a data entry batch.
@@ -842,8 +851,9 @@ class TemplateManageView(LoginRequiredMixin, FormView):
         elif request.method == 'DELETE':
             return self.delete(request, *args, **kwargs)
         return super().dispatch(request, *args, **kwargs)
-    
-    
+
+
+
 def validate_recaptured_tag(request):
     """
     Validates if a given tag matches the turtle ID and side.
@@ -904,6 +914,7 @@ def validate_recaptured_tag(request):
     except TrtTurtles.DoesNotExist:
         return JsonResponse({'valid': False, 'wrong_side': False, 'message': 'Turtle not found'})
 
+
 def validate_new_pit_tag(request):
     """
     Validates if a new PIT tag already exists and is unused.
@@ -947,6 +958,7 @@ def validate_new_pit_tag(request):
     except Exception as e:
         return JsonResponse({'valid': False, 'message': str(e)})
 
+
 def validate_new_tag(request):
     """
     Validates if a new tag already exists and is unused.
@@ -988,6 +1000,7 @@ def validate_new_tag(request):
             return JsonResponse({'valid': False, 'message': 'Flipper tag not found'})
     except Exception as e:
         return JsonResponse({'valid': False, 'message': str(e)})
+
 
 def validate_recaptured_pit_tag(request):
     """
