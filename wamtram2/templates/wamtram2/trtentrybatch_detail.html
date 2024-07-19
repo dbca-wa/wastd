@@ -128,7 +128,7 @@
     {% endblock pagination_row %}
     <div class="step-container">
         <div class="step-header">Step 1: Batch Details</div>
-        <form action="{% url 'wamtram2:entry_batch_detail' batch_id=batch.entry_batch_id %}" method="post" class="row">
+        <form id="batchDetailsForm" action="{% url 'wamtram2:entry_batch_detail' batch_id=batch.entry_batch_id %}" method="post" class="row">
             {% csrf_token %}
             <div class="col-md-4">
                 <div class="d-flex align-items-end">
@@ -369,7 +369,8 @@
 
     document.addEventListener('DOMContentLoaded', function() {
         // Get necessary DOM elements
-        const form = document.querySelector('form');
+        const form = document.getElementById('batchDetailsForm');
+        const submitButton = form.querySelector('button[type="submit"]');
         const templateSelector = document.getElementById('templateSelector');
         const setDefaultEnterer = document.getElementById('setDefaultEnterer');
         const createEntryBtn = document.getElementById('createEntryBtn');
@@ -407,6 +408,7 @@
                 form.appendChild(defaultEntererInput);
 
                 console.log('Form inputs added:', templateInput.value, defaultEntererInput.value);
+                showLoadingSpinner();
                 form.submit();
             });
         } else {
@@ -445,6 +447,7 @@
                 // Short delay before navigation to ensure cookies update is complete
                 setTimeout(() => {
                     console.log('Navigating to:', this.href);
+                    showLoadingSpinner();
                     window.location.href = this.href;
                 }, 100);
             });
