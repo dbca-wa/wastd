@@ -1,23 +1,23 @@
 {
     "template6": {
-        "name": "1131123",
-        "location_code": "DH",
-        "place_code": "DHT2",
-        "species_code": "0",
+        "name": "Cape Dommett- Needles - Flatback - Male",
+        "location_code": "CD",
+        "place_code": "CDTN",
+        "species_code": "FB",
         "sex": "M"
     },
     "template8": {
-        "name": "123123",
+        "name": "Brazil coast - Green - Female",
         "location_code": "BZ",
         "place_code": "BZIL",
         "species_code": "GN",
-        "sex": "M"
+        "sex": "F"
     },
     "template9": {
-        "name": "231",
+        "name": "Ashmore Reef - East -  Hawksbill - Male",
         "location_code": "AR",
-        "place_code": "ARMI",
-        "species_code": "GN",
-        "sex": "F"
+        "place_code": "AREI",
+        "species_code": "HK",
+        "sex": "M"
     }
 }

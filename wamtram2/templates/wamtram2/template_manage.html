@@ -5,7 +5,9 @@
     {{ block.super }}
     {{ form.media.css }}
     <style>
-        .select2 { width: 100% !important; }
+        .select2 {
+            width: 100% !important;
+        }
         .add-person-btn {
             height: 28px;
             width: 28px;
@@ -69,6 +71,7 @@
 {% endblock extra_head %}
 
 {% block breadcrumbs %}
+    <!-- Breadcrumb Navigation -->
     <nav aria-label="breadcrumb" class="d-none d-md-block">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
@@ -79,6 +82,7 @@
 
 {% block page_content_inner %}
     <div class="container">
+        <!-- Message Alert -->
         <div id="message-alert" class="alert alert-success" role="alert"></div>
         {% if error_message %}
             <div class="alert alert-danger" role="alert">
@@ -86,6 +90,7 @@
             </div>
         {% endif %}
 
+        <!-- Create New Template Form -->
         <div class="step-container">
             <div class="step-header">Create New Template</div>
             <form id="templateForm" method="post" class="row">
@@ -131,6 +136,7 @@
             </form>
         </div>
 
+        <!-- Existing Templates List -->
         <div class="step-container">
             <div class="step-header">Existing Templates</div>
             {% for key, template in templates.items %}
@@ -200,15 +206,17 @@
             </div>
         </div>
     </div>
-{% endblock page_content_inner %}
+{% endblock %}
 
 {% block extra_js %}
     {{ block.super }}
     <script>
+        // Get CSRF Token
         function getCSRFToken() {
             return document.querySelector('[name=csrfmiddlewaretoken]').value;
         }
 
+        // Show Message
         function showMessage(message, type) {
             var alert = $('#message-alert');
             alert.removeClass('alert-success alert-danger');
@@ -221,6 +229,7 @@
             }, 3000);
         }
 
+        // Show Loading Spinner
         function showLoadingSpinner() {
             const loadingSpinner = document.querySelector('.loading-spinner');
             if (loadingSpinner) {
@@ -228,6 +237,7 @@
             }
         }
 
+        // Hide Loading Spinner
         function hideLoadingSpinner() {
             const loadingSpinner = document.querySelector('.loading-spinner');
             if (loadingSpinner) {
@@ -235,8 +245,9 @@
             }
         }
 
+        // Update Template
         function updateTemplate(templateKey) {
-            var formData = $('#templateForm-' + templateKey).serialize(); // 使用serialize()创建URL编码的字符串
+            var formData = $('#templateForm-' + templateKey).serialize(); // Serialize form data
 
             console.log(formData);
 
@@ -271,6 +282,7 @@
             });
         }
 
+        // Delete Template
         function deleteTemplate(templateKey) {
             if (confirm('Are you sure you want to delete this template?')) {
                 showLoadingSpinner();
@@ -294,6 +306,7 @@
             }
         }
 
+        // Create Template
         function createTemplate() {
             var formData = $('#templateForm').serialize();
             showLoadingSpinner();
@@ -314,13 +327,14 @@
             });
         }
 
+        // Load Places based on Location Code
         function loadPlaces(locationCode, targetElement) {
             showLoadingSpinner();
             $.ajax({
                 url: "{% url 'wamtram2:get_places' %}",
                 type: 'GET',
                 data: { location_code: locationCode },
-                dataType: 'json', 
+                dataType: 'json',
                 success: function(data) {
                     var placeSelect = $(targetElement);
                     placeSelect.empty();
@@ -343,6 +357,7 @@
             });
         }
 
+        // Initialize event handlers on document ready
         $(document).ready(function() {
             $('#location_code').change(function() {
                 var locationCode = $(this).val();
@@ -358,4 +373,3 @@
         });
     </script>
 {% endblock %}
-
