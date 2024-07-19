@@ -1,99 +1,145 @@
 {% extends "base_wastd.html" %}
 {% load static bootstrap4 %}
- 
+
 {% block extra_style %}
   {{ block.super }}
   {{ form.media.css }}
-<style>
+  <style>
     .select2 {
       width: 100% !important;
     }
-</style>
+    /* Loading spinner */
+    .loading-spinner {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 9999;
+    }
+    .loading-spinner .spinner-border {
+        width: 5rem;
+        height: 5rem;
+        border-width: 0.5rem;
+    }
+  </style>
 {% endblock %}
- 
+
 {% block extra_head %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" 
+        integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" 
+        crossorigin="anonymous"></script>
 {% endblock extra_head %}
- 
+
 {% block breadcrumbs %}
 <nav aria-label="breadcrumb">
-<ol class="breadcrumb">
-<li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-<li class="breadcrumb-item"><a href="{% url 'wamtram2:entry_batches' %}">Entry batches</a></li>       
-      {% if form.batch_id.value %}
-<li class="breadcrumb-item"><a href="{% url 'wamtram2:entry_batch_detail' form.batch_id.value %}">{{form.batch_id.value}}</a></li>
-      {% endif %}
-</ol>
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'wamtram2:entry_batches' %}">Entry batches</a></li>
+    {% if form.batch_id.value %}
+    <li class="breadcrumb-item"><a href="{% url 'wamtram2:entry_batch_detail' form.batch_id.value %}">{{ form.batch_id.value }}</a></li>
+    {% endif %}
+  </ol>
 </nav>
 {% endblock %}
- 
+
 {% block page_content_inner %}
 <div class="container mt-5 mb-5">
-<div class="row">
-<div class="col col-12 mb-3">
-<div class="card card-lg shadow-lg">
-<div class="card-body">
-<div class="text-center mt-3">
-<a href="{% url 'wamtram2:newtrtdataentry' batch_id=form.batch_id.value %}" class="btn btn-primary">Create New Untagged Turtle</a>
+  <div class="row">
+    <div class="col col-12 mb-3">
+      <div class="card card-lg shadow-lg">
+        <div class="card-body">
+          <div class="text-center mt-3">
+            <a href="{% url 'wamtram2:newtrtdataentry' batch_id=form.batch_id.value %}" class="btn btn-primary">Create New Untagged Turtle</a>
+          </div>
+          <div class="text-center mt-4">or</div>
+          <h5 class="text-center mt-4">Search for a Tagged Turtle</h5>
+          <form method="post" class="w-50 mx-auto text-center mt-3" onsubmit="return validateForm()">
+            {% csrf_token %}
+            <div class="form-group">
+              <label for="tag_id">Tag ID:</label>
+              <input type="text" class="form-control" id="tag_id" name="tag_id" required>
+            </div>
+            <div class="row justify-content-md-center">
+              <input type="submit" value="Search" class="btn btn-primary">
+            </div>
+          </form>
+          
+          <div class="text-center mt-4">{% bootstrap_form_errors form %}</div>
+          {% if turtle %}
+          <div class="container border pb-3 mt-3">
+            <div class="mt-3 row justify-content-md-center"><strong>Tag: {{ form.tag_id.value }}</strong></div>
+            <div class="mt-3 row justify-content-md-center">
+              <div class="col-md-auto"><strong>ID:</strong> <a href="{% url 'wamtram2:turtle_detail' turtle.turtle_id %}" target="_blank">{{ turtle.turtle_id }}</a></div>
+              <div class="col-md-auto"><strong>Sex:</strong> {{ turtle.sex }}</div>
+              <div class="col-md-auto"><strong>Species:</strong> {{ turtle.species_code }}</div>        
+              <div class="col-md-auto"><strong>Status:</strong> {{ turtle.turtle_status }}</div>        
+            </div>
+          </div>
+          <div class="text-center mt-4">
+            <p>Does the species and sex match the data sheet?</p>
+            <a href="{% url 'wamtram2:existingtrtdataentry' batch_id=form.batch_id.value turtle_id=turtle.turtle_id %}" class="btn btn-primary" onclick="updateReviewLaterStatus(false)">Yes, create for turtle {{ turtle.turtle_id }}</a>
+            <button class="btn btn-secondary ml-2" onclick="createAndReviewLater('{{ form.batch_id.value }}', '{{ form.tag_id.value }}')">No, create the record and review later</button>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
-<div class="text-center mt-4">or</div>
-<h5 class="text-center mt-4">Search for a Tagged Turtle</h5>
-<form method="post" class="w-50 mx-auto text-center mt-3" onsubmit="return validateForm()">     
-              {% csrf_token %}
-<div class="form-group">
-<label for="tag_id">Tag ID:</label>
-<input type="text" class="form-control" id="tag_id" name="tag_id" required>
-</div>
-<div class="row justify-content-md-center">
-<input type="submit" value="Search" class="btn btn-primary">
-</div>
-</form>
- 
-            <div class="text-center mt-4">{% bootstrap_form_errors form %}</div>
-            {% if turtle %}
-<div class="container border pb-3 mt-3">
-<div class="mt-3 row justify-content-md-center"><strong>Tag: {{ form.tag_id.value }}</strong></div>
-<div class="mt-3 row justify-content-md-center">
-<div class="col-md-auto"><strong>ID:</strong> <a href="{% url 'wamtram2:turtle_detail' turtle.turtle_id %}" target="_blank">{{ turtle.turtle_id }}</a></div>
-<div class="col-md-auto"><strong>Sex:</strong> {{ turtle.sex }}</div>
-<div class="col-md-auto"><strong>Species:</strong> {{ turtle.species_code }}</div>        
-<div class="col-md-auto"><strong>Status:</strong> {{ turtle.turtle_status }}</div>        
-</div>
-</div>
-<div class="text-center mt-4">
-<p>Does the species and sex match the data sheet?</p>
-<a href="{% url 'wamtram2:existingtrtdataentry' batch_id=form.batch_id.value turtle_id=turtle.turtle_id %}" class="btn btn-primary" onclick="updateReviewLaterStatus(false)">Yes, create for turtle {{ turtle.turtle_id }}</a>
-<button class="btn btn-secondary ml-2" onclick="createAndReviewLater('{{ form.batch_id.value }}', '{{ form.tag_id.value }}')">No, create the record and review later</button>
-</div>
-            {% endif %}
-</div>
-</div>
-</div>
-</div>
+
+<!-- Loading spinner -->
+<div class="loading-spinner">
+  <div class="spinner-border text-primary" role="status">
+    <span class="sr-only">Loading...</span>
+  </div>
 </div>
 {% endblock %}
- 
+
 {% block extra_js %}
   {{ form.media.js }}
-<script>
+  <script>
+    // Validate form input
     function validateForm() {
       var tagId = document.getElementById('tag_id').value;
       if (tagId == null || tagId.trim() === "") {
         alert("Please enter a Tag ID");
         return false;
       }
+      showLoadingSpinner();
       return true;
     }
- 
+
+    // Set cookies and navigate to new data entry page
     function createAndReviewLater(batchId, tagId) {
       document.cookie = `${batchId}_tag_id=${tagId};path=/;max-age=3600`;
       document.cookie = `${batchId}_do_not_process=true;path=/;max-age=3600`;
       window.location.href = `{% url 'wamtram2:newtrtdataentry' batch_id=form.batch_id.value %}`;
     }
- 
+
+    // Update review later status in cookies
     function updateReviewLaterStatus(status) {
       var batchId = '{{ form.batch_id.value }}';
       document.cookie = `${batchId}_review_later=${status};path=/;max-age=3600`;
     }
-</script>
+
+    // Show loading spinner
+    function showLoadingSpinner() {
+        const loadingSpinner = document.querySelector('.loading-spinner');
+        if (loadingSpinner) {
+            loadingSpinner.style.display = 'block';
+        }
+    }
+
+    // Hide loading spinner
+    function hideLoadingSpinner() {
+        const loadingSpinner = document.querySelector('.loading-spinner');
+        if (loadingSpinner) {
+            loadingSpinner.style.display = 'none';
+        }
+    }
+
+    // Hide spinner on page load
+    window.addEventListener('load', hideLoadingSpinner);
+  </script>
 {% endblock %}
