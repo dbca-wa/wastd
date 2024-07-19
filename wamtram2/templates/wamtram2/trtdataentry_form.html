@@ -695,23 +695,23 @@
                         validationMessage.style.color = 'red';
                         detailedMessage.innerHTML = `Tag belongs to another turtle (ID: <a href="/wamtram2/turtles/${data.other_turtle_id}/" target="_blank">${data.other_turtle_id}</a>)`;
                         detailedMessage.style.color = 'red';
-                        if (type === 'recaptured_tag') doNotProcessField.checked = true;
+                        if (type === 'recaptured_tag' || type === 'recaptured_pit_tag') doNotProcessField.checked = true;
                     } else if (data.status) {
                         validationMessage.textContent = '✗ Invalid tag:';
                         validationMessage.style.color = 'red';
-                        detailedMessage.textContent = `Tag status: ${data.status}`;
+                        detailedMessage.textContent = `Tag status - ${data.status}`;
                         detailedMessage.style.color = 'red';
-                        if (type === 'recaptured_tag') doNotProcessField.checked = true;
+                        if (type === 'recaptured_tag' || type === 'recaptured_pit_tag') doNotProcessField.checked = true;
                     } else if (data.tag_not_found) {
                         validationMessage.textContent = '✗ Invalid tag: Tag not found (Please remove it from here and add it to the comment area)';
                         validationMessage.style.color = 'red';
                         detailedMessage.textContent = '';
-                        if (type === 'recaptured_tag') doNotProcessField.checked = true;
+                        if (type === 'recaptured_tag' || type === 'recaptured_pit_tag') doNotProcessField.checked = true;
                     } else {
                         validationMessage.textContent = '✗ Invalid tag';
                         validationMessage.style.color = 'red';
                         detailedMessage.textContent = '';
-                        if (type === 'recaptured_tag') doNotProcessField.checked = true;
+                        if (type === 'recaptured_tag' || type === 'recaptured_pit_tag') doNotProcessField.checked = true;
                     }
                     updateBackgroundColor();
                 })
@@ -746,10 +746,7 @@
     addValidationListener(tagInputs.newPitTagInput2, validationMessages.newPitTagMessage2, detailedMessages.newPitTagDetailedMessage2, 'new_pit_tag');
     addValidationListener(tagInputs.recapturePitTagInput, validationMessages.recapturePitTagMessage, detailedMessages.recapturePitTagDetailedMessage, 'recaptured_pit_tag');
     addValidationListener(tagInputs.recapturePitTagInput2, validationMessages.recapturePitTagMessage2, detailedMessages.recapturePitTagDetailedMessage2, 'recaptured_pit_tag');
-});
-
-
-
+  });
 
   // Show or hide content based on PIT tag selection
   function showPITContentBasedOnSelection() {

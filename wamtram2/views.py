@@ -988,10 +988,17 @@ class ValidateTagView(View):
             return JsonResponse({'valid': False, 'message': 'Missing tag parameter'})
 
         try:
-            pit_tag = TrtPitTags.objects.filter(pittag_id=tag).select_related('pit_tag_status').first()
+            pit_tag = TrtPitTags.objects.filter(pittag_id=tag).select_related('turtle', 'pit_tag_status').first()
             if pit_tag:
+                if pit_tag.turtle:
+                    return JsonResponse({
+                        'valid': False, 
+                        'message': 'PIT tag belongs to another turtle', 
+                        'other_turtle_id': pit_tag.turtle.turtle_id,
+                        'status': pit_tag.pit_tag_status.description
+                    })
                 if pit_tag.pit_tag_status.pit_tag_status == 'U':
-                    return JsonResponse({'valid': True})
+                    return JsonResponse({'valid': True, 'other_turtle_id': None, 'status': pit_tag.pit_tag_status.description})
                 else:
                     return JsonResponse({'valid': False, 'status': pit_tag.pit_tag_status.description})
             else:
@@ -1007,15 +1014,28 @@ class ValidateTagView(View):
             return JsonResponse({'valid': False, 'message': 'Missing parameters'})
 
         try:
-            turtle = TrtTurtles.objects.get(turtle_id=turtle_id)
-            is_valid = turtle.trtpittags_set.filter(pittag_id=tag).exists()
-            if not is_valid:
+            pit_tag = TrtPitTags.objects.filter(pittag_id=tag).select_related('turtle').first()
+            if pit_tag:
+                if pit_tag.turtle and pit_tag.turtle.turtle_id != int(turtle_id):
+                    return JsonResponse({
+                        'valid': False,
+                        'message': 'PIT tag belongs to another turtle',
+                        'other_turtle_id': pit_tag.turtle.turtle_id,
+                        'status': pit_tag.pit_tag_status.description
+                    })
+                else:
+                    if pit_tag.pit_tag_status.pit_tag_status != 'ATT':
+                        return JsonResponse({
+                            'valid': False,
+                            'message': f'PIT tag status: {pit_tag.pit_tag_status.description}',
+                            'status': pit_tag.pit_tag_status.description
+                        })
+                    return JsonResponse({'valid': True})
+            else:
                 return JsonResponse({'valid': False, 'message': 'PIT tag not found', 'tag_not_found': True})
-            return JsonResponse({'valid': True})
-        except TrtTurtles.DoesNotExist:
-            return JsonResponse({'valid': False, 'message': 'Turtle not found'})
-        except TrtPitTags.DoesNotExist:
-            return JsonResponse({'valid': False, 'message': 'PIT tag not found'})
+        except Exception as e:
+            return JsonResponse({'valid': False, 'message': str(e)})
+
 
     def get(self, request, *args, **kwargs):
         validation_type = request.GET.get('type')
@@ -1029,3 +1049,4 @@ class ValidateTagView(View):
             return self.validate_recaptured_pit_tag(request)
         else:
             return JsonResponse({'valid': False, 'message': 'Invalid validation type'})
+
