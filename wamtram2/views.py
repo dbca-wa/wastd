@@ -2,7 +2,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.db import connections, DatabaseError
 from django.db.models import Q, Exists, OuterRef
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse, reverse_lazy
@@ -262,6 +262,37 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
             ).order_by("-data_entry_id")
             
             return context
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        form.instance.entry_batch_id = self.kwargs.get("batch_id")
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
+
+    def form_valid(self, form):
+        batch = form.save(commit=False)
+
+        batch_id = batch.entry_batch_id
+
+        # Get the existing instance from the database
+        existing_batch = TrtEntryBatches.objects.get(entry_batch_id=batch_id)
+
+        # Update the PR_DATE_CONVENTION field with the existing value
+        batch.pr_date_convention = existing_batch.pr_date_convention
+        batch.entry_date = existing_batch.entry_date
+        batch.filename = existing_batch.filename
+
+        # Save the batch instance
+        batch.save()
+
+        # Redirect to the success URL
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_success_url(self):
+        batch_id = self.kwargs.get("batch_id")
+        return reverse("wamtram2:entry_batch_detail", args=[batch_id])
 
 
 class TrtDataEntryFormView(LoginRequiredMixin, FormView):
