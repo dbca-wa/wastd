@@ -42,16 +42,16 @@
 {% block page_content_inner %}
 <body data-do-not-process="{{ form.do_not_process.value|yesno:"true,false" }}">
 {% if entry_id %}
-
-<form action="{% url 'wamtram2:trtdataentry' entry_id %}" method="post"  class="container">
+  <form id="dataEntryForm" action="{% url 'wamtram2:trtdataentry' entry_id %}" method="post"  class="container">
 {% else %}
-<form action="{% url 'wamtram2:newtrtdataentry' batch_id %}" method="post"  class="container">
+  <form id="dataEntryForm" action="{% url 'wamtram2:newtrtdataentry' batch_id %}" method="post"  class="container">
 {% endif %}
 {% csrf_token %}
 {% bootstrap_form_errors form %}
 {% if form.observation_id.value %}
 <div class="row">
 <h4>Observation has aleady been submitted: <a href="{% url 'wamtram2:observationdetail' pk=form.observation_id.value %}">view observation</a></h4> 
+<div id="form-errors"></div>
 </div>
 {% endif %}
 
@@ -545,7 +545,26 @@
       {% endif %}
     </div>
   </div>
-  
+  <!-- Before Reload Confirmation Dialog -->
+  <div id="confirmation-dialog" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Confirm Navigation</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>You have unsaved changes. Do you really want to leave?</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" id="leave-button">Leave</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Stay</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 </form>
 </body>
@@ -555,65 +574,272 @@
 {{ form.media.js }}
 {{ block.super }}
 <script>
-  var adminUrl = "{% url 'admin:wamtram2_trtpersons_add' %}";
-
-  // Part 2: Tags
-  // Show or hide content based on flipper tag selection
-  function showContentBasedOnSelection() {
-    var selectElement = document.getElementById('flipperTags');
-    var tagDetails = document.getElementById('tagDetails');
-    var recaptureTags = document.getElementById('recaptureTags');
-    var newTags = document.getElementById('newTags');
-  
-    tagDetails.style.display = 'none';
-    recaptureTags.style.display = 'none';
-    newTags.style.display = 'none';
-  
-    if (selectElement.value === 'Yes') {
-      tagDetails.style.display = 'block';
-      recaptureTags.style.display = 'block';
-      newTags.style.display = 'block';
-    } else if (selectElement.value === 'No') {
-      tagDetails.style.display = 'block';
-      newTags.style.display = 'block';
-    }
-  }
-  
-  function toggleRecaptureTags() {
-    var additionalRecaptureTags = document.getElementById('additionalRecaptureTags');
-    var toggleBtn = document.getElementById('toggleRecaptureTagsBtn');
-    if (additionalRecaptureTags.style.display === 'none') {
-      additionalRecaptureTags.style.display = 'block';
-      toggleBtn.textContent = 'Less Recapture Tags';
-    } else {
-      additionalRecaptureTags.style.display = 'none';
-      toggleBtn.textContent = 'More Recapture Tags';
-    }
-  }
-  
-  function toggleNewTags() {
-    var additionalNewTags = document.getElementById('additionalNewTags');
-    var toggleBtn = document.getElementById('toggleNewTagsBtn');
-    if (additionalNewTags.style.display === 'none') {
-      additionalNewTags.style.display = 'block';
-      toggleBtn.textContent = 'Less New Tags';
-    } else {
-      additionalNewTags.style.display = 'none';
-      toggleBtn.textContent = 'More New Tags';
-    }
-  }
-  
   document.addEventListener('DOMContentLoaded', function() {
-    var selectElement = document.getElementById('flipperTags');
-    selectElement.addEventListener('change', showContentBasedOnSelection);
+    // Admin URL
+    var adminUrl = "{% url 'admin:wamtram2_trtpersons_add' %}";
+
+    // Initialize form variables
+    const form = document.getElementById('dataEntryForm');
+    let isFormDirty = false;
+
+    // Flipper Tags Handling
+    function showContentBasedOnSelection() {
+        const selectElement = document.getElementById('flipperTags');
+        const tagDetails = document.getElementById('tagDetails');
+        const recaptureTags = document.getElementById('recaptureTags');
+        const newTags = document.getElementById('newTags');
+      
+        tagDetails.style.display = 'none';
+        recaptureTags.style.display = 'none';
+        newTags.style.display = 'none';
+      
+        if (selectElement.value === 'Yes') {
+            tagDetails.style.display = 'block';
+            recaptureTags.style.display = 'block';
+            newTags.style.display = 'block';
+        } else if (selectElement.value === 'No') {
+            tagDetails.style.display = 'block';
+            newTags.style.display = 'block';
+        }
+    }
+
+    function toggleRecaptureTags() {
+        const additionalRecaptureTags = document.getElementById('additionalRecaptureTags');
+        const toggleBtn = document.getElementById('toggleRecaptureTagsBtn');
+        if (additionalRecaptureTags.style.display === 'none') {
+            additionalRecaptureTags.style.display = 'block';
+            toggleBtn.textContent = 'Less Recapture Tags';
+        } else {
+            additionalRecaptureTags.style.display = 'none';
+            toggleBtn.textContent = 'More Recapture Tags';
+        }
+    }
+    
+    function toggleNewTags() {
+        const additionalNewTags = document.getElementById('additionalNewTags');
+        const toggleBtn = document.getElementById('toggleNewTagsBtn');
+        if (additionalNewTags.style.display === 'none') {
+            additionalNewTags.style.display = 'block';
+            toggleBtn.textContent = 'Less New Tags';
+        } else {
+            additionalNewTags.style.display = 'none';
+            toggleBtn.textContent = 'More New Tags';
+        }
+    }
+
+    // Initial call to set the display based on the initial value
+    document.getElementById('flipperTags').addEventListener('change', showContentBasedOnSelection);
     showContentBasedOnSelection();
-  });
 
-  // Tag validation
-  document.addEventListener('DOMContentLoaded', function() {
+    // PIT Tags Handling
+    function showPITContentBasedOnSelection() {
+        const selectElement = document.getElementById('PITTags');
+        const recapturePIT = document.getElementById('recapturePIT');
+        const newPIT = document.getElementById('newPIT');
+
+        recapturePIT.style.display = 'none';
+        newPIT.style.display = 'none';
+
+        if (selectElement.value === 'Yes') {
+            recapturePIT.style.display = 'block';
+        } else if (selectElement.value === 'No') {
+            newPIT.style.display = 'block';
+        }
+    }
+
+    document.getElementById('PITTags').addEventListener('change', showPITContentBasedOnSelection);
+    showPITContentBasedOnSelection();
+
+    // Scars Handling
+    function toggleScarsDetails() {
+        const tagscarnotcheckedCheckbox = document.getElementById('{{ form.tagscarnotchecked.auto_id }}');
+        const scarsDetails = document.getElementById('scarsDetails');
+        const scarsDetailsRight = document.getElementById('scarsDetailsRight');
+
+        if (tagscarnotcheckedCheckbox.checked) {
+            scarsDetails.style.display = 'none';
+            scarsDetailsRight.style.display = 'none';
+        } else {
+            scarsDetails.style.display = 'block';
+            scarsDetailsRight.style.display = 'block';
+        }
+    }
+
+    document.getElementById('{{ form.tagscarnotchecked.auto_id }}').addEventListener('change', toggleScarsDetails);
+    toggleScarsDetails();
+
+    // Measurement Handling
+    function toggleMeasurement() {
+        const moreMeasurement = document.getElementById('moreMeasurement');
+        const addMeasurementButton = document.getElementById('addMeasurementButton');
+        if (moreMeasurement.style.display === 'none' || moreMeasurement.style.display === '') {
+            moreMeasurement.style.display = 'block';
+            addMeasurementButton.innerText = 'Less Measurements';
+        } else {
+            moreMeasurement.style.display = 'none';
+            addMeasurementButton.innerText = 'More Measurements';
+        }
+    }
+
+    function toggleCurvedCarapaceLength() {
+        const curvedCarapaceLength = document.getElementById('{{ form.curved_carapace_length.auto_id }}').parentElement;
+        if (document.getElementById('{{ form.cc_length_not_measured.auto_id }}').checked) {
+            curvedCarapaceLength.style.display = 'none';
+        } else {
+            curvedCarapaceLength.style.display = 'block';
+        }
+    }
+
+    function toggleCurvedCarapaceWidth() {
+        const curvedCarapaceWidth = document.getElementById('{{ form.curved_carapace_width.auto_id }}').parentElement;
+        if (document.getElementById('{{ form.cc_width_not_measured.auto_id }}').checked) {
+            curvedCarapaceWidth.style.display = 'none';
+        } else {
+            curvedCarapaceWidth.style.display = 'block';
+        }
+    }
+
+    document.getElementById('{{ form.cc_length_not_measured.auto_id }}').addEventListener('change', toggleCurvedCarapaceLength);
+    document.getElementById('{{ form.cc_width_not_measured.auto_id }}').addEventListener('change', toggleCurvedCarapaceWidth);
+    toggleCurvedCarapaceLength(); 
+    toggleCurvedCarapaceWidth();
+
+    // Injuries Handling
+    function toggleInjuryDetails() {
+        const didNotCheckCheckbox = document.getElementById('{{ form.didnotcheckforinjury.auto_id }}');
+        const injuryDetails = document.getElementById('injuryDetails');
+
+        if (didNotCheckCheckbox.checked) {
+            injuryDetails.style.display = 'none';
+        } else {
+            injuryDetails.style.display = 'block';
+        }
+    }
+
+    document.getElementById('{{ form.didnotcheckforinjury.auto_id }}').addEventListener('change', toggleInjuryDetails);
+    toggleInjuryDetails();
+
+    function toggleInjuryFields() {
+        const injuryAdditionalFields = document.getElementById('injuryAdditionalFields');
+        const toggleButton = document.getElementById('toggleInjuryFieldsButton');
+
+        if (injuryAdditionalFields.style.display === 'none' || injuryAdditionalFields.style.display === '') {
+            injuryAdditionalFields.style.display = 'block';
+            toggleButton.innerText = 'Less Injuries';
+        } else {
+            injuryAdditionalFields.style.display = 'none';
+            toggleButton.innerText = 'More Injuries';
+        }
+    }
+
+    // Advanced Data Handling
+    document.getElementById('advancedDataButton').addEventListener('click', function() {
+        const advancedDataCard = document.getElementById('advancedDataCard');
+        advancedDataCard.style.display = 'block';
+        this.style.display = 'none';
+    });
+
+    // Form Dirty Handling
+    form.addEventListener('input', function() {
+        isFormDirty = true;
+    });
+
+    window.addEventListener('beforeunload', function(event) {
+        if (isFormDirty) {
+            const confirmationMessage = 'You have unsaved changes. Do you really want to leave?';
+            (event || window.event).returnValue = confirmationMessage;
+            return confirmationMessage;
+        }
+    });
+
+    form.addEventListener('submit', function(event) {
+        isFormDirty = false;
+    });
+
+    // Confirmation Dialog
+    const confirmationDialog = document.createElement('div');
+    confirmationDialog.id = 'confirmation-dialog';
+    confirmationDialog.innerHTML = `
+        <div class="modal" tabindex="-1" role="dialog" style="display:none;">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Confirm Navigation</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <p>You have unsaved changes. Do you really want to leave?</p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="leave-button">Leave</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Stay</button>
+              </div>
+            </div>
+          </div>
+        </div>
+    `;
+    document.body.appendChild(confirmationDialog);
+
+    const leaveButton = document.getElementById('leave-button');
+    leaveButton.addEventListener('click', function() {
+        window.removeEventListener('beforeunload', onBeforeUnload);
+        window.location.href = document.referrer;
+    });
+
+    // Background Color Update
+    function updateBackgroundColor() {
+        const bodyElement = document.body;
+        const doNotProcessField = document.getElementById('id_do_not_process');
+        if (doNotProcessField.checked) {
+            bodyElement.classList.add('bg-yellow');
+        } else {
+            bodyElement.classList.remove('bg-yellow');
+        }
+    }
+
+    // Initialize background color on page load
+    const doNotProcessField = document.getElementById('id_do_not_process');
+    doNotProcessField.addEventListener('change', updateBackgroundColor);
+    updateBackgroundColor();
+
+    // Get the do_not_process cookie value and set the field
+    const batchId = form.querySelector('[name="entry_batch"]').value;
+    const cookieName = `${batchId}_do_not_process`;
+    const doNotProcessCookie = document.cookie.split('; ').find(row => row.startsWith(cookieName));
+    
+    if (doNotProcessCookie && doNotProcessField) {
+        const cookieValue = doNotProcessCookie.split('=')[1];
+        if (cookieValue === 'true') {
+            doNotProcessField.checked = true;
+            doNotProcessField.disabled = true;
+            updateBackgroundColor();
+        } else if (cookieValue === 'false') {
+          doNotProcessField.checked = false;
+          doNotProcessField.disabled = false;
+        }
+    }
+
+    // Render required field background color
+    setTimeout(function() {
+        var placeCodeSelect = document.querySelector('select[name="place_code"][data-required="true"]');
+        if (placeCodeSelect) {
+            var select2Container = placeCodeSelect.nextElementSibling;
+            if (select2Container && select2Container.classList.contains('select2-container')) {
+                select2Container.querySelector('.select2-selection').classList.add('required-field');
+            }
+            var placeCode = '{{ form.initial.place_code }}';
+            if (placeCode) {
+                placeCodeSelect.value = placeCode;
+                var event = new Event('change');
+                placeCodeSelect.dispatchEvent(event);
+            }
+        }
+    }, 100);
+
+    // Tag validation
     const turtleIdInput = document.getElementById('id_turtle_id');
-    const doNotProcessField = document.getElementById('{{ form.do_not_process.auto_id }}');
-
     const tagInputs = {
         recaptureLeftTagInput: document.getElementById('id_recapture_left_tag_id'),
         recaptureRightTagInput: document.getElementById('id_recapture_right_tag_id'),
@@ -695,23 +921,23 @@
                         validationMessage.style.color = 'red';
                         detailedMessage.innerHTML = `Tag belongs to another turtle (ID: <a href="/wamtram2/turtles/${data.other_turtle_id}/" target="_blank">${data.other_turtle_id}</a>)`;
                         detailedMessage.style.color = 'red';
-                        if (type === 'recaptured_tag' || type === 'recaptured_pit_tag') doNotProcessField.checked = true;
+                        if (type === 'recaptured_tag' || type === 'recaptured_pit_tag' || type === 'new_pit_tag') doNotProcessField.checked = true;
                     } else if (data.status) {
                         validationMessage.textContent = '✗ Invalid tag:';
                         validationMessage.style.color = 'red';
                         detailedMessage.textContent = `Tag status - ${data.status}`;
                         detailedMessage.style.color = 'red';
-                        if (type === 'recaptured_tag' || type === 'recaptured_pit_tag') doNotProcessField.checked = true;
+                        if (type === 'recaptured_tag' || type === 'recaptured_pit_tag' || type === 'new_pit_tag') doNotProcessField.checked = true;
                     } else if (data.tag_not_found) {
                         validationMessage.textContent = '✗ Invalid tag: Tag not found (Please remove it from here and add it to the comment area)';
                         validationMessage.style.color = 'red';
                         detailedMessage.textContent = '';
-                        if (type === 'recaptured_tag' || type === 'recaptured_pit_tag') doNotProcessField.checked = true;
+                        if (type === 'recaptured_tag' || type === 'recaptured_pit_tag' || type === 'new_pit_tag') doNotProcessField.checked = true;
                     } else {
                         validationMessage.textContent = '✗ Invalid tag';
                         validationMessage.style.color = 'red';
                         detailedMessage.textContent = '';
-                        if (type === 'recaptured_tag' || type === 'recaptured_pit_tag') doNotProcessField.checked = true;
+                        if (type === 'recaptured_tag' || type === 'recaptured_pit_tag' || type === 'new_pit_tag') doNotProcessField.checked = true;
                     }
                     updateBackgroundColor();
                 })
@@ -720,6 +946,7 @@
                     validationMessage.textContent = 'Error validating tag';
                     validationMessage.style.color = 'red';
                     detailedMessage.textContent = '';
+                    if (type === 'recaptured_tag' || type === 'recaptured_pit_tag' || type === 'new_pit_tag') doNotProcessField.checked = true;
                 });
         } else {
             validationMessage.textContent = '';
@@ -747,175 +974,6 @@
     addValidationListener(tagInputs.recapturePitTagInput, validationMessages.recapturePitTagMessage, detailedMessages.recapturePitTagDetailedMessage, 'recaptured_pit_tag');
     addValidationListener(tagInputs.recapturePitTagInput2, validationMessages.recapturePitTagMessage2, detailedMessages.recapturePitTagDetailedMessage2, 'recaptured_pit_tag');
   });
-
-  // Show or hide content based on PIT tag selection
-  function showPITContentBasedOnSelection() {
-    var selectElement = document.getElementById('PITTags');
-    var recapturePIT = document.getElementById('recapturePIT');
-    var newPIT = document.getElementById('newPIT');
-
-    recapturePIT.style.display = 'none';
-    newPIT.style.display = 'none';
-
-    if (selectElement.value === 'Yes') {
-      recapturePIT.style.display = 'block';
-    } else if (selectElement.value === 'No') {
-      newPIT.style.display = 'block';
-    }
-  }
-
-  document.addEventListener('DOMContentLoaded', function() {
-    var PITSelectElement = document.getElementById('PITTags');
-    PITSelectElement.addEventListener('change', showPITContentBasedOnSelection);
-    showPITContentBasedOnSelection(); // Initial call to set the display based on the initial value
-  });
-
-  // Toggle scars details based on checkbox
-  document.addEventListener('DOMContentLoaded', function() {
-    var tagscarnotcheckedCheckbox = document.getElementById('{{ form.tagscarnotchecked.auto_id }}');
-    var scarsDetails = document.getElementById('scarsDetails');
-    var scarsDetailsRight = document.getElementById('scarsDetailsRight');
-
-    function toggleScarsDetails() {
-      if (tagscarnotcheckedCheckbox.checked) {
-        scarsDetails.style.display = 'none';
-        scarsDetailsRight.style.display = 'none';
-      } else {
-        scarsDetails.style.display = 'block';
-        scarsDetailsRight.style.display = 'block';
-      }
-    }
-
-    tagscarnotcheckedCheckbox.addEventListener('change', toggleScarsDetails);
-    toggleScarsDetails();
-  });
-
-  // Part 3: Measurements
-  function toggleMeasurement() {
-    var moreMeasurement = document.getElementById('moreMeasurement');
-    var addMeasurementButton = document.getElementById('addMeasurementButton');
-    if (moreMeasurement.style.display === 'none' || moreMeasurement.style.display === '') {
-      moreMeasurement.style.display = 'block';
-      addMeasurementButton.innerText = 'Less Measurements';
-    } else {
-      moreMeasurement.style.display = 'none';
-      addMeasurementButton.innerText = 'More Measurements';
-    }
-  }
-
-  function toggleCurvedCarapaceLength() {
-    var curvedCarapaceLength = document.getElementById('{{ form.curved_carapace_length.auto_id }}').parentElement;
-    if (document.getElementById('{{ form.cc_length_not_measured.auto_id }}').checked) {
-      curvedCarapaceLength.style.display = 'none';
-    } else {
-      curvedCarapaceLength.style.display = 'block';
-    }
-  }
-
-  function toggleCurvedCarapaceWidth() {
-    var curvedCarapaceWidth = document.getElementById('{{ form.curved_carapace_width.auto_id }}').parentElement;
-    if (document.getElementById('{{ form.cc_width_not_measured.auto_id }}').checked) {
-      curvedCarapaceWidth.style.display = 'none';
-    } else {
-      curvedCarapaceWidth.style.display = 'block';
-    }
-  }
-
-  document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('{{ form.cc_length_not_measured.auto_id }}').addEventListener('change', toggleCurvedCarapaceLength);
-    document.getElementById('{{ form.cc_width_not_measured.auto_id }}').addEventListener('change', toggleCurvedCarapaceWidth);
-    toggleCurvedCarapaceLength(); 
-    toggleCurvedCarapaceWidth();
-  });
-
-  // Part 5: Injuries
-  // Toggle injury details based on checkbox
-  document.addEventListener('DOMContentLoaded', function() {
-    var didNotCheckCheckbox = document.getElementById('{{ form.didnotcheckforinjury.auto_id }}');
-    var injuryDetails = document.getElementById('injuryDetails');
-
-    function toggleInjuryDetails() {
-      if (didNotCheckCheckbox.checked) {
-        injuryDetails.style.display = 'none';
-      } else {
-        injuryDetails.style.display = 'block';
-      }
-    }
-
-    didNotCheckCheckbox.addEventListener('change', toggleInjuryDetails);
-    toggleInjuryDetails();
-  });
-
-  // Toggle injury fields and change button text
-  function toggleInjuryFields() {
-    var injuryAdditionalFields = document.getElementById('injuryAdditionalFields');
-    var toggleButton = document.getElementById('toggleInjuryFieldsButton');
-
-    if (injuryAdditionalFields.style.display === 'none' || injuryAdditionalFields.style.display === '') {
-      injuryAdditionalFields.style.display = 'block';
-      toggleButton.innerText = 'Less Injuries';
-    } else {
-      injuryAdditionalFields.style.display = 'none';
-      toggleButton.innerText = 'More Injuries';
-    }
-  }
-
-  // Initialize injury fields to be hidden
-  document.addEventListener('DOMContentLoaded', function() {
-    var injuryAdditionalFields = document.getElementById('injuryAdditionalFields');
-    injuryAdditionalFields.style.display = 'none';
-  });
-
-
-
-  // Part 7: Show advanced data card
-  document.addEventListener('DOMContentLoaded', function() {
-    const advancedDataButton = document.getElementById('advancedDataButton');
-    const advancedDataCard = document.getElementById('advancedDataCard');
-
-    advancedDataButton.addEventListener('click', function() {
-      advancedDataCard.style.display = 'block';
-      advancedDataButton.style.display = 'none';
-    });
-  });
-
-  // Page Setting
-  // Background color update
-  function updateBackgroundColor() {
-    const bodyElement = document.body;
-    const doNotProcessField = document.getElementById('{{ form.do_not_process.auto_id }}');
-    if (doNotProcessField.checked) {
-      bodyElement.classList.add('bg-yellow');
-    } else {
-      bodyElement.classList.remove('bg-yellow');
-    }
-  }
-
-  // Initialize background color on page load
-  document.addEventListener('DOMContentLoaded', function() {
-    const doNotProcessField = document.getElementById('{{ form.do_not_process.auto_id }}');
-    doNotProcessField.addEventListener('change', updateBackgroundColor);
-    updateBackgroundColor();
-  });
-
-  // Render required field background color
-  document.addEventListener('DOMContentLoaded', function() {
-    setTimeout(function() {
-      var placeCodeSelect = document.querySelector('select[name="place_code"][data-required="true"]');
-      if (placeCodeSelect) {
-        var select2Container = placeCodeSelect.nextElementSibling;
-        if (select2Container && select2Container.classList.contains('select2-container')) {
-          select2Container.querySelector('.select2-selection').classList.add('required-field');
-        }
-        var placeCode = '{{ form.initial.place_code }}';
-        if (placeCode) {
-          placeCodeSelect.value = placeCode;
-          var event = new Event('change');
-          placeCodeSelect.dispatchEvent(event);
-        }
-      }
-    }, 100);
-  });
-
 </script>
 {% endblock %}
+
