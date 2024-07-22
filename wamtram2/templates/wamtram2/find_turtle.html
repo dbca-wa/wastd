@@ -50,7 +50,7 @@
       <div class="card card-lg shadow-lg">
         <div class="card-body">
           <div class="text-center mt-3">
-            <a href="{% url 'wamtram2:newtrtdataentry' batch_id=form.batch_id.value %}" class="btn btn-primary" onclick="updateDoNotProcess(false)">Create New Untagged Turtle</a>
+            <a href="{% url 'wamtram2:newtrtdataentry' batch_id=form.batch_id.value %}" class="btn btn-primary">Create New Untagged Turtle</a>
           </div>
           <div class="text-center mt-4">or</div>
           <h5 class="text-center mt-4">Search for a Tagged Turtle</h5>
@@ -60,6 +60,7 @@
               <label for="tag_id">Tag ID:</label>
               <input type="text" class="form-control" id="tag_id" name="tag_id" required>
             </div>
+            <input type="hidden" id="tag_type" name="tag_type" value="{{ tag_type }}">
             <div class="row justify-content-center">
               <input type="submit" value="Search" class="btn btn-primary">
             </div>
@@ -90,8 +91,14 @@
           </div>
           <div class="text-center mt-4">
             <p>Does the species and sex match the data sheet?</p>
-            <a href="{% url 'wamtram2:existingtrtdataentry' batch_id=form.batch_id.value turtle_id=turtle.turtle_id %}" class="btn btn-primary mt-2 ml-md-2" onclick="updateDoNotProcessAndNavigate(false, '{% url 'wamtram2:existingtrtdataentry' batch_id=form.batch_id.value turtle_id=turtle.turtle_id %}')">Yes, create for turtle {{ turtle.turtle_id }}</a>
-            <button class="btn btn-secondary mt-2 ml-md-2" onclick="createAndReviewLater('{{ form.batch_id.value }}', '{{ form.tag_id.value }}')">No, create the record and review later</button>
+            <a href="{% url 'wamtram2:existingtrtdataentry' batch_id=form.batch_id.value turtle_id=turtle.turtle_id %}" class="btn btn-primary mt-2 ml-md-2">Yes, create for turtle {{ turtle.turtle_id }}</a>
+            <form method="post" style="display: inline;">
+              {% csrf_token %}
+              <input type="hidden" name="tag_id" value="{{ form.tag_id.value }}">
+              <input type="hidden" name="tag_type" value="{{ tag_type }}">
+              <input type="hidden" name="create_and_review" value="true">
+              <button type="submit" class="btn btn-secondary mt-2 ml-md-2">No, create the record and review later</button>
+            </form>
           </div>          
           {% endif %}
         </div>
@@ -99,123 +106,87 @@
     </div>
   </div>
 </div>
-
+<div>Tag Type: {{ tag_type }}</div>
 <!-- Loading spinner -->
 <div class="loading-spinner">
   <div class="spinner-border text-primary" role="status">
     <span class="sr-only">Loading...</span>
   </div>
 </div>
+
 {% endblock %}
 
 {% block extra_js %}
-  {{ form.media.js }}
-  <script>
-    function validateForm() {
-      var tagId = document.getElementById('tag_id').value;
-      if (tagId == null || tagId.trim() === "") {
-        alert("Please enter a Tag ID");
-        return false;
-      }
-
-      return true;  // Allow form to be submitted normally
+{{ form.media.js }}
+<script>
+  // Show loading animation
+  function showLoadingSpinner() {
+    const loadingSpinner = document.querySelector('.loading-spinner');
+    if (loadingSpinner) {
+      loadingSpinner.style.display = 'block';
     }
+  }
 
-    // Set cookies and navigate to new data entry page
-    function createAndReviewLater(batchId, tagId) {
-      document.cookie = `${batchId}_tag_id=${tagId};path=/;max-age=3600`;
-      document.cookie = `${batchId}_do_not_process=true;path=/;max-age=3600`;
+  // Hide loading animation
+  function hideLoadingSpinner() {
+    const loadingSpinner = document.querySelector('.loading-spinner');
+    if (loadingSpinner) {
+      loadingSpinner.style.display = 'none';
+    }
+  }
+
+  // Hide loading animation when the page is fully loaded
+  window.addEventListener('load', hideLoadingSpinner);
+
+  // Add event listeners to all form submissions to show the loading animation
+  document.querySelectorAll('form').forEach(form => {
+    form.addEventListener('submit', function(event) {
       showLoadingSpinner();
-      window.location.href = `{% url 'wamtram2:newtrtdataentry' batch_id=form.batch_id.value %}`;
-    }
-
-    // Update do_not_process in cookies
-    function updateDoNotProcess(status) {
-      var batchId = '{{ form.batch_id.value }}';
-      document.cookie = `${batchId}_do_not_process=${status};path=/;max-age=3600`;
-      showLoadingSpinner();
-    }
-
-    // Update do_not_process in cookies and navigate to URL
-    function updateDoNotProcessAndNavigate(status, url) {
-      var batchId = '{{ form.batch_id.value }}';
-      document.cookie = `${batchId}_do_not_process=${status};path=/;max-age=3600`;
-      showLoadingSpinner();
-      window.location.href = url;
-    }
-
-    // Show loading spinner
-    function showLoadingSpinner() {
-      const loadingSpinner = document.querySelector('.loading-spinner');
-      if (loadingSpinner) {
-        loadingSpinner.style.display = 'block';
-      }
-    }
-
-    // Hide loading spinner
-    function hideLoadingSpinner() {
-      const loadingSpinner = document.querySelector('.loading-spinner');
-      if (loadingSpinner) {
-        loadingSpinner.style.display = 'none';
-      }
-    }
-
-    // Hide spinner on page load
-    window.addEventListener('load', hideLoadingSpinner);
-
-    // Add loading spinner to all form submits
-    document.querySelectorAll('form').forEach(form => {
-      form.addEventListener('submit', function() {
-        showLoadingSpinner();
-      });
     });
+  });
 
-    // Use suggested tag
-    document.getElementById('use-suggested-tag').addEventListener('click', function() {
-      document.getElementById('tag_id').value = document.getElementById('suggested-tag').innerText;
-      document.getElementById('tag-suggestion').style.display = 'none';
-      document.getElementById('searchForm').submit();
-    });
+  // Use the suggested tag
+  document.getElementById('use-suggested-tag').addEventListener('click', function() {
+    document.getElementById('tag_id').value = document.getElementById('suggested-tag').innerText;
+    document.getElementById('tag-suggestion').style.display = 'none';
+    document.getElementById('searchForm').submit();
+  });
 
-    // Handle exact match prompt
-    document.getElementById('exact-match-yes').addEventListener('click', function() {
-      var batchId = '{{ form.batch_id.value }}';
-      document.cookie = `${batchId}_do_not_process=true;path=/;max-age=3600`;
-      showLoadingSpinner();
-      window.location.href = `{% url 'wamtram2:newtrtdataentry' batch_id=form.batch_id.value %}`;
-    });
+  // Handle exact match prompt
+  document.getElementById('exact-match-yes').addEventListener('click', function() {
+    document.getElementById('searchForm').submit();
+  });
 
-    document.getElementById('exact-match-no').addEventListener('click', function() {
-      document.getElementById('exact-match-prompt').style.display = 'none';
-    });
+  document.getElementById('exact-match-no').addEventListener('click', function() {
+    document.getElementById('exact-match-prompt').style.display = 'none';
+  });
 
-    // Show exact match prompt if needed
-    function showExactMatchPrompt(tagId) {
-      document.getElementById('exact-tag-id').innerText = tagId;
-      document.getElementById('exact-match-prompt').style.display = 'block';
-    }
+  // Show exact match prompt
+  function showExactMatchPrompt(tagId) {
+    document.getElementById('exact-tag-id').innerText = tagId;
+    document.getElementById('exact-match-prompt').style.display = 'block';
+  }
 
-    // Handle no option for suggested tag
-    document.getElementById('suggested-tag-no').addEventListener('click', function() {
-      document.getElementById('tag-suggestion').style.display = 'none';
-      var tagId = document.getElementById('user-input-tag').innerText;
-      showExactMatchPrompt(tagId);
-    });
+  // Handle no suggested tag option
+  document.getElementById('suggested-tag-no').addEventListener('click', function() {
+    document.getElementById('tag-suggestion').style.display = 'none';
+    var tagId = document.getElementById('user-input-tag').innerText;
+    showExactMatchPrompt(tagId);
+  });
 
-    // Check if no turtle found and show appropriate prompts
-    {% if no_turtle_found %}
-      var tagId = '{{ tag_id }}';
-      // Check for two letters followed by 4 digits
-      var regex = /^[A-Za-z]{2}\d{4}$/;
-      if (regex.test(tagId)) {
-        var suggestedTag = tagId.slice(0, 2) + " " + tagId.slice(2);
-        document.getElementById('suggested-tag').innerText = suggestedTag;
-        document.getElementById('suggested-tag-btn').innerText = suggestedTag;
-        document.getElementById('user-input-tag').innerText = tagId;
-        document.getElementById('tag-suggestion').style.display = 'block';
-      } else {
-        showExactMatchPrompt(tagId);
-      }
-    {% endif %}
-  </script>
+  // Check if no turtle found and show appropriate prompt
+  {% if no_turtle_found %}
+  var tagId = '{{ tag_id }}';
+  var regex = /^[A-Za-z]{2}\d{4}$/; // Check for two letters followed by four numbers
+  if (regex.test(tagId)) {
+    var suggestedTag = tagId.slice(0, 2) + " " + tagId.slice(2);
+    document.getElementById('suggested-tag').innerText = suggestedTag;
+    document.getElementById('suggested-tag-btn').innerText = suggestedTag;
+    document.getElementById('user-input-tag').innerText = tagId;
+    document.getElementById('tag-suggestion').style.display = 'block';
+  } else {
+    showExactMatchPrompt(tagId);
+  }
+  {% endif %}
+</script>
 {% endblock %}

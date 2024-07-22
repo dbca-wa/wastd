@@ -347,6 +347,9 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         entry_id = self.kwargs.get("entry_id")
         
         cookies_key_prefix = batch_id
+        
+        tag_id = self.request.COOKIES.get(f'{cookies_key_prefix}_tag_id')
+        tag_type = self.request.COOKIES.get(f'{cookies_key_prefix}_tag_type')
 
         selected_template = self.request.COOKIES.get(f'{cookies_key_prefix}_selected_template')
         use_default_enterer = self.request.COOKIES.get(f'{cookies_key_prefix}_use_default_enterer', False)
@@ -354,6 +357,13 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         
         if default_enterer == "None" or not default_enterer or default_enterer == "":
             default_enterer = None
+        
+        # If a tag is selected, populate the form with the tag data
+        if tag_id and tag_type:
+            if tag_type == 'recapture_tag':
+                initial['recapture_left_tag_id'] = tag_id
+            elif tag_type == 'recapture_pit_tag':
+                initial['recapture_pittag_id'] = tag_id
 
         # If a template is selected, populate the form with the template data
         if selected_template:
@@ -472,6 +482,8 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
             context["selected_template"] = self.request.COOKIES.get(f'{cookies_key_prefix}_selected_template')
             context["use_default_enterer"] = self.request.COOKIES.get(f'{cookies_key_prefix}_use_default_enterer', False)
             context["default_enterer"] = self.request.COOKIES.get(f'{cookies_key_prefix}_default_enterer', None)
+            context["cookie_tag_id"] = self.request.COOKIES.get(f'{cookies_key_prefix}_tag_id')
+            context["cookie_tag_type"] = self.request.COOKIES.get(f'{cookies_key_prefix}_tag_type')
 
         return context
 
@@ -599,7 +611,6 @@ class ProcessDataEntryBatchView(LoginRequiredMixin, View):
             )
         return redirect("wamtram2:entry_batch_detail", batch_id=self.kwargs["batch_id"])
 
-
 class FindTurtleView(LoginRequiredMixin, View):
     """
     View class for finding a turtle based on tag and pit tag ID.
@@ -622,30 +633,41 @@ class FindTurtleView(LoginRequiredMixin, View):
         form = SearchForm(initial={"batch_id": batch_id})
         return render(request, "wamtram2/find_turtle.html", {"form": form})
 
+    def set_cookie(self, response, batch_id, tag_id, tag_type, do_not_process=False):
+        response.set_cookie(f'{batch_id}_tag_id', tag_id, max_age=3600)
+        response.set_cookie(f'{batch_id}_tag_type', tag_type, max_age=3600)
+        if do_not_process:
+            response.set_cookie(f'{batch_id}_do_not_process', 'true', max_age=3600)
+        return response
+
     def post(self, request, *args, **kwargs):
         batch_id = kwargs.get("batch_id")
         form = SearchForm(request.POST, initial={"batch_id": batch_id})
         no_turtle_found = False
         tag_type = None
-        tag_id = form.cleaned_data["tag_id"] if form.is_valid() else None
+        tag_id = None
+        create_and_review = request.POST.get('create_and_review') == 'true'
 
         if form.is_valid():
+            tag_id = form.cleaned_data["tag_id"]
             turtle = None
 
-            try:
+            if not create_and_review:
                 tag = TrtTags.objects.select_related('turtle').filter(tag_id=tag_id).first()
                 if tag:
                     turtle = tag.turtle
-                    tag_type = "recaptured_tag"
+                    tag_type = "recapture_tag"
                 else:
                     pit_tag = TrtPitTags.objects.select_related('turtle').filter(pittag_id=tag_id).first()
                     if pit_tag:
                         turtle = pit_tag.turtle
-                        tag_type = "recaptured_pit_tag"
+                        tag_type = "recapture_pit_tag"
+                    else:
+                        tag_type = "new_tag"
 
                 if turtle:
                     turtle = TrtTurtles.objects.prefetch_related('trttags_set', 'trtpittags_set').get(pk=turtle.pk)
-                    return render(
+                    response = render(
                         request,
                         "wamtram2/find_turtle.html",
                         {
@@ -654,20 +676,35 @@ class FindTurtleView(LoginRequiredMixin, View):
                             "tags": turtle.trttags_set.all(),
                             "pittags": turtle.trtpittags_set.all(),
                             "tag_type": tag_type,
+                            "tag_id": tag_id
                         },
                     )
                 else:
-                    raise TrtTags.DoesNotExist
+                    no_turtle_found = True
+                    response = render(
+                        request,
+                        "wamtram2/find_turtle.html",
+                        {
+                            "form": form, 
+                            "no_turtle_found": no_turtle_found, 
+                            "tag_id": tag_id,
+                            "tag_type": tag_type
+                        },
+                    )
+            else:
+                # Handle create_and_review_later
+                tag_type = request.POST.get('tag_type', 'new_tag')
+                response = redirect(reverse('wamtram2:newtrtdataentry', kwargs={'batch_id': batch_id}))
+                return self.set_cookie(response, batch_id, tag_id, tag_type, do_not_process=True)
+        else:
+            response = render(
+                request,
+                "wamtram2/find_turtle.html",
+                {"form": form}
+            )
 
-            except TrtTags.DoesNotExist:
-                no_turtle_found = True
+        return self.set_cookie(response, batch_id, tag_id, tag_type)
 
-        return render(
-            request,
-            "wamtram2/find_turtle.html",
-            {"form": form, "no_turtle_found": no_turtle_found, "tag_id": tag_id},
-        )
-            
 class ObservationDetailView(LoginRequiredMixin, DetailView):
     model = TrtObservations
     template_name = "wamtram2/observation_detail.html"
