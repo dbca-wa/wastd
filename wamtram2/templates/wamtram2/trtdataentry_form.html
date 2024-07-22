@@ -582,6 +582,26 @@
     const form = document.getElementById('dataEntryForm');
     let isFormDirty = false;
 
+    const cookieTagId = "{{ cookie_tag_id }}";
+    const cookieTagType = "{{ cookie_tag_type }}";
+
+    function setTagAndValidate(inputId, tagId) {
+      const input = document.getElementById(inputId);
+      if (input) {
+        input.value = tagId;
+        // Validate the input
+        input.dispatchEvent(new Event('blur'));
+      }
+    }
+
+    if (cookieTagId && cookieTagType) {
+      if (cookieTagType === 'recapture_tag') {
+        setTagAndValidate('id_recapture_left_tag_id', cookieTagId);
+      } else if (cookieTagType === 'recapture_pit_tag') {
+        setTagAndValidate('id_recapture_pittag_id', cookieTagId);
+      }
+    }
+
     // Flipper Tags Handling
     function showContentBasedOnSelection() {
         const selectElement = document.getElementById('flipperTags');

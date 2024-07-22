@@ -482,6 +482,7 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
             context["selected_template"] = self.request.COOKIES.get(f'{cookies_key_prefix}_selected_template')
             context["use_default_enterer"] = self.request.COOKIES.get(f'{cookies_key_prefix}_use_default_enterer', False)
             context["default_enterer"] = self.request.COOKIES.get(f'{cookies_key_prefix}_default_enterer', None)
+            # Add the tag id and tag type to the context data
             context["cookie_tag_id"] = self.request.COOKIES.get(f'{cookies_key_prefix}_tag_id')
             context["cookie_tag_type"] = self.request.COOKIES.get(f'{cookies_key_prefix}_tag_type')
 
