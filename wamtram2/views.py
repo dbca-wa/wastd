@@ -426,29 +426,31 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         return initial
 
     def form_valid(self, form):
-        """
-        Saves the form and returns the success URL.
-
-        Args:
-            form (Form): The form instance.
-
-        Returns:
-            str: The success URL.
-        """
-        # instance = form.save(commit=False)
-        # if 'turtle_id' in self.kwargs:
-        #     instance.turtle_id = TrtTurtles.objects.get(turtle_id=self.kwargs['turtle_id'])
-        #     instance.save()
-        # form.save_tag_info(instance) 
-        form.save()
-        # Get the batch_id
+        
         batch_id = form.cleaned_data["entry_batch"].entry_batch_id
+        
+        do_not_process_cookie_name = f"{batch_id}_do_not_process"
+        do_not_process_cookie_value = self.request.COOKIES.get(do_not_process_cookie_name)
+        if do_not_process_cookie_value == 'true':
+            form.instance.do_not_process = True
+        
+        form.save()
+        
+        success_url = reverse("wamtram2:entry_batch_detail", args=[batch_id])
+        
+        if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({'success': True, 'redirect_url': success_url})
+        else:
+            self.success_url = success_url
+            return super().form_valid(form)
 
-        # Set the success URL
-        self.success_url = reverse("wamtram2:entry_batch_detail", args=[batch_id])
 
-        return super().form_valid(form)
-
+    def form_invalid(self, form):
+        if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({'success': False, 'errors': form.errors})
+        else:
+            return super().form_invalid(form)
+        
     def get_context_data(self, **kwargs):
         """
         Returns the context data for rendering the template.
@@ -603,8 +605,8 @@ class FindTurtleView(LoginRequiredMixin, View):
     View class for finding a turtle based on tag and pit tag ID.
     """
 
+    # FIXME: Permission check
     def dispatch(self, request, *args, **kwargs):
-        # FIXME: Permission check
         if not (
             request.user.groups.filter(name="Tagging Data Entry").exists()
             or request.user.groups.filter(name="Tagging Data Curation").exists()
@@ -617,32 +619,31 @@ class FindTurtleView(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         batch_id = kwargs.get("batch_id")
-
-        form = SearchForm(initial={
-            "batch_id": batch_id,
-        })
+        form = SearchForm(initial={"batch_id": batch_id})
         return render(request, "wamtram2/find_turtle.html", {"form": form})
+
     def post(self, request, *args, **kwargs):
         batch_id = kwargs.get("batch_id")
         form = SearchForm(request.POST, initial={"batch_id": batch_id})
-        no_turtle_found = False # Flag to indicate if no turtle was found
+        no_turtle_found = False
+        tag_type = None
+        tag_id = form.cleaned_data["tag_id"] if form.is_valid() else None
 
         if form.is_valid():
-            tag_id = form.cleaned_data["tag_id"]
             turtle = None
 
             try:
-                # Check if the tag is a turtle tag or a pit tag
                 tag = TrtTags.objects.select_related('turtle').filter(tag_id=tag_id).first()
                 if tag:
                     turtle = tag.turtle
+                    tag_type = "recaptured_tag"
                 else:
                     pit_tag = TrtPitTags.objects.select_related('turtle').filter(pittag_id=tag_id).first()
                     if pit_tag:
                         turtle = pit_tag.turtle
+                        tag_type = "recaptured_pit_tag"
 
                 if turtle:
-                    # Prefetch related tags and pit tags
                     turtle = TrtTurtles.objects.prefetch_related('trttags_set', 'trtpittags_set').get(pk=turtle.pk)
                     return render(
                         request,
@@ -652,22 +653,21 @@ class FindTurtleView(LoginRequiredMixin, View):
                             "turtle": turtle,
                             "tags": turtle.trttags_set.all(),
                             "pittags": turtle.trtpittags_set.all(),
+                            "tag_type": tag_type,
                         },
                     )
                 else:
                     raise TrtTags.DoesNotExist
 
             except TrtTags.DoesNotExist:
-                form.add_error(None, "No Turtle found with the given tag id.")
                 no_turtle_found = True
 
         return render(
             request,
             "wamtram2/find_turtle.html",
-            {"form": form, "no_turtle_found": no_turtle_found},
+            {"form": form, "no_turtle_found": no_turtle_found, "tag_id": tag_id},
         )
-
-
+            
 class ObservationDetailView(LoginRequiredMixin, DetailView):
     model = TrtObservations
     template_name = "wamtram2/observation_detail.html"
@@ -764,13 +764,33 @@ SEX_CHOICES = [
     ("I", "Indeterminate"),
 ]
 class TemplateManageView(LoginRequiredMixin, FormView):
+    """
+    View for managing templates.
+    Provides functionality to create, update, and delete templates.
+
+    Attributes:
+        template_name (str): The name of the template used to render the view.
+        form_class (Form): The form class used to create or update templates.
+    """
     template_name = 'wamtram2/template_manage.html'
     form_class = TemplateForm
 
     def get_json_path(self):
+        """
+        Returns the path to the JSON file storing the templates.
+
+        Returns:
+            str: The file path.
+        """
         return os.path.join(settings.BASE_DIR, 'wamtram2', 'templates.json')
 
     def load_templates_from_json(self):
+        """
+        Loads templates from the JSON file.
+
+        Returns:
+            dict: The templates data.
+        """
         try:
             with open(self.get_json_path(), 'r') as file:
                 data = json.load(file)
@@ -782,6 +802,12 @@ class TemplateManageView(LoginRequiredMixin, FormView):
             return {}
 
     def save_templates_to_json(self, templates):
+        """
+        Saves the templates data to the JSON file.
+
+        Args:
+            templates (dict): The templates data to save.
+        """
         try:
             with open(self.get_json_path(), 'w') as file:
                 json.dump(templates, file, indent=4)
@@ -790,6 +816,15 @@ class TemplateManageView(LoginRequiredMixin, FormView):
             raise
 
     def get_next_template_key(self, templates):
+        """
+        Generates the next key for a new template.
+
+        Args:
+            templates (dict): The current templates data.
+
+        Returns:
+            str: The new template key.
+        """
         max_key = 0
         template_key_pattern = re.compile(r'^template(\d+)$')
         for key in templates.keys():
@@ -799,6 +834,15 @@ class TemplateManageView(LoginRequiredMixin, FormView):
         return f"template{max_key + 1}"
 
     def form_valid(self, form):
+        """
+        Handles the form submission for creating or updating a template.
+
+        Args:
+            form (Form): The submitted form.
+
+        Returns:
+            HttpResponse: The HTTP response.
+        """
         new_template = form.save(commit=False)
         templates = self.load_templates_from_json()
         new_template_data = {
@@ -808,19 +852,7 @@ class TemplateManageView(LoginRequiredMixin, FormView):
             'species_code': self.request.POST.get('species_code'),
             'sex': self.request.POST.get('sex')
         }
-        
-        # # 检查新模板数据是否完整
-        # if not all(new_template_data.values()):
-        #     return render(self.request, 'wamtram2/template_manage.html', {
-        #         'form': form,
-        #         'templates': templates,
-        #         'locations': list(TrtLocations.objects.all()),
-        #         'places': list(TrtPlaces.objects.all()), 
-        #         'species': list(TrtSpecies.objects.all()),
-        #         'sex_choices': SEX_CHOICES,
-        #         'error_message': "All fields are required."
-        #     })
-        
+
         template_key = self.get_next_template_key(templates)
         templates[template_key] = new_template_data
         try:
@@ -837,8 +869,13 @@ class TemplateManageView(LoginRequiredMixin, FormView):
                 'error_message': f"Error saving template: {e}"
             })
 
-
     def get_context_data(self, **kwargs):
+        """
+        Retrieves the context data for rendering the template.
+
+        Returns:
+            dict: The context data.
+        """
         context = super().get_context_data(**kwargs)
         context['templates'] = self.load_templates_from_json()
         context['locations'] = list(TrtLocations.objects.all())
@@ -848,6 +885,16 @@ class TemplateManageView(LoginRequiredMixin, FormView):
         return context
 
     def delete(self, request, template_key):
+        """
+        Deletes a template based on the provided key.
+
+        Args:
+            request (HttpRequest): The HTTP request.
+            template_key (str): The key of the template to delete.
+
+        Returns:
+            JsonResponse: The JSON response.
+        """
         templates = self.load_templates_from_json()
         if template_key in templates:
             del templates[template_key]
@@ -859,6 +906,15 @@ class TemplateManageView(LoginRequiredMixin, FormView):
         return JsonResponse({'error': 'Template not found'}, status=404)
 
     def dispatch(self, request, *args, **kwargs):
+        """
+        Handles different HTTP methods for the view.
+
+        Args:
+            request (HttpRequest): The HTTP request.
+
+        Returns:
+            HttpResponse: The HTTP response.
+        """
         if not request.user.is_superuser:
             return HttpResponseForbidden("You do not have permission to access this page.")
         
@@ -871,12 +927,31 @@ class TemplateManageView(LoginRequiredMixin, FormView):
         return super().dispatch(request, *args, **kwargs)
     
     def get_places(self, request):
+        """
+        Retrieves places based on the provided location code.
+
+        Args:
+            request (HttpRequest): The HTTP request.
+
+        Returns:
+            JsonResponse: The JSON response with places data.
+        """
         location_code = request.GET.get('location_code')
         places = TrtPlaces.objects.filter(location_code=location_code)
         places_list = list(places.values('place_code', 'place_name'))
         return JsonResponse(places_list, safe=False)
     
     def put(self, request, template_key):
+        """
+        Updates a template based on the provided key.
+
+        Args:
+            request (HttpRequest): The HTTP request.
+            template_key (str): The key of the template to update.
+
+        Returns:
+            JsonResponse: The JSON response.
+        """
         templates = self.load_templates_from_json()
         template_data = templates.get(template_key)
         if not template_data:
@@ -884,7 +959,7 @@ class TemplateManageView(LoginRequiredMixin, FormView):
         
         put_data = QueryDict(request.body)
     
-        # 调试输出接收到的数据
+        # Debugging output
         print(put_data)
         
         template_instance = Template(
@@ -913,10 +988,29 @@ class TemplateManageView(LoginRequiredMixin, FormView):
                 return JsonResponse({'error': f"Error saving template: {e}"}, status=500)
         return JsonResponse({'errors': form.errors}, status=400)
 
-
 class ValidateTagView(View):
+    """
+    View for validating tags.
+    Provides functionality to validate different types of tags.
+
+    Methods:
+        validate_recaptured_tag(request): Validates a recaptured tag.
+        validate_new_tag(request): Validates a new tag.
+        validate_new_pit_tag(request): Validates a new PIT tag.
+        validate_recaptured_pit_tag(request): Validates a recaptured PIT tag.
+        get(request, *args, **kwargs): Handles GET requests.
+    """
 
     def validate_recaptured_tag(self, request):
+        """
+        Validates a recaptured tag.
+
+        Args:
+            request (HttpRequest): The HTTP request.
+
+        Returns:
+            JsonResponse: The JSON response.
+        """
         turtle_id = request.GET.get('turtle_id')
         tag = request.GET.get('tag')
         side = request.GET.get('side')
@@ -959,6 +1053,15 @@ class ValidateTagView(View):
             return JsonResponse({'valid': False, 'wrong_side': False, 'message': 'Turtle not found'})
 
     def validate_new_tag(self, request):
+        """
+        Validates a new tag.
+
+        Args:
+            request (HttpRequest): The HTTP request.
+
+        Returns:
+            JsonResponse: The JSON response.
+        """
         tag = request.GET.get('tag')
         if not tag:
             return JsonResponse({'valid': False, 'message': 'Missing tag parameter'})
@@ -983,6 +1086,15 @@ class ValidateTagView(View):
             return JsonResponse({'valid': False, 'message': str(e)})
 
     def validate_new_pit_tag(self, request):
+        """
+        Validates a new PIT tag.
+
+        Args:
+            request (HttpRequest): The HTTP request.
+
+        Returns:
+            JsonResponse: The JSON response.
+        """
         tag = request.GET.get('tag')
         if not tag:
             return JsonResponse({'valid': False, 'message': 'Missing tag parameter'})
@@ -1007,6 +1119,15 @@ class ValidateTagView(View):
             return JsonResponse({'valid': False, 'message': str(e)})
 
     def validate_recaptured_pit_tag(self, request):
+        """
+        Validates a recaptured PIT tag.
+
+        Args:
+            request (HttpRequest): The HTTP request.
+
+        Returns:
+            JsonResponse: The JSON response.
+        """
         turtle_id = request.GET.get('turtle_id')
         tag = request.GET.get('tag')
 
@@ -1036,8 +1157,16 @@ class ValidateTagView(View):
         except Exception as e:
             return JsonResponse({'valid': False, 'message': str(e)})
 
-
     def get(self, request, *args, **kwargs):
+        """
+        Handles GET requests for tag validation.
+
+        Args:
+            request (HttpRequest): The HTTP request.
+
+        Returns:
+            JsonResponse: The JSON response.
+        """
         validation_type = request.GET.get('type')
         if validation_type == 'recaptured_tag':
             return self.validate_recaptured_tag(request)
@@ -1049,4 +1178,3 @@ class ValidateTagView(View):
             return self.validate_recaptured_pit_tag(request)
         else:
             return JsonResponse({'valid': False, 'message': 'Invalid validation type'})
-
