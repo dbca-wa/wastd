@@ -297,7 +297,7 @@
     {% if user.is_superuser %}
     <div class="danger-zone">
         <div class="danger-zone-header">Danger Zone</div>
-        <span style="font-size: 1.0em; color: #fc8b95;">(only super user can see)</span>
+        {% comment %} <span style="font-size: 1.0em; color: #fc8b95;">(only super user can see)</span> {% endcomment %}
         <p>Deleting this batch cannot be undone. This will permanently delete the batch and all its associated data.</p>
         <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteConfirmationModal">Delete Batch</button>
     </div>
