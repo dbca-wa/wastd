@@ -147,21 +147,11 @@
         <section class="row">
             <div class="col-md-12">
                 <div class="row mt-2">
-                    <label class="col-sm-2 col-form-label"><strong>FLIPPER Tag(s)</strong></label>
-                    <label class="col-sm-4 col-form-label">Does turtle have old FLIPPER tag(s)?</label>
-                    <div class="col-sm-4">
-                        <select class="form-control" id="flipperTags" onchange="showContentBasedOnSelection()">
-                            <option value="" disabled selected>Select</option>
-                            <option value="Yes">Yes</option>
-                            <option value="No">No</option>
-                            <option value="did not check">Did not check</option>
-                        </select>
-                    </div>
+                    <label class="col-sm-2 col-form-label"><strong>FLIPPER Tag(s) present?</strong></label>
                 </div>
-                
-                <div id="tagDetails" style="display: none;">
+                <div id="tagDetails">
                     <!-- Recapture Tags -->
-                    <div id="recaptureTags" style="display: none;">
+                    <div id="recaptureTags">
                         <div class="row mt-2">
                             <div class="col-md-6">
                                 {% bootstrap_field form.recapture_left_tag_id %}
@@ -190,13 +180,13 @@
                         </div>
                         <div class="row mt-2">
                             <div class="col-md-6">
-                                <button type="button" class="btn btn-primary" id="toggleRecaptureTagsBtn" onclick="toggleRecaptureTags()">More Recapture Tags</button>
+                              <button type="button" class="btn btn-primary" id="toggleRecaptureTagsBtn">More Recapture Tags</button>
                             </div>
                         </div>
                     </div>
                     
                     <!-- New Tags -->
-                    <div id="newTags" style="display: none;">
+                    <div id="newTags">
                         <div class="row mt-2">
                             <div class="col-md-6">
                                 {% bootstrap_field form.new_left_tag_id %}
@@ -221,7 +211,7 @@
                         </div>
                         <div class="row mt-2">
                             <div class="col-md-6">
-                                <button type="button" class="btn btn-primary" id="toggleNewTagsBtn" onclick="toggleNewTags()">More New Tags</button>
+                              <button type="button" class="btn btn-primary" id="toggleNewTagsBtn">More New Tags</button>
                             </div>
                         </div>
                     </div>
@@ -234,16 +224,8 @@
             <div class="col-md-12">
                 <div class="row">
                     <label class="col-sm-2 col-form-label"><strong>PIT tag present?</strong></label>
-                    <div class="col-sm-4 offset-sm-4">
-                        <select class="form-control" id="PITTags" onchange="showPITContentBasedOnSelection()">
-                            <option value="" disabled selected>Select</option>
-                            <option value="Yes">Yes</option>
-                            <option value="No">No</option>
-                            <option value="did not check">Did not check</option>
-                        </select>
-                    </div>
                 </div>
-                <div id="recapturePIT" style="display: none;">
+                <div id="recapturePIT">
                     <div class="row mt-2">
                         <div class="col-md-6">
                             {% bootstrap_field form.recapture_pittag_id %}
@@ -257,7 +239,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="newPIT" style="display: none;">
+                <div id="newPIT">
                     <div class="row mt-2">
                         <div class="col-md-6">
                             {% bootstrap_field form.new_pittag_id %}
@@ -603,26 +585,16 @@
     }
 
     // Flipper Tags Handling
-    function showContentBasedOnSelection() {
-        const selectElement = document.getElementById('flipperTags');
-        const tagDetails = document.getElementById('tagDetails');
-        const recaptureTags = document.getElementById('recaptureTags');
-        const newTags = document.getElementById('newTags');
-      
-        tagDetails.style.display = 'none';
-        recaptureTags.style.display = 'none';
-        newTags.style.display = 'none';
-      
-        if (selectElement.value === 'Yes') {
-            tagDetails.style.display = 'block';
-            recaptureTags.style.display = 'block';
-            newTags.style.display = 'block';
-        } else if (selectElement.value === 'No') {
-            tagDetails.style.display = 'block';
-            newTags.style.display = 'block';
-        }
+
+    const toggleRecaptureTagsBtn = document.getElementById('toggleRecaptureTagsBtn');
+    if (toggleRecaptureTagsBtn) {
+        toggleRecaptureTagsBtn.addEventListener('click', toggleRecaptureTags);
     }
 
+    const toggleNewTagsBtn = document.getElementById('toggleNewTagsBtn');
+    if (toggleNewTagsBtn) {
+        toggleNewTagsBtn.addEventListener('click', toggleNewTags);
+    }
     function toggleRecaptureTags() {
         const additionalRecaptureTags = document.getElementById('additionalRecaptureTags');
         const toggleBtn = document.getElementById('toggleRecaptureTagsBtn');
@@ -646,29 +618,6 @@
             toggleBtn.textContent = 'More New Tags';
         }
     }
-
-    // Initial call to set the display based on the initial value
-    document.getElementById('flipperTags').addEventListener('change', showContentBasedOnSelection);
-    showContentBasedOnSelection();
-
-    // PIT Tags Handling
-    function showPITContentBasedOnSelection() {
-        const selectElement = document.getElementById('PITTags');
-        const recapturePIT = document.getElementById('recapturePIT');
-        const newPIT = document.getElementById('newPIT');
-
-        recapturePIT.style.display = 'none';
-        newPIT.style.display = 'none';
-
-        if (selectElement.value === 'Yes') {
-            recapturePIT.style.display = 'block';
-        } else if (selectElement.value === 'No') {
-            newPIT.style.display = 'block';
-        }
-    }
-
-    document.getElementById('PITTags').addEventListener('change', showPITContentBasedOnSelection);
-    showPITContentBasedOnSelection();
 
     // Scars Handling
     function toggleScarsDetails() {
