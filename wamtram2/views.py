@@ -350,6 +350,7 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         
         tag_id = self.request.COOKIES.get(f'{cookies_key_prefix}_tag_id')
         tag_type = self.request.COOKIES.get(f'{cookies_key_prefix}_tag_type')
+        tag_side = self.request.COOKIES.get(f'{cookies_key_prefix}_tag_side')
 
         selected_template = self.request.COOKIES.get(f'{cookies_key_prefix}_selected_template')
         use_default_enterer = self.request.COOKIES.get(f'{cookies_key_prefix}_use_default_enterer', False)
@@ -361,7 +362,10 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         # If a tag is selected, populate the form with the tag data
         if tag_id and tag_type:
             if tag_type == 'recapture_tag':
-                initial['recapture_left_tag_id'] = tag_id
+                if tag_side == 'L':
+                    initial['recapture_left_tag_id'] = tag_id
+                elif tag_side == 'R':
+                    initial['recapture_right_tag_id'] = tag_id
             elif tag_type == 'recapture_pit_tag':
                 initial['recapture_pittag_id'] = tag_id
 
@@ -485,6 +489,7 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
             # Add the tag id and tag type to the context data
             context["cookie_tag_id"] = self.request.COOKIES.get(f'{cookies_key_prefix}_tag_id')
             context["cookie_tag_type"] = self.request.COOKIES.get(f'{cookies_key_prefix}_tag_type')
+            context["cookie_tag_side"] = self.request.COOKIES.get(f'{cookies_key_prefix}_tag_side')
 
         return context
 
@@ -634,11 +639,17 @@ class FindTurtleView(LoginRequiredMixin, View):
         form = SearchForm(initial={"batch_id": batch_id})
         return render(request, "wamtram2/find_turtle.html", {"form": form})
 
-    def set_cookie(self, response, batch_id, tag_id, tag_type, do_not_process=False):
-        response.set_cookie(f'{batch_id}_tag_id', tag_id, max_age=3600)
-        response.set_cookie(f'{batch_id}_tag_type', tag_type, max_age=3600)
+    def set_cookie(self, response, batch_id, tag_id=None, tag_side=None, tag_type=None, do_not_process=False):
+        if tag_id:
+            response.set_cookie(f'{batch_id}_tag_id', tag_id, max_age=3600)
+        if tag_side:
+            response.set_cookie(f'{batch_id}_tag_side', tag_side, max_age=3600)
+        if tag_type:
+            response.set_cookie(f'{batch_id}_tag_type', tag_type, max_age=3600)
         if do_not_process:
             response.set_cookie(f'{batch_id}_do_not_process', 'true', max_age=3600)
+        else:
+            response.set_cookie(f'{batch_id}_do_not_process', 'false', max_age=3600)
         return response
 
     def post(self, request, *args, **kwargs):
@@ -647,6 +658,7 @@ class FindTurtleView(LoginRequiredMixin, View):
         no_turtle_found = False
         tag_type = None
         tag_id = None
+        tag_side = None
         create_and_review = request.POST.get('create_and_review') == 'true'
 
         if form.is_valid():
@@ -658,13 +670,14 @@ class FindTurtleView(LoginRequiredMixin, View):
                 if tag:
                     turtle = tag.turtle
                     tag_type = "recapture_tag"
+                    tag_side = tag.side
                 else:
                     pit_tag = TrtPitTags.objects.select_related('turtle').filter(pittag_id=tag_id).first()
                     if pit_tag:
                         turtle = pit_tag.turtle
                         tag_type = "recapture_pit_tag"
                     else:
-                        tag_type = "new_tag"
+                        tag_type = "unknown_tag"
 
                 if turtle:
                     turtle = TrtTurtles.objects.prefetch_related('trttags_set', 'trtpittags_set').get(pk=turtle.pk)
@@ -677,7 +690,8 @@ class FindTurtleView(LoginRequiredMixin, View):
                             "tags": turtle.trttags_set.all(),
                             "pittags": turtle.trtpittags_set.all(),
                             "tag_type": tag_type,
-                            "tag_id": tag_id
+                            "tag_id": tag_id,
+                            "tag_side": tag_side
                         },
                     )
                 else:
@@ -694,9 +708,10 @@ class FindTurtleView(LoginRequiredMixin, View):
                     )
             else:
                 # Handle create_and_review_later
-                tag_type = request.POST.get('tag_type', 'new_tag')
+                tag_type = request.POST.get('tag_type', 'unknown_tag')
+                tag_side = request.POST.get('tag_side', None)
                 response = redirect(reverse('wamtram2:newtrtdataentry', kwargs={'batch_id': batch_id}))
-                return self.set_cookie(response, batch_id, tag_id, tag_type, do_not_process=True)
+                return self.set_cookie(response, batch_id, tag_id, tag_type, tag_side, do_not_process=True)
         else:
             response = render(
                 request,
@@ -704,7 +719,28 @@ class FindTurtleView(LoginRequiredMixin, View):
                 {"form": form}
             )
 
-        return self.set_cookie(response, batch_id, tag_id, tag_type)
+        return self.set_cookie(response, batch_id, tag_id, tag_type, tag_side)
+    
+    
+    def form_valid(self, form):
+        batch_id = form.cleaned_data["entry_batch"].entry_batch_id
+
+        response = super().form_valid(form)
+        
+        # Get set_do_not_process Value
+        set_do_not_process = self.request.POST.get("set_do_not_process", "false")
+
+        # Set set_do_not_process cookie
+        response = self.set_cookie(response, batch_id, do_not_process=(set_do_not_process == "true"))
+
+        success_url = reverse("wamtram2:entry_batch_detail", args=[batch_id])
+        
+        if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({'success': True, 'redirect_url': success_url})
+        else:
+            self.success_url = success_url
+            return response
+
 
 class ObservationDetailView(LoginRequiredMixin, DetailView):
     model = TrtObservations

@@ -174,29 +174,12 @@ class TrtDataEntryForm(forms.ModelForm):
             "clutch_completed": forms.Select(attrs={"class": "form-control"}),
             "egg_count": forms.NumberInput(attrs={"class": "form-control"}),
             "egg_count_method": forms.Select(attrs={"class": "form-control"}),
-            # "new_left_tag_id": unAssignedTagWidget,
-            # "new_left_tag_id_2": unAssignedTagWidget,
-            # "new_right_tag_id": unAssignedTagWidget,
-            # "new_right_tag_id_2": unAssignedTagWidget,
-            # "new_pittag_id": unassignedPitTagWidget,
-            # "new_pittag_id_2": unassignedPitTagWidget,
-            #"recapture_left_tag_id": tagWidget,
-            #"recapture_left_tag_id_2": tagWidget,
-            #"recapture_left_tag_id_3": tagWidget,
-            #"recapture_right_tag_id": tagWidget,
-            #"recapture_right_tag_id_2": tagWidget,
-            #"recapture_right_tag_id_3": tagWidget,
-            # "recapture_pittag_id": pitTagWidget,
-            # "recapture_pittag_id_2": pitTagWidget,
         }
 
     def __init__(self, *args, **kwargs):
         self.batch_id = kwargs.pop("batch_id", None)
         super().__init__(*args, **kwargs)
 
-        # self.fields["activity_code"].required = True
-        # self.fields["alive"].required = True
-        # self.fields["nesting"].required = True
         self.fields["observation_date"].required = True
         self.fields["species_code"].required = True
         self.fields["place_code"].required = True
@@ -246,20 +229,26 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["damage_rhf"].label = "Right hind flipper"
         
         
-        self.fields['recapture_left_tag_id'].widget = forms.TextInput(attrs={'class': 'form-control'})
-        self.fields['recapture_left_tag_id_2'].widget = forms.TextInput(attrs={'class': 'form-control'})
-        self.fields['recapture_left_tag_id_3'].widget = forms.TextInput(attrs={'class': 'form-control'})
-        self.fields['recapture_right_tag_id'].widget = forms.TextInput(attrs={'class': 'form-control'})
-        self.fields['recapture_right_tag_id_2'].widget = forms.TextInput(attrs={'class': 'form-control'})
-        self.fields['recapture_right_tag_id_3'].widget = forms.TextInput(attrs={'class': 'form-control'})
-        self.fields['new_left_tag_id'].widget = forms.TextInput(attrs={'class': 'form-control'})
-        self.fields['new_left_tag_id_2'].widget = forms.TextInput(attrs={'class': 'form-control'})
-        self.fields['new_right_tag_id'].widget = forms.TextInput(attrs={'class': 'form-control'})
-        self.fields['new_right_tag_id_2'].widget = forms.TextInput(attrs={'class': 'form-control'})
-        self.fields['recapture_pittag_id'].widget = forms.TextInput(attrs={'class': 'form-control'})
-        self.fields['recapture_pittag_id_2'].widget = forms.TextInput(attrs={'class': 'form-control'})
-        self.fields['new_pittag_id'].widget = forms.TextInput(attrs={'class': 'form-control'})
-        self.fields['new_pittag_id_2'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        optional_fields = [
+            "recapture_left_tag_id",
+            "recapture_left_tag_id_2",
+            "recapture_left_tag_id_3",
+            "recapture_right_tag_id",
+            "recapture_right_tag_id_2",
+            "recapture_right_tag_id_3",
+            "new_left_tag_id",
+            "new_left_tag_id_2",
+            "new_right_tag_id",
+            "new_right_tag_id_2",
+            "recapture_pittag_id",
+            "recapture_pittag_id_2",
+            "new_pittag_id",
+            "new_pittag_id_2"
+    ]
+
+        for field in optional_fields:
+            self.fields[field].required = False
+            self.fields[field].widget = forms.TextInput(attrs={'class': 'form-control'})
 
         # Disable all fields if there is an observation_id as it already in the database
         if self.instance.observation_id:
@@ -271,6 +260,7 @@ class TrtDataEntryForm(forms.ModelForm):
             field = self.fields[field_name]
             if field.required:
                 field.widget.attrs['class'] = field.widget.attrs.get('class', '') + ' required-field'
+
 
     # saves the people names as well as the person_id for use in MS Access front end
     def save(self, commit=True):
@@ -301,75 +291,14 @@ class TrtDataEntryForm(forms.ModelForm):
 
         return instance
                 
-        def clean(self):
-            cleaned_data = super().clean()
+    def clean(self):
+        cleaned_data = super().clean()
+        do_not_process = cleaned_data.get("do_not_process")
 
-            # fields_to_check = [
-            #     "recapture_left_tag_id",
-            #     "recapture_left_tag_id_2",
-            #     "recapture_left_tag_id_3",
-            #     "recapture_right_tag_id",
-            #     "recapture_right_tag_id_2",
-            #     "recapture_right_tag_id_3",
-            #     "recapture_pittag_id",
-            #     "recapture_pittag_id_2",
-            # ]
-            # if cleaned_data.get("turtle_id"):
-            #     if not any(cleaned_data.get(field) for field in fields_to_check):
-            #         raise ValidationError(
-            #             "No recapture tags have been entered for a recaptured turtle."
-            #         )
-
-            # fields_to_check = [
-            #     "tagscarnotchecked",
-            #     "scars_left",
-            #     "scars_right",
-            #     "scars_left_scale_1",
-            #     "scars_right_scale_1",
-            #     "scars_left_scale_2",
-            #     "scars_right_scale_2",
-            #     "scars_left_scale_3",
-            #     "scars_right_scale_3",
-            # ]
-
-            # if not any(cleaned_data.get(field) for field in fields_to_check):
-            #     raise ValidationError(
-            #         "At least one of the tag scar fields must be selected."
-            #     )
-
-            # fields_to_check = [
-            #     "cc_length_not_measured",
-            #     "curved_carapace_length",
-            # ]
-
-            # if not any(cleaned_data.get(field) for field in fields_to_check):
-            #     raise ValidationError("Did you measure CCL?")
-
-            # fields_to_check = [
-            #     "cc_width_not_measured",
-            #     "curved_carapace_width",
-            # ]
-
-            # if not any(cleaned_data.get(field) for field in fields_to_check):
-            #     raise ValidationError("Did you measure CCW?")
-
-            # fields_to_check = [
-            #     "didnotcheckforinjury",
-            #     "damage_carapace",
-            #     "damage_lff",
-            #     "damage_rff",
-            #     "damage_lhf",
-            #     "damage_rhf",
-            #     "body_part_1",
-            #     "damage_code_1",
-            #     "body_part_2",
-            #     "damage_code_2",
-            # ]
-
-            # if not any(cleaned_data.get(field) for field in fields_to_check):
-            #     raise ValidationError("At least one of the injury fields must be selected.")
-
+        if do_not_process:
             return cleaned_data
+        
+        return cleaned_data
 
 
 class DataEntryUserModelForm(forms.ModelForm):

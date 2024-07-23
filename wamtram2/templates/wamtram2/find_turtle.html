@@ -50,7 +50,7 @@
       <div class="card card-lg shadow-lg">
         <div class="card-body">
           <div class="text-center mt-3">
-            <a href="{% url 'wamtram2:newtrtdataentry' batch_id=form.batch_id.value %}" class="btn btn-primary">Create New Untagged Turtle</a>
+            <a id="createForUntaggedTurtle" href="{% url 'wamtram2:newtrtdataentry' batch_id=form.batch_id.value %}" class="btn btn-primary">Create New Untagged Turtle</a>
           </div>
           <div class="text-center mt-4">or</div>
           <h5 class="text-center mt-4">Search for a Tagged Turtle</h5>
@@ -61,6 +61,8 @@
               <input type="text" class="form-control" id="tag_id" name="tag_id" required>
             </div>
             <input type="hidden" id="tag_type" name="tag_type" value="{{ tag_type }}">
+            <input type="hidden" id="set_do_not_process" name="set_do_not_process" value="false">
+            <input type="hidden" id="batch_id" name="batch_id" value="{{ form.batch_id.value }}">
             <div class="row justify-content-center">
               <input type="submit" value="Search" class="btn btn-primary">
             </div>
@@ -70,14 +72,14 @@
           <div id="tag-suggestion" class="alert alert-warning mt-3" style="display: none;">
             <p>Sorry we cannot find the tag in our database, or it was set as unavailable.</br></p>
             <p>It seems you forgot to add a space in the tag ID:  <span id="suggested-tag"></span></p>
-            <button class="btn btn-primary" id="use-suggested-tag">Yes, it is <span id="suggested-tag-btn"></span></button>
-            <button class="btn btn-secondary" id="suggested-tag-no">No, it is <span id="user-input-tag"></span></button>
+            <button class="btn btn-primary" id="suggestedTagYes">Yes, it is <span id="suggested-tag-btn"></span></button>
+            <button class="btn btn-secondary" id="suggestedTagNo">No, it is <span id="user-input-tag"></span></button>
           </div>
           <div id="exact-match-prompt" class="alert alert-warning mt-3" style="display: none;">
             <p>Sorry we cannot find the tag in our database.</br></p>
             <p>Is the tag id <strong id="exact-tag-id"></strong> exact same as the data sheet?</p>
-            <button class="btn btn-primary" id="exact-match-yes">Yes, I have double checked the tag from data sheet</button>
-            <button class="btn btn-secondary" id="exact-match-no">No, I will reenter the tag</button>
+            <button id="exactMatchYes" class="btn btn-primary">Yes, I have double checked the tag from data sheet</button>
+            <button id="exactMatchNo" class="btn btn-secondary">No, I will reenter the tag</button>
           </div>
           {% if turtle %}
           <div class="container border pb-3 mt-3">
@@ -91,13 +93,16 @@
           </div>
           <div class="text-center mt-4">
             <p>Does the species and sex match the data sheet?</p>
-            <a href="{% url 'wamtram2:existingtrtdataentry' batch_id=form.batch_id.value turtle_id=turtle.turtle_id %}" class="btn btn-primary mt-2 ml-md-2">Yes, create for turtle {{ turtle.turtle_id }}</a>
+            <a id="createForExistingTurtle" href="{% url 'wamtram2:existingtrtdataentry' batch_id=form.batch_id.value turtle_id=turtle.turtle_id %}" class="btn btn-primary mt-2 ml-md-2">Yes, create for turtle {{ turtle.turtle_id }}</a>
             <form method="post" style="display: inline;">
               {% csrf_token %}
               <input type="hidden" name="tag_id" value="{{ form.tag_id.value }}">
               <input type="hidden" name="tag_type" value="{{ tag_type }}">
+              <input type="hidden" name="tag_side" value="{{ tag_side }}">
               <input type="hidden" name="create_and_review" value="true">
-              <button type="submit" class="btn btn-secondary mt-2 ml-md-2">No, create the record and review later</button>
+              <input type="hidden" id="set_do_not_process" name="set_do_not_process" value="false">
+              <input type="hidden" id="batch_id" name="batch_id" value="{{ form.batch_id.value }}">
+              <button id="createAndReviewLater" type="submit" class="btn btn-secondary mt-2 ml-md-2">No, create the record and review later</button>
             </form>
           </div>          
           {% endif %}
@@ -119,74 +124,100 @@
 {% block extra_js %}
 {{ form.media.js }}
 <script>
-  // Show loading animation
-  function showLoadingSpinner() {
-    const loadingSpinner = document.querySelector('.loading-spinner');
-    if (loadingSpinner) {
-      loadingSpinner.style.display = 'block';
+  document.addEventListener('DOMContentLoaded', function() {
+    const batchId = document.getElementById('batch_id').value;
+  
+    // Show loading animation
+    function showLoadingSpinner() {
+      const loadingSpinner = document.querySelector('.loading-spinner');
+      if (loadingSpinner) {
+        loadingSpinner.style.display = 'block';
+      }
     }
-  }
-
-  // Hide loading animation
-  function hideLoadingSpinner() {
-    const loadingSpinner = document.querySelector('.loading-spinner');
-    if (loadingSpinner) {
-      loadingSpinner.style.display = 'none';
+  
+    // Hide loading animation
+    function hideLoadingSpinner() {
+      const loadingSpinner = document.querySelector('.loading-spinner');
+      if (loadingSpinner) {
+        loadingSpinner.style.display = 'none';
+      }
     }
-  }
-
-  // Hide loading animation when the page is fully loaded
-  window.addEventListener('load', hideLoadingSpinner);
-
-  // Add event listeners to all form submissions to show the loading animation
-  document.querySelectorAll('form').forEach(form => {
-    form.addEventListener('submit', function(event) {
-      showLoadingSpinner();
+  
+    // Hide loading animation when the page is fully loaded
+    window.addEventListener('load', hideLoadingSpinner);
+  
+    // Show exact match prompt
+    function showExactMatchPrompt(tagId) {
+      document.getElementById('exact-tag-id').innerText = tagId;
+      document.getElementById('exact-match-prompt').style.display = 'block';
+    }
+  
+    document.body.addEventListener('click', function(event) {
+      const target = event.target;
+  
+      switch(target.id) {
+        case 'suggestedTagNo':
+          document.getElementById('set_do_not_process').value = "true";
+          document.getElementById('tag-suggestion').style.display = 'none';
+          var tagId = document.getElementById('user-input-tag').innerText;
+          showExactMatchPrompt(tagId);
+          hideLoadingSpinner(); // Hide spinner since no navigation or form submission
+          break;
+  
+        case 'suggestedTagYes':
+          document.getElementById('tag_id').value = document.getElementById('suggested-tag').innerText;
+          document.getElementById('tag-suggestion').style.display = 'none';
+          document.getElementById('searchForm').submit();
+          showLoadingSpinner(); // Show spinner for form submission
+          break;
+  
+        case 'exactMatchYes':
+          // document.cookie = `${batchId}_do_not_process=true; path=/`;
+          document.getElementById('set_do_not_process').value = "true";
+          // Redirect to the newtrtdataentry page
+          const newDataEntryURL = `{% url 'wamtram2:newtrtdataentry' batch_id=form.batch_id.value %}`;
+          window.location.href = newDataEntryURL;
+          showLoadingSpinner(); // Show spinner for page navigation
+          break;
+  
+        case 'exactMatchNo':
+          document.getElementById('exact-match-prompt').style.display = 'none';
+          hideLoadingSpinner(); // Hide spinner since no navigation or form submission
+          break;
+  
+        case 'createAndReviewLater':
+          document.getElementById('set_do_not_process').value = "true";
+          showLoadingSpinner(); // Show spinner for form submission
+          break;
+  
+        case 'createForExistingTurtle':
+        case 'createForUntaggedTurtle':
+          document.getElementById('set_do_not_process').value = "false";
+          // document.cookie = `${batchId}_do_not_process=false; path=/`;
+          showLoadingSpinner(); // Show spinner for page navigation
+          break;
+  
+        default:
+          hideLoadingSpinner(); // Hide spinner for any other cases not causing navigation or submission
+          break;
+      }
     });
+  
+    // Check if no turtle found and show appropriate prompt
+    {% if no_turtle_found %}
+    var tagId = '{{ tag_id }}';
+    var regex = /^[A-Za-z]{2}\d{4}$/; // Check for two letters followed by four numbers
+    if (regex.test(tagId)) {
+      var suggestedTag = tagId.slice(0, 2) + " " + tagId.slice(2);
+      document.getElementById('suggested-tag').innerText = suggestedTag;
+      document.getElementById('suggested-tag-btn').innerText = suggestedTag;
+      document.getElementById('user-input-tag').innerText = tagId;
+      document.getElementById('tag-suggestion').style.display = 'block';
+    } else {
+      showExactMatchPrompt(tagId);
+    }
+    {% endif %}
   });
-
-  // Use the suggested tag
-  document.getElementById('use-suggested-tag').addEventListener('click', function() {
-    document.getElementById('tag_id').value = document.getElementById('suggested-tag').innerText;
-    document.getElementById('tag-suggestion').style.display = 'none';
-    document.getElementById('searchForm').submit();
-  });
-
-  // Handle exact match prompt
-  document.getElementById('exact-match-yes').addEventListener('click', function() {
-    document.getElementById('searchForm').submit();
-  });
-
-  document.getElementById('exact-match-no').addEventListener('click', function() {
-    document.getElementById('exact-match-prompt').style.display = 'none';
-  });
-
-  // Show exact match prompt
-  function showExactMatchPrompt(tagId) {
-    document.getElementById('exact-tag-id').innerText = tagId;
-    document.getElementById('exact-match-prompt').style.display = 'block';
-  }
-
-  // Handle no suggested tag option
-  document.getElementById('suggested-tag-no').addEventListener('click', function() {
-    document.getElementById('tag-suggestion').style.display = 'none';
-    var tagId = document.getElementById('user-input-tag').innerText;
-    showExactMatchPrompt(tagId);
-  });
-
-  // Check if no turtle found and show appropriate prompt
-  {% if no_turtle_found %}
-  var tagId = '{{ tag_id }}';
-  var regex = /^[A-Za-z]{2}\d{4}$/; // Check for two letters followed by four numbers
-  if (regex.test(tagId)) {
-    var suggestedTag = tagId.slice(0, 2) + " " + tagId.slice(2);
-    document.getElementById('suggested-tag').innerText = suggestedTag;
-    document.getElementById('suggested-tag-btn').innerText = suggestedTag;
-    document.getElementById('user-input-tag').innerText = tagId;
-    document.getElementById('tag-suggestion').style.display = 'block';
-  } else {
-    showExactMatchPrompt(tagId);
-  }
-  {% endif %}
-</script>
+  </script>
+  
 {% endblock %}
