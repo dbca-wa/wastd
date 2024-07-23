@@ -64,7 +64,7 @@
             <input type="hidden" id="set_do_not_process" name="set_do_not_process" value="false">
             <input type="hidden" id="batch_id" name="batch_id" value="{{ form.batch_id.value }}">
             <div class="row justify-content-center">
-              <input type="submit" value="Search" class="btn btn-primary">
+              <input id="searchBtn" type="submit" value="Search" class="btn btn-primary">
             </div>
           </form>
           
@@ -145,6 +145,12 @@
   
     // Hide loading animation when the page is fully loaded
     window.addEventListener('load', hideLoadingSpinner);
+
+    // Show loading spinner when the search form is submitted
+    const searchForm = document.getElementById('searchForm');
+    searchForm.addEventListener('submit', function(event) {
+      showLoadingSpinner();
+    });
   
     // Show exact match prompt
     function showExactMatchPrompt(tagId) {
@@ -218,6 +224,6 @@
     }
     {% endif %}
   });
-  </script>
+</script>
   
 {% endblock %}
