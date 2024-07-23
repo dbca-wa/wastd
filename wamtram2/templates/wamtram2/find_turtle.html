@@ -111,7 +111,6 @@
     </div>
   </div>
 </div>
-<div>Tag Type: {{ tag_type }}</div>
 <!-- Loading spinner -->
 <div class="loading-spinner">
   <div class="spinner-border text-primary" role="status">
@@ -142,12 +141,6 @@
         loadingSpinner.style.display = 'none';
       }
     }
-
-    // Initialize loading spinner
-    function initializeLoadingSpinner() {
-      hideLoadingSpinner();
-    }
-  
     // Hide loading animation when the page is fully loaded
     window.addEventListener('load', hideLoadingSpinner);
 
@@ -167,6 +160,7 @@
     }
   
     document.body.addEventListener('click', function(event) {
+      
       const target = event.target;
   
       switch(target.id) {
@@ -179,19 +173,28 @@
           break;
   
         case 'suggestedTagYes':
+        case 'suggested-tag-btn':
           document.getElementById('tag_id').value = document.getElementById('suggested-tag').innerText;
           document.getElementById('tag-suggestion').style.display = 'none';
           document.getElementById('searchForm').submit();
-          showLoadingSpinner(); // Show spinner for form submission
+          showLoadingSpinner(); // Show spinner for page navigation
+          setTimeout(function() {
+            console.log('Submitting form');
+            document.getElementById('searchForm').submit();
+          }, 500);
           break;
   
         case 'exactMatchYes':
-          // document.cookie = `${batchId}_do_not_process=true; path=/`;
+          document.cookie = `${batchId}_do_not_process=true; path=/`;
           document.getElementById('set_do_not_process').value = "true";
           // Redirect to the newtrtdataentry page
           const newDataEntryURL = `{% url 'wamtram2:newtrtdataentry' batch_id=form.batch_id.value %}`;
           window.location.href = newDataEntryURL;
           showLoadingSpinner(); // Show spinner for page navigation
+          setTimeout(function() {
+            console.log('Submitting form');
+            document.getElementById('searchForm').submit();
+          }, 500);
           break;
   
         case 'exactMatchNo':
@@ -207,7 +210,7 @@
         case 'createForExistingTurtle':
         case 'createForUntaggedTurtle':
           document.getElementById('set_do_not_process').value = "false";
-          // document.cookie = `${batchId}_do_not_process=false; path=/`;
+          document.cookie = `${batchId}_do_not_process=false; path=/`;
           showLoadingSpinner(); // Show spinner for page navigation
           break;
   
