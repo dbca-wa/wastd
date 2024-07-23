@@ -639,13 +639,13 @@ class FindTurtleView(LoginRequiredMixin, View):
         form = SearchForm(initial={"batch_id": batch_id})
         return render(request, "wamtram2/find_turtle.html", {"form": form})
 
-    def set_cookie(self, response, batch_id, tag_id=None, tag_side=None, tag_type=None, do_not_process=False):
+    def set_cookie(self, response, batch_id, tag_id=None, tag_type=None, tag_side=None, do_not_process=False):
         if tag_id:
             response.set_cookie(f'{batch_id}_tag_id', tag_id, max_age=3600)
-        if tag_side:
-            response.set_cookie(f'{batch_id}_tag_side', tag_side, max_age=3600)
         if tag_type:
             response.set_cookie(f'{batch_id}_tag_type', tag_type, max_age=3600)
+        if tag_side:
+            response.set_cookie(f'{batch_id}_tag_side', tag_side, max_age=3600)
         if do_not_process:
             response.set_cookie(f'{batch_id}_do_not_process', 'true', max_age=3600)
         else:
