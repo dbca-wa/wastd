@@ -142,11 +142,16 @@
         loadingSpinner.style.display = 'none';
       }
     }
+    // Initialize loading spinner
+    function initializeLoadingSpinner() {
+      hideLoadingSpinner();
+    }
+
     // Hide loading animation when the page is fully loaded
     window.addEventListener('load', hideLoadingSpinner);
 
-    // Initialize loading spinner
     initializeLoadingSpinner();
+
 
     // Show loading spinner when the search form is submitted
     const searchForm = document.getElementById('searchForm');
