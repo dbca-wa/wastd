@@ -450,10 +450,7 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
             return JsonResponse({'success': True, 'redirect_url': success_url})
         else:
-            self.success_url = success_url
-            return redirect(reverse('wamtram2:find_turtle', kwargs={'batch_id': batch_id}))
-
-
+            return redirect(success_url)
 
     def form_invalid(self, form):
         if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
