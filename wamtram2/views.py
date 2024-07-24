@@ -440,23 +440,19 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         return initial
 
     def form_valid(self, form):
-        
         batch_id = form.cleaned_data["entry_batch"].entry_batch_id
-        
         do_not_process_cookie_name = f"{batch_id}_do_not_process"
         do_not_process_cookie_value = self.request.COOKIES.get(do_not_process_cookie_name)
         if do_not_process_cookie_value == 'true':
             form.instance.do_not_process = True
-        
         form.save()
-        
         success_url = reverse("wamtram2:entry_batch_detail", args=[batch_id])
-        
         if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
             return JsonResponse({'success': True, 'redirect_url': success_url})
         else:
             self.success_url = success_url
-            return super().form_valid(form)
+            return redirect(reverse('wamtram2:find_turtle', kwargs={'batch_id': batch_id}))
+
 
 
     def form_invalid(self, form):
@@ -633,23 +629,43 @@ class FindTurtleView(LoginRequiredMixin, View):
                 "You do not have permission to view this record"
             )
         return super().dispatch(request, *args, **kwargs)
-
+    
     def get(self, request, *args, **kwargs):
-        batch_id = kwargs.get("batch_id")
-        form = SearchForm(initial={"batch_id": batch_id})
-        return render(request, "wamtram2/find_turtle.html", {"form": form})
+            batch_id = kwargs.get("batch_id")
+            form = SearchForm(initial={"batch_id": batch_id})
+            no_turtle_found = request.COOKIES.get(f'{batch_id}_no_turtle_found') == "true"
+            tag_id = request.COOKIES.get(f'{batch_id}_tag_id')
+            tag_type = request.COOKIES.get(f'{batch_id}_tag_type')
+            tag_side = request.COOKIES.get(f'{batch_id}_tag_side')
+            turtle = None
 
-    def set_cookie(self, response, batch_id, tag_id=None, tag_type=None, tag_side=None, do_not_process=False):
+            if tag_id and tag_type and not no_turtle_found:
+                tag = TrtTags.objects.select_related('turtle').filter(tag_id=tag_id).first()
+                if tag:
+                    turtle = tag.turtle
+                else:
+                    pit_tag = TrtPitTags.objects.select_related('turtle').filter(pittag_id=tag_id).first()
+                    if pit_tag:
+                        turtle = pit_tag.turtle
+
+            return render(request, "wamtram2/find_turtle.html", {
+                "form": form,
+                "turtle": turtle,
+                "no_turtle_found": no_turtle_found,
+                "tag_id": tag_id,
+                "tag_type": tag_type,
+                "tag_side": tag_side
+            })
+
+    def set_cookie(self, response, batch_id, tag_id=None, tag_type=None, tag_side=None, no_turtle_found=False, do_not_process=False):
         if tag_id:
             response.set_cookie(f'{batch_id}_tag_id', tag_id, max_age=3600)
         if tag_type:
             response.set_cookie(f'{batch_id}_tag_type', tag_type, max_age=3600)
         if tag_side:
             response.set_cookie(f'{batch_id}_tag_side', tag_side, max_age=3600)
-        if do_not_process:
-            response.set_cookie(f'{batch_id}_do_not_process', 'true', max_age=3600)
-        else:
-            response.set_cookie(f'{batch_id}_do_not_process', 'false', max_age=3600)
+        response.set_cookie(f'{batch_id}_no_turtle_found', 'true' if no_turtle_found else 'false', max_age=3600)
+        response.set_cookie(f'{batch_id}_do_not_process', 'true' if do_not_process else 'false', max_age=3600)
         return response
 
     def post(self, request, *args, **kwargs):
@@ -681,65 +697,21 @@ class FindTurtleView(LoginRequiredMixin, View):
 
                 if turtle:
                     turtle = TrtTurtles.objects.prefetch_related('trttags_set', 'trtpittags_set').get(pk=turtle.pk)
-                    response = render(
-                        request,
-                        "wamtram2/find_turtle.html",
-                        {
-                            "form": form,
-                            "turtle": turtle,
-                            "tags": turtle.trttags_set.all(),
-                            "pittags": turtle.trtpittags_set.all(),
-                            "tag_type": tag_type,
-                            "tag_id": tag_id,
-                            "tag_side": tag_side
-                        },
-                    )
+                    response = redirect(reverse('wamtram2:find_turtle', kwargs={'batch_id': batch_id}))
+                    return self.set_cookie(response, batch_id, tag_id, tag_type, tag_side)
                 else:
                     no_turtle_found = True
-                    response = render(
-                        request,
-                        "wamtram2/find_turtle.html",
-                        {
-                            "form": form, 
-                            "no_turtle_found": no_turtle_found, 
-                            "tag_id": tag_id,
-                            "tag_type": tag_type
-                        },
-                    )
+                    response = redirect(reverse('wamtram2:find_turtle', kwargs={'batch_id': batch_id}))
+                    return self.set_cookie(response, batch_id, tag_id, tag_type, tag_side, no_turtle_found)
             else:
-                # Handle create_and_review_later
                 tag_type = request.POST.get('tag_type', 'unknown_tag')
                 tag_side = request.POST.get('tag_side', None)
                 response = redirect(reverse('wamtram2:newtrtdataentry', kwargs={'batch_id': batch_id}))
                 return self.set_cookie(response, batch_id, tag_id, tag_type, tag_side, do_not_process=True)
         else:
-            response = render(
-                request,
-                "wamtram2/find_turtle.html",
-                {"form": form}
-            )
+            response = render(request, "wamtram2/find_turtle.html", {"form": form})
 
         return self.set_cookie(response, batch_id, tag_id, tag_type, tag_side)
-    
-    
-    def form_valid(self, form):
-        batch_id = form.cleaned_data["entry_batch"].entry_batch_id
-
-        response = super().form_valid(form)
-        
-        # Get set_do_not_process Value
-        set_do_not_process = self.request.POST.get("set_do_not_process", "false")
-
-        # Set set_do_not_process cookie
-        response = self.set_cookie(response, batch_id, do_not_process=(set_do_not_process == "true"))
-
-        success_url = reverse("wamtram2:entry_batch_detail", args=[batch_id])
-        
-        if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            return JsonResponse({'success': True, 'redirect_url': success_url})
-        else:
-            self.success_url = success_url
-            return response
 
 
 class ObservationDetailView(LoginRequiredMixin, DetailView):
