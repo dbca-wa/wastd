@@ -234,6 +234,12 @@
       showExactMatchPrompt(tagId);
     }
     {% endif %}
+
+    // Reload the page when the back button is clicked
+    if (performance.navigation.type === 2) {
+      location.reload(true);
+      initializeLoadingSpinner();
+    }
   });
 </script>
   
