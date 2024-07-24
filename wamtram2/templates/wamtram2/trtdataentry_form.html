@@ -428,7 +428,7 @@
                   <button id="toggleInjuryFieldsButton" type="button" class="btn btn-primary">More Injuries</button>
                 </div>
             </div>
-            <div id="injuryAdditionalFields">
+            <div id="injuryAdditionalFields" style="display: none;">
                 <div class="row">
                     <div class="col-md-6">
                         {% bootstrap_field form.body_part_1 %}
@@ -650,6 +650,8 @@
       }
     }
 
+    document.getElementById('addMeasurementButton').addEventListener('click', toggleMeasurement);
+
     function toggleCurvedCarapaceLength() {
         const curvedCarapaceLength = document.getElementById('{{ form.curved_carapace_length.auto_id }}').parentElement;
         if (document.getElementById('{{ form.cc_length_not_measured.auto_id }}').checked) {
@@ -684,7 +686,7 @@
             injuryDetails.style.display = 'block';
         }
     }
-
+    
     document.getElementById('{{ form.didnotcheckforinjury.auto_id }}').addEventListener('change', toggleInjuryDetails);
     toggleInjuryDetails();
 
@@ -699,6 +701,7 @@
           toggleButton.innerText = 'More Injuries';
       }
   }
+  document.getElementById('toggleInjuryFieldsButton').addEventListener('click', toggleInjuryFields);
 
 
     // Advanced Data Handling
