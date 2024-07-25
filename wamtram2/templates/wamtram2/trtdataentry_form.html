@@ -527,26 +527,7 @@
       {% endif %}
     </div>
   </div>
-  <!-- Before Reload Confirmation Dialog -->
-  <div id="confirmation-dialog" class="modal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Confirm Navigation</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <p>You have unsaved changes. Do you really want to leave?</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" id="leave-button">Leave</button>
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Stay</button>
-        </div>
-      </div>
-    </div>
-  </div>
+
 </div>
 </form>
 </body>
@@ -726,13 +707,28 @@
 
     form.addEventListener('submit', function(event) {
         isFormDirty = false;
+        disableSaveButton();
     });
 
-    const leaveButton = document.getElementById('leave-button');
-    leaveButton.addEventListener('click', function() {
-        window.removeEventListener('beforeunload', onBeforeUnload);
-        window.location.href = document.referrer;
-    });
+    function disableSaveButton() {
+      const saveButton = document.querySelector('.save-button');
+      if (saveButton) {
+          saveButton.disabled = true;
+          let dots = 0;
+          saveButton.textContent = 'Processing';
+          const originalText = saveButton.textContent;
+          const interval = setInterval(() => {
+              if (dots >= 3) {
+                  dots = 0;
+                  saveButton.textContent = originalText;
+              } else {
+                  dots++;
+                  saveButton.textContent += '.';
+              }
+          }, 500);  // Adjust the speed of the dots as needed
+          saveButton.dataset.intervalId = interval;
+      }
+    }
 
     // Background Color Update
     function updateBackgroundColor() {
