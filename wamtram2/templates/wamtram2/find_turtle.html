@@ -199,6 +199,7 @@
           break;
   
         case 'exactMatchYes':
+        case 'user-input-tag':
           document.cookie = `${batchId}_do_not_process=true; path=/`;
           document.getElementById('set_do_not_process').value = "true";
           // Redirect to the newtrtdataentry page
