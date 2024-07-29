@@ -179,6 +179,7 @@
   
       switch(target.id) {
         case 'suggestedTagNo':
+        case 'user-input-tag':
           document.getElementById('set_do_not_process').value = "true";
           document.getElementById('tag-suggestion').style.display = 'none';
           var tagId = document.getElementById('user-input-tag').innerText;
@@ -199,7 +200,6 @@
           break;
   
         case 'exactMatchYes':
-        case 'user-input-tag':
           document.cookie = `${batchId}_do_not_process=true; path=/`;
           document.getElementById('set_do_not_process').value = "true";
           // Redirect to the newtrtdataentry page
