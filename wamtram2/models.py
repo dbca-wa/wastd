@@ -1488,10 +1488,6 @@ class TrtPersons(models.Model):
         db_column="Transfer", max_length=50, blank=True, null=True
     )  # Field name made lowercase.
     recorder = models.BooleanField(db_column="Recorder")  # Field name made lowercase.
-    
-    @property
-    def full_name(self):
-        return f"{self.first_name} {self.surname}"
 
     class Meta:
         managed = False
