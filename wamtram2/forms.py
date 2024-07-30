@@ -167,7 +167,7 @@ class TrtDataEntryForm(forms.ModelForm):
             "turtle_id": forms.HiddenInput(),
             "entry_batch": forms.HiddenInput(),
             "observation_date": DateTimeInput(attrs={"type": "datetime-local"}),
-            "user_entry_id": personWidget,
+            "user_entry_id": forms.TextInput(attrs={'class': 'form-control search-field'}),
             "measured_by_id": personWidget,
             "recorded_by_id": personWidget,
             "tagged_by_id": personWidget,

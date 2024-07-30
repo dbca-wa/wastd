@@ -6,6 +6,23 @@
 {{ block.super }}
 {{ form.media.css }}
 <style>
+  .search-results {
+    position: absolute; /* 绝对定位，根据需要调整 */
+    background-color: white;
+    border: 1px solid #ddd;
+    z-index: 1000; /* 确保下拉列表在输入框之上 */
+    max-height: 200px; /* 设置最大高度，可滚动 */
+    overflow-y: auto; /* 允许滚动 */
+}
+
+.search-result {
+    padding: 5px;
+    cursor: pointer;
+}
+
+.search-result:hover {
+    background-color: #f0f0f0; /* 鼠标悬浮效果 */
+}
   .select2 {
     width: 100% !important;
   }
@@ -75,10 +92,8 @@
         <div class="col-md-12">
           <div class="row">
             <div class="col-md-12">
-              <label for="{{ form.entered_by_id.id_for_label }}">{{ form.entered_by_id.label }}</label>
-            </div>
-            <div class="col-md-4">
-              {% bootstrap_field form.entered_by_id show_label=False %}
+              <input type="text" class="search-field" data-field-name="user_entry_id" placeholder="Search person">
+              <div class="search-results" style="display:none;"></div>
             </div>
             <div class="col-md-2">
               <button type="button" class="btn btn-outline-primary add-person-btn" onClick="window.open(adminUrl);" title="Add new person">
@@ -921,6 +936,72 @@
       location.reload(true);
     }
   });
+
+// 防抖函数
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+      const context = this;
+      clearTimeout(timeout);
+      timeout = setTimeout(() => func.apply(context, args), wait);
+  };
+}
+
+// 假设这是你的 searchPersons 函数，现在使用防抖包装
+function searchPersons(input, resultsContainer, query) {
+  // 发送AJAX请求获取搜索结果
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', `/wamtram2/search-persons/?q=${encodeURIComponent(query)}`, true);
+  xhr.onload = function() {
+      if (xhr.status == 200) {
+          var persons = JSON.parse(xhr.responseText);
+          // 显示下拉列表并填充结果
+          resultsContainer.style.display = 'block';
+          resultsContainer.innerHTML = ''; // 清空之前的结果
+          persons.forEach(function(person) {
+              var div = document.createElement('div');
+              div.textContent = `${person.first_name} ${person.surname}`;
+              div.className = 'search-result';
+              div.onclick = function() {
+                  input.value = `${person.first_name} ${person.surname}`;
+                  resultsContainer.style.display = 'none';
+              };
+              resultsContainer.appendChild(div);
+          });
+      } else {
+          // 错误处理
+          console.error('Search failed with status:', xhr.status);
+          resultsContainer.style.display = 'none';
+      }
+  };
+  xhr.onerror = function() {
+      console.error('Search request failed');
+      resultsContainer.style.display = 'none';
+  };
+  xhr.send();
+}
+
+document.querySelectorAll('.search-field').forEach(function(input) {
+  let resultsContainer = input.parentNode.querySelector('.search-results');
+  // 绑定防抖函数到 input 事件监听器
+  let debouncedSearch = debounce(function() {
+      let query = input.value;
+      if (query.length === 0) {
+          resultsContainer.style.display = 'none';
+          return;
+      }
+      searchPersons(input, resultsContainer, query);
+  }, 500);
+  
+  input.addEventListener('input', debouncedSearch);
+  
+  resultsContainer.addEventListener('click', function(e) {
+      if (e.target.className === 'search-result') {
+          input.value = e.target.textContent;
+          resultsContainer.style.display = 'none';
+      }
+  });
+});
 </script>
 {% endblock %}
 
