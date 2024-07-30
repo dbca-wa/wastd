@@ -38,9 +38,9 @@ unassignedPitTagWidget = ModelSelect2Widget(
 )
 
 personWidget = ModelSelect2Widget(
-    queryset=TrtPersons.objects.all(),
+    queryset=TrtPersons.objects.all().only('person_id', 'first_name', 'surname'),
     model=TrtPersons,
-    search_fields=["first_name__icontains", "surname__icontains"],
+    search_fields=["first_name__icontains"],
 )
 
 placeWidget = ModelSelect2Widget(
@@ -79,6 +79,10 @@ class TrtEntryBatchesForm(forms.ModelForm):
         model = TrtEntryBatches
         fields = ["entered_person_id", "comments"]
         widgets = {"entered_person_id": personWidget}
+        
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['entered_person_id'].label = "Enterer Name (Input first name for search)"
 
 
 class TrtDataEntryForm(forms.ModelForm):
@@ -188,11 +192,11 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["latitude"].label = "Latitude (-xx.xxxxxx)"
         self.fields["longitude"].label = "Longitude (xxx.xxxxxx)"
         self.fields["nesting"].label = "Did nesting complete?"
-        self.fields["entered_by_id"].label = "Entered by"
+        self.fields["entered_by_id"].label = "Entered by (Input first name for search)"
         self.fields["place_code"].label = "Location/Beach"
         self.fields["species_code"].label = "Species"
         self.fields["observation_date"].label = "Observation Date & Time"
-        self.fields["recorded_by_id"].label = "Data captured by"
+        self.fields["recorded_by_id"].label = "Data captured by (Input first name for search)"
         self.fields["recapture_pittag_id"].label = "Recapture PIT Tag 1"
         self.fields["recapture_pittag_id_2"].label = "Recapture PIT Tag 2"
         self.fields["new_pittag_id"].label = "New PIT Tag 1"
@@ -213,8 +217,8 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["scars_right_scale_1"].label = "1"
         self.fields["scars_right_scale_2"].label = "2"
         self.fields["scars_right_scale_3"].label = "3"
-        self.fields["tagged_by_id"].label = "Tagged by"
-        self.fields["measured_by_id"].label = "Measured by"
+        self.fields["tagged_by_id"].label = "Tagged by (Input first name for search)"
+        self.fields["measured_by_id"].label = "Measured by (Input first name for search)"
         self.fields["tagscarnotchecked"].label = "Didn't check for tag scars"
         self.fields["didnotcheckforinjury"].label = "Didn't check for injury"
         self.fields["cc_length_not_measured"].label = "CCL not measured"
