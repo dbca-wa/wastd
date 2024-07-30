@@ -1440,13 +1440,13 @@ class TrtPersons(models.Model):
         db_column="PERSON_ID", primary_key=True
     )  # Field name made lowercase.
     first_name = models.CharField(
-        db_column="FIRST_NAME", max_length=50
+        db_column="FIRST_NAME", max_length=50, db_index=True
     )  # Field name made lowercase.
     middle_name = models.CharField(
         db_column="MIDDLE_NAME", max_length=50, blank=True, null=True
     )  # Field name made lowercase.
     surname = models.CharField(
-        db_column="SURNAME", max_length=50, blank=True, null=True
+        db_column="SURNAME", max_length=50, blank=True, null=True, db_index=True
     )  # Field name made lowercase.
     specialty = models.CharField(
         db_column="SPECIALTY", max_length=255, blank=True, null=True
@@ -1488,6 +1488,10 @@ class TrtPersons(models.Model):
         db_column="Transfer", max_length=50, blank=True, null=True
     )  # Field name made lowercase.
     recorder = models.BooleanField(db_column="Recorder")  # Field name made lowercase.
+    
+    @property
+    def full_name(self):
+        return f"{self.first_name} {self.surname}"
 
     class Meta:
         managed = False
