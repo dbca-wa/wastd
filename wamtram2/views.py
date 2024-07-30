@@ -501,7 +501,7 @@ class DeleteBatchView(LoginRequiredMixin, View):
             )
         return super().dispatch(request, *args, **kwargs)
 
-    def get(self, request, batch_id):
+    def post(self, request, batch_id):
         batch = get_object_or_404(TrtEntryBatches, entry_batch_id=batch_id)
         batch.delete()
         return redirect("wamtram2:entry_batches")
@@ -554,7 +554,6 @@ class ValidateDataEntryBatchView(LoginRequiredMixin, View):
 
 class DeleteEntryView(DeleteView):
     model = TrtDataEntry
-    template_name = 'your_app/delete_entry_confirm.html'
     success_url = reverse_lazy('wamtram2:entry_batches')
 
     def get_success_url(self):
@@ -1221,3 +1220,12 @@ class ValidateTagView(View):
             return self.validate_recaptured_pit_tag(request)
         else:
             return JsonResponse({'valid': False, 'message': 'Invalid validation type'})
+        
+        
+        
+def search_persons(request):
+    query = request.GET.get('q')
+    persons = TrtPersons.objects.filter(
+        first_name__icontains=query
+    ).values('person_id', 'first_name', 'surname')[:10]
+    return JsonResponse(list(persons), safe=False)
