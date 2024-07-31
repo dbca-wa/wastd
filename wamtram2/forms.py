@@ -167,12 +167,12 @@ class TrtDataEntryForm(forms.ModelForm):
             "turtle_id": forms.HiddenInput(),
             "entry_batch": forms.HiddenInput(),
             "observation_date": DateTimeInput(attrs={"type": "datetime-local"}),
-            "user_entry_id": forms.TextInput(attrs={'class': 'form-control search-field'}),
-            "measured_by_id": personWidget,
-            "recorded_by_id": personWidget,
-            "tagged_by_id": personWidget,
-            "entered_by_id": personWidget,
-            "measured_recorded_by_id": personWidget,
+
+            "measured_by_id": forms.HiddenInput(),
+            "recorded_by_id": forms.HiddenInput(),
+            "tagged_by_id": forms.HiddenInput(),
+            "entered_by_id": forms.HiddenInput(),
+            # "measured_recorded_by_id": personWidget,
             "place_code": placeWidget,
             "comments": forms.Textarea(attrs={"rows": 3, "class": "form-control"}),
             "clutch_completed": forms.Select(attrs={"class": "form-control"}),
@@ -192,11 +192,11 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["latitude"].label = "Latitude (-xx.xxxxxx)"
         self.fields["longitude"].label = "Longitude (xxx.xxxxxx)"
         self.fields["nesting"].label = "Did nesting complete?"
-        self.fields["entered_by_id"].label = "Entered by (Input first name for search)"
+        self.fields["entered_by_id"].label = "Entered by"
         self.fields["place_code"].label = "Location/Beach"
         self.fields["species_code"].label = "Species"
         self.fields["observation_date"].label = "Observation Date & Time"
-        self.fields["recorded_by_id"].label = "Data captured by (Input first name for search)"
+        self.fields["recorded_by_id"].label = "Data captured by"
         self.fields["recapture_pittag_id"].label = "Recapture PIT Tag 1"
         self.fields["recapture_pittag_id_2"].label = "Recapture PIT Tag 2"
         self.fields["new_pittag_id"].label = "New PIT Tag 1"
@@ -217,8 +217,8 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["scars_right_scale_1"].label = "1"
         self.fields["scars_right_scale_2"].label = "2"
         self.fields["scars_right_scale_3"].label = "3"
-        self.fields["tagged_by_id"].label = "Tagged by (Input first name for search)"
-        self.fields["measured_by_id"].label = "Measured by (Input first name for search)"
+        self.fields["tagged_by_id"].label = "Tagged by"
+        self.fields["measured_by_id"].label = "Measured by"
         self.fields["tagscarnotchecked"].label = "Didn't check for tag scars"
         self.fields["didnotcheckforinjury"].label = "Didn't check for injury"
         self.fields["cc_length_not_measured"].label = "CCL not measured"
@@ -264,7 +264,6 @@ class TrtDataEntryForm(forms.ModelForm):
             field = self.fields[field_name]
             if field.required:
                 field.widget.attrs['class'] = field.widget.attrs.get('class', '') + ' required-field'
-
 
     # saves the people names as well as the person_id for use in MS Access front end
     def save(self, commit=True):

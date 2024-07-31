@@ -1222,10 +1222,19 @@ class ValidateTagView(View):
             return JsonResponse({'valid': False, 'message': 'Invalid validation type'})
         
         
-        
+
 def search_persons(request):
-    query = request.GET.get('q')
-    persons = TrtPersons.objects.filter(
-        first_name__icontains=query
-    ).values('person_id', 'first_name', 'surname')[:10]
+    query = request.GET.get('q', '')
+    query_parts = query.split()
+
+    # Build the query
+    if len(query_parts) == 1:
+        persons = TrtPersons.objects.filter(
+            Q(first_name__icontains=query_parts[0]) | Q(surname__icontains=query_parts[0])
+        ).values('person_id', 'first_name', 'surname')
+    elif len(query_parts) >= 2:
+        persons = TrtPersons.objects.filter(
+            Q(first_name__icontains=query_parts[0]) & Q(surname__icontains=query_parts[1])
+        ).values('person_id', 'first_name', 'surname')
+
     return JsonResponse(list(persons), safe=False)
