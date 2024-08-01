@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import DateTimeInput
 from easy_select2 import apply_select2
-from .models import TrtPersons, TrtDataEntry, TrtTags, TrtEntryBatches, TrtPlaces, TrtPitTags, TrtPitTags, Template
+from .models import TrtPersons, TrtDataEntry, TrtTags, TrtEntryBatches, TrtPlaces, TrtPitTags, TrtPitTags, Template, TrtTissueTypes
 from django_select2.forms import ModelSelect2Widget
 
 
@@ -173,7 +173,7 @@ class TrtDataEntryForm(forms.ModelForm):
             "tagged_by_id": forms.HiddenInput(),
             "entered_by_id": forms.HiddenInput(),
             # "measured_recorded_by_id": personWidget,
-            "place_code": placeWidget,
+            "place_code": forms.HiddenInput(),
             "comments": forms.Textarea(attrs={"rows": 3, "class": "form-control"}),
             "clutch_completed": forms.Select(attrs={"class": "form-control"}),
             "egg_count": forms.NumberInput(attrs={"class": "form-control"}),
@@ -232,6 +232,19 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["damage_lhf"].label = "Left hind flipper"
         self.fields["damage_rhf"].label = "Right hind flipper"
         
+        # Configure tissue type fields
+        self.fields["tissue_type_1"] = forms.ModelChoiceField(
+            queryset=TrtTissueTypes.objects.all(),
+            to_field_name="description",
+            widget=forms.Select(attrs={"class": "form-control"}),
+            required=False
+        )
+        self.fields["tissue_type_2"] = forms.ModelChoiceField(
+            queryset=TrtTissueTypes.objects.all(),
+            to_field_name="description",
+            widget=forms.Select(attrs={"class": "form-control"}),
+            required=False
+        )
         
         optional_fields = [
             "recapture_left_tag_id",
@@ -281,9 +294,9 @@ class TrtDataEntryForm(forms.ModelForm):
         if instance.entered_by_id:
             person = TrtPersons.objects.get(person_id=instance.entered_by_id.person_id)
             instance.entered_by = "{} {}".format(person.first_name, person.surname)
-        if instance.measured_recorded_by_id:
-            person = TrtPersons.objects.get(person_id=instance.measured_recorded_by_id.person_id)
-            instance.measured_recorded_by = "{} {}".format(person.first_name, person.surname)
+        # if instance.measured_recorded_by_id:
+        #     person = TrtPersons.objects.get(person_id=instance.measured_recorded_by_id.person_id)
+        #     instance.measured_recorded_by = "{} {}".format(person.first_name, person.surname)
 
         # Set the observation_time to the same value as the observation_date
         instance.observation_time = instance.observation_date
@@ -300,6 +313,10 @@ class TrtDataEntryForm(forms.ModelForm):
 
         if do_not_process:
             return cleaned_data
+        
+        place_code = cleaned_data.get("place_code")
+        if not place_code:
+            raise forms.ValidationError("The place code is required.")
         
         return cleaned_data
 
