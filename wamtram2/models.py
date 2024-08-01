@@ -1634,8 +1634,11 @@ class TrtPlaces(models.Model):
         db_table = "TRT_PLACES"
         ordering = ["place_name"]
 
-    def __str__(self):
+    def get_full_name(self):
         return f"{self.location_code} - {self.place_name}"
+    
+    def __str__(self):
+        return self.place_code
 
 
 class TrtRecordedIdentification(models.Model):
@@ -2011,6 +2014,9 @@ class TrtTissueTypes(models.Model):
     class Meta:
         managed = False
         db_table = "TRT_TISSUE_TYPES"
+        
+    def __str__(self):
+        return self.description
 
 
 class TrtTurtles(models.Model):
