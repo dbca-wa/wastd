@@ -14,6 +14,8 @@
       height: 34px;
       padding: 6px 12px;
       font-size: 15px;
+      font-color: #495057;
+      font-family: inherit;
       line-height: 1.42857143;
       color: #555;
       background-color: #fff;
@@ -63,8 +65,8 @@
     width: 100% !important;
   }
   .add-person-btn {
-    height: 28px;
-    width: 28px;
+    height: 34px;
+    width: 34px;
     padding: 0;
   }
   .required-field {
@@ -129,7 +131,7 @@
           <label for="{{ form.entered_by_id.id_for_label }}">{{ form.entered_by_id.label }}</label>
           <div class="row">
             <div class="col-md-4">
-              <input type="text" id="search_field" class="search-field form-control" placeholder="Search person">
+              <input type="text" id="search_entered_by" class="search-field form-control" placeholder="Search person">
               {{ form.entered_by_id }}
               <div class="search-results" style="display:none;"></div>
             </div>
@@ -143,16 +145,18 @@
         <div class="col-md-8 pt-2">
           <div class="row">
             <div class="col-md-6">
-              <label for="{{ form.place_code.id_for_label }}">{{ form.place_code.label }}</label>
-              {% bootstrap_field form.place_code show_label=False %}
+              <label for="search_place_code">{{ form.place_code.label }}</label>
+              <input type="text" id="search_place_code" class="search-field form-control required-field" placeholder="Search place">
+              {{ form.place_code }}
+              <div class="search-results" style="display:none;"></div>
             </div>
           </div>
           <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-6 pt-2">
               <label for="{{ form.latitude.id_for_label }}">{{ form.latitude.label }}</label>
               {% bootstrap_field form.latitude show_label=False %}
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 pt-2">
               <label for="{{ form.longitude.id_for_label }}">{{ form.longitude.label }}</label>
               {% bootstrap_field form.longitude show_label=False %}
             </div>
@@ -160,7 +164,7 @@
           <div class="row">
             <div class="col-md-6">
               <label for="{{ form.observation_date.id_for_label }}">{{ form.observation_date.label }}</label>
-              {% bootstrap_field form.observation_date show_label=False %}
+              {% bootstrap_field form.observation_date show_label=False%}
             </div>
           </div>
           <div class="row">
@@ -399,7 +403,7 @@
             </div>
           </div>
           <div id="moreMeasurement" class="row" style="display: none;">
-            <div class="col-md-12 d-flex align-items-center">
+            <div class="col-md-12 d-flex align-items-center mt-3">
               <div class="mr-2">
                 {% bootstrap_field form.measurement_type_1 %}
               </div>
@@ -597,159 +601,105 @@
 {{ block.super }}
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    // Admin URL
-    var adminUrl = "{% url 'admin:wamtram2_trtpersons_add' %}";
-
-    // Initialize form variables
-    const form = document.getElementById('dataEntryForm');
-    let isFormDirty = false;
-
+    // URL for adding a new person
+    const adminUrl = "{% url 'admin:wamtram2_trtpersons_add' %}";
+    
     const cookieTagId = "{{ cookie_tag_id }}";
     const cookieTagType = "{{ cookie_tag_type }}";
+    const entryId = "{{ entry_id }}";
+    const templateId = "{{ selected_template }}";
 
-    function setTagAndValidate(inputId, tagId) {
-      const input = document.getElementById(inputId);
-      if (input) {
-        input.value = tagId;
-        // Validate the input
-        input.dispatchEvent(new Event('blur'));
-      }
+    if (entryId) {
+        const enteredById = "{{ form.entered_by_id.value }}";
+        if (enteredById) {
+            const enteredByFullName = "{{ view.entered_by_full_name|escapejs }}";
+            if (enteredByFullName) {
+                document.getElementById('search_entered_by').value = enteredByFullName;
+            }
+        }
+        const placeCodeFromDb = "{{ form.place_code.value|escapejs }}";
+        const placeNameFromDb = "{{ view.place_full_name|escapejs }}";
+        const searchPlaceInput = document.getElementById('search_place_code');
+        const placeCodeInput = document.getElementById('id_place_code');
+
+        if (placeCodeFromDb && placeNameFromDb) {
+            searchPlaceInput.value = placeNameFromDb;
+            placeCodeInput.value = placeCodeFromDb;
+        }
+
+        const measuredByFullName = "{{ view.measured_by_full_name|escapejs }}";
+        if (measuredByFullName) {
+            document.getElementById('search_measured_by').value = measuredByFullName;
+        }
+
+        const recordedByFullName = "{{ view.recorded_by_full_name|escapejs }}";
+        if (recordedByFullName) {
+            document.getElementById('search_recorded_by').value = recordedByFullName;
+        }
+
+        const taggedByFullName = "{{ view.tagged_by_full_name|escapejs }}";
+        if (taggedByFullName) {
+            document.getElementById('search_tagged_by').value = taggedByFullName;
+        }
+
+        const measuredRecordedByFullName = "{{ view.measured_recorded_by_full_name|escapejs }}";
+        if (measuredRecordedByFullName) {
+            document.getElementById('search_measured_recorded_by').value = measuredRecordedByFullName;
+        }
     }
 
+    if (!entryId && templateId) {
+        const defaultEntererId = "{{ default_enterer }}";
+        const defaultPlaceCode = "{{ default_place_code|escapejs }}";
+        const defaultPlaceFullName = "{{ default_place_full_name|escapejs }}";
+        const searchPlaceInput = document.getElementById('search_place_code');
+        const placeCodeInput = document.getElementById('id_place_code');
+
+        if (defaultEntererId) {
+            document.getElementById('id_entered_by_id').value = defaultEntererId;
+            const defaultEntererFullName = "{{ default_enterer_full_name }}";
+            if (defaultEntererFullName) {
+                document.getElementById('search_entered_by').value = defaultEntererFullName;
+            }
+        }
+
+        if (defaultPlaceFullName && defaultPlaceCode) {
+            searchPlaceInput.value = defaultPlaceFullName;
+            placeCodeInput.value = defaultPlaceCode;
+        }
+    }
+
+    //  Set the tag and validate
     if (cookieTagId && cookieTagType) {
       if (cookieTagType === 'recapture_tag') {
-        setTagAndValidate('id_recapture_left_tag_id', cookieTagId);
+          setTagAndValidate('id_recapture_left_tag_id', cookieTagId);
       } else if (cookieTagType === 'recapture_pit_tag') {
-        setTagAndValidate('id_recapture_pittag_id', cookieTagId);
+          setTagAndValidate('id_recapture_pittag_id', cookieTagId);
       }
     }
-
-    // Flipper Tags Handling
-
-    const toggleRecaptureTagsBtn = document.getElementById('toggleRecaptureTagsBtn');
-    if (toggleRecaptureTagsBtn) {
-        toggleRecaptureTagsBtn.addEventListener('click', toggleRecaptureTags);
-    }
-
-    const toggleNewTagsBtn = document.getElementById('toggleNewTagsBtn');
-    if (toggleNewTagsBtn) {
-        toggleNewTagsBtn.addEventListener('click', toggleNewTags);
-    }
-    function toggleRecaptureTags() {
-        const additionalRecaptureTags = document.getElementById('additionalRecaptureTags');
-        const toggleBtn = document.getElementById('toggleRecaptureTagsBtn');
-        if (additionalRecaptureTags.style.display === 'none') {
-            additionalRecaptureTags.style.display = 'block';
-            toggleBtn.textContent = 'Less Recapture Tags';
-        } else {
-            additionalRecaptureTags.style.display = 'none';
-            toggleBtn.textContent = 'More Recapture Tags';
-        }
-    }
-    
-    function toggleNewTags() {
-        const additionalNewTags = document.getElementById('additionalNewTags');
-        const toggleBtn = document.getElementById('toggleNewTagsBtn');
-        if (additionalNewTags.style.display === 'none') {
-            additionalNewTags.style.display = 'block';
-            toggleBtn.textContent = 'Less New Tags';
-        } else {
-            additionalNewTags.style.display = 'none';
-            toggleBtn.textContent = 'More New Tags';
+    // Disable the save button and show processing message
+    function disableSaveButton() {
+        const saveButton = document.querySelector('.save-button');
+        if (saveButton) {
+            saveButton.disabled = true;
+            let dots = 0;
+            saveButton.textContent = 'Processing';
+            const originalText = saveButton.textContent;
+            const interval = setInterval(() => {
+                if (dots >= 3) {
+                    dots = 0;
+                    saveButton.textContent = originalText;
+                } else {
+                    dots++;
+                    saveButton.textContent += '.';
+                }
+            }, 500);  // Adjust the speed of the dots as needed
+            saveButton.dataset.intervalId = interval;
         }
     }
 
-    // Scars Handling
-    function toggleScarsDetails() {
-        const tagscarnotcheckedCheckbox = document.getElementById('{{ form.tagscarnotchecked.auto_id }}');
-        const scarsDetails = document.getElementById('scarsDetails');
-        const scarsDetailsRight = document.getElementById('scarsDetailsRight');
-
-        if (tagscarnotcheckedCheckbox.checked) {
-            scarsDetails.style.display = 'none';
-            scarsDetailsRight.style.display = 'none';
-        } else {
-            scarsDetails.style.display = 'block';
-            scarsDetailsRight.style.display = 'block';
-        }
-    }
-
-    document.getElementById('{{ form.tagscarnotchecked.auto_id }}').addEventListener('change', toggleScarsDetails);
-    toggleScarsDetails();
-
-    // Measurement Handling
-    function toggleMeasurement() {
-      const moreMeasurement = document.getElementById('moreMeasurement');
-      const addMeasurementButton = document.getElementById('addMeasurementButton');
-      if (moreMeasurement.style.display === 'none' || moreMeasurement.style.display === '') {
-          moreMeasurement.style.display = 'block';
-          addMeasurementButton.innerText = 'Less Measurements';
-      } else {
-          moreMeasurement.style.display = 'none';
-          addMeasurementButton.innerText = 'More Measurements';
-      }
-    }
-
-    document.getElementById('addMeasurementButton').addEventListener('click', toggleMeasurement);
-
-    function toggleCurvedCarapaceLength() {
-        const curvedCarapaceLength = document.getElementById('{{ form.curved_carapace_length.auto_id }}').parentElement;
-        if (document.getElementById('{{ form.cc_length_not_measured.auto_id }}').checked) {
-            curvedCarapaceLength.style.display = 'none';
-        } else {
-            curvedCarapaceLength.style.display = 'block';
-        }
-    }
-
-    function toggleCurvedCarapaceWidth() {
-        const curvedCarapaceWidth = document.getElementById('{{ form.curved_carapace_width.auto_id }}').parentElement;
-        if (document.getElementById('{{ form.cc_width_not_measured.auto_id }}').checked) {
-            curvedCarapaceWidth.style.display = 'none';
-        } else {
-            curvedCarapaceWidth.style.display = 'block';
-        }
-    }
-
-    document.getElementById('{{ form.cc_length_not_measured.auto_id }}').addEventListener('change', toggleCurvedCarapaceLength);
-    document.getElementById('{{ form.cc_width_not_measured.auto_id }}').addEventListener('change', toggleCurvedCarapaceWidth);
-    toggleCurvedCarapaceLength(); 
-    toggleCurvedCarapaceWidth();
-
-    // Injuries Handling
-    function toggleInjuryDetails() {
-        const didNotCheckCheckbox = document.getElementById('{{ form.didnotcheckforinjury.auto_id }}');
-        const injuryDetails = document.getElementById('injuryDetails');
-
-        if (didNotCheckCheckbox.checked) {
-            injuryDetails.style.display = 'none';
-        } else {
-            injuryDetails.style.display = 'block';
-        }
-    }
-    
-    document.getElementById('{{ form.didnotcheckforinjury.auto_id }}').addEventListener('change', toggleInjuryDetails);
-    toggleInjuryDetails();
-
-    function toggleInjuryFields() {
-      const injuryAdditionalFields = document.getElementById('injuryAdditionalFields');
-      const toggleButton = document.getElementById('toggleInjuryFieldsButton');
-      if (injuryAdditionalFields.style.display === 'none' || injuryAdditionalFields.style.display === '') {
-          injuryAdditionalFields.style.display = 'block';
-          toggleButton.innerText = 'Less Injuries';
-      } else {
-          injuryAdditionalFields.style.display = 'none';
-          toggleButton.innerText = 'More Injuries';
-      }
-  }
-  document.getElementById('toggleInjuryFieldsButton').addEventListener('click', toggleInjuryFields);
-
-
-    // Advanced Data Handling
-    document.getElementById('advancedDataButton').addEventListener('click', function() {
-        const advancedDataCard = document.getElementById('advancedDataCard');
-        advancedDataCard.style.display = 'block';
-        this.style.display = 'none';
-    });
+    const form = document.getElementById('dataEntryForm');
+    let isFormDirty = false;
 
     // Form Dirty Handling
     form.addEventListener('input', function() {
@@ -769,297 +719,19 @@
         disableSaveButton();
     });
 
-    function disableSaveButton() {
-      const saveButton = document.querySelector('.save-button');
-      if (saveButton) {
-          saveButton.disabled = true;
-          let dots = 0;
-          saveButton.textContent = 'Processing';
-          const originalText = saveButton.textContent;
-          const interval = setInterval(() => {
-              if (dots >= 3) {
-                  dots = 0;
-                  saveButton.textContent = originalText;
-              } else {
-                  dots++;
-                  saveButton.textContent += '.';
-              }
-          }, 500);  // Adjust the speed of the dots as needed
-          saveButton.dataset.intervalId = interval;
-      }
-    }
-
-    // Background Color Update
-    function updateBackgroundColor() {
-        const bodyElement = document.body;
-        const doNotProcessField = document.getElementById('id_do_not_process');
-        if (doNotProcessField.checked) {
-            bodyElement.classList.add('bg-yellow');
-        } else {
-            bodyElement.classList.remove('bg-yellow');
-        }
-    }
-
-    // Initialize background color on page load
-    const doNotProcessField = document.getElementById('id_do_not_process');
-    doNotProcessField.addEventListener('change', updateBackgroundColor);
-    updateBackgroundColor();
-
-    // Get the do_not_process cookie value and set the field
-    const batchId = form.querySelector('[name="entry_batch"]').value;
-    const cookieName = `${batchId}_do_not_process`;
-    const doNotProcessCookie = document.cookie.split('; ').find(row => row.startsWith(cookieName));
-    
-    if (doNotProcessCookie && doNotProcessField) {
-        const cookieValue = doNotProcessCookie.split('=')[1];
-        if (cookieValue === 'true') {
-            doNotProcessField.checked = true;
-            doNotProcessField.disabled = true;
-            updateBackgroundColor();
-        } else if (cookieValue === 'false') {
-          doNotProcessField.checked = false;
-          doNotProcessField.disabled = false;
-        }
-    }
-
-    // Render required field background color
-    setTimeout(function() {
-        var placeCodeSelect = document.querySelector('select[name="place_code"][data-required="true"]');
-        if (placeCodeSelect) {
-            var select2Container = placeCodeSelect.nextElementSibling;
-            if (select2Container && select2Container.classList.contains('select2-container')) {
-                select2Container.querySelector('.select2-selection').classList.add('required-field');
-            }
-            var placeCode = '{{ form.initial.place_code }}';
-            if (placeCode) {
-                placeCodeSelect.value = placeCode;
-                var event = new Event('change');
-                placeCodeSelect.dispatchEvent(event);
-            }
-        }
-    }, 100);
-
-    // Tag validation
-    const turtleIdInput = document.getElementById('id_turtle_id');
-    const tagInputs = {
-        recaptureLeftTagInput: document.getElementById('id_recapture_left_tag_id'),
-        recaptureRightTagInput: document.getElementById('id_recapture_right_tag_id'),
-        recaptureLeftTagInput2: document.getElementById('id_recapture_left_tag_id_2'),
-        recaptureRightTagInput2: document.getElementById('id_recapture_right_tag_id_2'),
-        newLeftTagInput: document.getElementById('id_new_left_tag_id'),
-        newRightTagInput: document.getElementById('id_new_right_tag_id'),
-        newPitTagInput: document.getElementById('id_new_pittag_id'),
-        newPitTagInput2: document.getElementById('id_new_pittag_id_2'),
-        recapturePitTagInput: document.getElementById('id_recapture_pittag_id'),
-        recapturePitTagInput2: document.getElementById('id_recapture_pittag_id_2')
-    };
-
-    const validationMessages = {
-        recaptureLeftTagMessage: document.getElementById('left-tag-validation-message'),
-        recaptureRightTagMessage: document.getElementById('right-tag-validation-message'),
-        recaptureLeftTagMessage2: document.getElementById('left-tag-validation-message-2'),
-        recaptureRightTagMessage2: document.getElementById('right-tag-validation-message-2'),
-        newLeftTagMessage: document.getElementById('new-left-tag-validation-message'),
-        newRightTagMessage: document.getElementById('new-right-tag-validation-message'),
-        newPitTagMessage: document.getElementById('new-pit-tag-validation-message'),
-        newPitTagMessage2: document.getElementById('new-pit-tag-validation-message-2'),
-        recapturePitTagMessage: document.getElementById('recapture-pit-tag-validation-message'),
-        recapturePitTagMessage2: document.getElementById('recapture-pit-tag-validation-message-2')
-    };
-
-    const detailedMessages = {
-        recaptureLeftTagDetailedMessage: document.getElementById('left-tag-message'),
-        recaptureRightTagDetailedMessage: document.getElementById('right-tag-message'),
-        recaptureLeftTagDetailedMessage2: document.getElementById('left-tag-message-2'),
-        recaptureRightTagDetailedMessage2: document.getElementById('right-tag-message-2'),
-        newLeftTagDetailedMessage: document.getElementById('new-left-tag-message'),
-        newRightTagDetailedMessage: document.getElementById('new-right-tag-message'),
-        newPitTagDetailedMessage: document.getElementById('new-pit-tag-message'),
-        newPitTagDetailedMessage2: document.getElementById('new-pit-tag-message-2'),
-        recapturePitTagDetailedMessage: document.getElementById('recapture-pit-tag-message'),
-        recapturePitTagDetailedMessage2: document.getElementById('recapture-pit-tag-message-2')
-    };
-
-    function validateTag(tagInput, validationMessage, detailedMessage, type, side) {
-        const turtleId = turtleIdInput.value;
-        const tagId = tagInput.value;
-
-        if (!turtleId && tagId && (type === 'recaptured_tag' || type === 'recaptured_pit_tag')) {
-            validationMessage.textContent = '✗ invalid untagged turtle with recapture tag';
-            validationMessage.style.color = 'red';
-            detailedMessage.textContent = '';
-            doNotProcessField.checked = true;
-            return;
-        }
-
-        if (tagId) {
-            let url = `/wamtram2/validate-tag/?type=${type}&tag=${tagId}`;
-            if (type === 'recaptured_tag') {
-                url += `&turtle_id=${turtleId}&side=${side}`;
-            } else if (type === 'recaptured_pit_tag') {
-                url += `&turtle_id=${turtleId}`;
-            }
-
-            fetch(url)
-                .then(response => {
-                    console.log('Response received for URL:', url);
-                    return response.json();
-                })
-                .then(data => {
-                    console.log('Data received:', data);
-                    if (data.valid && !data.wrong_side) {
-                        validationMessage.textContent = '✓ Valid tag';
-                        validationMessage.style.color = 'green';
-                        detailedMessage.textContent = '';
-                        if (type === 'recaptured_tag') doNotProcessField.checked = false;
-                    } else if (data.wrong_side) {
-                        validationMessage.textContent = '! Tag may be on the wrong side';
-                        validationMessage.style.color = 'orange';
-                        detailedMessage.textContent = '';
-                        if (type === 'recaptured_tag') doNotProcessField.checked = true;
-                    } else if (data.other_turtle_id) {
-                        validationMessage.innerHTML = '✗ Invalid tag:';
-                        validationMessage.style.color = 'red';
-                        detailedMessage.innerHTML = `Tag belongs to another turtle (ID: <a href="/wamtram2/turtles/${data.other_turtle_id}/" target="_blank">${data.other_turtle_id}</a>)`;
-                        detailedMessage.style.color = 'red';
-                        if (type === 'recaptured_tag' || type === 'recaptured_pit_tag' || type === 'new_pit_tag') doNotProcessField.checked = true;
-                    } else if (data.status) {
-                        validationMessage.textContent = '✗ Invalid tag:';
-                        validationMessage.style.color = 'red';
-                        detailedMessage.textContent = `Tag status - ${data.status}`;
-                        detailedMessage.style.color = 'red';
-                        if (type === 'recaptured_tag' || type === 'recaptured_pit_tag' || type === 'new_pit_tag') doNotProcessField.checked = true;
-                    } else if (data.tag_not_found) {
-                        validationMessage.textContent = '✗ Invalid tag: Tag not found (Please remove it from here and add it to the comment area)';
-                        validationMessage.style.color = 'red';
-                        detailedMessage.textContent = '';
-                        if (type === 'recaptured_tag' || type === 'recaptured_pit_tag' || type === 'new_pit_tag') doNotProcessField.checked = true;
-                    } else {
-                        validationMessage.textContent = '✗ Invalid tag';
-                        validationMessage.style.color = 'red';
-                        detailedMessage.textContent = '';
-                        if (type === 'recaptured_tag' || type === 'recaptured_pit_tag' || type === 'new_pit_tag') doNotProcessField.checked = true;
-                    }
-                    updateBackgroundColor();
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    validationMessage.textContent = 'Error validating tag';
-                    validationMessage.style.color = 'red';
-                    detailedMessage.textContent = '';
-                    if (type === 'recaptured_tag' || type === 'recaptured_pit_tag' || type === 'new_pit_tag') doNotProcessField.checked = true;
-                });
-        } else {
-            validationMessage.textContent = '';
-            detailedMessage.textContent = '';
-        }
-    }
-
-    function addValidationListener(input, validationMessage, detailedMessage, type, side = '') {
-        if (input) {
-            input.addEventListener('blur', function() {
-                validateTag(this, validationMessage, detailedMessage, type, side);
-            });
-        }
-    }
-
-    // Add validation listeners for each tag input
-    addValidationListener(tagInputs.recaptureLeftTagInput, validationMessages.recaptureLeftTagMessage, detailedMessages.recaptureLeftTagDetailedMessage, 'recaptured_tag', 'L');
-    addValidationListener(tagInputs.recaptureRightTagInput, validationMessages.recaptureRightTagMessage, detailedMessages.recaptureRightTagDetailedMessage, 'recaptured_tag', 'R');
-    addValidationListener(tagInputs.recaptureLeftTagInput2, validationMessages.recaptureLeftTagMessage2, detailedMessages.recaptureLeftTagDetailedMessage2, 'recaptured_tag', 'L');
-    addValidationListener(tagInputs.recaptureRightTagInput2, validationMessages.recaptureRightTagMessage2, detailedMessages.recaptureRightTagDetailedMessage2, 'recaptured_tag', 'R');
-    addValidationListener(tagInputs.newLeftTagInput, validationMessages.newLeftTagMessage, detailedMessages.newLeftTagDetailedMessage, 'new_tag');
-    addValidationListener(tagInputs.newRightTagInput, validationMessages.newRightTagMessage, detailedMessages.newRightTagDetailedMessage, 'new_tag');
-    addValidationListener(tagInputs.newPitTagInput, validationMessages.newPitTagMessage, detailedMessages.newPitTagDetailedMessage, 'new_pit_tag');
-    addValidationListener(tagInputs.newPitTagInput2, validationMessages.newPitTagMessage2, detailedMessages.newPitTagDetailedMessage2, 'new_pit_tag');
-    addValidationListener(tagInputs.recapturePitTagInput, validationMessages.recapturePitTagMessage, detailedMessages.recapturePitTagDetailedMessage, 'recaptured_pit_tag');
-    addValidationListener(tagInputs.recapturePitTagInput2, validationMessages.recapturePitTagMessage2, detailedMessages.recapturePitTagDetailedMessage2, 'recaptured_pit_tag');
-
     // Reload the page when the back button is clicked
     if (performance.navigation.type === 2) {
-      location.reload(true);
+        location.reload(true);
     }
   });
-
-  // Debounce function
-  function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        const context = this;
-        clearTimeout(timeout);
-        timeout = setTimeout(() => func.apply(context, args), wait);
-    };
-  }
-
-  // Function to search persons and display results
-  function searchPersons(input, resultsContainer, query, hiddenFieldId) {
-    // Show the searching status
-    resultsContainer.style.display = 'block';
-    resultsContainer.innerHTML = '<div class="search-result">Searching...</div>';
-
-    // Send an AJAX request to get search results
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', `/wamtram2/search-persons/?q=${encodeURIComponent(query)}`, true);
-    xhr.onload = function() {
-        if (xhr.status == 200) {
-            var persons = JSON.parse(xhr.responseText);
-            // Display the dropdown list and populate the results
-            resultsContainer.style.display = 'block';
-            resultsContainer.innerHTML = ''; // Clear previous results
-            if (persons.length > 0) {
-                persons.forEach(function(person) {
-                    var div = document.createElement('div');
-                    div.textContent = `${person.first_name} ${person.surname}`;
-                    div.className = 'search-result';
-                    div.onclick = function() {
-                        input.value = `${person.first_name} ${person.surname}`;
-                        document.getElementById(hiddenFieldId).value = person.person_id; // Store the user ID in the hidden field
-
-                        console.log('Selected person:', person);
-                        console.log('Selected person ID:', person.person_id);
-                        resultsContainer.style.display = 'none';
-                    };
-                    resultsContainer.appendChild(div);
-                });
-            } else {
-                resultsContainer.innerHTML = '<div class="search-result">No data found</div>';
-            }
-        } else {
-            // Error handling
-            console.error('Search failed with status:', xhr.status);
-            resultsContainer.style.display = 'none';
-        }
-    };
-    xhr.onerror = function() {
-        console.error('Search request failed');
-        resultsContainer.style.display = 'none';
-    };
-    xhr.send();
-  }
-
-  // Initialize search fields
-  document.querySelectorAll('.search-field').forEach(function(input) {
-    let resultsContainer = input.parentNode.querySelector('.search-results');
-    let hiddenFieldId = input.nextElementSibling.id;
-    // Bind the debounce function to the input event listener
-    let debouncedSearch = debounce(function() {
-        let query = input.value;
-        if (query.length === 0) {
-            resultsContainer.style.display = 'none';
-            return;
-        }
-        searchPersons(input, resultsContainer, query, hiddenFieldId);
-    }, 500);
-    
-    input.addEventListener('input', debouncedSearch);
-    
-    resultsContainer.addEventListener('click', function(e) {
-        if (e.target.className === 'search-result') {
-            input.value = e.target.textContent;
-            resultsContainer.style.display = 'none';
-        }
-    });
-  });
 </script>
+<script src="{% static 'js/tagToggleHandler.js' %}"></script>
+<script src="{% static 'js/scarHandler.js' %}"></script>
+<script src="{% static 'js/measurementHandler.js' %}"></script>
+<script src="{% static 'js/injuryHandler.js' %}"></script>
+<script src="{% static 'js/advancedDataHandler.js' %}"></script>
+<script src="{% static 'js/bgColorHandler.js' %}"></script>
+<script src="{% static 'js/tagValidation.js' %}"></script>
+<script src="{% static 'js/searchHandler.js' %}"></script>
 {% endblock %}
 
