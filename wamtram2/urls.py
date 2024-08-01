@@ -25,4 +25,5 @@ urlpatterns = [
     path("templates-manage/<str:template_key>/", views.TemplateManageView.as_view(), name="template_manage_key"),
     path('templates-manage/get-places/', views.TemplateManageView.as_view(), name='get_places'),
     path('search-persons/', views.search_persons, name='search-persons'),
+    path('search-places/', views.search_places, name='search-places'),
 ]
