@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib import messages
+from django.utils import timezone
 from django.db import connections, DatabaseError
 from django.db.models import Q, Exists, OuterRef
 from django.http import HttpResponseForbidden, HttpResponseRedirect
@@ -133,7 +134,7 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
 
     model = TrtDataEntry
     template_name = "wamtram2/trtentrybatch_detail.html"
-    context_object_name = "batch"
+    context_object_name = "object_list"
     paginate_by = 50
     form_class = TrtEntryBatchesForm
     
@@ -190,8 +191,9 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
         """
         if "batch_id" not in kwargs:
             new_batch = TrtEntryBatches.objects.create(
-                pr_date_convention=False
-            )  # All dates should be entered as calander dates
+                pr_date_convention=False,
+                entry_date=timezone.now().date()
+            )  # All dates should be entered as calendar dates
             self.kwargs["batch_id"] = new_batch.entry_batch_id
         return super().get(request, *args, **kwargs)
 
@@ -216,63 +218,68 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
         return queryset.order_by("-data_entry_id")
 
     def get_context_data(self, **kwargs):
-            """
-            Returns the context data for rendering the template, including the persons dictionary.
+        """
+        Returns the context data for rendering the template, including the persons dictionary.
 
-            Args:
-                **kwargs: Additional keyword arguments.
+        Args:
+            **kwargs: Additional keyword arguments.
 
-            Returns:
-                context (dict): The context data for rendering the template.
+        Returns:
+            context (dict): The context data for rendering the template.
 
-            """
-            context = super().get_context_data(**kwargs)
-            context["persons"] = {
-                person.person_id: person for person in TrtPersons.objects.all()
-            }
+        """
+        context = super().get_context_data(**kwargs)
+        context["persons"] = {
+            person.person_id: person for person in TrtPersons.objects.all()
+        }
 
-            batch = TrtEntryBatches.objects.get(entry_batch_id=self.kwargs.get("batch_id"))
-            context["batch"] = batch  # add the batch to the context
-            initial = self.get_initial()
-            context["form"] = TrtEntryBatchesForm(
-                instance=batch,
-                initial=initial
-            )  # Add the form to the context data
-            
-            # Add the templates to the context data
-            cookies_key_prefix = self.kwargs.get("batch_id")
-            context['selected_template'] = self.request.COOKIES.get(f'{cookies_key_prefix}_selected_template', '')
-            context['use_default_enterer'] = self.request.COOKIES.get(f'{cookies_key_prefix}_use_default_enterer', False)
-            context['default_enterer'] = self.request.COOKIES.get(f'{cookies_key_prefix}_default_enterer', None)
+        batch = TrtEntryBatches.objects.get(entry_batch_id=self.kwargs.get("batch_id"))
+        context["batch"] = batch  # add the batch to the context
+        initial = self.get_initial()
+        context["form"] = TrtEntryBatchesForm(
+            instance=batch,
+            initial=initial
+        )  # Add the form to the context data
+        
+        # Add the templates to the context data
+        cookies_key_prefix = self.kwargs.get("batch_id")
+        context['selected_template'] = self.request.COOKIES.get(f'{cookies_key_prefix}_selected_template', '')
+        context['use_default_enterer'] = self.request.COOKIES.get(f'{cookies_key_prefix}_use_default_enterer', False)
+        context['default_enterer'] = self.request.COOKIES.get(f'{cookies_key_prefix}_default_enterer', None)
 
-            context['cookies_key_prefix'] = cookies_key_prefix
-            context['default_enterer_value'] = context['default_enterer']
-            context['templates'] = self.load_templates()
-            
-            # Add entries with do_not_process = True to the context
-            context["do_not_process_entries"] = TrtDataEntry.objects.filter(
-                entry_batch_id=batch.entry_batch_id,
-                do_not_process=True
-            ).order_by("-data_entry_id")
-            
-            # Add entries with do_not_process = False to the context
-            context["process_entries"] = TrtDataEntry.objects.filter(
-                entry_batch_id=batch.entry_batch_id,
-                do_not_process=False
-            ).order_by("-data_entry_id")
-            
-            return context
+        context['cookies_key_prefix'] = cookies_key_prefix
+        context['default_enterer_value'] = context['default_enterer']
+        context['templates'] = self.load_templates()
+        
+        # Add entries with do_not_process = True to the context
+        context["do_not_process_entries"] = TrtDataEntry.objects.filter(
+            entry_batch_id=batch.entry_batch_id,
+            do_not_process=True
+        ).order_by("-data_entry_id")
+        
+        # Add entries with do_not_process = False to the context
+        context["process_entries"] = TrtDataEntry.objects.filter(
+            entry_batch_id=batch.entry_batch_id,
+            do_not_process=False
+        ).order_by("-data_entry_id")
+        
+        return context
 
     def post(self, request, *args, **kwargs):
         form = self.get_form()
         form.instance.entry_batch_id = self.kwargs.get("batch_id")
+        
         if form.is_valid():
             return self.form_valid(form)
         else:
-            return self.form_invalid(form)
+            context = self.get_context_data(form=form, object_list=self.get_queryset())
+            return self.render_to_response(context)
 
     def form_valid(self, form):
         batch = form.save(commit=False)
+        
+        if not batch.entry_date:
+            batch.entry_date = timezone.now()
 
         batch_id = batch.entry_batch_id
 
