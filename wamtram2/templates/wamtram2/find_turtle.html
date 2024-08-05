@@ -4,23 +4,21 @@
 {% block extra_style %}
   {{ block.super }}
   {{ form.media.css }}
+  <link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
   <style>
     .select2 {
       width: 100% !important;
     }
-    /* Loading spinner */
-    .loading-spinner {
-        display: none;
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        z-index: 9999;
-    }
-    .loading-spinner .spinner-border {
-        width: 5rem;
-        height: 5rem;
-        border-width: 0.5rem;
+    /* Overlay style */
+    #loadingOverlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
     }
   </style>
 {% endblock %}
@@ -112,6 +110,12 @@
     </div>
   </div>
 </div>
+
+<!-- Loading overlay -->
+<div id="loadingOverlay">
+  <div class="spinner"></div>
+</div>
+
 <!-- Loading spinner -->
 <div class="loading-spinner">
   <div class="spinner-border text-primary" role="status">
@@ -142,7 +146,23 @@
         loadingSpinner.style.display = 'none';
       }
     }
-    
+
+    // Show overlay
+    function showLoadingOverlay() {
+      const overlay = document.getElementById('loadingOverlay');
+      if (overlay) {
+        overlay.style.display = 'block';
+      }
+    }
+
+    // Hide overlay
+    function hideLoadingOverlay() {
+      const overlay = document.getElementById('loadingOverlay');
+      if (overlay) {
+        overlay.style.display = 'none';
+      }
+    }
+
     // Initialize loading spinner
     function initializeLoadingSpinner() {
       hideLoadingSpinner();
@@ -150,13 +170,26 @@
 
     // Hide loading animation when the page is fully loaded
     window.addEventListener('load', hideLoadingSpinner);
+    window.addEventListener('load', hideLoadingOverlay);
 
     initializeLoadingSpinner();
+
+    // Function to disable all buttons and show loading spinner
+    function disableButtonsAndShowSpinner() {
+      const allButtons = document.querySelectorAll('button, input[type="submit"]');
+      allButtons.forEach(button => {
+        button.disabled = true;
+        button.classList.remove('btn-primary');
+        button.classList.add('btn-secondary');
+      });
+      showLoadingOverlay(); // Show overlay
+      showLoadingSpinner(); // Show loading spinner
+    }
 
     // Show loading spinner when the search form is submitted
     const searchForm = document.getElementById('searchForm');
     searchForm.addEventListener('submit', function(event) {
-      showLoadingSpinner();
+      disableButtonsAndShowSpinner();
     });
   
     // Show exact match prompt
@@ -169,12 +202,12 @@
     window.addEventListener('pageshow', function(event) {
       if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
         hideLoadingSpinner();
+        hideLoadingOverlay();
       }
     });
     
     // Add event listener for button clicks
     document.body.addEventListener('click', function(event) {
-      
       const target = event.target;
   
       switch(target.id) {
@@ -185,6 +218,7 @@
           var tagId = document.getElementById('user-input-tag').innerText;
           showExactMatchPrompt(tagId);
           hideLoadingSpinner(); // Hide spinner since no navigation or form submission
+          hideLoadingOverlay(); // Hide overlay since no navigation or form submission
           break;
   
         case 'suggestedTagYes':
@@ -193,6 +227,7 @@
           document.getElementById('tag-suggestion').style.display = 'none';
           document.getElementById('searchForm').submit();
           showLoadingSpinner(); // Show spinner for page navigation
+          showLoadingOverlay(); // Show overlay for page navigation
           setTimeout(function() {
             console.log('Submitting form');
             document.getElementById('searchForm').submit();
@@ -200,26 +235,28 @@
           break;
   
         case 'exactMatchYes':
+          console.log('exactMatchYes button clicked');
           document.cookie = `${batchId}_do_not_process=true; path=/`;
+          console.log(`Cookie set: ${document.cookie}`);
           document.getElementById('set_do_not_process').value = "true";
           // Redirect to the newtrtdataentry page
           const newDataEntryURL = `{% url 'wamtram2:newtrtdataentry' batch_id=form.batch_id.value %}`;
+          console.log(`Redirecting to: ${newDataEntryURL}`);
           window.location.href = newDataEntryURL;
           showLoadingSpinner(); // Show spinner for page navigation
-          setTimeout(function() {
-            console.log('Submitting form');
-            document.getElementById('searchForm').submit();
-          }, 500);
+          showLoadingOverlay(); // Show overlay for page navigation
           break;
   
         case 'exactMatchNo':
           document.getElementById('exact-match-prompt').style.display = 'none';
           hideLoadingSpinner(); // Hide spinner since no navigation or form submission
+          hideLoadingOverlay(); // Hide overlay since no navigation or form submission
           break;
   
         case 'createAndReviewLater':
           document.getElementById('set_do_not_process').value = "true";
           showLoadingSpinner(); // Show spinner for form submission
+          showLoadingOverlay(); // Show overlay for form submission
           break;
   
         case 'createForExistingTurtle':
@@ -227,10 +264,12 @@
           document.getElementById('set_do_not_process').value = "false";
           document.cookie = `${batchId}_do_not_process=false; path=/`;
           showLoadingSpinner(); // Show spinner for page navigation
+          showLoadingOverlay(); // Show overlay for page navigation
           break;
   
         default:
           hideLoadingSpinner(); // Hide spinner for any other cases not causing navigation or submission
+          hideLoadingOverlay(); // Hide overlay for any other cases not causing navigation or submission
           break;
       }
     });
@@ -251,5 +290,4 @@
     {% endif %}
   });
 </script>
-  
 {% endblock %}
