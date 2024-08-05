@@ -4,15 +4,13 @@
 {% block extra_style %}
     {{ block.super }}
     {{ form.media.css }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/search_styles.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/disabled_btn.css' %}">
     <style>
         /* Ensure Select2 dropdowns are full width */
         .select2 { width: 100% !important; }
 
-        .add-person-btn {
-            height: 28px;
-            width: 28px;
-            padding: 0;
-        }
         .step-container {
             border: 1px solid #ddd;
             border-radius: 5px;
@@ -38,28 +36,6 @@
             padding: 10px;
             margin: -15px -15px 15px -15px;
             font-weight: bold;
-        }
-
-        /* Loading spinner */
-        .loading-spinner {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 9999;
-        }
-        .loading-spinner .spinner-border {
-            width: 5rem;
-            height: 5rem;
-            border-width: 0.5rem;
-        }
-
-        /* Disabled button style */
-        .btn-secondary[disabled] {
-            background-color: #6c757d;
-            border-color: #6c757d;
-            cursor: not-allowed;
         }
     </style>
 {% endblock %}
@@ -132,19 +108,29 @@
             {% csrf_token %}
             <div class="col-md-4">
                 <div class="d-flex align-items-end">
-                    {% bootstrap_field form.entered_person_id show_label=True form_group_class="flex-grow-1 mr-2" %}
+                    <div class="flex-grow-1 mr-2">
+                        <label for="search_entered_person_id">{{ form.entered_person_id.label }}</label>
+                        <input type="text" id="search_entered_person_id" class="search-field form-control" placeholder="Search person" value="{{ batch.entered_person_id.first_name }} {{ batch.entered_person_id.surname }}">
+                        {{ form.entered_person_id }}
+                        <div class="search-results" style="display:none;"></div>
+                    </div>
                     <button type="button" class="btn btn-outline-primary add-person-btn align-self-end" onClick="window.open(adminUrl);" title="Add new person">
                         <i class="fas fa-plus"></i>
                     </button>
                 </div>
             </div>
-            <div class="col-md-6">
-                {% bootstrap_field form.comments %}
-            </div>
-            <div class="col-md-2 mt-4">
-                {% bootstrap_button "Save batch details" button_type="submit" button_class="btn-primary" %}
-            </div>
+            <div class="col-md-8">
+                <div class="d-flex align-items-center">
+                    <div class="flex-grow-1 mr-2">
+                        {% bootstrap_field form.comments %}
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-3" id="saveBatchDetailsBtn">
+                        Save batch details
+                    </button>
+                </div>
+            </div>            
         </form>
+        
     </div>
 
     <div class="step-container">
@@ -163,7 +149,7 @@
                 </button>
                 {% endif %}
             </div>
-            <div class="col-md-4">
+            <div class="col-md-4 mb-2">
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" id="setDefaultEnterer" {% if use_default_enterer %} checked {% endif %}>
                     <label class="form-check-label" for="setDefaultEnterer">
@@ -172,7 +158,7 @@
                 </div>
             </div>
             <div class="col-md-2">
-                <a href="{% url 'wamtram2:find_turtle' batch_id=batch.entry_batch_id %}" id="createEntryBtn" class="btn btn-primary">Create a new entry</a>
+                <a href="{% url 'wamtram2:find_turtle' batch_id=batch.entry_batch_id %}" id="createEntryBtn" class="btn btn-primary float-right">Create a new entry</a>
             </div>
         </div>
         <div id="templateSelectedMessage" class="mt-2 text-success" style="display: none;">Template selected</div>
@@ -356,7 +342,6 @@
     </div>
 
 
-    
 {% endblock page_content_inner %}
 
 {% block extra_js %}
@@ -374,6 +359,7 @@
         const templateSelector = document.getElementById('templateSelector');
         const setDefaultEnterer = document.getElementById('setDefaultEnterer');
         const createEntryBtn = document.getElementById('createEntryBtn');
+        const saveBatchDetailsBtn = document.getElementById('saveBatchDetailsBtn');
         const enteredPersonId = document.getElementById('id_entered_person_id');
 
         // Delay execution to ensure DOM elements are fully loaded
@@ -385,13 +371,11 @@
             }
         }, 200);
 
-        console.log('DOM content loaded');
-
         // Form submission event handler
         if (form) {
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
-                console.log('Form submitted');
+                saveBatchDetailsBtn.disabled = true;
 
                 // Create and add hidden template input field
                 const templateInput = document.createElement('input');
@@ -408,8 +392,15 @@
                 form.appendChild(defaultEntererInput);
 
                 console.log('Form inputs added:', templateInput.value, defaultEntererInput.value);
-                showLoadingSpinner();
-                form.submit();
+                console.log('Hidden field value:', enteredPersonId.value);
+                
+                if (enteredPersonId.value) {
+                    showLoadingSpinner();
+                    form.submit();
+                } else {
+                    console.error('Hidden field value is not set correctly');
+                }
+
             });
         } else {
             console.error('Form not found');
@@ -444,6 +435,7 @@
                 e.preventDefault();
                 console.log('Create entry button clicked');
                 updateCookies();
+                createEntryBtn.disabled = true;
                 // Short delay before navigation to ensure cookies update is complete
                 setTimeout(() => {
                     console.log('Navigating to:', this.href);
@@ -506,6 +498,59 @@
             showLoadingSpinner();
             document.getElementById('deleteBatchForm').submit();
         });
+
+        // Search functionality for entered_person_id
+        const searchField = document.getElementById('search_entered_person_id');
+        const resultsContainer = searchField.nextElementSibling.nextElementSibling;
+
+        searchField.addEventListener('input', debounce(function() {
+            const query = this.value;
+            if (query.length > 2) {
+                fetch(`/wamtram2/search-persons/?q=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Search results:', data);
+                        if (data.length > 0) {
+                            resultsContainer.innerHTML = '';
+                            resultsContainer.style.display = 'block';
+                            data.forEach(person => {
+                                const div = document.createElement('div');
+                                div.textContent = `${person.first_name} ${person.surname}`;
+                                div.className = 'search-result';
+                                div.onclick = function() {
+                                    searchField.value = div.textContent;
+                                    enteredPersonId.value = person.person_id;
+                                    resultsContainer.style.display = 'none';
+                                    console.log(`Selected person ID: ${enteredPersonId.value}`);
+                                };
+                                resultsContainer.appendChild(div);
+                            });
+                        } else {
+                            resultsContainer.innerHTML = '<div class="search-result">No data found</div>';
+                            resultsContainer.style.display = 'block';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching search results:', error);
+                    });
+            } else {
+                resultsContainer.style.display = 'none';
+            }
+        }, 300));
+
+        document.addEventListener('click', function(e) {
+            if (!searchField.contains(e.target) && !resultsContainer.contains(e.target)) {
+                resultsContainer.style.display = 'none';
+            }
+        });
+
+        function debounce(func, wait) {
+            let timeout;
+            return function(...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), wait);
+            };
+        }
     });
 
     // Show loading spinner
@@ -533,4 +578,5 @@
     // Show loading spinner on form submission
     window.addEventListener('load', hideLoadingSpinner);
 </script>
+
 {% endblock %}
