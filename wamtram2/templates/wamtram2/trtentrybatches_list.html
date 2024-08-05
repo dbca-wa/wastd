@@ -1,5 +1,12 @@
 {% extends "base_wastd.html" %}
+{% load static %}
 {% load dict_filter %}
+
+{% block extra_style %}
+{{ block.super }}
+<link rel="stylesheet" type="text/css" href="{% static 'css/disabled_btn.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
+{% endblock %}
 
 {% block breadcrumbs %}
 <!-- Breadcrumb Navigation -->
@@ -11,7 +18,6 @@
 {% endblock %}
 
 {% block page_content_inner %}
-
 {% block pagination_row %}
 <!-- Pagination Row -->
 <div class="row" id="pagination-row">
@@ -59,7 +65,7 @@
 
 <!-- Action and Filter Section -->
 <div class="d-flex justify-content-between align-items-center">
-    <a href="{% url 'wamtram2:new_batch_detail' %}" class="btn btn-primary">Create a new entry batch</a>
+    <a href="{% url 'wamtram2:new_batch_detail' %}" class="btn btn-primary" id="createNewBatchBtn">Create a new entry batch</a>
     <form method="get" class="form-inline">
         <div class="form-group">
             <label class="mr-1" for="filter">Filter</label>
@@ -107,4 +113,68 @@
 </div>
 {% endif %}
 
+<!-- Loading spinner -->
+<div class="loading-spinner">
+    <div class="spinner-border text-primary" role="status">
+        <span class="sr-only">Loading...</span>
+    </div>
+</div>
+
 {% endblock page_content_inner %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        let link = document.querySelector("#createNewBatchBtn");
+
+        function showLoadingSpinner() {
+            const loadingSpinner = document.querySelector('.loading-spinner');
+            if (loadingSpinner) {
+                loadingSpinner.style.display = 'block';
+            }
+        }
+    
+        function hideLoadingSpinner() {
+            const loadingSpinner = document.querySelector('.loading-spinner');
+            if (loadingSpinner) {
+                loadingSpinner.style.display = 'none';
+            }
+        }
+        
+        function initializeLoadingSpinner() {
+            hideLoadingSpinner();
+        }
+    
+        window.addEventListener('load', hideLoadingSpinner);
+        initializeLoadingSpinner();
+
+        function clickAndDisable(e) {
+            let target = e.currentTarget;
+            target.onclick = null;
+            target.style.pointerEvents = "none";
+            target.classList.remove('btn-primary');
+            target.classList.add('btn-secondary');
+            target.disabled = true;
+            link.removeEventListener("click", clickAndDisable);
+            console.log("Clicked");
+
+            showLoadingSpinner();
+            console.log("Loading spinner shown");
+    
+            // Navigate to the link
+            window.location.href = target.href;
+        }
+    
+        link.addEventListener("click", clickAndDisable);
+    
+        // Auto-refresh page when user navigates back
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+                window.location.reload();
+                hideLoadingSpinner();
+            }
+        });
+    });
+</script>
+{% endblock %}
