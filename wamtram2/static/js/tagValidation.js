@@ -1,10 +1,12 @@
 function setTagAndValidate(inputId, tagId) {
-const input = document.getElementById(inputId);
-if (input) {
-    input.value = tagId;
-    // Validate the input
-    input.dispatchEvent(new Event('blur'));
-}
+    console.log("Setting tag for:", inputId, "with tagId:", tagId); 
+    const input = document.getElementById(inputId);
+    if (input) {
+        input.value = tagId;
+        // Validate the input
+        input.dispatchEvent(new Event('change'));
+        input.dispatchEvent(new Event('blur'));
+    }
 }
 
 function updateBackgroundColor() {
