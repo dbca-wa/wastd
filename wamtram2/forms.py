@@ -77,12 +77,16 @@ class SearchForm(forms.Form):
 class TrtEntryBatchesForm(forms.ModelForm):
     class Meta:
         model = TrtEntryBatches
-        fields = ["entered_person_id", "comments"]
-        widgets = {"entered_person_id": personWidget}
+        fields = ["entered_person_id", "comments", "entry_date"]
+        widgets = {
+            "entered_person_id": forms.HiddenInput(),
+            "comments": forms.Textarea(attrs={"rows": 1, "class": "form-control"}),
+            "entry_date": forms.HiddenInput(),
+        }
         
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['entered_person_id'].label = "Enterer Name (Input first name for search)"
+        self.fields['entered_person_id'].label = "Enterer Name"
 
 
 class TrtDataEntryForm(forms.ModelForm):
