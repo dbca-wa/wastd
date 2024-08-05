@@ -548,6 +548,7 @@
     
     const cookieTagId = "{{ cookie_tag_id }}";
     const cookieTagType = "{{ cookie_tag_type }}";
+    const cookieTagSide = "{{ cookie_tag_side }}";
     const entryId = "{{ entry_id }}";
     const templateId = "{{ selected_template }}";
 
@@ -614,10 +615,14 @@
     //  Set the tag and validate
     if (cookieTagId && cookieTagType) {
       if (cookieTagType === 'recapture_tag') {
-          setTagAndValidate('id_recapture_left_tag_id', cookieTagId);
-      } else if (cookieTagType === 'recapture_pit_tag') {
-          setTagAndValidate('id_recapture_pittag_id', cookieTagId);
-      }
+        if (cookieTagSide === 'L') {
+            setTagAndValidate('id_recapture_left_tag_id', cookieTagId);
+        } else if (cookieTagSide === 'R') {
+            setTagAndValidate('id_recapture_right_tag_id', cookieTagId);
+        }
+    } else if (cookieTagType === 'recapture_pit_tag') {
+        setTagAndValidate('id_recapture_pittag_id', cookieTagId);
+    }
     }
     // Disable the save button and show processing message
     function disableSaveButton() {
