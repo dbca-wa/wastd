@@ -263,7 +263,7 @@
                 },
                 success: function(data) {
                     showMessage('Template updated successfully', 'success');
-                    location.reload();
+                    location.reload(); // Automatically refresh the page
                 },
                 error: function(xhr, status, error) {
                     var errorMessage = 'Error updating template';
@@ -294,7 +294,7 @@
                     },
                     success: function(data) {
                         showMessage('Template deleted successfully', 'success');
-                        location.reload();
+                        location.reload(); // Automatically refresh the page
                     },
                     error: function(data) {
                         showMessage('Error deleting template: ' + JSON.stringify(data.responseJSON.errors), 'danger');
@@ -316,7 +316,7 @@
                 data: formData,
                 success: function(data) {
                     showMessage('Template created successfully', 'success');
-                    location.reload();
+                    location.reload(); // Automatically refresh the page
                 },
                 error: function(data) {
                     showMessage('Error creating template: ' + JSON.stringify(data.responseJSON.errors), 'danger');
