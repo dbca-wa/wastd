@@ -1,21 +1,25 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const didNotCheckCheckbox = document.getElementById('{{ form.didnotcheckforinjury.auto_id }}');
-    if (didNotCheckCheckbox) {
-        didNotCheckCheckbox.addEventListener('change', toggleInjuryDetails);
+    const didNotCheckInjuryBox = document.getElementById('id_didnotcheckforinjury');
+    if (didNotCheckInjuryBox) {
+        didNotCheckInjuryBox.addEventListener('change', toggleInjuryDetails);
         toggleInjuryDetails();
+    } else {
+        console.error('didNotCheckInjuryBox not found: id_didnotcheckforinjury');
     }
 
     const toggleInjuryFieldsButton = document.getElementById('toggleInjuryFieldsButton');
     if (toggleInjuryFieldsButton) {
         toggleInjuryFieldsButton.addEventListener('click', toggleInjuryFields);
+    } else {
+        console.error('toggleInjuryFieldsButton not found');
     }
 });
 
 function toggleInjuryDetails() {
-    const didNotCheckCheckbox = document.getElementById('{{ form.didnotcheckforinjury.auto_id }}');
+    const didNotCheckInjuryBox = document.getElementById('id_didnotcheckforinjury');
     const injuryDetails = document.getElementById('injuryDetails');
 
-    if (didNotCheckCheckbox.checked) {
+    if (didNotCheckInjuryBox && didNotCheckInjuryBox.checked) {
         injuryDetails.style.display = 'none';
     } else {
         injuryDetails.style.display = 'block';
@@ -24,12 +28,15 @@ function toggleInjuryDetails() {
 
 function toggleInjuryFields() {
     const injuryAdditionalFields = document.getElementById('injuryAdditionalFields');
-    const toggleButton = document.getElementById('toggleInjuryFieldsButton');
+    const toggleButtonIcon = document.getElementById('toggleInjuryIcon');
+
     if (injuryAdditionalFields.style.display === 'none' || injuryAdditionalFields.style.display === '') {
         injuryAdditionalFields.style.display = 'block';
-        toggleButton.innerText = 'Less Injuries';
+        toggleButtonIcon.classList.remove('fa-plus');
+        toggleButtonIcon.classList.add('fa-minus');
     } else {
         injuryAdditionalFields.style.display = 'none';
-        toggleButton.innerText = 'More Injuries';
+        toggleButtonIcon.classList.remove('fa-minus');
+        toggleButtonIcon.classList.add('fa-plus');
     }
 }
