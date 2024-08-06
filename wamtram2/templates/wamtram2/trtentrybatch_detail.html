@@ -114,9 +114,11 @@
                         {{ form.entered_person_id }}
                         <div class="search-results" style="display:none;"></div>
                     </div>
+                    {% if user.is_superuser %}
                     <button type="button" class="btn btn-outline-primary add-person-btn align-self-end" onClick="window.open(adminUrl);" title="Add new person">
                         <i class="fas fa-plus"></i>
                     </button>
+                    {% endif %}
                 </div>
             </div>
             <div class="col-md-8">
@@ -170,7 +172,9 @@
             <div class="col-md-8">
                 {% if object_list %}
                     <a href="{% url 'wamtram2:validate_data_entry_batch' batch_id=batch.entry_batch_id %}" class="btn btn-primary mr-2">Validate this Batch</a>
+                    {% if user.is_superuser %}
                     <a href="{% url 'wamtram2:process_data_entry_batch' batch_id=batch.entry_batch_id %}" class="btn btn-primary" onclick="return confirm('Are you sure you want to add this batch?\nOnce the observations are added you will not be able to edit them.\nObservations that have already been added will not be processed.');">Add this batch to the database</a>
+                    {% endif %}
                 {% endif %}
             </div>
             <div class="col-md-4">
