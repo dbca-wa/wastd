@@ -77,11 +77,13 @@
               {{ form.entered_by_id }}
               <div class="search-results" style="display:none;"></div>
             </div>
+            {% comment %} {% if user.is_superuser %}
             <div class="col-md-2">
               <button type="button" class="btn btn-outline-primary add-person-btn" onClick="window.open(adminUrl);" title="Add new person">
               <i class="fas fa-plus"></i>
               </button>
             </div>
+            {% endif %} {% endcomment %}
           </div>
         </div>
         <div class="col-md-8 pt-2">
@@ -119,9 +121,11 @@
               <div class="search-results" style="display:none;"></div>
             </div>
             <div class="col-md-2">
+              {% comment %} {% if user.is_superuser %}
               <button type="button" class="btn btn-outline-primary add-person-btn" onClick="window.open(adminUrl);" title="Add new person">
               <i class="fas fa-plus"></i>
               </button>
+              {% endif %} {% endcomment %}
             </div>
           </div>
         </div>
@@ -148,74 +152,70 @@
         <section class="row">
             <div class="col-md-12">
                 <div class="row mt-2">
-                    <label class="col-md-4 col-form-label"><strong>FLIPPER Tag(s) present?</strong></label>
+                    <label class="col-md-4 col-form-label"><strong>FLIPPER Tag(s)</strong></label>
                 </div>
                 <div id="tagDetails">
                     <!-- Recapture Tags -->
                     <div id="recaptureTags">
-                        <div class="row mt-2">
-                            <div class="col-md-6">
-                                {% bootstrap_field form.recapture_left_tag_id %}
-                                <span id="left-tag-validation-message"></span>
-                                <span id="left-tag-message"></span>
-                            </div>
-                            <div class="col-md-6">
-                                {% bootstrap_field form.recapture_right_tag_id %}
-                                <span id="right-tag-validation-message"></span>
-                                <span id="right-tag-message"></span>
-                            </div>
-                        </div>
-                        <div id="additionalRecaptureTags" style="display: none;">
-                            <div class="row mt-2">
-                                <div class="col-md-6">
-                                    {% bootstrap_field form.recapture_left_tag_id_2 %}
-                                    <span id="left-tag-validation-message-2"></span>
-                                    <span id="left-tag-message-2"></span>
-                                </div>
-                                <div class="col-md-6">
-                                    {% bootstrap_field form.recapture_right_tag_id_2 %}
-                                    <span id="right-tag-validation-message-2"></span>
-                                    <span id="right-tag-message-2"></span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row mt-2">
-                            <div class="col-md-6">
-                              <button type="button" class="btn btn-primary" id="toggleRecaptureTagsBtn">More Recapture Tags</button>
-                            </div>
-                        </div>
+                      <div class="row mt-2">
+                          <div class="col-md-5">
+                              {% bootstrap_field form.recapture_left_tag_id %}
+                              <span id="left-tag-validation-message"></span>
+                              <span id="left-tag-message"></span>
+                          </div>
+                          <div class="col-md-5">
+                              {% bootstrap_field form.recapture_right_tag_id %}
+                              <span id="right-tag-validation-message"></span>
+                              <span id="right-tag-message"></span>
+                          </div>
+                          <div class="col-md-2 d-flex align-items-start">
+                              <button type="button" class="btn btn-outline-primary mt-4" id="toggleRecaptureTagsBtn"><i class="fas fa-plus"></i></button>
+                          </div>
+                      </div>
+                      <div id="additionalRecaptureTags" style="display: none;">
+                          <div class="row mt-2">
+                              <div class="col-md-5">
+                                  {% bootstrap_field form.recapture_left_tag_id_2 %}
+                                  <span id="left-tag-validation-message-2"></span>
+                                  <span id="left-tag-message-2"></span>
+                              </div>
+                              <div class="col-md-5">
+                                  {% bootstrap_field form.recapture_right_tag_id_2 %}
+                                  <span id="right-tag-validation-message-2"></span>
+                                  <span id="right-tag-message-2"></span>
+                              </div>
+                          </div>
+                      </div>
                     </div>
-                    
                     <!-- New Tags -->
                     <div id="newTags">
-                        <div class="row mt-2">
-                            <div class="col-md-6">
-                                {% bootstrap_field form.new_left_tag_id %}
-                                <span id="new-left-tag-validation-message"></span>
-                                <span id="new-left-tag-message"></span>
-                            </div>
-                            <div class="col-md-6">
-                                {% bootstrap_field form.new_right_tag_id %}
-                                <span id="new-right-tag-validation-message"></span>
-                                <span id="new-right-tag-message"></span>
-                            </div>
-                        </div>
-                        <div id="additionalNewTags" style="display: none;">
-                            <div class="row mt-2">
-                                <div class="col-md-6">
-                                    {% bootstrap_field form.new_left_tag_id_2 %}
-                                </div>
-                                <div class="col-md-6">
-                                    {% bootstrap_field form.new_right_tag_id_2 %}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row mt-2">
-                            <div class="col-md-6">
-                              <button type="button" class="btn btn-primary" id="toggleNewTagsBtn">More New Tags</button>
-                            </div>
-                        </div>
-                    </div>
+                      <div class="row mt-2">
+                          <div class="col-md-5">
+                              {% bootstrap_field form.new_left_tag_id %}
+                              <span id="new-left-tag-validation-message"></span>
+                              <span id="new-left-tag-message"></span>
+                          </div>
+                          <div class="col-md-5">
+                              {% bootstrap_field form.new_right_tag_id %}
+                              <span id="new-right-tag-validation-message"></span>
+                              <span id="new-right-tag-message"></span>
+                          </div>
+                          <div class="col-md-2 d-flex align-items-start">
+                              <button type="button" class="btn btn-outline-primary mt-4" id="toggleNewTagsBtn"><i class="fas fa-plus"></i></button>
+                          </div>
+                      </div>
+                      <div id="additionalNewTags" style="display: none;">
+                          <div class="row mt-2">
+                              <div class="col-md-5">
+                                  {% bootstrap_field form.new_left_tag_id_2 %}
+                              </div>
+                              <div class="col-md-5">
+                                  {% bootstrap_field form.new_right_tag_id_2 %}
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+                  
                 </div>
             </div>
         </section>
@@ -224,7 +224,7 @@
         <section class="row mt-5">
             <div class="col-md-12">
                 <div class="row">
-                    <label class="col-sm-2 col-form-label"><strong>PIT tag present?</strong></label>
+                    <label class="col-sm-2 col-form-label"><strong>PIT Tags</strong></label>
                 </div>
                 <div id="recapturePIT">
                     <div class="row mt-2">
@@ -314,9 +314,11 @@
               <div class="search-results" style="display:none;"></div>
             </div>
             <div class="col-md-2">
+              {% comment %} {% if user.is_superuser %}
                 <button type="button" class="btn btn-outline-primary add-person-btn" onclick="window.open(adminUrl);" title="Add new person">
                     <i class="fas fa-plus"></i>
                 </button>
+              {% endif %} {% endcomment %}
             </div>
         </section>
     </div>
@@ -325,60 +327,63 @@
   <div class="card border-dark mb-3">
     <div class="card-header">Measurements</div>
     <div class="card-body">
-      <div class="row">
-        <div class="col-md-12">
-          <div class="row">
-            <div class="col-md-6">
-              {% bootstrap_field form.cc_length_not_measured %}
-            </div>
-            <div class="col-md-6">
-              {% bootstrap_field form.curved_carapace_length %}
-            </div>
-            <div class="col-md-6">
-              {% bootstrap_field form.cc_width_not_measured %}
-            </div>
-            <div class="col-md-6">
-              {% bootstrap_field form.curved_carapace_width %}
-            </div>
-            <div class="col-md-6 pt-3 d-flex align-items-center">
-              <button id="addMeasurementButton" type="button" class="btn btn-primary">More Measurements</button>
-            </div>
-          </div>
-          <div id="moreMeasurement" class="row" style="display: none;">
-            <div class="col-md-12 d-flex align-items-center mt-3">
-              <div class="mr-2">
-                {% bootstrap_field form.measurement_type_1 %}
-              </div>
-              <div class="ml-5">
-                {% bootstrap_field form.measurement_value_1 %}
-              </div>
-            </div>
-            <div class="col-md-12 d-flex align-items-center">
-              <div class="mr-2">
-                {% bootstrap_field form.measurement_type_2 %}
-              </div>
-              <div class="ml-5">
-                {% bootstrap_field form.measurement_value_2 %}
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-6 p-4">
-              <label for="{{ form.measured_by_id.id_for_label }}">{{ form.measured_by_id.label }}</label>
-              <div class="d-flex align-items-center">
-                <div class="flex-grow-1">
-                  <input type="text" id="search_measured_by" class="search-field form-control" placeholder="Search measured by">
-                  {{ form.measured_by_id }}
-                  <div class="search-results" style="display:none;"></div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-5">
+                        {% bootstrap_field form.cc_length_not_measured %}
+                    </div>
+                    <div class="col-md-5">
+                        {% bootstrap_field form.curved_carapace_length %}
+                    </div>
+                    <div class="col-md-2 pt-3 d-flex align-items-center">
+                        <button id="toggleMeasurementButton" type="button" class="btn btn-outline-primary">
+                            <i class="fas fa-plus" id="toggleMeasurementIcon"></i>
+                        </button>
+                    </div>
+                    <div class="col-md-5 mt-2">
+                        {% bootstrap_field form.cc_width_not_measured %}
+                    </div>
+                    <div class="col-md-5 mt-2">
+                        {% bootstrap_field form.curved_carapace_width %}
+                    </div>
                 </div>
-                <button type="button" class="btn btn-outline-primary add-person-btn ml-2 align-self-start" onClick="window.open(adminUrl);" title="Add new person">
-                  <i class="fas fa-plus"></i>
-                </button>
-              </div>
+                <div id="moreMeasurement" class="row" style="display: none;">
+                    <div class="col-md-12 d-flex align-items-center mt-3">
+                        <div class="mr-2 flex-grow-1">
+                            {% bootstrap_field form.measurement_type_1 %}
+                        </div>
+                        <div class="ml-2 flex-grow-1">
+                            {% bootstrap_field form.measurement_value_1 %}
+                        </div>
+                    </div>
+                    <div class="col-md-12 d-flex align-items-center mt-2">
+                        <div class="mr-2 flex-grow-1">
+                            {% bootstrap_field form.measurement_type_2 %}
+                        </div>
+                        <div class="ml-2 flex-grow-1">
+                            {% bootstrap_field form.measurement_value_2 %}
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 p-4">
+                        <label for="{{ form.measured_by_id.id_for_label }}">{{ form.measured_by_id.label }}</label>
+                        <div class="d-flex align-items-center">
+                            <div class="flex-grow-1">
+                                <input type="text" id="search_measured_by" class="search-field form-control" placeholder="Search measured by">
+                                {{ form.measured_by_id }}
+                                <div class="search-results" style="display:none;"></div>
+                            </div>
+                            {% comment %} {% if user.is_superuser %}
+                            <button type="button" class="btn btn-outline-primary add-person-btn ml-2 align-self-start" onClick="window.open(adminUrl);" title="Add new person">
+                                <i class="fas fa-plus"></i></button>
+                            {% endif %} {% endcomment %}
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
     </div>
   </div>
   <!-- Fourth part: Nest -->
@@ -429,8 +434,10 @@
                 <div class="col-md-6">
                     {% bootstrap_field form.damage_rhf %}
                 </div>
-                <div class="col-md-6 d-flex align-items-center">
-                  <button id="toggleInjuryFieldsButton" type="button" class="btn btn-primary">More Injuries</button>
+                <div class="col-md-2 pt-3 d-flex align-items-center">
+                    <button id="toggleInjuryFieldsButton" type="button" class="btn btn-outline-primary">
+                        <i class="fas fa-plus" id="toggleInjuryIcon"></i>
+                    </button>
                 </div>
             </div>
             <div id="injuryAdditionalFields" style="display: none;">
@@ -464,7 +471,7 @@
   </div>
   <!-- Sixth part: Bio -->
   <div class="card border-dark mb-3">
-    <div class="card-header">Bio Samples</div>
+    <div class="card-header">Samples</div>
     <div class="card-body">
       <div class="row">
         <div class="col-md-12">

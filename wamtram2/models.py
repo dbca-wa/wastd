@@ -1003,6 +1003,8 @@ class TrtEggCountMethods(models.Model):
     class Meta:
         managed = False
         db_table = "TRT_EGG_COUNT_METHODS"
+    def __str__(self):
+        return f"{self.description}"
 
 
 class TrtEntryBatches(models.Model):

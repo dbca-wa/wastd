@@ -1077,6 +1077,7 @@ class TemplateManageView(LoginRequiredMixin, FormView):
                 return JsonResponse({'error': f"Error saving template: {e}"}, status=500)
         return JsonResponse({'errors': form.errors}, status=400)
 
+
 class ValidateTagView(View):
     """
     View for validating tags.

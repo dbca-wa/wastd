@@ -1,9 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const addMeasurementButton = document.getElementById('addMeasurementButton');
+    const addMeasurementButton = document.getElementById('toggleMeasurementButton');
     if (addMeasurementButton) {
-        addMeasurementButton.addEventListener('click', toggleMeasurement);
+        addMeasurementButton.addEventListener('click', toggleMeasurementFields);
     } else {
-        console.error('addMeasurementButton not found');
+        console.error('toggleMeasurementButton not found');
     }
 
     const ccLengthNotMeasured = document.getElementById('id_cc_length_not_measured');
@@ -24,19 +24,18 @@ document.addEventListener('DOMContentLoaded', function() {
     toggleCurvedCarapaceWidth();
 });
 
-function toggleMeasurement() {
+function toggleMeasurementFields() {
     const moreMeasurement = document.getElementById('moreMeasurement');
-    const addMeasurementButton = document.getElementById('addMeasurementButton');
-    if (moreMeasurement && addMeasurementButton) {
-        if (moreMeasurement.style.display === 'none' || moreMeasurement.style.display === '') {
-            moreMeasurement.style.display = 'block';
-            addMeasurementButton.innerText = 'Less Measurements';
-        } else {
-            moreMeasurement.style.display = 'none';
-            addMeasurementButton.innerText = 'More Measurements';
-        }
+    const toggleButtonIcon = document.getElementById('toggleMeasurementIcon');
+
+    if (moreMeasurement.style.display === 'none' || moreMeasurement.style.display === '') {
+        moreMeasurement.style.display = 'block';
+        toggleButtonIcon.classList.remove('fa-plus');
+        toggleButtonIcon.classList.add('fa-minus');
     } else {
-        console.error('moreMeasurement or addMeasurementButton not found');
+        moreMeasurement.style.display = 'none';
+        toggleButtonIcon.classList.remove('fa-minus');
+        toggleButtonIcon.classList.add('fa-plus');
     }
 }
 
