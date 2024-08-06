@@ -47,6 +47,8 @@ COPY wamtram2 ./wamtram2
 COPY marine_mammal_incidents ./marine_mammal_incidents
 RUN python manage.py collectstatic --noinput
 
+RUN chmod 777 /app/wamtram2/templates.json
+
 USER ${UID}
 EXPOSE 8080
 CMD ["gunicorn", "wastd.wsgi", "--config", "gunicorn.py"]
