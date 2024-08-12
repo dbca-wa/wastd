@@ -562,9 +562,13 @@ class TrtDataEntry(models.Model):
     longitude_seconds = models.FloatField(
         db_column="LONGITUDE_SECONDS", blank=True, null=True
     )  # Field name made lowercase.
-    identification_type = models.CharField(
-        db_column="IDENTIFICATION_TYPE", max_length=10, blank=True, null=True
-    )  # Field name made lowercase.
+    identification_type = models.ForeignKey(
+        "TrtIdentificationTypes",
+        models.CASCADE,
+        db_column="IDENTIFICATION_TYPE",
+        blank=True,
+        null=True
+    )
     identifier = models.CharField(
         db_column="IDENTIFIER", max_length=20, blank=True, null=True
     )  # Field name made lowercase.
@@ -1116,6 +1120,9 @@ class TrtIdentificationTypes(models.Model):
     class Meta:
         managed = False
         db_table = "TRT_IDENTIFICATION_TYPES"
+    def __str__(self):
+        return f"{self.description}"
+    
 
 
 class TrtLocations(models.Model):

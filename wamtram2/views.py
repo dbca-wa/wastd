@@ -1268,8 +1268,7 @@ class ValidateTagView(View):
             return self.validate_recaptured_pit_tag(request)
         else:
             return JsonResponse({'valid': False, 'message': 'Invalid validation type'})
-        
-        
+
 
 def search_persons(request):
     query = request.GET.get('q', '')

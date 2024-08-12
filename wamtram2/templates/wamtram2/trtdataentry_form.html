@@ -577,6 +577,7 @@
   <div id="advancedDataCard" class="card border-dark mt-3" style="display: none;">
     <div class="card-header">Advanced Data</div>
     <div class="card-body">
+      <!-- Egg -->
       <div class="row">
         <div class="col-md-12">
           <label><strong>Egg</strong></label>
@@ -586,6 +587,18 @@
         </div>
         <div class="col-md-6">
           {% bootstrap_field form.egg_count_method %}
+        </div>
+      </div>
+      <!-- Identification -->
+      <div class="row">
+        <div class="col-md-12">
+          <label><strong>Identification</strong></label>
+        </div>
+        <div class="col-md-6">
+          {% bootstrap_field form.identifier %}
+        </div>
+        <div class="col-md-6">
+          {% bootstrap_field form.identification_type %}
         </div>
       </div>
     </div>
