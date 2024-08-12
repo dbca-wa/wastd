@@ -201,6 +201,11 @@ class TrtDataEntry(models.Model):
         ("F", "Female"),
         ("I", "Indeterminate"),
     ]
+    TAG_POSITION_CHOICES = [
+        (1, '1'),
+        (2, '2'),
+        (3, '3'),
+    ]
     data_entry_id = models.AutoField(
         db_column="DATA_ENTRY_ID", primary_key=True
     )  # Field name made lowercase.
@@ -693,6 +698,36 @@ class TrtDataEntry(models.Model):
         null=True,
         related_name="newpittag2",
     )  # fake foreign key for right pit tag #models.CharField(db_column='NEW_PIT_TAG_ID_2', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    
+    # Flipper tag status
+    recapture_left_tag_status = models.ForeignKey('TrtTagStatus', models.SET_NULL, null=True, related_name='+', db_column='RECAPTURE_LEFT_TAG_STATUS')
+    recapture_left_tag_status_2 = models.ForeignKey('TrtTagStatus', models.SET_NULL, null=True, related_name='+', db_column='RECAPTURE_LEFT_TAG_STATUS_2')
+    recapture_right_tag_status = models.ForeignKey('TrtTagStatus', models.SET_NULL, null=True, related_name='+', db_column='RECAPTURE_RIGHT_TAG_STATUS')
+    recapture_right_tag_status_2 = models.ForeignKey('TrtTagStatus', models.SET_NULL, null=True, related_name='+', db_column='RECAPTURE_RIGHT_TAG_STATUS_2')
+    new_left_tag_status = models.ForeignKey('TrtTagStatus', models.SET_NULL, null=True, related_name='+', db_column='NEW_LEFT_TAG_STATUS')
+    new_left_tag_status_2 = models.ForeignKey('TrtTagStatus', models.SET_NULL, null=True, related_name='+', db_column='NEW_LEFT_TAG_STATUS_2')
+    new_right_tag_status = models.ForeignKey('TrtTagStatus', models.SET_NULL, null=True, related_name='+', db_column='NEW_RIGHT_TAG_STATUS')
+    new_right_tag_status_2 = models.ForeignKey('TrtTagStatus', models.SET_NULL, null=True, related_name='+', db_column='NEW_RIGHT_TAG_STATUS_2')
+
+    # Flipper tag position
+    recapture_left_tag_position = models.SmallIntegerField(choices=TAG_POSITION_CHOICES, null=True, db_column='RECAPTURE_LEFT_TAG_POSITION')
+    recapture_left_tag_position_2 = models.SmallIntegerField(choices=TAG_POSITION_CHOICES, null=True, db_column='RECAPTURE_LEFT_TAG_POSITION_2')
+    recapture_right_tag_position = models.SmallIntegerField(choices=TAG_POSITION_CHOICES, null=True, db_column='RECAPTURE_RIGHT_TAG_POSITION')
+    recapture_right_tag_position_2 = models.SmallIntegerField(choices=TAG_POSITION_CHOICES, null=True, db_column='RECAPTURE_RIGHT_TAG_POSITION_2')
+    new_left_tag_position = models.SmallIntegerField(choices=TAG_POSITION_CHOICES, null=True, db_column='NEW_LEFT_TAG_POSITION')
+    new_left_tag_position_2 = models.SmallIntegerField(choices=TAG_POSITION_CHOICES, null=True, db_column='NEW_LEFT_TAG_POSITION_2')
+    new_right_tag_position = models.SmallIntegerField(choices=TAG_POSITION_CHOICES, null=True, db_column='NEW_RIGHT_TAG_POSITION')
+    new_right_tag_position_2 = models.SmallIntegerField(choices=TAG_POSITION_CHOICES, null=True, db_column='NEW_RIGHT_TAG_POSITION_2')
+
+    # Flipper tag barnacles
+    recapture_left_tag_barnacles = models.BooleanField(default=False, db_column='RECAPTURE_LEFT_TAG_BARNACLES')
+    recapture_left_tag_barnacles_2 = models.BooleanField(default=False, db_column='RECAPTURE_LEFT_TAG_BARNACLES_2')
+    recapture_right_tag_barnacles = models.BooleanField(default=False, db_column='RECAPTURE_RIGHT_TAG_BARNACLES')
+    recapture_right_tag_barnacles_2 = models.BooleanField(default=False, db_column='RECAPTURE_RIGHT_TAG_BARNACLES_2')
+    new_left_tag_barnacles = models.BooleanField(default=False, db_column='NEW_LEFT_TAG_BARNACLES')
+    new_left_tag_barnacles_2 = models.BooleanField(default=False, db_column='NEW_LEFT_TAG_BARNACLES_2')
+    new_right_tag_barnacles = models.BooleanField(default=False, db_column='NEW_RIGHT_TAG_BARNACLES')
+    new_right_tag_barnacles_2 = models.BooleanField(default=False, db_column='NEW_RIGHT_TAG_BARNACLES_2')
 
     class Meta:
         managed = False
