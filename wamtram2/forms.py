@@ -167,14 +167,14 @@ class TrtDataEntryForm(forms.ModelForm):
             "egg_count_method",
             
             # v2.0 added columns
-            "recapture_left_tag_status",
-            "recapture_left_tag_status_2",
-            "recapture_right_tag_status",
-            "recapture_right_tag_status_2",
-            "new_left_tag_status",
-            "new_left_tag_status_2",
-            "new_right_tag_status",
-            "new_right_tag_status_2",
+            "recapture_left_tag_state",
+            "recapture_left_tag_state_2",
+            "recapture_right_tag_state",
+            "recapture_right_tag_state_2",
+            "new_left_tag_state",
+            "new_left_tag_state_2",
+            "new_right_tag_state",
+            "new_right_tag_state_2",
             "recapture_left_tag_position",
             "recapture_left_tag_position_2",
             "recapture_right_tag_position",
@@ -266,14 +266,14 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["damage_rhf"].label = "Right hind flipper"
         
         # v2.0 added columns
-        self.fields["recapture_left_tag_status"].label = "Recapture Left Tag Status"
-        self.fields["recapture_left_tag_status_2"].label = "Recapture Left Tag Status 2"
-        self.fields["recapture_right_tag_status"].label = "Recapture Right Tag Status"
-        self.fields["recapture_right_tag_status_2"].label = "Recapture Right Tag Status 2"
-        self.fields["new_left_tag_status"].label = "New Left Tag Status"
-        self.fields["new_left_tag_status_2"].label = "New Left Tag Status 2"
-        self.fields["new_right_tag_status"].label = "New Right Tag Status"
-        self.fields["new_right_tag_status_2"].label = "New Right Tag Status 2"
+        self.fields["recapture_left_tag_state"].label = "Recapture Left Tag State"
+        self.fields["recapture_left_tag_state_2"].label = "Recapture Left Tag Status 2"
+        self.fields["recapture_right_tag_state"].label = "Recapture Right Tag Status"
+        self.fields["recapture_right_tag_state_2"].label = "Recapture Right Tag Status 2"
+        self.fields["new_left_tag_state"].label = "New Left Tag Status"
+        self.fields["new_left_tag_state_2"].label = "New Left Tag Status 2"
+        self.fields["new_right_tag_state"].label = "New Right Tag Status"
+        self.fields["new_right_tag_state_2"].label = "New Right Tag Status 2"
         self.fields["recapture_left_tag_position"].label = "Recapture Left Tag Position"
         self.fields["recapture_left_tag_position_2"].label = "Recapture Left Tag Position 2"
         self.fields["recapture_right_tag_position"].label = "Recapture Right Tag Position"
@@ -305,14 +305,14 @@ class TrtDataEntryForm(forms.ModelForm):
             required=False
         )
         
-        self.fields["recapture_left_tag_status"].required = False
-        self.fields["recapture_left_tag_status_2"].required = False
-        self.fields["recapture_right_tag_status"].required = False
-        self.fields["recapture_right_tag_status_2"].required = False
-        self.fields["new_left_tag_status"].required = False
-        self.fields["new_left_tag_status_2"].required = False
-        self.fields["new_right_tag_status"].required = False
-        self.fields["new_right_tag_status_2"].required = False
+        self.fields["recapture_left_tag_state"].required = False
+        self.fields["recapture_left_tag_state_2"].required = False
+        self.fields["recapture_right_tag_state"].required = False
+        self.fields["recapture_right_tag_state_2"].required = False
+        self.fields["new_left_tag_state"].required = False
+        self.fields["new_left_tag_state_2"].required = False
+        self.fields["new_right_tag_state"].required = False
+        self.fields["new_right_tag_state_2"].required = False
         self.fields["recapture_left_tag_position"].required = False
         self.fields["recapture_left_tag_position_2"].required = False
         self.fields["recapture_right_tag_position"].required = False

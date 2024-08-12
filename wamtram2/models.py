@@ -704,14 +704,14 @@ class TrtDataEntry(models.Model):
     )  # fake foreign key for right pit tag #models.CharField(db_column='NEW_PIT_TAG_ID_2', max_length=50, blank=True, null=True)  # Field name made lowercase.
     
     # Flipper tag status
-    recapture_left_tag_status = models.ForeignKey('TrtTagStatus', models.SET_NULL, null=True, related_name='+', db_column='RECAPTURE_LEFT_TAG_STATUS')
-    recapture_left_tag_status_2 = models.ForeignKey('TrtTagStatus', models.SET_NULL, null=True, related_name='+', db_column='RECAPTURE_LEFT_TAG_STATUS_2')
-    recapture_right_tag_status = models.ForeignKey('TrtTagStatus', models.SET_NULL, null=True, related_name='+', db_column='RECAPTURE_RIGHT_TAG_STATUS')
-    recapture_right_tag_status_2 = models.ForeignKey('TrtTagStatus', models.SET_NULL, null=True, related_name='+', db_column='RECAPTURE_RIGHT_TAG_STATUS_2')
-    new_left_tag_status = models.ForeignKey('TrtTagStatus', models.SET_NULL, null=True, related_name='+', db_column='NEW_LEFT_TAG_STATUS')
-    new_left_tag_status_2 = models.ForeignKey('TrtTagStatus', models.SET_NULL, null=True, related_name='+', db_column='NEW_LEFT_TAG_STATUS_2')
-    new_right_tag_status = models.ForeignKey('TrtTagStatus', models.SET_NULL, null=True, related_name='+', db_column='NEW_RIGHT_TAG_STATUS')
-    new_right_tag_status_2 = models.ForeignKey('TrtTagStatus', models.SET_NULL, null=True, related_name='+', db_column='NEW_RIGHT_TAG_STATUS_2')
+    recapture_left_tag_state = models.ForeignKey('TrtTagStates', models.SET_NULL, null=True, related_name='+', db_column='RECAPTURE_LEFT_TAG_STATE')
+    recapture_left_tag_state_2 = models.ForeignKey('TrtTagStates', models.SET_NULL, null=True, related_name='+', db_column='RECAPTURE_LEFT_TAG_STATE_2')
+    recapture_right_tag_state = models.ForeignKey('TrtTagStates', models.SET_NULL, null=True, related_name='+', db_column='RECAPTURE_RIGHT_TAG_STATE')
+    recapture_right_tag_state_2 = models.ForeignKey('TrtTagStates', models.SET_NULL, null=True, related_name='+', db_column='RECAPTURE_RIGHT_TAG_STATE_2')
+    new_left_tag_state = models.ForeignKey('TrtTagStates', models.SET_NULL, null=True, related_name='+', db_column='NEW_LEFT_TAG_STATE')
+    new_left_tag_state_2 = models.ForeignKey('TrtTagStates', models.SET_NULL, null=True, related_name='+', db_column='NEW_LEFT_TAG_STATE_2')
+    new_right_tag_state = models.ForeignKey('TrtTagStates', models.SET_NULL, null=True, related_name='+', db_column='NEW_RIGHT_TAG_STATE')
+    new_right_tag_state_2 = models.ForeignKey('TrtTagStates', models.SET_NULL, null=True, related_name='+', db_column='NEW_RIGHT_TAG_STATE_2')
 
     # Flipper tag position
     recapture_left_tag_position = models.SmallIntegerField(choices=TAG_POSITION_CHOICES, null=True, db_column='RECAPTURE_LEFT_TAG_POSITION')
