@@ -11,25 +11,31 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function toggleRecaptureTags() {
-    const additionalRecaptureTags = document.getElementById('additionalRecaptureTags');
+    const additionalRecaptureLeftTag = document.getElementById('additionalRecaptureLeftTag');
+    const additionalRecaptureRightTag = document.getElementById('additionalRecaptureRightTag');
     const toggleBtn = document.getElementById('toggleRecaptureTagsBtn');
-    if (additionalRecaptureTags.style.display === 'none' || additionalRecaptureTags.style.display === '') {
-        additionalRecaptureTags.style.display = 'block';
+    if (additionalRecaptureLeftTag.style.display === 'none' || additionalRecaptureLeftTag.style.display === '') {
+        additionalRecaptureLeftTag.style.display = 'table-row';
+        additionalRecaptureRightTag.style.display = 'table-row';
         toggleBtn.innerHTML = '<i class="fas fa-minus"></i>';
     } else {
-        additionalRecaptureTags.style.display = 'none';
+        additionalRecaptureLeftTag.style.display = 'none';
+        additionalRecaptureRightTag.style.display = 'none';
         toggleBtn.innerHTML = '<i class="fas fa-plus"></i>';
     }
 }
 
 function toggleNewTags() {
-    const additionalNewTags = document.getElementById('additionalNewTags');
+    const additionalNewLeftTag = document.getElementById('additionalNewLeftTag');
+    const additionalNewRightTag = document.getElementById('additionalNewRightTag');
     const toggleBtn = document.getElementById('toggleNewTagsBtn');
-    if (additionalNewTags.style.display === 'none' || additionalNewTags.style.display === '') {
-        additionalNewTags.style.display = 'block';
+    if (additionalNewLeftTag.style.display === 'none' || additionalNewLeftTag.style.display === '') {
+        additionalNewLeftTag.style.display = 'table-row';
+        additionalNewRightTag.style.display = 'table-row';
         toggleBtn.innerHTML = '<i class="fas fa-minus"></i>';
     } else {
-        additionalNewTags.style.display = 'none';
-        toggleBtn.innerHTML = '<i class="fas fa-plus"></i>'; 
+        additionalNewLeftTag.style.display = 'none';
+        additionalNewRightTag.style.display = 'none';
+        toggleBtn.innerHTML = '<i class="fas fa-plus"></i>';
     }
 }
