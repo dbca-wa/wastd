@@ -201,6 +201,11 @@ class TrtDataEntry(models.Model):
         ("F", "Female"),
         ("I", "Indeterminate"),
     ]
+    TAG_POSITION_CHOICES = [
+        (1, '1'),
+        (2, '2'),
+        (3, '3'),
+    ]
     data_entry_id = models.AutoField(
         db_column="DATA_ENTRY_ID", primary_key=True
     )  # Field name made lowercase.
@@ -557,9 +562,13 @@ class TrtDataEntry(models.Model):
     longitude_seconds = models.FloatField(
         db_column="LONGITUDE_SECONDS", blank=True, null=True
     )  # Field name made lowercase.
-    identification_type = models.CharField(
-        db_column="IDENTIFICATION_TYPE", max_length=10, blank=True, null=True
-    )  # Field name made lowercase.
+    identification_type = models.ForeignKey(
+        "TrtIdentificationTypes",
+        models.CASCADE,
+        db_column="IDENTIFICATION_TYPE",
+        blank=True,
+        null=True
+    )
     identifier = models.CharField(
         db_column="IDENTIFIER", max_length=20, blank=True, null=True
     )  # Field name made lowercase.
@@ -693,6 +702,36 @@ class TrtDataEntry(models.Model):
         null=True,
         related_name="newpittag2",
     )  # fake foreign key for right pit tag #models.CharField(db_column='NEW_PIT_TAG_ID_2', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    
+    # Flipper tag states
+    recapture_left_tag_state = models.ForeignKey('TrtTagStates', models.SET_NULL, null=True, related_name='+', db_column='RECAPTURE_LEFT_TAG_STATE')
+    recapture_left_tag_state_2 = models.ForeignKey('TrtTagStates', models.SET_NULL, null=True, related_name='+', db_column='RECAPTURE_LEFT_TAG_STATE_2')
+    recapture_right_tag_state = models.ForeignKey('TrtTagStates', models.SET_NULL, null=True, related_name='+', db_column='RECAPTURE_RIGHT_TAG_STATE')
+    recapture_right_tag_state_2 = models.ForeignKey('TrtTagStates', models.SET_NULL, null=True, related_name='+', db_column='RECAPTURE_RIGHT_TAG_STATE_2')
+    new_left_tag_state = models.ForeignKey('TrtTagStates', models.SET_NULL, null=True, related_name='+', db_column='NEW_LEFT_TAG_STATE')
+    new_left_tag_state_2 = models.ForeignKey('TrtTagStates', models.SET_NULL, null=True, related_name='+', db_column='NEW_LEFT_TAG_STATE_2')
+    new_right_tag_state = models.ForeignKey('TrtTagStates', models.SET_NULL, null=True, related_name='+', db_column='NEW_RIGHT_TAG_STATE')
+    new_right_tag_state_2 = models.ForeignKey('TrtTagStates', models.SET_NULL, null=True, related_name='+', db_column='NEW_RIGHT_TAG_STATE_2')
+
+    # Flipper tag position
+    recapture_left_tag_position = models.SmallIntegerField(choices=TAG_POSITION_CHOICES, null=True, db_column='RECAPTURE_LEFT_TAG_POSITION')
+    recapture_left_tag_position_2 = models.SmallIntegerField(choices=TAG_POSITION_CHOICES, null=True, db_column='RECAPTURE_LEFT_TAG_POSITION_2')
+    recapture_right_tag_position = models.SmallIntegerField(choices=TAG_POSITION_CHOICES, null=True, db_column='RECAPTURE_RIGHT_TAG_POSITION')
+    recapture_right_tag_position_2 = models.SmallIntegerField(choices=TAG_POSITION_CHOICES, null=True, db_column='RECAPTURE_RIGHT_TAG_POSITION_2')
+    new_left_tag_position = models.SmallIntegerField(choices=TAG_POSITION_CHOICES, null=True, db_column='NEW_LEFT_TAG_POSITION')
+    new_left_tag_position_2 = models.SmallIntegerField(choices=TAG_POSITION_CHOICES, null=True, db_column='NEW_LEFT_TAG_POSITION_2')
+    new_right_tag_position = models.SmallIntegerField(choices=TAG_POSITION_CHOICES, null=True, db_column='NEW_RIGHT_TAG_POSITION')
+    new_right_tag_position_2 = models.SmallIntegerField(choices=TAG_POSITION_CHOICES, null=True, db_column='NEW_RIGHT_TAG_POSITION_2')
+
+    # Flipper tag barnacles
+    recapture_left_tag_barnacles = models.BooleanField(default=False, db_column='RECAPTURE_LEFT_TAG_BARNACLES')
+    recapture_left_tag_barnacles_2 = models.BooleanField(default=False, db_column='RECAPTURE_LEFT_TAG_BARNACLES_2')
+    recapture_right_tag_barnacles = models.BooleanField(default=False, db_column='RECAPTURE_RIGHT_TAG_BARNACLES')
+    recapture_right_tag_barnacles_2 = models.BooleanField(default=False, db_column='RECAPTURE_RIGHT_TAG_BARNACLES_2')
+    new_left_tag_barnacles = models.BooleanField(default=False, db_column='NEW_LEFT_TAG_BARNACLES')
+    new_left_tag_barnacles_2 = models.BooleanField(default=False, db_column='NEW_LEFT_TAG_BARNACLES_2')
+    new_right_tag_barnacles = models.BooleanField(default=False, db_column='NEW_RIGHT_TAG_BARNACLES')
+    new_right_tag_barnacles_2 = models.BooleanField(default=False, db_column='NEW_RIGHT_TAG_BARNACLES_2')
 
     class Meta:
         managed = False
@@ -1081,6 +1120,9 @@ class TrtIdentificationTypes(models.Model):
     class Meta:
         managed = False
         db_table = "TRT_IDENTIFICATION_TYPES"
+    def __str__(self):
+        return f"{self.description}"
+    
 
 
 class TrtLocations(models.Model):

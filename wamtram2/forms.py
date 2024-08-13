@@ -164,7 +164,35 @@ class TrtDataEntryForm(forms.ModelForm):
             "comments",
             "clutch_completed",
             "egg_count",
-            "egg_count_method"
+            "egg_count_method",
+            
+            # v2.0 added columns
+            "recapture_left_tag_state",
+            "recapture_left_tag_state_2",
+            "recapture_right_tag_state",
+            "recapture_right_tag_state_2",
+            "new_left_tag_state",
+            "new_left_tag_state_2",
+            "new_right_tag_state",
+            "new_right_tag_state_2",
+            "recapture_left_tag_position",
+            "recapture_left_tag_position_2",
+            "recapture_right_tag_position",
+            "recapture_right_tag_position_2",
+            "new_left_tag_position",
+            "new_left_tag_position_2",
+            "new_right_tag_position",
+            "new_right_tag_position_2",
+            "recapture_left_tag_barnacles",
+            "recapture_left_tag_barnacles_2",
+            "recapture_right_tag_barnacles",
+            "recapture_right_tag_barnacles_2",
+            "new_left_tag_barnacles",
+            "new_left_tag_barnacles_2",
+            "new_right_tag_barnacles",
+            "new_right_tag_barnacles_2",
+            "identifier",
+            "identification_type",
         ]  # "__all__"
 
         widgets = {
@@ -182,6 +210,7 @@ class TrtDataEntryForm(forms.ModelForm):
             "clutch_completed": forms.Select(attrs={"class": "form-control"}),
             "egg_count": forms.NumberInput(attrs={"class": "form-control"}),
             "egg_count_method": forms.Select(attrs={"class": "form-control"}),
+            "identification_type": forms.Select(attrs={"class": "form-control"}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -195,7 +224,7 @@ class TrtDataEntryForm(forms.ModelForm):
         
         self.fields["latitude"].label = "Latitude (-xx.xxxxxx)"
         self.fields["longitude"].label = "Longitude (xxx.xxxxxx)"
-        self.fields["nesting"].label = "Was the nesting process interrupted by us?"
+        self.fields["nesting"].label = "Was nesting interrupted by tag team?"
         self.fields["entered_by_id"].label = "Entered by"
         self.fields["place_code"].label = "Location/Beach"
         self.fields["species_code"].label = "Species"
@@ -236,6 +265,32 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["damage_lhf"].label = "Left hind flipper"
         self.fields["damage_rhf"].label = "Right hind flipper"
         
+        # v2.0 added columns
+        self.fields["recapture_left_tag_state"].label = "Recapture Left Tag State"
+        self.fields["recapture_left_tag_state_2"].label = "Recapture Left Tag Status 2"
+        self.fields["recapture_right_tag_state"].label = "Recapture Right Tag Status"
+        self.fields["recapture_right_tag_state_2"].label = "Recapture Right Tag Status 2"
+        self.fields["new_left_tag_state"].label = "New Left Tag Status"
+        self.fields["new_left_tag_state_2"].label = "New Left Tag Status 2"
+        self.fields["new_right_tag_state"].label = "New Right Tag Status"
+        self.fields["new_right_tag_state_2"].label = "New Right Tag Status 2"
+        self.fields["recapture_left_tag_position"].label = "Recapture Left Tag Position"
+        self.fields["recapture_left_tag_position_2"].label = "Recapture Left Tag Position 2"
+        self.fields["recapture_right_tag_position"].label = "Recapture Right Tag Position"
+        self.fields["recapture_right_tag_position_2"].label = "Recapture Right Tag Position 2"
+        self.fields["new_left_tag_position"].label = "New Left Tag Position"
+        self.fields["new_left_tag_position_2"].label = "New Left Tag Position 2"
+        self.fields["new_right_tag_position"].label = "New Right Tag Position"
+        self.fields["new_right_tag_position_2"].label = "New Right Tag Position 2"
+        self.fields["recapture_left_tag_barnacles"].label = ""
+        self.fields["recapture_left_tag_barnacles_2"].label = ""
+        self.fields["recapture_right_tag_barnacles"].label = ""
+        self.fields["recapture_right_tag_barnacles_2"].label = ""
+        self.fields["new_left_tag_barnacles"].label = ""
+        self.fields["new_left_tag_barnacles_2"].label = ""
+        self.fields["new_right_tag_barnacles"].label = ""
+        self.fields["new_right_tag_barnacles_2"].label = ""
+        
         # Configure tissue type fields
         self.fields["tissue_type_1"] = forms.ModelChoiceField(
             queryset=TrtTissueTypes.objects.all(),
@@ -249,6 +304,34 @@ class TrtDataEntryForm(forms.ModelForm):
             widget=forms.Select(attrs={"class": "form-control"}),
             required=False
         )
+        
+        self.fields["recapture_left_tag_state"].required = False
+        self.fields["recapture_left_tag_state_2"].required = False
+        self.fields["recapture_right_tag_state"].required = False
+        self.fields["recapture_right_tag_state_2"].required = False
+        self.fields["new_left_tag_state"].required = False
+        self.fields["new_left_tag_state_2"].required = False
+        self.fields["new_right_tag_state"].required = False
+        self.fields["new_right_tag_state_2"].required = False
+        self.fields["recapture_left_tag_position"].required = False
+        self.fields["recapture_left_tag_position_2"].required = False
+        self.fields["recapture_right_tag_position"].required = False
+        self.fields["recapture_right_tag_position_2"].required = False
+        self.fields["new_left_tag_position"].required = False
+        self.fields["new_left_tag_position_2"].required = False
+        self.fields["new_right_tag_position"].required = False
+        self.fields["new_right_tag_position_2"].required = False
+        self.fields["recapture_left_tag_barnacles"].required = False
+        self.fields["recapture_left_tag_barnacles_2"].required = False
+        self.fields["recapture_right_tag_barnacles"].required = False
+        self.fields["recapture_right_tag_barnacles_2"].required = False
+        self.fields["new_left_tag_barnacles"].required = False
+        self.fields["new_left_tag_barnacles_2"].required = False
+        self.fields["new_right_tag_barnacles"].required = False
+        self.fields["new_right_tag_barnacles_2"].required = False
+        self.fields["identifier"].required = False
+        self.fields["identification_type"].required = False
+        
         
         optional_fields = [
             "recapture_left_tag_id",
@@ -265,7 +348,7 @@ class TrtDataEntryForm(forms.ModelForm):
             "recapture_pittag_id_2",
             "new_pittag_id",
             "new_pittag_id_2"
-    ]
+        ]
 
         for field in optional_fields:
             self.fields[field].required = False
