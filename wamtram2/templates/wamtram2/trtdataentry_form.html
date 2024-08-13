@@ -606,13 +606,13 @@
   <!-- Submit and Advanced Data buttons -->
   <div class="row mt-4 mb-3 d-flex">
     <div class="col-md-6">
-      {% if not form.observation_id.value %}
       <button type="button" class="btn btn-secondary" id="advancedDataButton">Advanced Data</button>
-      {% endif %}
     </div>
     <div class="col-md-3 text-right">
       <div class="d-flex align-self-center">
+        {% if not form.observation_id.value %}
         {% bootstrap_field form.do_not_process %}
+        {% endif %}
       </div>
     </div>
     <div class="col-md-3 text-right">

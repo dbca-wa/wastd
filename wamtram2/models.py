@@ -703,7 +703,7 @@ class TrtDataEntry(models.Model):
         related_name="newpittag2",
     )  # fake foreign key for right pit tag #models.CharField(db_column='NEW_PIT_TAG_ID_2', max_length=50, blank=True, null=True)  # Field name made lowercase.
     
-    # Flipper tag status
+    # Flipper tag states
     recapture_left_tag_state = models.ForeignKey('TrtTagStates', models.SET_NULL, null=True, related_name='+', db_column='RECAPTURE_LEFT_TAG_STATE')
     recapture_left_tag_state_2 = models.ForeignKey('TrtTagStates', models.SET_NULL, null=True, related_name='+', db_column='RECAPTURE_LEFT_TAG_STATE_2')
     recapture_right_tag_state = models.ForeignKey('TrtTagStates', models.SET_NULL, null=True, related_name='+', db_column='RECAPTURE_RIGHT_TAG_STATE')
