@@ -19,7 +19,7 @@ function toggleInjuryDetails() {
     const injuryCheckSelect = document.getElementById('id_injury_check');
     const injuryDetails = document.getElementById('injuryDetails');
 
-    if (injuryCheckSelect && injuryCheckSelect.value === 'N') {
+    if (injuryCheckSelect && injuryCheckSelect.value === 'N' || injuryCheckSelect.value === 'D') {
         injuryDetails.style.display = 'none';
     } else {
         injuryDetails.style.display = 'block';
