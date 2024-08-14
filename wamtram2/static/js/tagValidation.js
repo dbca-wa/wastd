@@ -51,7 +51,11 @@ document.addEventListener('DOMContentLoaded', function() {
         newPitTagInput: document.getElementById('id_new_pittag_id'),
         newPitTagInput2: document.getElementById('id_new_pittag_id_2'),
         recapturePitTagInput: document.getElementById('id_recapture_pittag_id'),
-        recapturePitTagInput2: document.getElementById('id_recapture_pittag_id_2')
+        recapturePitTagInput2: document.getElementById('id_recapture_pittag_id_2'),
+        newPitTagInput3: document.getElementById('id_new_pittag_id_3'),
+        newPitTagInput4: document.getElementById('id_new_pittag_id_4'),
+        recapturePitTagInput3: document.getElementById('id_recapture_pittag_id_3'),
+        recapturePitTagInput4: document.getElementById('id_recapture_pittag_id_4')
     };
 
     const validationMessages = {
@@ -66,7 +70,11 @@ document.addEventListener('DOMContentLoaded', function() {
         newPitTagMessage: document.getElementById('new-pit-tag-validation-message'),
         newPitTagMessage2: document.getElementById('new-pit-tag-validation-message-2'),
         recapturePitTagMessage: document.getElementById('recapture-pit-tag-validation-message'),
-        recapturePitTagMessage2: document.getElementById('recapture-pit-tag-validation-message-2')
+        recapturePitTagMessage2: document.getElementById('recapture-pit-tag-validation-message-2'),
+        newPitTagMessage3: document.getElementById('new-pit-tag-validation-message-3'),
+        newPitTagMessage4: document.getElementById('new-pit-tag-validation-message-4'),
+        recapturePitTagMessage3: document.getElementById('recapture-pit-tag-validation-message-3'),
+        recapturePitTagMessage4: document.getElementById('recapture-pit-tag-validation-message-4'),
     };
 
     const detailedMessages = {
@@ -81,7 +89,11 @@ document.addEventListener('DOMContentLoaded', function() {
         newPitTagDetailedMessage: document.getElementById('new-pit-tag-message'),
         newPitTagDetailedMessage2: document.getElementById('new-pit-tag-message-2'),
         recapturePitTagDetailedMessage: document.getElementById('recapture-pit-tag-message'),
-        recapturePitTagDetailedMessage2: document.getElementById('recapture-pit-tag-message-2')
+        recapturePitTagDetailedMessage2: document.getElementById('recapture-pit-tag-message-2'),
+        newPitTagDetailedMessage3: document.getElementById('new-pit-tag-message-3'),
+        newPitTagDetailedMessage4: document.getElementById('new-pit-tag-message-4'),
+        recapturePitTagDetailedMessage3: document.getElementById('recapture-pit-tag-message-3'),
+        recapturePitTagDetailedMessage4: document.getElementById('recapture-pit-tag-message-4')
     };
 
     function validateTag(tagInput, validationMessage, detailedMessage, type, side) {
@@ -183,4 +195,8 @@ document.addEventListener('DOMContentLoaded', function() {
     addValidationListener(tagInputs.newPitTagInput2, validationMessages.newPitTagMessage2, detailedMessages.newPitTagDetailedMessage2, 'new_pit_tag');
     addValidationListener(tagInputs.recapturePitTagInput, validationMessages.recapturePitTagMessage, detailedMessages.recapturePitTagDetailedMessage, 'recaptured_pit_tag');
     addValidationListener(tagInputs.recapturePitTagInput2, validationMessages.recapturePitTagMessage2, detailedMessages.recapturePitTagDetailedMessage2, 'recaptured_pit_tag');
+    addValidationListener(tagInputs.newPitTagInput3, validationMessages.newPitTagMessage3, detailedMessages.newPitTagDetailedMessage3, 'new_pit_tag');
+addValidationListener(tagInputs.newPitTagInput4, validationMessages.newPitTagMessage4, detailedMessages.newPitTagDetailedMessage4, 'new_pit_tag');
+addValidationListener(tagInputs.recapturePitTagInput3, validationMessages.recapturePitTagMessage3, detailedMessages.recapturePitTagDetailedMessage3, 'recaptured_pit_tag');
+addValidationListener(tagInputs.recapturePitTagInput4, validationMessages.recapturePitTagMessage4, detailedMessages.recapturePitTagDetailedMessage4, 'recaptured_pit_tag');
 });
