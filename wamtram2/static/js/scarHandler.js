@@ -1,23 +1,23 @@
-document.addEventListener('DOMContentLoaded', function() {
-    const tagscarnotcheckedCheckbox = document.getElementById('id_tagscarnotchecked');
-    if (tagscarnotcheckedCheckbox) {
-        tagscarnotcheckedCheckbox.addEventListener('change', toggleScarsDetails);
-        toggleScarsDetails();
-    } else {
-        console.error('tagscarnotcheckedCheckbox not found: id_tagscarnotchecked');
-    }
-});
+// document.addEventListener('DOMContentLoaded', function() {
+//     const scarCheckSelect = document.getElementById('id_scar_check');
+//     if (scarCheckSelect) {
+//         scarCheckSelect.addEventListener('change', toggleScarsDetails);
+//         toggleScarsDetails();
+//     } else {
+//         console.error('scarCheckSelect not found: id_scar_check');
+//     }
+// });
 
-function toggleScarsDetails() {
-    const tagscarnotcheckedCheckbox = document.getElementById('id_tagscarnotchecked');
-    const scarsDetails = document.getElementById('scarsDetails');
-    const scarsDetailsRight = document.getElementById('scarsDetailsRight');
+// function toggleScarsDetails() {
+//     const scarCheckSelect = document.getElementById('id_scar_check');
+//     const scarsDetails = document.getElementById('scarsDetails');
+//     const scarsDetailsRight = document.getElementById('scarsDetailsRight');
 
-    if (tagscarnotcheckedCheckbox && tagscarnotcheckedCheckbox.checked) {
-        scarsDetails.style.display = 'none';
-        scarsDetailsRight.style.display = 'none';
-    } else {
-        scarsDetails.style.display = 'block';
-        scarsDetailsRight.style.display = 'block';
-    }
-}
+//     if (scarCheckSelect && scarCheckSelect.value === 'N') {
+//         scarsDetails.style.display = 'none';
+//         scarsDetailsRight.style.display = 'none';
+//     } else {
+//         scarsDetails.style.display = 'block';
+//         scarsDetailsRight.style.display = 'block';
+//     }
+// }
