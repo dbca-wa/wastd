@@ -39,3 +39,53 @@ function toggleNewTags() {
         toggleBtn.innerHTML = '<i class="fas fa-plus"></i>';
     }
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Existing toggle buttons
+    const toggleRecaptureTagsBtn = document.getElementById('toggleRecaptureTagsBtn');
+    if (toggleRecaptureTagsBtn) {
+        toggleRecaptureTagsBtn.addEventListener('click', toggleRecaptureTags);
+    }
+
+    const toggleNewTagsBtn = document.getElementById('toggleNewTagsBtn');
+    if (toggleNewTagsBtn) {
+        toggleNewTagsBtn.addEventListener('click', toggleNewTags);
+    }
+
+    // New toggle buttons for PIT tags
+    const toggleRecapturePITTagsBtn = document.getElementById('toggleRecapturePITTagsBtn');
+    if (toggleRecapturePITTagsBtn) {
+        toggleRecapturePITTagsBtn.addEventListener('click', toggleRecapturePITTags);
+    }
+
+    const toggleNewPITTagsBtn = document.getElementById('toggleNewPITTagsBtn');
+    if (toggleNewPITTagsBtn) {
+        toggleNewPITTagsBtn.addEventListener('click', toggleNewPITTags);
+    }
+});
+
+// Toggle function for Recapture PIT Tags
+function toggleRecapturePITTags() {
+    const additionalRecapturePITTags = document.getElementById('additionalRecapturePITTags');
+    const toggleBtn = document.getElementById('toggleRecapturePITTagsBtn');
+    if (additionalRecapturePITTags.style.display === 'none' || additionalRecapturePITTags.style.display === '') {
+        additionalRecapturePITTags.style.display = 'block';
+        toggleBtn.innerHTML = '<i class="fas fa-minus"></i>';
+    } else {
+        additionalRecapturePITTags.style.display = 'none';
+        toggleBtn.innerHTML = '<i class="fas fa-plus"></i>';
+    }
+}
+
+// Toggle function for New PIT Tags
+function toggleNewPITTags() {
+    const additionalNewPITTags = document.getElementById('additionalNewPITTags');
+    const toggleBtn = document.getElementById('toggleNewPITTagsBtn');
+    if (additionalNewPITTags.style.display === 'none' || additionalNewPITTags.style.display === '') {
+        additionalNewPITTags.style.display = 'block';
+        toggleBtn.innerHTML = '<i class="fas fa-minus"></i>';
+    } else {
+        additionalNewPITTags.style.display = 'none';
+        toggleBtn.innerHTML = '<i class="fas fa-plus"></i>';
+    }
+}
