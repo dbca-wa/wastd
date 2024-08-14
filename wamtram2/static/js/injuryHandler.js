@@ -1,10 +1,10 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const didNotCheckInjuryBox = document.getElementById('id_didnotcheckforinjury');
-    if (didNotCheckInjuryBox) {
-        didNotCheckInjuryBox.addEventListener('change', toggleInjuryDetails);
+    const injuryCheckSelect = document.getElementById('id_injury_check');
+    if (injuryCheckSelect) {
+        injuryCheckSelect.addEventListener('change', toggleInjuryDetails);
         toggleInjuryDetails();
     } else {
-        console.error('didNotCheckInjuryBox not found: id_didnotcheckforinjury');
+        console.error('injuryCheckSelect not found: id_injury_check');
     }
 
     const toggleInjuryFieldsButton = document.getElementById('toggleInjuryFieldsButton');
@@ -16,10 +16,10 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function toggleInjuryDetails() {
-    const didNotCheckInjuryBox = document.getElementById('id_didnotcheckforinjury');
+    const injuryCheckSelect = document.getElementById('id_injury_check');
     const injuryDetails = document.getElementById('injuryDetails');
 
-    if (didNotCheckInjuryBox && didNotCheckInjuryBox.checked) {
+    if (injuryCheckSelect && injuryCheckSelect.value === 'N') {
         injuryDetails.style.display = 'none';
     } else {
         injuryDetails.style.display = 'block';
