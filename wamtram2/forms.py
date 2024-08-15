@@ -331,6 +331,8 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["new_pit_tag_3_sticker_present"].label = "Sticker?"
         self.fields["new_pit_tag_4_sticker_present"].label = "Sticker?"
         
+        self.fields["do_not_process"].label = "Needs Review"
+        
         self.fields["recapture_left_tag_state"].required = False
         self.fields["recapture_left_tag_state_2"].required = False
         self.fields["recapture_right_tag_state"].required = False
