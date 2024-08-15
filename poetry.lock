@@ -890,13 +890,13 @@ django = ">=3.2"
 
 [[package]]
 name = "django-select2"
-version = "8.0.0"
+version = "8.2.1"
 description = "This is a Django_ integration of Select2_."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "django-select2-8.0.0.tar.gz", hash = "sha256:0145c9cb34a8c0813f68d7165ed6b034ac03fbdbf145aea203d15ae1653cf7d9"},
-    {file = "django_select2-8.0.0-py3-none-any.whl", hash = "sha256:38e2c91c99f0da07bb43addfa1ac3a2cd6a209154a93edbf4564b9203fa32a4d"},
+    {file = "django_select2-8.2.1-py3-none-any.whl", hash = "sha256:2d7f52b5cd362c4d0b1bf4caca8ad8463ae269b252eebbab4afabd762d08baf5"},
+    {file = "django_select2-8.2.1.tar.gz", hash = "sha256:dc03524c1cf7ef970e8b3ab2de76ce3179e414254fa812d8e2d2f0ba6fa487ba"},
 ]
 
 [package.dependencies]
@@ -2367,4 +2367,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "facafa1184ccc5c43146c5f60dea2dd0738a44a9005c526bcbb78693ae7cff13"
+content-hash = "de4b35c974f2e6ede0737b98559e7b9a2efafb9be21800e8e834c274560afc2a"
