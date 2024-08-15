@@ -7,6 +7,8 @@
 {{ form.media.css }}
 <link rel="stylesheet" type="text/css" href="{% static 'css/search_styles.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'css/add_person_btn.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
 <style>
   .select2 {
     width: 100% !important;
@@ -754,9 +756,19 @@
     </div>
     <div class="col-md-3 text-right">
       {% if not form.observation_id.value %}
-      <button type="submit" class="btn btn-primary save-button">Save</button>
+      <button type="submit" class="btn btn-primary save-button" id="saveBtn">Save</button>
       {% endif %}
     </div>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay"></div>
+
+  <!-- Loading Spinner -->
+  <div class="loading-spinner">
+      <div class="spinner-border text-primary" role="status">
+          <span class="sr-only">Loading...</span>
+      </div>
   </div>
 
 </div>
@@ -897,6 +909,30 @@
         location.reload(true);
     }
   });
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const saveButton = document.getElementById('saveBtn');
+
+    function showLoadingOverlay() {
+        const overlay = document.querySelector('.loading-overlay');
+        const spinner = document.querySelector('.loading-spinner');
+
+        if (overlay) {
+            overlay.style.display = 'block';
+        }
+
+        if (spinner) {
+            spinner.style.display = 'block';
+        }
+    }
+
+    if (saveButton) {
+        saveButton.addEventListener('click', function() {
+            showLoadingOverlay();
+        });
+    }
+  });
+
 </script>
 <script src="{% static 'js/tagToggleHandler.js' %}"></script>
 <script src="{% static 'js/scarHandler.js' %}"></script>
