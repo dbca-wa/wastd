@@ -326,26 +326,10 @@ class TrtDataEntryForm(forms.ModelForm):
         
         self.fields["cc_notch_length_not_measured"].label = "CCL min not measured"
         
-        self.fields["new_pit_tag_sticker_present"].label = "sticker?"
-        self.fields["new_pit_tag_2_sticker_present"].label = "sticker?"
-        self.fields["new_pit_tag_3_sticker_present"].label = "sticker?"
-        self.fields["new_pit_tag_4_sticker_present"].label = "sticker?"
-        
-
-        
-        # Configure tissue type fields
-        self.fields["tissue_type_1"] = forms.ModelChoiceField(
-            queryset=TrtTissueTypes.objects.all(),
-            to_field_name="description",
-            widget=forms.Select(attrs={"class": "form-control"}),
-            required=False
-        )
-        self.fields["tissue_type_2"] = forms.ModelChoiceField(
-            queryset=TrtTissueTypes.objects.all(),
-            to_field_name="description",
-            widget=forms.Select(attrs={"class": "form-control"}),
-            required=False
-        )
+        self.fields["new_pit_tag_sticker_present"].label = "Sticker?"
+        self.fields["new_pit_tag_2_sticker_present"].label = "Sticker?"
+        self.fields["new_pit_tag_3_sticker_present"].label = "Sticker?"
+        self.fields["new_pit_tag_4_sticker_present"].label = "Sticker?"
         
         self.fields["recapture_left_tag_state"].required = False
         self.fields["recapture_left_tag_state_2"].required = False
