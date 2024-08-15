@@ -193,6 +193,34 @@ class TrtDataEntryForm(forms.ModelForm):
             "new_right_tag_barnacles_2",
             "identifier",
             "identification_type",
+            
+
+            "curved_carapace_length_notch",
+            "measurement_type_3",
+            "measurement_value_3",
+            "measurement_type_4",
+            "measurement_value_4",
+            "measurement_type_5",
+            "measurement_value_5",
+            "measurement_type_6",
+            "measurement_value_6",
+            "cc_notch_length_not_measured",
+            
+            "flipper_tag_check",
+            "pit_tag_check",
+            "injury_check",
+            "scar_check",
+            
+            "recapture_pittag_id_3",
+            "recapture_pittag_id_4",
+            "new_pittag_id_3",
+            "new_pittag_id_4",
+            
+            "new_pit_tag_sticker_present",
+            "new_pit_tag_2_sticker_present",
+            "new_pit_tag_3_sticker_present",
+            "new_pit_tag_4_sticker_present",
+
         ]  # "__all__"
 
         widgets = {
@@ -230,10 +258,14 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["species_code"].label = "Species"
         self.fields["observation_date"].label = "Observation Date & Time"
         self.fields["recorded_by_id"].label = "Data captured by"
-        self.fields["recapture_pittag_id"].label = "Old PIT Tag 1"
-        self.fields["recapture_pittag_id_2"].label = "Old PIT Tag 2"
-        self.fields["new_pittag_id"].label = "New PIT Tag 1"
-        self.fields["new_pittag_id_2"].label = "New PIT Tag 2"
+        self.fields["recapture_pittag_id"].label = "Old Left PIT Tag"
+        self.fields["recapture_pittag_id_2"].label = "Old Right PIT Tag"
+        self.fields["recapture_pittag_id_3"].label = "Old Left PIT Tag 2"
+        self.fields["recapture_pittag_id_4"].label = "Old Right PIT Tag 2"
+        self.fields["new_pittag_id"].label = "New Left PIT Tag"
+        self.fields["new_pittag_id_2"].label = "New Right PIT Tag"
+        self.fields["new_pittag_id_3"].label = "New Left PIT Tag 2"
+        self.fields["new_pittag_id_4"].label = "New Right PIT Tag 2"
         self.fields["recapture_left_tag_id"].label = "Old Left Flipper Tag"
         self.fields["recapture_left_tag_id_2"].label = "Old Left Flipper Tag 2"
         self.fields["recapture_left_tag_id_3"].label = "Old Left Flipper Tag 3"
@@ -254,10 +286,11 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["measured_by_id"].label = "Measured by"
         self.fields["tagscarnotchecked"].label = "Didn't check for tag scars"
         self.fields["didnotcheckforinjury"].label = "Didn't check for injury"
-        self.fields["cc_length_not_measured"].label = "CCL not measured"
+        self.fields["cc_length_not_measured"].label = "CCL max not measured"
         self.fields["cc_width_not_measured"].label = "CCW not measured"
-        self.fields["curved_carapace_length"].label = "Curved carapace length (mm)"
-        self.fields["curved_carapace_width"].label = "Curved carapace width (mm)"
+        self.fields["curved_carapace_length"].label = "CCL max (mm)"
+        self.fields["curved_carapace_width"].label = "CCW (mm)"
+        self.fields["curved_carapace_length_notch"].label = "CCL min (mm)"
         self.fields["clutch_completed"].label = "Did turtle lay?"
         self.fields["damage_carapace"].label = "Carapace"
         self.fields["damage_lff"].label = "Left front flipper"
@@ -291,19 +324,12 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["new_right_tag_barnacles"].label = ""
         self.fields["new_right_tag_barnacles_2"].label = ""
         
-        # Configure tissue type fields
-        self.fields["tissue_type_1"] = forms.ModelChoiceField(
-            queryset=TrtTissueTypes.objects.all(),
-            to_field_name="description",
-            widget=forms.Select(attrs={"class": "form-control"}),
-            required=False
-        )
-        self.fields["tissue_type_2"] = forms.ModelChoiceField(
-            queryset=TrtTissueTypes.objects.all(),
-            to_field_name="description",
-            widget=forms.Select(attrs={"class": "form-control"}),
-            required=False
-        )
+        self.fields["cc_notch_length_not_measured"].label = "CCL min not measured"
+        
+        self.fields["new_pit_tag_sticker_present"].label = "Sticker?"
+        self.fields["new_pit_tag_2_sticker_present"].label = "Sticker?"
+        self.fields["new_pit_tag_3_sticker_present"].label = "Sticker?"
+        self.fields["new_pit_tag_4_sticker_present"].label = "Sticker?"
         
         self.fields["recapture_left_tag_state"].required = False
         self.fields["recapture_left_tag_state_2"].required = False
@@ -332,6 +358,18 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["identifier"].required = False
         self.fields["identification_type"].required = False
         
+
+        self.fields["curved_carapace_length_notch"].required = False
+        self.fields["measurement_type_3"].required = False
+        self.fields["measurement_type_4"].required = False
+        self.fields["measurement_type_5"].required = False
+        self.fields["measurement_type_6"].required = False
+        self.fields["measurement_value_3"].required = False
+        self.fields["measurement_value_4"].required = False
+        self.fields["measurement_value_5"].required = False
+        self.fields["measurement_value_6"].required = False
+        
+        self.fields["cc_notch_length_not_measured"].required = False
         
         optional_fields = [
             "recapture_left_tag_id",
@@ -347,7 +385,11 @@ class TrtDataEntryForm(forms.ModelForm):
             "recapture_pittag_id",
             "recapture_pittag_id_2",
             "new_pittag_id",
-            "new_pittag_id_2"
+            "new_pittag_id_2",
+            "recapture_pittag_id_3",
+            "recapture_pittag_id_4",
+            "new_pittag_id_3",
+            "new_pittag_id_4"
         ]
 
         for field in optional_fields:

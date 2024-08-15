@@ -1,11 +1,11 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const didNotCheckInjuryBox = document.getElementById('id_didnotcheckforinjury');
-    if (didNotCheckInjuryBox) {
-        didNotCheckInjuryBox.addEventListener('change', toggleInjuryDetails);
-        toggleInjuryDetails();
-    } else {
-        console.error('didNotCheckInjuryBox not found: id_didnotcheckforinjury');
-    }
+    // const injuryCheckSelect = document.getElementById('id_injury_check');
+    // if (injuryCheckSelect) {
+    //     injuryCheckSelect.addEventListener('change', toggleInjuryDetails);
+    //     toggleInjuryDetails();
+    // } else {
+    //     console.error('injuryCheckSelect not found: id_injury_check');
+    // }
 
     const toggleInjuryFieldsButton = document.getElementById('toggleInjuryFieldsButton');
     if (toggleInjuryFieldsButton) {
@@ -15,16 +15,16 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-function toggleInjuryDetails() {
-    const didNotCheckInjuryBox = document.getElementById('id_didnotcheckforinjury');
-    const injuryDetails = document.getElementById('injuryDetails');
+// function toggleInjuryDetails() {
+//     const injuryCheckSelect = document.getElementById('id_injury_check');
+//     const injuryDetails = document.getElementById('injuryDetails');
 
-    if (didNotCheckInjuryBox && didNotCheckInjuryBox.checked) {
-        injuryDetails.style.display = 'none';
-    } else {
-        injuryDetails.style.display = 'block';
-    }
-}
+//     if (injuryCheckSelect && injuryCheckSelect.value === 'N' || injuryCheckSelect.value === 'D') {
+//         injuryDetails.style.display = 'none';
+//     } else {
+//         injuryDetails.style.display = 'block';
+//     }
+// }
 
 function toggleInjuryFields() {
     const injuryAdditionalFields = document.getElementById('injuryAdditionalFields');

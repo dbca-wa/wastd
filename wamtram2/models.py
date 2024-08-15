@@ -732,6 +732,125 @@ class TrtDataEntry(models.Model):
     new_left_tag_barnacles_2 = models.BooleanField(default=False, db_column='NEW_LEFT_TAG_BARNACLES_2')
     new_right_tag_barnacles = models.BooleanField(default=False, db_column='NEW_RIGHT_TAG_BARNACLES')
     new_right_tag_barnacles_2 = models.BooleanField(default=False, db_column='NEW_RIGHT_TAG_BARNACLES_2')
+    
+    # Measurements
+    # Curved carapace length min
+    curved_carapace_length_notch = models.IntegerField(
+        db_column="CURVED_CARAPACE_LENGTH_NOTCH", blank=True, null=True
+    )  
+    # More measurements
+    measurement_type_3 = models.ForeignKey(
+        "TrtMeasurementTypes",
+        models.SET_NULL,
+        db_column="MEASUREMENT_TYPE_3",
+        blank=True,
+        null=True,
+        related_name="measuretype3",
+    )  # fake foreign key #models.CharField(db_column='MEASUREMENT_TYPE_2', max_length=10, blank=True, null=True)  # Field name made lowercase.
+    measurement_value_3 = models.FloatField(
+        db_column="MEASUREMENT_VALUE_3", blank=True, null=True
+    )  # Field name made lowercase.
+    
+    measurement_type_4 = models.ForeignKey(
+        "TrtMeasurementTypes",
+        models.SET_NULL,
+        db_column="MEASUREMENT_TYPE_4",
+        blank=True,
+        null=True,
+        related_name="measuretype4",
+    )  # fake foreign key #models.CharField(db_column='MEASUREMENT_TYPE_2', max_length=10, blank=True, null=True)  # Field name made lowercase.
+    measurement_value_4 = models.FloatField(
+        db_column="MEASUREMENT_VALUE_4", blank=True, null=True
+    )  # Field name made lowercase.
+    
+    measurement_type_5 = models.ForeignKey(
+        "TrtMeasurementTypes",
+        models.SET_NULL,
+        db_column="MEASUREMENT_TYPE_5",
+        blank=True,
+        null=True,
+        related_name="measuretype5",
+    )  # fake foreign key #models.CharField(db_column='MEASUREMENT_TYPE_2', max_length=10, blank=True, null=True)  # Field name made lowercase.
+    measurement_value_5 = models.FloatField(
+        db_column="MEASUREMENT_VALUE_5", blank=True, null=True
+    )  # Field name made lowercase.
+    
+    measurement_type_6 = models.ForeignKey(
+        "TrtMeasurementTypes",
+        models.SET_NULL,
+        db_column="MEASUREMENT_TYPE_6",
+        blank=True,
+        null=True,
+        related_name="measuretype6",
+    )  # fake foreign key #models.CharField(db_column='MEASUREMENT_TYPE_2', max_length=10, blank=True, null=True)  # Field name made lowercase.
+    measurement_value_6 = models.FloatField(
+        db_column="MEASUREMENT_VALUE_6", blank=True, null=True
+    )  # Field name made lowercase.
+    
+    
+    flipper_tag_check = models.ForeignKey(
+        "TrtYesNo",
+        on_delete=models.CASCADE,
+        related_name='flipper_tag_entries',
+        db_column='FLIPPER_TAG_CHECK'
+    )
+    pit_tag_check = models.ForeignKey(
+        "TrtYesNo",
+        on_delete=models.CASCADE,
+        related_name='pit_tag_entries',
+        db_column='PIT_TAG_CHECK'
+    )
+    injury_check = models.ForeignKey(
+        "TrtYesNo",
+        on_delete=models.CASCADE,
+        related_name='injury_entries',
+        db_column='INJURY_CHECK'
+    )
+    scar_check = models.ForeignKey(
+        "TrtYesNo",
+        on_delete=models.CASCADE,
+        related_name='scar_entries',
+        db_column='SCAR_CHECK'
+    )
+    
+    recapture_pittag_id_3 = models.ForeignKey(
+        "TrtPitTags",
+        models.SET_NULL,
+        db_column="RECAPTURE_PIT_TAG_ID_3",
+        blank=True,
+        null=True,
+        related_name="recapturepittag3",
+    )  # fake foreign key for right pit tag #models.CharField(db_column='recapture_pittag_id_3', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    new_pittag_id_3 = models.ForeignKey(
+        "TrtPitTags",
+        models.SET_NULL,
+        db_column="NEW_PIT_TAG_ID_3",
+        blank=True,
+        null=True,
+        related_name="newpittag3",
+    )  # fake foreign key for right pit tag #models.CharField(db_column='NEW_PIT_TAG_ID_3', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    recapture_pittag_id_4 = models.ForeignKey(
+        "TrtPitTags",
+        models.SET_NULL,
+        db_column="RECAPTURE_PIT_TAG_ID_4",
+        blank=True,
+        null=True,
+        related_name="recapturepittag4",
+    )  # fake foreign key for right pit tag #models.CharField(db_column='recapture_pittag_id_4', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    new_pittag_id_4 = models.ForeignKey(
+        "TrtPitTags",
+        models.SET_NULL,
+        db_column="NEW_PIT_TAG_ID_4",
+        blank=True,
+        null=True,
+        related_name="newpittag4",
+    )  # fake foreign key for right pit tag #models.CharField(db_column='NEW_PIT_TAG_ID_4', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    
+    new_pit_tag_sticker_present = models.BooleanField(default=False, db_column='NEW_PIT_TAG_STICKER_PRESENT')
+    new_pit_tag_2_sticker_present = models.BooleanField(default=False, db_column='NEW_PIT_TAG_2_STICKER_PRESENT')
+    new_pit_tag_3_sticker_present = models.BooleanField(default=False, db_column='NEW_PIT_TAG_3_STICKER_PRESENT')
+    new_pit_tag_4_sticker_present = models.BooleanField(default=False, db_column='NEW_PIT_TAG_4_STICKER_PRESENT')
+
 
     class Meta:
         managed = False
