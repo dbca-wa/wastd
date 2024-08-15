@@ -247,12 +247,10 @@
 
         // Update Template
         function updateTemplate(templateKey) {
-            var formData = $('#templateForm-' + templateKey).serialize(); // Serialize form data
-
-            console.log(formData);
+            var formData = $('#templateForm-' + templateKey).serialize();
 
             showLoadingSpinner();
-        
+            
             $.ajax({
                 url: "{% url 'wamtram2:template_manage_key' 'dummy_key' %}".replace('dummy_key', templateKey),
                 type: "PUT",
@@ -263,7 +261,9 @@
                 },
                 success: function(data) {
                     showMessage('Template updated successfully', 'success');
-                    location.reload(); // Automatically refresh the page
+                    setTimeout(function() { 
+                        location.reload();
+                    }, 500); 
                 },
                 error: function(xhr, status, error) {
                     var errorMessage = 'Error updating template';
@@ -294,7 +294,9 @@
                     },
                     success: function(data) {
                         showMessage('Template deleted successfully', 'success');
-                        location.reload(); // Automatically refresh the page
+                        setTimeout(function() { 
+                            location.reload();
+                        }, 500);
                     },
                     error: function(data) {
                         showMessage('Error deleting template: ' + JSON.stringify(data.responseJSON.errors), 'danger');
@@ -316,7 +318,9 @@
                 data: formData,
                 success: function(data) {
                     showMessage('Template created successfully', 'success');
-                    location.reload(); // Automatically refresh the page
+                    setTimeout(function() { 
+                        location.reload();
+                    }, 500);
                 },
                 error: function(data) {
                     showMessage('Error creating template: ' + JSON.stringify(data.responseJSON.errors), 'danger');
