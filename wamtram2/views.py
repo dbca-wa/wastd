@@ -840,9 +840,18 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
         """
         context = super().get_context_data(**kwargs)
         obj = self.get_object()
+        
+        pittags = obj.recorded_pittags.all().order_by('pittag_id', '-observation_id')
+        seen = set()
+        unique_pittags = []
+        for tag in pittags:
+            if tag.pittag_id_id not in seen:
+                unique_pittags.append(tag)
+                seen.add(tag.pittag_id_id)
+        
         context["page_title"] = f"{settings.SITE_CODE} | WAMTRAM2 | {obj.pk}"
         context["tags"] = obj.trttags_set.all()
-        context["pittags"] = obj.trtpittags_set.all()
+        context["pittags"] = unique_pittags
         context["observations"] = obj.trtobservations_set.all()
         return context
 

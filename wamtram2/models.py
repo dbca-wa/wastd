@@ -1855,7 +1855,11 @@ class TrtRecordedPitTags(models.Model):
     comments = models.CharField(
         db_column="COMMENTS", max_length=255, blank=True, null=True
     )  # Field name made lowercase.
-    turtle_id = models.IntegerField(db_column="TURTLE_ID")  # Field name made lowercase.
+    turtle_id = models.ForeignKey(
+        "TrtTurtles",
+        on_delete=models.CASCADE,
+        db_column="TURTLE_ID",
+        related_name="recorded_pittags",)  # Field name made lowercase.
     checked = models.BooleanField(db_column="Checked")  # Field name made lowercase.
 
     class Meta:
