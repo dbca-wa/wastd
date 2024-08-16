@@ -4,6 +4,8 @@
 {% block extra_style %}
     {{ block.super }}
     {{ form.media.css }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
     <style>
         .select2 {
             width: 100% !important;
@@ -46,21 +48,6 @@
         .btn-block {
             display: block;
             width: 100%;
-        }
-
-        /* Loading spinner */
-        .loading-spinner {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 9999;
-        }
-        .loading-spinner .spinner-border {
-            width: 5rem;
-            height: 5rem;
-            border-width: 0.5rem;
         }
     </style>
 {% endblock %}
@@ -205,17 +192,20 @@
                 <span class="sr-only">Loading...</span>
             </div>
         </div>
+
+        <!-- Loading Overlay -->
+        <div class="loading-overlay"></div>
     </div>
 {% endblock %}
 
 {% block extra_js %}
-    {{ block.super }}
+{{ block.super }}
     <script>
         // Get CSRF Token
         function getCSRFToken() {
             return document.querySelector('[name=csrfmiddlewaretoken]').value;
         }
-
+    
         // Show Message
         function showMessage(message, type) {
             var alert = $('#message-alert');
@@ -223,36 +213,42 @@
             alert.addClass('alert-' + type);
             alert.text(message);
             alert.slideDown();
-
+    
             setTimeout(function() {
                 alert.slideUp();
             }, 3000);
         }
-
-        // Show Loading Spinner
+    
+        // Show Loading Spinner and Overlay
         function showLoadingSpinner() {
             const loadingSpinner = document.querySelector('.loading-spinner');
+            const loadingOverlay = document.querySelector('.loading-overlay');
+            if (loadingOverlay) {
+                loadingOverlay.style.display = 'block';
+            }
             if (loadingSpinner) {
                 loadingSpinner.style.display = 'block';
             }
         }
-
-        // Hide Loading Spinner
+    
+        // Hide Loading Spinner and Overlay
         function hideLoadingSpinner() {
             const loadingSpinner = document.querySelector('.loading-spinner');
+            const loadingOverlay = document.querySelector('.loading-overlay');
+            if (loadingOverlay) {
+                loadingOverlay.style.display = 'none';
+            }
             if (loadingSpinner) {
                 loadingSpinner.style.display = 'none';
             }
         }
-
+    
         // Update Template
         function updateTemplate(templateKey) {
-            var formData = $('#templateForm-' + templateKey).serialize(); // Serialize form data
-
-            console.log(formData);
-
+            var formData = $('#templateForm-' + templateKey).serialize();
+    
             showLoadingSpinner();
-        
+            
             $.ajax({
                 url: "{% url 'wamtram2:template_manage_key' 'dummy_key' %}".replace('dummy_key', templateKey),
                 type: "PUT",
@@ -263,7 +259,9 @@
                 },
                 success: function(data) {
                     showMessage('Template updated successfully', 'success');
-                    location.reload(); // Automatically refresh the page
+                    setTimeout(function() { 
+                        location.reload();
+                    }, 500); 
                 },
                 error: function(xhr, status, error) {
                     var errorMessage = 'Error updating template';
@@ -281,7 +279,7 @@
                 }
             });
         }
-
+    
         // Delete Template
         function deleteTemplate(templateKey) {
             if (confirm('Are you sure you want to delete this template?')) {
@@ -294,7 +292,9 @@
                     },
                     success: function(data) {
                         showMessage('Template deleted successfully', 'success');
-                        location.reload(); // Automatically refresh the page
+                        setTimeout(function() { 
+                            location.reload();
+                        }, 500);
                     },
                     error: function(data) {
                         showMessage('Error deleting template: ' + JSON.stringify(data.responseJSON.errors), 'danger');
@@ -305,7 +305,7 @@
                 });
             }
         }
-
+    
         // Create Template
         function createTemplate() {
             var formData = $('#templateForm').serialize();
@@ -314,9 +314,14 @@
                 url: "{% url 'wamtram2:template_manage' %}",
                 type: "POST",
                 data: formData,
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader("X-CSRFToken", getCSRFToken());
+                },
                 success: function(data) {
                     showMessage('Template created successfully', 'success');
-                    location.reload(); // Automatically refresh the page
+                    setTimeout(function() { 
+                        location.reload();
+                    }, 500);
                 },
                 error: function(data) {
                     showMessage('Error creating template: ' + JSON.stringify(data.responseJSON.errors), 'danger');
@@ -326,7 +331,7 @@
                 }
             });
         }
-
+    
         // Load Places based on Location Code
         function loadPlaces(locationCode, targetElement) {
             showLoadingSpinner();
@@ -356,20 +361,37 @@
                 }
             });
         }
-
+    
         // Initialize event handlers on document ready
         $(document).ready(function() {
             $('#location_code').change(function() {
                 var locationCode = $(this).val();
                 loadPlaces(locationCode, '#place_code');
             });
-
+    
             {% for key, template in templates.items %}
                 $('#location_code_{{ key }}').change(function() {
                     var locationCode = $(this).val();
                     loadPlaces(locationCode, '#place_code_{{ key }}');
                 });
             {% endfor %}
+    
+            // Show spinner when the form is submitted or a link is clicked
+            $('form').on('submit', function() {
+                showLoadingSpinner();
+            });
+    
+            $('a').on('click', function() {
+                showLoadingSpinner();
+            });
+    
+            // Show spinner when the page is reloading
+            $(window).on('beforeunload', function() {
+                showLoadingSpinner();
+            });
         });
     </script>
+    
+    
+    
 {% endblock %}

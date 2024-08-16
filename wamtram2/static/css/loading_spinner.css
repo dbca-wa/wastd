@@ -1,14 +1,14 @@
-        /* Loading spinner */
-        .loading-spinner {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 9999;
-        }
-        .loading-spinner .spinner-border {
-            width: 5rem;
-            height: 5rem;
-            border-width: 0.5rem;
-        }
+/* Loading spinner */
+.loading-spinner {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+}
+.loading-spinner .spinner-border {
+    width: 5rem;
+    height: 5rem;
+    border-width: 0.5rem;
+}
