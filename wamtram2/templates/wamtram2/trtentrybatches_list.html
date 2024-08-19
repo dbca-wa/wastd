@@ -75,7 +75,7 @@
     <form method="get" class="form-inline">
         <div class="form-group">
             <label class="mr-1" for="filter">Filter</label>
-            <select name="filter" class="form-control" onchange="this.form.submit()">
+            <select name="filter" class="form-control" id="filterSelect" onchange="this.form.submit()">
                 <option value="">All</option>
                 <option value="no_observation_id" {% if request.GET.filter == "no_observation_id" %}selected{% endif %}>Has unprocessed observations</option>
             </select>
@@ -147,14 +147,40 @@
 {% block extra_js %}
 {{ block.super }}
 <script>
+    function showLoadingMessage() {
+        // Add a loading message to the page
+        loadingMessageElement = document.createElement('div');
+        loadingMessageElement.textContent = 'Loading time might take around 40 seconds...';
+
+        loadingMessageElement.style.position = 'fixed';
+        loadingMessageElement.style.top = '80%';  
+        loadingMessageElement.style.left = '50%';  
+        loadingMessageElement.style.transform = 'translate(-50%, -80%)';
+        loadingMessageElement.style.padding = '10px 20px';
+        loadingMessageElement.style.backgroundColor = '#cce5ff';
+        loadingMessageElement.style.color = '#004085';
+        loadingMessageElement.style.border = '1px solid #b8daff';
+        loadingMessageElement.style.borderRadius = '5px';
+        loadingMessageElement.style.zIndex = '10001';
+        loadingMessageElement.style.pointerEvents = 'none';
+        document.body.appendChild(loadingMessageElement);
+    }
+    
+    function removeLoadingMessage() {
+        if (loadingMessageElement) {
+            loadingMessageElement.remove(); 
+        }
+    }
+    
     window.addEventListener('load', function() {
         const createNewBatchBtn = document.querySelector("#createNewBatchBtn");
+        const filterSelect = document.querySelector("#filterSelect");
     
-        // Select all batch ID links in the table body and breadcrumb navigation links
+        // Select all batch ID links in the table body and pagination links
         const batchLinks = document.querySelectorAll('tbody a');
-        //const navLinks = document.querySelectorAll('.breadcrumb a');
         const paginationLinks = document.querySelectorAll('.pagination a');
-        console.log(paginationLinks);
+        
+        let loadingMessageElement;
     
         function showLoadingSpinner() {
             const loadingSpinner = document.querySelector('.loading-spinner');
@@ -166,7 +192,7 @@
                 loadingSpinner.style.display = 'block';
             }
         }
-    
+        
         function hideLoadingSpinner() {
             const loadingSpinner = document.querySelector('.loading-spinner');
             const loadingOverlay = document.querySelector('.loading-overlay');
@@ -177,7 +203,7 @@
                 loadingSpinner.style.display = 'none';
             }
         }
-    
+        
         function clickAndDisable(e) {
             e.preventDefault();
             let target = e.currentTarget;
@@ -185,7 +211,7 @@
             target.style.pointerEvents = "none";
             target.classList.add('disabled');
             showLoadingSpinner();
-    
+        
             setTimeout(function() {
                 window.location.href = target.href;
             }, 100);
@@ -194,24 +220,41 @@
         function initializeLoadingSpinner() {
             hideLoadingSpinner();
         }
-    
+        
         initializeLoadingSpinner();
-    
+        
         // Attach event listeners to the Create New Batch button
         if (createNewBatchBtn) {
             createNewBatchBtn.addEventListener("click", clickAndDisable);
         }
     
+        // Attach event listener to the filter select dropdown
+        if (filterSelect) {
+            filterSelect.addEventListener("change", function() {
+                const selectedValue = filterSelect.value;
+                if (selectedValue === "no_observation_id") { 
+                    showLoadingMessage(); 
+                }
+                showLoadingSpinner();
+            });
+        }
+        
         // Attach event listeners to all batch ID links within the table body
         batchLinks.forEach(link => {
             link.addEventListener("click", clickAndDisable);
         });
-    
-        // Attach event listeners to all breadcrumb navigation links
+        
+        // Attach event listeners to all pagination links
         paginationLinks.forEach(link => {
             link.addEventListener("click", clickAndDisable);
         });
     
+        // Remove loading message once the page is fully loaded
+        window.addEventListener('load', function() {
+            removeLoadingMessage();
+            hideLoadingSpinner();
+        });
+        
         // Auto-refresh page when user navigates back
         window.addEventListener('pageshow', function(event) {
             if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
@@ -220,5 +263,6 @@
             }
         });
     });
+    
 </script>
 {% endblock %}
