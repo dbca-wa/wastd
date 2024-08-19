@@ -145,7 +145,7 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
     model = TrtDataEntry
     template_name = "wamtram2/trtentrybatch_detail.html"
     context_object_name = "object_list"
-    paginate_by = 50
+    paginate_by = 30
     form_class = TrtEntryBatchesForm
     
     def get_initial(self):
@@ -250,6 +250,10 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
             instance=batch,
             initial=initial
         )  # Add the form to the context data
+        
+        # Add a `highlight_row` attribute to each entry if it meets the conditions
+        for entry in context['object_list']:
+            entry.highlight_row = entry.do_not_process and entry.error_message not in ['None', 'Observation added to database']
         
         # Add the templates to the context data
         cookies_key_prefix = self.kwargs.get("batch_id")
