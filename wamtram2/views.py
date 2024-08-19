@@ -83,9 +83,14 @@ class EntryBatchesListView(LoginRequiredMixin, ListView):
             .values("place_code")[:1]
         )
         
+        # Annotate the queryset with entry_count, last_place_code, and do_not_process_count
         queryset = queryset.annotate(
             entry_count=Count('trtdataentry'),
-            last_place_code=last_place_code_subquery
+            last_place_code=last_place_code_subquery,
+            do_not_process_count=Count(
+                'trtdataentry',
+                filter=Q(trtdataentry__do_not_process=True)
+            )
         )
 
         return queryset
@@ -107,6 +112,8 @@ class EntryBatchesListView(LoginRequiredMixin, ListView):
         # Attach TrtPlaces objects to each batch in the paginated list
         for batch in page_obj.object_list:
             batch.last_place_code_obj = places_dict.get(batch.last_place_code)
+            
+            batch.highlight_row = int(batch.do_not_process_count) > 0
 
         context['page_obj'] = page_obj
         context['is_paginated'] = page_obj.has_other_pages()
@@ -116,6 +123,7 @@ class EntryBatchesListView(LoginRequiredMixin, ListView):
         }
 
         return context
+
 
 class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
     """

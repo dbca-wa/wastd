@@ -6,6 +6,11 @@
 {{ block.super }}
 <link rel="stylesheet" type="text/css" href="{% static 'css/disabled_btn.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
+<style>
+    .highlight-row {
+        background-color: #f8d7da !important;
+    }
+</style>
 {% endblock %}
 
 {% block breadcrumbs %}
@@ -86,28 +91,31 @@
                 <tr>
                     <th>ID</th>
                     <th>Date Entered</th>
+                    <th>Place</th>
                     <th>Enterer</th>
+                    <th># of Records</th>
+                    <th># of Flagged Records</th>
                     <th>Comments</th>
-                    <th>No of Entries</th>
-                    <th>Last Place</th>
                 </tr>
             </thead>
             <tbody>
-                {% for obj in object_list %}
-                <tr>
+                {% for batch in object_list %}
+                <tr class="{% if batch.highlight_row %}highlight-row{% endif %}">
+                    <script>
+                        console.log("Batch ID: {{ batch.pk }}, Highlight: {{ batch.highlight_row }}");
+                    </script>
                     <td>
                         {% if request.GET.filter == "no_observation_id" %}
-                            <a href="{% url 'wamtram2:entry_batch_detail' obj.pk %}?filter=no_observation_id">
+                            <a href="{% url 'wamtram2:entry_batch_detail' batch.pk %}?filter=no_observation_id">
                         {% else %}
-                            <a href="{% url 'wamtram2:entry_batch_detail' obj.pk %}">
+                            <a href="{% url 'wamtram2:entry_batch_detail' batch.pk %}">
                         {% endif %}
-                            {{ obj.pk }}
+                            {{ batch.pk }}
                         </a>
                     </td>
-                    <td>{{ obj.entry_date|date:"j M Y" }}</td>
-                    <td>{{ obj.entered_person_id }}</td>
-                    <td>{{ obj.comments }}</td>
-                    <td>{{ obj.entry_count }}</td>
+                    <td>{{ batch.entry_date|date:"j M Y" }}</td>
+                    
+                    <td>{{ batch.entered_person_id }}</td>
                     <td>
                         {% if obj.last_place_code_obj %}
                             {{ obj.last_place_code_obj.get_full_name }}
@@ -115,6 +123,9 @@
                             {{ obj.last_place_code }}
                         {% endif %}
                     </td>
+                    <td>{{ batch.entry_count }}</td>
+                    <td>{{ batch.do_not_process_count }}</td>
+                    <td>{{ batch.comments }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
