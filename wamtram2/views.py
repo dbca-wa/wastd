@@ -49,7 +49,7 @@ class EntryBatchesListView(LoginRequiredMixin, ListView):
     model = TrtEntryBatches
     template_name = "wamtram2/trtentrybatches_list.html"
     context_object_name = "batches"
-    paginate_by = 50
+    paginate_by = 30
 
     def dispatch(self, request, *args, **kwargs):
         if not (
