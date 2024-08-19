@@ -41,7 +41,7 @@
                 </tr>
                 <tr>
                     <th>Name</th>
-                    <td>{{ object.name|default_if_none:"" }}</td>
+                    <td>{{ object.turtle_name|default_if_none:"" }}</td>
                 </tr>
                 <tr>
                     <th>Status</th>
@@ -91,7 +91,7 @@
                 <tr>
                     <td>PIT</td>
                     <td>{{ tag.pittag_id }}</td>
-                    <td></td>
+                    <td>{{ tag.pit_tag_position|default_if_none:"" }}</td>
                     <td>{{ tag.comments|default_if_none:"" }}</td>
                 </tr>
                 {% endfor %}

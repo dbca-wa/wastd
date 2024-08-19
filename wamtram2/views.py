@@ -14,6 +14,8 @@ from django.http import JsonResponse, QueryDict
 from .models import TrtPlaces, TrtSpecies, TrtLocations
 from django.views.decorators.http import require_http_methods
 from django.utils.decorators import method_decorator
+from django.db.models import Count, Exists, OuterRef, Subquery
+from django.core.paginator import Paginator
 import os
 import json
 import re
@@ -44,27 +46,12 @@ class HomePageView(LoginRequiredMixin, TemplateView):
 
 
 class EntryBatchesListView(LoginRequiredMixin, ListView):
-    """
-    A view that displays a list of entry batches.
-
-    Attributes:
-        model (Model): The model class to use for the list view.
-        template_name (str): The name of the template to use for rendering the list view.
-        context_object_name (str): The name of the variable to use in the template for the list of objects.
-        paginate_by (int): The number of objects to display per page.
-
-    Methods:
-        get_queryset(): Returns the queryset of objects for the list view.
-        get_context_data(**kwargs): Returns the context data for rendering the list view.
-    """
-
     model = TrtEntryBatches
-    template_name = "trtentrybatches_list.html"
+    template_name = "wamtram2/trtentrybatches_list.html"
     context_object_name = "batches"
-    paginate_by = 50
+    paginate_by = 30
 
     def dispatch(self, request, *args, **kwargs):
-        # FIXME: Permission check
         if not (
             request.user.groups.filter(name="Tagging Data Entry").exists()
             or request.user.groups.filter(name="Tagging Data Curation").exists()
@@ -76,42 +63,65 @@ class EntryBatchesListView(LoginRequiredMixin, ListView):
         return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
-        """
-        Returns the queryset of objects for the list view.
+        queryset = super().get_queryset().order_by("-entry_batch_id")
 
-        Returns:
-            QuerySet: The queryset of objects.
-        """
-        queryset = super().get_queryset()
-
-        # Check if the user has requested to filter by TrtEntryBatches that have TrtDataEntrys with no observation_id
         if (
             "filter" in self.request.GET
             and self.request.GET["filter"] == "no_observation_id"
         ):
-            # Subquery that checks if a TrtDataEntry with no observation_id exists for a TrtEntryBatch
             has_dataentry_no_observation_id = Exists(
                 TrtDataEntry.objects.filter(
                     entry_batch_id=OuterRef("pk"), observation_id__isnull=True
                 )
             )
-
-            # Filter the queryset
             queryset = queryset.filter(has_dataentry_no_observation_id)
 
-        return queryset.order_by("-entry_batch_id")
+        # Use Subquery to fetch the last place_code for each batch
+        last_place_code_subquery = Subquery(
+            TrtDataEntry.objects.filter(entry_batch_id=OuterRef("pk"))
+            .order_by("-data_entry_id")
+            .values("place_code")[:1]
+        )
+        
+        # Annotate the queryset with entry_count, last_place_code, and do_not_process_count
+        queryset = queryset.annotate(
+            entry_count=Count('trtdataentry'),
+            last_place_code=last_place_code_subquery,
+            do_not_process_count=Count(
+                'trtdataentry',
+                filter=Q(trtdataentry__do_not_process=True)
+            )
+        )
+
+        return queryset
 
     def get_context_data(self, **kwargs):
-        """
-        Returns the context data for rendering the list view.
-
-        Returns:
-            dict: The context data.
-        """
         context = super().get_context_data(**kwargs)
+
+        # Paginate the queryset
+        queryset = self.get_queryset()
+        paginator = Paginator(queryset, self.paginate_by)
+        page_number = self.request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+
+        # Retrieve place_code from paginated object list and fetch corresponding TrtPlaces objects
+        place_codes = [batch.last_place_code for batch in page_obj.object_list if batch.last_place_code]
+        places = TrtPlaces.objects.filter(place_code__in=place_codes)
+        places_dict = {place.place_code: place for place in places}
+
+        # Attach TrtPlaces objects to each batch in the paginated list
+        for batch in page_obj.object_list:
+            batch.last_place_code_obj = places_dict.get(batch.last_place_code)
+            
+            batch.highlight_row = int(batch.do_not_process_count) > 0
+
+        context['page_obj'] = page_obj
+        context['is_paginated'] = page_obj.has_other_pages()
+        context['object_list'] = page_obj.object_list
         context["persons"] = {
             person.person_id: person for person in TrtPersons.objects.all()
         }
+
         return context
 
 
@@ -135,7 +145,7 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
     model = TrtDataEntry
     template_name = "wamtram2/trtentrybatch_detail.html"
     context_object_name = "object_list"
-    paginate_by = 50
+    paginate_by = 30
     form_class = TrtEntryBatchesForm
     
     def get_initial(self):
@@ -240,6 +250,10 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
             instance=batch,
             initial=initial
         )  # Add the form to the context data
+        
+        # Add a `highlight_row` attribute to each entry if it meets the conditions
+        for entry in context['object_list']:
+            entry.highlight_row = entry.do_not_process and entry.error_message not in ['None', 'Observation added to database']
         
         # Add the templates to the context data
         cookies_key_prefix = self.kwargs.get("batch_id")
@@ -840,9 +854,18 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
         """
         context = super().get_context_data(**kwargs)
         obj = self.get_object()
+        
+        pittags = obj.recorded_pittags.all().order_by('pittag_id', '-observation_id')
+        seen = set()
+        unique_pittags = []
+        for tag in pittags:
+            if tag.pittag_id_id not in seen:
+                unique_pittags.append(tag)
+                seen.add(tag.pittag_id_id)
+        
         context["page_title"] = f"{settings.SITE_CODE} | WAMTRAM2 | {obj.pk}"
         context["tags"] = obj.trttags_set.all()
-        context["pittags"] = obj.trtpittags_set.all()
+        context["pittags"] = unique_pittags
         context["observations"] = obj.trtobservations_set.all()
         return context
 

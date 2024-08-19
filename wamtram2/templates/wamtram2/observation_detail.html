@@ -153,7 +153,7 @@
             <tr>
             <td>Pit</td>
             <td>{{ tag.pittag_id }}</td>
-            <td></td>
+            <td>{{ tag.pit_tag_position|default_if_none:"" }}</td> 
             <td>{{ tag.comments|default_if_none:"" }}</td>
             </tr>
             {% endfor %}

@@ -6,6 +6,12 @@
 {{ block.super }}
 <link rel="stylesheet" type="text/css" href="{% static 'css/disabled_btn.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
+<style>
+    .highlight-row {
+        background-color: #f8d7da !important;
+    }
+</style>
 {% endblock %}
 
 {% block breadcrumbs %}
@@ -87,33 +93,49 @@
                     <th>ID</th>
                     <th>Date Entered</th>
                     <th>Enterer</th>
+                    <th>Site</th>
+                    <th># of Records</th>
+                    <th># of Flagged Records</th>
                     <th>Comments</th>
                 </tr>
             </thead>
             <tbody>
-                {% for obj in object_list %}
-                <tr>
+                {% for batch in object_list %}
+                <tr class="{% if batch.highlight_row %}highlight-row{% endif %}">
                     <td>
                         {% if request.GET.filter == "no_observation_id" %}
-                            <a href="{% url 'wamtram2:entry_batch_detail' obj.pk %}?filter=no_observation_id">
+                            <a href="{% url 'wamtram2:entry_batch_detail' batch.pk %}?filter=no_observation_id">
                         {% else %}
-                            <a href="{% url 'wamtram2:entry_batch_detail' obj.pk %}">
+                            <a href="{% url 'wamtram2:entry_batch_detail' batch.pk %}">
                         {% endif %}
-                            {{ obj.pk }}
+                            {{ batch.pk }}
                         </a>
                     </td>
-                    <td>{{ obj.entry_date|date:"j M Y" }}</td>
-                    <td>{{ obj.entered_person_id }}</td>
-                    <td>{{ obj.comments }}</td>
+                    <td>{{ batch.entry_date|date:"j M Y" }}</td>
+                    <td>{{ batch.entered_person_id }}</td>
+                    <td>
+                        {% if batch.last_place_code_obj %}
+                            {{ batch.last_place_code_obj.get_full_name }}
+                        {% else %}
+                            {{ batch.last_place_code }}
+                        {% endif %}
+                    </td>
+                    <td>{{ batch.entry_count }}</td>
+                    <td>{{ batch.do_not_process_count }}</td>
+                    <td>{{ batch.comments }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
+            
         </table>
     </div>
 </div>
 {% endif %}
 
-<!-- Loading spinner -->
+<!-- Loading Overlay -->
+<div class="loading-overlay"></div>
+
+<!-- Loading Spinner -->
 <div class="loading-spinner">
     <div class="spinner-border text-primary" role="status">
         <span class="sr-only">Loading...</span>
@@ -125,11 +147,21 @@
 {% block extra_js %}
 {{ block.super }}
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        let link = document.querySelector("#createNewBatchBtn");
-
+    window.addEventListener('load', function() {
+        const createNewBatchBtn = document.querySelector("#createNewBatchBtn");
+    
+        // Select all batch ID links in the table body and breadcrumb navigation links
+        const batchLinks = document.querySelectorAll('tbody a');
+        //const navLinks = document.querySelectorAll('.breadcrumb a');
+        const paginationLinks = document.querySelectorAll('.pagination a');
+        console.log(paginationLinks);
+    
         function showLoadingSpinner() {
             const loadingSpinner = document.querySelector('.loading-spinner');
+            const loadingOverlay = document.querySelector('.loading-overlay');
+            if (loadingOverlay) {
+                loadingOverlay.style.display = 'block';
+            }
             if (loadingSpinner) {
                 loadingSpinner.style.display = 'block';
             }
@@ -137,36 +169,48 @@
     
         function hideLoadingSpinner() {
             const loadingSpinner = document.querySelector('.loading-spinner');
+            const loadingOverlay = document.querySelector('.loading-overlay');
+            if (loadingOverlay) {
+                loadingOverlay.style.display = 'none';
+            }
             if (loadingSpinner) {
                 loadingSpinner.style.display = 'none';
             }
         }
-        
+    
+        function clickAndDisable(e) {
+            e.preventDefault();
+            let target = e.currentTarget;
+            target.onclick = null;
+            target.style.pointerEvents = "none";
+            target.classList.add('disabled');
+            showLoadingSpinner();
+    
+            setTimeout(function() {
+                window.location.href = target.href;
+            }, 100);
+        }
+    
         function initializeLoadingSpinner() {
             hideLoadingSpinner();
         }
     
-        window.addEventListener('load', hideLoadingSpinner);
         initializeLoadingSpinner();
-
-        function clickAndDisable(e) {
-            let target = e.currentTarget;
-            target.onclick = null;
-            target.style.pointerEvents = "none";
-            target.classList.remove('btn-primary');
-            target.classList.add('btn-secondary');
-            target.disabled = true;
-            link.removeEventListener("click", clickAndDisable);
-            console.log("Clicked");
-
-            showLoadingSpinner();
-            console.log("Loading spinner shown");
     
-            // Navigate to the link
-            window.location.href = target.href;
+        // Attach event listeners to the Create New Batch button
+        if (createNewBatchBtn) {
+            createNewBatchBtn.addEventListener("click", clickAndDisable);
         }
     
-        link.addEventListener("click", clickAndDisable);
+        // Attach event listeners to all batch ID links within the table body
+        batchLinks.forEach(link => {
+            link.addEventListener("click", clickAndDisable);
+        });
+    
+        // Attach event listeners to all breadcrumb navigation links
+        paginationLinks.forEach(link => {
+            link.addEventListener("click", clickAndDisable);
+        });
     
         // Auto-refresh page when user navigates back
         window.addEventListener('pageshow', function(event) {

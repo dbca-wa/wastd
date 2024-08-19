@@ -38,6 +38,10 @@
             margin: -15px -15px 15px -15px;
             font-weight: bold;
         }
+        .highlight-row {
+            background-color: #f8d7da !important;
+        }
+    
     </style>
 {% endblock %}
 
@@ -215,7 +219,7 @@
                 </thead>
                 <tbody>
                     {% for obj in object_list %}
-                    <tr>
+                    <tr class="{% if obj.highlight_row %}highlight-row{% endif %}">
                         <td><a href="{% url 'wamtram2:trtdataentry' obj.data_entry_id %}">{{ obj.data_entry_id }}</a></td>
                         <td>{% if obj.observation_id %}<a href="{% url 'wamtram2:observationdetail' pk=obj.observation_id.pk %}">{{ obj.observation_id.pk }}</a>{% endif %}</td>
                         <td>{{ obj.observation_date|date:"j M Y" }} {{ obj.observation_time|date:"H:i" }}</td>
@@ -266,6 +270,7 @@
                     </tr>
                     {% endfor %}
                 </tbody>
+                
             </table>
         </div>
     </div>
