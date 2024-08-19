@@ -88,6 +88,8 @@
                     <th>Date Entered</th>
                     <th>Enterer</th>
                     <th>Comments</th>
+                    <th>No of Entries</th>
+                    <th>Last Place</th>
                 </tr>
             </thead>
             <tbody>
@@ -105,6 +107,14 @@
                     <td>{{ obj.entry_date|date:"j M Y" }}</td>
                     <td>{{ obj.entered_person_id }}</td>
                     <td>{{ obj.comments }}</td>
+                    <td>{{ obj.entry_count }}</td>
+                    <td>
+                        {% if obj.last_place_code_obj %}
+                            {{ obj.last_place_code_obj.get_full_name }}
+                        {% else %}
+                            {{ obj.last_place_code }}
+                        {% endif %}
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -112,6 +122,8 @@
     </div>
 </div>
 {% endif %}
+
+
 
 <!-- Loading spinner -->
 <div class="loading-spinner">
