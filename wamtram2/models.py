@@ -1576,10 +1576,10 @@ class TrtObservations(models.Model):
         db_column="DATE_CONVENTION", max_length=1
     )  # Field name made lowercase.
     observation_status = models.CharField(
-        db_column="OBSERVATION_STATUS", max_length=50, blank=True, null=True
+        db_column="OBSERVATION_STATUS", max_length=50, blank=True, null=True, editable=False
     )  # Field name made lowercase.
     corrected_date = models.DateTimeField(
-        db_column="CORRECTED_DATE", blank=True, null=True
+        db_column="CORRECTED_DATE", blank=True, null=True, editable=False
     )  # Field name made lowercase.
 
     class Meta:
@@ -1596,6 +1596,13 @@ class TrtObservations(models.Model):
 
     def __str__(self):
         return f"{self.observation_date}"
+    
+    def save(self, *args, **kwargs):
+        if 'observation_status' in self.__dict__:
+            del self.__dict__['observation_status']
+        if 'corrected_date' in self.__dict__:
+            del self.__dict__['corrected_date']
+        super().save(*args, **kwargs)
 
 
 class TrtPersons(models.Model):

@@ -1316,3 +1316,5 @@ def search_places(request):
         Q(place_name__icontains=query) | Q(location_code__location_name__icontains=query)
     ).values('place_code', 'place_name', 'location_code__location_name')[:10]
     return JsonResponse(list(places), safe=False)
+
+

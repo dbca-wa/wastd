@@ -13,7 +13,7 @@ from .models import (
     TrtTagOrders,
 )
 from import_export.admin import ImportExportModelAdmin
-from .forms import DataEntryUserModelForm, EnterUserModelForm
+from .forms import DataEntryUserModelForm, EnterUserModelForm, TrtObservationsForm
 
 
 class TrtMeasurementsInline(nested_admin.NestedTabularInline):
@@ -85,12 +85,22 @@ class TrtTurtlesAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
 
 @admin.register(TrtObservations)
 class TrtObservationsAdmin(nested_admin.NestedModelAdmin):
+    form = TrtObservationsForm
+    readonly_fields = ('observation_status','corrected_date',)
+    
     autocomplete_fields = ["turtle"]
     list_display = ("observation_id", "turtle", "observation_date", "entry_batch")
     date_hierarchy = "observation_date"
     list_filter = ["turtle__species_code", "place_code"]
     search_fields = ["observation_id", "entry_batch__entry_batch_id"]
     inlines = [TrtMeasurementsInline, TrtDamageInline]
+    
+    def save_model(self, request, obj, form, change):
+        if 'observation_status' in form.cleaned_data:
+            form.cleaned_data.pop('observation_status')
+        if 'corrected_date' in form.cleaned_data:
+            form.cleaned_data.pop('corrected_date')
+        super().save_model(request, obj, form, change)
 
 
 @admin.register(TrtMeasurements)

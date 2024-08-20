@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import DateTimeInput
 from easy_select2 import apply_select2
-from .models import TrtPersons, TrtDataEntry, TrtTags, TrtEntryBatches, TrtPlaces, TrtPitTags, TrtPitTags, Template, TrtTissueTypes
+from .models import TrtPersons, TrtDataEntry, TrtTags, TrtEntryBatches, TrtPlaces, TrtPitTags, TrtPitTags, Template, TrtObservations
 from django_select2.forms import ModelSelect2Widget
 
 
@@ -489,3 +489,16 @@ class TemplateForm(forms.ModelForm):
     class Meta:
         model = Template
         fields = ['name', 'location_code', 'place_code', 'species_code', 'sex']
+        
+class TrtObservationsForm(forms.ModelForm):
+    class Meta:
+        model = TrtObservations
+        fields = '__all__'
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if 'observation_status' in cleaned_data:
+            cleaned_data.pop('observation_status')
+        if 'corrected_date' in cleaned_data:
+            cleaned_data.pop('corrected_date')
+        return cleaned_data
