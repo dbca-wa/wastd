@@ -63,6 +63,97 @@
 {% endblock %}
 
 {% block page_content_inner %}
+    {# Step1: Display the entry batch details #}
+    <div class="step-container">
+        <div class="step-header">Step 1: Batch Details</div>
+        <form id="batchDetailsForm" action="{% url 'wamtram2:entry_batch_detail' batch_id=batch.entry_batch_id %}" method="post" class="row">
+            {% csrf_token %}
+            <div class="col-md-4">
+                <div class="d-flex align-items-end">
+                    <div class="flex-grow-1 mr-2">
+                        <label for="search_entered_person_id">{{ form.entered_person_id.label }}</label>
+                        <input type="text" id="search_entered_person_id" class="search-field form-control" placeholder="Search person" value="{{ batch.entered_person_id.first_name }} {{ batch.entered_person_id.surname }}">
+                        {{ form.entered_person_id }}
+                        <div class="search-results" style="display:none;"></div>
+                    </div>
+                    {% if user.is_superuser %}
+                    <button type="button" class="btn btn-outline-primary add-person-btn align-self-end" onClick="window.open(adminUrl);" title="Add new person">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="d-flex align-items-center">
+                    <div class="flex-grow-1 mr-2">
+                        {% bootstrap_field form.comments %}
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-3" id="saveBatchDetailsBtn">
+                        Save batch details
+                    </button>
+                </div>
+            </div>            
+        </form>
+        
+    </div>
+    {# Step2: Create new entry #}
+    <div class="step-container">
+        <div class="step-header">Step 2: Create New Entry</div>
+        <div class="row align-items-end">
+            <div class="col-md-6 d-flex align-items-end">
+                <select id="templateSelector" class="form-control flex-grow-1 mr-2">
+                    <option value="">Select a template</option>
+                    {% for key, template in templates.items %}
+                        <option value="{{ key }}" {% if key == selected_template %} selected {% endif %}>{{ template.name }}</option>
+                    {% endfor %}
+                </select>
+                {% if user.is_superuser %}
+                <button type="button" class="btn btn-outline-primary add-template-btn align-self-end" onClick="window.open('{% url 'wamtram2:template_manage' %}');" title="Add new template">
+                    <i class="fas fa-plus"></i>
+                </button>
+                {% endif %}
+            </div>
+            <div class="col-md-4 mb-2">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="setDefaultEnterer" {% if use_default_enterer %} checked {% endif %}>
+                    <label class="form-check-label" for="setDefaultEnterer">
+                        Set batch enterer as default entry enterer
+                    </label>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <a href="{% url 'wamtram2:find_turtle' batch_id=batch.entry_batch_id %}" id="createEntryBtn" class="btn btn-primary float-right">Create a new entry</a>
+            </div>
+        </div>
+        <div id="templateSelectedMessage" class="mt-2 text-success" style="display: none;">Template selected</div>
+    </div>
+    {# Step3: Batch Actions #}
+    <div class="step-container">
+        <div class="step-header">Step 3: Batch Actions</div>
+        <div class="row">
+            <div class="col-md-8">
+                {% if object_list %}
+                    <a id="validateBtn" href="{% url 'wamtram2:validate_data_entry_batch' batch_id=batch.entry_batch_id %}" class="btn btn-primary mr-2">Validate this Batch</a>
+                    {% if user.is_superuser %}
+                    <a id="processBtn" href="{% url 'wamtram2:process_data_entry_batch' batch_id=batch.entry_batch_id %}" class="btn btn-primary">Add this batch to the database</a>
+                    {% endif %}
+                {% endif %}
+            </div>
+            <div class="col-md-4">
+                <form method="get" class="form-inline float-right">
+                    <div class="form-group">
+                        <label class="mr-2" for="filter">Filter</label>
+                        <select name="filter" class="form-control" onchange="this.form.submit()">
+                            <option value="">All</option>
+                            <option value="no_observation_id" {% if request.GET.filter == "no_observation_id" %}selected{% endif %}>Unprocessed observations</option>
+                            <option value="not_processed" {% if request.GET.filter == "not_processed" %}selected{% endif %}>Not Processed</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     {% block pagination_row %}
         {# Pagination controls #}
         <div class="row" id="pagination-row">
@@ -107,96 +198,6 @@
             </div>
         </div>
     {% endblock pagination_row %}
-    <div class="step-container">
-        <div class="step-header">Step 1: Batch Details</div>
-        <form id="batchDetailsForm" action="{% url 'wamtram2:entry_batch_detail' batch_id=batch.entry_batch_id %}" method="post" class="row">
-            {% csrf_token %}
-            <div class="col-md-4">
-                <div class="d-flex align-items-end">
-                    <div class="flex-grow-1 mr-2">
-                        <label for="search_entered_person_id">{{ form.entered_person_id.label }}</label>
-                        <input type="text" id="search_entered_person_id" class="search-field form-control" placeholder="Search person" value="{{ batch.entered_person_id.first_name }} {{ batch.entered_person_id.surname }}">
-                        {{ form.entered_person_id }}
-                        <div class="search-results" style="display:none;"></div>
-                    </div>
-                    {% if user.is_superuser %}
-                    <button type="button" class="btn btn-outline-primary add-person-btn align-self-end" onClick="window.open(adminUrl);" title="Add new person">
-                        <i class="fas fa-plus"></i>
-                    </button>
-                    {% endif %}
-                </div>
-            </div>
-            <div class="col-md-8">
-                <div class="d-flex align-items-center">
-                    <div class="flex-grow-1 mr-2">
-                        {% bootstrap_field form.comments %}
-                    </div>
-                    <button type="submit" class="btn btn-primary mt-3" id="saveBatchDetailsBtn">
-                        Save batch details
-                    </button>
-                </div>
-            </div>            
-        </form>
-        
-    </div>
-
-    <div class="step-container">
-        <div class="step-header">Step 2: Create New Entry</div>
-        <div class="row align-items-end">
-            <div class="col-md-6 d-flex align-items-end">
-                <select id="templateSelector" class="form-control flex-grow-1 mr-2">
-                    <option value="">Select a template</option>
-                    {% for key, template in templates.items %}
-                        <option value="{{ key }}" {% if key == selected_template %} selected {% endif %}>{{ template.name }}</option>
-                    {% endfor %}
-                </select>
-                {% if user.is_superuser %}
-                <button type="button" class="btn btn-outline-primary add-template-btn align-self-end" onClick="window.open('{% url 'wamtram2:template_manage' %}');" title="Add new template">
-                    <i class="fas fa-plus"></i>
-                </button>
-                {% endif %}
-            </div>
-            <div class="col-md-4 mb-2">
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="setDefaultEnterer" {% if use_default_enterer %} checked {% endif %}>
-                    <label class="form-check-label" for="setDefaultEnterer">
-                        Set batch enterer as default entry enterer
-                    </label>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <a href="{% url 'wamtram2:find_turtle' batch_id=batch.entry_batch_id %}" id="createEntryBtn" class="btn btn-primary float-right">Create a new entry</a>
-            </div>
-        </div>
-        <div id="templateSelectedMessage" class="mt-2 text-success" style="display: none;">Template selected</div>
-    </div>
-
-    <div class="step-container">
-        <div class="step-header">Step 3: Batch Actions</div>
-        <div class="row">
-            <div class="col-md-8">
-                {% if object_list %}
-                    <a id="validateBtn" href="{% url 'wamtram2:validate_data_entry_batch' batch_id=batch.entry_batch_id %}" class="btn btn-primary mr-2">Validate this Batch</a>
-                    {% if user.is_superuser %}
-                    <a id="processBtn" href="{% url 'wamtram2:process_data_entry_batch' batch_id=batch.entry_batch_id %}" class="btn btn-primary">Add this batch to the database</a>
-                    {% endif %}
-                {% endif %}
-            </div>
-            <div class="col-md-4">
-                <form method="get" class="form-inline float-right">
-                    <div class="form-group">
-                        <label class="mr-2" for="filter">Filter</label>
-                        <select name="filter" class="form-control" onchange="this.form.submit()">
-                            <option value="">All</option>
-                            <option value="no_observation_id" {% if request.GET.filter == "no_observation_id" %}selected{% endif %}>Unprocessed observations</option>
-                            <option value="not_processed" {% if request.GET.filter == "not_processed" %}selected{% endif %}>Not Processed</option>
-                        </select>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
     {# Data entries table #}
     {% if object_list %}
     <div class="row mt-3">
@@ -386,7 +387,7 @@
     var adminUrl = "{% url 'admin:wamtram2_trtpersons_add' %}";
     var batchId = "{{ batch.entry_batch_id }}";
     var defaultEnterer = "{{ default_enterer_value }}";
-
+    
     document.addEventListener('DOMContentLoaded', function() {
         // Get necessary DOM elements
         const form = document.getElementById('batchDetailsForm');
@@ -396,6 +397,7 @@
         const createEntryBtn = document.getElementById('createEntryBtn');
         const saveBatchDetailsBtn = document.getElementById('saveBatchDetailsBtn');
         const enteredPersonId = document.getElementById('id_entered_person_id');
+        const paginationLinks = document.querySelectorAll('.pagination a');
 
         // Delay execution to ensure DOM elements are fully loaded
         setTimeout(function() {
@@ -588,108 +590,94 @@
         }
     });
 
-    // Show loading spinner
-    function showLoadingSpinner() {
-        const loadingSpinner = document.querySelector('.loading-spinner');
-        if (loadingSpinner) {
-            loadingSpinner.style.display = 'block';
-        }
+// Show loading spinner
+function showLoadingSpinner() {
+    const loadingSpinner = document.querySelector('.loading-spinner');
+    if (loadingSpinner) {
+        loadingSpinner.style.display = 'block';
+    }
+}
+
+// Hide loading spinner
+function hideLoadingSpinner() {
+    const loadingSpinner = document.querySelector('.loading-spinner');
+    if (loadingSpinner) {
+        loadingSpinner.style.display = 'none';
+    }
+}
+
+// Show loading spinner and overlay
+function showLoadingOverlay() {
+    const overlay = document.querySelector('.loading-overlay');
+    const spinner = document.querySelector('.loading-spinner');
+
+    if (overlay) {
+        overlay.style.display = 'block'; // Show the overlay
     }
 
-    // Hide loading spinner
-    function hideLoadingSpinner() {
-        const loadingSpinner = document.querySelector('.loading-spinner');
-        if (loadingSpinner) {
-            loadingSpinner.style.display = 'none';
-        }
+    if (spinner) {
+        spinner.style.display = 'block'; // Show the loading spinner
+    }
+}
+
+// Hide loading spinner and overlay
+function hideLoadingOverlay() {
+    const overlay = document.querySelector('.loading-overlay');
+    const spinner = document.querySelector('.loading-spinner');
+
+    if (overlay) {
+        overlay.style.display = 'none'; // Hide the overlay
     }
 
-    // Filter select change event handler
-    document.querySelector('select[name="filter"]').addEventListener('change', function() {
-        showLoadingSpinner();
-        this.form.submit();
+    if (spinner) {
+        spinner.style.display = 'none'; // Hide the loading spinner
+    }
+}
+
+// Filter select change event handler
+document.querySelector('select[name="filter"]').addEventListener('change', function() {
+    showLoadingOverlay();
+    this.form.submit();
+});
+
+// Hide loading spinner on page load
+window.addEventListener('load', function() {
+    hideLoadingOverlay();
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    const addToDatabaseBtn = document.getElementById('processBtn');
+    const confirmActionBtn = document.getElementById('confirmActionBtn');
+    const paginationLinks = document.querySelectorAll('.pagination a');
+    const customConfirmationModal = new bootstrap.Modal(document.getElementById('customConfirmationModal'), {
+        backdrop: 'static',
+        keyboard: false
     });
 
-    // Hide loading spinner on page load
-    window.addEventListener('load', function() {
-        hideLoadingSpinner();
-    });
-
-    // Show loading spinner and overlay
-    function showLoadingOverlay() {
-        const overlay = document.querySelector('.loading-overlay'); // Get the existing loading overlay
-        const spinner = document.querySelector('.loading-spinner'); // Get the loading spinner
-
-        if (overlay) {
-            overlay.style.display = 'block'; // Show the overlay
-        }
-
-        if (spinner) {
-            spinner.style.display = 'block'; // Show the loading spinner
-        }
-    }
-
-    // Hide loading spinner and overlay
-    function hideLoadingOverlay() {
-        const overlay = document.querySelector('.loading-overlay'); // Get the existing loading overlay
-        const spinner = document.querySelector('.loading-spinner'); // Get the loading spinner
-
-        if (overlay) {
-            overlay.style.display = 'none'; // Hide the overlay
-        }
-
-        if (spinner) {
-            spinner.style.display = 'none'; // Hide the loading spinner
-        }
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        const addToDatabaseBtn = document.getElementById('processBtn');
-        const confirmActionBtn = document.getElementById('confirmActionBtn');
-        const customConfirmationModal = new bootstrap.Modal(document.getElementById('customConfirmationModal'), {
-            backdrop: 'static',
-            keyboard: false
+    if (addToDatabaseBtn) {
+        addToDatabaseBtn.addEventListener('click', function(event) {
+            event.preventDefault(); // Prevent the default action
+            customConfirmationModal.show(); // Show the custom confirmation modal
         });
+    }
 
-        function showLoadingOverlay() {
-            const overlay = document.querySelector('.loading-overlay');
-            const spinner = document.querySelector('.loading-spinner');
-
-            if (overlay) {
-                overlay.style.display = 'block';
-            }
-
-            if (spinner) {
-                spinner.style.display = 'block';
-            }
-        }
-
-        function hideLoadingOverlay() {
-            const overlay = document.querySelector('.loading-overlay');
-            const spinner = document.querySelector('.loading-spinner');
-
-            if (overlay) {
-                overlay.style.display = 'none';
-            }
-
-            if (spinner) {
-                spinner.style.display = 'none';
-            }
-        }
-
-        if (addToDatabaseBtn) {
-            addToDatabaseBtn.addEventListener('click', function(event) {
-                event.preventDefault(); // Prevent the default action
-                customConfirmationModal.show(); // Show the custom confirmation modal
-            });
-        }
-
+    if (confirmActionBtn) {
         confirmActionBtn.addEventListener('click', function() {
             customConfirmationModal.hide(); // Hide the modal
             showLoadingOverlay(); // Show the loading overlay and spinner
             window.location.href = addToDatabaseBtn.href; // Proceed with the original action
         });
+    }
+
+    // Handle pagination links click event
+    paginationLinks.forEach(link => {
+        link.addEventListener('click', function(event) {
+            event.preventDefault(); // Prevent default action
+            showLoadingOverlay(); // Show loading overlay and spinner
+            window.location.href = this.href; // Proceed with navigation after showing the overlay
+        });
     });
+});
 
 
 </script>
