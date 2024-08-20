@@ -327,7 +327,7 @@ class TrtDataEntry(models.Model):
         db_column="OBSERVATION_TIME", blank=True, null=True
     )  # Field name made lowercase.
     nesting = models.ForeignKey(
-        "TrtYesNo", models.SET_NULL, db_column="NESTING", blank=True, null=True
+        "TrtYesNo", models.SET_NULL, db_column="NESTING", blank=True, null=True, limit_choices_to={'code__in': ['D', 'N', 'Y', 'P']}
     )  # fake foreign key #models.CharField(db_column='NESTING', max_length=1, blank=True, null=True)  # Field name made lowercase.
     species_code = models.ForeignKey(
         "TrtSpecies", models.SET_NULL, db_column="SPECIES_CODE", blank=True, null=True
@@ -792,25 +792,29 @@ class TrtDataEntry(models.Model):
         "TrtYesNo",
         on_delete=models.CASCADE,
         related_name='flipper_tag_entries',
-        db_column='FLIPPER_TAG_CHECK'
+        db_column='FLIPPER_TAG_CHECK',
+        limit_choices_to={'code__in': ['D', 'N', 'Y']}
     )
     pit_tag_check = models.ForeignKey(
         "TrtYesNo",
         on_delete=models.CASCADE,
         related_name='pit_tag_entries',
-        db_column='PIT_TAG_CHECK'
+        db_column='PIT_TAG_CHECK',
+        limit_choices_to={'code__in': ['D', 'N', 'Y']}
     )
     injury_check = models.ForeignKey(
         "TrtYesNo",
         on_delete=models.CASCADE,
         related_name='injury_entries',
-        db_column='INJURY_CHECK'
+        db_column='INJURY_CHECK',
+        limit_choices_to={'code__in': ['D', 'N', 'Y']} 
     )
     scar_check = models.ForeignKey(
         "TrtYesNo",
         on_delete=models.CASCADE,
         related_name='scar_entries',
-        db_column='SCAR_CHECK'
+        db_column='SCAR_CHECK',
+        limit_choices_to={'code__in': ['D', 'N', 'Y']}
     )
     
     recapture_pittag_id_3 = models.ForeignKey(
