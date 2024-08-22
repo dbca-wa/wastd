@@ -71,7 +71,15 @@
 
 <!-- Action and Filter Section -->
 <div class="d-flex justify-content-between align-items-center">
-    <a href="{% url 'wamtram2:new_batch_detail' %}" class="btn btn-primary" id="createNewBatchBtn">Create a new entry batch</a>
+    <div class="d-flex align-items-center">
+        {% if request.user.is_superuser %}
+            <!-- Download Button Visible Only to Admins -->
+            <a href="{% url 'wamtram2:export_form' %}" class="btn btn-outline-secondary mr-3">
+                <i class="fas fa-download"></i> Export Data
+            </a>
+        {% endif %}
+        <a href="{% url 'wamtram2:new_batch_detail' %}" class="btn btn-primary" id="createNewBatchBtn">Create a new entry batch</a>
+    </div>
     <form method="get" class="form-inline">
         <div class="form-group">
             <label class="mr-1" for="filter">Filter</label>
@@ -82,6 +90,7 @@
         </div>
     </form>
 </div>
+
 
 <!-- Entry Batch List Table -->
 {% if object_list %}
