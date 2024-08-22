@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.utils import timezone
 from django.db import connections, DatabaseError
 from django.db.models import Q, Exists, OuterRef
-from django.http import HttpResponseForbidden, HttpResponseRedirect
+from django.http import HttpResponseForbidden, HttpResponseRedirect, HttpResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse, reverse_lazy
@@ -16,9 +16,11 @@ from django.views.decorators.http import require_http_methods
 from django.utils.decorators import method_decorator
 from django.db.models import Count, Exists, OuterRef, Subquery
 from django.core.paginator import Paginator
+from openpyxl import Workbook
 import os
 import json
 import re
+import csv
 
 from wastd.utils import Breadcrumb, PaginateMixin
 from .models import (
@@ -1325,15 +1327,17 @@ def search_places(request):
     return JsonResponse(list(places), safe=False)
 
 
+class ExportDataView(LoginRequiredMixin, View):
+    def dispatch(self, request, *args, **kwargs):
+        # Permission check: only allow users in the specific groups or superusers
+        if not (
+            request.user.is_superuser
+        ):
+            return HttpResponseForbidden(
+                "You do not have permission to view this record"
+            )
+        return super().dispatch(request, *args, **kwargs)
 
-import csv
-from django.views import View
-from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render
-from openpyxl import Workbook
-from .models import TrtDataEntry, TrtPlaces
-
-class ExportDataView(View):
     def get(self, request):
         if request.GET.get('action') == 'get_places':
             return self.get_places(request)
@@ -1357,16 +1361,16 @@ class ExportDataView(View):
         if place_code:
             queryset = queryset.filter(place_code=place_code)
 
-        # 调试输出
+        # Debug output
         print(f"Place Code: {place_code}")
         print(f"Queryset: {queryset.query}")
         
-        # 生成文件逻辑
+        # File generation logic
         if file_format == "csv":
             response = HttpResponse(content_type="text/csv")
             response["Content-Disposition"] = 'attachment; filename="data_export.csv"'
             writer = csv.writer(response)
-            writer.writerow([field.name for field in TrtDataEntry._meta.fields])  # 写入表头
+            writer.writerow([field.name for field in TrtDataEntry._meta.fields])  # Write header
             for entry in queryset:
                 writer.writerow([getattr(entry, field.name) for field in TrtDataEntry._meta.fields])
         elif file_format == "xlsx":
@@ -1374,7 +1378,7 @@ class ExportDataView(View):
             response["Content-Disposition"] = 'attachment; filename="data_export.xlsx"'
             wb = Workbook()
             ws = wb.active
-            ws.append([field.name for field in TrtDataEntry._meta.fields])  # 写入表头
+            ws.append([field.name for field in TrtDataEntry._meta.fields])  # Write header
             for entry in queryset:
                 ws.append([getattr(entry, field.name) for field in TrtDataEntry._meta.fields])
             wb.save(response)
@@ -1400,9 +1404,16 @@ class ExportDataView(View):
         
         return JsonResponse({"places": place_list})
 
-class FilterFormView(View):
+class FilterFormView(LoginRequiredMixin, View):
+    def dispatch(self, request, *args, **kwargs):
+        # Permission check: only allow users in the specific groups or superusers
+        if not (
+            request.user.is_superuser
+        ):
+            return HttpResponseForbidden(
+                "You do not have permission to view this record"
+            )
+        return super().dispatch(request, *args, **kwargs)
+
     def get(self, request):
         return render(request, 'wamtram2/export_form.html')
-
-
-
