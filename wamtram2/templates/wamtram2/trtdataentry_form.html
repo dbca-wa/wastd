@@ -911,8 +911,15 @@
   });
 
   document.addEventListener('DOMContentLoaded', function() {
-    const saveButton = document.getElementById('saveBtn');
     const form = document.getElementById('dataEntryForm');
+
+    // Prevent form submission when Enter is pressed
+    form.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault(); // Prevent the default action of Enter key
+        }
+    });
+
     let isFormDirty = false;
 
     function showLoadingOverlay() {
@@ -927,29 +934,22 @@
             spinner.style.display = 'block';
         }
     }
-    // Prevent the overlay and spinner from continuing to display if there are form validation errors
+
+    // Handle form submission
     form.addEventListener('submit', function(event) {
-        // Prevent the default form submission behavior
-        event.preventDefault();
+        event.preventDefault();  // Prevent the default form submission behavior
 
         // Check if the form has any errors
         if (form.checkValidity()) {
-            // No errors, show the overlay and spinner
-            showLoadingOverlay();
-
-            // Submit the form
-            form.submit();
+            showLoadingOverlay();  // No errors, show the overlay and spinner
+            form.submit();  // Submit the form
         } else {
-            // If the form has errors, do not show the overlay and spinner
-            // Optionally, show a message to the user to correct the errors
-            alert("Please fix the errors in the form before submitting.");
+            alert("Please fix the errors in the form before submitting.");  // Show a message if there are errors
         }
 
-        // Reset the form dirty state
-        isFormDirty = false;
+        isFormDirty = false;  // Reset the form dirty state
     });
 
-    // Form Dirty Handling
     form.addEventListener('input', function() {
         isFormDirty = true;
     });
@@ -962,11 +962,11 @@
         }
     });
 
-    // Reload the page when the back button is clicked
     if (performance.navigation.type === 2) {
-        location.reload(true);
+        location.reload(true);  // Reload the page when the back button is clicked
     }
-  });
+});
+
 
 </script>
 <script src="{% static 'js/tagToggleHandler.js' %}"></script>
