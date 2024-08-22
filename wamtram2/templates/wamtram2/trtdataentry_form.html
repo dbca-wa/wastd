@@ -911,7 +911,16 @@
   });
 
   document.addEventListener('DOMContentLoaded', function() {
-    const saveButton = document.getElementById('saveBtn');
+    const form = document.getElementById('dataEntryForm');
+
+    // Prevent form submission when Enter is pressed
+    form.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault(); // Prevent the default action of Enter key
+        }
+    });
+
+    let isFormDirty = false;
 
     function showLoadingOverlay() {
         const overlay = document.querySelector('.loading-overlay');
@@ -926,12 +935,38 @@
         }
     }
 
-    if (saveButton) {
-        saveButton.addEventListener('click', function() {
-            showLoadingOverlay();
-        });
+    // Handle form submission
+    form.addEventListener('submit', function(event) {
+        event.preventDefault();  // Prevent the default form submission behavior
+
+        // Check if the form has any errors
+        if (form.checkValidity()) {
+            showLoadingOverlay();  // No errors, show the overlay and spinner
+            form.submit();  // Submit the form
+        } else {
+            alert("Please fix the errors in the form before submitting.");  // Show a message if there are errors
+        }
+
+        isFormDirty = false;  // Reset the form dirty state
+    });
+
+    form.addEventListener('input', function() {
+        isFormDirty = true;
+    });
+
+    window.addEventListener('beforeunload', function(event) {
+        if (isFormDirty) {
+            const confirmationMessage = 'You have unsaved changes. Do you really want to leave?';
+            (event || window.event).returnValue = confirmationMessage;
+            return confirmationMessage;
+        }
+    });
+
+    if (performance.navigation.type === 2) {
+        location.reload(true);  // Reload the page when the back button is clicked
     }
-  });
+});
+
 
 </script>
 <script src="{% static 'js/tagToggleHandler.js' %}"></script>

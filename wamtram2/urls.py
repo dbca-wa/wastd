@@ -26,4 +26,6 @@ urlpatterns = [
     path('templates-manage/get-places/', views.TemplateManageView.as_view(), name='get_places'),
     path('search-persons/', views.search_persons, name='search-persons'),
     path('search-places/', views.search_places, name='search-places'),
+    path('export/', views.ExportDataView.as_view(), name='export_data'),
+    path('export/form/', views.FilterFormView.as_view(), name='export_form'),
 ]

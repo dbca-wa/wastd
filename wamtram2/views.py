@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.utils import timezone
 from django.db import connections, DatabaseError
 from django.db.models import Q, Exists, OuterRef
-from django.http import HttpResponseForbidden, HttpResponseRedirect
+from django.http import HttpResponseForbidden, HttpResponseRedirect, HttpResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse, reverse_lazy
@@ -16,9 +16,11 @@ from django.views.decorators.http import require_http_methods
 from django.utils.decorators import method_decorator
 from django.db.models import Count, Exists, OuterRef, Subquery
 from django.core.paginator import Paginator
+from openpyxl import Workbook
 import os
 import json
 import re
+import csv
 
 from wastd.utils import Breadcrumb, PaginateMixin
 from .models import (
@@ -507,10 +509,17 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         entry_id = self.kwargs.get("entry_id")
         batch_id = self.kwargs.get("batch_id")
         cookies_key_prefix = batch_id
+        
 
         if entry_id:
+            entry = get_object_or_404(TrtDataEntry.objects.select_related('turtle_id'), data_entry_id=entry_id)
             context["entry_id"] = entry_id  # Editing existing entry
-            context["entry"] = get_object_or_404(TrtDataEntry.objects.select_related('turtle_id'), data_entry_id=entry_id)
+            context["entry"] = entry
+            
+            if entry.observation_id:
+                context["observation"] = entry.observation_id
+            else:
+                context["observation"] = None
         
         if batch_id:
             context["batch_id"] = batch_id  # Creating new entry in batch
@@ -1318,3 +1327,89 @@ def search_places(request):
     return JsonResponse(list(places), safe=False)
 
 
+class ExportDataView(LoginRequiredMixin, View):
+    def dispatch(self, request, *args, **kwargs):
+        # Permission check: only allow users in the specific groups or superusers
+        if not (
+            request.user.is_superuser
+        ):
+            return HttpResponseForbidden(
+                "You do not have permission to view this record"
+            )
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request):
+        if request.GET.get('action') == 'get_places':
+            return self.get_places(request)
+        return self.export_data(request)
+
+    def export_data(self, request):
+        observation_date_from = request.GET.get("observation_date_from")
+        observation_date_to = request.GET.get("observation_date_to")
+        place_code = request.GET.get("place_code")
+        file_format = request.GET.get("format", "csv")
+
+        queryset = TrtDataEntry.objects.filter(observation_id__isnull=False)
+        
+        if observation_date_from and observation_date_to:
+            queryset = queryset.filter(observation_date__range=[observation_date_from, observation_date_to])
+        elif observation_date_from:
+            queryset = queryset.filter(observation_date__gte=observation_date_from)
+        elif observation_date_to:
+            queryset = queryset.filter(observation_date__lte=observation_date_to)
+        
+        if place_code:
+            queryset = queryset.filter(place_code=place_code)
+
+        # File generation logic
+        if file_format == "csv":
+            response = HttpResponse(content_type="text/csv")
+            response["Content-Disposition"] = 'attachment; filename="data_export.csv"'
+            writer = csv.writer(response)
+            writer.writerow([field.name for field in TrtDataEntry._meta.fields])  # Write header
+            for entry in queryset:
+                writer.writerow([getattr(entry, field.name) for field in TrtDataEntry._meta.fields])
+        elif file_format == "xlsx":
+            response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+            response["Content-Disposition"] = 'attachment; filename="data_export.xlsx"'
+            wb = Workbook()
+            ws = wb.active
+            ws.append([field.name for field in TrtDataEntry._meta.fields])  # Write header
+            for entry in queryset:
+                ws.append([getattr(entry, field.name) for field in TrtDataEntry._meta.fields])
+            wb.save(response)
+
+        return response
+
+    def get_places(self, request):
+        observation_date_from = request.GET.get("observation_date_from")
+        observation_date_to = request.GET.get("observation_date_to")
+
+        places = TrtPlaces.objects.filter(
+            trtdataentry__observation_date__range=[observation_date_from, observation_date_to]
+        ).select_related('location_code').distinct()
+
+        place_list = [
+            {
+                "place_code": place.place_code,
+                "place_name": place.place_name,
+                "location_name": place.location_code.location_name,
+            }
+            for place in places
+        ]
+        
+        return JsonResponse({"places": place_list})
+
+class FilterFormView(LoginRequiredMixin, View):
+    def dispatch(self, request, *args, **kwargs):
+        # Permission check: only allow users in the specific groups or superusers
+        if not (
+            request.user.is_superuser
+        ):
+            return HttpResponseForbidden(
+                "You do not have permission to view this record"
+            )
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request):
+        return render(request, 'wamtram2/export_form.html')
