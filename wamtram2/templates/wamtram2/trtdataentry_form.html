@@ -912,6 +912,8 @@
 
   document.addEventListener('DOMContentLoaded', function() {
     const saveButton = document.getElementById('saveBtn');
+    const form = document.getElementById('dataEntryForm');
+    let isFormDirty = false;
 
     function showLoadingOverlay() {
         const overlay = document.querySelector('.loading-overlay');
@@ -925,11 +927,44 @@
             spinner.style.display = 'block';
         }
     }
+    // Prevent the overlay and spinner from continuing to display if there are form validation errors
+    form.addEventListener('submit', function(event) {
+        // Prevent the default form submission behavior
+        event.preventDefault();
 
-    if (saveButton) {
-        saveButton.addEventListener('click', function() {
+        // Check if the form has any errors
+        if (form.checkValidity()) {
+            // No errors, show the overlay and spinner
             showLoadingOverlay();
-        });
+
+            // Submit the form
+            form.submit();
+        } else {
+            // If the form has errors, do not show the overlay and spinner
+            // Optionally, show a message to the user to correct the errors
+            alert("Please fix the errors in the form before submitting.");
+        }
+
+        // Reset the form dirty state
+        isFormDirty = false;
+    });
+
+    // Form Dirty Handling
+    form.addEventListener('input', function() {
+        isFormDirty = true;
+    });
+
+    window.addEventListener('beforeunload', function(event) {
+        if (isFormDirty) {
+            const confirmationMessage = 'You have unsaved changes. Do you really want to leave?';
+            (event || window.event).returnValue = confirmationMessage;
+            return confirmationMessage;
+        }
+    });
+
+    // Reload the page when the back button is clicked
+    if (performance.navigation.type === 2) {
+        location.reload(true);
     }
   });
 
