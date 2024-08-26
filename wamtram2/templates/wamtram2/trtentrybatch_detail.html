@@ -108,7 +108,7 @@
                     {% endfor %}
                 </select>
                 {% if user.is_superuser %}
-                <button type="button" class="btn btn-outline-primary add-template-btn align-self-end" onClick="window.open('{% url 'wamtram2:template_manage' %}');" title="Add new template">
+                <button type="button" class="btn btn-outline-primary add-template-btn align-self-end" onClick="window.open('{% url 'wamtram2:template_manage'%}');" title="Add new template">
                     <i class="fas fa-plus"></i>
                 </button>
                 {% endif %}
@@ -145,8 +145,8 @@
                         <label class="mr-2" for="filter">Filter</label>
                         <select name="filter" class="form-control" onchange="this.form.submit()">
                             <option value="">All</option>
-                            <option value="no_observation_id" {% if request.GET.filter == "no_observation_id" %}selected{% endif %}>Unprocessed observations</option>
-                            <option value="not_processed" {% if request.GET.filter == "not_processed" %}selected{% endif %}>Not Processed</option>
+                            <option value="needs_review" {% if request.GET.filter == "needs_review" %}selected{% endif %}>Needs Review</option>
+                            <option value="not_saved" {% if request.GET.filter == "not_saved" %}selected{% endif %}>Haven't Saved</option>                            
                         </select>
                     </div>
                 </form>
@@ -219,11 +219,12 @@
                         <th>Delete</th>
                     </tr>
                 </thead>
+
                 <tbody>
                     {% for obj in object_list %}
                     <tr class="{% if obj.highlight_row %}highlight-row{% endif %}">
                         <td><a href="{% url 'wamtram2:trtdataentry' obj.data_entry_id %}">{{ obj.data_entry_id }}</a></td>
-                        <td>{% if obj.observation_id %}<a href="{% url 'wamtram2:observationdetail' pk=obj.observation_id.pk %}">{{ obj.observation_id.pk }}</a>{% endif %}</td>
+                        <td>{% if obj.observation_id %}<a href="{% url 'wamtram2:observationdetail' pk=obj.observation_id.pk %}">{{ obj.observation_id.pk }}</a>{% endif %}</td>                     
                         <td>{{ obj.observation_date|date:"j M Y" }} {{ obj.observation_time|date:"H:i" }}</td>
                         <td>{% if obj.turtle_id %}<a href="{% url 'wamtram2:turtle_detail' obj.turtle_id %}">{{obj.turtle_id}}</a>{% endif %}</td>
                         <td>
@@ -644,6 +645,15 @@ document.querySelector('select[name="filter"]').addEventListener('change', funct
 // Hide loading spinner on page load
 window.addEventListener('load', function() {
     hideLoadingOverlay();
+    setTimeout(function() {
+        hideLoadingOverlay();
+        hideLoadingSpinner();
+    }, 500);
+
+    if (performance.navigation.type === 2) {
+        hideLoadingOverlay();
+        hideLoadingSpinner();
+    }
 });
 
 document.addEventListener('DOMContentLoaded', function() {
