@@ -1,6 +1,5 @@
 {% extends "base_wastd.html" %}
 {% load static bootstrap4 dict_filter %}
-{% load observations_filter %}
 
 {% block extra_style %}
     {{ block.super }}
@@ -225,19 +224,7 @@
                     {% for obj in object_list %}
                     <tr class="{% if obj.highlight_row %}highlight-row{% endif %}">
                         <td><a href="{% url 'wamtram2:trtdataentry' obj.data_entry_id %}">{{ obj.data_entry_id }}</a></td>
-                    <td>
-                        {% if obj.observation_id %}
-                            {% with observation=obj.observation_id|get_observation %}
-                                {% if observation %}
-                    <a href="{% url 'wamtram2:observationdetail' pk=observation.pk %}">{{ observation.pk }}</a>
-                                {% else %}
-                    <span class="text-danger">{{ obj.observation_id }} (Invalid Observation)</span>
-                                {% endif %}
-                            {% endwith %}
-                        {% else %}
-                    <span>No Observation</span>
-                        {% endif %}
-                    </td>                        
+                        <td>{% if obj.observation_id %}<a href="{% url 'wamtram2:observationdetail' pk=obj.observation_id.pk %}">{{ obj.observation_id.pk }}</a>{% endif %}</td>                     
                         <td>{{ obj.observation_date|date:"j M Y" }} {{ obj.observation_time|date:"H:i" }}</td>
                         <td>{% if obj.turtle_id %}<a href="{% url 'wamtram2:turtle_detail' obj.turtle_id %}">{{obj.turtle_id}}</a>{% endif %}</td>
                         <td>
