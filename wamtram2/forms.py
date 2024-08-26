@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import DateTimeInput
 from easy_select2 import apply_select2
-from .models import TrtPersons, TrtDataEntry, TrtTags, TrtEntryBatches, TrtPlaces, TrtPitTags, TrtPitTags, Template, TrtObservations
+from .models import TrtPersons, TrtDataEntry, TrtTags, TrtEntryBatches, TrtPlaces, TrtPitTags, TrtPitTags, Template, TrtObservations,TrtTagStates
 from django_select2.forms import ModelSelect2Widget
 
 
@@ -244,6 +244,24 @@ class TrtDataEntryForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.batch_id = kwargs.pop("batch_id", None)
         super().__init__(*args, **kwargs)
+        
+        # Filter the queryset for new tag fields
+        new_tag_states = TrtTagStates.objects.filter(
+            tag_state__in=["A1", "AE", "P_ED", "P_OK", "#", "R"]
+        )
+        self.fields['new_left_tag_state'].queryset = new_tag_states
+        self.fields['new_right_tag_state'].queryset = new_tag_states
+        self.fields['new_left_tag_state_2'].queryset = new_tag_states
+        self.fields['new_right_tag_state_2'].queryset = new_tag_states
+
+        # Filter the queryset for recapture (old) tag fields
+        old_tag_states = TrtTagStates.objects.filter(
+            tag_state__in=["RQ", "RC", "OO", "OX", "P", "P_ED", "P_OK", "PX"]
+        )
+        self.fields['recapture_left_tag_state'].queryset = old_tag_states
+        self.fields['recapture_right_tag_state'].queryset = old_tag_states
+        self.fields['recapture_left_tag_state_2'].queryset = old_tag_states
+        self.fields['recapture_right_tag_state_2'].queryset = old_tag_states
 
         self.fields["observation_date"].required = True
         self.fields["species_code"].required = True
