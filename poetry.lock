@@ -1488,13 +1488,13 @@ ptyprocess = ">=0.5"
 
 [[package]]
 name = "phonenumbers"
-version = "8.13.32"
+version = "8.13.44"
 description = "Python version of Google's common library for parsing, formatting, storing and validating international phone numbers."
 optional = false
 python-versions = "*"
 files = [
-    {file = "phonenumbers-8.13.32-py2.py3-none-any.whl", hash = "sha256:ff8cd0a786fad230d454f35998984c21e501723e22df3fa61e65dbeef0919ced"},
-    {file = "phonenumbers-8.13.32.tar.gz", hash = "sha256:947a7e645ee6b77dfdd47d47e2ab5a240f46556bf26d101424cc0bb76c1ca200"},
+    {file = "phonenumbers-8.13.44-py2.py3-none-any.whl", hash = "sha256:52cd02865dab1428ca9e89d442629b61d407c7dc687cfb80a3e8d068a584513c"},
+    {file = "phonenumbers-8.13.44.tar.gz", hash = "sha256:2175021e84ee4e41b43c890f2d0af51f18c6ca9ad525886d6d6e4ea882e46fac"},
 ]
 
 [[package]]
@@ -2367,4 +2367,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "facafa1184ccc5c43146c5f60dea2dd0738a44a9005c526bcbb78693ae7cff13"
+content-hash = "a2949acd54ad749ea2da1002eb3963fd13e495b60534621304e9b120b27038db"
