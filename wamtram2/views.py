@@ -220,10 +220,10 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
         batch_id = self.kwargs.get("batch_id")
 
         filter_value = self.request.GET.get("filter")
-        if filter_value == "processed":
-            queryset = queryset.filter(entry_batch_id=batch_id, do_not_process=False)
-        elif filter_value == "not_processed":
+        if filter_value == "needs_review":
             queryset = queryset.filter(entry_batch_id=batch_id, do_not_process=True)
+        elif filter_value == "not_saved":
+            queryset = queryset.filter(entry_batch_id=batch_id, observation_id__isnull=True)
         else:
             queryset = queryset.filter(entry_batch_id=batch_id)
 

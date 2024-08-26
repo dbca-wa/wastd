@@ -145,8 +145,8 @@
                         <label class="mr-2" for="filter">Filter</label>
                         <select name="filter" class="form-control" onchange="this.form.submit()">
                             <option value="">All</option>
-                            <option value="no_observation_id" {% if request.GET.filter == "no_observation_id" %}selected{% endif %}>Unprocessed observations</option>
-                            <option value="not_processed" {% if request.GET.filter == "not_processed" %}selected{% endif %}>Not Processed</option>
+                            <option value="needs_review" {% if request.GET.filter == "needs_review" %}selected{% endif %}>Needs Review</option>
+                            <option value="not_saved" {% if request.GET.filter == "not_saved" %}selected{% endif %}>Haven't Saved</option>                            
                         </select>
                     </div>
                 </form>
