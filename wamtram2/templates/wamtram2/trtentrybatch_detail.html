@@ -219,11 +219,22 @@
                         <th>Delete</th>
                     </tr>
                 </thead>
+                {% load observations_filters %}
                 <tbody>
                     {% for obj in object_list %}
                     <tr class="{% if obj.highlight_row %}highlight-row{% endif %}">
                         <td><a href="{% url 'wamtram2:trtdataentry' obj.data_entry_id %}">{{ obj.data_entry_id }}</a></td>
-                        <td>{% if obj.observation_id %}<a href="{% url 'wamtram2:observationdetail' pk=obj.observation_id.pk %}">{{ obj.observation_id.pk }}</a>{% endif %}</td>
+                        <td>
+                            {% if obj.observation_id %}
+                                {% if obj.observation_id|get_observation %}
+                                    <a href="{% url 'wamtram2:observationdetail' pk=obj.observation_id.pk %}">{{ obj.observation_id.pk }}</a>
+                                {% else %}
+                                    <span class="text-danger">Invalid Observation</span>
+                                {% endif %}
+                            {% else %}
+                                <span>No Observation</span>
+                            {% endif %}
+                        </td>                        
                         <td>{{ obj.observation_date|date:"j M Y" }} {{ obj.observation_time|date:"H:i" }}</td>
                         <td>{% if obj.turtle_id %}<a href="{% url 'wamtram2:turtle_detail' obj.turtle_id %}">{{obj.turtle_id}}</a>{% endif %}</td>
                         <td>
