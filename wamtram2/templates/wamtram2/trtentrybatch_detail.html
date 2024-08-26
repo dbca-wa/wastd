@@ -645,6 +645,9 @@ document.querySelector('select[name="filter"]').addEventListener('change', funct
 // Hide loading spinner on page load
 window.addEventListener('load', function() {
     hideLoadingOverlay();
+    setTimeout(function() {
+        hideLoadingOverlay();
+    }, 500);
 });
 
 document.addEventListener('DOMContentLoaded', function() {
