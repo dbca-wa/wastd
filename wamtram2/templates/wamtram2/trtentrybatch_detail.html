@@ -108,7 +108,7 @@
                     {% endfor %}
                 </select>
                 {% if user.is_superuser %}
-                <button type="button" class="btn btn-outline-primary add-template-btn align-self-end" onClick="window.open('{% url 'wamtram2:template_manage' %}');" title="Add new template">
+                <button type="button" class="btn btn-outline-primary add-template-btn align-self-end" onClick="window.open('{% url 'wamtram2:template_manage'%}');" title="Add new template">
                     <i class="fas fa-plus"></i>
                 </button>
                 {% endif %}
@@ -647,7 +647,13 @@ window.addEventListener('load', function() {
     hideLoadingOverlay();
     setTimeout(function() {
         hideLoadingOverlay();
+        hideLoadingSpinner();
     }, 500);
+
+    if (performance.navigation.type === 2) {
+        hideLoadingOverlay();
+        hideLoadingSpinner();
+    }
 });
 
 document.addEventListener('DOMContentLoaded', function() {
