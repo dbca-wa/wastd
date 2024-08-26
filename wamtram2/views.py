@@ -1361,10 +1361,6 @@ class ExportDataView(LoginRequiredMixin, View):
         if place_code:
             queryset = queryset.filter(place_code=place_code)
 
-        # Debug output
-        print(f"Place Code: {place_code}")
-        print(f"Queryset: {queryset.query}")
-        
         # File generation logic
         if file_format == "csv":
             response = HttpResponse(content_type="text/csv")
