@@ -130,18 +130,6 @@ class EntryBatchesListView(LoginRequiredMixin, ListView):
 class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
     """
     A view for displaying list of a batch of TrtDataEntry objects.
-
-    Attributes:
-        model (Model): The model class for the TrtDataEntry objects.
-        template_name (str): The name of the template to be used for rendering the view.
-        context_object_name (str): The name of the variable to be used in the template for the queryset.
-        paginate_by (int): The number of objects to display per page.
-
-    Methods:
-        get_queryset(): Returns the queryset of TrtDataEntry objects filtered by entry_batch_id.
-        get_context_data(**kwargs): Returns the context data for rendering the template, including the persons dictionary.
-        load_templates(): Loads the templates from the templates.json file.
-
     """
 
     model = TrtDataEntry
@@ -164,17 +152,8 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
             initial['entered_person_id'] = default_enterer
         
         return initial
-        
-    def load_templates(self):
-        """
-        Loads the templates from the templates.json file.
-        """
-        json_file_path = os.path.join(settings.BASE_DIR, 'wamtram2', 'templates.json')
-        with open(json_file_path, 'r') as file:
-            return json.load(file)
 
     def dispatch(self, request, *args, **kwargs):
-        # FIXME: Permission check
         if not (
             request.user.groups.filter(name="Tagging Data Entry").exists()
             or request.user.groups.filter(name="Tagging Data Curation").exists()
@@ -186,42 +165,19 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
         return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
-        """
-        Handle GET requests.
-
-        This method checks if a 'batch_id' is in 'kwargs'. If not, it creates a new TrtEntryBatches object
-        and sets the 'batch_id' key in 'kwargs' to the newly created batch's entry_batch_id.
-        Then, it calls the 'get' method of the parent class using 'super()' and returns the result.
-
-        Args:
-            request: The HTTP request object.
-            args: Additional positional arguments.
-            kwargs: Additional keyword arguments.
-
-        Returns:
-            The response returned by the 'get' method of the parent class.
-        """
         if "batch_id" not in kwargs:
             new_batch = TrtEntryBatches.objects.create(
                 pr_date_convention=False,
                 entry_date=timezone.now().date()
-            )  # All dates should be entered as calendar dates
+            )
             self.kwargs["batch_id"] = new_batch.entry_batch_id
         return super().get(request, *args, **kwargs)
 
     def get_queryset(self):
-        """
-        Returns the queryset of TrtDataEntry objects filtered by entry_batch_id.
-
-        Returns:
-            queryset (QuerySet): The filtered queryset of TrtDataEntry objects.
-        """
         queryset = super().get_queryset()
         batch_id = self.kwargs.get("batch_id")
     
         filter_value = self.request.GET.get("filter")
-        print(f"Filter value: {filter_value}")
-    
         if filter_value == "needs_review":
             queryset = queryset.filter(entry_batch_id=batch_id, do_not_process=True)
         elif filter_value == "not_saved":
@@ -232,34 +188,26 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
         return queryset.order_by("-data_entry_id")
 
     def get_context_data(self, **kwargs):
-        """
-        Returns the context data for rendering the template, including the persons dictionary.
-
-        Args:
-            **kwargs: Additional keyword arguments.
-
-        Returns:
-            context (dict): The context data for rendering the template.
-
-        """
         context = super().get_context_data(**kwargs)
         context["persons"] = {
             person.person_id: person for person in TrtPersons.objects.all()
         }
 
         batch = TrtEntryBatches.objects.get(entry_batch_id=self.kwargs.get("batch_id"))
-        context["batch"] = batch  # add the batch to the context
+        context["batch"] = batch
         initial = self.get_initial()
         context["form"] = TrtEntryBatchesForm(
             instance=batch,
             initial=initial
-        )  # Add the form to the context data
+        )
         
         # Add a `highlight_row` attribute to each entry if it meets the conditions
         for entry in context['object_list']:
             entry.highlight_row = entry.do_not_process and entry.error_message not in ['None', 'Observation added to database']
         
-        # Add the templates to the context data
+        # 从数据库加载模板数据并添加到上下文
+        context['templates'] = Template.objects.all()
+
         cookies_key_prefix = self.kwargs.get("batch_id")
         context['selected_template'] = self.request.COOKIES.get(f'{cookies_key_prefix}_selected_template', '')
         context['use_default_enterer'] = self.request.COOKIES.get(f'{cookies_key_prefix}_use_default_enterer', False)
@@ -267,7 +215,6 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
 
         context['cookies_key_prefix'] = cookies_key_prefix
         context['default_enterer_value'] = context['default_enterer']
-        context['templates'] = self.load_templates()
         
         # Add entries with do_not_process = True to the context
         context["do_not_process_entries"] = TrtDataEntry.objects.filter(
@@ -301,24 +248,17 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
 
         batch_id = batch.entry_batch_id
 
-        # Get the existing instance from the database
         existing_batch = TrtEntryBatches.objects.get(entry_batch_id=batch_id)
-
-        # Update the PR_DATE_CONVENTION field with the existing value
         batch.pr_date_convention = existing_batch.pr_date_convention
         batch.entry_date = existing_batch.entry_date
         batch.filename = existing_batch.filename
 
-        # Save the batch instance
         batch.save()
-
-        # Redirect to the success URL
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
         batch_id = self.kwargs.get("batch_id")
         return reverse("wamtram2:entry_batch_detail", args=[batch_id])
-
 
 class TrtDataEntryFormView(LoginRequiredMixin, FormView):
     """
@@ -921,6 +861,7 @@ class TemplateManageView(LoginRequiredMixin, FormView):
                 'sex': updated_template.sex
             })
         return JsonResponse({'errors': form.errors}, status=400)
+
 
 class ValidateTagView(View):
     """
