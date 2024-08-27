@@ -886,6 +886,7 @@ SEX_CHOICES = [
     ("F", "Female"),
     ("I", "Indeterminate"),
 ]
+import uuid
 class TemplateManageView(LoginRequiredMixin, FormView):
     """
     View for managing templates.
@@ -948,13 +949,7 @@ class TemplateManageView(LoginRequiredMixin, FormView):
         Returns:
             str: The new template key.
         """
-        max_key = 0
-        template_key_pattern = re.compile(r'^template(\d+)$')
-        for key in templates.keys():
-            match = template_key_pattern.match(key)
-            if match:
-                max_key = max(max_key, int(match.group(1)))
-        return f"template{max_key + 1}"
+        return str(uuid.uuid4())
 
     def form_valid(self, form):
         """
