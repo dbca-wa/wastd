@@ -1,4 +1,5 @@
 from django.contrib.gis.db import models
+import uuid
 
 class TrtActivities(models.Model):
     activity_code = models.CharField(
@@ -2307,15 +2308,22 @@ class TrtYesNo(models.Model):
     def __str__(self):
         return f"{self.description}"
 
-
-# local models templates.json
+SEX_CHOICES = [
+    ("M", "Male"),
+    ("F", "Female"),
+    ("I", "Indeterminate"),
+]
 class Template(models.Model):
+    template_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
     location_code = models.CharField(max_length=50)
     place_code = models.CharField(max_length=50)
     species_code = models.CharField(max_length=50)
-    sex = models.CharField(max_length=1)
+    sex = models.CharField(max_length=1, choices=SEX_CHOICES)
 
+    class Meta:
+        db_table = 'TRT_TEMPLATE'
+        
     def __str__(self):
         return self.name
 
