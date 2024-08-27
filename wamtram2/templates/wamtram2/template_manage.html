@@ -260,7 +260,8 @@
             success: function(data) {
                 showMessage('Template updated successfully', 'success');
                 setTimeout(function() {
-                    location.reload();
+                    // 强制页面从服务器获取最新数据，避免缓存问题
+                    window.location.reload(true);
                 }, 500);
             },
             error: function(xhr, status, error) {
@@ -273,6 +274,33 @@
                     errorMessage += '. Please check the server logs for more details.';
                 }
                 showMessage(errorMessage, 'danger');
+            },
+            complete: function() {
+                hideLoadingSpinner();
+            }
+        });
+    }
+
+    // Create Template
+    function createTemplate() {
+        var formData = $('#templateForm').serialize();
+        showLoadingSpinner();
+        $.ajax({
+            url: "{% url 'wamtram2:template_manage' %}",
+            type: "POST",
+            data: formData,
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader("X-CSRFToken", getCSRFToken());
+            },
+            success: function(data) {
+                showMessage('Template created successfully', 'success');
+                setTimeout(function() {
+                    // 强制页面从服务器获取最新数据，避免缓存问题
+                    window.location.reload(true);
+                }, 500);
+            },
+            error: function(data) {
+                showMessage('Error creating template: ' + JSON.stringify(data.responseJSON.errors), 'danger');
             },
             complete: function() {
                 hideLoadingSpinner();
@@ -304,32 +332,6 @@
                 }
             });
         }
-    }
-
-    // Create Template
-    function createTemplate() {
-        var formData = $('#templateForm').serialize();
-        showLoadingSpinner();
-        $.ajax({
-            url: "{% url 'wamtram2:template_manage' %}",
-            type: "POST",
-            data: formData,
-            beforeSend: function(xhr) {
-                xhr.setRequestHeader("X-CSRFToken", getCSRFToken());
-            },
-            success: function(data) {
-                showMessage('Template created successfully', 'success');
-                setTimeout(function() {
-                    location.reload();
-                }, 500);
-            },
-            error: function(data) {
-                showMessage('Error creating template: ' + JSON.stringify(data.responseJSON.errors), 'danger');
-            },
-            complete: function() {
-                hideLoadingSpinner();
-            }
-        });
     }
 
     // Load Places based on Location Code
