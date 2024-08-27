@@ -133,7 +133,7 @@
                             {% csrf_token %}
                             <div class="form-row">
                                 <div class="form-group col-md-2">
-                                    <label for="name_{{ key }}" class="template-name">Template {{ index|add:1 }}</label>
+                                    <label for="name_{{ key }}" class="template-name">Template</label>
                                 </div>
                                 <div class="form-group col-md-10">
                                     <input type="text" class="form-control" id="name_{{ key }}" name="name" value="{{ template.name }}">
