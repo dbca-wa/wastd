@@ -103,7 +103,7 @@
             <div class="col-md-6 d-flex align-items-end">
                 <select id="templateSelector" class="form-control flex-grow-1 mr-2">
                     <option value="">Select a template</option>
-                    {% for key, template in templates.items %}
+                    {% for template in templates %}
                         <option value="{{ key }}" {% if key == selected_template %} selected {% endif %}>{{ template.name }}</option>
                     {% endfor %}
                 </select>
