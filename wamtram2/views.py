@@ -829,6 +829,18 @@ SEX_CHOICES = [
 class TemplateManageView(LoginRequiredMixin, FormView):
     template_name = 'wamtram2/template_manage.html'
     form_class = TemplateForm
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_superuser:
+            return HttpResponseForbidden("You do not have permission to access this page.")
+        
+        if request.method == 'PUT':
+            return self.put(request, *args, **kwargs)
+        elif request.method == 'DELETE':
+            return self.delete(request, *args, **kwargs)
+        elif request.method == 'GET' and 'location_code' in request.GET:
+            return self.get_places(request)
+        
+        return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
         form.save()
@@ -861,6 +873,22 @@ class TemplateManageView(LoginRequiredMixin, FormView):
                 'sex': updated_template.sex
             })
         return JsonResponse({'errors': form.errors}, status=400)
+    
+    def get_places(self, request):
+        """
+        Retrieves places based on the provided location code.
+
+        Args:
+            request (HttpRequest): The HTTP request.
+
+        Returns:
+            JsonResponse: The JSON response with places data.
+        """
+        location_code = request.GET.get('location_code')
+        places = TrtPlaces.objects.filter(location_code=location_code)
+        places_list = list(places.values('place_code', 'place_name'))
+        return JsonResponse(places_list, safe=False)
+    
 
 
 class ValidateTagView(View):
