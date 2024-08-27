@@ -300,10 +300,15 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         return kwargs
 
     def get_template_data(self, template_key):
-        json_file_path = os.path.join(settings.BASE_DIR, 'wamtram2', 'templates.json')
-        with open(json_file_path, 'r') as file:
-            templates = json.load(file)
-        return templates.get(template_key)
+        try:
+            template = Template.objects.get(pk=template_key)
+            return {
+                'place_code': template.place_code,
+                'species_code': template.species_code,
+                'sex': template.sex
+            }
+        except Template.DoesNotExist:
+            return None
 
     def get_initial(self):
         initial = super().get_initial()
