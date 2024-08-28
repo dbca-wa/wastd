@@ -58,6 +58,7 @@
                 <tbody>
                     {% for entry in entries %}
                     <!-- Flipper Tag -->
+                    {% if entry.dud_filpper_tag %}
                     <tr>
                         <td>
                             {% if entry.data_entry_id %}
@@ -97,8 +98,10 @@
                             {% endif %}
                         </td>
                     </tr>
+                    {% endif %}
 
                     <!-- Flipper Tag 2 -->
+                    {% if entry.dud_filpper_tag_2 %}
                     <tr>
                         <td>
                             {% if entry.data_entry_id %}
@@ -138,8 +141,10 @@
                             {% endif %}
                         </td>
                     </tr>
+                    {% endif %}
 
                     <!-- PIT Tag -->
+                    {% if entry.dud_pit_tag %}
                     <tr>
                         <td>
                             {% if entry.data_entry_id %}
@@ -179,8 +184,10 @@
                             {% endif %}
                         </td>
                     </tr>
+                    {% endif %}
 
                     <!-- PIT Tag 2 -->
+                    {% if entry.dud_pit_tag_2 %}
                     <tr>
                         <td>
                             {% if entry.data_entry_id %}
@@ -220,6 +227,7 @@
                             {% endif %}
                         </td>
                     </tr>
+                    {% endif %}
                     {% endfor %}
                 </tbody>
             </table>
