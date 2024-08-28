@@ -28,66 +28,77 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
         <!-- Pagination Section -->
         <div class="pagination-container"> 
-            {% if is_paginated %} {% load proper_paginate %} {% load url_replace %} 
-            <ul class="pagination mb-0"> 
-                {% if page_obj.number == 1 %} 
+            {% if is_paginated %} 
+            {% load proper_paginate %}
+            {% load url_replace %}
+            <ul class="pagination mb-0">
+                {% if page_obj.number == 1 %}
                 <li class="page-item disabled">
                     <span class="page-link">⇤</span>
                 </li>  
-                {% else %} 
+                {% else %}
                 <li class="page-item">
                     <a class="page-link" href="?{% url_replace request 'page' 1 %}">⇤</a>
                 </li> 
                 {% endif %} 
-                {% if page_obj.has_previous %} 
+                {% if page_obj.has_previous %}
                 <li class="page-item">
                     <a class="page-link" href="?{% url_replace request 'page' page_obj.previous_page_number %}">&laquo;</a>
                 </li>
-                {% else %} 
+                {% else %}
                 <li class="page-item disabled">
                     <span class="page-link">&laquo;</span>
-                </li> {% endif %} 
-                {% for i in paginator|proper_paginate:page_obj.number %} 
-                    {% if page_obj.number == i %} 
+                </li> 
+                {% endif %} 
+                {% for i in paginator|proper_paginate:page_obj.number %}
+                    {% if page_obj.number == i %}
                     <li class="page-item active">
                         <span class="page-link">{{ i }}<span class="sr-only">(current)</span></span>
                     </li>
-                    {% else %} 
+                    {% else %}
                     <li class="page-item">
                         <a class="page-link" href="?{% url_replace request 'page' i %}">{{ i }}</a>
                     </li> 
-                    {% endif %} 
-                {% endfor %} 
-                {% if page_obj.has_next %} 
+                    {% endif %}
+                {% endfor %}
+                {% if page_obj.has_next %}
                 <li class="page-item">
                     <a class="page-link" href="?{% url_replace request 'page' page_obj.next_page_number %}">&raquo;</a>
-                </li> 
-                {% else %} 
+                </li>
+                {% else %}
                 <li class="page-item disabled">
                     <span class="page-link">&raquo;</span>
                 </li> 
-                {% endif %} 
-                {% if page_obj.number == paginator.num_pages %} 
+                {% endif %}
+                {% if page_obj.number == paginator.num_pages %}
                 <li class="page-item disabled">
                     <span class="page-link">⇥</span>
-                </li> {% else %} <li class="page-item">
+                </li>
+                {% else %}
+                <li class="page-item">
                     <a class="page-link" href="?{% url_replace request 'page' paginator.num_pages %}">⇥</a>
                 </li>
-            {% endif %}  
+                {% endif %}  
             </ul> 
             {% endif %} 
         </div>
+    
         <!-- Export Buttons Section -->
         <div class="d-flex align-items-center"> 
             {% if request.user.is_superuser %}
             <!-- Download Button Visible Only to Admins -->
             <a href="{% url 'wamtram2:export_form' %}" class="btn btn-outline-secondary mr-3">
-                <i class="fas fa-download"></i> Export Data 
-            </a> 
+                <i class="fas fa-download"></i> Export Data
+            </a>
+            
+            <!-- Dud Wrench Button -->
+            <a href="{% url 'wamtram2:dud_tag_manage' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-wrench"></i> Dud Tags
+            </a>
             {% endif %} 
         </div>
     </div>
-
+    
     <div class="d-flex justify-content-between align-items-center mb-3">
         <!-- Create New Entry Batch Button Section-->
         <a href="{% url 'wamtram2:new_batch_detail' %}" class="btn btn-primary" id="createNewBatchBtn">Create a new entry batch</a>
