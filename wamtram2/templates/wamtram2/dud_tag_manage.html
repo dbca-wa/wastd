@@ -1,6 +1,5 @@
 {% extends "base_wastd.html" %}
 {% load static bootstrap4 %}
-<p>Template loaded successfully</p>
 
 {% block extra_style %}
     {{ block.super }}
@@ -29,7 +28,10 @@
     </nav>
 {% endblock %}
 
+<p>Template loaded successfully</p> <!-- 用于测试模板是否正确加载 -->
 {% block page_content_inner %}
+
+
     <div class="container">
         <h1>Dud Tag Management</h1>
 
@@ -77,14 +79,14 @@
         </form>
 
         <!-- Loading spinner -->
-        <div class="loading-spinner">
+        <div class="loading-spinner" style="display:none;">
             <div class="spinner-border text-primary" role="status">
                 <span class="sr-only">Loading...</span>
             </div>
         </div>
 
         <!-- Loading Overlay -->
-        <div class="loading-overlay"></div>
+        <div class="loading-overlay" style="display:none;"></div>
     </div>
 {% endblock %}
 

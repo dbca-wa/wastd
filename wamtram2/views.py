@@ -1200,35 +1200,53 @@ class FilterFormView(LoginRequiredMixin, View):
     def get(self, request):
         return render(request, 'wamtram2/export_form.html')
 
-class DudTagManageView(LoginRequiredMixin, View):
+class DudTagManageView(View):
     template_name = 'wamtram2/dud_tag_manage.html'
 
-    def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_superuser:
-            return HttpResponseForbidden("You do not have permission to view this record")
-        return super().dispatch(request, *args, **kwargs)
-
     def get(self, request):
-        print("Processing GET request...")
-        entries = TrtDataEntry.objects.all()
-        print(f"Found {entries.count()} entries")
-        return render(request, self.template_name, {'entries': entries})
+        if not request.user.is_superuser:
+            return HttpResponseForbidden("You do not have permission to access this page.")
+        
+        # 获取所有含有 dud tag 的数据条目
+        entries = TrtDataEntry.objects.filter(
+            dud_filpper_tag__isnull=False
+        ).select_related('turtle_id', 'observation_id')
+        
+        context = {
+            'entries': entries,
+        }
+        return render(request, self.template_name, context)
 
     def post(self, request):
-        print("Processing POST request...")
+        if not request.user.is_superuser:
+            return HttpResponseForbidden("You do not have permission to access this page.")
+        
+        # 获取用户提交的数据
         entry_id = request.POST.get('entry_id')
-        entry = get_object_or_404(TrtDataEntry, pk=entry_id)
-        print(f"Processing entry with ID: {entry_id}") 
+        tag_type = request.POST.get('tag_type')
+        tag_status = request.POST.get('tag_status')
 
+        # 查找对应的 TrtDataEntry
+        entry = get_object_or_404(TrtDataEntry, pk=entry_id)
+
+        # 根据 tag 类型更新 TRT_TAGS 或 TRT_PIT_TAG
+        if tag_type == 'flipper':
+            tag = get_object_or_404(TrtTags, tag_id=entry.dud_filpper_tag)
+            tag.tag_status = tag_status
+            tag.save()
+        elif tag_type == 'pit':
+            tag = get_object_or_404(TrtPitTags, pit_tag_id=entry.dud_pit_tag)
+            tag.pit_tag_status = tag_status
+            tag.save()
+
+        # 创建或更新 observation
         observation, created = TrtObservations.objects.update_or_create(
             observation_id=entry.observation_id,
             defaults={
-                'dud_filpper_tag': entry.dud_filpper_tag,
-                'dud_filpper_tag_2': entry.dud_filpper_tag_2,
-                'dud_pit_tag': entry.dud_pit_tag,
-                'dud_pit_tag_2': entry.dud_pit_tag_2,
+                'flipper_dud_tag': entry.dud_filpper_tag,
+                'pit_dud_tag': entry.dud_pit_tag,
             }
         )
 
-        print(f"Observation {'created' if created else 'updated'} for entry ID: {entry_id}") 
+        # 保存完成后重定向到管理页面
         return redirect('dud_tag_manage')
