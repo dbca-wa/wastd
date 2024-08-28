@@ -28,4 +28,5 @@ urlpatterns = [
     path('search-places/', views.search_places, name='search-places'),
     path('export/', views.ExportDataView.as_view(), name='export_data'),
     path('export/form/', views.FilterFormView.as_view(), name='export_form'),
+    path('dud-tag-manage/', views.DudTagManageView.as_view(), name='dud_tag_manage'),
 ]
