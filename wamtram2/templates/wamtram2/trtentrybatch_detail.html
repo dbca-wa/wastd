@@ -103,10 +103,12 @@
             <div class="col-md-6 d-flex align-items-end">
                 <select id="templateSelector" class="form-control flex-grow-1 mr-2">
                     <option value="">Select a template</option>
-                    {% for template in templates %}
-                        <option value="{{ key }}" {% if key == selected_template %} selected {% endif %}>{{ template.name }}</option>
-                    {% endfor %}
-                </select>
+                        {% for template in templates %}
+                    <option value="{{ template.template_id }}" {% if template.template_id == selected_template %} selected {% endif %}>
+                                {{ template.name }}
+                    </option>
+                        {% endfor %}
+                    </select>
                 {% if user.is_superuser %}
                 <button type="button" class="btn btn-outline-primary add-template-btn align-self-end" onClick="window.open('{% url 'wamtram2:template_manage'%}');" title="Add new template">
                     <i class="fas fa-plus"></i>
