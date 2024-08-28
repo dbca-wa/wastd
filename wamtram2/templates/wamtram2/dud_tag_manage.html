@@ -1,9 +1,11 @@
 {% extends "base_wastd.html" %}
 {% load static bootstrap4 %}
-<p>Template loaded successfully</p>
 
 {% block extra_style %}
     {{ block.super }}
+    {{ form.media.css }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
     <style>
         .table th, .table td {
             vertical-align: middle;
@@ -241,7 +243,7 @@
         </div>
 
         <!-- Loading Overlay -->
-        <div class="loading-overlay" style="display:none;"></div>
+        <div class="loading-overlay"></div>
     </div>
 {% endblock %}
 
@@ -267,7 +269,7 @@
                 }
             });
         });
-
+    
         // Functions to handle loading spinner and messages
         function showLoadingSpinner() {
             const loadingSpinner = document.querySelector('.loading-spinner');
@@ -279,7 +281,7 @@
                 loadingSpinner.style.display = 'block';
             }
         }
-
+    
         function hideLoadingSpinner() {
             const loadingSpinner = document.querySelector('.loading-spinner');
             const loadingOverlay = document.querySelector('.loading-overlay');
@@ -290,18 +292,18 @@
                 loadingSpinner.style.display = 'none';
             }
         }
-
+    
         function showMessage(message, type) {
             var alert = $('#message-alert');
             alert.removeClass('alert-success alert-danger');
             alert.addClass('alert-' + type);
             alert.text(message);
             alert.slideDown();
-
+    
             setTimeout(function() {
                 alert.slideUp();
             }, 3000);
         }
-    });
+    });    
 </script>
 {% endblock %}
