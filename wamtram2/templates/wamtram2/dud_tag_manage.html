@@ -1,5 +1,6 @@
 {% extends "base_wastd.html" %}
 {% load static bootstrap4 %}
+<p>Template loaded successfully</p>
 
 {% block extra_style %}
     {{ block.super }}
@@ -19,7 +20,6 @@
 {% endblock extra_head %}
 
 {% block breadcrumbs %}
-    <!-- Breadcrumb Navigation -->
     <nav aria-label="breadcrumb" class="d-none d-md-block">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
@@ -28,10 +28,7 @@
     </nav>
 {% endblock %}
 
-<p>Template loaded successfully</p> <!-- 用于测试模板是否正确加载 -->
 {% block page_content_inner %}
-
-
     <div class="container">
         <h1>Dud Tag Management</h1>
 
@@ -52,25 +49,103 @@
                         <th>Entry ID</th>
                         <th>Observation ID</th>
                         <th>Turtle ID</th>
-                        <th>Dud Flipper Tag</th>
-                        <th>Dud Flipper Tag 2</th>
-                        <th>Dud Pit Tag</th>
-                        <th>Dud Pit Tag 2</th>
+                        <th>DUD Tag Type</th>
+                        <th>DUD Tag ID</th>
+                        <th>DUD Tag Status</th>
                         <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for entry in entries %}
+                    <!-- Flipper Tag -->
                     <tr>
-                        <td>{{ entry.data_entry_id }}</td>
-                        <td>{{ entry.observation_id }}</td>
-                        <td>{{ entry.turtle_id }}</td>
-                        <td>{{ entry.dud_filpper_tag }}</td>
-                        <td>{{ entry.dud_filpper_tag_2 }}</td>
-                        <td>{{ entry.dud_pit_tag }}</td>
-                        <td>{{ entry.dud_pit_tag_2 }}</td>
+                        <td><a href="{% url 'wamtram2:trtdataentry' entry.data_entry_id %}">{{ entry.data_entry_id }}</a></td>
+                        <td><a href="{% url 'wamtram2:observationdetail' entry.observation_id.id %}">{{ entry.observation_id.id }}</a></td>
+                        <td><a href="{% url 'wamtram2:turtle_detail' entry.turtle_id.id %}">{{ entry.turtle_id.id }}</a></td>
+                        <td>Flipper</td>
+                        <td><input type="text" name="tag_id" value="{{ entry.dud_filpper_tag }}" /></td>
                         <td>
-                            <button type="submit" name="entry_id" value="{{ entry.data_entry_id }}" class="btn btn-primary btn-block">Save</button>
+                            <select name="tag_status">
+                                {% for state in tag_states %}
+                                    <option value="{{ state.tag_state }}" {% if state.tag_state == entry.dud_filpper_tag_state %}selected{% endif %}>{{ state.description }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td>
+                            {% if entry.observation_id %}
+                                <button type="submit" name="entry_id" value="{{ entry.data_entry_id }}" class="btn btn-primary btn-block">Save</button>
+                            {% else %}
+                                <button type="button" class="btn btn-secondary btn-block" disabled>No Observation</button>
+                            {% endif %}
+                        </td>
+                    </tr>
+
+                    <!-- Flipper Tag 2 -->
+                    <tr>
+                        <td><a href="{% url 'wamtram2:trtdataentry' entry.data_entry_id %}">{{ entry.data_entry_id }}</a></td>
+                        <td><a href="{% url 'wamtram2:observationdetail' entry.observation_id.id %}">{{ entry.observation_id.id }}</a></td>
+                        <td><a href="{% url 'wamtram2:turtle_detail' entry.turtle_id.id %}">{{ entry.turtle_id.id }}</a></td>
+                        <td>Flipper 2</td>
+                        <td><input type="text" name="tag_id" value="{{ entry.dud_filpper_tag_2 }}" /></td>
+                        <td>
+                            <select name="tag_status">
+                                {% for state in tag_states %}
+                                    <option value="{{ state.tag_state }}" {% if state.tag_state == entry.dud_filpper_tag_state_2 %}selected{% endif %}>{{ state.description }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td>
+                            {% if entry.observation_id %}
+                                <button type="submit" name="entry_id" value="{{ entry.data_entry_id }}" class="btn btn-primary btn-block">Save</button>
+                            {% else %}
+                                <button type="button" class="btn btn-secondary btn-block" disabled>No Observation</button>
+                            {% endif %}
+                        </td>
+                    </tr>
+
+                    <!-- PIT Tag -->
+                    <tr>
+                        <td><a href="{% url 'wamtram2:trtdataentry' entry.data_entry_id %}">{{ entry.data_entry_id }}</a></td>
+                        <td><a href="{% url 'wamtram2:observationdetail' entry.observation_id.id %}">{{ entry.observation_id.id }}</a></td>
+                        <td><a href="{% url 'wamtram2:turtle_detail' entry.turtle_id.id %}">{{ entry.turtle_id.id }}</a></td>
+                        <td>PIT</td>
+                        <td><input type="text" name="tag_id" value="{{ entry.dud_pit_tag }}" /></td>
+                        <td>
+                            <select name="tag_status">
+                                {% for state in tag_states %}
+                                    <option value="{{ state.tag_state }}" {% if state.tag_state == entry.dud_pit_tag_state %}selected{% endif %}>{{ state.description }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td>
+                            {% if entry.observation_id %}
+                                <button type="submit" name="entry_id" value="{{ entry.data_entry_id }}" class="btn btn-primary btn-block">Save</button>
+                            {% else %}
+                                <button type="button" class="btn btn-secondary btn-block" disabled>No Observation</button>
+                            {% endif %}
+                        </td>
+                    </tr>
+
+                    <!-- PIT Tag 2 -->
+                    <tr>
+                        <td><a href="{% url 'wamtram2:trtdataentry' entry.data_entry_id %}">{{ entry.data_entry_id }}</a></td>
+                        <td><a href="{% url 'wamtram2:observationdetail' entry.observation_id.id %}">{{ entry.observation_id.id }}</a></td>
+                        <td><a href="{% url 'wamtram2:turtle_detail' entry.turtle_id.id %}">{{ entry.turtle_id.id }}</a></td>
+                        <td>PIT 2</td>
+                        <td><input type="text" name="tag_id" value="{{ entry.dud_pit_tag_2 }}" /></td>
+                        <td>
+                            <select name="tag_status">
+                                {% for state in tag_states %}
+                                    <option value="{{ state.tag_state }}" {% if state.tag_state == entry.dud_pit_tag_state_2 %}selected{% endif %}>{{ state.description }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td>
+                            {% if entry.observation_id %}
+                                <button type="submit" name="entry_id" value="{{ entry.data_entry_id }}" class="btn btn-primary btn-block">Save</button>
+                            {% else %}
+                                <button type="button" class="btn btn-secondary btn-block" disabled>No Observation</button>
+                            {% endif %}
                         </td>
                     </tr>
                     {% endfor %}
@@ -79,7 +154,7 @@
         </form>
 
         <!-- Loading spinner -->
-        <div class="loading-spinner" style="display:none;">
+        <div class="loading-spinner">
             <div class="spinner-border text-primary" role="status">
                 <span class="sr-only">Loading...</span>
             </div>
