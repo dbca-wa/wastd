@@ -59,7 +59,13 @@
                     {% for entry in entries %}
                     <!-- Flipper Tag -->
                     <tr>
-                        <td><a href="{% url 'wamtram2:trtdataentry' entry.data_entry_id %}">{{ entry.data_entry_id }}</a></td>
+                        <td>
+                            {% if entry.data_entry_id %}
+                                <a href="{% url 'wamtram2:trtdataentry' entry.data_entry_id %}">{{ entry.data_entry_id }}</a>
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
                         <td>
                             {% if entry.observation_id %}
                                 <a href="{% url 'wamtram2:observationdetail' entry.observation_id.id %}">{{ entry.observation_id.id }}</a>
@@ -94,7 +100,13 @@
 
                     <!-- Flipper Tag 2 -->
                     <tr>
-                        <td><a href="{% url 'wamtram2:trtdataentry' entry.data_entry_id %}">{{ entry.data_entry_id }}</a></td>
+                        <td>
+                            {% if entry.data_entry_id %}
+                                <a href="{% url 'wamtram2:trtdataentry' entry.data_entry_id %}">{{ entry.data_entry_id }}</a>
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
                         <td>
                             {% if entry.observation_id %}
                                 <a href="{% url 'wamtram2:observationdetail' entry.observation_id.id %}">{{ entry.observation_id.id }}</a>
@@ -129,7 +141,13 @@
 
                     <!-- PIT Tag -->
                     <tr>
-                        <td><a href="{% url 'wamtram2:trtdataentry' entry.data_entry_id %}">{{ entry.data_entry_id }}</a></td>
+                        <td>
+                            {% if entry.data_entry_id %}
+                                <a href="{% url 'wamtram2:trtdataentry' entry.data_entry_id %}">{{ entry.data_entry_id }}</a>
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
                         <td>
                             {% if entry.observation_id %}
                                 <a href="{% url 'wamtram2:observationdetail' entry.observation_id.id %}">{{ entry.observation_id.id }}</a>
@@ -164,7 +182,13 @@
 
                     <!-- PIT Tag 2 -->
                     <tr>
-                        <td><a href="{% url 'wamtram2:trtdataentry' entry.data_entry_id %}">{{ entry.data_entry_id }}</a></td>
+                        <td>
+                            {% if entry.data_entry_id %}
+                                <a href="{% url 'wamtram2:trtdataentry' entry.data_entry_id %}">{{ entry.data_entry_id }}</a>
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
                         <td>
                             {% if entry.observation_id %}
                                 <a href="{% url 'wamtram2:observationdetail' entry.observation_id.id %}">{{ entry.observation_id.id }}</a>
