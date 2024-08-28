@@ -1199,3 +1199,34 @@ class FilterFormView(LoginRequiredMixin, View):
 
     def get(self, request):
         return render(request, 'wamtram2/export_form.html')
+
+
+class DudTagManageView(LoginRequiredMixin, View):
+    template_name = 'dud_tag_manage.html'
+    
+    def get(self, request):
+        if not request.user.is_superuser:
+            return HttpResponseForbidden("You do not have permission to access this page.")
+        
+        entries = TrtDataEntry.objects.all()
+        
+        return render(request, self.template_name, {'entries': entries})
+
+    def post(self, request):
+        if not request.user.is_superuser:
+            return HttpResponseForbidden("You do not have permission to access this page.")
+        
+        entry_id = request.POST.get('entry_id')
+        entry = get_object_or_404(TrtDataEntry, pk=entry_id)
+        
+        observation, created = TrtObservations.objects.update_or_create(
+            observation_id=entry.observation_id,
+            defaults={
+                'dud_filpper_tag': entry.dud_filpper_tag,
+                'dud_filpper_tag_2': entry.dud_filpper_tag_2,
+                'dud_pit_tag': entry.dud_pit_tag,
+                'dud_pit_tag_2': entry.dud_pit_tag_2,
+            }
+        )
+        
+        return redirect('dud_tag_manage') 

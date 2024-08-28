@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Dud Tag Management</h1>
+
+<form method="post">
+    {% csrf_token %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Entry ID</th>
+                <th>Observation ID</th>
+                <th>Turtle ID</th>
+                <th>Dud Flipper Tag</th>
+                <th>Dud Flipper Tag 2</th>
+                <th>Dud Pit Tag</th>
+                <th>Dud Pit Tag 2</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in entries %}
+            <tr>
+                <td>{{ entry.data_entry_id }}</td>
+                <td>{{ entry.observation_id }}</td>
+                <td>{{ entry.turtle_id }}</td>
+                <td>{{ entry.dud_filpper_tag }}</td>
+                <td>{{ entry.dud_filpper_tag_2 }}</td>
+                <td>{{ entry.dud_pit_tag }}</td>
+                <td>{{ entry.dud_pit_tag_2 }}</td>
+                <td>
+                    <button type="submit" name="entry_id" value="{{ entry.data_entry_id }}">Save</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</form>
+{% endblock %}

@@ -1610,6 +1610,30 @@ class TrtObservations(models.Model):
     corrected_date = models.DateTimeField(
         db_column="CORRECTED_DATE", blank=True, null=True, editable=False
     )  # Field name made lowercase.
+    dud_filpper_tag = models.CharField(
+        max_length=10, 
+        db_column="DUD_FLIPPER_TAG",
+        blank=True,
+        null=True,
+    )  
+    dud_filpper_tag_2 = models.CharField(
+        max_length=10,
+        db_column="DUD_FLIPPER_TAG_2",
+        blank=True,
+        null=True,
+    )
+    dud_pit_tag = models.CharField(
+        max_length=50,
+        db_column="DUD_PIT_TAG",
+        blank=True,
+        null=True,
+    )
+    dud_pit_tag_2 = models.CharField(
+        max_length=50,
+        db_column="DUD_PIT_TAG_2",
+        blank=True,
+        null=True,
+    )
 
     class Meta:
         managed = False
