@@ -1,39 +1,150 @@
-{% extends "base.html" %}
+{% extends "base_wastd.html" %}
+{% load static bootstrap4 %}
+<p>Template loaded successfully</p>
 
-{% block content %}
-<h1>Dud Tag Management</h1>
+{% block extra_style %}
+    {{ block.super }}
+    <style>
+        .table th, .table td {
+            vertical-align: middle;
+        }
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+    </style>
+{% endblock extra_style %}
 
-<form method="post">
-    {% csrf_token %}
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Entry ID</th>
-                <th>Observation ID</th>
-                <th>Turtle ID</th>
-                <th>Dud Flipper Tag</th>
-                <th>Dud Flipper Tag 2</th>
-                <th>Dud Pit Tag</th>
-                <th>Dud Pit Tag 2</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for entry in entries %}
-            <tr>
-                <td>{{ entry.data_entry_id }}</td>
-                <td>{{ entry.observation_id }}</td>
-                <td>{{ entry.turtle_id }}</td>
-                <td>{{ entry.dud_filpper_tag }}</td>
-                <td>{{ entry.dud_filpper_tag_2 }}</td>
-                <td>{{ entry.dud_pit_tag }}</td>
-                <td>{{ entry.dud_pit_tag_2 }}</td>
-                <td>
-                    <button type="submit" name="entry_id" value="{{ entry.data_entry_id }}">Save</button>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</form>
+{% block extra_head %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+{% endblock extra_head %}
+
+{% block breadcrumbs %}
+    <!-- Breadcrumb Navigation -->
+    <nav aria-label="breadcrumb" class="d-none d-md-block">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item active">Dud Tag Management</li>
+        </ol>
+    </nav>
+{% endblock %}
+
+{% block page_content_inner %}
+    <div class="container">
+        <h1>Dud Tag Management</h1>
+
+        <!-- Display any success or error messages -->
+        <div id="message-alert" class="alert alert-success" role="alert" style="display:none;"></div>
+        {% if error_message %}
+            <div class="alert alert-danger" role="alert">
+                {{ error_message }}
+            </div>
+        {% endif %}
+
+        <!-- Dud Tag Management Form -->
+        <form method="post" id="dudTagForm">
+            {% csrf_token %}
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Entry ID</th>
+                        <th>Observation ID</th>
+                        <th>Turtle ID</th>
+                        <th>Dud Flipper Tag</th>
+                        <th>Dud Flipper Tag 2</th>
+                        <th>Dud Pit Tag</th>
+                        <th>Dud Pit Tag 2</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in entries %}
+                    <tr>
+                        <td>{{ entry.data_entry_id }}</td>
+                        <td>{{ entry.observation_id }}</td>
+                        <td>{{ entry.turtle_id }}</td>
+                        <td>{{ entry.dud_filpper_tag }}</td>
+                        <td>{{ entry.dud_filpper_tag_2 }}</td>
+                        <td>{{ entry.dud_pit_tag }}</td>
+                        <td>{{ entry.dud_pit_tag_2 }}</td>
+                        <td>
+                            <button type="submit" name="entry_id" value="{{ entry.data_entry_id }}" class="btn btn-primary btn-block">Save</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </form>
+
+        <!-- Loading spinner -->
+        <div class="loading-spinner">
+            <div class="spinner-border text-primary" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div class="loading-overlay"></div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+    $(document).ready(function() {
+        // Handle the form submission to show a loading spinner
+        $('#dudTagForm').on('submit', function(event) {
+            event.preventDefault(); // Prevent the form from submitting normally
+            showLoadingSpinner(); // Show the loading spinner
+            $.ajax({
+                type: 'POST',
+                url: '', // Assuming this is the same URL
+                data: $(this).serialize(), // Serialize the form data
+                success: function(response) {
+                    hideLoadingSpinner(); // Hide the loading spinner
+                    showMessage('Dud Tag saved successfully!', 'success'); // Show success message
+                },
+                error: function(error) {
+                    hideLoadingSpinner(); // Hide the loading spinner
+                    showMessage('Error saving Dud Tag. Please try again.', 'danger'); // Show error message
+                }
+            });
+        });
+
+        // Functions to handle loading spinner and messages
+        function showLoadingSpinner() {
+            const loadingSpinner = document.querySelector('.loading-spinner');
+            const loadingOverlay = document.querySelector('.loading-overlay');
+            if (loadingOverlay) {
+                loadingOverlay.style.display = 'block';
+            }
+            if (loadingSpinner) {
+                loadingSpinner.style.display = 'block';
+            }
+        }
+
+        function hideLoadingSpinner() {
+            const loadingSpinner = document.querySelector('.loading-spinner');
+            const loadingOverlay = document.querySelector('.loading-overlay');
+            if (loadingOverlay) {
+                loadingOverlay.style.display = 'none';
+            }
+            if (loadingSpinner) {
+                loadingSpinner.style.display = 'none';
+            }
+        }
+
+        function showMessage(message, type) {
+            var alert = $('#message-alert');
+            alert.removeClass('alert-success alert-danger');
+            alert.addClass('alert-' + type);
+            alert.text(message);
+            alert.slideDown();
+
+            setTimeout(function() {
+                alert.slideUp();
+            }, 3000);
+        }
+    });
+</script>
 {% endblock %}

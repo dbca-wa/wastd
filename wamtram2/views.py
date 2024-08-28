@@ -1200,25 +1200,26 @@ class FilterFormView(LoginRequiredMixin, View):
     def get(self, request):
         return render(request, 'wamtram2/export_form.html')
 
-
 class DudTagManageView(LoginRequiredMixin, View):
     template_name = 'dud_tag_manage.html'
-    
-    def get(self, request):
+
+    def dispatch(self, request, *args, **kwargs):
         if not request.user.is_superuser:
-            return HttpResponseForbidden("You do not have permission to access this page.")
-        
+            return HttpResponseForbidden("You do not have permission to view this record")
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request):
+        print("Processing GET request...")
         entries = TrtDataEntry.objects.all()
-        
+        print(f"Found {entries.count()} entries")
         return render(request, self.template_name, {'entries': entries})
 
     def post(self, request):
-        if not request.user.is_superuser:
-            return HttpResponseForbidden("You do not have permission to access this page.")
-        
+        print("Processing POST request...")
         entry_id = request.POST.get('entry_id')
         entry = get_object_or_404(TrtDataEntry, pk=entry_id)
-        
+        print(f"Processing entry with ID: {entry_id}") 
+
         observation, created = TrtObservations.objects.update_or_create(
             observation_id=entry.observation_id,
             defaults={
@@ -1228,5 +1229,6 @@ class DudTagManageView(LoginRequiredMixin, View):
                 'dud_pit_tag_2': entry.dud_pit_tag_2,
             }
         )
-        
-        return redirect('dud_tag_manage') 
+
+        print(f"Observation {'created' if created else 'updated'} for entry ID: {entry_id}") 
+        return redirect('dud_tag_manage')
