@@ -740,6 +740,24 @@
           {% bootstrap_field form.identification_type %}
         </div>
       </div>
+      <!-- DUD Tag -->
+      <div class="row">
+        <div class="col-md-12">
+          <label><strong>DUD Tag</strong></label>
+        </div>
+        <div class="col-md-6">
+          {% bootstrap_field form.dud_filpper_tag %}
+        </div>
+        <div class="col-md-6">
+          {% bootstrap_field form.dud_filpper_tag_2 %}
+        </div>
+        <div class="col-md-6">
+          {% bootstrap_field form.dud_pit_tag %}
+        </div>
+        <div class="col-md-6">
+          {% bootstrap_field form.dud_pit_tag_2 %}
+        </div>
+      </div>
     </div>
   </div>
   <!-- Submit and Advanced Data buttons -->
@@ -784,13 +802,19 @@
     // URL for adding a new person
     const adminUrl = "{% url 'admin:wamtram2_trtpersons_add' %}";
     
+    // Get context data passed from Django
     const cookieTagId = "{{ cookie_tag_id }}";
     const cookieTagType = "{{ cookie_tag_type }}";
     const cookieTagSide = "{{ cookie_tag_side }}";
     const entryId = "{{ entry_id }}";
     const templateId = "{{ selected_template }}";
-
+ 
+    // Log the retrieved templateId to confirm it's being fetched
+    console.log("Template ID:", templateId);
+ 
+    // If entryId exists, populate the form fields with corresponding data
     if (entryId) {
+        console.log("Populating form for existing entry with ID:", entryId);
         const enteredById = "{{ form.entered_by_id.value }}";
         if (enteredById) {
             const enteredByFullName = "{{ view.entered_by_full_name|escapejs }}";
@@ -802,40 +826,42 @@
         const placeNameFromDb = "{{ view.place_full_name|escapejs }}";
         const searchPlaceInput = document.getElementById('search_place_code');
         const placeCodeInput = document.getElementById('id_place_code');
-
+ 
         if (placeCodeFromDb && placeNameFromDb) {
             searchPlaceInput.value = placeNameFromDb;
             placeCodeInput.value = placeCodeFromDb;
         }
-
+ 
         const measuredByFullName = "{{ view.measured_by_full_name|escapejs }}";
         if (measuredByFullName) {
             document.getElementById('search_measured_by').value = measuredByFullName;
         }
-
+ 
         const recordedByFullName = "{{ view.recorded_by_full_name|escapejs }}";
         if (recordedByFullName) {
             document.getElementById('search_recorded_by').value = recordedByFullName;
         }
-
+ 
         const taggedByFullName = "{{ view.tagged_by_full_name|escapejs }}";
         if (taggedByFullName) {
             document.getElementById('search_tagged_by').value = taggedByFullName;
         }
-
+ 
         const measuredRecordedByFullName = "{{ view.measured_recorded_by_full_name|escapejs }}";
         if (measuredRecordedByFullName) {
             document.getElementById('search_measured_recorded_by').value = measuredRecordedByFullName;
         }
     }
-
+ 
+    // If there's no entryId and a templateId is selected, populate the form with template data
     if (!entryId && templateId) {
+        console.log("No entry ID, using selected template ID:", templateId);
         const defaultEntererId = "{{ default_enterer }}";
         const defaultPlaceCode = "{{ default_place_code|escapejs }}";
         const defaultPlaceFullName = "{{ default_place_full_name|escapejs }}";
         const searchPlaceInput = document.getElementById('search_place_code');
         const placeCodeInput = document.getElementById('id_place_code');
-
+ 
         if (defaultEntererId) {
             document.getElementById('id_entered_by_id').value = defaultEntererId;
             const defaultEntererFullName = "{{ default_enterer_full_name }}";
@@ -843,26 +869,28 @@
                 document.getElementById('search_entered_by').value = defaultEntererFullName;
             }
         }
-
+ 
         if (defaultPlaceFullName && defaultPlaceCode) {
             searchPlaceInput.value = defaultPlaceFullName;
             placeCodeInput.value = defaultPlaceCode;
         }
     }
-
+ 
     //  Set the tag and validate
     if (cookieTagId && cookieTagType) {
-      if (cookieTagType === 'recapture_tag') {
-        if (cookieTagSide === 'L') {
-            setTagAndValidate('id_recapture_left_tag_id', cookieTagId);
-        } else if (cookieTagSide === 'R') {
-            setTagAndValidate('id_recapture_right_tag_id', cookieTagId);
+        console.log("Setting tag for", cookieTagType, "with ID:", cookieTagId);
+        if (cookieTagType === 'recapture_tag') {
+            if (cookieTagSide === 'L') {
+                setTagAndValidate('id_recapture_left_tag_id', cookieTagId);
+            } else if (cookieTagSide === 'R') {
+                setTagAndValidate('id_recapture_right_tag_id', cookieTagId);
+            }
+        } else if (cookieTagType === 'recapture_pit_tag') {
+            setTagAndValidate('id_recapture_pittag_id', cookieTagId);
         }
-    } else if (cookieTagType === 'recapture_pit_tag') {
-        setTagAndValidate('id_recapture_pittag_id', cookieTagId);
     }
-    }
-    // Disable the save button and show processing message
+ 
+    // Disable the save button and show a processing message
     function disableSaveButton() {
         const saveButton = document.querySelector('.save-button');
         if (saveButton) {
@@ -882,15 +910,16 @@
             saveButton.dataset.intervalId = interval;
         }
     }
-
+ 
     const form = document.getElementById('dataEntryForm');
     let isFormDirty = false;
-
-    // Form Dirty Handling
+ 
+    // Handle form changes to track dirty state
     form.addEventListener('input', function() {
         isFormDirty = true;
     });
-
+ 
+    // Prompt the user if they try to leave the page with unsaved changes
     window.addEventListener('beforeunload', function(event) {
         if (isFormDirty) {
             const confirmationMessage = 'You have unsaved changes. Do you really want to leave?';
@@ -898,75 +927,76 @@
             return confirmationMessage;
         }
     });
-
+ 
+    // Handle form submission
     form.addEventListener('submit', function(event) {
         isFormDirty = false;
         disableSaveButton();
     });
-
-    // Reload the page when the back button is clicked
+ 
+    // Reload the page if the back button is clicked
     if (performance.navigation.type === 2) {
         location.reload(true);
     }
   });
-
+ 
   document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('dataEntryForm');
-
-    // Prevent form submission when Enter is pressed
-    form.addEventListener('keydown', function(event) {
-        if (event.key === 'Enter') {
-            event.preventDefault(); // Prevent the default action of Enter key
-        }
-    });
-
-    let isFormDirty = false;
-
-    function showLoadingOverlay() {
-        const overlay = document.querySelector('.loading-overlay');
-        const spinner = document.querySelector('.loading-spinner');
-
-        if (overlay) {
-            overlay.style.display = 'block';
-        }
-
-        if (spinner) {
-            spinner.style.display = 'block';
-        }
-    }
-
-    // Handle form submission
-    form.addEventListener('submit', function(event) {
-        event.preventDefault();  // Prevent the default form submission behavior
-
-        // Check if the form has any errors
-        if (form.checkValidity()) {
-            showLoadingOverlay();  // No errors, show the overlay and spinner
-            form.submit();  // Submit the form
-        } else {
-            alert("Please fix the errors in the form before submitting.");  // Show a message if there are errors
-        }
-
-        isFormDirty = false;  // Reset the form dirty state
-    });
-
-    form.addEventListener('input', function() {
-        isFormDirty = true;
-    });
-
-    window.addEventListener('beforeunload', function(event) {
-        if (isFormDirty) {
-            const confirmationMessage = 'You have unsaved changes. Do you really want to leave?';
-            (event || window.event).returnValue = confirmationMessage;
-            return confirmationMessage;
-        }
-    });
-
-    if (performance.navigation.type === 2) {
-        location.reload(true);  // Reload the page when the back button is clicked
-    }
-});
-
+      const form = document.getElementById('dataEntryForm');
+ 
+      // Prevent form submission when Enter is pressed
+      form.addEventListener('keydown', function(event) {
+          if (event.key === 'Enter') {
+              event.preventDefault(); // Prevent the default action of Enter key
+          }
+      });
+ 
+      let isFormDirty = false;
+ 
+      function showLoadingOverlay() {
+          const overlay = document.querySelector('.loading-overlay');
+          const spinner = document.querySelector('.loading-spinner');
+ 
+          if (overlay) {
+              overlay.style.display = 'block';
+          }
+ 
+          if (spinner) {
+              spinner.style.display = 'block';
+          }
+      }
+ 
+      // Handle form submission
+      form.addEventListener('submit', function(event) {
+          event.preventDefault();  // Prevent the default form submission behavior
+ 
+          // Check if the form has any errors
+          if (form.checkValidity()) {
+              showLoadingOverlay();  // No errors, show the overlay and spinner
+              form.submit();  // Submit the form
+          } else {
+              alert("Please fix the errors in the form before submitting.");  // Show a message if there are errors
+          }
+ 
+          isFormDirty = false;  // Reset the form dirty state
+      });
+ 
+      form.addEventListener('input', function() {
+          isFormDirty = true;
+      });
+ 
+      window.addEventListener('beforeunload', function(event) {
+          if (isFormDirty) {
+              const confirmationMessage = 'You have unsaved changes. Do you really want to leave?';
+              (event || window.event).returnValue = confirmationMessage;
+              return confirmationMessage;
+          }
+      });
+ 
+      // Reload the page when the back button is clicked
+      if (performance.navigation.type === 2) {
+          location.reload(true);  // Reload the page when the back button is clicked
+      }
+  });
 
 </script>
 <script src="{% static 'js/tagToggleHandler.js' %}"></script>
