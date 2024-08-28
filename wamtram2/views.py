@@ -1201,7 +1201,7 @@ class FilterFormView(LoginRequiredMixin, View):
         return render(request, 'wamtram2/export_form.html')
 
 class DudTagManageView(LoginRequiredMixin, View):
-    template_name = 'dud_tag_manage.html'
+    template_name = 'wamtram2/dud_tag_manage.html'
 
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_superuser:
