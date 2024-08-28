@@ -31,7 +31,8 @@ from .models import (
     TrtDataEntry,
     TrtPersons,
     TrtObservations,
-    Template
+    Template,
+    TrtTagStates,
 )
 from .forms import TrtDataEntryForm, SearchForm, TrtEntryBatchesForm, TemplateForm
 
