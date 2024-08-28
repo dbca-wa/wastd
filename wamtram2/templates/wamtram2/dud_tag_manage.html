@@ -59,27 +59,9 @@
                     {% for entry in entries %}
                     <!-- Flipper Tag -->
                     <tr>
-                        <td>
-                            {% if entry.data_entry_id %}
-                                <a href="{% url 'wamtram2:trtdataentry' entry.data_entry_id %}">{{ entry.data_entry_id }}</a>
-                            {% else %}
-                                N/A
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if entry.observation_id %}
-                                <a href="{% url 'wamtram2:observationdetail' entry.observation_id.id %}">{{ entry.observation_id.id }}</a>
-                            {% else %}
-                                N/A
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if entry.turtle_id %}
-                                <a href="{% url 'wamtram2:turtle_detail' entry.turtle_id.id %}">{{ entry.turtle_id.id }}</a>
-                            {% else %}
-                                N/A
-                            {% endif %}
-                        </td>
+                        <td>{{ entry.data_entry_id }}</td>
+                        <td>{{ entry.observation_id.id if entry.observation_id else 'N/A' }}</td>
+                        <td>{{ entry.turtle_id.id if entry.turtle_id else 'N/A' }}</td>
                         <td>Flipper</td>
                         <td><input type="text" name="tag_id" value="{{ entry.dud_filpper_tag }}" /></td>
                         <td>
@@ -100,27 +82,9 @@
 
                     <!-- Flipper Tag 2 -->
                     <tr>
-                        <td>
-                            {% if entry.data_entry_id %}
-                                <a href="{% url 'wamtram2:trtdataentry' entry.data_entry_id %}">{{ entry.data_entry_id }}</a>
-                            {% else %}
-                                N/A
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if entry.observation_id %}
-                                <a href="{% url 'wamtram2:observationdetail' entry.observation_id.id %}">{{ entry.observation_id.id }}</a>
-                            {% else %}
-                                N/A
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if entry.turtle_id %}
-                                <a href="{% url 'wamtram2:turtle_detail' entry.turtle_id.id %}">{{ entry.turtle_id.id }}</a>
-                            {% else %}
-                                N/A
-                            {% endif %}
-                        </td>
+                        <td>{{ entry.data_entry_id }}</td>
+                        <td>{{ entry.observation_id.id if entry.observation_id else 'N/A' }}</td>
+                        <td>{{ entry.turtle_id.id if entry.turtle_id else 'N/A' }}</td>
                         <td>Flipper 2</td>
                         <td><input type="text" name="tag_id" value="{{ entry.dud_filpper_tag_2 }}" /></td>
                         <td>
@@ -141,27 +105,9 @@
 
                     <!-- PIT Tag -->
                     <tr>
-                        <td>
-                            {% if entry.data_entry_id %}
-                                <a href="{% url 'wamtram2:trtdataentry' entry.data_entry_id %}">{{ entry.data_entry_id }}</a>
-                            {% else %}
-                                N/A
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if entry.observation_id %}
-                                <a href="{% url 'wamtram2:observationdetail' entry.observation_id.id %}">{{ entry.observation_id.id }}</a>
-                            {% else %}
-                                N/A
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if entry.turtle_id %}
-                                <a href="{% url 'wamtram2:turtle_detail' entry.turtle_id.id %}">{{ entry.turtle_id.id }}</a>
-                            {% else %}
-                                N/A
-                            {% endif %}
-                        </td>
+                        <td>{{ entry.data_entry_id }}</td>
+                        <td>{{ entry.observation_id.id if entry.observation_id else 'N/A' }}</td>
+                        <td>{{ entry.turtle_id.id if entry.turtle_id else 'N/A' }}</td>
                         <td>PIT</td>
                         <td><input type="text" name="tag_id" value="{{ entry.dud_pit_tag }}" /></td>
                         <td>
@@ -182,27 +128,9 @@
 
                     <!-- PIT Tag 2 -->
                     <tr>
-                        <td>
-                            {% if entry.data_entry_id %}
-                                <a href="{% url 'wamtram2:trtdataentry' entry.data_entry_id %}">{{ entry.data_entry_id }}</a>
-                            {% else %}
-                                N/A
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if entry.observation_id %}
-                                <a href="{% url 'wamtram2:observationdetail' entry.observation_id.id %}">{{ entry.observation_id.id }}</a>
-                            {% else %}
-                                N/A
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if entry.turtle_id %}
-                                <a href="{% url 'wamtram2:turtle_detail' entry.turtle_id.id %}">{{ entry.turtle_id.id }}</a>
-                            {% else %}
-                                N/A
-                            {% endif %}
-                        </td>
+                        <td>{{ entry.data_entry_id }}</td>
+                        <td>{{ entry.observation_id.id if entry.observation_id else 'N/A' }}</td>
+                        <td>{{ entry.turtle_id.id if entry.turtle_id else 'N/A' }}</td>
                         <td>PIT 2</td>
                         <td><input type="text" name="tag_id" value="{{ entry.dud_pit_tag_2 }}" /></td>
                         <td>
