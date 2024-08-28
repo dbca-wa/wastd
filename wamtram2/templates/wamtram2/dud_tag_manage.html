@@ -1,0 +1,309 @@
+{% extends "base_wastd.html" %}
+{% load static bootstrap4 %}
+
+{% block extra_style %}
+    {{ block.super }}
+    {{ form.media.css }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
+    <style>
+        .table th, .table td {
+            vertical-align: middle;
+        }
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+    </style>
+{% endblock extra_style %}
+
+{% block extra_head %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+{% endblock extra_head %}
+
+{% block breadcrumbs %}
+    <nav aria-label="breadcrumb" class="d-none d-md-block">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item active">Dud Tag Management</li>
+        </ol>
+    </nav>
+{% endblock %}
+
+{% block page_content_inner %}
+    <div class="container">
+        <h1>Dud Tag Management</h1>
+
+        <!-- Display any success or error messages -->
+        <div id="message-alert" class="alert alert-success" role="alert" style="display:none;"></div>
+        {% if error_message %}
+            <div class="alert alert-danger" role="alert">
+                {{ error_message }}
+            </div>
+        {% endif %}
+
+        <!-- Dud Tag Management Form -->
+        <form method="post" id="dudTagForm">
+            {% csrf_token %}
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Entry ID</th>
+                        <th>Observation ID</th>
+                        <th>Turtle ID</th>
+                        <th>DUD Tag Type</th>
+                        <th>DUD Tag ID</th>
+                        <th>DUD Tag Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in entries %}
+                    <!-- Flipper Tag -->
+                    {% if entry.dud_filpper_tag %}
+                    <tr>
+                        <td>
+                            {% if entry.data_entry_id %}
+                                <a href="{% url 'wamtram2:trtdataentry' entry.data_entry_id %}">{{ entry.data_entry_id }}</a>
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if entry.observation_id %}
+                                <a href="{% url 'wamtram2:observationdetail' entry.observation_id.id %}">{{ entry.observation_id.id }}</a>
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if entry.turtle_id %}
+                                {{ entry.turtle_id }}
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
+                        <td>Flipper</td>
+                        <td><input type="text" name="tag_id" value="{{ entry.dud_filpper_tag }}" /></td>
+                        <td>
+                            <select name="tag_status">
+                                {% for state in tag_states %}
+                                    <option value="{{ state.tag_state }}" {% if state.tag_state == entry.dud_filpper_tag_state %}selected{% endif %}>{{ state.description }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td>
+                            {% if entry.observation_id %}
+                                <button type="submit" name="entry_id" value="{{ entry.data_entry_id }}" class="btn btn-primary btn-block">Save</button>
+                            {% else %}
+                                <button type="button" class="btn btn-secondary btn-block" disabled>No Observation</button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endif %}
+
+                    <!-- Flipper Tag 2 -->
+                    {% if entry.dud_filpper_tag_2 %}
+                    <tr>
+                        <td>
+                            {% if entry.data_entry_id %}
+                                <a href="{% url 'wamtram2:trtdataentry' entry.data_entry_id %}">{{ entry.data_entry_id }}</a>
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if entry.observation_id %}
+                                <a href="{% url 'wamtram2:observationdetail' entry.observation_id.id %}">{{ entry.observation_id.id }}</a>
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if entry.turtle_id %}
+                                {{ entry.turtle_id.id }}
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
+                        <td>Flipper 2</td>
+                        <td><input type="text" name="tag_id" value="{{ entry.dud_filpper_tag_2 }}" /></td>
+                        <td>
+                            <select name="tag_status">
+                                {% for state in tag_states %}
+                                    <option value="{{ state.tag_state }}" {% if state.tag_state == entry.dud_filpper_tag_state_2 %}selected{% endif %}>{{ state.description }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td>
+                            {% if entry.observation_id %}
+                                <button type="submit" name="entry_id" value="{{ entry.data_entry_id }}" class="btn btn-primary btn-block">Save</button>
+                            {% else %}
+                                <button type="button" class="btn btn-secondary btn-block" disabled>No Observation</button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endif %}
+
+                    <!-- PIT Tag -->
+                    {% if entry.dud_pit_tag %}
+                    <tr>
+                        <td>
+                            {% if entry.data_entry_id %}
+                                <a href="{% url 'wamtram2:trtdataentry' entry.data_entry_id %}">{{ entry.data_entry_id }}</a>
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if entry.observation_id %}
+                                <a href="{% url 'wamtram2:observationdetail' entry.observation_id.id %}">{{ entry.observation_id.id }}</a>
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if entry.turtle_id %}
+                                {{ entry.turtle_id.id }}
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
+                        <td>PIT</td>
+                        <td><input type="text" name="tag_id" value="{{ entry.dud_pit_tag }}" /></td>
+                        <td>
+                            <select name="tag_status">
+                                {% for state in tag_states %}
+                                    <option value="{{ state.tag_state }}" {% if state.tag_state == entry.dud_pit_tag_state %}selected{% endif %}>{{ state.description }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td>
+                            {% if entry.observation_id %}
+                                <button type="submit" name="entry_id" value="{{ entry.data_entry_id }}" class="btn btn-primary btn-block">Save</button>
+                            {% else %}
+                                <button type="button" class="btn btn-secondary btn-block" disabled>No Observation</button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endif %}
+
+                    <!-- PIT Tag 2 -->
+                    {% if entry.dud_pit_tag_2 %}
+                    <tr>
+                        <td>
+                            {% if entry.data_entry_id %}
+                                <a href="{% url 'wamtram2:trtdataentry' entry.data_entry_id %}">{{ entry.data_entry_id }}</a>
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if entry.observation_id %}
+                                <a href="{% url 'wamtram2:observationdetail' entry.observation_id.id %}">{{ entry.observation_id.id }}</a>
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if entry.turtle_id %}
+                                {{ entry.turtle_id.id }}
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
+                        <td>PIT 2</td>
+                        <td><input type="text" name="tag_id" value="{{ entry.dud_pit_tag_2 }}" /></td>
+                        <td>
+                            <select name="tag_status">
+                                {% for state in tag_states %}
+                                    <option value="{{ state.tag_state }}" {% if state.tag_state == entry.dud_pit_tag_state_2 %}selected{% endif %}>{{ state.description }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td>
+                            {% if entry.observation_id %}
+                                <button type="submit" name="entry_id" value="{{ entry.data_entry_id }}" class="btn btn-primary btn-block">Save</button>
+                            {% else %}
+                                <button type="button" class="btn btn-secondary btn-block" disabled>No Observation</button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </form>
+
+        <!-- Loading spinner -->
+        <div class="loading-spinner">
+            <div class="spinner-border text-primary" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div class="loading-overlay"></div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+    $(document).ready(function() {
+        // Handle the form submission to show a loading spinner
+        $('#dudTagForm').on('submit', function(event) {
+            event.preventDefault(); // Prevent the form from submitting normally
+            showLoadingSpinner(); // Show the loading spinner
+            $.ajax({
+                type: 'POST',
+                url: '', // Assuming this is the same URL
+                data: $(this).serialize(), // Serialize the form data
+                success: function(response) {
+                    hideLoadingSpinner(); // Hide the loading spinner
+                    showMessage('Dud Tag saved successfully!', 'success'); // Show success message
+                },
+                error: function(error) {
+                    hideLoadingSpinner(); // Hide the loading spinner
+                    showMessage('Error saving Dud Tag. Please try again.', 'danger'); // Show error message
+                }
+            });
+        });
+    
+        // Functions to handle loading spinner and messages
+        function showLoadingSpinner() {
+            const loadingSpinner = document.querySelector('.loading-spinner');
+            const loadingOverlay = document.querySelector('.loading-overlay');
+            if (loadingOverlay) {
+                loadingOverlay.style.display = 'block';
+            }
+            if (loadingSpinner) {
+                loadingSpinner.style.display = 'block';
+            }
+        }
+    
+        function hideLoadingSpinner() {
+            const loadingSpinner = document.querySelector('.loading-spinner');
+            const loadingOverlay = document.querySelector('.loading-overlay');
+            if (loadingOverlay) {
+                loadingOverlay.style.display = 'none';
+            }
+            if (loadingSpinner) {
+                loadingSpinner.style.display = 'none';
+            }
+        }
+    
+        function showMessage(message, type) {
+            var alert = $('#message-alert');
+            alert.removeClass('alert-success alert-danger');
+            alert.addClass('alert-' + type);
+            alert.text(message);
+            alert.slideDown();
+    
+            setTimeout(function() {
+                alert.slideUp();
+            }, 3000);
+        }
+    });    
+</script>
+{% endblock %}

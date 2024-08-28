@@ -221,6 +221,11 @@ class TrtDataEntryForm(forms.ModelForm):
             "new_pit_tag_3_sticker_present",
             "new_pit_tag_4_sticker_present",
 
+            "dud_filpper_tag",
+            "dud_filpper_tag_2",
+            "dud_pit_tag",
+            "dud_pit_tag_2",
+
         ]  # "__all__"
 
         widgets = {
@@ -409,7 +414,11 @@ class TrtDataEntryForm(forms.ModelForm):
             "recapture_pittag_id_3",
             "recapture_pittag_id_4",
             "new_pittag_id_3",
-            "new_pittag_id_4"
+            "new_pittag_id_4",
+            "dud_filpper_tag",
+            "dud_filpper_tag_2",
+            "dud_pit_tag",
+            "dud_pit_tag_2",
         ]
 
         for field in optional_fields:

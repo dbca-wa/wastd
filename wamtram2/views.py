@@ -31,7 +31,8 @@ from .models import (
     TrtDataEntry,
     TrtPersons,
     TrtObservations,
-    Template
+    Template,
+    TrtTagStates,
 )
 from .forms import TrtDataEntryForm, SearchForm, TrtEntryBatchesForm, TemplateForm
 
@@ -1199,3 +1200,47 @@ class FilterFormView(LoginRequiredMixin, View):
 
     def get(self, request):
         return render(request, 'wamtram2/export_form.html')
+
+class DudTagManageView(LoginRequiredMixin, View):
+    template_name = 'wamtram2/dud_tag_manage.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_superuser:
+            return HttpResponseForbidden("You do not have permission to view this record")
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request):
+        entries = TrtDataEntry.objects.filter(
+            dud_filpper_tag__isnull=False
+        ).select_related('observation_id', 'turtle_id')
+        tag_states = TrtTagStates.objects.all()
+        return render(request, self.template_name, {'entries': entries, 'tag_states': tag_states})
+
+    def post(self, request):
+        entry_id = request.POST.get('entry_id')
+        tag_type = request.POST.get('tag_type')
+        tag_id = request.POST.get('tag_id')
+        tag_status = request.POST.get('tag_status')
+
+        entry = get_object_or_404(TrtDataEntry, pk=entry_id)
+
+        # 仅当 observation_id 存在时才允许保存
+        if entry.observation_id:
+            observation = entry.observation_id
+
+            # 根据标签类型保存到对应的 observation 字段
+            if tag_type == 'flipper':
+                observation.dud_filpper_tag = tag_id
+            elif tag_type == 'flipper_2':
+                observation.dud_filpper_tag_2 = tag_id
+            elif tag_type == 'pit':
+                observation.dud_pit_tag = tag_id
+            elif tag_type == 'pit_2':
+                observation.dud_pit_tag_2 = tag_id
+
+            observation.save()
+
+            print(f"Observation updated for entry ID: {entry_id}, tag type: {tag_type}")
+
+        return redirect('wamtram2:dud_tag_manage')
+
