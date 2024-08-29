@@ -46,7 +46,7 @@
           <form method="post" class="w-50 mx-auto text-center mt-3" id="searchForm">
             {% csrf_token %}
             <div class="form-group">
-              <label for="tag_id">Tag ID:</label>
+              <label for="tag_id">Flipper/ PIT tag ID:</label>
               <input type="text" class="form-control" id="tag_id" name="tag_id" required>
             </div>
             <input type="hidden" id="tag_type" name="tag_type" value="{{ tag_type }}">
