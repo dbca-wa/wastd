@@ -624,24 +624,24 @@
         <div id="injuryDetails">
             <div class="row">
                 <div class="col-md-6">
-                    {% bootstrap_field form.damage_carapace %}
-                </div>
-                <div class="col-md-6">
                     {% bootstrap_field form.damage_lff %}
                 </div>
+                <div class="col-md-6">
+                  {% bootstrap_field form.damage_rff %}
+              </div>
             </div>
             <div class="row">
-                <div class="col-md-6">
-                    {% bootstrap_field form.damage_rff %}
-                </div>
                 <div class="col-md-6">
                     {% bootstrap_field form.damage_lhf %}
                 </div>
+                <div class="col-md-6">
+                  {% bootstrap_field form.damage_rhf %}
+                </div>
             </div>
             <div class="row">
                 <div class="col-md-6">
-                    {% bootstrap_field form.damage_rhf %}
-                </div>
+                  {% bootstrap_field form.damage_carapace %}
+              </div>
                 <div class="col-md-2 pt-3 d-flex align-items-center">
                     <button id="toggleInjuryFieldsButton" type="button" class="btn btn-outline-primary">
                         <i class="fas fa-plus" id="toggleInjuryIcon"></i>
