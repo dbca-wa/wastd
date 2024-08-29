@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import DateTimeInput
 from easy_select2 import apply_select2
-from .models import TrtPersons, TrtDataEntry, TrtTags, TrtEntryBatches, TrtPlaces, TrtPitTags, TrtPitTags, Template, TrtObservations,TrtTagStates
+from .models import TrtPersons, TrtDataEntry, TrtTags, TrtEntryBatches, TrtPlaces, TrtPitTags, TrtPitTags, Template, TrtObservations,TrtTagStates, TrtDamageCodes
 from django_select2.forms import ModelSelect2Widget
 
 
@@ -269,10 +269,16 @@ class TrtDataEntryForm(forms.ModelForm):
         old_tag_states = TrtTagStates.objects.filter(
             tag_state__in=["RQ", "RC", "OO", "OX", "P", "P_ED", "P_OK", "PX"]
         )
+        
         self.fields['recapture_left_tag_state'].queryset = old_tag_states
         self.fields['recapture_right_tag_state'].queryset = old_tag_states
         self.fields['recapture_left_tag_state_2'].queryset = old_tag_states
         self.fields['recapture_right_tag_state_2'].queryset = old_tag_states
+        
+        # Filter the queryset for damage codes
+        self.fields["damage_carapace"].queryset = TrtDamageCodes.objects.filter(
+            damage_code__in=["0", "5", "6", "7"]
+        )
 
         self.fields["observation_date"].required = True
         self.fields["species_code"].required = True
