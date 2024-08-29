@@ -272,6 +272,7 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["species_code"].required = True
         self.fields["place_code"].required = True
         self.fields["sex"].required = True
+        self.fields["clutch_completed"].required = True
         
         self.fields["latitude"].label = "Latitude (-xx.xxxxxx)"
         self.fields["longitude"].label = "Longitude (xxx.xxxxxx)"
@@ -314,7 +315,7 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["curved_carapace_length"].label = "CCL max (mm)"
         self.fields["curved_carapace_width"].label = "CCW (mm)"
         self.fields["curved_carapace_length_notch"].label = "CCL min (mm)"
-        self.fields["clutch_completed"].label = "Did turtle lay?"
+        self.fields["clutch_completed"].label = "Did the turtle lay?"
         self.fields["damage_carapace"].label = "Carapace"
         self.fields["damage_lff"].label = "Left front flipper"
         self.fields["damage_rff"].label = "Right front flipper"
