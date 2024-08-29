@@ -939,7 +939,6 @@
         location.reload(true);
     }
   });
- 
   document.addEventListener('DOMContentLoaded', function() {
       const form = document.getElementById('dataEntryForm');
  
@@ -997,6 +996,27 @@
           location.reload(true);  // Reload the page when the back button is clicked
       }
   });
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('dataEntryForm');
+    
+    const focusableElements = form.querySelectorAll('input, select, textarea');
+    
+    const focusableArray = Array.prototype.slice.call(focusableElements);
+    
+    focusableArray.forEach((element, index) => {
+        element.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                
+                const nextElement = focusableArray[index + 1];
+                if (nextElement) {
+                    nextElement.focus();
+                }
+            }
+        });
+    });
+});
+
 
 </script>
 <script src="{% static 'js/tagToggleHandler.js' %}"></script>
