@@ -73,6 +73,12 @@ class SearchForm(forms.Form):
     selected_template = forms.CharField(required=False, widget=forms.HiddenInput())
     use_default_enterer = forms.BooleanField(required=False, widget=forms.HiddenInput())
     
+class DateTimeForm(forms.Form):
+    observation_date = forms.DateTimeField(
+        widget=forms.DateTimeInput(attrs={"type": "datetime-local"}),
+        input_formats=['%Y-%m-%dT%H:%M'],
+    )
+
 
 class TrtEntryBatchesForm(forms.ModelForm):
     class Meta:
@@ -231,7 +237,7 @@ class TrtDataEntryForm(forms.ModelForm):
         widgets = {
             "turtle_id": forms.HiddenInput(),
             "entry_batch": forms.HiddenInput(),
-            "observation_date": DateTimeInput(attrs={"type": "datetime-local"}),
+            "observation_date": forms.DateTimeInput(attrs={"type": "datetime-local"}),
 
             "measured_by_id": forms.HiddenInput(),
             "recorded_by_id": forms.HiddenInput(),
