@@ -779,6 +779,27 @@
     </div>
   </div>
 
+  <!-- Summary Modal -->
+  <div class="modal fade" id="summaryModal" tabindex="-1" aria-labelledby="summaryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="summaryModalLabel">Summary of Your Inputs</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body" id="summaryContent">
+          <!-- Summary content will be injected here -->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Edit</button>
+          <button type="button" class="btn btn-primary" id="confirmSaveButton">Confirm & Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Loading Overlay -->
   <div class="loading-overlay"></div>
 
@@ -1015,9 +1036,47 @@
             }
         });
     });
-});
+  });
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('dataEntryForm');
+    const saveButton = document.getElementById('saveBtn');
+    const summaryModal = document.getElementById('summaryModal');
+    const summaryContent = document.getElementById('summaryContent');
+    const confirmSaveButton = document.getElementById('confirmSaveButton');
 
+    if (saveButton) {
+        saveButton.addEventListener('click', function(event) {
+            event.preventDefault(); // Prevent form submission
 
+            // Generate summary
+            let summaryHTML = '<ul>';
+            
+            form.querySelectorAll('input, select, textarea').forEach(input => {
+                if (input.type !== 'hidden' && input.value.trim() !== '') {
+                    const label = form.querySelector(`label[for="${input.id}"]`);
+                    const labelText = label ? label.textContent.trim() : input.name;
+
+                    summaryHTML += `<li><strong>${labelText}:</strong> ${input.value}</li>`;
+                }
+            });
+
+            summaryHTML += '</ul>';
+
+            // Inject summary into modal
+            summaryContent.innerHTML = summaryHTML;
+
+            // Show the modal
+            $(summaryModal).modal('show');
+        });
+    }
+
+    if (confirmSaveButton) {
+        confirmSaveButton.addEventListener('click', function() {
+            // Submit the form after confirming
+            form.submit();
+        });
+    }
+  });
 </script>
 <script src="{% static 'js/tagToggleHandler.js' %}"></script>
 <script src="{% static 'js/scarHandler.js' %}"></script>
