@@ -1062,11 +1062,25 @@
             let summaryHTML = '<ul>';
             
             form.querySelectorAll('input, select, textarea').forEach(input => {
-                if (input.type !== 'hidden' && input.value.trim() !== '') {
+                if (input.type !== 'hidden') {
                     const label = form.querySelector(`label[for="${input.id}"]`);
                     const labelText = label ? label.textContent.trim() : input.name;
+                    let inputValue = '';
 
-                    summaryHTML += `<li><strong>${labelText}:</strong> ${input.value}</li>`;
+                    // Special handling for checkboxes
+                    if (input.type === 'checkbox') {
+                        if (input.checked) {
+                            inputValue = 'Yes'; // Or any other text that indicates it's checked
+                        } else {
+                            return; // Skip unchecked checkboxes
+                        }
+                    } else {
+                        inputValue = input.value.trim();
+                    }
+
+                    if (inputValue !== '') {
+                        summaryHTML += `<li><strong>${labelText}:</strong> ${inputValue}</li>`;
+                    }
                 }
             });
 
