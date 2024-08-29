@@ -167,6 +167,7 @@
           <table class="table table-borderless">
             <thead>
               <tr>
+                <th></th>
                 <th style="width: 50%;">Tag Number</th>
                 <th>Tag State</th>
                 <th>Tag Scale</th>
@@ -182,6 +183,7 @@
               </tr>
               <!-- Old Left Flipper Tag -->
               <tr>
+                <td>L1</td>
                 <td>
                   {% bootstrap_field form.recapture_left_tag_id show_label=False %}
                   <span id="left-tag-validation-message"></span>
@@ -193,6 +195,7 @@
               </tr>
               <!-- Old Right Flipper Tag -->
               <tr>
+                <td>R1</td>
                 <td>
                   {% bootstrap_field form.recapture_right_tag_id show_label=False %}
                   <span id="right-tag-validation-message"></span>
@@ -204,6 +207,7 @@
               </tr>
               <!-- Additional Old Left Flipper Tag -->
               <tr id="additionalRecaptureLeftTag" style="display: none;">
+                <td>L2</td>
                 <td>
                   {% bootstrap_field form.recapture_left_tag_id_2 show_label=False %}
                   <span id="left-tag-validation-message-2"></span>
@@ -215,6 +219,7 @@
               </tr>
               <!-- Additional Old Right Flipper Tag -->
               <tr id="additionalRecaptureRightTag" style="display: none;">
+                <td>R2</td>
                 <td>
                   {% bootstrap_field form.recapture_right_tag_id_2 show_label=False %}
                   <span id="right-tag-validation-message-2"></span>
@@ -236,6 +241,7 @@
           <table class="table table-borderless">
             <thead>
               <tr>
+                <th></th>
                 <th style="width: 50%;">Tag Number</th>
                 <th>Tag State</th>
                 <th>Tag Scale</th>
@@ -252,6 +258,7 @@
               </tr>
               <!-- New Left Flipper Tag -->
               <tr>
+                <td>L1</td>
                 <td>
                   {% bootstrap_field form.new_left_tag_id show_label=False %}
                   <span id="new-left-tag-validation-message"></span>
@@ -263,6 +270,7 @@
               </tr>
               <!-- New Right Flipper Tag -->
               <tr>
+                <td>R1</td>
                 <td>
                   {% bootstrap_field form.new_right_tag_id show_label=False %}
                   <span id="new-right-tag-validation-message"></span>
@@ -274,6 +282,7 @@
               </tr>
               <!-- Additional New Left Flipper Tag -->
               <tr id="additionalNewLeftTag" style="display: none;">
+                <td>L2</td>
                 <td>
                   {% bootstrap_field form.new_left_tag_id_2 show_label=False %}
                   <span id="new-left-tag-validation-message-2"></span>
@@ -285,6 +294,7 @@
               </tr>
               <!-- Additional New Right Flipper Tag -->
               <tr id="additionalNewRightTag" style="display: none;">
+                <td>R2</td>
                 <td>
                   {% bootstrap_field form.new_right_tag_id_2 show_label=False %}
                   <span id="new-right-tag-validation-message-2"></span>
