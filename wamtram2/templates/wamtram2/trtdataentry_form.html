@@ -478,7 +478,6 @@
               </div>
             </div>
             
-
             <!-- Toggle Button for New PIT Tags -->
             <button id="toggleNewPITTagsBtn" type="button" class="btn btn-outline-primary mt-2">
               <i class="fas fa-plus"></i>
@@ -788,7 +787,6 @@
       {% endif %}
     </div>
   </div>
-
   <!-- Summary Modal -->
   <div class="modal fade" id="summaryModal" tabindex="-1" aria-labelledby="summaryModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -809,10 +807,8 @@
       </div>
     </div>
   </div>
-
   <!-- Loading Overlay -->
   <div class="loading-overlay"></div>
-
   <!-- Loading Spinner -->
   <div class="loading-spinner">
       <div class="spinner-border text-primary" role="status">
@@ -1054,6 +1050,17 @@
     const summaryContent = document.getElementById('summaryContent');
     const confirmSaveButton = document.getElementById('confirmSaveButton');
 
+    const labelMapping = {
+        "id_entered_by_id": "Enterer", // Add custom label mapping
+        "id_scars_left_scale_1": "Scars Left Scale 1",
+        "id_scars_left_scale_2": "Scars Left Scale 2",
+        "id_scars_left_scale_3": "Scars Left Scale 3",
+        "id_scars_right_scale_1": "Scars Right Scale 1",
+        "id_scars_right_scale_2": "Scars Right Scale 2",
+        "id_scars_right_scale_3": "Scars Right Scale 3",
+        // Add mappings for other fields as needed...
+    };
+
     if (saveButton) {
         saveButton.addEventListener('click', function(event) {
             event.preventDefault(); // Prevent form submission
@@ -1062,18 +1069,21 @@
             let summaryHTML = '<ul>';
             
             form.querySelectorAll('input, select, textarea').forEach(input => {
-                if (input.type !== 'hidden') {
-                    const label = form.querySelector(`label[for="${input.id}"]`);
-                    const labelText = label ? label.textContent.trim() : input.name;
+                if (input.type !== 'hidden' && input.value.trim() !== '') {
+                    let labelText = '';
+
+                    // Use detailed label from the mapping if it exists
+                    if (labelMapping[input.id]) {
+                        labelText = labelMapping[input.id];
+                    } else {
+                        const label = form.querySelector(`label[for="${input.id}"]`);
+                        labelText = label ? label.textContent.trim() : input.name;
+                    }
+
                     let inputValue = '';
 
-                    // Special handling for checkboxes
                     if (input.type === 'checkbox') {
-                        if (input.checked) {
-                            inputValue = 'Yes'; // Or any other text that indicates it's checked
-                        } else {
-                            return; // Skip unchecked checkboxes
-                        }
+                        inputValue = input.checked ? 'True' : 'False';
                     } else {
                         inputValue = input.value.trim();
                     }
@@ -1086,7 +1096,7 @@
 
             summaryHTML += '</ul>';
 
-            // Inject summary into modal
+            // Insert the summary into the modal
             summaryContent.innerHTML = summaryHTML;
 
             // Show the modal
