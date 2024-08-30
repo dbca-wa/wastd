@@ -673,13 +673,13 @@ class FindTurtleView(LoginRequiredMixin, View):
 
     def set_cookie(self, response, batch_id, tag_id=None, tag_type=None, tag_side=None, no_turtle_found=False, do_not_process=False):
         if tag_id:
-            response.set_cookie(f'{batch_id}_tag_id', tag_id, max_age=3600)
+            response.set_cookie(f'{batch_id}_tag_id', tag_id, max_age=63072000)
         if tag_type:
-            response.set_cookie(f'{batch_id}_tag_type', tag_type, max_age=3600)
+            response.set_cookie(f'{batch_id}_tag_type', tag_type, max_age=63072000)
         if tag_side:
-            response.set_cookie(f'{batch_id}_tag_side', tag_side, max_age=3600)
-        response.set_cookie(f'{batch_id}_no_turtle_found', 'true' if no_turtle_found else 'false', max_age=3600)
-        response.set_cookie(f'{batch_id}_do_not_process', 'true' if do_not_process else 'false', max_age=3600)
+            response.set_cookie(f'{batch_id}_tag_side', tag_side, max_age=63072000)
+        response.set_cookie(f'{batch_id}_no_turtle_found', 'true' if no_turtle_found else 'false', max_age=63072000)
+        response.set_cookie(f'{batch_id}_do_not_process', 'true' if do_not_process else 'false', max_age=63072000)
         return response
 
     def post(self, request, *args, **kwargs):
