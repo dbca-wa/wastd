@@ -119,7 +119,16 @@
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     const batchId = document.getElementById('batch_id').value;
-  
+    
+    function clearCookie(name) {
+      document.cookie = name + '=; Max-Age=0; path=/';
+    }
+
+    function clearCookiesForUntaggedTurtle(batchId) {
+      clearCookie(`${batchId}_tag_id`);
+      clearCookie(`${batchId}_tag_type`);
+      clearCookie(`${batchId}_tag_side`);
+    }
     // Show loading animation
     function showLoadingSpinner() {
       const loadingSpinner = document.querySelector('.loading-spinner');
@@ -249,12 +258,20 @@
           break;
   
         case 'createForExistingTurtle':
-        case 'createForUntaggedTurtle':
           document.getElementById('set_do_not_process').value = "false";
           document.cookie = `${batchId}_do_not_process=false; path=/`;
           showLoadingSpinner(); // Show spinner for page navigation
           showLoadingOverlay(); // Show overlay for page navigation
           break;
+
+          case 'createForUntaggedTurtle':
+          clearCookiesForUntaggedTurtle(batchId);
+          document.getElementById('set_do_not_process').value = "false";
+          document.cookie = `${batchId}_do_not_process=false; path=/`;
+          showLoadingSpinner(); // Show spinner for page navigation
+          showLoadingOverlay(); // Show overlay for page navigation
+          break;
+
   
         default:
           hideLoadingSpinner(); // Hide spinner for any other cases not causing navigation or submission
