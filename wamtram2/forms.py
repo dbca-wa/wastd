@@ -355,10 +355,10 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["recapture_left_tag_barnacles_2"].label = ""
         self.fields["recapture_right_tag_barnacles"].label = ""
         self.fields["recapture_right_tag_barnacles_2"].label = ""
-        self.fields["new_left_tag_barnacles"].label = ""
-        self.fields["new_left_tag_barnacles_2"].label = ""
-        self.fields["new_right_tag_barnacles"].label = ""
-        self.fields["new_right_tag_barnacles_2"].label = ""
+        # self.fields["new_left_tag_barnacles"].label = ""
+        # self.fields["new_left_tag_barnacles_2"].label = ""
+        # self.fields["new_right_tag_barnacles"].label = ""
+        # self.fields["new_right_tag_barnacles_2"].label = ""
         
         self.fields["cc_notch_length_not_measured"].label = "CCL min not measured"
         
