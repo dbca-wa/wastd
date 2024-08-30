@@ -1121,8 +1121,16 @@
 
     if (confirmSaveButton) {
         confirmSaveButton.addEventListener('click', function() {
-            // Submit the form after confirming
-            form.submit();
+          window.removeEventListener('beforeunload', function(event) {
+            if (isFormDirty) {
+                const confirmationMessage = 'You have unsaved changes. Do you really want to leave?';
+                (event || window.event).returnValue = confirmationMessage;
+                return confirmationMessage;
+            }
+        });
+
+        $(summaryModal).modal('hide');
+        form.submit();
         });
     }
   });
