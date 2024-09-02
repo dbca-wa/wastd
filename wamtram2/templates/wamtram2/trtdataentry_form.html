@@ -977,6 +977,14 @@
         }
     }
 
+    function setTagAndValidate(fieldId, tagId) {
+      const field = document.getElementById(fieldId);
+      if (field) {
+          field.value = tagId;
+          field.dispatchEvent(new Event('input'));
+      }
+  }
+
     // Disable the save button and show a processing message
     function disableSaveButton() {
         const saveButton = document.querySelector('.save-button');
