@@ -466,6 +466,7 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         entry_id = self.kwargs.get("entry_id")
         batch_id = self.kwargs.get("batch_id")
         cookies_key_prefix = batch_id
+        context['is_volunteer'] = self.request.user.groups.filter(name='Tagging Data Entry').exists()
         
 
         if entry_id:
