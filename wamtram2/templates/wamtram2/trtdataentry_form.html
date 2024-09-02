@@ -199,7 +199,7 @@
               </tr>
               <!-- Old Left Flipper Tag -->
               <tr>
-                <td>L1</td>
+                <td><strong>L1</strong></td>
                 <td>
                   {% bootstrap_field form.recapture_left_tag_id show_label=False %}
                   <span id="left-tag-validation-message"></span>
@@ -211,7 +211,7 @@
               </tr>
               <!-- Old Right Flipper Tag -->
               <tr>
-                <td>R1</td>
+                <td><strong>R1</strong></td>
                 <td>
                   {% bootstrap_field form.recapture_right_tag_id show_label=False %}
                   <span id="right-tag-validation-message"></span>
@@ -223,7 +223,7 @@
               </tr>
               <!-- Additional Old Left Flipper Tag -->
               <tr id="additionalRecaptureLeftTag" style="display: none;">
-                <td>L2</td>
+                <td><strong>L2</strong></td>
                 <td>
                   {% bootstrap_field form.recapture_left_tag_id_2 show_label=False %}
                   <span id="left-tag-validation-message-2"></span>
@@ -235,7 +235,7 @@
               </tr>
               <!-- Additional Old Right Flipper Tag -->
               <tr id="additionalRecaptureRightTag" style="display: none;">
-                <td>R2</td>
+                <td><strong>R2</strong></td>
                 <td>
                   {% bootstrap_field form.recapture_right_tag_id_2 show_label=False %}
                   <span id="right-tag-validation-message-2"></span>
@@ -1200,7 +1200,7 @@
     document.addEventListener('DOMContentLoaded', function() {
     var datetimeInputs = document.querySelectorAll('input[type="datetime-local"]');
     datetimeInputs.forEach(function(input) {
-        input.setAttribute('step', '60'); // 设置步长为60秒，确保显示到分钟
+        input.setAttribute('step', '60');
     });
   });
 </script>
