@@ -811,9 +811,10 @@ def volunteer_find_turtle(request, batch_id):
     
     return response
 
+@login_required
 def volunteer_redirect(request):
-    if is_volunteer(request.user):
-        return redirect('wamtram2:entry_batches')
+    if request.user.groups.filter(name='Tagging Data Entry').exists() and not request.user.is_staff and not request.user.is_superuser:
+        return redirect('wamtram2:volunteer_find_turtle')
     else:
         return redirect('home')
 

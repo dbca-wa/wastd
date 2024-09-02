@@ -1,6 +1,4 @@
 from dbca_utils.utils import env
-from django.core.exceptions import DisallowedHost
-from django.db.utils import OperationalError
 import dj_database_url
 import os
 from pathlib import Path
@@ -159,7 +157,7 @@ LOCAL_USERGROUPS = [
     "api",
 ]
 LOGIN_URL = "/login/"
-LOGIN_REDIRECT_URL = '/wamtram2/volunteer-redirect/'
+LOGIN_REDIRECT_URL = "/"
 
 # Branding
 SITE_NAME = os.environ.get("SITE_NAME", "Turtles Database")
@@ -172,7 +170,7 @@ VERSION_NO = project["tool"]["poetry"]["version"]
 # Database configuration
 DATABASES = {
     # Defined in DATABASE_URL env variable.
-    "default": dj_database_url.config(),
+    'default': dj_database_url.config(default=os.getenv('DATABASE_URL')),
     "wamtram2": {
         "ENGINE": "mssql",
         "HOST": os.environ.get("DB_HOST", "host"),
@@ -213,6 +211,7 @@ DATETIME_INPUT_FORMATS = (
 TIME_ZONE = "Australia/Perth"
 TZ = ZoneInfo(TIME_ZONE)
 UTC = ZoneInfo("UTC")
+USE_TZ = False
 
 
 # Email settings.
@@ -301,24 +300,7 @@ BOOTSTRAP4 = {
 }
 
 
-def sentry_excluded_exceptions(event, hint):
-    """Exclude defined class(es) of Exception from being reported to Sentry.
-    These exception classes are generally related to operational or configuration issues,
-    and they are not errors that we want to capture.
-    https://docs.sentry.io/platforms/python/configuration/filtering/#filtering-error-events
-    """
-    if "exc_info" in hint and hint["exc_info"]:
-        # Exclude database-related errors (connection error, timeout, DNS failure, etc.)
-        if hint["exc_info"][0] is OperationalError:
-            return None
-        # Exclude exceptions related to host requests not in ALLOWED_HOSTS.
-        elif hint["exc_info"][0] is DisallowedHost:
-            return None
-
-    return event
-
-
-# Sentry config
+# Sentry settings
 SENTRY_DSN = env("SENTRY_DSN", None)
 SENTRY_SAMPLE_RATE = env("SENTRY_SAMPLE_RATE", 1.0)  # Error sampling rate
 SENTRY_TRANSACTION_SAMPLE_RATE = env("SENTRY_TRANSACTION_SAMPLE_RATE", 0.0)  # Transaction sampling
@@ -334,5 +316,4 @@ if SENTRY_DSN and SENTRY_ENVIRONMENT:
         profiles_sample_rate=SENTRY_PROFILES_SAMPLE_RATE,
         environment=SENTRY_ENVIRONMENT,
         release=VERSION_NO,
-        before_send=sentry_excluded_exceptions,
     )
