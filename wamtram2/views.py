@@ -1108,9 +1108,18 @@ def search_persons(request):
 
 def search_places(request):
     query = request.GET.get('q', '')
-    places = TrtPlaces.objects.filter(
-        Q(place_name__icontains=query) | Q(location_code__location_name__icontains=query)
-    ).values('place_code', 'place_name', 'location_code__location_name')[:10]
+    
+    if ' - ' in query:
+        location_code, place_name = query.split(' - ', 1)
+        places = TrtPlaces.objects.filter(
+            location_code__icontains=location_code.strip(),
+            place_name__icontains=place_name.strip()
+        ).values('place_code', 'place_name', 'location_code__location_name')[:10]
+    else:
+        places = TrtPlaces.objects.filter(
+            Q(place_name__icontains=query) | Q(location_code__location_name__icontains=query)
+        ).values('place_code', 'place_name', 'location_code__location_name')[:10]
+    
     return JsonResponse(list(places), safe=False)
 
 
