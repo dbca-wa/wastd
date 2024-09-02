@@ -397,14 +397,28 @@
             <h5>OLD PIT Tag(s)</h5>
             <div class="row mt-2">
               <div class="col-md-6">
-                {% bootstrap_field form.recapture_pittag_id show_label=Fals %}
-                <div id="recapture-pit-tag-validation-message"></div>
-                <div id="recapture-pit-tag-message"></div>
+                <div class="row">
+                  <div class="col-md-2 d-flex align-items-center">
+                    <strong>L1</strong>
+                  </div>
+                  <div class="col-md-10">
+                    {% bootstrap_field form.recapture_pittag_id show_label=False %}
+                    <div id="recapture-pit-tag-validation-message"></div>
+                    <div id="recapture-pit-tag-message"></div>
+                  </div>
+                </div>
               </div>
               <div class="col-md-6">
-                {% bootstrap_field form.recapture_pittag_id_2 show_label=Fals %}
-                <div id="recapture-pit-tag-validation-message-2"></div>
-                <div id="recapture-pit-tag-message-2"></div>
+                <div class="row">
+                  <div class="col-md-2 d-flex align-items-center">
+                    <strong>R1</strong>
+                  </div>
+                  <div class="col-md-10">
+                    {% bootstrap_field form.recapture_pittag_id_2 show_label=False %}
+                    <div id="recapture-pit-tag-validation-message-2"></div>
+                    <div id="recapture-pit-tag-message-2"></div>
+                  </div>
+                </div>
               </div>
             </div>
 
