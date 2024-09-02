@@ -6,11 +6,11 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error('toggleMeasurementButton not found');
     }
 
-    const ccLengthNotMeasured = document.getElementById('id_cc_length_not_measured');
-    if (ccLengthNotMeasured) {
-        ccLengthNotMeasured.addEventListener('change', toggleCurvedCarapaceLength);
+    const ccLengthMinNotMeasured = document.getElementById('id_cc_notch_length_not_measured');
+    if (ccLengthMinNotMeasured) {
+        ccLengthMinNotMeasured.addEventListener('change', toggleCCLMin);
     } else {
-        console.error('ccLengthNotMeasured not found');
+        console.error('ccLengthMinNotMeasured not found');
     }
 
     const ccWidthNotMeasured = document.getElementById('id_cc_width_not_measured');
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error('ccWidthNotMeasured not found');
     }
 
-    toggleCurvedCarapaceLength();
+    toggleCCLMin();
     toggleCurvedCarapaceWidth();
 });
 
@@ -39,16 +39,16 @@ function toggleMeasurementFields() {
     }
 }
 
-function toggleCurvedCarapaceLength() {
-    const ccLengthElement = document.getElementById('id_curved_carapace_length');
+function toggleCCLMin() {
+    const ccLengthElement = document.getElementById('id_curved_carapace_length_notch');
     if (!ccLengthElement) {
         console.error('ccLengthElement not found');
         return;
     }
     const curvedCarapaceLength = ccLengthElement.parentElement;
     if (curvedCarapaceLength) {
-        const ccLengthNotMeasured = document.getElementById('id_cc_length_not_measured');
-        if (ccLengthNotMeasured.checked) {
+        const ccLengthMinNotMeasured = document.getElementById('id_cc_notch_length_not_measured');
+        if (ccLengthMinNotMeasured.checked) {
             curvedCarapaceLength.style.display = 'none';
         } else {
             curvedCarapaceLength.style.display = 'block';

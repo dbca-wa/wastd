@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.utils import timezone
 from django.db import connections, DatabaseError
 from django.db.models import Q, Exists, OuterRef
-from django.http import HttpResponseForbidden, HttpResponseRedirect
+from django.http import HttpResponseForbidden, HttpResponseRedirect, HttpResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse, reverse_lazy
@@ -16,9 +16,11 @@ from django.views.decorators.http import require_http_methods
 from django.utils.decorators import method_decorator
 from django.db.models import Count, Exists, OuterRef, Subquery
 from django.core.paginator import Paginator
+from openpyxl import Workbook
 import os
 import json
 import re
+import csv
 
 from wastd.utils import Breadcrumb, PaginateMixin
 from .models import (
@@ -29,7 +31,8 @@ from .models import (
     TrtDataEntry,
     TrtPersons,
     TrtObservations,
-    Template
+    Template,
+    TrtTagStates,
 )
 from .forms import TrtDataEntryForm, SearchForm, TrtEntryBatchesForm, TemplateForm
 
@@ -128,18 +131,6 @@ class EntryBatchesListView(LoginRequiredMixin, ListView):
 class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
     """
     A view for displaying list of a batch of TrtDataEntry objects.
-
-    Attributes:
-        model (Model): The model class for the TrtDataEntry objects.
-        template_name (str): The name of the template to be used for rendering the view.
-        context_object_name (str): The name of the variable to be used in the template for the queryset.
-        paginate_by (int): The number of objects to display per page.
-
-    Methods:
-        get_queryset(): Returns the queryset of TrtDataEntry objects filtered by entry_batch_id.
-        get_context_data(**kwargs): Returns the context data for rendering the template, including the persons dictionary.
-        load_templates(): Loads the templates from the templates.json file.
-
     """
 
     model = TrtDataEntry
@@ -162,17 +153,8 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
             initial['entered_person_id'] = default_enterer
         
         return initial
-        
-    def load_templates(self):
-        """
-        Loads the templates from the templates.json file.
-        """
-        json_file_path = os.path.join(settings.BASE_DIR, 'wamtram2', 'templates.json')
-        with open(json_file_path, 'r') as file:
-            return json.load(file)
 
     def dispatch(self, request, *args, **kwargs):
-        # FIXME: Permission check
         if not (
             request.user.groups.filter(name="Tagging Data Entry").exists()
             or request.user.groups.filter(name="Tagging Data Curation").exists()
@@ -184,78 +166,49 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
         return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
-        """
-        Handle GET requests.
-
-        This method checks if a 'batch_id' is in 'kwargs'. If not, it creates a new TrtEntryBatches object
-        and sets the 'batch_id' key in 'kwargs' to the newly created batch's entry_batch_id.
-        Then, it calls the 'get' method of the parent class using 'super()' and returns the result.
-
-        Args:
-            request: The HTTP request object.
-            args: Additional positional arguments.
-            kwargs: Additional keyword arguments.
-
-        Returns:
-            The response returned by the 'get' method of the parent class.
-        """
         if "batch_id" not in kwargs:
             new_batch = TrtEntryBatches.objects.create(
                 pr_date_convention=False,
                 entry_date=timezone.now().date()
-            )  # All dates should be entered as calendar dates
+            )
             self.kwargs["batch_id"] = new_batch.entry_batch_id
         return super().get(request, *args, **kwargs)
 
     def get_queryset(self):
-        """
-        Returns the queryset of TrtDataEntry objects filtered by entry_batch_id.
-
-        Returns:
-            queryset (QuerySet): The filtered queryset of TrtDataEntry objects.
-        """
         queryset = super().get_queryset()
         batch_id = self.kwargs.get("batch_id")
-
+    
         filter_value = self.request.GET.get("filter")
-        if filter_value == "processed":
-            queryset = queryset.filter(entry_batch_id=batch_id, do_not_process=False)
-        elif filter_value == "not_processed":
+        if filter_value == "needs_review":
             queryset = queryset.filter(entry_batch_id=batch_id, do_not_process=True)
+        elif filter_value == "not_saved":
+            queryset = queryset.filter(entry_batch_id=batch_id, observation_id__isnull=True)
         else:
             queryset = queryset.filter(entry_batch_id=batch_id)
-
+    
         return queryset.order_by("-data_entry_id")
 
     def get_context_data(self, **kwargs):
-        """
-        Returns the context data for rendering the template, including the persons dictionary.
-
-        Args:
-            **kwargs: Additional keyword arguments.
-
-        Returns:
-            context (dict): The context data for rendering the template.
-
-        """
         context = super().get_context_data(**kwargs)
         context["persons"] = {
             person.person_id: person for person in TrtPersons.objects.all()
         }
 
         batch = TrtEntryBatches.objects.get(entry_batch_id=self.kwargs.get("batch_id"))
-        context["batch"] = batch  # add the batch to the context
+        context["batch"] = batch
         initial = self.get_initial()
         context["form"] = TrtEntryBatchesForm(
             instance=batch,
             initial=initial
-        )  # Add the form to the context data
+        )
         
         # Add a `highlight_row` attribute to each entry if it meets the conditions
         for entry in context['object_list']:
             entry.highlight_row = entry.do_not_process and entry.error_message not in ['None', 'Observation added to database']
         
-        # Add the templates to the context data
+        # 从数据库加载模板数据并添加到上下文
+        context['templates'] = Template.objects.all()
+
         cookies_key_prefix = self.kwargs.get("batch_id")
         context['selected_template'] = self.request.COOKIES.get(f'{cookies_key_prefix}_selected_template', '')
         context['use_default_enterer'] = self.request.COOKIES.get(f'{cookies_key_prefix}_use_default_enterer', False)
@@ -263,7 +216,6 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
 
         context['cookies_key_prefix'] = cookies_key_prefix
         context['default_enterer_value'] = context['default_enterer']
-        context['templates'] = self.load_templates()
         
         # Add entries with do_not_process = True to the context
         context["do_not_process_entries"] = TrtDataEntry.objects.filter(
@@ -297,24 +249,17 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
 
         batch_id = batch.entry_batch_id
 
-        # Get the existing instance from the database
         existing_batch = TrtEntryBatches.objects.get(entry_batch_id=batch_id)
-
-        # Update the PR_DATE_CONVENTION field with the existing value
         batch.pr_date_convention = existing_batch.pr_date_convention
         batch.entry_date = existing_batch.entry_date
         batch.filename = existing_batch.filename
 
-        # Save the batch instance
         batch.save()
-
-        # Redirect to the success URL
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
         batch_id = self.kwargs.get("batch_id")
         return reverse("wamtram2:entry_batch_detail", args=[batch_id])
-
 
 class TrtDataEntryFormView(LoginRequiredMixin, FormView):
     """
@@ -356,10 +301,15 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         return kwargs
 
     def get_template_data(self, template_key):
-        json_file_path = os.path.join(settings.BASE_DIR, 'wamtram2', 'templates.json')
-        with open(json_file_path, 'r') as file:
-            templates = json.load(file)
-        return templates.get(template_key)
+        try:
+            template = Template.objects.get(pk=template_key)
+            return {
+                'place_code': template.place_code,
+                'species_code': template.species_code,
+                'sex': template.sex
+            }
+        except Template.DoesNotExist:
+            return None
 
     def get_initial(self):
         initial = super().get_initial()
@@ -507,10 +457,17 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         entry_id = self.kwargs.get("entry_id")
         batch_id = self.kwargs.get("batch_id")
         cookies_key_prefix = batch_id
+        
 
         if entry_id:
+            entry = get_object_or_404(TrtDataEntry.objects.select_related('turtle_id'), data_entry_id=entry_id)
             context["entry_id"] = entry_id  # Editing existing entry
-            context["entry"] = get_object_or_404(TrtDataEntry.objects.select_related('turtle_id'), data_entry_id=entry_id)
+            context["entry"] = entry
+            
+            if entry.observation_id:
+                context["observation"] = entry.observation_id
+            else:
+                context["observation"] = None
         
         if batch_id:
             context["batch_id"] = batch_id  # Creating new entry in batch
@@ -716,13 +673,13 @@ class FindTurtleView(LoginRequiredMixin, View):
 
     def set_cookie(self, response, batch_id, tag_id=None, tag_type=None, tag_side=None, no_turtle_found=False, do_not_process=False):
         if tag_id:
-            response.set_cookie(f'{batch_id}_tag_id', tag_id, max_age=3600)
+            response.set_cookie(f'{batch_id}_tag_id', tag_id, max_age=63072000)
         if tag_type:
-            response.set_cookie(f'{batch_id}_tag_type', tag_type, max_age=3600)
+            response.set_cookie(f'{batch_id}_tag_type', tag_type, max_age=63072000)
         if tag_side:
-            response.set_cookie(f'{batch_id}_tag_side', tag_side, max_age=3600)
-        response.set_cookie(f'{batch_id}_no_turtle_found', 'true' if no_turtle_found else 'false', max_age=3600)
-        response.set_cookie(f'{batch_id}_do_not_process', 'true' if do_not_process else 'false', max_age=3600)
+            response.set_cookie(f'{batch_id}_tag_side', tag_side, max_age=63072000)
+        response.set_cookie(f'{batch_id}_no_turtle_found', 'true' if no_turtle_found else 'false', max_age=63072000)
+        response.set_cookie(f'{batch_id}_do_not_process', 'true' if do_not_process else 'false', max_age=63072000)
         return response
 
     def post(self, request, *args, **kwargs):
@@ -869,164 +826,16 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
         context["observations"] = obj.trtobservations_set.all()
         return context
 
-
 SEX_CHOICES = [
     ("M", "Male"),
     ("F", "Female"),
     ("I", "Indeterminate"),
 ]
-class TemplateManageView(LoginRequiredMixin, FormView):
-    """
-    View for managing templates.
-    Provides functionality to create, update, and delete templates.
 
-    Attributes:
-        template_name (str): The name of the template used to render the view.
-        form_class (Form): The form class used to create or update templates.
-    """
+class TemplateManageView(LoginRequiredMixin, FormView):
     template_name = 'wamtram2/template_manage.html'
     form_class = TemplateForm
-
-    def get_json_path(self):
-        """
-        Returns the path to the JSON file storing the templates.
-
-        Returns:
-            str: The file path.
-        """
-        return os.path.join(settings.BASE_DIR, 'wamtram2', 'templates.json')
-
-    def load_templates_from_json(self):
-        """
-        Loads templates from the JSON file.
-
-        Returns:
-            dict: The templates data.
-        """
-        try:
-            with open(self.get_json_path(), 'r') as file:
-                data = json.load(file)
-            return data
-        except FileNotFoundError:
-            return {}
-        except json.JSONDecodeError as e:
-            print(f"Error decoding JSON: {e}")
-            return {}
-
-    def save_templates_to_json(self, templates):
-        """
-        Saves the templates data to the JSON file.
-
-        Args:
-            templates (dict): The templates data to save.
-        """
-        try:
-            with open(self.get_json_path(), 'w') as file:
-                json.dump(templates, file, indent=4)
-        except IOError as e:
-            print(f"Error writing to JSON file: {e}")
-            raise
-
-    def get_next_template_key(self, templates):
-        """
-        Generates the next key for a new template.
-
-        Args:
-            templates (dict): The current templates data.
-
-        Returns:
-            str: The new template key.
-        """
-        max_key = 0
-        template_key_pattern = re.compile(r'^template(\d+)$')
-        for key in templates.keys():
-            match = template_key_pattern.match(key)
-            if match:
-                max_key = max(max_key, int(match.group(1)))
-        return f"template{max_key + 1}"
-
-    def form_valid(self, form):
-        """
-        Handles the form submission for creating or updating a template.
-
-        Args:
-            form (Form): The submitted form.
-
-        Returns:
-            HttpResponse: The HTTP response.
-        """
-        new_template = form.save(commit=False)
-        templates = self.load_templates_from_json()
-        new_template_data = {
-            'name': new_template.name,
-            'location_code': self.request.POST.get('location_code'),
-            'place_code': self.request.POST.get('place_code'),
-            'species_code': self.request.POST.get('species_code'),
-            'sex': self.request.POST.get('sex')
-        }
-
-        template_key = self.get_next_template_key(templates)
-        templates[template_key] = new_template_data
-        try:
-            self.save_templates_to_json(templates)
-            return redirect('wamtram2:template_manage')
-        except Exception as e:
-            return render(self.request, 'wamtram2/template_manage.html', {
-                'form': form,
-                'templates': templates,
-                'locations': list(TrtLocations.objects.all()),
-                'places': list(TrtPlaces.objects.all()), 
-                'species': list(TrtSpecies.objects.all()),
-                'sex_choices': SEX_CHOICES,
-                'error_message': f"Error saving template: {e}"
-            })
-
-    def get_context_data(self, **kwargs):
-        """
-        Retrieves the context data for rendering the template.
-
-        Returns:
-            dict: The context data.
-        """
-        context = super().get_context_data(**kwargs)
-        context['templates'] = self.load_templates_from_json()
-        context['locations'] = list(TrtLocations.objects.all())
-        context['places'] = list(TrtPlaces.objects.all())
-        context['species'] = list(TrtSpecies.objects.all())
-        context['sex_choices'] = SEX_CHOICES
-        return context
-
-    def delete(self, request, template_key):
-        """
-        Deletes a template based on the provided key.
-
-        Args:
-            request (HttpRequest): The HTTP request.
-            template_key (str): The key of the template to delete.
-
-        Returns:
-            JsonResponse: The JSON response.
-        """
-        templates = self.load_templates_from_json()
-        if template_key in templates:
-            del templates[template_key]
-            try:
-                self.save_templates_to_json(templates)
-                return JsonResponse({'message': 'Template deleted'})
-            except Exception as e:
-                return JsonResponse({'error': f"Error deleting template: {e}"}, status=500)
-        return JsonResponse({'error': 'Template not found'}, status=404)
-
     def dispatch(self, request, *args, **kwargs):
-        """
-        Handles different HTTP methods for the view.
-
-        Args:
-            request (HttpRequest): The HTTP request.
-
-        Returns:
-            HttpResponse: The HTTP response.
-        """
         if not request.user.is_superuser:
             return HttpResponseForbidden("You do not have permission to access this page.")
         
@@ -1036,7 +845,40 @@ class TemplateManageView(LoginRequiredMixin, FormView):
             return self.delete(request, *args, **kwargs)
         elif request.method == 'GET' and 'location_code' in request.GET:
             return self.get_places(request)
+        
         return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.save()
+        return redirect('wamtram2:template_manage')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['templates'] = Template.objects.all()
+        context['locations'] = list(TrtLocations.objects.all())
+        context['places'] = list(TrtPlaces.objects.all())
+        context['species'] = list(TrtSpecies.objects.all())
+        context['sex_choices'] = SEX_CHOICES
+        return context
+
+    def delete(self, request, template_key):
+        template = get_object_or_404(Template, pk=template_key)
+        template.delete()
+        return JsonResponse({'message': 'Template deleted'})
+
+    def put(self, request, template_key):
+        template = get_object_or_404(Template, pk=template_key)
+        form = TemplateForm(QueryDict(request.body), instance=template)
+        if form.is_valid():
+            updated_template = form.save()
+            return JsonResponse({
+                'name': updated_template.name,
+                'location_code': updated_template.location_code,
+                'place_code': updated_template.place_code,
+                'species_code': updated_template.species_code,
+                'sex': updated_template.sex
+            })
+        return JsonResponse({'errors': form.errors}, status=400)
     
     def get_places(self, request):
         """
@@ -1053,52 +895,6 @@ class TemplateManageView(LoginRequiredMixin, FormView):
         places_list = list(places.values('place_code', 'place_name'))
         return JsonResponse(places_list, safe=False)
     
-    def put(self, request, template_key):
-        """
-        Updates a template based on the provided key.
-
-        Args:
-            request (HttpRequest): The HTTP request.
-            template_key (str): The key of the template to update.
-
-        Returns:
-            JsonResponse: The JSON response.
-        """
-        templates = self.load_templates_from_json()
-        template_data = templates.get(template_key)
-        if not template_data:
-            return JsonResponse({'error': 'Template not found'}, status=404)
-        
-        put_data = QueryDict(request.body)
-    
-        # Debugging output
-        print(put_data)
-        
-        template_instance = Template(
-            name=template_data['name'],
-            location_code=template_data['location_code'],
-            place_code=template_data['place_code'],
-            species_code=template_data['species_code'],
-            sex=template_data['sex']
-        )
-        
-        form = TemplateForm(put_data, instance=template_instance)
-        if form.is_valid():
-            updated_template = form.save(commit=False)
-            updated_template_data = {
-                'name': updated_template.name,
-                'location_code': put_data.get('location_code'),
-                'place_code': put_data.get('place_code'),
-                'species_code': put_data.get('species_code'),
-                'sex': put_data.get('sex')
-            }
-            templates[template_key] = updated_template_data
-            try:
-                self.save_templates_to_json(templates)
-                return JsonResponse(updated_template_data)
-            except Exception as e:
-                return JsonResponse({'error': f"Error saving template: {e}"}, status=500)
-        return JsonResponse({'errors': form.errors}, status=400)
 
 
 class ValidateTagView(View):
@@ -1312,9 +1108,148 @@ def search_persons(request):
 
 def search_places(request):
     query = request.GET.get('q', '')
-    places = TrtPlaces.objects.filter(
-        Q(place_name__icontains=query) | Q(location_code__location_name__icontains=query)
-    ).values('place_code', 'place_name', 'location_code__location_name')[:10]
+    
+    if ' - ' in query:
+        location_code, place_name = query.split(' - ', 1)
+        places = TrtPlaces.objects.filter(
+            location_code__icontains=location_code.strip(),
+            place_name__icontains=place_name.strip()
+        ).values('place_code', 'place_name', 'location_code__location_name')[:10]
+    else:
+        places = TrtPlaces.objects.filter(
+            Q(place_name__icontains=query) | Q(location_code__location_name__icontains=query)
+        ).values('place_code', 'place_name', 'location_code__location_name')[:10]
+    
     return JsonResponse(list(places), safe=False)
 
+
+class ExportDataView(LoginRequiredMixin, View):
+    def dispatch(self, request, *args, **kwargs):
+        # Permission check: only allow users in the specific groups or superusers
+        if not (
+            request.user.is_superuser
+        ):
+            return HttpResponseForbidden(
+                "You do not have permission to view this record"
+            )
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request):
+        if request.GET.get('action') == 'get_places':
+            return self.get_places(request)
+        return self.export_data(request)
+
+    def export_data(self, request):
+        observation_date_from = request.GET.get("observation_date_from")
+        observation_date_to = request.GET.get("observation_date_to")
+        place_code = request.GET.get("place_code")
+        file_format = request.GET.get("format", "csv")
+
+        queryset = TrtDataEntry.objects.filter(observation_id__isnull=False)
+        
+        if observation_date_from and observation_date_to:
+            queryset = queryset.filter(observation_date__range=[observation_date_from, observation_date_to])
+        elif observation_date_from:
+            queryset = queryset.filter(observation_date__gte=observation_date_from)
+        elif observation_date_to:
+            queryset = queryset.filter(observation_date__lte=observation_date_to)
+        
+        if place_code:
+            queryset = queryset.filter(place_code=place_code)
+
+        # File generation logic
+        if file_format == "csv":
+            response = HttpResponse(content_type="text/csv")
+            response["Content-Disposition"] = 'attachment; filename="data_export.csv"'
+            writer = csv.writer(response)
+            writer.writerow([field.name for field in TrtDataEntry._meta.fields])  # Write header
+            for entry in queryset:
+                writer.writerow([getattr(entry, field.name) for field in TrtDataEntry._meta.fields])
+        elif file_format == "xlsx":
+            response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+            response["Content-Disposition"] = 'attachment; filename="data_export.xlsx"'
+            wb = Workbook()
+            ws = wb.active
+            ws.append([field.name for field in TrtDataEntry._meta.fields])  # Write header
+            for entry in queryset:
+                ws.append([getattr(entry, field.name) for field in TrtDataEntry._meta.fields])
+            wb.save(response)
+
+        return response
+
+    def get_places(self, request):
+        observation_date_from = request.GET.get("observation_date_from")
+        observation_date_to = request.GET.get("observation_date_to")
+
+        places = TrtPlaces.objects.filter(
+            trtdataentry__observation_date__range=[observation_date_from, observation_date_to]
+        ).select_related('location_code').distinct()
+
+        place_list = [
+            {
+                "place_code": place.place_code,
+                "place_name": place.place_name,
+                "location_name": place.location_code.location_name,
+            }
+            for place in places
+        ]
+        
+        return JsonResponse({"places": place_list})
+
+class FilterFormView(LoginRequiredMixin, View):
+    def dispatch(self, request, *args, **kwargs):
+        # Permission check: only allow users in the specific groups or superusers
+        if not (
+            request.user.is_superuser
+        ):
+            return HttpResponseForbidden(
+                "You do not have permission to view this record"
+            )
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request):
+        return render(request, 'wamtram2/export_form.html')
+
+class DudTagManageView(LoginRequiredMixin, View):
+    template_name = 'wamtram2/dud_tag_manage.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_superuser:
+            return HttpResponseForbidden("You do not have permission to view this record")
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request):
+        entries = TrtDataEntry.objects.filter(
+            dud_filpper_tag__isnull=False
+        ).select_related('observation_id', 'turtle_id')
+        tag_states = TrtTagStates.objects.all()
+        return render(request, self.template_name, {'entries': entries, 'tag_states': tag_states})
+
+    def post(self, request):
+        entry_id = request.POST.get('entry_id')
+        tag_type = request.POST.get('tag_type')
+        tag_id = request.POST.get('tag_id')
+        tag_status = request.POST.get('tag_status')
+
+        entry = get_object_or_404(TrtDataEntry, pk=entry_id)
+
+        # 仅当 observation_id 存在时才允许保存
+        if entry.observation_id:
+            observation = entry.observation_id
+
+            # 根据标签类型保存到对应的 observation 字段
+            if tag_type == 'flipper':
+                observation.dud_filpper_tag = tag_id
+            elif tag_type == 'flipper_2':
+                observation.dud_filpper_tag_2 = tag_id
+            elif tag_type == 'pit':
+                observation.dud_pit_tag = tag_id
+            elif tag_type == 'pit_2':
+                observation.dud_pit_tag_2 = tag_id
+
+            observation.save()
+
+            print(f"Observation updated for entry ID: {entry_id}, tag type: {tag_type}")
+
+        return redirect('wamtram2:dud_tag_manage')
 

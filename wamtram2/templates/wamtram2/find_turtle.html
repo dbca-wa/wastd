@@ -46,7 +46,7 @@
           <form method="post" class="w-50 mx-auto text-center mt-3" id="searchForm">
             {% csrf_token %}
             <div class="form-group">
-              <label for="tag_id">Tag ID:</label>
+              <label for="tag_id">Flipper/ PIT tag ID:</label>
               <input type="text" class="form-control" id="tag_id" name="tag_id" required>
             </div>
             <input type="hidden" id="tag_type" name="tag_type" value="{{ tag_type }}">
@@ -102,17 +102,15 @@
   </div>
 </div>
 
-<!-- Loading overlay -->
-<div id="loadingOverlay">
-  <div class="spinner"></div>
-</div>
-
 <!-- Loading spinner -->
 <div class="loading-spinner">
   <div class="spinner-border text-primary" role="status">
-    <span class="sr-only">Loading...</span>
+      <span class="sr-only">Loading...</span>
   </div>
 </div>
+
+<!-- Loading overlay -->
+<div class="loading-overlay"></div>
 
 {% endblock %}
 
@@ -121,7 +119,16 @@
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     const batchId = document.getElementById('batch_id').value;
-  
+    
+    function clearCookie(name) {
+      document.cookie = name + '=; Max-Age=0; path=/';
+    }
+
+    function clearCookiesForUntaggedTurtle(batchId) {
+      clearCookie(`${batchId}_tag_id`);
+      clearCookie(`${batchId}_tag_type`);
+      clearCookie(`${batchId}_tag_side`);
+    }
     // Show loading animation
     function showLoadingSpinner() {
       const loadingSpinner = document.querySelector('.loading-spinner');
@@ -140,7 +147,7 @@
 
     // Show overlay
     function showLoadingOverlay() {
-      const overlay = document.getElementById('loadingOverlay');
+      const overlay = document.querySelector('.loading-overlay');
       if (overlay) {
         overlay.style.display = 'block';
       }
@@ -148,7 +155,7 @@
 
     // Hide overlay
     function hideLoadingOverlay() {
-      const overlay = document.getElementById('loadingOverlay');
+      const overlay = document.querySelector('.loading-overlay');
       if (overlay) {
         overlay.style.display = 'none';
       }
@@ -251,12 +258,20 @@
           break;
   
         case 'createForExistingTurtle':
-        case 'createForUntaggedTurtle':
           document.getElementById('set_do_not_process').value = "false";
           document.cookie = `${batchId}_do_not_process=false; path=/`;
           showLoadingSpinner(); // Show spinner for page navigation
           showLoadingOverlay(); // Show overlay for page navigation
           break;
+
+          case 'createForUntaggedTurtle':
+          clearCookiesForUntaggedTurtle(batchId);
+          document.getElementById('set_do_not_process').value = "false";
+          document.cookie = `${batchId}_do_not_process=false; path=/`;
+          showLoadingSpinner(); // Show spinner for page navigation
+          showLoadingOverlay(); // Show overlay for page navigation
+          break;
+
   
         default:
           hideLoadingSpinner(); // Hide spinner for any other cases not causing navigation or submission
