@@ -286,7 +286,7 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["sex"].required = True
         self.fields["clutch_completed"].required = True
         
-        self.fields["latitude"].label = "Latitude (-xx.xxxxxx)"
+        self.fields["latitude"].label = "Latitude - (xx.xxxxxx)"
         self.fields["longitude"].label = "Longitude (xxx.xxxxxx)"
         self.fields["nesting"].label = "Was nesting interrupted by tag team?"
         self.fields["entered_by_id"].label = "Entered by"
@@ -488,6 +488,10 @@ class TrtDataEntryForm(forms.ModelForm):
         place_code = cleaned_data.get("place_code")
         if not place_code:
             raise forms.ValidationError("The place code is required.")
+        
+        latitude = cleaned_data.get("latitude")
+        if latitude is not None and not str(latitude).startswith('-'):
+            cleaned_data['latitude'] = f'-{latitude}'
         
         return cleaned_data
 
