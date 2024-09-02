@@ -103,7 +103,12 @@
           <div class="row">
             <div class="col-md-6 pt-2">
               <label for="{{ form.latitude.id_for_label }}">{{ form.latitude.label }}</label>
-              - {% bootstrap_field form.latitude show_label=False %}
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <span class="input-group-text font-weight-bold">-</span>
+                </div>
+                {% bootstrap_field form.latitude show_label=False %}
+              </div>
             </div>
             <div class="col-md-6 pt-2">
               <label for="{{ form.longitude.id_for_label }}">{{ form.longitude.label }}</label>
