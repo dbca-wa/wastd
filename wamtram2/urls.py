@@ -29,4 +29,6 @@ urlpatterns = [
     path('export/', views.ExportDataView.as_view(), name='export_data'),
     path('export/form/', views.FilterFormView.as_view(), name='export_form'),
     path('dud-tag-manage/', views.DudTagManageView.as_view(), name='dud_tag_manage'),
+    path('volunteer-find-turtle/<int:batch_id>/', views.volunteer_find_turtle, name='volunteer_find_turtle'),
+    path('volunteer-redirect/', views.volunteer_redirect, name='volunteer_redirect'),
 ]

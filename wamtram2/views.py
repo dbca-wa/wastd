@@ -792,6 +792,32 @@ class TurtleListView(LoginRequiredMixin, PaginateMixin, ListView):
         return qs.order_by("pk")
 
 
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.shortcuts import redirect
+
+def is_volunteer(user):
+    return user.groups.filter(name='Tagging Data Entry').exists() and not user.is_staff and not user.is_superuser
+
+@login_required
+@user_passes_test(is_volunteer)
+def volunteer_find_turtle(request, batch_id):
+    template_id = request.GET.get('templateid')
+    
+    # 设置 cookies
+    response = redirect('wamtram2:find_turtle', batch_id=batch_id)
+    response.set_cookie(f'{batch_id}_default_enterer', request.user.id, max_age=18000)
+    if template_id:
+        response.set_cookie(f'{batch_id}_selected_template', template_id, max_age=18000)
+    
+    return response
+
+def volunteer_redirect(request):
+    if is_volunteer(request.user):
+        return redirect('wamtram2:entry_batches')
+    else:
+        return redirect('home')
+
+
 class TurtleDetailView(LoginRequiredMixin, DetailView):
     """
     View class for displaying the details of a turtle.

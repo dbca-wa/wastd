@@ -157,7 +157,7 @@ LOCAL_USERGROUPS = [
     "api",
 ]
 LOGIN_URL = "/login/"
-LOGIN_REDIRECT_URL = "/"
+LOGIN_REDIRECT_URL = '/wamtram2/volunteer-redirect/'
 
 # Branding
 SITE_NAME = os.environ.get("SITE_NAME", "Turtles Database")
