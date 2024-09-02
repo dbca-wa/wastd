@@ -1121,6 +1121,11 @@
                         inputValue = input.value.trim();
                     }
 
+                    // Add negative sign for latitude
+                    if (input.id === 'id_latitude' && inputValue !== '') {
+                        inputValue = '-' + inputValue;
+                    }
+
                     if (inputValue !== '') {
                         summaryHTML += `<li><strong>${labelText}:</strong> ${inputValue}</li>`;
                     }
