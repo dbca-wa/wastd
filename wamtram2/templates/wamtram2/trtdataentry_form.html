@@ -9,6 +9,7 @@
 <link rel="stylesheet" type="text/css" href="{% static 'css/add_person_btn.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <style>
   .select2 {
     width: 100% !important;
@@ -880,6 +881,7 @@
 {% block extra_js %}
 {{ form.media.js }}
 {{ block.super }}
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     // URL for adding a new person
@@ -1198,9 +1200,13 @@
     }
   });
     document.addEventListener('DOMContentLoaded', function() {
-    var datetimeInputs = document.querySelectorAll('input[type="datetime-local"]');
+      var datetimeInputs = document.querySelectorAll('input[type="datetime-local"]');
     datetimeInputs.forEach(function(input) {
-        input.setAttribute('step', '60');
+        flatpickr(input, {
+            enableTime: true,
+            dateFormat: "Y-m-d H:i",
+            time_24hr: true
+        });
     });
   });
 </script>
