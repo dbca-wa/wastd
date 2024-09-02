@@ -1197,6 +1197,12 @@
         });
     }
   });
+    document.addEventListener('DOMContentLoaded', function() {
+    var datetimeInputs = document.querySelectorAll('input[type="datetime-local"]');
+    datetimeInputs.forEach(function(input) {
+        input.setAttribute('step', '60'); // 设置步长为60秒，确保显示到分钟
+    });
+  });
 </script>
 <script src="{% static 'js/tagToggleHandler.js' %}"></script>
 <script src="{% static 'js/scarHandler.js' %}"></script>
