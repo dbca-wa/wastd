@@ -72,12 +72,6 @@ class SearchForm(forms.Form):
     default_enterer = forms.CharField(widget=forms.HiddenInput(), required=False)
     selected_template = forms.CharField(required=False, widget=forms.HiddenInput())
     use_default_enterer = forms.BooleanField(required=False, widget=forms.HiddenInput())
-    
-class DateTimeForm(forms.Form):
-    observation_date = forms.DateTimeField(
-        widget=forms.DateTimeInput(attrs={"type": "datetime-local"}),
-        input_formats=['%Y-%m-%dT%H:%M'],
-    )
 
 
 class TrtEntryBatchesForm(forms.ModelForm):
@@ -238,7 +232,6 @@ class TrtDataEntryForm(forms.ModelForm):
             "turtle_id": forms.HiddenInput(),
             "entry_batch": forms.HiddenInput(),
             "observation_date": forms.DateTimeInput(attrs={"type": "datetime-local"}),
-
             "measured_by_id": forms.HiddenInput(),
             "recorded_by_id": forms.HiddenInput(),
             "tagged_by_id": forms.HiddenInput(),
@@ -286,7 +279,7 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["sex"].required = True
         self.fields["clutch_completed"].required = True
         
-        self.fields["latitude"].label = "Latitude (-xx.xxxxxx)"
+        self.fields["latitude"].label = "Latitude - (xx.xxxxxx)"
         self.fields["longitude"].label = "Longitude (xxx.xxxxxx)"
         self.fields["nesting"].label = "Was nesting interrupted by tag team?"
         self.fields["entered_by_id"].label = "Entered by"
@@ -488,6 +481,14 @@ class TrtDataEntryForm(forms.ModelForm):
         place_code = cleaned_data.get("place_code")
         if not place_code:
             raise forms.ValidationError("The place code is required.")
+        
+        latitude = cleaned_data.get("latitude")
+        if latitude is not None:
+            latitude_str = str(latitude)
+            if not latitude_str.startswith('-') and not latitude_str.startswith('-'):
+                cleaned_data['latitude'] = f'-{latitude}'
+            else:
+                cleaned_data['latitude'] = latitude_str
         
         return cleaned_data
 

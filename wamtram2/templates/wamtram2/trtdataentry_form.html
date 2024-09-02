@@ -9,6 +9,7 @@
 <link rel="stylesheet" type="text/css" href="{% static 'css/add_person_btn.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <style>
   .select2 {
     width: 100% !important;
@@ -21,6 +22,17 @@
   }
   .table-borderless td, .table-borderless th {
     border: 0 !important;
+  }
+  .custom-prepend {
+    height: 38px;
+    line-height: 24px;
+    display: flex;
+    align-items: center;
+  }
+  .input-group-text {
+    background-color: #e9ecef;
+    border: 1px solid #ced4da;
+    border-radius: .25rem 0 0 .25rem;
   }
 </style>
 {% endblock %}  
@@ -103,7 +115,12 @@
           <div class="row">
             <div class="col-md-6 pt-2">
               <label for="{{ form.latitude.id_for_label }}">{{ form.latitude.label }}</label>
-              {% bootstrap_field form.latitude show_label=False %}
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <span class="input-group-text font-weight-bold custom-prepend">-</span>
+                </div>
+                {% bootstrap_field form.latitude show_label=False %}
+              </div>
             </div>
             <div class="col-md-6 pt-2">
               <label for="{{ form.longitude.id_for_label }}">{{ form.longitude.label }}</label>
@@ -183,7 +200,7 @@
               </tr>
               <!-- Old Left Flipper Tag -->
               <tr>
-                <td>L1</td>
+                <td><strong>L1</strong></td>
                 <td>
                   {% bootstrap_field form.recapture_left_tag_id show_label=False %}
                   <span id="left-tag-validation-message"></span>
@@ -195,7 +212,7 @@
               </tr>
               <!-- Old Right Flipper Tag -->
               <tr>
-                <td>R1</td>
+                <td><strong>R1</strong></td>
                 <td>
                   {% bootstrap_field form.recapture_right_tag_id show_label=False %}
                   <span id="right-tag-validation-message"></span>
@@ -207,7 +224,7 @@
               </tr>
               <!-- Additional Old Left Flipper Tag -->
               <tr id="additionalRecaptureLeftTag" style="display: none;">
-                <td>L2</td>
+                <td><strong>L2</strong></td>
                 <td>
                   {% bootstrap_field form.recapture_left_tag_id_2 show_label=False %}
                   <span id="left-tag-validation-message-2"></span>
@@ -219,7 +236,7 @@
               </tr>
               <!-- Additional Old Right Flipper Tag -->
               <tr id="additionalRecaptureRightTag" style="display: none;">
-                <td>R2</td>
+                <td><strong>R2</strong></td>
                 <td>
                   {% bootstrap_field form.recapture_right_tag_id_2 show_label=False %}
                   <span id="right-tag-validation-message-2"></span>
@@ -258,7 +275,7 @@
               </tr>
               <!-- New Left Flipper Tag -->
               <tr>
-                <td>L1</td>
+                <td><strong>L1</strong></td>
                 <td>
                   {% bootstrap_field form.new_left_tag_id show_label=False %}
                   <span id="new-left-tag-validation-message"></span>
@@ -270,7 +287,7 @@
               </tr>
               <!-- New Right Flipper Tag -->
               <tr>
-                <td>R1</td>
+                <td><strong>R1</strong></td>
                 <td>
                   {% bootstrap_field form.new_right_tag_id show_label=False %}
                   <span id="new-right-tag-validation-message"></span>
@@ -282,7 +299,7 @@
               </tr>
               <!-- Additional New Left Flipper Tag -->
               <tr id="additionalNewLeftTag" style="display: none;">
-                <td>L2</td>
+                <td><strong>L2</strong></td>
                 <td>
                   {% bootstrap_field form.new_left_tag_id_2 show_label=False %}
                   <span id="new-left-tag-validation-message-2"></span>
@@ -294,7 +311,7 @@
               </tr>
               <!-- Additional New Right Flipper Tag -->
               <tr id="additionalNewRightTag" style="display: none;">
-                <td>R2</td>
+                <td><strong>R2</strong></td>
                 <td>
                   {% bootstrap_field form.new_right_tag_id_2 show_label=False %}
                   <span id="new-right-tag-validation-message-2"></span>
@@ -381,28 +398,56 @@
             <h5>OLD PIT Tag(s)</h5>
             <div class="row mt-2">
               <div class="col-md-6">
-                {% bootstrap_field form.recapture_pittag_id show_label=Fals %}
-                <div id="recapture-pit-tag-validation-message"></div>
-                <div id="recapture-pit-tag-message"></div>
+                <div class="row">
+                  <div class="col-md-2 d-flex align-items-center">
+                    <strong>L1</strong>
+                  </div>
+                  <div class="col-md-10 mt-2">
+                    {% bootstrap_field form.recapture_pittag_id show_label=False %}
+                    <div id="recapture-pit-tag-validation-message"></div>
+                    <div id="recapture-pit-tag-message"></div>
+                  </div>
+                </div>
               </div>
               <div class="col-md-6">
-                {% bootstrap_field form.recapture_pittag_id_2 show_label=Fals %}
-                <div id="recapture-pit-tag-validation-message-2"></div>
-                <div id="recapture-pit-tag-message-2"></div>
+                <div class="row">
+                  <div class="col-md-2 d-flex align-items-center">
+                    <strong>R1</strong>
+                  </div>
+                  <div class="col-md-10 mt-2">
+                    {% bootstrap_field form.recapture_pittag_id_2 show_label=False %}
+                    <div id="recapture-pit-tag-validation-message-2"></div>
+                    <div id="recapture-pit-tag-message-2"></div>
+                  </div>
+                </div>
               </div>
             </div>
 
             <div id="additionalRecapturePITTags" style="display: none;">
               <div class="row mt-2">
                 <div class="col-md-6">
-                  {% bootstrap_field form.recapture_pittag_id_3 show_label=Fals %}
-                  <div id="recapture-pit-tag-validation-message-3"></div>
-                  <div id="recapture-pit-tag-message-3"></div>
+                  <div class="row">
+                    <div class="col-md-2 d-flex align-items-center">
+                      <strong>L2</strong>
+                    </div>
+                    <div class="col-md-10 mt-2">
+                      {% bootstrap_field form.recapture_pittag_id_3 show_label=False %}
+                      <div id="recapture-pit-tag-validation-message-3"></div>
+                      <div id="recapture-pit-tag-message-3"></div>
+                    </div>
+                  </div>
                 </div>
                 <div class="col-md-6">
-                  {% bootstrap_field form.recapture_pittag_id_4 show_label=Fals %}
-                  <div id="recapture-pit-tag-validation-message-4"></div>
-                  <div id="recapture-pit-tag-message-4"></div>
+                  <div class="row">
+                    <div class="col-md-2 d-flex align-items-center">
+                      <strong>R2</strong>
+                    </div>
+                    <div class="col-md-10 mt-2">
+                      {% bootstrap_field form.recapture_pittag_id_4 show_label=False %}
+                      <div id="recapture-pit-tag-validation-message-4"></div>
+                      <div id="recapture-pit-tag-message-4"></div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -420,7 +465,10 @@
               <!-- First Row for New PIT Tag -->
               <div class="col-md-6">
                 <div class="row">
-                  <div class="col-md-9">
+                  <div class="col-md-2 d-flex align-items-center">
+                    <strong>L1</strong>
+                  </div>
+                  <div class="col-md-7">
                     {% bootstrap_field form.new_pittag_id show_label=False %}
                     <div id="new-pit-tag-validation-message"></div>
                     <div id="new-pit-tag-message"></div>
@@ -434,7 +482,10 @@
               <!-- Second Row for New PIT Tag 2 -->
               <div class="col-md-6">
                 <div class="row">
-                  <div class="col-md-9">
+                  <div class="col-md-2 d-flex align-items-center">
+                    <strong>R1</strong>
+                  </div>
+                  <div class="col-md-7">
                     {% bootstrap_field form.new_pittag_id_2 show_label=False %}
                     <div id="new-pit-tag-validation-message-2"></div>
                     <div id="new-pit-tag-message-2"></div>
@@ -451,7 +502,10 @@
                 <!-- First Row for New PIT Tag 3 -->
                 <div class="col-md-6">
                   <div class="row">
-                    <div class="col-md-9">
+                    <div class="col-md-2 d-flex align-items-center">
+                      <strong>L2</strong>
+                    </div>
+                    <div class="col-md-7">
                       {% bootstrap_field form.new_pittag_id_3 show_label=False %}
                       <div id="new-pit-tag-validation-message-3"></div>
                       <div id="new-pit-tag-message-3"></div>
@@ -465,7 +519,10 @@
                 <!-- Second Row for New PIT Tag 4 -->
                 <div class="col-md-6">
                   <div class="row">
-                    <div class="col-md-9">
+                    <div class="col-md-2 d-flex align-items-center">
+                      <strong>R2</strong>
+                    </div>
+                    <div class="col-md-7">
                       {% bootstrap_field form.new_pittag_id_4 show_label=False %}
                       <div id="new-pit-tag-validation-message-4"></div>
                       <div id="new-pit-tag-message-4"></div>
@@ -824,6 +881,7 @@
 {% block extra_js %}
 {{ form.media.js }}
 {{ block.super }}
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     // URL for adding a new person
@@ -835,10 +893,10 @@
     const cookieTagSide = "{{ cookie_tag_side }}";
     const entryId = "{{ entry_id }}";
     const templateId = "{{ selected_template }}";
- 
+
     // Log the retrieved templateId to confirm it's being fetched
     console.log("Template ID:", templateId);
- 
+
     // If entryId exists, populate the form fields with corresponding data
     if (entryId) {
         console.log("Populating form for existing entry with ID:", entryId);
@@ -853,33 +911,33 @@
         const placeNameFromDb = "{{ view.place_full_name|escapejs }}";
         const searchPlaceInput = document.getElementById('search_place_code');
         const placeCodeInput = document.getElementById('id_place_code');
- 
+
         if (placeCodeFromDb && placeNameFromDb) {
             searchPlaceInput.value = placeNameFromDb;
             placeCodeInput.value = placeCodeFromDb;
         }
- 
+
         const measuredByFullName = "{{ view.measured_by_full_name|escapejs }}";
         if (measuredByFullName) {
             document.getElementById('search_measured_by').value = measuredByFullName;
         }
- 
+
         const recordedByFullName = "{{ view.recorded_by_full_name|escapejs }}";
         if (recordedByFullName) {
             document.getElementById('search_recorded_by').value = recordedByFullName;
         }
- 
+
         const taggedByFullName = "{{ view.tagged_by_full_name|escapejs }}";
         if (taggedByFullName) {
             document.getElementById('search_tagged_by').value = taggedByFullName;
         }
- 
+
         const measuredRecordedByFullName = "{{ view.measured_recorded_by_full_name|escapejs }}";
         if (measuredRecordedByFullName) {
             document.getElementById('search_measured_recorded_by').value = measuredRecordedByFullName;
         }
     }
- 
+
     // If there's no entryId and a templateId is selected, populate the form with template data
     if (!entryId && templateId) {
         console.log("No entry ID, using selected template ID:", templateId);
@@ -888,7 +946,7 @@
         const defaultPlaceFullName = "{{ default_place_full_name|escapejs }}";
         const searchPlaceInput = document.getElementById('search_place_code');
         const placeCodeInput = document.getElementById('id_place_code');
- 
+
         if (defaultEntererId) {
             document.getElementById('id_entered_by_id').value = defaultEntererId;
             const defaultEntererFullName = "{{ default_enterer_full_name }}";
@@ -896,13 +954,13 @@
                 document.getElementById('search_entered_by').value = defaultEntererFullName;
             }
         }
- 
+
         if (defaultPlaceFullName && defaultPlaceCode) {
             searchPlaceInput.value = defaultPlaceFullName;
             placeCodeInput.value = defaultPlaceCode;
         }
     }
- 
+
     //  Set the tag and validate
     if (cookieTagId && cookieTagType) {
         console.log("Setting tag for", cookieTagType, "with ID:", cookieTagId);
@@ -916,7 +974,7 @@
             setTagAndValidate('id_recapture_pittag_id', cookieTagId);
         }
     }
- 
+
     // Disable the save button and show a processing message
     function disableSaveButton() {
         const saveButton = document.querySelector('.save-button');
@@ -937,15 +995,15 @@
             saveButton.dataset.intervalId = interval;
         }
     }
- 
+
     const form = document.getElementById('dataEntryForm');
     let isFormDirty = false;
- 
+
     // Handle form changes to track dirty state
     form.addEventListener('input', function() {
         isFormDirty = true;
     });
- 
+
     // Prompt the user if they try to leave the page with unsaved changes
     window.addEventListener('beforeunload', function(event) {
         if (isFormDirty) {
@@ -954,13 +1012,13 @@
             return confirmationMessage;
         }
     });
- 
+
     // Handle form submission
     form.addEventListener('submit', function(event) {
         isFormDirty = false;
         disableSaveButton();
     });
- 
+
     // Reload the page if the back button is clicked
     if (performance.navigation.type === 2) {
         location.reload(true);
@@ -968,33 +1026,33 @@
   });
   document.addEventListener('DOMContentLoaded', function() {
       const form = document.getElementById('dataEntryForm');
- 
+
       // Prevent form submission when Enter is pressed
       form.addEventListener('keydown', function(event) {
           if (event.key === 'Enter') {
               event.preventDefault(); // Prevent the default action of Enter key
           }
       });
- 
+
       let isFormDirty = false;
- 
+
       function showLoadingOverlay() {
           const overlay = document.querySelector('.loading-overlay');
           const spinner = document.querySelector('.loading-spinner');
- 
+
           if (overlay) {
               overlay.style.display = 'block';
           }
- 
+
           if (spinner) {
               spinner.style.display = 'block';
           }
       }
- 
+
       // Handle form submission
       form.addEventListener('submit', function(event) {
           event.preventDefault();  // Prevent the default form submission behavior
- 
+
           // Check if the form has any errors
           if (form.checkValidity()) {
               showLoadingOverlay();  // No errors, show the overlay and spinner
@@ -1002,14 +1060,14 @@
           } else {
               alert("Please fix the errors in the form before submitting.");  // Show a message if there are errors
           }
- 
+
           isFormDirty = false;  // Reset the form dirty state
       });
- 
+
       form.addEventListener('input', function() {
           isFormDirty = true;
       });
- 
+
       window.addEventListener('beforeunload', function(event) {
           if (isFormDirty) {
               const confirmationMessage = 'You have unsaved changes. Do you really want to leave?';
@@ -1017,7 +1075,7 @@
               return confirmationMessage;
           }
       });
- 
+
       // Reload the page when the back button is clicked
       if (performance.navigation.type === 2) {
           location.reload(true);  // Reload the page when the back button is clicked
@@ -1066,6 +1124,8 @@
         "id_new_pit_tag_2_sticker_present": "New PIT Tag 2 Sticker Present",
         "id_new_pit_tag_3_sticker_present": "New PIT Tag 3 Sticker Present",
         "id_new_pit_tag_4_sticker_present": "New PIT Tag 4 Sticker Present",
+        "id_latitude": "Latitude",
+        "id_longitude": "Longitude",
     };
 
     if (saveButton) {
@@ -1103,6 +1163,11 @@
                         inputValue = input.value.trim();
                     }
 
+                    // Add negative sign for latitude
+                    if (input.id === 'id_latitude' && inputValue !== '') {
+                        inputValue = '-' + inputValue;
+                    }
+
                     if (inputValue !== '') {
                         summaryHTML += `<li><strong>${labelText}:</strong> ${inputValue}</li>`;
                     }
@@ -1133,6 +1198,16 @@
         form.submit();
         });
     }
+  });
+    document.addEventListener('DOMContentLoaded', function() {
+      var datetimeInputs = document.querySelectorAll('input[type="datetime-local"]');
+    datetimeInputs.forEach(function(input) {
+        flatpickr(input, {
+            enableTime: true,
+            dateFormat: "Y-m-d H:i",
+            time_24hr: true
+        });
+    });
   });
 </script>
 <script src="{% static 'js/tagToggleHandler.js' %}"></script>
