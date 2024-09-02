@@ -199,7 +199,7 @@
               </tr>
               <!-- Old Left Flipper Tag -->
               <tr>
-                <td>L1</td>
+                <td><strong>L1</strong></td>
                 <td>
                   {% bootstrap_field form.recapture_left_tag_id show_label=False %}
                   <span id="left-tag-validation-message"></span>
@@ -211,7 +211,7 @@
               </tr>
               <!-- Old Right Flipper Tag -->
               <tr>
-                <td>R1</td>
+                <td><strong>R1</strong></td>
                 <td>
                   {% bootstrap_field form.recapture_right_tag_id show_label=False %}
                   <span id="right-tag-validation-message"></span>
@@ -223,7 +223,7 @@
               </tr>
               <!-- Additional Old Left Flipper Tag -->
               <tr id="additionalRecaptureLeftTag" style="display: none;">
-                <td>L2</td>
+                <td><strong>L2</strong></td>
                 <td>
                   {% bootstrap_field form.recapture_left_tag_id_2 show_label=False %}
                   <span id="left-tag-validation-message-2"></span>
@@ -235,7 +235,7 @@
               </tr>
               <!-- Additional Old Right Flipper Tag -->
               <tr id="additionalRecaptureRightTag" style="display: none;">
-                <td>R2</td>
+                <td><strong>R2</strong></td>
                 <td>
                   {% bootstrap_field form.recapture_right_tag_id_2 show_label=False %}
                   <span id="right-tag-validation-message-2"></span>
@@ -401,7 +401,7 @@
                   <div class="col-md-2 d-flex align-items-center">
                     <strong>L1</strong>
                   </div>
-                  <div class="col-md-10">
+                  <div class="col-md-10 mt-2">
                     {% bootstrap_field form.recapture_pittag_id show_label=False %}
                     <div id="recapture-pit-tag-validation-message"></div>
                     <div id="recapture-pit-tag-message"></div>
@@ -413,7 +413,7 @@
                   <div class="col-md-2 d-flex align-items-center">
                     <strong>R1</strong>
                   </div>
-                  <div class="col-md-10">
+                  <div class="col-md-10 mt-2">
                     {% bootstrap_field form.recapture_pittag_id_2 show_label=False %}
                     <div id="recapture-pit-tag-validation-message-2"></div>
                     <div id="recapture-pit-tag-message-2"></div>
@@ -429,7 +429,7 @@
                     <div class="col-md-2 d-flex align-items-center">
                       <strong>L2</strong>
                     </div>
-                    <div class="col-md-10">
+                    <div class="col-md-10 mt-2">
                       {% bootstrap_field form.recapture_pittag_id_3 show_label=False %}
                       <div id="recapture-pit-tag-validation-message-3"></div>
                       <div id="recapture-pit-tag-message-3"></div>
@@ -441,7 +441,7 @@
                     <div class="col-md-2 d-flex align-items-center">
                       <strong>R2</strong>
                     </div>
-                    <div class="col-md-10">
+                    <div class="col-md-10 mt-2">
                       {% bootstrap_field form.recapture_pittag_id_4 show_label=False %}
                       <div id="recapture-pit-tag-validation-message-4"></div>
                       <div id="recapture-pit-tag-message-4"></div>
@@ -1200,7 +1200,7 @@
     document.addEventListener('DOMContentLoaded', function() {
     var datetimeInputs = document.querySelectorAll('input[type="datetime-local"]');
     datetimeInputs.forEach(function(input) {
-        input.setAttribute('step', '60'); // 设置步长为60秒，确保显示到分钟
+        input.setAttribute('step', '60');
     });
   });
 </script>
