@@ -1199,13 +1199,41 @@
         });
     }
   });
-    document.addEventListener('DOMContentLoaded', function() {
-      var datetimeInputs = document.querySelectorAll('input[type="datetime-local"]');
+  document.addEventListener('DOMContentLoaded', function() {
+    var datetimeInputs = document.querySelectorAll('input[type="datetime-local"]');
     datetimeInputs.forEach(function(input) {
         flatpickr(input, {
             enableTime: true,
             dateFormat: "Y-m-d H:i",
-            time_24hr: true
+            time_24hr: true,
+            allowInput: true,
+            altInput: true,
+            altFormat: "d/m/Y H:i",
+            onReady: function(selectedDates, dateStr, instance) {
+                var altInput = instance.altInput;
+                altInput.addEventListener('input', function(e) {
+                    let value = e.target.value.replace(/\D/g, ''); 
+                    let formattedValue = '';
+ 
+                    if (value.length > 0) {
+                        formattedValue += value.substring(0, 2); 
+                        if (value.length > 2) {
+                            formattedValue += '/' + value.substring(2, 4);
+                            if (value.length > 4) {
+                                formattedValue += '/' + value.substring(4, 8); 
+                                if (value.length > 8) {
+                                    formattedValue += ' ' + value.substring(8, 10);
+                                    if (value.length > 10) {
+                                        formattedValue += ':' + value.substring(10, 12);
+                                    }
+                                }
+                            }
+                        }
+                    }
+ 
+                    e.target.value = formattedValue;
+                });
+            }
         });
     });
   });

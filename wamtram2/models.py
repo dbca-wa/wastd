@@ -2370,7 +2370,7 @@ class Template(models.Model):
     sex = models.CharField(max_length=1, choices=SEX_CHOICES)
 
     class Meta:
-        db_table = 'TRT_TEMPLATES'
+        db_table = 'TRT_TEMPLATE'
         
     def __str__(self):
         return self.name
