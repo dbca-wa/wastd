@@ -432,7 +432,16 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         if do_not_process_cookie_value == 'true':
             form.instance.do_not_process = True
         form.save()
-        success_url = reverse("wamtram2:entry_batch_detail", args=[batch_id])
+        
+        
+        if self.request.user.groups.filter(name='Tagging Data Entry').exists() and not self.request.user.is_staff and not self.request.user.is_superuser:
+            template_id = self.request.COOKIES.get(f'{batch_id}_selected_template')
+            success_url = reverse("wamtram2:volunteer_find_turtle", args=[batch_id])
+            if template_id:
+                success_url += f'?templateid={template_id}'
+        else:
+            success_url = reverse("wamtram2:entry_batch_detail", args=[batch_id])
+        
         if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
             return JsonResponse({'success': True, 'redirect_url': success_url})
         else:
