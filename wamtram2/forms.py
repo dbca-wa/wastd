@@ -237,7 +237,7 @@ class TrtDataEntryForm(forms.ModelForm):
         widgets = {
             "turtle_id": forms.HiddenInput(),
             "entry_batch": forms.HiddenInput(),
-            "observation_date": forms.DateTimeInput(attrs={"type": "datetime-local"}),
+            # "observation_date": forms.DateTimeInput(attrs={"type": "datetime-local"}),
 
             "measured_by_id": forms.HiddenInput(),
             "recorded_by_id": forms.HiddenInput(),
