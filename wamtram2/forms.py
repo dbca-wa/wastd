@@ -490,8 +490,12 @@ class TrtDataEntryForm(forms.ModelForm):
             raise forms.ValidationError("The place code is required.")
         
         latitude = cleaned_data.get("latitude")
-        if latitude is not None and not str(latitude).startswith('-'):
-            cleaned_data['latitude'] = f'-{latitude}'
+        if latitude is not None:
+            latitude_str = str(latitude)
+            if not latitude_str.startswith('-') and not latitude_str.startswith('-'):
+                cleaned_data['latitude'] = f'-{latitude}'
+            else:
+                cleaned_data['latitude'] = latitude_str
         
         return cleaned_data
 
