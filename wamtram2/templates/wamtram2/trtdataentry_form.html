@@ -842,7 +842,7 @@
     </div>
     <div class="col-md-3 text-right">
       {% if not form.observation_id.value %}
-      <button type="submit" class="btn btn-primary save-button" id="saveBtn">Save</button>
+      <button type="button" class="btn btn-primary" id="re view B t n">Review</button>
       {% endif %}
     </div>
   </div>
@@ -860,8 +860,8 @@
           <!-- Summary content will be injected here -->
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Edit</button>
-          <button type="button" class="btn btn-primary" id="confirmSaveButton">Confirm & Save</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="confirmSaveButton">Confirm & Save</button>
         </div>
       </div>
     </div>
@@ -895,9 +895,6 @@
     const cookieTagSide = "{{ cookie_tag_side }}";
     const entryId = "{{ entry_id }}";
     const templateId = "{{ selected_template }}";
-
-    // Log the retrieved templateId to confirm it's being fetched
-    console.log("Template ID:", templateId);
 
     const form = document.getElementById('dataEntryForm');
     let isFormDirty = false;
@@ -1002,27 +999,6 @@
 
       window.addEventListener('beforeunload', handleBeforeUnload);
   }
-    // Disable the save button and show a processing message
-    function disableSaveButton() {
-        const saveButton = document.querySelector('.save-button');
-        if (saveButton) {
-            saveButton.disabled = true;
-            let dots = 0;
-            saveButton.textContent = 'Processing';
-            const originalText = saveButton.textContent;
-            const interval = setInterval(() => {
-                if (dots >= 3) {
-                    dots = 0;
-                    saveButton.textContent = originalText;
-                } else {
-                    dots++;
-                    saveButton.textContent += '.';
-                }
-            }, 500);  // Adjust the speed of the dots as needed
-            saveButton.dataset.intervalId = interval;
-        }
-    }
-
     // Prevent form submission when Enter is pressed
     form.addEventListener('keydown', function(event) {
         if (event.key === 'Enter') {
@@ -1055,7 +1031,6 @@
     // Handle form submission
     form.addEventListener('submit', function(event) {
         event.preventDefault();  // Prevent the default form submission behavior
-
         // Check if the form has any errors
         if (form.checkValidity()) {
             showLoadingOverlay();  // No errors, show the overlay and spinner
@@ -1063,9 +1038,7 @@
         } else {
             alert("Please fix the errors in the form before submitting.");  // Show a message if there are errors
         }
-
         isFormDirty = false;  // Reset the form dirty state
-        disableSaveButton();
     });
 
     // Show loading overlay
@@ -1109,7 +1082,6 @@
   });
   document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('dataEntryForm');
-    const saveButton = document.getElementById('saveBtn');
     const summaryModal = document.getElementById('summaryModal');
     const summaryContent = document.getElementById('summaryContent');
     const confirmSaveButton = document.getElementById('confirmSaveButton');
@@ -1138,88 +1110,10 @@
         "id_longitude": "Longitude",
     };
 
-    if (saveButton) {
-        saveButton.addEventListener('click', function(event) {
-            event.preventDefault(); // Prevent form submission
-
-            let isValid = true;
-            let errorMessages = [];
-
-            const requiredFields = form.querySelectorAll('[required]');
-            
-            requiredFields.forEach(field => {
-                if (!field.value.trim()) {
-                    isValid = false;
-                    const fieldName = field.name || field.id;
-                    errorMessages.push(`${fieldName} is required.`);
-                    field.classList.add('is-invalid');
-                } else {
-                    field.classList.remove('is-invalid');
-                }
-            });
-            
-            if (!isValid) {
-              alert(':Please input all required field(s)\n' + errorMessages.join('\n'));
-              return; // 
-          }
-
-            // Generate summary
-            let summaryHTML = '<ul>';
-            
-            form.querySelectorAll('input, select, textarea').forEach(input => {
-                if (input.type !== 'hidden' && input.value.trim() !== '') {
-                    let labelText = '';
-
-                    // Use detailed label from the mapping if it exists
-                    if (labelMapping[input.id]) {
-                        labelText = labelMapping[input.id];
-                    } else {
-                        const label = form.querySelector(`label[for="${input.id}"]`);
-                        labelText = label ? label.textContent.trim() : input.name;
-                    }
-
-                    // Handle different input types
-                    let inputValue = '';
-
-                    if (input.type === 'checkbox') {
-                        if (input.checked) {
-                            inputValue = 'True';
-                        } else {
-                            return; // Skip unchecked checkboxes
-                        }
-                    } else if (input.tagName.toLowerCase() === 'select') {
-                        // For select elements, use the selected option's text content
-                        inputValue = input.selectedOptions[0].textContent.trim();
-                    } else {
-                        inputValue = input.value.trim();
-                    }
-
-                    // Add negative sign for latitude
-                    if (input.id === 'id_latitude' && inputValue !== '') {
-                        inputValue = '-' + inputValue;
-                    }
-
-                    if (inputValue !== '') {
-                        summaryHTML += `<li><strong>${labelText}:</strong> ${inputValue}</li>`;
-                    }
-                }
-            });
-
-            summaryHTML += '</ul>';
-
-            // Insert the summary into the modal
-            summaryContent.innerHTML = summaryHTML;
-
-            // Show the modal
-            $(summaryModal).modal('show');
-        });
-    }
-
     if (confirmSaveButton) {
         confirmSaveButton.addEventListener('click', function() {
-          window.removeEventListener('beforeunload', handleBeforeUnload);
-          event.preventDefault();
           isFormDirty = false;
+          window.removeEventListener('beforeunload', handleBeforeUnload);
           form.submit(); 
         });
     }
