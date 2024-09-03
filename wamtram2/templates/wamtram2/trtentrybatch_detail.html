@@ -651,10 +651,12 @@ window.addEventListener('load', function() {
         hideLoadingOverlay();
         hideLoadingSpinner();
     }, 500);
+});
 
-    if (performance.navigation.type === 2) {
-        hideLoadingOverlay();
+window.addEventListener('pageshow', function(event) {
+    if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
         hideLoadingSpinner();
+        window.location.reload();
     }
 });
 
