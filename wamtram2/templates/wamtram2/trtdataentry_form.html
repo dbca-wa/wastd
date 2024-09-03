@@ -993,6 +993,15 @@
         }
     }
 
+    function handleBeforeUnload(event) {
+      if (isFormDirty) {
+          const confirmationMessage = 'You have unsaved changes. Do you really want to leave?';
+          (event || window.event).returnValue = confirmationMessage;
+          return confirmationMessage;
+      }
+
+      window.addEventListener('beforeunload', handleBeforeUnload);
+  }
     // Disable the save button and show a processing message
     function disableSaveButton() {
         const saveButton = document.querySelector('.save-button');
@@ -1021,6 +1030,14 @@
         }
     });
 
+    function handleBeforeUnload(event) {
+      if (isFormDirty) {
+          const confirmationMessage = 'You have unsaved changes. Do you really want to leave?';
+          (event || window.event).returnValue = confirmationMessage;
+          return confirmationMessage;
+      }
+  }
+  window.addEventListener('beforeunload', handleBeforeUnload);
     // Handle form changes to track dirty state
     form.addEventListener('input', function() {
         isFormDirty = true;
@@ -1098,7 +1115,6 @@
     const confirmSaveButton = document.getElementById('confirmSaveButton');
 
     const labelMapping = {
-        "id_entered_by_id": "Enterer",
         "search_entered_by": "Enterer",
         "search_measured_by": "Measured by",
         "search_recorded_by": "Recorded by",
@@ -1180,16 +1196,10 @@
 
     if (confirmSaveButton) {
         confirmSaveButton.addEventListener('click', function() {
-          window.removeEventListener('beforeunload', function(event) {
-            if (isFormDirty) {
-                const confirmationMessage = 'You have unsaved changes. Do you really want to leave?';
-                (event || window.event).returnValue = confirmationMessage;
-                return confirmationMessage;
-            }
-        });
-
-        $(summaryModal).modal('hide');
-        form.submit();
+          window.removeEventListener('beforeunload', handleBeforeUnload);
+          event.preventDefault();
+          isFormDirty = false;
+          form.submit(); 
         });
     }
   });
