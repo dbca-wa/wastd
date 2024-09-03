@@ -1092,7 +1092,7 @@
     
     const focusableElements = form.querySelectorAll('input, select, textarea');
     
-    const focusableArray = Array.prototype.slice.call(focusableElements);
+    const focusableArray = Array.from(focusableElements);
     
     focusableArray.forEach((element, index) => {
         element.addEventListener('keydown', function(event) {
@@ -1141,6 +1141,27 @@
     if (saveButton) {
         saveButton.addEventListener('click', function(event) {
             event.preventDefault(); // Prevent form submission
+
+            let isValid = true;
+            let errorMessages = [];
+
+            const requiredFields = form.querySelectorAll('[required]');
+            
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    isValid = false;
+                    const fieldName = field.name || field.id;
+                    errorMessages.push(`${fieldName} is required.`);
+                    field.classList.add('is-invalid');
+                } else {
+                    field.classList.remove('is-invalid');
+                }
+            });
+            
+            if (!isValid) {
+              alert(':Please input all required field(s)\n' + errorMessages.join('\n'));
+              return; // 
+          }
 
             // Generate summary
             let summaryHTML = '<ul>';
