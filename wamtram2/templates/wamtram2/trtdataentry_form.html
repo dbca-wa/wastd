@@ -899,71 +899,87 @@
     // Log the retrieved templateId to confirm it's being fetched
     console.log("Template ID:", templateId);
 
-    // If entryId exists, populate the form fields with corresponding data
-    if (entryId) {
-        console.log("Populating form for existing entry with ID:", entryId);
-        const enteredById = "{{ form.entered_by_id.value }}";
-        if (enteredById) {
-            const enteredByFullName = "{{ view.entered_by_full_name|escapejs }}";
-            if (enteredByFullName) {
-                document.getElementById('search_entered_by').value = enteredByFullName;
-            }
-        }
-        const placeCodeFromDb = "{{ form.place_code.value|escapejs }}";
-        const placeNameFromDb = "{{ view.place_full_name|escapejs }}";
-        const searchPlaceInput = document.getElementById('search_place_code');
-        const placeCodeInput = document.getElementById('id_place_code');
+    const form = document.getElementById('dataEntryForm');
+    let isFormDirty = false;
 
-        if (placeCodeFromDb && placeNameFromDb) {
-            searchPlaceInput.value = placeNameFromDb;
-            placeCodeInput.value = placeCodeFromDb;
-        }
-
-        const measuredByFullName = "{{ view.measured_by_full_name|escapejs }}";
-        if (measuredByFullName) {
-            document.getElementById('search_measured_by').value = measuredByFullName;
-        }
-
-        const recordedByFullName = "{{ view.recorded_by_full_name|escapejs }}";
-        if (recordedByFullName) {
-            document.getElementById('search_recorded_by').value = recordedByFullName;
-        }
-
-        const taggedByFullName = "{{ view.tagged_by_full_name|escapejs }}";
-        if (taggedByFullName) {
-            document.getElementById('search_tagged_by').value = taggedByFullName;
-        }
-
-        const measuredRecordedByFullName = "{{ view.measured_recorded_by_full_name|escapejs }}";
-        if (measuredRecordedByFullName) {
-            document.getElementById('search_measured_recorded_by').value = measuredRecordedByFullName;
+    // Function to set tag and validate
+    function setTagAndValidate(fieldId, tagId) {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            field.value = tagId;
+            field.dispatchEvent(new Event('input'));
         }
     }
 
-    // If there's no entryId and a templateId is selected, populate the form with template data
-    if (!entryId && templateId) {
-        console.log("No entry ID, using selected template ID:", templateId);
-        const defaultEntererId = "{{ default_enterer }}";
-        const defaultPlaceCode = "{{ default_place_code|escapejs }}";
-        const defaultPlaceFullName = "{{ default_place_full_name|escapejs }}";
-        const searchPlaceInput = document.getElementById('search_place_code');
-        const placeCodeInput = document.getElementById('id_place_code');
+    // Populate form fields based on entryId or templateId
+    function populateForm() {
+        if (entryId) {
+            console.log("Populating form for existing entry with ID:", entryId);
 
-        if (defaultEntererId) {
-            document.getElementById('id_entered_by_id').value = defaultEntererId;
-            const defaultEntererFullName = "{{ default_enterer_full_name }}";
-            if (defaultEntererFullName) {
-                document.getElementById('search_entered_by').value = defaultEntererFullName;
+            const enteredById = "{{ form.entered_by_id.value }}";
+            if (enteredById) {
+                const enteredByFullName = "{{ view.entered_by_full_name|escapejs }}";
+                if (enteredByFullName) {
+                    document.getElementById('search_entered_by').value = enteredByFullName;
+                }
             }
-        }
 
-        if (defaultPlaceFullName && defaultPlaceCode) {
-            searchPlaceInput.value = defaultPlaceFullName;
-            placeCodeInput.value = defaultPlaceCode;
+            const placeCodeFromDb = "{{ form.place_code.value|escapejs }}";
+            const placeNameFromDb = "{{ view.place_full_name|escapejs }}";
+            const searchPlaceInput = document.getElementById('search_place_code');
+            const placeCodeInput = document.getElementById('id_place_code');
+
+            if (placeCodeFromDb && placeNameFromDb) {
+                searchPlaceInput.value = placeNameFromDb;
+                placeCodeInput.value = placeCodeFromDb;
+            }
+
+            const measuredByFullName = "{{ view.measured_by_full_name|escapejs }}";
+            if (measuredByFullName) {
+                document.getElementById('search_measured_by').value = measuredByFullName;
+            }
+
+            const recordedByFullName = "{{ view.recorded_by_full_name|escapejs }}";
+            if (recordedByFullName) {
+                document.getElementById('search_recorded_by').value = recordedByFullName;
+            }
+
+            const taggedByFullName = "{{ view.tagged_by_full_name|escapejs }}";
+            if (taggedByFullName) {
+                document.getElementById('search_tagged_by').value = taggedByFullName;
+            }
+
+            const measuredRecordedByFullName = "{{ view.measured_recorded_by_full_name|escapejs }}";
+            if (measuredRecordedByFullName) {
+                document.getElementById('search_measured_recorded_by').value = measuredRecordedByFullName;
+            }
+        } else if (templateId) {
+            console.log("No entry ID, using selected template ID:", templateId);
+
+            const defaultEntererId = "{{ default_enterer }}";
+            if (defaultEntererId) {
+                document.getElementById('id_entered_by_id').value = defaultEntererId;
+                const defaultEntererFullName = "{{ default_enterer_full_name }}";
+                if (defaultEntererFullName) {
+                    document.getElementById('search_entered_by').value = defaultEntererFullName;
+                }
+            }
+
+            const defaultPlaceCode = "{{ default_place_code|escapejs }}";
+            const defaultPlaceFullName = "{{ default_place_full_name|escapejs }}";
+            const searchPlaceInput = document.getElementById('search_place_code');
+            const placeCodeInput = document.getElementById('id_place_code');
+
+            if (defaultPlaceFullName && defaultPlaceCode) {
+                searchPlaceInput.value = defaultPlaceFullName;
+                placeCodeInput.value = defaultPlaceCode;
+            }
         }
     }
 
-    //  Set the tag and validate
+    populateForm();
+
+    // Set the tag and validate
     if (cookieTagId && cookieTagType) {
         console.log("Setting tag for", cookieTagType, "with ID:", cookieTagId);
         if (cookieTagType === 'recapture_tag') {
@@ -974,15 +990,6 @@
             }
         } else if (cookieTagType === 'recapture_pit_tag') {
             setTagAndValidate('id_recapture_pittag_id', cookieTagId);
-        }
-    }
-
-        function setTagAndValidate(fieldId, tagId) {
-        const field = document.getElementById(fieldId);
-        if (field) {
-            field.value = tagId;
-
-            field.dispatchEvent(new Event('input'));
         }
     }
 
@@ -1007,8 +1014,12 @@
         }
     }
 
-    const form = document.getElementById('dataEntryForm');
-    let isFormDirty = false;
+    // Prevent form submission when Enter is pressed
+    form.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault(); // Prevent the default action of Enter key
+        }
+    });
 
     // Handle form changes to track dirty state
     form.addEventListener('input', function() {
@@ -1026,71 +1037,38 @@
 
     // Handle form submission
     form.addEventListener('submit', function(event) {
-        isFormDirty = false;
+        event.preventDefault();  // Prevent the default form submission behavior
+
+        // Check if the form has any errors
+        if (form.checkValidity()) {
+            showLoadingOverlay();  // No errors, show the overlay and spinner
+            form.submit();  // Submit the form
+        } else {
+            alert("Please fix the errors in the form before submitting.");  // Show a message if there are errors
+        }
+
+        isFormDirty = false;  // Reset the form dirty state
         disableSaveButton();
     });
+
+    // Show loading overlay
+    function showLoadingOverlay() {
+        const overlay = document.querySelector('.loading-overlay');
+        const spinner = document.querySelector('.loading-spinner');
+
+        if (overlay) {
+            overlay.style.display = 'block';
+        }
+
+        if (spinner) {
+            spinner.style.display = 'block';
+        }
+    }
 
     // Reload the page if the back button is clicked
     if (performance.navigation.type === 2) {
         location.reload(true);
     }
-  });
-  document.addEventListener('DOMContentLoaded', function() {
-      const form = document.getElementById('dataEntryForm');
-
-      // Prevent form submission when Enter is pressed
-      form.addEventListener('keydown', function(event) {
-          if (event.key === 'Enter') {
-              event.preventDefault(); // Prevent the default action of Enter key
-          }
-      });
-
-      let isFormDirty = false;
-
-      function showLoadingOverlay() {
-          const overlay = document.querySelector('.loading-overlay');
-          const spinner = document.querySelector('.loading-spinner');
-
-          if (overlay) {
-              overlay.style.display = 'block';
-          }
-
-          if (spinner) {
-              spinner.style.display = 'block';
-          }
-      }
-
-      // Handle form submission
-      form.addEventListener('submit', function(event) {
-          event.preventDefault();  // Prevent the default form submission behavior
-
-          // Check if the form has any errors
-          if (form.checkValidity()) {
-              showLoadingOverlay();  // No errors, show the overlay and spinner
-              form.submit();  // Submit the form
-          } else {
-              alert("Please fix the errors in the form before submitting.");  // Show a message if there are errors
-          }
-
-          isFormDirty = false;  // Reset the form dirty state
-      });
-
-      form.addEventListener('input', function() {
-          isFormDirty = true;
-      });
-
-      window.addEventListener('beforeunload', function(event) {
-          if (isFormDirty) {
-              const confirmationMessage = 'You have unsaved changes. Do you really want to leave?';
-              (event || window.event).returnValue = confirmationMessage;
-              return confirmationMessage;
-          }
-      });
-
-      // Reload the page when the back button is clicked
-      if (performance.navigation.type === 2) {
-          location.reload(true);  // Reload the page when the back button is clicked
-      }
   });
   document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('dataEntryForm');
