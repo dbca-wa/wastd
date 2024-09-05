@@ -203,9 +203,9 @@ class TrtDataEntry(models.Model):
         ("I", "Indeterminate"),
     ]
     TAG_POSITION_CHOICES = [
-        (1, '1'),
-        (2, '2'),
-        (3, '3'),
+        (1, ' scale 1'),
+        (2, 'scale 2'),
+        (3, 'scale 3'),
     ]
     data_entry_id = models.AutoField(
         db_column="DATA_ENTRY_ID", primary_key=True
