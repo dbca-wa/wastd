@@ -1,0 +1,11 @@
+{% extends "base_wastd.html" %}
+{% load bootstrap4 %}
+
+{% block page_content_inner %}
+<h2>Add Batches Code for Batch {{ batch.entry_batch_id }}</h2>
+<form method="post">
+    {% csrf_token %}
+    {% bootstrap_form form %}
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>
+{% endblock %}

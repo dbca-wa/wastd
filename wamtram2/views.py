@@ -17,9 +17,6 @@ from django.utils.decorators import method_decorator
 from django.db.models import Count, Exists, OuterRef, Subquery
 from django.core.paginator import Paginator
 from openpyxl import Workbook
-import os
-import json
-import re
 import csv
 
 from wastd.utils import Breadcrumb, PaginateMixin
@@ -34,7 +31,7 @@ from .models import (
     Template,
     TrtTagStates,
 )
-from .forms import TrtDataEntryForm, SearchForm, TrtEntryBatchesForm, TemplateForm
+from .forms import TrtDataEntryForm, SearchForm, TrtEntryBatchesForm, TemplateForm, BatchesCodeForm, BatchesSearchForm
 
 
 class HomePageView(LoginRequiredMixin, TemplateView):
@@ -1303,3 +1300,34 @@ class DudTagManageView(LoginRequiredMixin, View):
 
         return redirect('wamtram2:dud_tag_manage')
 
+
+
+
+def add_batches_code(request, batch_id):
+    batch = get_object_or_404(TrtEntryBatches, pk=batch_id)
+    if request.method == 'POST':
+        form = BatchesCodeForm(request.POST, instance=batch)
+        if form.is_valid():
+            form.save()
+            return redirect('wamtram2:entry_batch_detail', batch_id=batch_id)
+    else:
+        form = BatchesCodeForm(instance=batch)
+    return render(request, 'wamtram2/add_batches_code.html', {'form': form, 'batch': batch})
+
+class BatchesListView(ListView):
+    model = TrtEntryBatches
+    template_name = 'wamtram2/batches_list.html'
+    context_object_name = 'batches'
+    paginate_by = 20
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        location = self.request.GET.get('location')
+        if location:
+            queryset = queryset.filter(batches_code__icontains=location)
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['search_form'] = BatchesSearchForm(self.request.GET)
+        return context

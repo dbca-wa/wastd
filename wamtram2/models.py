@@ -1217,6 +1217,9 @@ class TrtEntryBatches(models.Model):
     pr_date_convention = models.BooleanField(
         db_column="PR_DATE_CONVENTION",default=False
     )  # Field name made lowercase.
+    batches_code = models.CharField(
+        db_column="BATCHES_CODE", max_length=10, blank=True, null=True
+    )  # Field name made lowercase.
 
     class Meta:
         managed = False

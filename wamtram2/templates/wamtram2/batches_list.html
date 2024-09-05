@@ -1,0 +1,38 @@
+{% extends "base_wastd.html" %}
+{% load bootstrap4 %}
+
+{% block page_content_inner %}
+<h2>Batches List</h2>
+<form method="get" class="mb-4">
+    {% bootstrap_form search_form %}
+    <button type="submit" class="btn btn-primary">Search</button>
+</form>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Batch ID</th>
+            <th>Batches Code</th>
+            <th>Entry Date</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for batch in batches %}
+        <tr>
+            <td>{{ batch.entry_batch_id }}</td>
+            <td>{{ batch.batches_code|default:"No Code" }}</td>
+            <td>{{ batch.entry_date }}</td>
+            <td>
+                <a href="{% url 'wamtram2:entry_batch_detail' batch_id=batch.entry_batch_id %}" class="btn btn-sm btn-info">View</a>
+                <a href="{% url 'wamtram2:add_batches_code' batch_id=batch.entry_batch_id %}" class="btn btn-sm btn-primary">Edit Code</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4">No batches found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% include "pagination.html" %}
+{% endblock %}
