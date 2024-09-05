@@ -827,9 +827,9 @@ def volunteer_find_turtle(request, batch_id):
     
     # 设置 cookies
     response = redirect('wamtram2:find_turtle', batch_id=batch_id)
-    response.set_cookie(f'{batch_id}_default_enterer', request.user.id, max_age=18000)
+    response.set_cookie(f'{batch_id}_default_enterer', request.user.id, max_age=63072000)
     if template_id:
-        response.set_cookie(f'{batch_id}_selected_template', template_id, max_age=18000)
+        response.set_cookie(f'{batch_id}_selected_template', template_id, max_age=63072000)
     
     return response
 
