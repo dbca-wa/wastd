@@ -453,9 +453,9 @@
             const useDefaultEnterer = setDefaultEnterer.checked;
             const defaultEnterer = useDefaultEnterer ? enteredPersonId.value : "None";
 
-            document.cookie = `${batchId}_selected_template=${selectedTemplate};path=/;max-age=18000`;
-            document.cookie = `${batchId}_use_default_enterer=${useDefaultEnterer};path=/;max-age=18000`;
-            document.cookie = `${batchId}_default_enterer=${defaultEnterer};path=/;max-age=18000`;
+            document.cookie = `${batchId}_selected_template=${selectedTemplate};path=/;max-age=63072000`;
+            document.cookie = `${batchId}_use_default_enterer=${useDefaultEnterer};path=/;max-age=63072000`;
+            document.cookie = `${batchId}_default_enterer=${defaultEnterer};path=/;max-age=63072000`;
 
             console.log('Updating cookies with:', {
                 batch_id: batchId,
