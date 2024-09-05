@@ -668,7 +668,7 @@ class FindTurtleView(LoginRequiredMixin, View):
                 first_observation_date = first_observation.observation_date if first_observation else None
 
                 latest_observation = turtle.trtobservations_set.order_by('-observation_date').first()
-                latest_site = latest_observation.place_code if latest_observation else None
+                latest_site = latest_observation.place_code.place_name if latest_observation else None
 
             if tag_id and tag_type and not no_turtle_found:
                 tag = TrtTags.objects.select_related('turtle').filter(tag_id=tag_id).first()
