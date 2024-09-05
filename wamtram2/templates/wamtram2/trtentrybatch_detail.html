@@ -88,7 +88,7 @@
                     <div class="flex-grow-1 mr-2">
                         {% bootstrap_field form.comments %}
                     </div>
-                    <button type="submit" class="btn btn-primary mt-3" id="saveBatchDetailsBtn">
+                    <button type="submit" class="btn btn-secondary mt-3" id="saveBatchDetailsBtn">
                         Save batch details
                     </button>
                 </div>
@@ -429,20 +429,15 @@
                 defaultEntererInput.name = 'use_default_enterer';
                 defaultEntererInput.value = setDefaultEnterer.checked;
                 form.appendChild(defaultEntererInput);
-
-                console.log('Form inputs added:', templateInput.value, defaultEntererInput.value);
-                console.log('Hidden field value:', enteredPersonId.value);
                 
                 if (enteredPersonId.value) {
                     showLoadingSpinner();
                     form.submit();
                 } else {
-                    console.error('Hidden field value is not set correctly');
+                    alert('Please select an enterer or add some new comments.');
                 }
 
             });
-        } else {
-            console.error('Form not found');
         }
 
         // Function to update cookies data
