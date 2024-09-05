@@ -1161,24 +1161,24 @@
                       inputValue = input.value.trim();
                   }
 
-                  if (labelMapping[inputId]) {
-                      labelText = labelMapping[inputId];
-                  } else {
-                      const label = form.querySelector(`label[for="${inputId}"]`);
-                      labelText = label ? label.textContent.trim() : input.name;
-                  }
-
-                  if (input.type === 'checkbox') {
-                      inputValue = input.checked ? 'True' : 'False';
-                  } else if (input.tagName.toLowerCase() === 'select') {
-                      inputValue = input.selectedOptions[0].textContent.trim();
-                  }
-
-                  if (inputId === 'id_latitude' && inputValue !== '') {
-                      inputValue = '-' + inputValue;
-                  }
-
                   if (inputValue !== '') {
+                      if (labelMapping[inputId]) {
+                          labelText = labelMapping[inputId];
+                      } else {
+                          const label = form.querySelector(`label[for="${inputId}"]`);
+                          labelText = label ? label.textContent.trim() : input.name;
+                      }
+
+                      if (input.type === 'checkbox') {
+                          inputValue = input.checked ? 'True' : 'False';
+                      } else if (input.tagName.toLowerCase() === 'select') {
+                          inputValue = input.selectedOptions[0].textContent.trim();
+                      }
+
+                      if (inputId === 'id_latitude' && inputValue !== '') {
+                          inputValue = '-' + inputValue;
+                      }
+
                       summaryHTML += `<li><strong>${labelText}:</strong> ${inputValue}</li>`;
                   }
               }
