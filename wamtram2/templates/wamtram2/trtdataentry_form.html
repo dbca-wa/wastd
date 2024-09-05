@@ -990,30 +990,6 @@
         }
     }
 
-    function handleBeforeUnload(event) {
-      if (isFormDirty) {
-          const confirmationMessage = 'You have unsaved changes. Do you really want to leave?';
-          (event || window.event).returnValue = confirmationMessage;
-          return confirmationMessage;
-      }
-
-      window.addEventListener('beforeunload', handleBeforeUnload);
-  }
-    // Prevent form submission when Enter is pressed
-    form.addEventListener('keydown', function(event) {
-        if (event.key === 'Enter') {
-            event.preventDefault(); // Prevent the default action of Enter key
-        }
-    });
-
-    function handleBeforeUnload(event) {
-      if (isFormDirty) {
-          const confirmationMessage = 'You have unsaved changes. Do you really want to leave?';
-          (event || window.event).returnValue = confirmationMessage;
-          return confirmationMessage;
-      }
-  }
-  window.addEventListener('beforeunload', handleBeforeUnload);
     // Handle form changes to track dirty state
     form.addEventListener('input', function() {
         isFormDirty = true;
@@ -1022,15 +998,20 @@
     // Prompt the user if they try to leave the page with unsaved changes
     window.addEventListener('beforeunload', function(event) {
         if (isFormDirty) {
-            const confirmationMessage = 'You have unsaved changes. Do you really want to leave?';
-            (event || window.event).returnValue = confirmationMessage;
-            return confirmationMessage;
+            event.preventDefault(); 
+            event.returnValue = ''; 
+            return ''; 
         }
     });
 
     // Handle form submission
     form.addEventListener('submit', function(event) { 
-      isFormDirty = false;  // Reset the form dirty state
+        if (form.checkValidity()) {
+            showLoadingOverlay();
+            isFormDirty = false;
+        } else {
+            event.preventDefault();
+        }
     });
 
     // Show loading overlay
@@ -1038,19 +1019,16 @@
         const overlay = document.querySelector('.loading-overlay');
         const spinner = document.querySelector('.loading-spinner');
 
-        if (overlay) {
-            overlay.style.display = 'block';
-        }
-
-        if (spinner) {
-            spinner.style.display = 'block';
-        }
+        if (overlay) overlay.style.display = 'block';
+        if (spinner) spinner.style.display = 'block';
     }
 
-    // Reload the page if the back button is clicked
-    if (performance.navigation.type === 2) {
-        location.reload(true);
-    }
+    // Handle page reload on back navigation
+    window.addEventListener('pageshow', function(event) {
+        if (event.persisted) {
+            window.location.reload();
+        }
+    });
   });
   document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('dataEntryForm');
@@ -1110,9 +1088,6 @@
         reviewButton.addEventListener('click', function(event) {
             event.preventDefault(); 
 
-            let isValid = true;
-            let errorMessages = [];
-
             let summaryHTML = '<ul>';
             
             form.querySelectorAll('input, select, textarea').forEach(input => {
@@ -1161,13 +1136,6 @@
             $(summaryModal).modal('show');
         });
     }
-
-    if (confirmSaveButton) {
-        confirmSaveButton.addEventListener('click', function() {
-            window.removeEventListener('beforeunload', handleBeforeUnload);
-        });
-    }
-
 
     var datetimeInputs = document.querySelectorAll('input[type="datetime-local"]');
     datetimeInputs.forEach(function(input) {
