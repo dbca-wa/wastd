@@ -73,7 +73,14 @@
           {% if turtle %}
           <div class="container border pb-3 mt-3">
             <div class="mt-3 row justify-content-md-center">
-              <div class="col-md-auto"><strong>ID:</strong> <a href="{% url 'wamtram2:turtle_detail' turtle.turtle_id %}" target="_blank">{{ turtle.turtle_id }}</a></div>
+              <div class="col-md-auto">
+                <strong>ID:</strong> 
+                {% if user.is_superuser or user.groups.all.0.name == 'Tagging Data Curation' %}
+                  <a href="{% url 'wamtram2:turtle_detail' turtle.turtle_id %}" target="_blank">{{ turtle.turtle_id }}</a>
+                {% else %}
+                  {{ turtle.turtle_id }}
+                {% endif %}
+              </div>
               <div class="col-md-auto"><strong>Sex:</strong> {{ turtle.sex }}</div>
               <div class="col-md-auto"><strong>Species:</strong> {{ turtle.species_code }}</div>
               {% if first_observation_date %}
