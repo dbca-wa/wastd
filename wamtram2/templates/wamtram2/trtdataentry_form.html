@@ -133,6 +133,7 @@
             <div class="col-md-6">
               <label for="{{ form.observation_date.id_for_label }}">{{ form.observation_date.label }}</label>
               {% bootstrap_field form.observation_date show_label=False%}
+              <div id="date-error-message" class="text-danger" style="display: none;"></div>
             </div>
           </div>
           <div class="row">
@@ -349,7 +350,7 @@
           <div class="col-6" id="scarsDetails">
             <div class="row align-items-center mb-2">
               <div class="col-auto">
-                <label>Scars Left</label>
+                <label><strong>Scars Left</strong></label>
               </div>
               <div class="col-auto d-flex align-items-center">
                 <div class="form-check form-check-inline">
@@ -367,7 +368,7 @@
           <div class="col-6" id="scarsDetailsRight">
             <div class="row align-items-center">
               <div class="col-auto">
-                <label>Scars Right</label>
+                <label><strong>Scars Right</strong></label>
               </div>
               <div class="col-auto d-flex align-items-center">
                 <div class="form-check form-check-inline">
@@ -842,7 +843,7 @@
     </div>
     <div class="col-md-3 text-right">
       {% if not form.observation_id.value %}
-      <button type="button" class="btn btn-primary" id="re view B t n">Review</button>
+      <button type="button" class="btn btn-primary" id="reviewBtn">Review</button>
       {% endif %}
     </div>
   </div>
@@ -990,30 +991,6 @@
         }
     }
 
-    function handleBeforeUnload(event) {
-      if (isFormDirty) {
-          const confirmationMessage = 'You have unsaved changes. Do you really want to leave?';
-          (event || window.event).returnValue = confirmationMessage;
-          return confirmationMessage;
-      }
-
-      window.addEventListener('beforeunload', handleBeforeUnload);
-  }
-    // Prevent form submission when Enter is pressed
-    form.addEventListener('keydown', function(event) {
-        if (event.key === 'Enter') {
-            event.preventDefault(); // Prevent the default action of Enter key
-        }
-    });
-
-    function handleBeforeUnload(event) {
-      if (isFormDirty) {
-          const confirmationMessage = 'You have unsaved changes. Do you really want to leave?';
-          (event || window.event).returnValue = confirmationMessage;
-          return confirmationMessage;
-      }
-  }
-  window.addEventListener('beforeunload', handleBeforeUnload);
     // Handle form changes to track dirty state
     form.addEventListener('input', function() {
         isFormDirty = true;
@@ -1022,23 +999,20 @@
     // Prompt the user if they try to leave the page with unsaved changes
     window.addEventListener('beforeunload', function(event) {
         if (isFormDirty) {
-            const confirmationMessage = 'You have unsaved changes. Do you really want to leave?';
-            (event || window.event).returnValue = confirmationMessage;
-            return confirmationMessage;
+            event.preventDefault(); 
+            event.returnValue = ''; 
+            return ''; 
         }
     });
 
     // Handle form submission
-    form.addEventListener('submit', function(event) {
-        event.preventDefault();  // Prevent the default form submission behavior
-        // Check if the form has any errors
+    form.addEventListener('submit', function(event) { 
         if (form.checkValidity()) {
-            showLoadingOverlay();  // No errors, show the overlay and spinner
-            form.submit();  // Submit the form
+            showLoadingOverlay();
+            isFormDirty = false;
         } else {
-            alert("Please fix the errors in the form before submitting.");  // Show a message if there are errors
+            event.preventDefault();
         }
-        isFormDirty = false;  // Reset the form dirty state
     });
 
     // Show loading overlay
@@ -1046,24 +1020,21 @@
         const overlay = document.querySelector('.loading-overlay');
         const spinner = document.querySelector('.loading-spinner');
 
-        if (overlay) {
-            overlay.style.display = 'block';
-        }
-
-        if (spinner) {
-            spinner.style.display = 'block';
-        }
+        if (overlay) overlay.style.display = 'block';
+        if (spinner) spinner.style.display = 'block';
     }
 
-    // Reload the page if the back button is clicked
-    if (performance.navigation.type === 2) {
-        location.reload(true);
-    }
+    // Handle page reload on back navigation
+    window.addEventListener('pageshow', function(event) {
+        if (event.persisted) {
+            window.location.reload();
+        }
+    });
   });
   document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('dataEntryForm');
     
-    const focusableElements = form.querySelectorAll('input, select, textarea');
+    const focusableElements = form.querySelectorAll('input:not([type="hidden"]), select, textarea');
     
     const focusableArray = Array.from(focusableElements);
     
@@ -1075,16 +1046,21 @@
                 const nextElement = focusableArray[index + 1];
                 if (nextElement) {
                     nextElement.focus();
+                    if (nextElement.tagName === 'SELECT') {
+                        nextElement.click(); 
                 }
             }
-        });
+        }});
     });
   });
   document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('dataEntryForm');
+    const reviewButton = document.getElementById('reviewBtn');
     const summaryModal = document.getElementById('summaryModal');
     const summaryContent = document.getElementById('summaryContent');
     const confirmSaveButton = document.getElementById('confirmSaveButton');
+    const observationDateInput = document.querySelector('input[name="observation_date"]');
+    const dateErrorMessage = document.getElementById('date-error-message');
 
     const labelMapping = {
         "search_entered_by": "Enterer",
@@ -1092,33 +1068,39 @@
         "search_recorded_by": "Recorded by",
         "search_tagged_by": "Tagged by",
         "search_place_code": "Place",
-        "id_scars_left_scale_1": "Scars Left Scale 1",
-        "id_scars_left_scale_2": "Scars Left Scale 2",
-        "id_scars_left_scale_3": "Scars Left Scale 3",
-        "id_scars_right_scale_1": "Scars Right Scale 1",
-        "id_scars_right_scale_2": "Scars Right Scale 2",
-        "id_scars_right_scale_3": "Scars Right Scale 3",
-        "id_recapture_left_tag_barnacles": "Recapture Left Tag Barnacles",
-        "id_recapture_right_tag_barnacles": "Recapture Right Tag Barnacles",
-        "id_recapture_left_tag_barnacles_2": "Recapture Left Tag Barnacles 2",
-        "id_recapture_right_tag_barnacles_2": "Recapture Right Tag Barnacles 2",
-        "id_new_pit_tag_sticker_present": "New PIT Tag Sticker Present",
-        "id_new_pit_tag_2_sticker_present": "New PIT Tag 2 Sticker Present",
-        "id_new_pit_tag_3_sticker_present": "New PIT Tag 3 Sticker Present",
-        "id_new_pit_tag_4_sticker_present": "New PIT Tag 4 Sticker Present",
-        "id_latitude": "Latitude",
-        "id_longitude": "Longitude",
+        "scars_left_scale_1": "Scars Left Scale 1",
+        "scars_left_scale_2": "Scars Left Scale 2",
+        "scars_left_scale_3": "Scars Left Scale 3",
+        "scars_right_scale_1": "Scars Right Scale 1",
+        "scars_right_scale_2": "Scars Right Scale 2",
+        "scars_right_scale_3": "Scars Right Scale 3",
+        "recapture_left_tag_barnacles": "Recapture Left Tag Barnacles",
+        "recapture_right_tag_barnacles": "Recapture Right Tag Barnacles",
+        "recapture_left_tag_barnacles_2": "Recapture Left Tag Barnacles 2",
+        "recapture_right_tag_barnacles_2": "Recapture Right Tag Barnacles 2",
+        "new_pit_tag_sticker_present": "New PIT Tag Sticker Present",
+        "new_pit_tag_2_sticker_present": "New PIT Tag 2 Sticker Present",
+        "new_pit_tag_3_sticker_present": "New PIT Tag 3 Sticker Present",
+        "new_pit_tag_4_sticker_present": "New PIT Tag 4 Sticker Present",
+        "latitude": "Latitude",
+        "longitude": "Longitude",
+        "observation_date": "Observation Date & Time",
     };
 
-    if (confirmSaveButton) {
-        confirmSaveButton.addEventListener('click', function() {
-          isFormDirty = false;
-          window.removeEventListener('beforeunload', handleBeforeUnload);
-          form.submit(); 
-        });
+    function validateDate() {
+      const selectedDate = new Date(observationDateInput.value);
+      const currentDate = new Date();
+  
+      if (selectedDate > currentDate) {
+        dateErrorMessage.textContent = "Date in the future";
+        dateErrorMessage.style.display = 'block';
+        observationDateInput.classList.add('is-invalid');
+      } else {
+        dateErrorMessage.style.display = 'none';
+        observationDateInput.classList.remove('is-invalid');
+      }
     }
-  });
-  document.addEventListener('DOMContentLoaded', function() {
+
     var datetimeInputs = document.querySelectorAll('input[type="datetime-local"]');
     datetimeInputs.forEach(function(input) {
         flatpickr(input, {
@@ -1133,7 +1115,6 @@
                 altInput.addEventListener('input', function(e) {
                     let value = e.target.value.replace(/\D/g, ''); 
                     let formattedValue = '';
- 
                     if (value.length > 0) {
                         formattedValue += value.substring(0, 2); 
                         if (value.length > 2) {
@@ -1149,12 +1130,68 @@
                             }
                         }
                     }
- 
                     e.target.value = formattedValue;
                 });
+                altInput.addEventListener('input', validateDate);
+            },
+            onChange: function(selectedDates, dateStr, instance) {
+              validateDate();
             }
         });
     });
+
+    if (reviewButton) {
+      reviewButton.addEventListener('click', function(event) {
+          event.preventDefault(); 
+
+          let summaryHTML = '<ul>';
+          
+          form.querySelectorAll('input, select, textarea').forEach(input => {
+              if (input.type !== 'hidden' || (input.classList.contains('flatpickr-input') && input.type !== 'hidden')) {
+                  let labelText = '';
+                  let inputValue = '';
+                  let inputId = input.name;
+
+                  if (input.classList.contains('flatpickr-input') && input.type !== 'hidden') {
+                      const hiddenInput = input.parentElement.querySelector('input[type="hidden"]');
+                      if (hiddenInput) {
+                          inputId = hiddenInput.id;
+                          inputValue = input.value.trim();
+                      }
+                  } else {
+                      inputValue = input.value.trim();
+                  }
+
+                  if (labelMapping[inputId]) {
+                      labelText = labelMapping[inputId];
+                  } else {
+                      const label = form.querySelector(`label[for="${inputId}"]`);
+                      labelText = label ? label.textContent.trim() : input.name;
+                  }
+
+                  if (input.type === 'checkbox') {
+                      inputValue = input.checked ? 'True' : 'False';
+                  } else if (input.tagName.toLowerCase() === 'select') {
+                      inputValue = input.selectedOptions[0].textContent.trim();
+                  }
+
+                  if (inputId === 'id_latitude' && inputValue !== '') {
+                      inputValue = '-' + inputValue;
+                  }
+
+                  if (inputValue !== '') {
+                      summaryHTML += `<li><strong>${labelText}:</strong> ${inputValue}</li>`;
+                  }
+              }
+          });
+
+          summaryHTML += '</ul>';
+
+          summaryContent.innerHTML = summaryHTML;
+
+          $(summaryModal).modal('show');
+      });
+  }
   });
 </script>
 <script src="{% static 'js/tagToggleHandler.js' %}"></script>

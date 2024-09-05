@@ -59,7 +59,7 @@
           
           <div class="text-center mt-4">{% bootstrap_form_errors form %}</div>
           <div id="tag-suggestion" class="alert alert-warning mt-3" style="display: none;">
-            <p>Sorry we cannot find the tag in our database, or it was set as unavailable.</br></p>
+            {% comment %} <p>Sorry we cannot find the tag in our database, or it was set as unavailable.</br></p> {% endcomment %}
             <p>It seems you forgot to add a space in the tag ID: <strong><span id="suggested-tag"></span></strong></p>
             <button class="btn btn-primary" id="suggestedTagYes">Yes, it is <span id="suggested-tag-btn"></span></button>
             <button class="btn btn-secondary" id="suggestedTagNo">No, it is <span id="user-input-tag">(without space)</span></button>
@@ -67,8 +67,8 @@
           <div id="exact-match-prompt" class="alert alert-warning mt-3" style="display: none;">
             <p>Sorry we cannot find the tag in our database.</br></p>
             <p>Is the tag id <strong id="exact-tag-id"></strong> exact same as the data sheet?</p>
-            <button id="exactMatchYes" class="btn btn-primary">Yes, I have double checked the tag from data sheet</button>
-            <button id="exactMatchNo" class="btn btn-secondary">No, I will reenter the tag</button>
+            <button id="exactMatchYes" class="btn btn-primary">Yes, I have double checked</button>
+            <button id="exactMatchNo" class="btn btn-secondary">No, I will reenter</button>
           </div>
           {% if turtle %}
           <div class="container border pb-3 mt-3">

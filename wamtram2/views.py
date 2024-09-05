@@ -662,13 +662,8 @@ class FindTurtleView(LoginRequiredMixin, View):
             tag_type = request.COOKIES.get(f'{batch_id}_tag_type')
             tag_side = request.COOKIES.get(f'{batch_id}_tag_side')
             turtle = None
-            
-            if turtle:
-                first_observation = turtle.trtobservations_set.order_by('observation_date').first()
-                first_observation_date = first_observation.observation_date if first_observation else None
-
-                latest_observation = turtle.trtobservations_set.order_by('-observation_date').first()
-                latest_site = latest_observation.place_code.place_name if latest_observation else None
+            first_observation_date = None
+            latest_site = None
 
             if tag_id and tag_type and not no_turtle_found:
                 tag = TrtTags.objects.select_related('turtle').filter(tag_id=tag_id).first()
@@ -678,6 +673,15 @@ class FindTurtleView(LoginRequiredMixin, View):
                     pit_tag = TrtPitTags.objects.select_related('turtle').filter(pittag_id=tag_id).first()
                     if pit_tag:
                         turtle = pit_tag.turtle
+                        
+                if turtle:
+                    first_observation = turtle.trtobservations_set.order_by('observation_date').first()
+                    if first_observation:
+                        first_observation_date = first_observation.observation_date
+
+                    latest_observation = turtle.trtobservations_set.order_by('-observation_date').first()
+                    if latest_observation and latest_observation.place_code:
+                        latest_site = latest_observation.place_code.place_name
 
             return render(request, "wamtram2/find_turtle.html", {
                 "form": form,
@@ -687,7 +691,8 @@ class FindTurtleView(LoginRequiredMixin, View):
                 "tag_type": tag_type,
                 "tag_side": tag_side,
                 "first_observation_date": first_observation_date,
-            "latest_site": latest_site
+                "latest_site": latest_site,
+                "batch_id": batch_id
             })
 
     def set_cookie(self, response, batch_id, tag_id=None, tag_type=None, tag_side=None, no_turtle_found=False, do_not_process=False):
@@ -712,7 +717,6 @@ class FindTurtleView(LoginRequiredMixin, View):
 
         if form.is_valid():
             tag_id = form.cleaned_data["tag_id"]
-            turtle = None
 
             if not create_and_review:
                 tag = TrtTags.objects.select_related('turtle').filter(tag_id=tag_id).first()
@@ -729,7 +733,6 @@ class FindTurtleView(LoginRequiredMixin, View):
                         tag_type = "unknown_tag"
 
                 if turtle:
-                    turtle = TrtTurtles.objects.prefetch_related('trttags_set', 'trtpittags_set').get(pk=turtle.pk)
                     response = redirect(reverse('wamtram2:find_turtle', kwargs={'batch_id': batch_id}))
                     return self.set_cookie(response, batch_id, tag_id, tag_type, tag_side)
                 else:
