@@ -842,7 +842,7 @@
     </div>
     <div class="col-md-3 text-right">
       {% if not form.observation_id.value %}
-      <button type="button" class="btn btn-primary" id="re view B t n">Review</button>
+      <button type="button" class="btn btn-primary" id="reviewBtn">Review</button>
       {% endif %}
     </div>
   </div>
@@ -1029,16 +1029,8 @@
     });
 
     // Handle form submission
-    form.addEventListener('submit', function(event) {
-        event.preventDefault();  // Prevent the default form submission behavior
-        // Check if the form has any errors
-        if (form.checkValidity()) {
-            showLoadingOverlay();  // No errors, show the overlay and spinner
-            form.submit();  // Submit the form
-        } else {
-            alert("Please fix the errors in the form before submitting.");  // Show a message if there are errors
-        }
-        isFormDirty = false;  // Reset the form dirty state
+    form.addEventListener('submit', function(event) { 
+      isFormDirty = false;  // Reset the form dirty state
     });
 
     // Show loading overlay
@@ -1063,7 +1055,7 @@
   document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('dataEntryForm');
     
-    const focusableElements = form.querySelectorAll('input, select, textarea');
+    const focusableElements = form.querySelectorAll('input:not([type="hidden"]), select, textarea');
     
     const focusableArray = Array.from(focusableElements);
     
@@ -1075,6 +1067,8 @@
                 const nextElement = focusableArray[index + 1];
                 if (nextElement) {
                     nextElement.focus();
+                    if (nextElement.tagName === 'SELECT') {
+                        nextElement.click(); 
                 }
             }
         });
@@ -1082,6 +1076,7 @@
   });
   document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('dataEntryForm');
+    const reviewButton = document.getElementById('reviewBtn');
     const summaryModal = document.getElementById('summaryModal');
     const summaryContent = document.getElementById('summaryContent');
     const confirmSaveButton = document.getElementById('confirmSaveButton');
@@ -1108,17 +1103,72 @@
         "id_new_pit_tag_4_sticker_present": "New PIT Tag 4 Sticker Present",
         "id_latitude": "Latitude",
         "id_longitude": "Longitude",
+        "id_observation_date": "Observation Date & Time",
     };
+
+    if (reviewButton) {
+        reviewButton.addEventListener('click', function(event) {
+            event.preventDefault(); 
+
+            let isValid = true;
+            let errorMessages = [];
+
+            let summaryHTML = '<ul>';
+            
+            form.querySelectorAll('input, select, textarea').forEach(input => {
+                if (input.type !== 'hidden' || (input.classList.contains('flatpickr-input') && input.type !== 'hidden')) {
+                    let labelText = '';
+                    let inputValue = '';
+                    let inputId = input.id;
+
+                    if (input.classList.contains('flatpickr-input') && input.type !== 'hidden') {
+                        const hiddenInput = input.parentElement.querySelector('input[type="hidden"]');
+                        if (hiddenInput) {
+                            inputId = hiddenInput.id;
+                            inputValue = input.value.trim();
+                        }
+                    } else {
+                        inputValue = input.value.trim();
+                    }
+
+                    if (labelMapping[inputId]) {
+                        labelText = labelMapping[inputId];
+                    } else {
+                        const label = form.querySelector(`label[for="${inputId}"]`);
+                        labelText = label ? label.textContent.trim() : input.name;
+                    }
+
+                    if (input.type === 'checkbox') {
+                        inputValue = input.checked ? 'True' : 'False';
+                    } else if (input.tagName.toLowerCase() === 'select') {
+                        inputValue = input.selectedOptions[0].textContent.trim();
+                    }
+
+                    if (inputId === 'id_latitude' && inputValue !== '') {
+                        inputValue = '-' + inputValue;
+                    }
+
+                    if (inputValue !== '') {
+                        summaryHTML += `<li><strong>${labelText}:</strong> ${inputValue}</li>`;
+                    }
+                }
+            });
+
+            summaryHTML += '</ul>';
+
+            summaryContent.innerHTML = summaryHTML;
+
+            $(summaryModal).modal('show');
+        });
+    }
 
     if (confirmSaveButton) {
         confirmSaveButton.addEventListener('click', function() {
-          isFormDirty = false;
-          window.removeEventListener('beforeunload', handleBeforeUnload);
-          form.submit(); 
+            window.removeEventListener('beforeunload', handleBeforeUnload);
         });
     }
-  });
-  document.addEventListener('DOMContentLoaded', function() {
+
+
     var datetimeInputs = document.querySelectorAll('input[type="datetime-local"]');
     datetimeInputs.forEach(function(input) {
         flatpickr(input, {
@@ -1149,7 +1199,6 @@
                             }
                         }
                     }
- 
                     e.target.value = formattedValue;
                 });
             }
