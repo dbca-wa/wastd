@@ -129,17 +129,14 @@
         </div>
         <div id="templateSelectedMessage" class="mt-2 text-success" style="display: none;">Template selected</div>
     </div>
+    {% if user.is_superuser and object_list %}
     {# Step3: Batch Actions #}
     <div class="step-container">
         <div class="step-header">Step 3: Batch Actions</div>
         <div class="row">
             <div class="col-md-8">
-                {% if object_list %}
-                    <a id="validateBtn" href="{% url 'wamtram2:validate_data_entry_batch' batch_id=batch.entry_batch_id %}" class="btn btn-primary mr-2">Validate this Batch</a>
-                    {% if user.is_superuser %}
-                    <a id="processBtn" href="{% url 'wamtram2:process_data_entry_batch' batch_id=batch.entry_batch_id %}" class="btn btn-primary">Add this batch to the database</a>
-                    {% endif %}
-                {% endif %}
+                <a id="validateBtn" href="{% url 'wamtram2:validate_data_entry_batch' batch_id=batch.entry_batch_id %}" class="btn btn-primary mr-2">Validate this Batch</a>
+                <a id="processBtn" href="{% url 'wamtram2:process_data_entry_batch' batch_id=batch.entry_batch_id %}" class="btn btn-primary">Add this batch to the database</a>
             </div>
             <div class="col-md-4">
                 <form method="get" class="form-inline float-right">
@@ -155,6 +152,7 @@
             </div>
         </div>
     </div>
+{% endif %}
 
     {% block pagination_row %}
         {# Pagination controls #}
