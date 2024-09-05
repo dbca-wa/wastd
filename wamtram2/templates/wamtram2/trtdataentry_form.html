@@ -1059,7 +1059,7 @@
     const summaryModal = document.getElementById('summaryModal');
     const summaryContent = document.getElementById('summaryContent');
     const confirmSaveButton = document.getElementById('confirmSaveButton');
-    const observationDateInput = document.getElementById('id_observation_date');
+    const observationDateInput = document.querySelector('input[name="observation_date"]');
     const dateErrorMessage = document.getElementById('date-error-message');
 
     const labelMapping = {
@@ -1068,25 +1068,24 @@
         "search_recorded_by": "Recorded by",
         "search_tagged_by": "Tagged by",
         "search_place_code": "Place",
-        "id_scars_left_scale_1": "Scars Left Scale 1",
-        "id_scars_left_scale_2": "Scars Left Scale 2",
-        "id_scars_left_scale_3": "Scars Left Scale 3",
-        "id_scars_right_scale_1": "Scars Right Scale 1",
-        "id_scars_right_scale_2": "Scars Right Scale 2",
-        "id_scars_right_scale_3": "Scars Right Scale 3",
-        "id_recapture_left_tag_barnacles": "Recapture Left Tag Barnacles",
-        "id_recapture_right_tag_barnacles": "Recapture Right Tag Barnacles",
-        "id_recapture_left_tag_barnacles_2": "Recapture Left Tag Barnacles 2",
-        "id_recapture_right_tag_barnacles_2": "Recapture Right Tag Barnacles 2",
-        "id_new_pit_tag_sticker_present": "New PIT Tag Sticker Present",
-        "id_new_pit_tag_2_sticker_present": "New PIT Tag 2 Sticker Present",
-        "id_new_pit_tag_3_sticker_present": "New PIT Tag 3 Sticker Present",
-        "id_new_pit_tag_4_sticker_present": "New PIT Tag 4 Sticker Present",
-        "id_latitude": "Latitude",
-        "id_longitude": "Longitude",
-        "id_observation_date": "Observation Date & Time",
+        "scars_left_scale_1": "Scars Left Scale 1",
+        "scars_left_scale_2": "Scars Left Scale 2",
+        "scars_left_scale_3": "Scars Left Scale 3",
+        "scars_right_scale_1": "Scars Right Scale 1",
+        "scars_right_scale_2": "Scars Right Scale 2",
+        "scars_right_scale_3": "Scars Right Scale 3",
+        "recapture_left_tag_barnacles": "Recapture Left Tag Barnacles",
+        "recapture_right_tag_barnacles": "Recapture Right Tag Barnacles",
+        "recapture_left_tag_barnacles_2": "Recapture Left Tag Barnacles 2",
+        "recapture_right_tag_barnacles_2": "Recapture Right Tag Barnacles 2",
+        "new_pit_tag_sticker_present": "New PIT Tag Sticker Present",
+        "new_pit_tag_2_sticker_present": "New PIT Tag 2 Sticker Present",
+        "new_pit_tag_3_sticker_present": "New PIT Tag 3 Sticker Present",
+        "new_pit_tag_4_sticker_present": "New PIT Tag 4 Sticker Present",
+        "latitude": "Latitude",
+        "longitude": "Longitude",
+        "observation_date": "Observation Date & Time",
     };
-
 
     function validateDate() {
       const selectedDate = new Date(observationDateInput.value);
@@ -1100,62 +1099,6 @@
         dateErrorMessage.style.display = 'none';
         observationDateInput.classList.remove('is-invalid');
       }
-    }
-  
-    observationDateInput.addEventListener('change', validateDate);
-    observationDateInput.addEventListener('input', validateDate);
-
-    if (reviewButton) {
-        reviewButton.addEventListener('click', function(event) {
-            event.preventDefault(); 
-
-            let summaryHTML = '<ul>';
-            
-            form.querySelectorAll('input, select, textarea').forEach(input => {
-                if (input.type !== 'hidden' || (input.classList.contains('flatpickr-input') && input.type !== 'hidden')) {
-                    let labelText = '';
-                    let inputValue = '';
-                    let inputId = input.id;
-
-                    if (input.classList.contains('flatpickr-input') && input.type !== 'hidden') {
-                        const hiddenInput = input.parentElement.querySelector('input[type="hidden"]');
-                        if (hiddenInput) {
-                            inputId = hiddenInput.id;
-                            inputValue = input.value.trim();
-                        }
-                    } else {
-                        inputValue = input.value.trim();
-                    }
-
-                    if (labelMapping[inputId]) {
-                        labelText = labelMapping[inputId];
-                    } else {
-                        const label = form.querySelector(`label[for="${inputId}"]`);
-                        labelText = label ? label.textContent.trim() : input.name;
-                    }
-
-                    if (input.type === 'checkbox') {
-                        inputValue = input.checked ? 'True' : 'False';
-                    } else if (input.tagName.toLowerCase() === 'select') {
-                        inputValue = input.selectedOptions[0].textContent.trim();
-                    }
-
-                    if (inputId === 'id_latitude' && inputValue !== '') {
-                        inputValue = '-' + inputValue;
-                    }
-
-                    if (inputValue !== '') {
-                        summaryHTML += `<li><strong>${labelText}:</strong> ${inputValue}</li>`;
-                    }
-                }
-            });
-
-            summaryHTML += '</ul>';
-
-            summaryContent.innerHTML = summaryHTML;
-
-            $(summaryModal).modal('show');
-        });
     }
 
     var datetimeInputs = document.querySelectorAll('input[type="datetime-local"]');
@@ -1172,7 +1115,6 @@
                 altInput.addEventListener('input', function(e) {
                     let value = e.target.value.replace(/\D/g, ''); 
                     let formattedValue = '';
- 
                     if (value.length > 0) {
                         formattedValue += value.substring(0, 2); 
                         if (value.length > 2) {
@@ -1190,12 +1132,66 @@
                     }
                     e.target.value = formattedValue;
                 });
+                altInput.addEventListener('input', validateDate);
             },
             onChange: function(selectedDates, dateStr, instance) {
               validateDate();
             }
         });
     });
+
+    if (reviewButton) {
+      reviewButton.addEventListener('click', function(event) {
+          event.preventDefault(); 
+
+          let summaryHTML = '<ul>';
+          
+          form.querySelectorAll('input, select, textarea').forEach(input => {
+              if (input.type !== 'hidden' || (input.classList.contains('flatpickr-input') && input.type !== 'hidden')) {
+                  let labelText = '';
+                  let inputValue = '';
+                  let inputId = input.name;
+
+                  if (input.classList.contains('flatpickr-input') && input.type !== 'hidden') {
+                      const hiddenInput = input.parentElement.querySelector('input[type="hidden"]');
+                      if (hiddenInput) {
+                          inputId = hiddenInput.id;
+                          inputValue = input.value.trim();
+                      }
+                  } else {
+                      inputValue = input.value.trim();
+                  }
+
+                  if (labelMapping[inputId]) {
+                      labelText = labelMapping[inputId];
+                  } else {
+                      const label = form.querySelector(`label[for="${inputId}"]`);
+                      labelText = label ? label.textContent.trim() : input.name;
+                  }
+
+                  if (input.type === 'checkbox') {
+                      inputValue = input.checked ? 'True' : 'False';
+                  } else if (input.tagName.toLowerCase() === 'select') {
+                      inputValue = input.selectedOptions[0].textContent.trim();
+                  }
+
+                  if (inputId === 'id_latitude' && inputValue !== '') {
+                      inputValue = '-' + inputValue;
+                  }
+
+                  if (inputValue !== '') {
+                      summaryHTML += `<li><strong>${labelText}:</strong> ${inputValue}</li>`;
+                  }
+              }
+          });
+
+          summaryHTML += '</ul>';
+
+          summaryContent.innerHTML = summaryHTML;
+
+          $(summaryModal).modal('show');
+      });
+  }
   });
 </script>
 <script src="{% static 'js/tagToggleHandler.js' %}"></script>
