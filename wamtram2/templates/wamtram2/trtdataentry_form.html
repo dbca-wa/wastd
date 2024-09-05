@@ -350,7 +350,7 @@
           <div class="col-6" id="scarsDetails">
             <div class="row align-items-center mb-2">
               <div class="col-auto">
-                <label><strong>Scars Left</strong></label>
+                <label>Scars Left</label>
               </div>
               <div class="col-auto d-flex align-items-center">
                 <div class="form-check form-check-inline">
@@ -368,7 +368,7 @@
           <div class="col-6" id="scarsDetailsRight">
             <div class="row align-items-center">
               <div class="col-auto">
-                <label><strong>Scars Right</strong></label>
+                <label>Scars Right</label>
               </div>
               <div class="col-auto d-flex align-items-center">
                 <div class="form-check form-check-inline">
@@ -1050,7 +1050,7 @@
                         nextElement.click(); 
                 }
             }
-        }});
+        });
     });
   });
   document.addEventListener('DOMContentLoaded', function() {
@@ -1068,23 +1068,22 @@
         "search_recorded_by": "Recorded by",
         "search_tagged_by": "Tagged by",
         "search_place_code": "Place",
-        "scars_left_scale_1": "Scars Left Scale 1",
-        "scars_left_scale_2": "Scars Left Scale 2",
-        "scars_left_scale_3": "Scars Left Scale 3",
-        "scars_right_scale_1": "Scars Right Scale 1",
-        "scars_right_scale_2": "Scars Right Scale 2",
-        "scars_right_scale_3": "Scars Right Scale 3",
-        "recapture_left_tag_barnacles": "Recapture Left Tag Barnacles",
-        "recapture_right_tag_barnacles": "Recapture Right Tag Barnacles",
-        "recapture_left_tag_barnacles_2": "Recapture Left Tag Barnacles 2",
-        "recapture_right_tag_barnacles_2": "Recapture Right Tag Barnacles 2",
-        "new_pit_tag_sticker_present": "New PIT Tag Sticker Present",
-        "new_pit_tag_2_sticker_present": "New PIT Tag 2 Sticker Present",
-        "new_pit_tag_3_sticker_present": "New PIT Tag 3 Sticker Present",
-        "new_pit_tag_4_sticker_present": "New PIT Tag 4 Sticker Present",
-        "latitude": "Latitude",
-        "longitude": "Longitude",
-        "observation_date": "Observation Date & Time",
+        "id_scars_left_scale_1": "Scars Left Scale 1",
+        "id_scars_left_scale_2": "Scars Left Scale 2",
+        "id_scars_left_scale_3": "Scars Left Scale 3",
+        "id_scars_right_scale_1": "Scars Right Scale 1",
+        "id_scars_right_scale_2": "Scars Right Scale 2",
+        "id_scars_right_scale_3": "Scars Right Scale 3",
+        "id_recapture_left_tag_barnacles": "Recapture Left Tag Barnacles",
+        "id_recapture_right_tag_barnacles": "Recapture Right Tag Barnacles",
+        "id_recapture_left_tag_barnacles_2": "Recapture Left Tag Barnacles 2",
+        "id_recapture_right_tag_barnacles_2": "Recapture Right Tag Barnacles 2",
+        "id_new_pit_tag_sticker_present": "New PIT Tag Sticker Present",
+        "id_new_pit_tag_2_sticker_present": "New PIT Tag 2 Sticker Present",
+        "id_new_pit_tag_3_sticker_present": "New PIT Tag 3 Sticker Present",
+        "id_new_pit_tag_4_sticker_present": "New PIT Tag 4 Sticker Present",
+        "id_latitude": "Latitude",
+        "id_longitude": "Longitude",
     };
 
     function validateDate() {
@@ -1150,7 +1149,7 @@
               if (input.type !== 'hidden' || (input.classList.contains('flatpickr-input') && input.type !== 'hidden')) {
                   let labelText = '';
                   let inputValue = '';
-                  let inputId = input.name;
+                  let inputId = input.id;
 
                   if (input.classList.contains('flatpickr-input') && input.type !== 'hidden') {
                       const hiddenInput = input.parentElement.querySelector('input[type="hidden"]');
@@ -1190,6 +1189,14 @@
           summaryContent.innerHTML = summaryHTML;
 
           $(summaryModal).modal('show');
+      });
+    }
+
+    if (confirmSaveButton) {
+      confirmSaveButton.addEventListener('click', function(event) {
+          event.preventDefault();
+          $(summaryModal).modal('hide');
+          form.submit();
       });
   }
   });
