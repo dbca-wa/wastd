@@ -1170,7 +1170,11 @@
                       }
 
                       if (input.type === 'checkbox') {
-                          inputValue = input.checked ? 'True' : 'False';
+                        if (input.checked) {
+                          inputValue = 'Yes';
+                        } else {
+                          return;
+                        }
                       } else if (input.tagName.toLowerCase() === 'select') {
                           inputValue = input.selectedOptions[0].textContent.trim();
                       }
