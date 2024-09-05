@@ -133,6 +133,7 @@
             <div class="col-md-6">
               <label for="{{ form.observation_date.id_for_label }}">{{ form.observation_date.label }}</label>
               {% bootstrap_field form.observation_date show_label=False%}
+              <div id="date-error-message" class="text-danger" style="display: none;"></div>
             </div>
           </div>
           <div class="row">
@@ -1058,6 +1059,8 @@
     const summaryModal = document.getElementById('summaryModal');
     const summaryContent = document.getElementById('summaryContent');
     const confirmSaveButton = document.getElementById('confirmSaveButton');
+    const observationDateInput = document.getElementById('id_observation_date');
+    const dateErrorMessage = document.getElementById('date-error-message');
 
     const labelMapping = {
         "search_entered_by": "Enterer",
@@ -1083,6 +1086,24 @@
         "id_longitude": "Longitude",
         "id_observation_date": "Observation Date & Time",
     };
+
+
+    function validateDate() {
+      const selectedDate = new Date(observationDateInput.value);
+      const currentDate = new Date();
+  
+      if (selectedDate > currentDate) {
+        dateErrorMessage.textContent = "Date in the future";
+        dateErrorMessage.style.display = 'block';
+        observationDateInput.classList.add('is-invalid');
+      } else {
+        dateErrorMessage.style.display = 'none';
+        observationDateInput.classList.remove('is-invalid');
+      }
+    }
+  
+    observationDateInput.addEventListener('change', validateDate);
+    observationDateInput.addEventListener('input', validateDate);
 
     if (reviewButton) {
         reviewButton.addEventListener('click', function(event) {
@@ -1169,6 +1190,9 @@
                     }
                     e.target.value = formattedValue;
                 });
+            },
+            onChange: function(selectedDates, dateStr, instance) {
+              validateDate();
             }
         });
     });
