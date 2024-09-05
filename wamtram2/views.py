@@ -709,10 +709,14 @@ class FindTurtleView(LoginRequiredMixin, View):
         tag_id = None
         tag_side = None
         create_and_review = request.POST.get('create_and_review') == 'true'
+        first_observation_date = None 
+        latest_site = None
 
         if form.is_valid():
             tag_id = form.cleaned_data["tag_id"]
-            turtle = None
+            tag_type = form.cleaned_data["tag_type"]
+            tag_side = form.cleaned_data["tag_side"]
+            turtle = form.turtle
 
             if not create_and_review:
                 tag = TrtTags.objects.select_related('turtle').filter(tag_id=tag_id).first()
@@ -730,7 +734,25 @@ class FindTurtleView(LoginRequiredMixin, View):
 
                 if turtle:
                     turtle = TrtTurtles.objects.prefetch_related('trttags_set', 'trtpittags_set').get(pk=turtle.pk)
-                    response = redirect(reverse('wamtram2:find_turtle', kwargs={'batch_id': batch_id}))
+
+                    first_observation = turtle.trtobservations_set.order_by('observation_date').first()
+                    if first_observation:
+                        first_observation_date = first_observation.observation_date
+
+                    latest_observation = turtle.trtobservations_set.order_by('-observation_date').first()
+                    if latest_observation and latest_observation.place_code:
+                        latest_site = latest_observation.place_code.place_name
+
+                    context = {
+                        "form": form,
+                        "turtle": turtle,
+                        "tag_id": tag_id,
+                        "tag_type": tag_type,
+                        "tag_side": tag_side,
+                        "first_observation_date": first_observation_date,
+                        "latest_site": latest_site
+                    }
+                    response = render(request, "wamtram2/find_turtle.html", context)
                     return self.set_cookie(response, batch_id, tag_id, tag_type, tag_side)
                 else:
                     no_turtle_found = True
