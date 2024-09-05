@@ -714,12 +714,9 @@ class FindTurtleView(LoginRequiredMixin, View):
         tag_id = None
         tag_side = None
         create_and_review = request.POST.get('create_and_review') == 'true'
-        first_observation_date = None 
-        latest_site = None
 
         if form.is_valid():
             tag_id = form.cleaned_data["tag_id"]
-            turtle = form.turtle
 
             if not create_and_review:
                 tag = TrtTags.objects.select_related('turtle').filter(tag_id=tag_id).first()
