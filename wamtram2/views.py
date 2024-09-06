@@ -232,6 +232,7 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
         return context
 
     def post(self, request, *args, **kwargs):
+        self.object = get_object_or_404(TrtEntryBatches, entry_batch_id=self.kwargs.get("batch_id"))
         form = self.get_form()
         if form.is_valid():
             entered_person_id = form.cleaned_data.get('entered_person_id')
@@ -241,6 +242,10 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
                 return self.form_valid(form)
             else:
                 messages.error(request, 'please add at least one field')
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{field}: {error}")
         context = self.get_context_data(form=form, object_list=self.get_queryset())
         return self.render_to_response(context)
 
@@ -262,8 +267,7 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
-        batch_id = self.kwargs.get("batch_id")
-        return reverse("wamtram2:entry_batch_detail", args=[batch_id])
+        return reverse("wamtram2:entry_batch_detail", kwargs={'batch_id': self.object.entry_batch_id})
 
 class TrtDataEntryFormView(LoginRequiredMixin, FormView):
     """

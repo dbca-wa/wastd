@@ -428,14 +428,9 @@
                 defaultEntererInput.name = 'use_default_enterer';
                 defaultEntererInput.value = setDefaultEnterer.checked;
                 form.appendChild(defaultEntererInput);
-                
-                if (enteredPersonId.value || comments.value.trim()) {
-                    showLoadingSpinner();
-                    showLoadingOverlay();
-                    form.submit();
-                } else {
-                    alert('Please select an enterer or add some new comments.');
-                }
+
+                showLoadingOverlay();
+                form.submit()
 
             });
         }
