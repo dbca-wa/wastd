@@ -1,15 +1,21 @@
 {% extends "base_wastd.html" %}
-{% load bootstrap4 %}
-{% load proper_paginate %}
-{% load url_replace %}
+{% load bootstrap4 static %}
 {% load proper_paginate %}
 {% load url_replace %}
 
 {% block extra_style %}
+{{ block.super}}
+{{ form.media.css }}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 <style>
     .tooltip-inner {
         max-width: 300px;
         text-align: left;
+    }
+    .info-icon {
+        cursor: pointer;
+        color: #007bff;
+        margin-left: 5px;
     }
 </style>
 {% endblock %}
@@ -101,24 +107,9 @@
 </div>
 {% endblock %}
 
-
-{% endblock %}
-
 {% block extra_js %}
 <script>
     $(function () {
-        $('#{{ search_form.batches_code.id_for_label }}').parent().find('label').append(
-            '<span class="ml-1" data-toggle="tooltip" data-html="true" title="' +
-            'Batch Code Format:<br>' +
-            '<strong>Part 1 (2 chars):</strong> N1 (Night 1), N2 (Night 2), D1 (Day 1), D2 (Day 2)<br>' +
-            '<strong>Part 2 (2 chars):</strong> GN (Gnaraloo), WR (Warroora)<br>' +
-            '<strong>Part 3 (2 chars):</strong> Year (e.g., 24 for 2024)<br>' +
-            'Example: N1GN24 (Night 1, Gnaraloo, 2024)' +
-            '">' +
-            '<i class="fas fa-question-circle"></i>' +
-            '</span>'
-        );
-
         $('[data-toggle="tooltip"]').tooltip();
     });
 </script>
