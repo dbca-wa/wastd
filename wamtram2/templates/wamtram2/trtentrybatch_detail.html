@@ -429,8 +429,12 @@
                 defaultEntererInput.value = setDefaultEnterer.checked;
                 form.appendChild(defaultEntererInput);
 
-                showLoadingOverlay();
-                form.submit()
+                if (enteredPersonId.value || comments.value.trim()) {
+                    showLoadingOverlay();
+                    form.submit();
+                } else {
+                    alert('please add at least one field');
+                }
 
             });
         }

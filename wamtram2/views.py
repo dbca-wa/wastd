@@ -232,6 +232,7 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
         return context
 
     def post(self, request, *args, **kwargs):
+        self.object_list = self.get_queryset() 
         self.object = get_object_or_404(TrtEntryBatches, entry_batch_id=self.kwargs.get("batch_id"))
         form = self.get_form()
         if form.is_valid():
