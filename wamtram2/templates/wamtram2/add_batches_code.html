@@ -7,5 +7,40 @@
     {% csrf_token %}
     {% bootstrap_form form %}
     <button type="submit" class="btn btn-primary">Save</button>
+    <a href="{% url 'wamtram2:batches_list' %}" class="btn btn-secondary">Cancel</a>
 </form>
+
+<hr>
+
+<h3>Batch Code Guide</h3>
+<p>The batch code consists of three parts:</p>
+<ol>
+    <li><strong>Part 1 (2 chars):</strong> N1 (Night 1), N2 (Night 2), D1 (Day 1), D2 (Day 2)</li>
+    <li><strong>Part 2 (2 chars):</strong> Location code (see table below)</li>
+    <li><strong>Part 3 (2 chars):</strong> Year (e.g., 24 for 2024)</li>
+</ol>
+
+<p><strong>Example:</strong> N1GN24 (Night 1, Gnaraloo, 2024)</p>
+
+<h4>TRT Locations</h4>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Location Code</th>
+            <th>Location Name</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for location in locations %}
+        <tr>
+            <td>{{ location.location_code }}</td>
+            <td>{{ location.location_name }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="2">No locations found</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 {% endblock %}

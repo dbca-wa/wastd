@@ -1307,7 +1307,15 @@ def add_batches_code(request, batch_id):
             return redirect(reverse('wamtram2:batches_list'))
     else:
         form = BatchesCodeForm(instance=batch)
-    return render(request, 'wamtram2/add_batches_code.html', {'form': form, 'batch': batch})
+    
+    locations = TrtLocations.objects.all().order_by('location_code')
+    
+    context = {
+        'form': form,
+        'batch': batch,
+        'locations': locations,
+    }
+    return render(request, 'wamtram2/add_batches_code.html', context)
 
 class BatchesListView(ListView):
     model = TrtEntryBatches
