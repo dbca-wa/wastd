@@ -88,7 +88,7 @@
                     <div class="flex-grow-1 mr-2">
                         {% bootstrap_field form.comments %}
                     </div>
-                    <button type="submit" class="btn btn-secondary mt-3" id="saveBatchDetailsBtn">
+                    <button type="submit" class="btn btn-info mt-3" id="saveBatchDetailsBtn">
                         Save batch details
                     </button>
                 </div>
@@ -429,7 +429,7 @@
                 defaultEntererInput.value = setDefaultEnterer.checked;
                 form.appendChild(defaultEntererInput);
                 
-                if (enteredPersonId.value) {
+                if (enteredPersonId.value || comments.value.trim()) {
                     showLoadingSpinner();
                     showLoadingOverlay();
                     form.submit();
