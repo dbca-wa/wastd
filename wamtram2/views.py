@@ -232,43 +232,39 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
         return context
 
     def post(self, request, *args, **kwargs):
-        self.object_list = self.get_queryset() 
-        self.object = get_object_or_404(TrtEntryBatches, entry_batch_id=self.kwargs.get("batch_id"))
         form = self.get_form()
-        if form.is_valid():
-            entered_person_id = form.cleaned_data.get('entered_person_id')
-            comments = form.cleaned_data.get('comments')
+        form.instance.entry_batch_id = self.kwargs.get("batch_id")
         
-            if entered_person_id or comments:
-                return self.form_valid(form)
-            else:
-                messages.error(request, 'please add at least one field')
+        if form.is_valid():
+            return self.form_valid(form)
         else:
-            for field, errors in form.errors.items():
-                for error in errors:
-                    messages.error(request, f"{field}: {error}")
-        context = self.get_context_data(form=form, object_list=self.get_queryset())
-        return self.render_to_response(context)
+            context = self.get_context_data(form=form, object_list=self.get_queryset())
+            return self.render_to_response(context)
 
     def form_valid(self, form):
         batch = form.save(commit=False)
-        
-        if not batch.entry_date:
-            batch.entry_date = timezone.now()
+        entered_person_id = form.cleaned_data.get('entered_person_id')
+        comments = form.cleaned_data.get('comments')
+        if entered_person_id or comments:
+            if not batch.entry_date:
+                batch.entry_date = timezone.now()
 
-        batch_id = batch.entry_batch_id
+            batch_id = batch.entry_batch_id
 
-        existing_batch = TrtEntryBatches.objects.get(entry_batch_id=batch_id)
-        batch.pr_date_convention = existing_batch.pr_date_convention
-        batch.entry_date = existing_batch.entry_date
-        batch.filename = existing_batch.filename
-
-        batch.save()
-        messages.success(self.request, 'batch details saved')
+            existing_batch = TrtEntryBatches.objects.get(entry_batch_id=batch_id)
+            batch.pr_date_convention = existing_batch.pr_date_convention
+            batch.entry_date = existing_batch.entry_date
+            batch.filename = existing_batch.filename
+            messages.success(self.request, 'Batch detail saved')
+            batch.save()
+        else:
+            context = self.get_context_data(form=form, object_list=self.get_queryset())
+            return self.render_to_response(context)
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
-        return reverse("wamtram2:entry_batch_detail", kwargs={'batch_id': self.object.entry_batch_id})
+        batch_id = self.kwargs.get("batch_id")
+        return reverse("wamtram2:entry_batch_detail", args=[batch_id])
 
 class TrtDataEntryFormView(LoginRequiredMixin, FormView):
     """
