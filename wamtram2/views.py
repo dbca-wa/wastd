@@ -1307,7 +1307,7 @@ def add_batches_code(request, batch_id):
             return redirect(reverse('wamtram2:batches_list'))
     else:
         form = BatchesCodeForm(instance=batch)
-    
+        
     locations = TrtLocations.objects.all().order_by('location_code')
     
     context = {
@@ -1338,4 +1338,10 @@ class BatchesListView(ListView):
                 Q(batches_code__iendswith=batches_code[-4:])
             )
         return queryset
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        search_form = BatchesSearchForm(self.request.GET or None)
+        context['search_form'] = search_form
+        return context
     
