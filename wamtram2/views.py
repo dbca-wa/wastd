@@ -12,13 +12,15 @@ from django.views.generic.edit import FormMixin
 from django.views.generic import TemplateView, ListView, DetailView, FormView, DeleteView
 from django.http import JsonResponse, QueryDict
 from .models import TrtPlaces, TrtSpecies, TrtLocations
-from django.views.decorators.http import require_http_methods
-from django.utils.decorators import method_decorator
+from django.db.models.functions import Coalesce
 from django.db.models import Count, Exists, OuterRef, Subquery
 from django.core.paginator import Paginator
 from openpyxl import Workbook
 import csv
 from django.db.models import Count, Max, F
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.shortcuts import redirect
+
 
 from wastd.utils import Breadcrumb, PaginateMixin
 from .models import (
@@ -812,8 +814,6 @@ class TurtleListView(LoginRequiredMixin, PaginateMixin, ListView):
         return qs.order_by("pk")
 
 
-from django.contrib.auth.decorators import login_required, user_passes_test
-from django.shortcuts import redirect
 
 def is_volunteer(user):
     return user.groups.filter(name='Tagging Data Entry').exists() and not user.is_staff and not user.is_superuser
@@ -1277,15 +1277,11 @@ class DudTagManageView(LoginRequiredMixin, View):
         entry_id = request.POST.get('entry_id')
         tag_type = request.POST.get('tag_type')
         tag_id = request.POST.get('tag_id')
-        tag_status = request.POST.get('tag_status')
-
         entry = get_object_or_404(TrtDataEntry, pk=entry_id)
 
-        # 仅当 observation_id 存在时才允许保存
         if entry.observation_id:
             observation = entry.observation_id
-
-            # 根据标签类型保存到对应的 observation 字段
+            
             if tag_type == 'flipper':
                 observation.dud_filpper_tag = tag_id
             elif tag_type == 'flipper_2':
@@ -1300,8 +1296,6 @@ class DudTagManageView(LoginRequiredMixin, View):
             print(f"Observation updated for entry ID: {entry_id}, tag type: {tag_type}")
 
         return redirect('wamtram2:dud_tag_manage')
-
-
 
 
 def add_batches_code(request, batch_id):
@@ -1325,16 +1319,29 @@ class BatchesListView(ListView):
         queryset = super().get_queryset().annotate(
             entry_count=Count('trtdataentry'),
             last_entry_date=Max('trtdataentry__observation_date'),
-            last_place_code=F('trtdataentry__place_code')
-        ).order_by('-entry_batch_id') 
-        
-        location = self.request.GET.get('location')
-        if location:
-            queryset = queryset.filter(batches_code__icontains=location)
-        return queryset
+            last_place_code=F('trtdataentry__place_code'),
+            last_place_name=Coalesce('trtdataentry__place_code__place_name', 'trtdataentry__place_code')
+        ).order_by('-entry_batch_id')
 
+        batches_code = self.request.GET.get('batches_code')
+        if batches_code:
+            queryset = queryset.filter(
+                Q(batches_code__icontains=batches_code) |
+                Q(batches_code__iendswith=batches_code[-4:])
+            )
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['search_form'] = BatchesSearchForm(self.request.GET)
+        context['code_reference'] = {
+            'N1': 'Night 1',
+            'N2': 'Night 2',
+            'D1': 'Day 1',
+            'D2': 'Day 2',
+            'GN': 'Gnaraloo',
+            'WR': 'Warroora',
+            '24': '2024'
+        }
         return context
+    

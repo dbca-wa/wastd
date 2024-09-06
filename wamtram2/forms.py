@@ -557,4 +557,9 @@ class BatchesCodeForm(forms.ModelForm):
         }
 
 class BatchesSearchForm(forms.Form):
-    location = forms.CharField(max_length=255, required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    batches_code = forms.CharField(
+        max_length=255, 
+        required=False, 
+        widget=forms.TextInput(attrs={'class': 'form-control'}),
+        label='Batch Code'
+    )

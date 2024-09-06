@@ -5,53 +5,32 @@
 {% load proper_paginate %}
 {% load url_replace %}
 
-<div class="pagination-container">
-    {% if is_paginated %}
-    <ul class="pagination mb-0">
-        {% if page_obj.number != 1 %}
-        <li class="page-item">
-            <a class="page-link" href="?{% url_replace request 'page' 1 %}">⇤</a>
-        </li>
-        {% endif %}
-        
-        {% if page_obj.has_previous %}
-        <li class="page-item">
-            <a class="page-link" href="?{% url_replace request 'page' page_obj.previous_page_number %}">&laquo;</a>
-        </li>
-        {% endif %}
-        
-        {% for i in paginator|proper_paginate:page_obj.number %}
-            {% if page_obj.number == i %}
-            <li class="page-item active">
-                <span class="page-link">{{ i }}<span class="sr-only">(current)</span></span>
-            </li>
-            {% else %}
-            <li class="page-item">
-                <a class="page-link" href="?{% url_replace request 'page' i %}">{{ i }}</a>
-            </li>
-            {% endif %}
-        {% endfor %}
-        
-        {% if page_obj.has_next %}
-        <li class="page-item">
-            <a class="page-link" href="?{% url_replace request 'page' page_obj.next_page_number %}">&raquo;</a>
-        </li>
-        {% endif %}
-        
-        {% if page_obj.number != paginator.num_pages %}
-        <li class="page-item">
-            <a class="page-link" href="?{% url_replace request 'page' paginator.num_pages %}">⇥</a>
-        </li>
-        {% endif %}
-    </ul>
-    {% endif %}
-</div>
+{% block extra_style %}
+<style>
+    .tooltip-inner {
+        max-width: 300px;
+        text-align: left;
+    }
+</style>
+{% endblock %}
 
 
 {% block page_content_inner %}
 <h2>Batches List</h2>
 <form method="get" class="mb-4">
-    {% bootstrap_form search_form %}
+    <div class="form-group">
+        <label for="{{ search_form.batches_code.id_for_label }}">
+            {{ search_form.batches_code.label }}
+            <span class="ml-1" data-toggle="tooltip" data-html="true" title="
+                {% for key, value in code_reference.items %}
+                    <strong>{{ key }}</strong>: {{ value }}<br>
+                {% endfor %}
+            ">
+                <i class="fas fa-question-circle"></i>
+            </span>
+        </label>
+        {{ search_form.batches_code }}
+    </div>
     <button type="submit" class="btn btn-primary">Search</button>
 </form>
 <table class="table">
@@ -130,4 +109,15 @@
     </ul>
     {% endif %}
 </div>
+{% endblock %}
+
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+</script>
 {% endblock %}
