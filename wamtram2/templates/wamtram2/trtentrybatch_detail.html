@@ -414,7 +414,6 @@
         if (form) {
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
-                saveBatchDetailsBtn.disabled = true;
 
                 // Create and add hidden template input field
                 const templateInput = document.createElement('input');
@@ -432,6 +431,7 @@
                 
                 if (enteredPersonId.value) {
                     showLoadingSpinner();
+                    showLoadingOverlay();
                     form.submit();
                 } else {
                     alert('Please select an enterer or add some new comments.');

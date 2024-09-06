@@ -233,13 +233,16 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
 
     def post(self, request, *args, **kwargs):
         form = self.get_form()
-        form.instance.entry_batch_id = self.kwargs.get("batch_id")
-        
         if form.is_valid():
-            return self.form_valid(form)
-        else:
-            context = self.get_context_data(form=form, object_list=self.get_queryset())
-            return self.render_to_response(context)
+            entered_person_id = form.cleaned_data.get('entered_person_id')
+            comments = form.cleaned_data.get('comments')
+        
+            if entered_person_id or comments:
+                return self.form_valid(form)
+            else:
+                messages.error(request, 'please add at least one field')
+        context = self.get_context_data(form=form, object_list=self.get_queryset())
+        return self.render_to_response(context)
 
     def form_valid(self, form):
         batch = form.save(commit=False)
@@ -255,6 +258,7 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
         batch.filename = existing_batch.filename
 
         batch.save()
+        messages.success(self.request, 'batch details saved')
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
