@@ -25,7 +25,19 @@
 <div class="mt-5">
     <h2 class="mb-4">Batches List</h2>
     <form method="get" class="mb-4">
-        {% bootstrap_form search_form %}
+        <div class="form-group">
+            <label for="{{ search_form.batches_code.id_for_label }}">
+                {{ search_form.batches_code.label }}
+                <i class="fas fa-question-circle info-icon" data-toggle="tooltip" data-html="true" title="
+                    Batch Code Format:<br>
+                    <strong>Part 1 (2 chars):</strong> N1 (Night 1), N2 (Night 2), D1 (Day 1), D2 (Day 2)<br>
+                    <strong>Part 2 (2 chars):</strong> GN (Gnaraloo), WR (Warroora)<br>
+                    <strong>Part 3 (2 chars):</strong> Year (e.g., 24 for 2024)<br>
+                    Example: N1GN24 (Night 1, Gnaraloo, 2024)
+                "></i>
+            </label>
+            {{ search_form.batches_code }}
+        </div>
         <button type="submit" class="btn btn-primary">Search</button>
     </form>
 </div>
