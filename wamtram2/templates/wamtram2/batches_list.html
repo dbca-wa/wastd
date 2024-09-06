@@ -1,5 +1,52 @@
 {% extends "base_wastd.html" %}
 {% load bootstrap4 %}
+{% load proper_paginate %}
+{% load url_replace %}
+{% load proper_paginate %}
+{% load url_replace %}
+
+<div class="pagination-container">
+    {% if is_paginated %}
+    <ul class="pagination mb-0">
+        {% if page_obj.number != 1 %}
+        <li class="page-item">
+            <a class="page-link" href="?{% url_replace request 'page' 1 %}">⇤</a>
+        </li>
+        {% endif %}
+        
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?{% url_replace request 'page' page_obj.previous_page_number %}">&laquo;</a>
+        </li>
+        {% endif %}
+        
+        {% for i in paginator|proper_paginate:page_obj.number %}
+            {% if page_obj.number == i %}
+            <li class="page-item active">
+                <span class="page-link">{{ i }}<span class="sr-only">(current)</span></span>
+            </li>
+            {% else %}
+            <li class="page-item">
+                <a class="page-link" href="?{% url_replace request 'page' i %}">{{ i }}</a>
+            </li>
+            {% endif %}
+        {% endfor %}
+        
+        {% if page_obj.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?{% url_replace request 'page' page_obj.next_page_number %}">&raquo;</a>
+        </li>
+        {% endif %}
+        
+        {% if page_obj.number != paginator.num_pages %}
+        <li class="page-item">
+            <a class="page-link" href="?{% url_replace request 'page' paginator.num_pages %}">⇥</a>
+        </li>
+        {% endif %}
+    </ul>
+    {% endif %}
+</div>
+
 
 {% block page_content_inner %}
 <h2>Batches List</h2>
@@ -13,6 +60,10 @@
             <th>Batch ID</th>
             <th>Batches Code</th>
             <th>Entry Date</th>
+            <th>Enterer</th>
+            <th>Site</th>
+            <th># of Records</th>
+            <th>Comments</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -21,7 +72,11 @@
         <tr>
             <td>{{ batch.entry_batch_id }}</td>
             <td>{{ batch.batches_code|default:"No Code" }}</td>
-            <td>{{ batch.entry_date }}</td>
+            <td>{{ batch.entry_date|date:"Y-m-d" }}</td>
+            <td>{{ batch.entered_person_id.first_name }} {{ batch.entered_person_id.surname }}</td>
+            <td>{{ batch.last_place_code }}</td>
+            <td>{{ batch.entry_count }}</td>
+            <td>{{ batch.comments|truncatechars:30 }}</td>
             <td>
                 <a href="{% url 'wamtram2:entry_batch_detail' batch_id=batch.entry_batch_id %}" class="btn btn-sm btn-info">View</a>
                 <a href="{% url 'wamtram2:add_batches_code' batch_id=batch.entry_batch_id %}" class="btn btn-sm btn-primary">Edit Code</a>
@@ -29,10 +84,50 @@
         </tr>
         {% empty %}
         <tr>
-            <td colspan="4">No batches found.</td>
+            <td colspan="8">No batches found.</td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
-{% include "pagination.html" %}
+<div class="pagination-container">
+    {% if is_paginated %}
+    <ul class="pagination mb-0">
+        {% if page_obj.number != 1 %}
+        <li class="page-item">
+            <a class="page-link" href="?{% url_replace request 'page' 1 %}">⇤</a>
+        </li>
+        {% endif %}
+        
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?{% url_replace request 'page' page_obj.previous_page_number %}">&laquo;</a>
+        </li>
+        {% endif %}
+        
+        {% for i in paginator|proper_paginate:page_obj.number %}
+            {% if page_obj.number == i %}
+            <li class="page-item active">
+                <span class="page-link">{{ i }}<span class="sr-only">(current)</span></span>
+            </li>
+            {% else %}
+            <li class="page-item">
+                <a class="page-link" href="?{% url_replace request 'page' i %}">{{ i }}</a>
+            </li>
+            {% endif %}
+        {% endfor %}
+        
+        {% if page_obj.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?{% url_replace request 'page' page_obj.next_page_number %}">&raquo;</a>
+        </li>
+        {% endif %}
+        
+        {% if page_obj.number != paginator.num_pages %}
+        <li class="page-item">
+            <a class="page-link" href="?{% url_replace request 'page' paginator.num_pages %}">⇥</a>
+        </li>
+        {% endif %}
+    </ul>
+    {% endif %}
+</div>
 {% endblock %}

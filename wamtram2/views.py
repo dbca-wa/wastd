@@ -18,6 +18,7 @@ from django.db.models import Count, Exists, OuterRef, Subquery
 from django.core.paginator import Paginator
 from openpyxl import Workbook
 import csv
+from django.db.models import Count, Max, F
 
 from wastd.utils import Breadcrumb, PaginateMixin
 from .models import (
@@ -1321,11 +1322,17 @@ class BatchesListView(ListView):
     paginate_by = 20
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        queryset = super().get_queryset().annotate(
+            entry_count=Count('trtdataentry'),
+            last_entry_date=Max('trtdataentry__observation_date'),
+            last_place_code=F('trtdataentry__place_code')
+        ).order_by('-entry_batch_id') 
+        
         location = self.request.GET.get('location')
         if location:
             queryset = queryset.filter(batches_code__icontains=location)
         return queryset
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
