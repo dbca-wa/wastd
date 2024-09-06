@@ -1330,18 +1330,4 @@ class BatchesListView(ListView):
                 Q(batches_code__iendswith=batches_code[-4:])
             )
         return queryset
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['search_form'] = BatchesSearchForm(self.request.GET)
-        context['code_reference'] = {
-            'N1': 'Night 1',
-            'N2': 'Night 2',
-            'D1': 'Day 1',
-            'D2': 'Day 2',
-            'GN': 'Gnaraloo',
-            'WR': 'Warroora',
-            '24': '2024'
-        }
-        return context
     
