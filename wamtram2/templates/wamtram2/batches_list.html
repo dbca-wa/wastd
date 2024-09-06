@@ -61,7 +61,7 @@
             <td>{{ batch.batches_code|default:"No Code" }}</td>
             <td>{{ batch.entry_date|date:"Y-m-d" }}</td>
             <td>{{ batch.entered_person_id.first_name }} {{ batch.entered_person_id.surname }}</td>
-            <td>{{ batch.last_place_code }}</td>
+            <td>{{ batch.last_place_name }}</td>
             <td>{{ batch.entry_count }}</td>
             <td>{{ batch.comments|truncatechars:30 }}</td>
             <td>
