@@ -1304,7 +1304,7 @@ def add_batches_code(request, batch_id):
         form = BatchesCodeForm(request.POST, instance=batch)
         if form.is_valid():
             form.save()
-            return redirect('wamtram2:entry_batch_detail', batch_id=batch_id)
+            return redirect(reverse('wamtram2:batches_list'))
     else:
         form = BatchesCodeForm(instance=batch)
     return render(request, 'wamtram2/add_batches_code.html', {'form': form, 'batch': batch})
