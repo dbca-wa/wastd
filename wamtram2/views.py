@@ -664,6 +664,9 @@ class FindTurtleView(LoginRequiredMixin, View):
             latest_site = None
             batch = None
             
+            template = batch.template
+            template_name = template.name if template else "No template associated"
+            
             if batch_id:
                 batch = TrtEntryBatches.objects.filter(entry_batch_id=batch_id).first()
             
@@ -696,6 +699,7 @@ class FindTurtleView(LoginRequiredMixin, View):
                 "latest_site": latest_site,
                 "batch_id": batch_id,
                 "batch": batch,
+                "template_name": template_name,
             })
 
     def set_cookie(self, response, batch_id, tag_id=None, tag_type=None, tag_side=None, no_turtle_found=False, do_not_process=False):
@@ -752,20 +756,6 @@ class FindTurtleView(LoginRequiredMixin, View):
 
         return self.set_cookie(response, batch_id, tag_id, tag_type, tag_side)
     
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        batch_id = self.kwargs.get("batch_id")
-        batch = get_object_or_404(TrtEntryBatches, entry_batch_id=batch_id)
-        
-        template = batch.template
-        if template:
-            context['template_name'] = template.name
-        else:
-            context['template_name'] = "No template associated"
-
-        context['batch'] = batch
-        return context
-
 
 class ObservationDetailView(LoginRequiredMixin, DetailView):
     model = TrtObservations
