@@ -342,6 +342,14 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
                     initial['recapture_right_tag_id'] = tag_id
             elif tag_type == 'recapture_pit_tag':
                 initial['recapture_pittag_id'] = tag_id
+                
+        if batch_id:
+            try:
+                batch = TrtEntryBatches.objects.get(entry_batch_id=batch_id)
+                if batch.template:
+                    selected_template = str(batch.template.template_id)
+            except TrtEntryBatches.DoesNotExist:
+                pass
 
         if default_enterer == "None" or not default_enterer:
             default_enterer = None
@@ -487,7 +495,11 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         
         if batch_id:
             context["batch_id"] = batch_id  # Creating new entry in batch
-            context["selected_template"] = self.request.COOKIES.get(f'{cookies_key_prefix}_selected_template')
+            batch = TrtEntryBatches.objects.get(entry_batch_id=batch_id)
+        if batch.template:
+            context["selected_template"] = str(batch.template.template_id)
+        else:
+            context["selected_template"] = self.request.COOKIES.get(f'{cookies_key_prefix}_selected_template') or None
             context["use_default_enterer"] = self.request.COOKIES.get(f'{cookies_key_prefix}_use_default_enterer', False)
             context["default_enterer"] = self.request.COOKIES.get(f'{cookies_key_prefix}_default_enterer', None)
             # Add the tag id and tag type to the context data
