@@ -20,6 +20,7 @@ import csv
 from django.db.models import Count, Max, F
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import redirect
+from django.views.decorators.http import require_POST
 
 
 from wastd.utils import Breadcrumb, PaginateMixin
@@ -1377,4 +1378,19 @@ def batch_code_filter(request):
         'batches': batches,
     }
     return render(request, 'wamtram2/batch_code_filter.html', context)
+
+
+@login_required
+@require_POST
+def quick_add_batch(request):
+    batches_code = request.POST.get('batches_code')
+    comments = request.POST.get('comments', '')
+    try:
+        new_batch = TrtEntryBatches.objects.create(
+            batches_code=batches_code,
+            comments=comments,
+        )
+        return JsonResponse({'success': True, 'batch_id': new_batch.id})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
     
