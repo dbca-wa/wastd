@@ -54,6 +54,9 @@
         <div class="batch-info">
           <div class="batch-code">Batch Code: {{ batch.batches_code }}</div>
           <div class="batch-comment">{{ batch.comments|default:"No comment" }}</div>
+          {% if template_name %}
+          <strong>Associated Template:</strong> {{ template_name }}
+          {% endif %}
         </div>
         {% endif %}
         <div class="card-body">

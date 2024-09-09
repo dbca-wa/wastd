@@ -476,7 +476,6 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         batch_id = self.kwargs.get("batch_id")
         cookies_key_prefix = batch_id
         context['is_volunteer'] = self.request.user.groups.filter(name='Tagging Data Entry').exists()
-        
 
         if entry_id:
             entry = get_object_or_404(TrtDataEntry.objects.select_related('turtle_id'), data_entry_id=entry_id)
@@ -752,6 +751,20 @@ class FindTurtleView(LoginRequiredMixin, View):
             response = render(request, "wamtram2/find_turtle.html", {"form": form})
 
         return self.set_cookie(response, batch_id, tag_id, tag_type, tag_side)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        batch_id = self.kwargs.get("batch_id")
+        batch = get_object_or_404(TrtEntryBatches, entry_batch_id=batch_id)
+        
+        template = batch.template
+        if template:
+            context['template_name'] = template.name
+        else:
+            context['template_name'] = "No template associated"
+
+        context['batch'] = batch
+        return context
 
 
 class ObservationDetailView(LoginRequiredMixin, DetailView):
