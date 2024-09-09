@@ -24,6 +24,9 @@
 {% block page_content_inner %}
 <div class="mt-5">
     <h2 class="mb-4">Batches List</h2>
+    <button type="button" class="btn btn-outline-primary" id="quickAddBatchBtn" title="Quick Add Batch">
+        <i class="fas fa-plus"></i> Add New Batch
+    </button>
     <form method="get" class="mb-4">
         <div class="form-group">
             <label for="{{ search_form.batches_code.id_for_label }}">
@@ -63,7 +66,7 @@
             <td>{{ batch.entered_person_id.first_name }} {{ batch.entered_person_id.surname }}</td>
             <td>{{ batch.last_place_name }}</td>
             <td>{{ batch.entry_count }}</td>
-            <td>{{ batch.comments|truncatechars:30 }}</td>
+            <td>{{ batch.comments|truncatechars:50 }}</td>
             <td>
                 <a href="{% url 'wamtram2:entry_batch_detail' batch_id=batch.entry_batch_id %}" class="btn btn-sm btn-info">View</a>
                 <a href="{% url 'wamtram2:add_batches_code' batch_id=batch.entry_batch_id %}" class="btn btn-sm btn-primary">Edit Code</a>
@@ -71,7 +74,7 @@
         </tr>
         {% empty %}
         <tr>
-            <td colspan="8">No batches found.</td>
+            <td colspan="8" class="text-center">No batches found.</td>
         </tr>
         {% endfor %}
     </tbody>
@@ -117,12 +120,98 @@
     </ul>
     {% endif %}
 </div>
+
+<!-- Quick Add Batch Modal -->
+<div class="modal fade" id="quickAddBatchModal" tabindex="-1" role="dialog" aria-labelledby="quickAddBatchModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="quickAddBatchModalLabel">Quick Add New Batch</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="quickAddBatchForm">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="quickAddBatchCode">Batch Code</label>
+                        <input type="text" class="form-control" id="quickAddBatchCode" name="batches_code" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="quickAddComments">Comments</label>
+                        <textarea class="form-control" id="quickAddComments" name="comments" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="quickAddTemplate">Template</label>
+                        <select class="form-control" id="quickAddTemplate" name="template">
+                            <option value="">Select Template</option>
+                            {% for template in templates %}
+                                <option value="{{ template.template_id }}">{{ template.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="quickAddBatchConfirm">Add Batch</button>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
     $(function () {
         $('[data-toggle="tooltip"]').tooltip();
+
+    $("#quickAddBatchBtn").click(function(e) {
+        e.preventDefault();
+        $('#quickAddBatchModal').modal('show');
     });
+
+    $("#quickAddBatchConfirm").click(function() {
+        const form = document.getElementById('quickAddBatchForm');
+        const formData = new FormData(form);
+
+        fetch("{% url 'wamtram2:quick_add_batch' %}", {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                $('#quickAddBatchModal').modal('hide');
+                location.reload();
+            } else {
+                alert(data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while adding the batch.');
+        });
+    });
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+});
 </script>
 {% endblock %}

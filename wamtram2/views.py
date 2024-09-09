@@ -1354,6 +1354,7 @@ class BatchesListView(ListView):
         context = super().get_context_data(**kwargs)
         search_form = BatchesSearchForm(self.request.GET or None)
         context['search_form'] = search_form
+        context['templates'] = Template.objects.all()
         return context
 
 
@@ -1401,19 +1402,22 @@ def batch_code_filter(request):
 def quick_add_batch(request):
     batches_code = request.POST.get('batches_code')
     comments = request.POST.get('comments', '')
+    template_id = request.POST.get('template')
     try:
         new_batch = TrtEntryBatches.objects.create(
             batches_code=batches_code,
             comments=comments,
             entry_date=timezone.now(),
-            pr_date_convention=False
+            pr_date_convention=False,
+            template_id=template_id if template_id else None
         )
         return JsonResponse({
             'success': True, 
             'batch_id': new_batch.entry_batch_id,
             'entry_date': new_batch.entry_date.strftime('%Y-%m-%d %H:%M:%S'),
             'batches_code': new_batch.batches_code,
-            'comments': new_batch.comments
+            'comments': new_batch.comments,
+            'template': new_batch.template.name if new_batch.template else None
         })
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})

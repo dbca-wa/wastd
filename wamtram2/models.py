@@ -1220,7 +1220,13 @@ class TrtEntryBatches(models.Model):
     batches_code = models.CharField(
         db_column="BATCHES_CODE", max_length=10, blank=True, null=True
     )  # Field name made lowercase.
-
+    template = models.ForeignKey(
+        "TrtTemplate",  
+        models.SET_NULL,
+        db_column="template",
+        blank=True,
+        null=True,
+    )
     class Meta:
         managed = False
         db_table = "TRT_ENTRY_BATCHES"
@@ -2365,7 +2371,7 @@ SEX_CHOICES = [
     ("I", "Indeterminate"),
 ]
 class Template(models.Model):
-    template_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    template_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255)
     location_code = models.CharField(max_length=50)
     place_code = models.CharField(max_length=50)
