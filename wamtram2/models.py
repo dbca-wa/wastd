@@ -1221,7 +1221,7 @@ class TrtEntryBatches(models.Model):
         db_column="BATCHES_CODE", max_length=10, blank=True, null=True
     )  # Field name made lowercase.
     template = models.ForeignKey(
-        "TrtTemplate",  
+        "Template",  
         models.SET_NULL,
         db_column="template",
         blank=True,
