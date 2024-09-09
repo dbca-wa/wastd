@@ -663,12 +663,12 @@ class FindTurtleView(LoginRequiredMixin, View):
             first_observation_date = None
             latest_site = None
             batch = None
-            
-            template = batch.template
-            template_name = template.name if template else "No template associated"
+            template_name = "No template associated"
             
             if batch_id:
                 batch = TrtEntryBatches.objects.filter(entry_batch_id=batch_id).first()
+                if batch and batch.template:
+                    template_name = batch.template.name
             
             if tag_id and tag_type and not no_turtle_found:
                 tag = TrtTags.objects.select_related('turtle').filter(tag_id=tag_id).first()
