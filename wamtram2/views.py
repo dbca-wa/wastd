@@ -1357,7 +1357,7 @@ def batch_code_filter(request):
         'delambre': 'DEL',
     }
     current_year = timezone.now().year
-    years = {str(year): str(year)[-2:] for year in range(1980, current_year)}
+    years = {str(year): str(year)[-2:] for year in range(1980, current_year+1)}
 
     selected_location = request.GET.get('location')
     selected_year = request.GET.get('year')
