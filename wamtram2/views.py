@@ -1351,24 +1351,35 @@ class BatchesListView(ListView):
         context['search_form'] = search_form
         return context
 
+
 def batch_code_filter(request):
     locations = {
         'delambre': 'DEL',
-        # 添加其他位置映射
     }
-    years = {str(year): str(year)[-2:] for year in range(2020, 2025)}  # 假设年份范围是2020-2024
+    current_year = timezone.now().year
+    years = {str(year): str(year)[-2:] for year in range(1980, current_year)}
 
     selected_location = request.GET.get('location')
     selected_year = request.GET.get('year')
 
     batches = TrtEntryBatches.objects.all()
 
-    if selected_location and selected_year:
-        location_code = locations.get(selected_location.lower())
-        year_code = years.get(selected_year)
-        if location_code and year_code:
-            search_code = f"{location_code}{year_code}"
-            batches = batches.filter(batches_code__iendswith=search_code)
+    if selected_location or selected_year:
+        query = Q()
+        
+        if selected_location:
+            location_code = locations.get(selected_location.lower())
+            if location_code:
+                query |= Q(batches_code__icontains=location_code)
+        
+        if selected_year:
+            year_code = years.get(selected_year)
+            if year_code:
+                query |= Q(batches_code__iendswith=year_code)
+        
+        batches = batches.filter(query)
+
+    batches = batches.order_by('-entry_batch_id')
 
     context = {
         'locations': locations,
