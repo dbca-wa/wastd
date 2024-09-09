@@ -312,7 +312,8 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
             return {
                 'place_code': template.place_code,
                 'species_code': template.species_code,
-                'sex': template.sex
+                'sex': template.sex,
+                'location_code': template.location_code
             }
         except Template.DoesNotExist:
             return None
@@ -358,12 +359,11 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
             template_data = self.get_template_data(selected_template)
             if template_data:
                 place_code = template_data.get('place_code')
-                print(f"Debug: place_code from template_data = {place_code}")
                 initial['default_place_code'] = place_code
                 self.default_place_code = place_code
                 default_place_obj = TrtPlaces.objects.filter(place_code=self.default_place_code).first()
                 if default_place_obj:
-                    self.default_place_full_name = f"{default_place_obj.location_code} - {default_place_obj.place_name}"
+                    self.default_place_full_name = default_place_obj.get_full_name()
                     initial['default_place_full_name'] = self.default_place_full_name
                 if not turtle_id:
                     initial['species_code'] = template_data.get('species_code')
@@ -505,15 +505,11 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
             context["default_enterer_full_name"] = getattr(self, 'default_enterer_full_name', None)
             context["default_place_full_name"] = getattr(self, 'default_place_full_name', None)
             context["default_place_code"] = getattr(self, 'default_place_code', None)
-
-
-        context['defalut_place_full_name'] = getattr(self, 'default_place_full_name', '')
-        context["default_place_code"] = getattr(self, 'default_place_code', None)
         
-        context['measured_by_full_name'] = getattr(self, 'measured_by_full_name', '')
-        context['recorded_by_full_name'] = getattr(self, 'recorded_by_full_name', '')
-        context['tagged_by_full_name'] = getattr(self, 'tagged_by_full_name', '')
-        context['entered_by_full_name'] = getattr(self, 'entered_by_full_name', '')
+            context['measured_by_full_name'] = getattr(self, 'measured_by_full_name', '')
+            context['recorded_by_full_name'] = getattr(self, 'recorded_by_full_name', '')
+            context['tagged_by_full_name'] = getattr(self, 'tagged_by_full_name', '')
+            context['entered_by_full_name'] = getattr(self, 'entered_by_full_name', '')
 
         return context
 
@@ -1174,6 +1170,9 @@ def search_places(request):
         places = TrtPlaces.objects.filter(
             Q(place_name__icontains=query) | Q(location_code__location_name__icontains=query)
         ).values('place_code', 'place_name', 'location_code__location_name')[:10]
+        
+    for place in places:
+        place['full_name'] = f"{place['place_name']} ({place['location_code__location_name']})"
     
     return JsonResponse(list(places), safe=False)
 

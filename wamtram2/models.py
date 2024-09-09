@@ -1867,7 +1867,7 @@ class TrtPlaces(models.Model):
         ordering = ["place_name"]
 
     def get_full_name(self):
-        return f"{self.location_code} - {self.place_name}"
+        return f"{self.place_name} ({self.location_code.location_name})"
     
     def __str__(self):
         return self.place_code
