@@ -24,9 +24,29 @@
 {% block page_content_inner %}
 <div class="mt-5">
     <h2 class="mb-4">Batches List</h2>
-    <button type="button" class="btn btn-outline-primary" id="quickAddBatchBtn" title="Quick Add Batch">
-        <i class="fas fa-plus"></i> Add New Batch
-    </button>
+    <div class="d-flex flex-wrap align-items-center mb-3">
+        {% if request.user.is_superuser %}
+        <!-- Export Data Button -->
+        <a href="{% url 'wamtram2:export_form' %}" class="btn btn-outline-secondary mr-2 mb-2">
+            <i class="fas fa-download"></i> Export Data
+        </a>
+        
+        <!-- Dud Tags Button -->
+        <a href="{% url 'wamtram2:dud_tag_manage' %}" class="btn btn-outline-secondary mr-2 mb-2">
+            <i class="fas fa-wrench"></i> Dud Tags
+        </a>
+        
+        <!-- Manage Templates Button -->
+        <a href="{% url 'wamtram2:template_manage' %}" class="btn btn-outline-secondary mr-2 mb-2">
+            <i class="fas fa-cog"></i> Manage Templates
+        </a>
+        {% endif %}
+        
+        <!-- Quick Add Batch Button -->
+        <button type="button" class="btn btn-outline-primary mr-2 mb-2" id="quickAddBatchBtn" title="Quick Add Batch">
+            <i class="fas fa-plus"></i> Add New Batch
+        </button>
+    </div>
     <form method="get" class="mb-4">
         <div class="form-group">
             <label for="{{ search_form.batches_code.id_for_label }}">
