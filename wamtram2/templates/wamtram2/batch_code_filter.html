@@ -1,0 +1,62 @@
+{% extends "base_wastd.html" %}
+{% load bootstrap4 %}
+
+{% block page_content_inner %}
+<div class="container mt-5">
+    <h2>Batch Filter</h2>
+    <form method="get" class="mb-4">
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="location">Location</label>
+                <select name="location" id="location" class="form-control">
+                    <option value="">Select Location</option>
+                    {% for loc, code in locations.items %}
+                        <option value="{{ loc }}" {% if loc == selected_location %}selected{% endif %}>{{ loc|title }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group col-md-4">
+                <label for="year">Year</label>
+                <select name="year" id="year" class="form-control">
+                    <option value="">Select Year</option>
+                    {% for year, code in years.items %}
+                        <option value="{{ year }}" {% if year == selected_year %}selected{% endif %}>{{ year }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group col-md-4 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary">Filter</button>
+            </div>
+        </div>
+    </form>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Batch ID</th>
+                <th>Batch Code</th>
+                <th>Entry Date</th>
+                <th>Enterer</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for batch in batches %}
+            <tr>
+                <td>{{ batch.entry_batch_id }}</td>
+                <td>{{ batch.batches_code|default:"No Code" }}</td>
+                <td>{{ batch.entry_date|date:"Y-m-d" }}</td>
+                <td>{{ batch.entered_person_id.first_name }} {{ batch.entered_person_id.surname }}</td>
+                <td>
+                    <a href="{% url 'wamtram2:entry_batch_detail' batch_id=batch.entry_batch_id %}" class="btn btn-sm btn-info">View</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">No batches found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

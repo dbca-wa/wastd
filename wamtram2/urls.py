@@ -33,4 +33,5 @@ urlpatterns = [
     path('volunteer-redirect/', views.volunteer_redirect, name='volunteer_redirect'),
     path('batch/<int:batch_id>/add-code/', views.add_batches_code, name='add_batches_code'),
     path('batches/', views.BatchesListView.as_view(), name='batches_list'),
+    path('batch_code_filter/', views.batch_code_filter, name='batch_code_filter'),
 ]
