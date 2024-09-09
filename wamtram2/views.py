@@ -357,12 +357,14 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         if selected_template:
             template_data = self.get_template_data(selected_template)
             if template_data:
-                initial['place_code'] = template_data.get('place_code')
-                self.default_place_code = template_data.get('place_code')
+                place_code = template_data.get('place_code')
+                print(f"Debug: place_code from template_data = {place_code}")
+                initial['default_place_code'] = place_code
+                self.default_place_code = place_code
                 default_place_obj = TrtPlaces.objects.filter(place_code=self.default_place_code).first()
                 if default_place_obj:
-                    initial['place_code'] = default_place_obj.place_code
                     self.default_place_full_name = f"{default_place_obj.location_code} - {default_place_obj.place_name}"
+                    initial['default_place_full_name'] = self.default_place_full_name
                 if not turtle_id:
                     initial['species_code'] = template_data.get('species_code')
                     initial['sex'] = template_data.get('sex')
@@ -430,13 +432,6 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
                 else:
                     self.entered_by_full_name = None
 
-            place_code = trtdataentry.place_code
-            if place_code:
-                place = TrtPlaces.objects.filter(place_code=place_code).first()
-                if place:
-                    initial["place_code"] = place_code
-                    self.place_full_name = f"{place.location_code} - {place.place_name}"
-
         return initial
 
     def form_valid(self, form):
@@ -496,10 +491,10 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         if batch_id:
             context["batch_id"] = batch_id  # Creating new entry in batch
             batch = TrtEntryBatches.objects.get(entry_batch_id=batch_id)
-        if batch.template:
-            context["selected_template"] = str(batch.template.template_id)
-        else:
-            context["selected_template"] = self.request.COOKIES.get(f'{cookies_key_prefix}_selected_template') or None
+            if batch.template:
+                context["selected_template"] = str(batch.template.template_id)
+            else:
+                context["selected_template"] = self.request.COOKIES.get(f'{cookies_key_prefix}_selected_template') or None
             context["use_default_enterer"] = self.request.COOKIES.get(f'{cookies_key_prefix}_use_default_enterer', False)
             context["default_enterer"] = self.request.COOKIES.get(f'{cookies_key_prefix}_default_enterer', None)
             # Add the tag id and tag type to the context data
@@ -511,19 +506,9 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
             context["default_place_full_name"] = getattr(self, 'default_place_full_name', None)
             context["default_place_code"] = getattr(self, 'default_place_code', None)
 
-            selected_template = self.request.COOKIES.get(f'{cookies_key_prefix}_selected_template')
-            if selected_template:
-                template_data = self.get_template_data(selected_template)
-                if template_data:
-                    context["default_place_code"] = template_data.get('place_code')
-                    context["default_location_code"] = template_data.get('location_code')
-                    place = TrtPlaces.objects.filter(place_code=template_data.get('place_code')).first()
-                    if place:
-                        context["default_place_full_name"] = f"{place.location_code} - {place.place_name}"
-                    else:
-                        context["default_place_full_name"] = ""
 
-        context['place_full_name'] = getattr(self, 'place_full_name', '')
+        context['defalut_place_full_name'] = getattr(self, 'default_place_full_name', '')
+        context["default_place_code"] = getattr(self, 'default_place_code', None)
         
         context['measured_by_full_name'] = getattr(self, 'measured_by_full_name', '')
         context['recorded_by_full_name'] = getattr(self, 'recorded_by_full_name', '')

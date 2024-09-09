@@ -968,6 +968,9 @@
             const searchPlaceInput = document.getElementById('search_place_code');
             const placeCodeInput = document.getElementById('id_place_code');
 
+            console.log("Default Place Code:", defaultPlaceCode);
+            console.log("Default Place Full Name:", defaultPlaceFullName)
+
             if (defaultPlaceFullName && defaultPlaceCode) {
                 searchPlaceInput.value = defaultPlaceFullName;
                 placeCodeInput.value = defaultPlaceCode;
