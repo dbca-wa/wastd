@@ -670,7 +670,11 @@ class FindTurtleView(LoginRequiredMixin, View):
             turtle = None
             first_observation_date = None
             latest_site = None
-
+            batch = None
+            
+            if batch_id:
+                batch = TrtEntryBatches.objects.filter(entry_batch_id=batch_id).first()
+            
             if tag_id and tag_type and not no_turtle_found:
                 tag = TrtTags.objects.select_related('turtle').filter(tag_id=tag_id).first()
                 if tag:
@@ -698,7 +702,8 @@ class FindTurtleView(LoginRequiredMixin, View):
                 "tag_side": tag_side,
                 "first_observation_date": first_observation_date,
                 "latest_site": latest_site,
-                "batch_id": batch_id
+                "batch_id": batch_id,
+                "batch": batch,
             })
 
     def set_cookie(self, response, batch_id, tag_id=None, tag_type=None, tag_side=None, no_turtle_found=False, do_not_process=False):

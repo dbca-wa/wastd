@@ -10,7 +10,20 @@
     .select2 {
       width: 100% !important;
     }
-
+    .batch-info {
+      background-color: #f8f9fa;
+      border-bottom: 1px solid #dee2e6;
+      padding: 10px;
+      text-align: center;
+    }
+    .batch-code {
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+    .batch-comment {
+      font-size: 0.9em;
+      color: #6c757d;
+    }
   </style>
 {% endblock %}
 
@@ -37,6 +50,12 @@
   <div class="row">
     <div class="col col-12 mb-3">
       <div class="card card-lg shadow-lg">
+        {% if form.batch_id.value %}
+        <div class="batch-info">
+          <div class="batch-code">Batch Code: {{ batch.batches_code }}</div>
+          <div class="batch-comment">{{ batch.comments|default:"No comment" }}</div>
+        </div>
+        {% endif %}
         <div class="card-body">
           <div class="text-center mt-3">
             <a id="createForUntaggedTurtle" href="{% url 'wamtram2:newtrtdataentry' batch_id=form.batch_id.value %}" class="btn btn-primary">Create New Untagged Turtle</a>
