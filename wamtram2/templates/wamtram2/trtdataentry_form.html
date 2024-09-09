@@ -23,6 +23,23 @@
   .table-borderless td, .table-borderless th {
     border: 0 !important;
   }
+  .input-group {
+    display: flex;
+    width: 100%;
+  }
+  
+  .input-group-prepend {
+    flex: 0 0 auto;
+  }
+  
+  .input-group .form-group {
+    flex: 1 1 auto;
+    margin-bottom: 0;
+  }
+  
+  .input-group .form-control {
+    width: 100%;
+  }
   .custom-prepend {
     height: 38px;
     line-height: 24px;
@@ -121,7 +138,9 @@
                 <div class="input-group-prepend">
                   <span class="input-group-text font-weight-bold custom-prepend">-</span>
                 </div>
-                {% bootstrap_field form.latitude show_label=False %}
+                <div class="flex-grow-1">
+                  {% bootstrap_field form.latitude show_label=False %}
+                </div>
               </div>
             </div>
             <div class="col-md-6 pt-2">
@@ -129,6 +148,7 @@
               {% bootstrap_field form.longitude show_label=False %}
             </div>
           </div>
+
           <div class="row">
             <div class="col-md-6">
               <label for="{{ form.observation_date.id_for_label }}">{{ form.observation_date.label }}</label>
