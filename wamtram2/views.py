@@ -1391,9 +1391,12 @@ class BatchCodeManageView(View):
     def get(self, request):
         locations = TrtLocations.objects.all().order_by('location_code')
         current_year = datetime.now().year
+        years = {str(year): str(year)[-2:] for year in range(2020, current_year+1)}
         context = {
             'locations': locations,
+            'years': years,
             'current_year': current_year,
+            
         }
         return render(request, self.template_name, context)
 
