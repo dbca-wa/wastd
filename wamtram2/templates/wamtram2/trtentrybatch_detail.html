@@ -65,7 +65,7 @@
 {% block page_content_inner %}
     {# Step1: Display the entry batch details #}
     <div class="step-container">
-        <div class="step-header">Step 1: Batch Details</div>
+        <div class="step-header">Batch Details Management</div>
         <form id="batchDetailsForm" action="{% url 'wamtram2:entry_batch_detail' batch_id=batch.entry_batch_id %}" method="post" class="row">
             {% csrf_token %}
             <div class="col-md-4">
@@ -96,7 +96,7 @@
         </form>
         
     </div>
-    {# Step2: Create new entry #}
+    {% comment %} {# Step2: Create new entry #}
     <div class="step-container">
         <div class="step-header">Step 2: Create New Entry</div>
         <div class="row align-items-end">
@@ -128,11 +128,11 @@
             </div>
         </div>
         <div id="templateSelectedMessage" class="mt-2 text-success" style="display: none;">Template selected</div>
-    </div>
+    </div> {% endcomment %}
     {% if user.is_superuser and object_list %}
     {# Step3: Batch Actions #}
     <div class="step-container">
-        <div class="step-header">Step 3: Batch Actions</div>
+        <div class="step-header">Entries Validation & Processing</div>
         <div class="row">
             <div class="col-md-8">
                 <a id="validateBtn" href="{% url 'wamtram2:validate_data_entry_batch' batch_id=batch.entry_batch_id %}" class="btn btn-primary mr-2">Validate this Batch</a>
