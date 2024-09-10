@@ -79,31 +79,23 @@
         <div class="step-header">Add/Edit Batch Code</div>
         <form method="post">
             {% csrf_token %}
-            {% for field in form %}
-                {% if field.name == 'batches_code' %}
-                    <div class="form-group">
-                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                        <input type="text" name="{{ field.name }}" id="batches_code" class="form-control" value="{{ field.value|default_if_none:'' }}">
-                    </div>
-                {% elif field.name == 'comments' %}
-                    <div class="form-group">
-                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                        <textarea name="{{ field.name }}" id="comments" class="form-control" rows="3">{{ field.value|default_if_none:'' }}</textarea>
-                    </div>
-                {% elif field.name == 'template' %}
-                    <div class="form-group">
-                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                        <select name="{{ field.name }}" id="template" class="form-control">
-                            <option value="">---------</option>
-                            {% for template in templates %}
-                                <option value="{{ template.id }}" {% if template.id == field.value.id %}selected{% endif %}>{{ template.name }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                {% else %}
-                    {% bootstrap_field field %}
-                {% endif %}
-            {% endfor %}
+            <div class="form-group">
+                <label for="batches_code">{{ form.batches_code.label }}</label>
+                <input type="text" name="batches_code" id="batches_code" class="form-control" value="{{ form.batches_code.value|default_if_none:'' }}">
+            </div>
+            <div class="form-group">
+                <label for="comments">{{ form.comments.label }}</label>
+                <textarea name="comments" id="comments" class="form-control" rows="3">{{ form.comments.value|default_if_none:'' }}</textarea>
+            </div>
+            <div class="form-group">
+                <label for="template">{{ form.template.label }}</label>
+                <select name="template" id="template" class="form-control">
+                    <option value="">---------</option>
+                    {% for template in templates %}
+                        <option value="{{ template.id }}" {% if template.id == form.template.value.id %}selected{% endif %}>{{ template.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
             <button type="submit" class="btn btn-primary">Save</button>
             <a href="{% url 'wamtram2:batches_list' %}" class="btn btn-secondary">Cancel</a>
         </form>
