@@ -5,9 +5,6 @@
 <div class="container mt-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Batch Filter</h2>
-        <button type="button" class="btn btn-outline-primary" id="quickAddBatchBtn" title="Quick Add Batch">
-            <i class="fas fa-plus"></i>
-        </button>
     </div>
     <form method="get" class="mb-4">
         <div class="form-row">
@@ -97,63 +94,4 @@
         </div>
     </div>
 </div>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const quickAddBatchBtn = document.querySelector("#quickAddBatchBtn");
-    const quickAddBatchConfirm = document.querySelector("#quickAddBatchConfirm");
-
-    if (quickAddBatchBtn) {
-        quickAddBatchBtn.addEventListener("click", function(e) {
-            e.preventDefault();
-            $('#quickAddBatchModal').modal('show');
-        });
-    }
-
-    if (quickAddBatchConfirm) {
-        quickAddBatchConfirm.addEventListener("click", function() {
-            const form = document.getElementById('quickAddBatchForm');
-            const formData = new FormData(form);
-
-            fetch("{% url 'wamtram2:quick_add_batch' %}", {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-CSRFToken': getCookie('csrftoken')
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    $('#quickAddBatchModal').modal('hide');
-                    location.reload();
-                } else {
-                    alert(data.error);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while adding the batch.');
-            });
-        });
-    }
-
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
-});
-</script>
 {% endblock %}
