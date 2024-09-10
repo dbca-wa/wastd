@@ -37,8 +37,7 @@
             <tr>
                 <th>Batch ID</th>
                 <th>Batch Code</th>
-                <th>Entry Date</th>
-                <th>Enterer</th>
+                <th>Comments</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -47,11 +46,16 @@
             <tr>
                 <td>{{ batch.entry_batch_id }}</td>
                 <td>{{ batch.batches_code|default:"No Code" }}</td>
-                <td>{{ batch.entry_date|date:"Y-m-d" }}</td>
-                <td>{{ batch.entered_person_id.first_name }} {{ batch.entered_person_id.surname }}</td>
+                <td style="width: 15%;">{{ batch.comments|default:"" }}</td>
                 <td>
-                    <a href="{% url 'wamtram2:entry_batch_detail' batch_id=batch.entry_batch_id %}" class="btn btn-sm btn-info">View Details</a>
-                    <a href="{% url 'wamtram2:find_turtle' batch_id=batch.entry_batch_id %}" class="btn btn-sm btn-success">Create New Entry</a>
+                    <div class="d-flex justify-content-between">
+                        {% if user.is_superuser %}
+                            <a href="{% url 'wamtram2:entry_batch_detail' batch_id=batch.entry_batch_id %}" class="btn btn-sm btn-info mr-1">View Details</a>
+                        {% else %}
+                            <span class="mr-1"></span>
+                        {% endif %}
+                        <a href="{% url 'wamtram2:find_turtle' batch_id=batch.entry_batch_id %}" class="btn btn-sm btn-success">Create New Entry</a>
+                    </div>
                 </td>
             </tr>
             {% empty %}
