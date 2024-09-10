@@ -1107,7 +1107,15 @@
         "id_new_pit_tag_4_sticker_present": "New PIT Tag 4 Sticker Present",
         "id_latitude": "Latitude",
         "id_longitude": "Longitude",
+        "id_observation_date": "Observation Date & Time",
     };
+
+    console.log("Observation Date Input:", observationDateInput.value);
+    console.log("Observation Date label:", observationDateInput.parentElement.querySelector('label').innerText);
+    console.log(document.getElementById('id_observation_date'))
+    console.log(document.getElementById('id_latitude'))
+    
+
 
     function validateDate() {
       const selectedDate = new Date(observationDateInput.value);
@@ -1169,27 +1177,25 @@
           let summaryHTML = '<ul>';
           
           form.querySelectorAll('input, select, textarea').forEach(input => {
-              if (input.type !== 'hidden' || (input.classList.contains('flatpickr-input') && input.type !== 'hidden')) {
-                  let labelText = '';
-                  let inputValue = '';
-                  let inputId = input.id;
+                  if (input.type !== 'hidden') {
+                    let labelText = '';
+                    let inputValue = input.value.trim();;
+                    let inputId = input.id;
 
-                  if (input.classList.contains('flatpickr-input') && input.type !== 'hidden') {
-                      const hiddenInput = input.parentElement.querySelector('input[type="hidden"]');
-                      if (hiddenInput) {
-                          inputId = hiddenInput.id;
-                          inputValue = input.value.trim();
-                      }
-                  } else {
-                      inputValue = input.value.trim();
-                  }
 
                   if (inputValue !== '') {
                       if (labelMapping[inputId]) {
                           labelText = labelMapping[inputId];
                       } else {
                           const label = form.querySelector(`label[for="${inputId}"]`);
-                          labelText = label ? label.textContent.trim() : input.name;
+
+                          if (!label) {
+                            const parentLabel = input.parentElement.querySelector('label');
+                            console.log("Parent Label:", parentLabel);
+                            labelText = parentLabel ? parentLabel.textContent.trim() : input.name;
+                          } else {
+                            labelText = label.textContent.trim();
+                          }
                       }
 
                       if (input.type === 'checkbox') {
