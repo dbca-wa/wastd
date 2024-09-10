@@ -1384,19 +1384,52 @@ def quick_add_batch(request):
         return JsonResponse({'success': False, 'error': str(e)})
     
 
-
 class BatchCodeManageView(View):
     template_name = 'wamtram2/add_batches_code.html'
 
-    def get(self, request):
+    def get(self, request, batch_id=None):
+        if batch_id:
+            batch = get_object_or_404(TrtEntryBatches, pk=batch_id)
+            form = BatchesCodeForm(instance=batch)
+        else:
+            form = BatchesCodeForm()
+
         locations = TrtLocations.objects.all().order_by('location_code')
-        current_year = datetime.now().year
+        current_year = timezone.now().year
         years = {str(year): str(year)[-2:] for year in range(2020, current_year+1)}
+        templates = Template.objects.all()
+
         context = {
+            'form': form,
             'locations': locations,
             'years': years,
             'current_year': current_year,
-            
+            'templates': templates,
+        }
+        return render(request, self.template_name, context)
+
+    def post(self, request, batch_id=None):
+        if batch_id:
+            batch = get_object_or_404(TrtEntryBatches, pk=batch_id)
+            form = BatchesCodeForm(request.POST, instance=batch)
+        else:
+            form = BatchesCodeForm(request.POST)
+
+        if form.is_valid():
+            form.save()
+            return redirect(reverse('wamtram2:batches_list'))
+
+        locations = TrtLocations.objects.all().order_by('location_code')
+        current_year = timezone.now().year
+        years = {str(year): str(year)[-2:] for year in range(2020, current_year+1)}
+        templates = Template.objects.all()
+
+        context = {
+            'form': form,
+            'locations': locations,
+            'years': years,
+            'current_year': current_year,
+            'templates': templates,
         }
         return render(request, self.template_name, context)
 
@@ -1421,22 +1454,3 @@ class BatchCodeManageView(View):
             elif action == 'check_batch_code':
                 return self.check_batch_code(request)
         return super().dispatch(request, *args, **kwargs)
-
-def add_batches_code(request, batch_id):
-    batch = get_object_or_404(TrtEntryBatches, pk=batch_id)
-    if request.method == 'POST':
-        form = BatchesCodeForm(request.POST, instance=batch)
-        if form.is_valid():
-            form.save()
-            return redirect(reverse('wamtram2:batches_list'))
-    else:
-        form = BatchesCodeForm(instance=batch)
-        
-    locations = TrtLocations.objects.all().order_by('location_code')
-    
-    context = {
-        'form': form,
-        'batch': batch,
-        'locations': locations,
-    }
-    return render(request, 'wamtram2/add_batches_code.html', context)

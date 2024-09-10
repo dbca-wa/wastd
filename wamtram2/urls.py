@@ -29,11 +29,11 @@ urlpatterns = [
     path('export/', views.ExportDataView.as_view(), name='export_data'),
     path('export/form/', views.FilterFormView.as_view(), name='export_form'),
     path('dud-tag-manage/', views.DudTagManageView.as_view(), name='dud_tag_manage'),
-    path('batch/<int:batch_id>/add-code/', views.add_batches_code, name='add_batches_code'),
     path('batches/', views.BatchesListView.as_view(), name='batches_list'),
     path('create-new-entry/', views.batch_code_filter, name='batch_code_filter'),
     path('quick-add-batch/', views.quick_add_batch, name='quick_add_batch'),
     path('batch_code_manage/', views.BatchCodeManageView.as_view(), name='batch_code_manage'),
+    path('batch_code_manage/<int:batch_id>/', views.BatchCodeManageView.as_view(), name='add_batches_code'),
     path('get_places/', views.BatchCodeManageView.as_view(http_method_names=['get']), {'action': 'get_places'}, name='get_places'),
     path('check_batch_code/', views.BatchCodeManageView.as_view(http_method_names=['get']), {'action': 'check_batch_code'}, name='check_batch_code'),
 ]
