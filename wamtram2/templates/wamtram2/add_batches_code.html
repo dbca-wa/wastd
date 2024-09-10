@@ -1,46 +1,204 @@
 {% extends "base_wastd.html" %}
 {% load bootstrap4 %}
 
+{% block extra_style %}
+    {{ block.super }}
+    <style>
+        .step-container {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .step-header {
+            background-color: #f8f9fa;
+            padding: 10px;
+            margin: -15px -15px 15px -15px;
+            border-bottom: 1px solid #ddd;
+            font-weight: bold;
+        }
+        .alert {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            z-index: 1050;
+            display: none;
+        }
+    </style>
+{% endblock %}
+
 {% block page_content_inner %}
-<h2>Add Batches Code for Batch {{ batch.entry_batch_id }}</h2>
-<form method="post">
-    {% csrf_token %}
-    {% bootstrap_form form %}
-    <button type="submit" class="btn btn-primary">Save</button>
-    <a href="{% url 'wamtram2:batches_list' %}" class="btn btn-secondary">Cancel</a>
-</form>
+<div class="container">
+    <!-- Message Alert -->
+    <div id="message-alert" class="alert" role="alert"></div>
 
-<hr>
+    <!-- Batch Code Generator -->
+    <div class="step-container">
+        <div class="step-header">Batch Code Generator</div>
+        <form id="codeGeneratorForm" class="row">
+            {% csrf_token %}
+            <div class="col-md-3">
+                <label for="location_code">Location</label>
+                <select class="form-control" id="location_code" name="location_code">
+                    {% for location in locations %}
+                        <option value="{{ location.location_code }}">{{ location.location_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="place_code">Place</label>
+                <select class="form-control" id="place_code" name="place_code">
+                    <!-- Will be populated dynamically by JavaScript -->
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="year">Year</label>
+                <input type="number" class="form-control" id="year" name="year" min="2000" max="2099" value="{{ current_year }}">
+            </div>
+            <div class="col-md-2">
+                <label for="night">Night Number</label>
+                <input type="number" class="form-control" id="night" name="night" min="1" max="99" value="1">
+            </div>
+            <div class="col-md-2 mt-4">
+                <button type="button" class="btn btn-primary btn-block" onclick="generateCode()">Generate Code</button>
+            </div>
+        </form>
+        <div class="mt-3">
+            <h4>Generated Code: <span id="generatedCode"></span></h4>
+        </div>
+    </div>
 
-<h3>Batch Code Guide</h3>
-<p>The batch code consists of three parts:</p>
-<ol>
-    <li><strong>Part 1 (2 chars):</strong> N1 (Night 1), N2 (Night 2), D1 (Day 1), D2 (Day 2)</li>
-    <li><strong>Part 2 (2 chars):</strong> Location code (see table below)</li>
-    <li><strong>Part 3 (2 chars):</strong> Year (e.g., 24 for 2024)</li>
-</ol>
+    <!-- Existing Batch Code Form -->
+    <div class="step-container">
+        <div class="step-header">Add Batch Code</div>
+        <form method="post">
+            {% csrf_token %}
+            {% bootstrap_form form %}
+            <button type="submit" class="btn btn-primary">Save</button>
+            <a href="{% url 'wamtram2:batches_list' %}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
 
-<p><strong>Example:</strong> N1GN24 (Night 1, Gnaraloo, 2024)</p>
+    <!-- Batch Code Guide -->
+    <div class="step-container">
+        <div class="step-header">Batch Code Guide</div>
+        <p>The batch code consists of three parts:</p>
+        <ol>
+            <li><strong>Part 1 (2-3 chars):</strong> N followed by the night number (e.g., N1, N2, N10)</li>
+            <li><strong>Part 2 (2 chars):</strong> Location code (see table below)</li>
+            <li><strong>Part 3 (2 chars):</strong> Year (e.g., 24 for 2024)</li>
+        </ol>
 
-<h4>TRT Locations</h4>
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Location Code</th>
-            <th>Location Name</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for location in locations %}
-        <tr>
-            <td>{{ location.location_code }}</td>
-            <td>{{ location.location_name }}</td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="2">No locations found</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+        <p><strong>Example:</strong> N1GN24 (Night 1, Gnaraloo, 2024)</p>
+
+        <h4>TRT Locations</h4>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Location Code</th>
+                    <th>Location Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for location in locations %}
+                <tr>
+                    <td>{{ location.location_code }}</td>
+                    <td>{{ location.location_name }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="2">No locations found</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Get CSRF Token
+    function getCSRFToken() {
+        return document.querySelector('[name=csrfmiddlewaretoken]').value;
+    }
+
+    // Show Message
+    function showMessage(message, type) {
+        var alert = $('#message-alert');
+        alert.removeClass('alert-success alert-danger');
+        alert.addClass('alert-' + type);
+        alert.text(message);
+        alert.slideDown();
+
+        setTimeout(function() {
+            alert.slideUp();
+        }, 3000);
+    }
+
+    // Load Places
+    function loadPlaces(locationCode) {
+        $.ajax({
+            url: "{% url 'wamtram2:get_places' %}",
+            type: 'GET',
+            data: { location_code: locationCode },
+            dataType: 'json',
+            success: function(data) {
+                var placeSelect = $('#place_code');
+                placeSelect.empty();
+                if (Array.isArray(data)) {
+                    $.each(data, function(index, place) {
+                        placeSelect.append('<option value="' + place.place_code + '">' + place.place_name + '</option>');
+                    });
+                } else {
+                    console.error('Unexpected data format:', data);
+                    showMessage('Error loading places: Unexpected data format', 'danger');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error fetching places:', xhr.responseText);
+                showMessage('Error loading places. Please try again.', 'danger');
+            }
+        });
+    }
+
+    // Generate Code
+    function generateCode() {
+        var night = $('#night').val().padStart(2, '0');
+        var locationCode = $('#location_code').val();
+        var year = $('#year').val().slice(-2);
+        var generatedCode = 'N' + night + locationCode + year;
+
+        // Check if the code is unique
+        $.ajax({
+            url: "{% url 'wamtram2:check_batch_code' %}",
+            type: 'GET',
+            data: { code: generatedCode },
+            success: function(data) {
+                if (data.is_unique) {
+                    $('#generatedCode').text(generatedCode);
+                    showMessage('Code generated successfully', 'success');
+                } else {
+                    showMessage('Code already exists. Please try a different combination.', 'danger');
+                }
+            },
+            error: function() {
+                showMessage('Error checking code uniqueness', 'danger');
+            }
+        });
+    }
+
+    // Initialize event handlers
+    $(document).ready(function() {
+        $('#location_code').change(function() {
+            var locationCode = $(this).val();
+            loadPlaces(locationCode);
+        });
+
+        // Initial load of places
+        loadPlaces($('#location_code').val());
+    });
+</script>
 {% endblock %}

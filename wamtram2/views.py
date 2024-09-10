@@ -21,6 +21,10 @@ from django.db.models import Count, Max, F
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import redirect
 from django.views.decorators.http import require_POST
+from django.utils.decorators import method_decorator
+from django.views.decorators.http import require_http_methods
+from django.urls import reverse
+from datetime import datetime
 
 
 from wastd.utils import Breadcrumb, PaginateMixin
@@ -1285,26 +1289,6 @@ class DudTagManageView(LoginRequiredMixin, View):
 
         return redirect('wamtram2:dud_tag_manage')
 
-
-def add_batches_code(request, batch_id):
-    batch = get_object_or_404(TrtEntryBatches, pk=batch_id)
-    if request.method == 'POST':
-        form = BatchesCodeForm(request.POST, instance=batch)
-        if form.is_valid():
-            form.save()
-            return redirect(reverse('wamtram2:batches_list'))
-    else:
-        form = BatchesCodeForm(instance=batch)
-        
-    locations = TrtLocations.objects.all().order_by('location_code')
-    
-    context = {
-        'form': form,
-        'batch': batch,
-        'locations': locations,
-    }
-    return render(request, 'wamtram2/add_batches_code.html', context)
-
 class BatchesListView(ListView):
     model = TrtEntryBatches
     template_name = 'wamtram2/batches_list.html'
@@ -1399,3 +1383,57 @@ def quick_add_batch(request):
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
     
+
+
+class BatchCodeManageView(View):
+    template_name = 'wamtram2/add_batches_code.html'
+
+    def get(self, request):
+        locations = TrtLocations.objects.all().order_by('location_code')
+        current_year = datetime.now().year
+        context = {
+            'locations': locations,
+            'current_year': current_year,
+        }
+        return render(request, self.template_name, context)
+
+    @method_decorator(require_http_methods(["GET"]))
+    def get_places(self, request):
+        location_code = request.GET.get('location_code')
+        places = TrtPlaces.objects.filter(location_code=location_code)
+        places_data = [{'place_code': place.place_code, 'place_name': place.place_name} for place in places]
+        return JsonResponse(places_data, safe=False)
+
+    @method_decorator(require_http_methods(["GET"]))
+    def check_batch_code(self, request):
+        code = request.GET.get('code')
+        is_unique = not TrtEntryBatches.objects.filter(batches_code=code).exists()
+        return JsonResponse({'is_unique': is_unique})
+
+    def dispatch(self, request, *args, **kwargs):
+        if 'action' in kwargs:
+            action = kwargs['action']
+            if action == 'get_places':
+                return self.get_places(request)
+            elif action == 'check_batch_code':
+                return self.check_batch_code(request)
+        return super().dispatch(request, *args, **kwargs)
+
+def add_batches_code(request, batch_id):
+    batch = get_object_or_404(TrtEntryBatches, pk=batch_id)
+    if request.method == 'POST':
+        form = BatchesCodeForm(request.POST, instance=batch)
+        if form.is_valid():
+            form.save()
+            return redirect(reverse('wamtram2:batches_list'))
+    else:
+        form = BatchesCodeForm(instance=batch)
+        
+    locations = TrtLocations.objects.all().order_by('location_code')
+    
+    context = {
+        'form': form,
+        'batch': batch,
+        'locations': locations,
+    }
+    return render(request, 'wamtram2/add_batches_code.html', context)
