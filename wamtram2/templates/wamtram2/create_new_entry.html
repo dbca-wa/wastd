@@ -3,6 +3,13 @@
 {% load proper_paginate %}
 {% load url_replace %}
 
+{% block extra_style %}
+    {{ block.super }}
+    {{ form.media.css }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
+{% endblock %}
+
 {% block page_content_inner %}
 <div class="container mt-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -10,7 +17,7 @@
     </div>
 
     <!-- Filter Form -->
-    <form method="get" class="mb-4">
+    <form id="filterForm" method="get" class="mb-4">
         <div class="form-row">
             <div class="form-group col-md-4">
                 <label for="location">Location</label>
@@ -127,15 +134,40 @@
         </div>
     </div>
 </div>
+
+<!-- Loading spinner -->
+<div class="loading-spinner">
+    <div class="spinner-border text-primary" role="status">
+        <span class="sr-only">Loading...</span>
+    </div>
+</div>
+
+<!-- Loading overlay -->
+<div class="loading-overlay"></div>
+
 {% endblock %}
 
 {% block extra_js %}
 <script>
 $(document).ready(function() {
+    // Show loading spinner and overlay
+    function showLoadingSpinner() {
+        $('.loading-spinner, .loading-overlay').show();
+    }
+
+    // Hide loading spinner and overlay
+    function hideLoadingSpinner() {
+        $('.loading-spinner, .loading-overlay').hide();
+    }
+
+    // Initially hide the spinner
+    hideLoadingSpinner();
+
     // Handle location change and update places via AJAX
     $('#location').change(function() {
         var locationCode = $(this).val();
         if (locationCode) {
+            showLoadingSpinner();
             $.ajax({
                 url: "{% url 'wamtram2:get_places' %}",
                 data: {'location_code': locationCode},
@@ -145,6 +177,11 @@ $(document).ready(function() {
                     $.each(data, function(index, place) {
                         $('#place').append('<option value="' + place.place_code + '">' + place.place_name + '</option>');
                     });
+                    hideLoadingSpinner();
+                },
+                error: function() {
+                    hideLoadingSpinner();
+                    alert('An error occurred while loading places.');
                 }
             });
         } else {
@@ -153,10 +190,16 @@ $(document).ready(function() {
         }
     });
 
+    // Handle filter form submission and show spinner
+    $('#filterForm').submit(function(e) {
+        showLoadingSpinner();
+    });
+
     // Handle pagination via AJAX
     $(document).on('click', '.pagination a', function(e) {
         e.preventDefault();
         var url = $(this).attr('href');
+        showLoadingSpinner();
         loadBatches(url);
     });
 
@@ -166,6 +209,11 @@ $(document).ready(function() {
             type: 'GET',
             success: function(data) {
                 $('#batches-table').html(data.html);
+                hideLoadingSpinner();
+            },
+            error: function() {
+                hideLoadingSpinner();
+                alert('An error occurred while loading batches.');
             }
         });
     }
