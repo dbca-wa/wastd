@@ -548,9 +548,11 @@ class TrtObservationsForm(forms.ModelForm):
 class BatchesCodeForm(forms.ModelForm):
     class Meta:
         model = TrtEntryBatches
-        fields = ['batches_code']
+        fields = ['batches_code', 'comments', 'template']
         labels = {
             'batches_code': 'Batches Code',
+            'comments': 'Comments',
+            'template': 'Template'
         }
         widgets = {
             'batches_code': forms.TextInput(attrs={'class': 'form-control'}),
