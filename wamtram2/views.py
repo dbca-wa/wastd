@@ -24,8 +24,7 @@ from django.views.decorators.http import require_POST
 from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_http_methods
 from django.urls import reverse
-from datetime import datetime
-
+from django.views.decorators.http import require_GET, require_POST, require_http_methods
 
 from wastd.utils import Breadcrumb, PaginateMixin
 from .models import (
@@ -825,8 +824,6 @@ class TurtleListView(LoginRequiredMixin, PaginateMixin, ListView):
         return qs.order_by("pk")
 
 
-
-
 class TurtleDetailView(LoginRequiredMixin, DetailView):
     """
     View class for displaying the details of a turtle.
@@ -1166,7 +1163,6 @@ def search_places(request):
     return JsonResponse(list(places), safe=False)
 
 
-
 class ExportDataView(LoginRequiredMixin, View):
     def dispatch(self, request, *args, **kwargs):
         # Permission check: only allow users in the specific groups or superusers
@@ -1240,6 +1236,7 @@ class ExportDataView(LoginRequiredMixin, View):
         
         return JsonResponse({"places": place_list})
 
+
 class FilterFormView(LoginRequiredMixin, View):
     def dispatch(self, request, *args, **kwargs):
         # Permission check: only allow users in the specific groups or superusers
@@ -1253,6 +1250,7 @@ class FilterFormView(LoginRequiredMixin, View):
 
     def get(self, request):
         return render(request, 'wamtram2/export_form.html')
+
 
 class DudTagManageView(LoginRequiredMixin, View):
     template_name = 'wamtram2/dud_tag_manage.html'
@@ -1293,6 +1291,7 @@ class DudTagManageView(LoginRequiredMixin, View):
 
         return redirect('wamtram2:dud_tag_manage')
 
+
 class BatchesListView(ListView):
     model = TrtEntryBatches
     template_name = 'wamtram2/batches_list.html'
@@ -1303,26 +1302,42 @@ class BatchesListView(ListView):
         queryset = super().get_queryset().annotate(
             entry_count=Count('trtdataentry'),
             last_entry_date=Max('trtdataentry__observation_date'),
-            last_place_code=F('trtdataentry__place_code'),
-            last_place_name=Coalesce('trtdataentry__place_code__place_name', 'trtdataentry__place_code')
+            last_place_code=Subquery(
+                TrtDataEntry.objects.filter(entry_batch_id=OuterRef('pk'))
+                .order_by('-data_entry_id')
+                .values('place_code')[:1]
+            ),
+            last_place_name=Subquery(
+                TrtPlaces.objects.filter(place_code=OuterRef('last_place_code'))
+                .values('place_name')[:1]
+            )
         ).order_by('-entry_batch_id')
 
-        batches_code = self.request.GET.get('batches_code')
-        if batches_code:
-            queryset = queryset.filter(
-                Q(batches_code__icontains=batches_code) |
-                Q(batches_code__iendswith=batches_code[-4:])
-            )
+        location = self.request.GET.get('location')
+        place = self.request.GET.get('place')
+        year = self.request.GET.get('year')
+
+        if location:
+            queryset = queryset.filter(batches_code__regex=r'N\d+' + location)
+        if place:
+            queryset = queryset.filter(batches_code__contains=place)
+        if year:
+            queryset = queryset.filter(batches_code__endswith=year[-2:])
+
         return queryset
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['locations'] = TrtLocations.objects.all().order_by('location_name')
+        context['places'] = TrtPlaces.objects.all().order_by('place_name')
         current_year = timezone.now().year
         context['years'] = range(2020, current_year + 1)
         context['templates'] = Template.objects.all()
+        context['selected_location'] = self.request.GET.get('location', '')
+        context['selected_place'] = self.request.GET.get('place', '')
+        context['selected_year'] = self.request.GET.get('year', '')
         return context
-
+    
 def batch_code_filter(request):
     locations = TrtLocations.objects.all().order_by('location_name')
     current_year = timezone.now().year
@@ -1368,6 +1383,7 @@ def batch_code_filter(request):
     }
     return render(request, 'wamtram2/batch_code_filter.html', context)
 
+
 @login_required
 @require_POST
 def quick_add_batch(request):
@@ -1393,7 +1409,6 @@ def quick_add_batch(request):
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
     
-
 
 class BatchCodeManageView(View):
     template_name = 'wamtram2/add_batches_code.html'
@@ -1451,13 +1466,6 @@ class BatchCodeManageView(View):
         return render(request, self.template_name, context)
 
     @method_decorator(require_http_methods(["GET"]))
-    def get_places(self, request):
-        location_code = request.GET.get('location_code')
-        places = TrtPlaces.objects.filter(location_code=location_code)
-        places_data = [{'place_code': place.place_code, 'place_name': place.place_name} for place in places]
-        return JsonResponse(places_data, safe=False)
-
-    @method_decorator(require_http_methods(["GET"]))
     def check_batch_code(self, request):
         code = request.GET.get('code')
         batch_id = request.GET.get('batch_id')
@@ -1475,3 +1483,10 @@ class BatchCodeManageView(View):
             elif action == 'check_batch_code':
                 return self.check_batch_code(request)
         return super().dispatch(request, *args, **kwargs)
+    
+    
+@require_GET
+def get_places(request):
+    location_code = request.GET.get('location_code')
+    places = TrtPlaces.objects.filter(location_code=location_code).values('place_code', 'place_name')
+    return JsonResponse(list(places), safe=False)
