@@ -291,7 +291,7 @@
             showLoadingSpinner();
     
             $.ajax({
-                url: "{% url 'wamtram2:batches_list' %}",
+                url: "{% url 'wamtram2:batches_curation' %}",
                 data: $(this).serialize(),
                 type: 'GET',
                 success: function(response) {
