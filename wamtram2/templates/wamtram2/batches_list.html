@@ -184,6 +184,7 @@
                     <div class="form-group">
                         <label for="quickAddBatchCode">Batch Code</label>
                         <input type="text" class="form-control" id="quickAddBatchCode" name="batches_code" readonly>
+                        <div id="batchCodeFeedback" class="invalid-feedback" style="display:none;"></div>
                     </div>
                     <div class="form-group">
                         <label for="quickAddEntryDate">Expected Entry Date</label>
@@ -292,7 +293,31 @@ $(document).ready(function() {
         if (night && placeCode && year) {
             var batchCode = 'N' + night + placeCode + year;
             $('#quickAddBatchCode').val(batchCode);
+            checkBatchCodeUniqueness(batchCode);
         }
+    }
+
+    function checkBatchCodeUniqueness(batchCode) {
+        $.ajax({
+            url: "{% url 'wamtram2:check_batch_code' %}",
+            type: 'GET',
+            data: { 'batches_code': batchCode },
+            dataType: 'json',
+            success: function(response) {
+                if (response.exists) {
+                    $('#quickAddBatchCode').addClass('is-invalid');
+                    $('#batchCodeFeedback').text('This batch code already exists.').show();
+                    $('#quickAddBatchConfirm').prop('disabled', true);
+                } else {
+                    $('#quickAddBatchCode').removeClass('is-invalid');
+                    $('#batchCodeFeedback').hide();
+                    $('#quickAddBatchConfirm').prop('disabled', false);
+                }
+            },
+            error: function() {
+                console.error('Error checking batch code uniqueness');
+            }
+        });
     }
 
     $('#quickAddNight, #quickAddPlace, #quickAddYear').change(generateBatchCode);
