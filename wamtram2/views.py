@@ -1287,6 +1287,8 @@ class DudTagManageView(LoginRequiredMixin, View):
 
             observation.save()
 
+            print(f"Observation updated for entry ID: {entry_id}, tag type: {tag_type}")
+
         return redirect('wamtram2:dud_tag_manage')
 
 class BatchesListView(LoginRequiredMixin,ListView):
@@ -1301,7 +1303,9 @@ class BatchesListView(LoginRequiredMixin,ListView):
         return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
+        print(f"GET parameters: {self.request.GET}")
         if not self.request.GET:
+            print("No GET parameters, returning empty queryset")
             return TrtEntryBatches.objects.none()
 
         queryset = super().get_queryset()
@@ -1309,6 +1313,8 @@ class BatchesListView(LoginRequiredMixin,ListView):
         location = self.request.GET.get('location')
         place = self.request.GET.get('place')
         year = self.request.GET.get('year')
+        
+        print(f"Filters: location={location}, place={place}, year={year}")
 
         query = Q()
 
@@ -1323,11 +1329,18 @@ class BatchesListView(LoginRequiredMixin,ListView):
         elif year:
             year_code = str(year)[-2:]
             query = Q(batches_code__endswith=year_code)
+            
         if query:
+            print(f"Query: {query}")
             result = queryset.filter(query).order_by('-entry_batch_id')
+            print(f"Query result count: {result.count()}")
+            print("Query results:", list(result.values_list('batches_code', flat=True)[:10]))  # 只打印前10个结果
             return result
         else:
+            print("No filters applied, returning all batches")
             result = queryset.order_by('-entry_batch_id')
+            print(f"All batches count: {result.count()}")
+            print("All batches (first 10):", list(result.values_list('batches_code', flat=True)[:10]))  # 只打印前10个结果
             return result
 
     def get_context_data(self, **kwargs):
@@ -1340,8 +1353,11 @@ class BatchesListView(LoginRequiredMixin,ListView):
         context['selected_place'] = self.request.GET.get('place', '')
         context['selected_year'] = self.request.GET.get('year', '')
         context['templates'] = Template.objects.all()
+
         context['batches'] = self.get_queryset()
         context['is_initial_load'] = not bool(self.request.GET)
+        print(f"Batches count in context: {len(context['batches'])}")
+        print(f"Context data: {context}")
         return context
     
     
