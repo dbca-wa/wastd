@@ -930,6 +930,10 @@ class TemplateManageView(LoginRequiredMixin, FormView):
         places_list = list(places.values('place_code', 'place_name'))
         return JsonResponse(places_list, safe=False)
     
+def check_template_name(request):
+    name = request.GET.get('name', '')
+    exists = Template.objects.filter(name=name).exists()
+    return JsonResponse({'exists': exists})
 
 
 class ValidateTagView(View):
