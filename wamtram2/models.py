@@ -1218,7 +1218,7 @@ class TrtEntryBatches(models.Model):
         db_column="PR_DATE_CONVENTION",default=False
     )  # Field name made lowercase.
     batches_code = models.CharField(
-        db_column="BATCHES_CODE", max_length=10, blank=True, null=True
+        db_column="BATCHES_CODE", max_length=10, blank=True, null=True, unique=True
     )  # Field name made lowercase.
     template = models.ForeignKey(
         "Template",  
@@ -2372,7 +2372,7 @@ SEX_CHOICES = [
 ]
 class Template(models.Model):
     template_id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
     location_code = models.CharField(max_length=50)
     place_code = models.CharField(max_length=50)
     species_code = models.CharField(max_length=50)
