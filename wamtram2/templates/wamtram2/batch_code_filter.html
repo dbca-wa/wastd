@@ -12,9 +12,20 @@
                 <label for="location">Location</label>
                 <select name="location" id="location" class="form-control">
                     <option value="">Select Location</option>
-                    {% for loc, code in locations.items %}
-                        <option value="{{ loc }}" {% if loc == selected_location %}selected{% endif %}>{{ loc|title }}</option>
+                    {% for location in locations %}
+                        <option value="{{ location.location_code }}" {% if location.location_code == selected_location %}selected{% endif %}>{{ location.location_name }}</option>
                     {% endfor %}
+                </select>
+            </div>
+            <div class="form-group col-md-4">
+                <label for="place">Place</label>
+                <select name="place" id="place" class="form-control">
+                    <option value="">Select Place</option>
+                    {% if places %}
+                        {% for place in places %}
+                            <option value="{{ place.place_code }}" {% if place.place_code == selected_place %}selected{% endif %}>{{ place.place_name }}</option>
+                        {% endfor %}
+                    {% endif %}
                 </select>
             </div>
             <div class="form-group col-md-4">
@@ -98,4 +109,30 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    $('#location').change(function() {
+        var locationCode = $(this).val();
+        if (locationCode) {
+            $.ajax({
+                url: "{% url 'wamtram2:get_places' %}",
+                data: {'location_code': locationCode},
+                success: function(data) {
+                    $('#place').empty();
+                    $('#place').append('<option value="">Select Place</option>');
+                    $.each(data, function(index, place) {
+                        $('#place').append('<option value="' + place.place_code + '">' + place.place_name + '</option>');
+                    });
+                }
+            });
+        } else {
+            $('#place').empty();
+            $('#place').append('<option value="">Select Place</option>');
+        }
+    });
+});
+</script>
 {% endblock %}

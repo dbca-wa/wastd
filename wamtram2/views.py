@@ -1322,7 +1322,6 @@ class BatchesListView(ListView):
         context['templates'] = Template.objects.all()
         return context
 
-
 def batch_code_filter(request):
     locations = {
         'delambre': 'DEL',
