@@ -17,6 +17,22 @@
         color: #007bff;
         margin-left: 5px;
     }
+    .loading-spinner {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1060;
+    }
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1050;
+    }
 </style>
 {% endblock %}
 
@@ -47,7 +63,7 @@
             <i class="fas fa-plus"></i> Add New Batch
         </button>
     </div>
-    <form method="get" class="mb-4">
+    <form id="filter-form" method="get" class="mb-4">
         <div class="form-row">
             <div class="form-group col-md-3">
                 <label for="location">Location</label>
@@ -82,41 +98,51 @@
         </div>
     </form>
 </div>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Batch ID</th>
-            <th>Batches Code</th>
-            <th>Entry Date</th>
-            <th>Enterer</th>
-            <th>Site</th>
-            <th># of Records</th>
-            <th>Comments</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for batch in batches %}
-        <tr>
-            <td>{{ batch.entry_batch_id }}</td>
-            <td>{{ batch.batches_code|default:"No Code" }}</td>
-            <td>{{ batch.entry_date|date:"Y-m-d" }}</td>
-            <td>{{ batch.entered_person_id.first_name }} {{ batch.entered_person_id.surname }}</td>
-            <td>{{ batch.last_place_name }}</td>
-            <td>{{ batch.entry_count }}</td>
-            <td>{{ batch.comments|truncatechars:50 }}</td>
-            <td>
-                <a href="{% url 'wamtram2:entry_batch_detail' batch_id=batch.entry_batch_id %}" class="btn btn-sm btn-info">View</a>
-                <a href="{% url 'wamtram2:add_batches_code' batch_id=batch.entry_batch_id %}" class="btn btn-sm btn-primary">Edit Details</a>
-            </td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="8" class="text-center">No batches found.</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+
+{% if is_initial_load %}
+<div id="initial-message" class="alert alert-info" role="alert">
+    Please select a location, place, and year to filter the batches.
+</div>
+{% else %}
+<div id="batches-table">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Batch ID</th>
+                <th>Batches Code</th>
+                <th>Entry Date</th>
+                <th>Enterer</th>
+                <th>Site</th>
+                <th># of Records</th>
+                <th>Comments</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for batch in batches %}
+            <tr>
+                <td>{{ batch.entry_batch_id }}</td>
+                <td>{{ batch.batches_code|default:"No Code" }}</td>
+                <td>{{ batch.entry_date|date:"Y-m-d" }}</td>
+                <td>{{ batch.entered_person_id.first_name }} {{ batch.entered_person_id.surname }}</td>
+                <td>{{ batch.last_place_name }}</td>
+                <td>{{ batch.entry_count }}</td>
+                <td>{{ batch.comments|truncatechars:50 }}</td>
+                <td>
+                    <a href="{% url 'wamtram2:entry_batch_detail' batch_id=batch.entry_batch_id %}" class="btn btn-sm btn-info">View</a>
+                    <a href="{% url 'wamtram2:add_batches_code' batch_id=batch.entry_batch_id %}" class="btn btn-sm btn-primary">Edit Details</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="8" class="text-center">No batches found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
 <div class="pagination-container">
     {% if is_paginated %}
     <ul class="pagination mb-0">
@@ -230,44 +256,68 @@
         </div>
     </div>
 </div>
+
+<!-- Loading spinner -->
+<div class="loading-spinner" style="display: none;">
+    <div class="spinner-border text-primary" role="status">
+        <span class="sr-only">Loading...</span>
+    </div>
+</div>
+
+<!-- Loading overlay -->
+<div class="loading-overlay" style="display: none;"></div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-    $(function () {
+    $(document).ready(function() {
+        // Initialize tooltips
         $('[data-toggle="tooltip"]').tooltip();
+    
+        // Show loading spinner and overlay
+        function showLoadingSpinner() {
+            $('.loading-spinner, .loading-overlay').show();
+        }
+    
+        // Hide loading spinner and overlay
+        function hideLoadingSpinner() {
+            $('.loading-spinner, .loading-overlay').hide();
+        }
+    
+        // Disable button
+        function disableButton(button) {
+            button.prop('disabled', true).removeClass('btn-primary').addClass('btn-secondary');
+        }
+    
+        // Enable button
+        function enableButton(button) {
+            button.prop('disabled', false).removeClass('btn-secondary').addClass('btn-primary');
+        }
 
-        $("#quickAddBatchBtn").click(function(e) {
+        $('#filter-form').submit(function(e) {
             e.preventDefault();
-            $('#quickAddBatchModal').modal('show');
-        });
-
-        $("#quickAddBatchConfirm").click(function() {
-            const form = document.getElementById('quickAddBatchForm');
-            const formData = new FormData(form);
-
-            fetch("{% url 'wamtram2:quick_add_batch' %}", {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-CSRFToken': getCookie('csrftoken')
+            var button = $('button[type="submit"]');
+            disableButton(button);
+            showLoadingSpinner();
+    
+            $.ajax({
+                url: "{% url 'wamtram2:batches_list' %}",
+                data: $(this).serialize(),
+                type: 'GET',
+                success: function(response) {
+                    $('#page_content_inner').html(response);
+                    enableButton(button);
+                    hideLoadingSpinner();
+                },
+                error: function() {
+                    alert('An error occurred while filtering the batches.');
+                    enableButton(button);
+                    hideLoadingSpinner();
                 }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    $('#quickAddBatchModal').modal('hide');
-                    location.reload();
-                } else {
-                    alert(data.error);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while adding the batch.');
             });
         });
-
+    
+        // Get cookie value
         function getCookie(name) {
             let cookieValue = null;
             if (document.cookie && document.cookie !== '') {
@@ -282,114 +332,133 @@
             }
             return cookieValue;
         }
-    });
-</script>
-
-<script>
-$(document).ready(function() {
-
-    $('#location').change(function() {
-        var locationCode = $(this).val();
-        $.ajax({
-            url: "{% url 'wamtram2:get_places' %}",
-            data: { 'location_code': locationCode },
-            dataType: 'json',
-            success: function(data) {
-                var placeSelect = $('#place');
-                placeSelect.empty();
-                placeSelect.append('<option value="">Select Place</option>');
-                $.each(data, function(index, place) {
-                    placeSelect.append('<option value="' + place.place_code + '">' + place.place_name + '</option>');
-                });
-            }
-        });
-    });
     
-    $('#quickAddLocation').change(function() {
-        var locationCode = $(this).val();
-        $.ajax({
-            url: "{% url 'wamtram2:get_places' %}",
-            data: { 'location_code': locationCode },
-            dataType: 'json',
-            success: function(data) {
-                var placeSelect = $('#quickAddPlace');
-                placeSelect.empty();
-                placeSelect.append('<option value="">Select Place</option>');
-                $.each(data, function(index, place) {
-                    placeSelect.append('<option value="' + place.place_code + '" data-full-name="' + place.get_full_name + '">' + place.place_name + '</option>');
-                });
-            }
-        });
-    });
-
-    function generateBatchCode() {
-        var night = $('#quickAddNight').val();
-        var placeCode = $('#quickAddPlace').val();
-        var year = $('#quickAddYear').val().slice(-2);
-        if (night && placeCode && year) {
-            var batchCode = 'N' + night + placeCode + year;
-            $('#quickAddBatchCode').val(batchCode);
-            checkBatchCodeUniqueness(batchCode);
-        }
-    }
-
-    function checkBatchCodeUniqueness(batchCode) {
-        $.ajax({
-            url: "{% url 'wamtram2:check_batch_code' %}",
-            type: 'GET',
-            data: { 'batches_code': batchCode },
-            dataType: 'json',
-            success: function(response) {
-                if (response.exists) {
-                    $('#quickAddBatchCode').addClass('is-invalid');
-                    $('#batchCodeFeedback').text('This batch code already exists.').show();
-                    $('#quickAddBatchConfirm').prop('disabled', true);
-                } else {
-                    $('#quickAddBatchCode').removeClass('is-invalid');
-                    $('#batchCodeFeedback').hide();
-                    $('#quickAddBatchConfirm').prop('disabled', false);
+        // Handle location change
+        function handleLocationChange(locationSelect, placeSelect) {
+            var locationCode = locationSelect.val();
+            $.ajax({
+                url: "{% url 'wamtram2:get_places' %}",
+                data: { 'location_code': locationCode },
+                dataType: 'json',
+                success: function(data) {
+                    placeSelect.empty().append('<option value="">Select Place</option>');
+                    $.each(data, function(index, place) {
+                        placeSelect.append($('<option>', {
+                            value: place.place_code,
+                            text: place.place_name,
+                            'data-full-name': place.get_full_name
+                        }));
+                    });
                 }
-            },
-            error: function() {
-                console.error('Error checking batch code uniqueness');
-            }
-        });
-    }
-
-    $('#quickAddNight, #quickAddPlace, #quickAddYear').change(generateBatchCode);
-
-    function updateComments() {
-        var selectedPlace = $('#quickAddPlace option:selected');
-        var placeFullName = selectedPlace.data('full-name');
-        var night = $('#quickAddNight').val();
-        var entryDate = $('#quickAddEntryDate').val();
-        if (placeFullName && night && entryDate) {
-            var comments = placeFullName + ' - Night ' + night + ' - Expected entry date: ' + entryDate;
-            $('#quickAddComments').val(comments);
+            });
         }
-    }
-
-    $('#quickAddPlace, #quickAddNight, #quickAddEntryDate').change(updateComments);
-
-    $('#quickAddBatchConfirm').click(function() {
-        var formData = $('#quickAddBatchForm').serialize();
-        $.ajax({
-            url: "{% url 'wamtram2:quick_add_batch' %}",
-            type: 'POST',
-            data: formData,
-            success: function(response) {
-                if (response.success) {
+    
+        // Generate batch code
+        function generateBatchCode() {
+            var night = $('#quickAddNight').val();
+            var placeCode = $('#quickAddPlace').val();
+            var year = $('#quickAddYear').val().slice(-2);
+            if (night && placeCode && year) {
+                var batchCode = 'N' + night + placeCode + year;
+                $('#quickAddBatchCode').val(batchCode);
+                checkBatchCodeUniqueness(batchCode);
+            }
+        }
+    
+        // Check batch code uniqueness
+        function checkBatchCodeUniqueness(batchCode) {
+            $.ajax({
+                url: "{% url 'wamtram2:check_batch_code' %}",
+                type: 'GET',
+                data: { 'batches_code': batchCode },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.exists) {
+                        $('#quickAddBatchCode').addClass('is-invalid');
+                        $('#batchCodeFeedback').text('This batch code already exists.').show();
+                        $('#quickAddBatchConfirm').prop('disabled', true);
+                    } else {
+                        $('#quickAddBatchCode').removeClass('is-invalid');
+                        $('#batchCodeFeedback').hide();
+                        $('#quickAddBatchConfirm').prop('disabled', false);
+                    }
+                },
+                error: function() {
+                    console.error('Error checking batch code uniqueness');
+                }
+            });
+        }
+    
+        // Update comments
+        function updateComments() {
+            var selectedPlace = $('#quickAddPlace option:selected');
+            var placeFullName = selectedPlace.data('full-name');
+            var night = $('#quickAddNight').val();
+            var entryDate = $('#quickAddEntryDate').val();
+            if (placeFullName && night && entryDate) {
+                var comments = placeFullName + ' - Night ' + night + ' - Expected entry date: ' + entryDate;
+                $('#quickAddComments').val(comments);
+            }
+        }
+    
+        // Event listeners
+        $('#location').change(function() {
+            handleLocationChange($(this), $('#place'));
+        });
+    
+        $('#quickAddLocation').change(function() {
+            handleLocationChange($(this), $('#quickAddPlace'));
+        });
+    
+        $('#quickAddNight, #quickAddPlace, #quickAddYear').change(generateBatchCode);
+        $('#quickAddPlace, #quickAddNight, #quickAddEntryDate').change(updateComments);
+    
+        // Show Quick Add Batch modal
+        $("#quickAddBatchBtn").click(function(e) {
+            e.preventDefault();
+            $('#quickAddBatchModal').modal('show');
+        });
+    
+        // Handle Quick Add Batch confirmation
+        $("#quickAddBatchConfirm").click(function() {
+            var button = $(this);
+            disableButton(button);
+            showLoadingSpinner();
+    
+            const form = document.getElementById('quickAddBatchForm');
+            const formData = new FormData(form);
+    
+            fetch("{% url 'wamtram2:quick_add_batch' %}", {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
                     $('#quickAddBatchModal').modal('hide');
                     location.reload();
                 } else {
-                    alert('Error: ' + response.error);
+                    alert(data.error);
+                    enableButton(button);
+                    hideLoadingSpinner();
                 }
-            },
-            error: function() {
+            })
+            .catch(error => {
+                console.error('Error:', error);
                 alert('An error occurred while adding the batch.');
-            }
+                enableButton(button);
+                hideLoadingSpinner();
+            });
+        });
+    
+        // Reset button state when modal is closed
+        $('#quickAddBatchModal').on('hidden.bs.modal', function () {
+            enableButton($('#quickAddBatchConfirm'));
+            hideLoadingSpinner();
         });
     });
-});
-</script>
+    </script>
 {% endblock %}

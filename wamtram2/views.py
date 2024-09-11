@@ -1291,40 +1291,52 @@ class DudTagManageView(LoginRequiredMixin, View):
 
         return redirect('wamtram2:dud_tag_manage')
 
-
-class BatchesListView(ListView):
+class BatchesListView(LoginRequiredMixin,ListView):
     model = TrtEntryBatches
     template_name = 'wamtram2/batches_list.html'
     context_object_name = 'batches'
+    paginate_by = 20
+    
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_superuser:
+            return HttpResponseForbidden("You do not have permission to view this record")
+        return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
-        queryset = TrtEntryBatches.objects.all()
+        if not self.request.GET:
+            return TrtEntryBatches.objects.none()
+
+        queryset = super().get_queryset()
+        
         location = self.request.GET.get('location')
         place = self.request.GET.get('place')
         year = self.request.GET.get('year')
 
-        if location and place:
-            place_obj = TrtPlaces.objects.filter(place_code=place, location_code=location).first()
-            if place_obj:
-                queryset = queryset.filter(batches_code__startswith=place_obj.place_code)
-
-        if year:
-            queryset = queryset.filter(batches_code__contains=year)
-
-        # 添加倒序排列
-        return queryset.order_by('-entry_batch_id')
+        if location or place or year:
+            query = Q()
+            if location:
+                query &= Q(batches_code__startswith=location)
+            if place:
+                query &= Q(batches_code__contains=place)
+            if year:
+                query &= Q(batches_code__endswith=year[-2:])
+            return queryset.filter(query).order_by('-entry_batch_id')
+        else:
+            return queryset.order_by('-entry_batch_id')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['locations'] = TrtLocations.objects.all()
-        context['places'] = TrtPlaces.objects.filter(location_code=self.request.GET.get('location', ''))
-        context['years'] = {str(year): str(year) for year in range(2000, 2025)}  # 假设年份范围
+        context['locations'] = TrtLocations.objects.all().order_by('location_name')
+        context['places'] = TrtPlaces.objects.all().order_by('place_name')
+        current_year = timezone.now().year
+        context['years'] = range(2020, current_year + 1)
         context['selected_location'] = self.request.GET.get('location', '')
         context['selected_place'] = self.request.GET.get('place', '')
         context['selected_year'] = self.request.GET.get('year', '')
+        context['is_initial_load'] = not bool(self.request.GET)
         return context
     
-
+@login_required
 def create_new_entry(request):
     locations = TrtLocations.objects.all().order_by('location_name')
     current_year = timezone.now().year
@@ -1377,6 +1389,8 @@ def create_new_entry(request):
         'templates': templates, 
     }
     return render(request, 'wamtram2/batch_code_filter.html', context)
+
+
 @login_required
 @require_POST
 def quick_add_batch(request):
