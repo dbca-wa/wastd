@@ -165,9 +165,9 @@
     // Generate Code
     function generateCode() {
         var night = $('#night').val();
-        var locationCode = $('#location_code').val();
+        var placeCode = $('#place_code').val();
         var year = $('#year').val().slice(-2);
-        var generatedCode = 'N' + night + locationCode + year;
+        var generatedCode = 'N' + night + placeCode + year;
 
         // Check if the code is unique
         $.ajax({
