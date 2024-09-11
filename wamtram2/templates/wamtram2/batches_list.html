@@ -305,11 +305,13 @@
                 data: $(this).serialize(),
                 type: 'GET',
                 success: function(response) {
+                    console.log("AJAX response received");
                     $('#page_content_inner').html(response);
                     enableButton(button);
                     hideLoadingSpinner();
                 },
                 error: function() {
+                    console.error("AJAX error:", status, error);
                     alert('An error occurred while filtering the batches.');
                     enableButton(button);
                     hideLoadingSpinner();

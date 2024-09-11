@@ -1303,7 +1303,9 @@ class BatchesListView(LoginRequiredMixin,ListView):
         return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
+        print(f"GET parameters: {self.request.GET}")
         if not self.request.GET:
+            print("No GET parameters, returning empty queryset")
             return TrtEntryBatches.objects.none()
 
         queryset = super().get_queryset()
@@ -1311,6 +1313,8 @@ class BatchesListView(LoginRequiredMixin,ListView):
         location = self.request.GET.get('location')
         place = self.request.GET.get('place')
         year = self.request.GET.get('year')
+        
+        print(f"Filters: location={location}, place={place}, year={year}")
 
         if location or place or year:
             query = Q()
@@ -1323,9 +1327,16 @@ class BatchesListView(LoginRequiredMixin,ListView):
             if year:
                 year_code = str(year)[-2:]
                 query &= Q(batches_code__endswith=year_code)
-            return queryset.filter(query).order_by('-entry_batch_id')
+            print(f"Query: {query}")
+            result = queryset.filter(query).order_by('-entry_batch_id')
+            print(f"Query result count: {result.count()}")
+            return result
+        
         else:
-            return queryset.order_by('-entry_batch_id')
+            print("No filters applied, returning all batches")
+            result = queryset.order_by('-entry_batch_id')
+            print(f"All batches count: {result.count()}")
+            return result
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1338,6 +1349,7 @@ class BatchesListView(LoginRequiredMixin,ListView):
         context['selected_year'] = self.request.GET.get('year', '')
         context['is_initial_load'] = not bool(self.request.GET)
         context['templates'] = Template.objects.all()
+        print(f"Context data: {context}")
         return context
     
     
