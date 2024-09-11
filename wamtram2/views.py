@@ -1324,6 +1324,7 @@ class BatchesListView(ListView):
         context['selected_year'] = self.request.GET.get('year', '')
         return context
     
+
 def create_new_entry(request):
     locations = TrtLocations.objects.all().order_by('location_name')
     current_year = timezone.now().year
@@ -1340,23 +1341,30 @@ def create_new_entry(request):
     else:
         places = TrtPlaces.objects.none()
 
-    if selected_location or selected_place or selected_year:
-        query = Q()
-        
-        if selected_place:
-            query &= Q(batches_code__icontains=selected_place)
-        elif selected_location:
-            place_codes = places.values_list('place_code', flat=True)
-            query &= Q(batches_code__regex=r'N\d+(' + '|'.join(place_codes) + ')')
-        
-        if selected_year:
-            year_code = years.get(selected_year)
-            if year_code:
-                query &= Q(batches_code__endswith=year_code)
-        
+    query = Q()
+
+    if selected_place:
+        place_obj = TrtPlaces.objects.filter(place_code=selected_place).first()
+        if place_obj:
+            query &= Q(batches_code__startswith=place_obj.place_code)
+    elif selected_location:
+        place_codes = places.values_list('place_code', flat=True)
+        place_code_query = Q()
+        for place_code in place_codes:
+            place_code_query |= Q(batches_code__startswith=place_code)
+        query &= place_code_query
+
+    if selected_year:
+        year_code = years.get(selected_year)
+        if year_code:
+            query &= Q(batches_code__contains=year_code)
+
+    if query:
         batches = batches.filter(query)
 
     batches = batches.order_by('-entry_batch_id')
+    
+    templates = Template.objects.all()
 
     context = {
         'locations': locations,
@@ -1366,10 +1374,9 @@ def create_new_entry(request):
         'selected_place': selected_place,
         'selected_year': selected_year,
         'batches': batches,
+        'templates': templates, 
     }
     return render(request, 'wamtram2/batch_code_filter.html', context)
-
-
 @login_required
 @require_POST
 def quick_add_batch(request):
