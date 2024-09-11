@@ -76,12 +76,17 @@
 
     <!-- Existing Batch Code Form -->
     <div class="step-container">
-        <div class="step-header">Add/Edit Batch Detail</div>
+        <div class="step-header">{% if batch_id %}Edit{% else %}Add{% endif %} Batch Detail</div>
         <form method="post">
             {% csrf_token %}
             <div class="form-group">
                 <label for="batches_code">{{ form.batches_code.label }}</label>
                 <input type="text" name="batches_code" id="batches_code" class="form-control" value="{{ form.batches_code.value|default_if_none:'' }}">
+                {% if form.batches_code.errors %}
+                    <div class="invalid-feedback" style="display: block;">
+                        {{ form.batches_code.errors }}
+                    </div>
+                {% endif %}
             </div>
             <div class="form-group">
                 <label for="comments">{{ form.comments.label }}</label>
@@ -110,7 +115,6 @@
             <li><strong>Part 2 (2 chars):</strong> Place code </li>
             <li><strong>Part 3 (2 chars):</strong> Year (e.g., 24 for 2024)</li>
         </ol>
-
         <p><strong>Example:</strong> N1GN24 (Night 1, Gnaraloo, 2024)</p>
     </div>
 </div>
@@ -139,9 +143,9 @@
     // Load Places
     function loadPlaces(locationCode) {
         $.ajax({
-            url: "{% url 'wamtram2:get_places' %}",
+            url: "{% url 'wamtram2:add_batches_code' %}",
             type: 'GET',
-            data: { location_code: locationCode },
+            data: { action: 'get_places', location_code: locationCode },
             dataType: 'json',
             success: function(data) {
                 var placeSelect = $('#place_code');
@@ -171,9 +175,13 @@
 
         // Check if the code is unique
         $.ajax({
-            url: "{% url 'wamtram2:check_batch_code' %}",
+            url: "{% url 'wamtram2:add_batches_code' %}",
             type: 'GET',
-            data: { code: generatedCode },
+            data: { 
+                action: 'check_batch_code', 
+                code: generatedCode,
+                {% if batch_id %}batch_id: {{ batch_id }}{% endif %}
+            },
             success: function(data) {
                 if (data.is_unique) {
                     $('#generatedCode').text(generatedCode);

@@ -1387,6 +1387,7 @@ def quick_add_batch(request):
         return JsonResponse({'success': False, 'error': str(e)})
     
 
+
 class BatchCodeManageView(View):
     template_name = 'wamtram2/add_batches_code.html'
 
@@ -1408,6 +1409,7 @@ class BatchCodeManageView(View):
             'years': years,
             'current_year': current_year,
             'templates': templates,
+            'batch_id': batch_id,
         }
         return render(request, self.template_name, context)
 
@@ -1419,8 +1421,12 @@ class BatchCodeManageView(View):
             form = BatchesCodeForm(request.POST)
 
         if form.is_valid():
-            form.save()
-            return redirect(reverse('wamtram2:batches_list'))
+            new_batch = form.save(commit=False)
+            if not TrtEntryBatches.objects.filter(batches_code=new_batch.batches_code).exclude(pk=batch_id).exists():
+                new_batch.save()
+                return redirect(reverse('wamtram2:batches_list'))
+            else:
+                form.add_error('batches_code', 'This batch code already exists.')
 
         locations = TrtLocations.objects.all().order_by('location_code')
         current_year = timezone.now().year
@@ -1433,6 +1439,7 @@ class BatchCodeManageView(View):
             'years': years,
             'current_year': current_year,
             'templates': templates,
+            'batch_id': batch_id,
         }
         return render(request, self.template_name, context)
 
@@ -1446,12 +1453,16 @@ class BatchCodeManageView(View):
     @method_decorator(require_http_methods(["GET"]))
     def check_batch_code(self, request):
         code = request.GET.get('code')
-        is_unique = not TrtEntryBatches.objects.filter(batches_code=code).exists()
+        batch_id = request.GET.get('batch_id')
+        if batch_id:
+            is_unique = not TrtEntryBatches.objects.filter(batches_code=code).exclude(pk=batch_id).exists()
+        else:
+            is_unique = not TrtEntryBatches.objects.filter(batches_code=code).exists()
         return JsonResponse({'is_unique': is_unique})
 
     def dispatch(self, request, *args, **kwargs):
-        if 'action' in kwargs:
-            action = kwargs['action']
+        if request.method == 'GET' and 'action' in request.GET:
+            action = request.GET.get('action')
             if action == 'get_places':
                 return self.get_places(request)
             elif action == 'check_batch_code':
