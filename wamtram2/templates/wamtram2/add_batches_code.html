@@ -143,9 +143,13 @@
     // Load Places
     function loadPlaces(locationCode) {
         $.ajax({
-            url: "{% url 'wamtram2:add_batches_code' %}",
+            url: "{% url 'wamtram2:batch_code_manage' %}",
             type: 'GET',
-            data: { action: 'get_places', location_code: locationCode },
+            data: { 
+                action: 'get_places', 
+                location_code: locationCode,
+                {% if batch_id %}batch_id: {{ batch_id }}{% endif %}
+            },
             dataType: 'json',
             success: function(data) {
                 var placeSelect = $('#place_code');
@@ -175,7 +179,7 @@
 
         // Check if the code is unique
         $.ajax({
-            url: "{% url 'wamtram2:add_batches_code' %}",
+            url: "{% url 'wamtram2:batch_code_manage' %}",
             type: 'GET',
             data: { 
                 action: 'check_batch_code', 
