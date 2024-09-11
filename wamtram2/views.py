@@ -1294,7 +1294,7 @@ class DudTagManageView(LoginRequiredMixin, View):
 
 class BatchesListView(ListView):
     model = TrtEntryBatches
-    template_name = 'wamtram2/batch_code_filter.html'
+    template_name = 'wamtram2/batches_list.html'
     context_object_name = 'batches'
 
     def get_queryset(self):
@@ -1311,7 +1311,8 @@ class BatchesListView(ListView):
         if year:
             queryset = queryset.filter(batches_code__contains=year)
 
-        return queryset
+        # 添加倒序排列
+        return queryset.order_by('-entry_batch_id')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1323,7 +1324,7 @@ class BatchesListView(ListView):
         context['selected_year'] = self.request.GET.get('year', '')
         return context
     
-def batch_code_filter(request):
+def create_new_entry(request):
     locations = TrtLocations.objects.all().order_by('location_name')
     current_year = timezone.now().year
     years = {str(year): str(year)[-2:] for year in range(2020, current_year+1)}
