@@ -1316,26 +1316,31 @@ class BatchesListView(LoginRequiredMixin,ListView):
         
         print(f"Filters: location={location}, place={place}, year={year}")
 
-        if location or place or year:
-            query = Q()
-            if location:
-                query &= Q(batches_code__startswith=location)
-            if place:
-                place_obj = TrtPlaces.objects.filter(place_code=place).first()
-                if place_obj:
-                    query &= Q(batches_code__contains=place_obj.place_code)
-            if year:
-                year_code = str(year)[-2:]
-                query &= Q(batches_code__endswith=year_code)
+        query = Q()
+
+        if location and place and year:
+            year_code = str(year)[-2:]
+            query = Q(batches_code__contains=place) & Q(batches_code__endswith=year_code)
+        elif location and year:
+            year_code = str(year)[-2:]
+            query = Q(batches_code__contains=location) & Q(batches_code__endswith=year_code)
+        elif location:
+            query = Q(batches_code__contains=location)
+        elif year:
+            year_code = str(year)[-2:]
+            query = Q(batches_code__endswith=year_code)
+            
+        if query:
             print(f"Query: {query}")
             result = queryset.filter(query).order_by('-entry_batch_id')
             print(f"Query result count: {result.count()}")
+            print("Query results:", list(result.values_list('batches_code', flat=True)[:10]))  # 只打印前10个结果
             return result
-        
         else:
             print("No filters applied, returning all batches")
             result = queryset.order_by('-entry_batch_id')
             print(f"All batches count: {result.count()}")
+            print("All batches (first 10):", list(result.values_list('batches_code', flat=True)[:10]))  # 只打印前10个结果
             return result
 
     def get_context_data(self, **kwargs):
@@ -1347,7 +1352,6 @@ class BatchesListView(LoginRequiredMixin,ListView):
         context['selected_location'] = self.request.GET.get('location', '')
         context['selected_place'] = self.request.GET.get('place', '')
         context['selected_year'] = self.request.GET.get('year', '')
-        context['is_initial_load'] = not bool(self.request.GET)
         context['templates'] = Template.objects.all()
         print(f"Context data: {context}")
         return context
