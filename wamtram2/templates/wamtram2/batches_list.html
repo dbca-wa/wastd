@@ -53,8 +53,8 @@
                 {{ search_form.batches_code.label }}
                 <i class="fas fa-question-circle info-icon" data-toggle="tooltip" data-html="true" title="
                     Batch Code Format:<br>
-                    <strong>Part 1 (2 chars):</strong> N1 (Night 1), N2 (Night 2), D1 (Day 1), D2 (Day 2)<br>
-                    <strong>Part 2 (2 chars):</strong> GN (Gnaraloo), WR (Warroora)<br>
+                    <strong>Part 1 (2 chars):</strong> N1 (Night 1), N2 (Night 2)
+                    <strong>Part 2 (4 chars):</strong> Place Code <br>
                     <strong>Part 3 (2 chars):</strong> Year (e.g., 24 for 2024)<br>
                     Example: N1GN24 (Night 1, Gnaraloo, 2024)
                 "></i>
@@ -155,8 +155,39 @@
                 <form id="quickAddBatchForm">
                     {% csrf_token %}
                     <div class="form-group">
+                        <label for="quickAddLocation">Location</label>
+                        <select class="form-control" id="quickAddLocation" name="location_code" required>
+                            <option value="">Select Location</option>
+                            {% for location in locations %}
+                                <option value="{{ location.location_code }}">{{ location.location_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="quickAddPlace">Place</label>
+                        <select class="form-control" id="quickAddPlace" name="place_code" required>
+                            <option value="">Select Place</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="quickAddYear">Year</label>
+                        <select class="form-control" id="quickAddYear" name="year" required>
+                            {% for year in years %}
+                                <option value="{{ year }}">{{ year }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="quickAddNight">Night Number</label>
+                        <input type="number" class="form-control" id="quickAddNight" name="night" min="1" required>
+                    </div>
+                    <div class="form-group">
                         <label for="quickAddBatchCode">Batch Code</label>
-                        <input type="text" class="form-control" id="quickAddBatchCode" name="batches_code" required>
+                        <input type="text" class="form-control" id="quickAddBatchCode" name="batches_code" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="quickAddEntryDate">Expected Entry Date</label>
+                        <input type="date" class="form-control" id="quickAddEntryDate" name="entry_date" required>
                     </div>
                     <div class="form-group">
                         <label for="quickAddComments">Comments</label>
@@ -187,51 +218,117 @@
     $(function () {
         $('[data-toggle="tooltip"]').tooltip();
 
-    $("#quickAddBatchBtn").click(function(e) {
-        e.preventDefault();
-        $('#quickAddBatchModal').modal('show');
+        $("#quickAddBatchBtn").click(function(e) {
+            e.preventDefault();
+            $('#quickAddBatchModal').modal('show');
+        });
+
+        $("#quickAddBatchConfirm").click(function() {
+            const form = document.getElementById('quickAddBatchForm');
+            const formData = new FormData(form);
+
+            fetch("{% url 'wamtram2:quick_add_batch' %}", {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    $('#quickAddBatchModal').modal('hide');
+                    location.reload();
+                } else {
+                    alert(data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while adding the batch.');
+            });
+        });
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
     });
+</script>
 
-    $("#quickAddBatchConfirm").click(function() {
-        const form = document.getElementById('quickAddBatchForm');
-        const formData = new FormData(form);
-
-        fetch("{% url 'wamtram2:quick_add_batch' %}", {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRFToken': getCookie('csrftoken')
+<script>
+$(document).ready(function() {
+    $('#quickAddLocation').change(function() {
+        var locationCode = $(this).val();
+        $.ajax({
+            url: "{% url 'wamtram2:get_places' %}",
+            data: { 'location_code': locationCode },
+            dataType: 'json',
+            success: function(data) {
+                var placeSelect = $('#quickAddPlace');
+                placeSelect.empty();
+                placeSelect.append('<option value="">Select Place</option>');
+                $.each(data, function(index, place) {
+                    placeSelect.append('<option value="' + place.place_code + '" data-full-name="' + place.get_full_name + '">' + place.place_name + '</option>');
+                });
             }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                $('#quickAddBatchModal').modal('hide');
-                location.reload();
-            } else {
-                alert(data.error);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred while adding the batch.');
         });
     });
 
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
+    function generateBatchCode() {
+        var night = $('#quickAddNight').val();
+        var placeCode = $('#quickAddPlace').val();
+        var year = $('#quickAddYear').val().slice(-2);
+        if (night && placeCode && year) {
+            var batchCode = 'N' + night + placeCode + year;
+            $('#quickAddBatchCode').val(batchCode);
         }
-        return cookieValue;
     }
+
+    $('#quickAddNight, #quickAddPlace, #quickAddYear').change(generateBatchCode);
+
+    function updateComments() {
+        var selectedPlace = $('#quickAddPlace option:selected');
+        var placeFullName = selectedPlace.data('full-name');
+        var night = $('#quickAddNight').val();
+        var entryDate = $('#quickAddEntryDate').val();
+        if (placeFullName && night && entryDate) {
+            var comments = placeFullName + ' - Night ' + night + ' - Expected entry date: ' + entryDate;
+            $('#quickAddComments').val(comments);
+        }
+    }
+
+    $('#quickAddPlace, #quickAddNight, #quickAddEntryDate').change(updateComments);
+
+    $('#quickAddBatchConfirm').click(function() {
+        var formData = $('#quickAddBatchForm').serialize();
+        $.ajax({
+            url: "{% url 'wamtram2:quick_add_batch' %}",
+            type: 'POST',
+            data: formData,
+            success: function(response) {
+                if (response.success) {
+                    $('#quickAddBatchModal').modal('hide');
+                    location.reload();
+                } else {
+                    alert('Error: ' + response.error);
+                }
+            },
+            error: function() {
+                alert('An error occurred while adding the batch.');
+            }
+        });
+    });
 });
 </script>
 {% endblock %}
