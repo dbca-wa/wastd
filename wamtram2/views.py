@@ -1294,45 +1294,30 @@ class DudTagManageView(LoginRequiredMixin, View):
 
 class BatchesListView(ListView):
     model = TrtEntryBatches
-    template_name = 'wamtram2/batches_list.html'
+    template_name = 'wamtram2/batch_code_filter.html'
     context_object_name = 'batches'
-    paginate_by = 20
 
     def get_queryset(self):
-        queryset = super().get_queryset().annotate(
-            entry_count=Count('trtdataentry'),
-            last_entry_date=Max('trtdataentry__observation_date'),
-            last_place_code=Subquery(
-                TrtDataEntry.objects.filter(entry_batch_id=OuterRef('pk'))
-                .order_by('-data_entry_id')
-                .values('place_code')[:1]
-            ),
-            last_place_name=Subquery(
-                TrtPlaces.objects.filter(place_code=OuterRef('last_place_code'))
-                .values('place_name')[:1]
-            )
-        ).order_by('-entry_batch_id')
-
+        queryset = TrtEntryBatches.objects.all()
         location = self.request.GET.get('location')
         place = self.request.GET.get('place')
         year = self.request.GET.get('year')
 
-        if location:
-            queryset = queryset.filter(batches_code__regex=r'N\d+' + location)
-        if place:
-            queryset = queryset.filter(batches_code__contains=place)
+        if location and place:
+            place_obj = TrtPlaces.objects.filter(place_code=place, location_code=location).first()
+            if place_obj:
+                queryset = queryset.filter(batches_code__startswith=place_obj.place_code)
+
         if year:
-            queryset = queryset.filter(batches_code__endswith=year[-2:])
+            queryset = queryset.filter(batches_code__contains=year)
 
         return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['locations'] = TrtLocations.objects.all().order_by('location_name')
-        context['places'] = TrtPlaces.objects.all().order_by('place_name')
-        current_year = timezone.now().year
-        context['years'] = range(2020, current_year + 1)
-        context['templates'] = Template.objects.all()
+        context['locations'] = TrtLocations.objects.all()
+        context['places'] = TrtPlaces.objects.filter(location_code=self.request.GET.get('location', ''))
+        context['years'] = {str(year): str(year) for year in range(2000, 2025)}  # 假设年份范围
         context['selected_location'] = self.request.GET.get('location', '')
         context['selected_place'] = self.request.GET.get('place', '')
         context['selected_year'] = self.request.GET.get('year', '')
