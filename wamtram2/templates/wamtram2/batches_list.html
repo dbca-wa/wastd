@@ -103,8 +103,10 @@
 <div id="initial-message" class="alert alert-info" role="alert">
     Please select a location, place, and year to filter the batches.
 </div>
-{% else %}
+{% endif %}
+
 <div id="batches-table">
+    {% if batches %}
     <table class="table">
         <thead>
             <tr>
@@ -133,15 +135,17 @@
                     <a href="{% url 'wamtram2:add_batches_code' batch_id=batch.entry_batch_id %}" class="btn btn-sm btn-primary">Edit Details</a>
                 </td>
             </tr>
-            {% empty %}
-            <tr>
-                <td colspan="8" class="text-center">No batches found.</td>
-            </tr>
             {% endfor %}
         </tbody>
     </table>
+    {% else %}
+    {% if not is_initial_load %}
+    <div class="alert alert-info" role="alert">
+        No batches found.
+    </div>
+    {% endif %}
+    {% endif %}
 </div>
-{% endif %}
 
 <div class="pagination-container">
     {% if is_paginated %}
