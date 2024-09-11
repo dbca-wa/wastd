@@ -1317,8 +1317,9 @@ class BatchesListView(ListView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        search_form = BatchesSearchForm(self.request.GET or None)
-        context['search_form'] = search_form
+        context['locations'] = TrtLocations.objects.all().order_by('location_name')
+        current_year = timezone.now().year
+        context['years'] = range(2020, current_year + 1)
         context['templates'] = Template.objects.all()
         return context
 
