@@ -1317,9 +1317,12 @@ class BatchesListView(LoginRequiredMixin,ListView):
             if location:
                 query &= Q(batches_code__startswith=location)
             if place:
-                query &= Q(batches_code__contains=place)
+                place_obj = TrtPlaces.objects.filter(place_code=place).first()
+                if place_obj:
+                    query &= Q(batches_code__contains=place_obj.place_code)
             if year:
-                query &= Q(batches_code__endswith=year[-2:])
+                year_code = str(year)[-2:]
+                query &= Q(batches_code__endswith=year_code)
             return queryset.filter(query).order_by('-entry_batch_id')
         else:
             return queryset.order_by('-entry_batch_id')
@@ -1334,7 +1337,9 @@ class BatchesListView(LoginRequiredMixin,ListView):
         context['selected_place'] = self.request.GET.get('place', '')
         context['selected_year'] = self.request.GET.get('year', '')
         context['is_initial_load'] = not bool(self.request.GET)
+        context['templates'] = Template.objects.all()
         return context
+    
     
 @login_required
 def create_new_entry(request):
