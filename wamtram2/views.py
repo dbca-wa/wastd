@@ -1324,29 +1324,34 @@ class BatchesListView(ListView):
         return context
 
 def batch_code_filter(request):
-    locations = {
-        'delambre': 'DEL',
-    }
+    locations = TrtLocations.objects.all().order_by('location_name')
     current_year = timezone.now().year
     years = {str(year): str(year)[-2:] for year in range(2020, current_year+1)}
 
     selected_location = request.GET.get('location')
+    selected_place = request.GET.get('place')
     selected_year = request.GET.get('year')
 
     batches = TrtEntryBatches.objects.all()
 
-    if selected_location or selected_year:
+    if selected_location:
+        places = TrtPlaces.objects.filter(location_code=selected_location)
+    else:
+        places = TrtPlaces.objects.none()
+
+    if selected_location or selected_place or selected_year:
         query = Q()
         
-        if selected_location:
-            location_code = locations.get(selected_location.lower())
-            if location_code:
-                query |= Q(batches_code__icontains=location_code)
+        if selected_place:
+            query &= Q(batches_code__icontains=selected_place)
+        elif selected_location:
+            place_codes = places.values_list('place_code', flat=True)
+            query &= Q(batches_code__regex=r'N\d+(' + '|'.join(place_codes) + ')')
         
         if selected_year:
             year_code = years.get(selected_year)
             if year_code:
-                query |= Q(batches_code__iendswith=year_code)
+                query &= Q(batches_code__endswith=year_code)
         
         batches = batches.filter(query)
 
@@ -1354,13 +1359,14 @@ def batch_code_filter(request):
 
     context = {
         'locations': locations,
+        'places': places,
         'years': years,
         'selected_location': selected_location,
+        'selected_place': selected_place,
         'selected_year': selected_year,
         'batches': batches,
     }
     return render(request, 'wamtram2/batch_code_filter.html', context)
-
 
 @login_required
 @require_POST
