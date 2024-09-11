@@ -25,6 +25,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_http_methods
 from django.urls import reverse
 from django.views.decorators.http import require_GET, require_POST, require_http_methods
+from django.template.loader import render_to_string
 
 from wastd.utils import Breadcrumb, PaginateMixin
 from .models import (
@@ -1359,6 +1360,31 @@ class BatchesListView(LoginRequiredMixin,ListView):
         print(f"Batches count in context: {len(context['batches'])}")
         print(f"Context data: {context}")
         return context
+    
+    def get(self, request, *args, **kwargs):
+        self.object_list = self.get_queryset()
+        context = self.get_context_data()
+        
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            paginator = Paginator(context['batches'], self.paginate_by)
+            page_number = request.GET.get('page', 1)
+            page_obj = paginator.get_page(page_number)
+            
+            context.update({
+                'batches': page_obj,
+                'page_obj': page_obj,
+                'is_paginated': page_obj.has_other_pages(),
+                'paginator': paginator,
+            })
+            
+            html = render_to_string('wamtram2/batches_table.html', context, request=request)
+            return JsonResponse({
+                'html': html,
+                'count': paginator.count,
+                'num_pages': paginator.num_pages,
+                'current_page': page_obj.number,
+            })
+        return super().get(request, *args, **kwargs)
     
     
 @login_required
