@@ -1292,9 +1292,9 @@ class DudTagManageView(LoginRequiredMixin, View):
 
         return redirect('wamtram2:dud_tag_manage')
 
-class BatchesListView(LoginRequiredMixin,ListView):
+class BatchesCurationView(LoginRequiredMixin,ListView):
     model = TrtEntryBatches
-    template_name = 'wamtram2/batches_list.html'
+    template_name = 'wamtram2/batches_curation.html'
     context_object_name = 'batches'
     paginate_by = 20
     
@@ -1386,61 +1386,102 @@ class BatchesListView(LoginRequiredMixin,ListView):
             })
         return super().get(request, *args, **kwargs)
     
-    
-@login_required
-def create_new_entry(request):
-    locations = TrtLocations.objects.all().order_by('location_name')
-    current_year = timezone.now().year
-    years = {str(year): str(year)[-2:] for year in range(2020, current_year+1)}
 
-    selected_location = request.GET.get('location')
-    selected_place = request.GET.get('place')
-    selected_year = request.GET.get('year')
+class CreateNewEntryView(LoginRequiredMixin, ListView):
+    model = TrtEntryBatches
+    template_name = 'wamtram2/create_new_entry.html'
+    context_object_name = 'batches'
+    paginate_by = 20
 
-    batches = TrtEntryBatches.objects.all()
+    def get_queryset(self):
+        """
+        Filter the batches data based on query parameters
+        """
+        queryset = super().get_queryset()
 
-    if selected_location:
-        places = TrtPlaces.objects.filter(location_code=selected_location)
-    else:
+        location = self.request.GET.get('location')
+        place = self.request.GET.get('place')
+        year = self.request.GET.get('year')
+
+        query = Q()
+        years = {str(year): str(year)[-2:] for year in range(2020, timezone.now().year + 1)}
+
+        # Generate queries based on different filter parameters
+        if location and place and year:
+            year_code = years.get(year)
+            if year_code:
+                query = Q(batches_code__contains=place) & Q(batches_code__endswith=year_code)
+        elif location and year:
+            year_code = years.get(year)
+            if year_code:
+                query = Q(batches_code__contains=location) & Q(batches_code__endswith=year_code)
+        elif location:
+            query = Q(batches_code__contains=location)
+        elif year:
+            year_code = years.get(year)
+            if year_code:
+                query = Q(batches_code__endswith=year_code)
+
+        if query:
+            return queryset.filter(query).order_by('-entry_batch_id')
+        else:
+            return TrtEntryBatches.objects.none()
+
+    def get_context_data(self, **kwargs):
+        """
+        Provide context data to the template, including locations, places, and years
+        """
+        context = super().get_context_data(**kwargs)
+        locations = TrtLocations.objects.all().order_by('location_name')
         places = TrtPlaces.objects.none()
 
-    query = Q()
+        if 'location' in self.request.GET and self.request.GET['location']:
+            places = TrtPlaces.objects.filter(location_code=self.request.GET['location'])
 
-    if selected_place:
-        place_obj = TrtPlaces.objects.filter(place_code=selected_place).first()
-        if place_obj:
-            query &= Q(batches_code__startswith=place_obj.place_code)
-    elif selected_location:
-        place_codes = places.values_list('place_code', flat=True)
-        place_code_query = Q()
-        for place_code in place_codes:
-            place_code_query |= Q(batches_code__startswith=place_code)
-        query &= place_code_query
+        current_year = timezone.now().year
+        years = {str(year): str(year)[-2:] for year in range(2020, current_year + 1)}
 
-    if selected_year:
-        year_code = years.get(selected_year)
-        if year_code:
-            query &= Q(batches_code__contains=year_code)
+        context.update({
+            'locations': locations,
+            'places': places,
+            'years': years,
+            'selected_location': self.request.GET.get('location', ''),
+            'selected_place': self.request.GET.get('place', ''),
+            'selected_year': self.request.GET.get('year', ''),
+            'templates': Template.objects.all(),
+        })
 
-    if query:
-        batches = batches.filter(query)
+        return context
 
-    batches = batches.order_by('-entry_batch_id')
-    
-    templates = Template.objects.all()
+    def get(self, request, *args, **kwargs):
+        """
+        Handle GET requests, support AJAX pagination
+        """
+        self.object_list = self.get_queryset()
+        context = self.get_context_data()
 
-    context = {
-        'locations': locations,
-        'places': places,
-        'years': years,
-        'selected_location': selected_location,
-        'selected_place': selected_place,
-        'selected_year': selected_year,
-        'batches': batches,
-        'templates': templates, 
-    }
-    return render(request, 'wamtram2/batch_code_filter.html', context)
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            paginator = Paginator(context['batches'], self.paginate_by)
+            page_number = request.GET.get('page', 1)
+            page_obj = paginator.get_page(page_number)
 
+            context.update({
+                'batches': page_obj,
+                'page_obj': page_obj,
+                'is_paginated': page_obj.has_other_pages(),
+                'paginator': paginator,
+            })
+
+            # Return AJAX paginated content
+            html = render_to_string('wamtram2/batches_table.html', context, request=request)
+            return JsonResponse({
+                'html': html,
+                'count': paginator.count,
+                'num_pages': paginator.num_pages,
+                'current_page': page_obj.number,
+            })
+
+        return super().get(request, *args, **kwargs)
 
 @login_required
 @require_POST
@@ -1504,7 +1545,7 @@ class BatchCodeManageView(View):
             new_batch = form.save(commit=False)
             if not TrtEntryBatches.objects.filter(batches_code=new_batch.batches_code).exclude(pk=batch_id).exists():
                 new_batch.save()
-                return redirect(reverse('wamtram2:batches_list'))
+                return redirect(reverse('wamtram2:batches_curation'))
             else:
                 form.add_error('batches_code', 'This batch code already exists.')
 
