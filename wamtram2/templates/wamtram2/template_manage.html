@@ -291,10 +291,9 @@
         };
     
         const templateManager = {
-            checkTemplateNameAvailability: function(templateName, inputId) {
+            checkTemplateNameAvailability: function(templateName, inputElement) {
                 api.checkTemplateName(templateName).done(function(response) {
-                    const feedbackElement = $('#name-feedback_' + inputId);
-                    const inputElement = $('#name_' + inputId);
+                    const feedbackElement = inputElement.siblings('.valid-feedback');
     
                     if (response.exists) {
                         inputElement.addClass('is-invalid').removeClass('is-valid');
@@ -313,12 +312,11 @@
                 var placeFullName = selectedPlace.attr('place-full-name');
                 var species = $('#species_code option:selected').text();
                 var sex = $('#sex option:selected').text();
-                
+    
                 if (placeFullName && species && sex) {
                     var templateName = placeFullName + '-' + species + '-' + sex;
                     $('#name').val(templateName);
-                    // Check template name for uniqueness during creation
-                    this.checkTemplateNameAvailability(templateName);
+                    this.checkTemplateNameAvailability(templateName, $('#name'));
                 }
             },
     
@@ -378,16 +376,6 @@
         };
     
         $(document).ready(function() {
-            $('#name_new').on('input', function() {
-                const templateName = $(this).val();
-                templateManager.checkTemplateNameAvailability(templateName, 'new');
-            });
-            $('input[id^="name_"]').on('input', function() {
-                const templateId = $(this).attr('id').split('_')[1]; // 获取模板ID
-                const templateName = $(this).val();
-                templateManager.checkTemplateNameAvailability(templateName, templateId);
-            });
-
             $('#location_code').change(function() {
                 var locationCode = $(this).val();
                 api.loadPlaces(locationCode).done(function(data) {
