@@ -144,7 +144,7 @@ MAP_WIDGETS = {
         }
     }
 }
-MAPPROXY_URL = os.environ.get("MAPPROXY_URL", "")
+GEOSERVER_URL = os.environ.get("GEOSERVER_URL", "")
 IMPORT_EXPORT_SKIP_ADMIN_CONFIRM = True
 
 # Use the customised User model
