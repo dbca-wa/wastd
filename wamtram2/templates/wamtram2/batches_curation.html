@@ -289,14 +289,15 @@
             var button = $('button[type="submit"]');
             disableButton(button);
             showLoadingSpinner();
-    
+        
             $.ajax({
                 url: "{% url 'wamtram2:batches_curation' %}",
                 data: $(this).serialize(),
                 type: 'GET',
                 success: function(response) {
                     console.log("AJAX response received");
-                    $('#page_content_inner').html(response);
+                    $('#batches-table').html($(response.html).find('#batches-table').html());
+                    $('.pagination-container').html($(response.html).find('.pagination-container').html());
                     enableButton(button);
                     hideLoadingSpinner();
                 },
@@ -304,6 +305,28 @@
                     console.error("AJAX error:", status, error);
                     alert('An error occurred while filtering the batches.');
                     enableButton(button);
+                    hideLoadingSpinner();
+                }
+            });
+        });
+        
+
+        $(document).on('click', '.pagination a', function(e) {
+            e.preventDefault();
+            var url = $(this).attr('href');
+            showLoadingSpinner();
+        
+            $.ajax({
+                url: url,
+                type: 'GET',
+                success: function(response) {
+                    $('#batches-table').html($(response.html).find('#batches-table').html());
+                    $('.pagination-container').html($(response.html).find('.pagination-container').html());
+                    hideLoadingSpinner();
+                },
+                error: function() {
+                    console.error("AJAX error:", status, error);
+                    alert('An error occurred while loading the page.');
                     hideLoadingSpinner();
                 }
             });

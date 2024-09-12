@@ -211,7 +211,8 @@ $(document).ready(function() {
             url: url,
             type: 'GET',
             success: function(data) {
-                $('#batches-table').html(data.html);
+                $('#batches-table').html($(data.html).find('#batches-table').html());
+                $('.pagination-container').html($(data.html).find('.pagination-container').html());
                 hideLoadingSpinner();
             },
             error: function() {
@@ -220,21 +221,17 @@ $(document).ready(function() {
             }
         });
     }
-
-    $('#clearFilter').click(function() {
-        $('#location, #place, #year').val('');
-        $('#filterForm').submit();
-    });
-
+    
     $('#showAllBatches').click(function() {
         $('#location, #place, #year').val('');
         showLoadingSpinner();
         $.ajax({
-            url: "{% url 'wamtram2:batches_curation' %}",
+            url: "{% url 'wamtram2:create_new_entry' %}",
             type: 'GET',
             data: { show_all: true },
             success: function(data) {
-                $('#batches-table').html(data.html);
+                $('#batches-table').html($(data.html).find('#batches-table').html());
+                $('.pagination-container').html($(data.html).find('.pagination-container').html());
                 hideLoadingSpinner();
             },
             error: function() {
@@ -243,6 +240,12 @@ $(document).ready(function() {
             }
         });
     });
+
+    $('#clearFilter').click(function() {
+        $('#location, #place, #year').val('');
+        $('#filterForm').submit();
+    });
+
 });
 </script>
 {% endblock %}

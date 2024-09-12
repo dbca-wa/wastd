@@ -1377,7 +1377,7 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
                 'paginator': paginator,
             })
             
-            html = render_to_string('wamtram2/batches_table.html', context, request=request)
+            html = render_to_string('wamtram2/batches_curation.html', context, request=request)
             return JsonResponse({
                 'html': html,
                 'count': paginator.count,
@@ -1385,7 +1385,6 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
                 'current_page': page_obj.number,
             })
         return super().get(request, *args, **kwargs)
-    
 
 class CreateNewEntryView(LoginRequiredMixin, ListView):
     model = TrtEntryBatches
@@ -1454,35 +1453,19 @@ class CreateNewEntryView(LoginRequiredMixin, ListView):
         return context
 
     def get(self, request, *args, **kwargs):
-        """
-        Handle GET requests, support AJAX pagination
-        """
         self.object_list = self.get_queryset()
         context = self.get_context_data()
-
+        
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            paginator = Paginator(context['batches'], self.paginate_by)
-            page_number = request.GET.get('page', 1)
-            page_obj = paginator.get_page(page_number)
-
-            context.update({
-                'batches': page_obj,
-                'page_obj': page_obj,
-                'is_paginated': page_obj.has_other_pages(),
-                'paginator': paginator,
-            })
-
-            # Return AJAX paginated content
-            html = render_to_string('wamtram2/batches_table.html', context, request=request)
+            html = render_to_string('wamtram2/create_new_entry.html', context, request=request)
             return JsonResponse({
                 'html': html,
-                'count': paginator.count,
-                'num_pages': paginator.num_pages,
-                'current_page': page_obj.number,
+                'count': context['paginator'].count if 'paginator' in context else 0,
+                'num_pages': context['paginator'].num_pages if 'paginator' in context else 1,
+                'current_page': context['page_obj'].number if 'page_obj' in context else 1,
             })
-
         return super().get(request, *args, **kwargs)
-
+    
 @login_required
 @require_POST
 def quick_add_batch(request):
