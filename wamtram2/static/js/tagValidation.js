@@ -99,16 +99,16 @@ document.addEventListener('DOMContentLoaded', function() {
     function validateTag(tagInput, validationMessage, detailedMessage, type, side) {
         const turtleId = turtleIdInput.value;
         const tagId = tagInput.value;
-
+    
+        tagInput.classList.remove('is-valid', 'is-invalid', 'is-warning');
+    
         if (!turtleId && tagId && (type === 'recaptured_tag' || type === 'recaptured_pit_tag')) {
-            validationMessage.textContent = '✗ invalid untagged turtle with recapture tag';
-            validationMessage.style.color = 'red';
-            detailedMessage.textContent = '';
+            setValidationStatus(tagInput, validationMessage, detailedMessage, 'invalid', '✗ invalid untagged turtle with recapture tag');
             doNotProcessField.checked = true;
             updateBackgroundColor();
             return;
         }
-
+    
         if (tagId) {
             let url = `/wamtram2/validate-tag/?type=${type}&tag=${tagId}`;
             if (type === 'recaptured_tag') {
@@ -116,54 +116,36 @@ document.addEventListener('DOMContentLoaded', function() {
             } else if (type === 'recaptured_pit_tag') {
                 url += `&turtle_id=${turtleId}`;
             }
-
+    
             fetch(url)
-                .then(response => {
-                    return response.json();
-                })
+                .then(response => response.json())
                 .then(data => {
                     if (data.valid && !data.wrong_side) {
-                        validationMessage.textContent = '✓ Valid tag';
-                        validationMessage.style.color = 'green';
-                        detailedMessage.textContent = '';
+                        setValidationStatus(tagInput, validationMessage, detailedMessage, 'valid', '✓ Valid tag');
                         doNotProcessField.checked = false;
                     } else if (data.wrong_side) {
-                        validationMessage.textContent = '! Tag may be on the wrong side';
-                        validationMessage.style.color = 'orange';
-                        detailedMessage.textContent = '';
+                        setValidationStatus(tagInput, validationMessage, detailedMessage, 'warning', '! Tag may be on the wrong side');
                         doNotProcessField.checked = true;
                     } else if (data.other_turtle_id) {
-                        validationMessage.innerHTML = '✗ Invalid tag:';
-                        validationMessage.style.color = 'red';
-                        detailedMessage.innerHTML = `Tag belongs to another turtle (ID: <a href="/wamtram2/turtles/${data.other_turtle_id}/" target="_blank">${data.other_turtle_id}</a>)`;
-                        detailedMessage.style.color = 'red';
+                        setValidationStatus(tagInput, validationMessage, detailedMessage, 'invalid', '✗ Invalid tag:', `Tag belongs to another turtle (ID: <a href="/wamtram2/turtles/${data.other_turtle_id}/" target="_blank">${data.other_turtle_id}</a>)`);
                         doNotProcessField.checked = true;
                     } else if (data.status) {
-                        validationMessage.textContent = '✗ Invalid tag:';
-                        validationMessage.style.color = 'red';
-                        detailedMessage.textContent = `Tag status - ${data.status}`;
-                        detailedMessage.style.color = 'red';
+                        setValidationStatus(tagInput, validationMessage, detailedMessage, 'invalid', '✗ Invalid tag:', `Tag status - ${data.status}`);
                         doNotProcessField.checked = true;
                     } else if (data.tag_not_found) {
-                        validationMessage.textContent = '✗ Invalid tag: Tag not found (Please remove it from here and add it to the comment area)';
-                        validationMessage.style.color = 'red';
-                        detailedMessage.textContent = '';
+                        setValidationStatus(tagInput, validationMessage, detailedMessage, 'invalid', '✗ Invalid tag: Tag not found (Please remove it from here and add it to the comment area)');
                         doNotProcessField.checked = true;
                     } else {
-                        validationMessage.textContent = '✗ Invalid tag';
-                        validationMessage.style.color = 'red';
-                        detailedMessage.textContent = '';
+                        setValidationStatus(tagInput, validationMessage, detailedMessage, 'invalid', '✗ Invalid tag');
                         doNotProcessField.checked = true;
                     }
                     updateBackgroundColor();
                 })
                 .catch(error => {
-                    console.error('Error:', error); 
-                    validationMessage.textContent = 'Error validating tag';
-                    validationMessage.style.color = 'red';
-                    detailedMessage.textContent = '';
+                    console.error('Error:', error);
+                    setValidationStatus(tagInput, validationMessage, detailedMessage, 'invalid', 'Error validating tag');
                     doNotProcessField.checked = true;
-                    updateBackgroundColor(); 
+                    updateBackgroundColor();
                 });
         } else {
             validationMessage.textContent = '';
@@ -171,7 +153,27 @@ document.addEventListener('DOMContentLoaded', function() {
             updateBackgroundColor();
         }
     }
-
+    
+    function setValidationStatus(input, validationMessage, detailedMessage, status, message, detailedMessageText = '') {
+        input.classList.remove('is-valid', 'is-invalid', 'is-warning');
+        input.classList.add(`is-${status}`);
+    
+        validationMessage.textContent = message;
+        detailedMessage.innerHTML = detailedMessageText;
+    
+        switch (status) {
+            case 'valid':
+                validationMessage.style.color = 'green';
+                break;
+            case 'invalid':
+                validationMessage.style.color = 'red';
+                detailedMessage.style.color = 'red';
+                break;
+            case 'warning':
+                validationMessage.style.color = 'orange';
+                break;
+        }
+    }
     function addValidationListener(input, validationMessage, detailedMessage, type, side = '') {
         if (input) {
             input.addEventListener('blur', function() {
@@ -196,7 +198,7 @@ document.addEventListener('DOMContentLoaded', function() {
     addValidationListener(tagInputs.recapturePitTagInput, validationMessages.recapturePitTagMessage, detailedMessages.recapturePitTagDetailedMessage, 'recaptured_pit_tag');
     addValidationListener(tagInputs.recapturePitTagInput2, validationMessages.recapturePitTagMessage2, detailedMessages.recapturePitTagDetailedMessage2, 'recaptured_pit_tag');
     addValidationListener(tagInputs.newPitTagInput3, validationMessages.newPitTagMessage3, detailedMessages.newPitTagDetailedMessage3, 'new_pit_tag');
-addValidationListener(tagInputs.newPitTagInput4, validationMessages.newPitTagMessage4, detailedMessages.newPitTagDetailedMessage4, 'new_pit_tag');
-addValidationListener(tagInputs.recapturePitTagInput3, validationMessages.recapturePitTagMessage3, detailedMessages.recapturePitTagDetailedMessage3, 'recaptured_pit_tag');
-addValidationListener(tagInputs.recapturePitTagInput4, validationMessages.recapturePitTagMessage4, detailedMessages.recapturePitTagDetailedMessage4, 'recaptured_pit_tag');
+    addValidationListener(tagInputs.newPitTagInput4, validationMessages.newPitTagMessage4, detailedMessages.newPitTagDetailedMessage4, 'new_pit_tag');
+    addValidationListener(tagInputs.recapturePitTagInput3, validationMessages.recapturePitTagMessage3, detailedMessages.recapturePitTagDetailedMessage3, 'recaptured_pit_tag');
+    addValidationListener(tagInputs.recapturePitTagInput4, validationMessages.recapturePitTagMessage4, detailedMessages.recapturePitTagDetailedMessage4, 'recaptured_pit_tag');
 });
