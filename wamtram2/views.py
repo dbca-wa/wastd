@@ -882,6 +882,8 @@ class TemplateManageView(LoginRequiredMixin, FormView):
                 "You do not have permission to view this page"
             )
         
+        response = super().dispatch(request, *args, **kwargs)
+        
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             if request.method == 'GET' and 'location_code' in request.GET:
                 return self.get_places(request)
@@ -894,7 +896,7 @@ class TemplateManageView(LoginRequiredMixin, FormView):
             elif request.method == 'DELETE':
                 return self.delete_template(request, *args, **kwargs)
         
-        return super().dispatch(request, *args, **kwargs)
+        return response
 
     def get_places(self, request):
         location_code = request.GET.get('location_code')
@@ -972,6 +974,7 @@ class TemplateManageView(LoginRequiredMixin, FormView):
             } for place in places
         ]
         return places_data
+
 
 class ValidateTagView(View):
     """

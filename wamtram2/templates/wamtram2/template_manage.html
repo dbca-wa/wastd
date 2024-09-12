@@ -216,6 +216,7 @@
                             <div class="col-md-12 mt-2">
                                 <label for="name_{{ template.template_id }}">Template Name</label>
                                 <input type="text" class="form-control" id="name_{{ template.template_id }}" name="name" value="{{ template.name }}">
+                                <div id="name-feedback_{{ template.template_id }}" class="valid-feedback"></div> <!-- 添加反馈区域 -->
                             </div>
                             <div class="col-md-2 mt-3">
                                 <button type="button" class="btn btn-success btn-block" onclick="updateTemplate('{{ template.template_id }}')">Update</button>
@@ -252,9 +253,9 @@
             showMessage: function(message, type) {
                 var alert = $('#message-alert');
                 alert.removeClass('alert-success alert-danger')
-                     .addClass('alert-' + type)
-                     .text(message)
-                     .slideDown();
+                    .addClass('alert-' + type)
+                    .text(message)
+                    .slideDown();
         
                 setTimeout(function() {
                     alert.slideUp();
@@ -281,7 +282,7 @@
             checkTemplateName: function(name, templateKey = null) {
                 // Check for template name uniqueness
                 return $.ajax({
-                    url: "{% url 'wamtram2:template_manage' %}",
+                    url: "{% url 'wamtram2:check_template_name' %}",
                     type: 'GET',
                     data: { name: name, template_key: templateKey },
                     dataType: 'json'
@@ -290,21 +291,22 @@
         };
     
         const templateManager = {
-            checkTemplateNameAvailability: function(templateName, templateKey) {
-                api.checkTemplateName(templateName, templateKey).done(function(response) {
+            checkTemplateNameAvailability: function(templateName, inputId) {
+                api.checkTemplateName(templateName).done(function(response) {
+                    const feedbackElement = $('#name-feedback_' + inputId);
+                    const inputElement = $('#name_' + inputId);
+    
                     if (response.exists) {
-                        // Mark the input as invalid
-                        $('#name').addClass('is-invalid').removeClass('is-valid');
-                        $('#name-feedback').text('This template name already exists').removeClass('valid-feedback').addClass('invalid-feedback').show();
+                        inputElement.addClass('is-invalid').removeClass('is-valid');
+                        feedbackElement.text('This template name already exists').removeClass('valid-feedback').addClass('invalid-feedback').show();
                     } else {
-                        // Mark the input as valid
-                        $('#name').removeClass('is-invalid').addClass('is-valid');
-                        $('#name-feedback').text('This template name is available').removeClass('invalid-feedback').addClass('valid-feedback').show();
+                        inputElement.removeClass('is-invalid').addClass('is-valid');
+                        feedbackElement.text('This template name is available').removeClass('invalid-feedback').addClass('valid-feedback').show();
                     }
                 }).fail(function() {
                     utils.showMessage('Error checking template name', 'danger');
                 });
-            },
+            }
     
             generateTemplateName: function() {
                 var selectedPlace = $('#place_code option:selected');
@@ -376,6 +378,16 @@
         };
     
         $(document).ready(function() {
+            $('#name_new').on('input', function() {
+                const templateName = $(this).val();
+                templateManager.checkTemplateNameAvailability(templateName, 'new');
+            });
+            $('input[id^="name_"]').on('input', function() {
+                const templateId = $(this).attr('id').split('_')[1]; // 获取模板ID
+                const templateName = $(this).val();
+                templateManager.checkTemplateNameAvailability(templateName, templateId);
+            });
+
             $('#location_code').change(function() {
                 var locationCode = $(this).val();
                 api.loadPlaces(locationCode).done(function(data) {
@@ -396,10 +408,10 @@
                 templateManager.generateTemplateName();
             });
     
-            $('#name').on('input', function() {
-                // Check template name uniqueness when manually entered
-                var templateName = $(this).val();
-                templateManager.checkTemplateNameAvailability(templateName);
+            $('input[id^="name_"]').on('input', function() {
+                const templateName = $(this).val();
+                const inputElement = $(this);
+                templateManager.checkTemplateNameAvailability(templateName, inputElement);
             });
         });
 
