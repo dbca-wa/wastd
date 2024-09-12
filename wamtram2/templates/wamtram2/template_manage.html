@@ -62,7 +62,7 @@
     <nav aria-label="breadcrumb" class="d-none d-md-block">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-            <li class="breadcrumb-item"><a href="{% url 'wamtram2:batches_curation' %}">Entry batches</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'wamtram2:batches_curation' %}">Batches Curation</a></li>
             <li class="breadcrumb-item active">Manage Templates</li>
         </ol>
     </nav>
@@ -114,9 +114,10 @@
                         {% endfor %}
                     </select>
                 </div>
-                <div class="col-md-12">
+                <div class="col-md-12 mt-2">
                     <label for="name">Template Name</label>
                     <input type="text" class="form-control" id="name" name="name" required>
+                    <div id="name-feedback" class="valid-feedback"></div>
                 </div>
                 <div class="col-md-2 mt-3">
                     <button type="button" class="btn btn-primary btn-block" onclick="createTemplate()">Create</button>
@@ -285,40 +286,24 @@
         const templateManager = {
             generateTemplateName: function() {
                 var selectedPlace = $('#place_code option:selected');
-                var placeFullName = selectedOption.data('full-name');
+                var placeFullName = selectedPlace.attr('place-full-name');
                 var species = $('#species_code option:selected').text();
                 var sex = $('#sex option:selected').text();
                 
                 if (placeFullName && species && sex) {
                     var templateName = placeFullName + ' - ' + species + ' ' + sex;
                     $('#name').val(templateName);
-    
-                    api.checkTemplateName(templateName).done(function(response) {
-                        if (response.exists) {
-                            $('#name').addClass('is-invalid');
-                            $('#name-feedback').text('(This template already exists)').show();
-                        } else {
-                            $('#name').removeClass('is-invalid');
-                            $('#name-feedback').hide();
-                        }
-                    });
+                    this.checkTemplateNameAvailability(templateName);
                 }
             },
-            createTemplate: function() {
-                var templateName = $('#name').val();
+            checkTemplateNameAvailability: function(templateName) {
                 api.checkTemplateName(templateName).done(function(response) {
                     if (response.exists) {
-                        utils.showMessage('Error: This template already exists', 'danger');
+                        $('#name').addClass('is-invalid').removeClass('is-valid');
+                        $('#name-feedback').text('This template name already exists').removeClass('valid-feedback').addClass('invalid-feedback').show();
                     } else {
-                        var formData = $('#templateForm').serialize();
-                        api.createTemplate(formData)
-                            .done(function() {
-                                utils.showMessage('Template created successfully', 'success');
-                                setTimeout(function() { window.location.reload(true); }, 500);
-                            })
-                            .fail(function(data) {
-                                utils.showMessage('Error creating template: ' + JSON.stringify(data.responseJSON.errors), 'danger');
-                            });
+                        $('#name').removeClass('is-invalid').addClass('is-valid');
+                        $('#name-feedback').text('This template name is available').removeClass('invalid-feedback').addClass('valid-feedback').show();
                     }
                 });
             },
@@ -370,8 +355,13 @@
                         'place-full-name': place.full_name
                     }));
                 });
+                templateManager.generateTemplateName();
             });
-            $('#place_code, #species_code, #sex').change(templateManager.generateTemplateName);
+
+            $('#place_code, #species_code, #sex').change(templateManager.generateTemplateName.bind(templateManager));
+            $('#name').on('input', function() {
+                templateManager.checkTemplateNameAvailability($(this).val());
+            });
     
             {% for template in templates %}
             $('#location_code_{{ template.template_id }}').change(function() {
