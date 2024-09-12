@@ -1348,11 +1348,10 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
         context['selected_place'] = self.request.GET.get('place', '')
         context['selected_year'] = self.request.GET.get('year', '')
         context['templates'] = Template.objects.all()
-
         context['batches'] = self.get_queryset()
-        context['show_initial_message'] = not (self.request.GET.get('location') or self.request.GET.get('year'))
+        context['is_initial_load'] = not bool(self.request.GET)
+
         return context
-    
     def get(self, request, *args, **kwargs):
         self.object_list = self.get_queryset()
         context = self.get_context_data()

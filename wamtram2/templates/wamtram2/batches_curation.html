@@ -80,18 +80,12 @@
             </div>
             <div class="form-group col-md-3 d-flex align-items-end">
                 <button type="submit" class="btn btn-primary">Filter</button>
-                <button type="button" id="clearFilter" class="btn btn-secondary mr-2">Clear Filter</button>
-                <button type="button" id="showAllBatches" class="btn btn-info mr-2">Show All Batches</button>
+                <button type="button" id="clearFilter" class="btn btn-secondary ml-4">Clear Filter</button>
+                <button type="button" id="showAllBatches" class="btn btn-info ml-4">Show All Batches</button>
             </div>
         </div>
     </form>
 </div>
-
-{% if show_initial_message %}
-<div id="initial-message" class="alert alert-info" role="alert">
-    Please select a location, place, and year to filter the batches.
-</div>
-{% endif %}
 
 <div id="batches-table">
     {% if batches %}
@@ -126,12 +120,6 @@
             {% endfor %}
         </tbody>
     </table>
-    {% else %}
-    {% if not is_initial_load %}
-    <div class="alert alert-info" role="alert">
-        No batches found.
-    </div>
-    {% endif %}
     {% endif %}
 </div>
 
