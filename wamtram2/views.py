@@ -896,16 +896,6 @@ class TemplateManageView(LoginRequiredMixin, FormView):
         
         return super().dispatch(request, *args, **kwargs)
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['templates'] = Template.objects.all()
-        context['locations'] = list(TrtLocations.objects.all())
-        context['places'] = list(TrtPlaces.objects.all())
-        context['species'] = list(TrtSpecies.objects.all())
-        context['sex_choices'] = SEX_CHOICES
-        context['places_json'] = json.dumps(self.get_places(), cls=DjangoJSONEncoder)
-        return context
-
     def get_places(self, request):
         location_code = request.GET.get('location_code')
         places = TrtPlaces.objects.filter(location_code=location_code)
@@ -968,10 +958,20 @@ class TemplateManageView(LoginRequiredMixin, FormView):
         context['sex_choices'] = SEX_CHOICES
         
         # This is where get_places is needed
-        context['places_json'] = json.dumps(self.get_places(), cls=DjangoJSONEncoder)
+        context['places_json'] = json.dumps(self.get_places_data(), cls=DjangoJSONEncoder)
         return context
 
-
+    def get_places_data(self):
+        """Returns places data including full name."""
+        places = TrtPlaces.objects.select_related('location_code').all()
+        places_data = [
+            {
+                'place_code': place.place_code,
+                'place_name': place.place_name,
+                'full_name': place.get_full_name()
+            } for place in places
+        ]
+        return places_data
 
 class ValidateTagView(View):
     """
