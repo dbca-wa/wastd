@@ -871,9 +871,16 @@ SEX_CHOICES = [
 class TemplateManageView(LoginRequiredMixin, FormView):
     template_name = 'wamtram2/template_manage.html'
     form_class = TemplateForm
+    paginate_by = 30
+
     def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_superuser:
-            return HttpResponseForbidden("You do not have permission to access this page.")
+        if not (
+            request.user.groups.filter(name="Tagging Data Curation").exists()
+            or request.user.is_superuser
+        ):
+            return HttpResponseForbidden(
+                "You do not have permission to view this page"
+            )
         
         if request.method == 'PUT':
             return self.put(request, *args, **kwargs)
@@ -881,8 +888,10 @@ class TemplateManageView(LoginRequiredMixin, FormView):
             return self.delete(request, *args, **kwargs)
         elif request.method == 'GET' and 'location_code' in request.GET:
             return self.get_places(request)
-        
-        return super().dispatch(request, *args, **kwargs)
+        elif request.method == 'GET' and 'get_templates' in request.GET:
+            return self.get_templates(request)
+        elif request.method == 'GET' and 'name' in request.GET:
+            return self.check_template_name(request)
 
     def form_valid(self, form):
         form.save()
@@ -895,16 +904,7 @@ class TemplateManageView(LoginRequiredMixin, FormView):
         context['places'] = list(TrtPlaces.objects.all())
         context['species'] = list(TrtSpecies.objects.all())
         context['sex_choices'] = SEX_CHOICES
-        
-        places_data = [
-            {
-                'place_code': place.place_code,
-                'place_name': place.place_name,
-                'full_name': place.get_full_name()
-            }
-            for place in context['places']
-        ]
-        context['places_json'] = json.dumps(places_data, cls=DjangoJSONEncoder)
+        context['places_json'] = json.dumps(self.get_places_data(), cls=DjangoJSONEncoder)
         return context
 
     def delete(self, request, template_key):
@@ -926,33 +926,71 @@ class TemplateManageView(LoginRequiredMixin, FormView):
             })
         return JsonResponse({'errors': form.errors}, status=400)
     
-    def get_places(self, request):
-        """
-        Retrieves places based on the provided location code.
+    def get_locations(self):
+        return list(TrtLocations.objects.all())
 
-        Args:
-            request (HttpRequest): The HTTP request.
+    def get_places(self):
+        return list(TrtPlaces.objects.select_related('location_code').all())
 
-        Returns:
-            JsonResponse: The JSON response with places data.
-        """
-        location_code = request.GET.get('location_code')
-        places = TrtPlaces.objects.filter(location_code=location_code).select_related('location_code')
-        places_list = [
-            {
-                'place_code': place.place_code,
-                'place_name': place.place_name,
-                'full_name': place.get_full_name()
-            }
-            for place in places
-        ]
-        return JsonResponse(places_list, safe=False)
+    def get_species(self):
+        return list(TrtSpecies.objects.all())
 
+    def get_places_data(self):
+        places = self.get_places()
+        return [{'place_code': place.place_code, 'place_name': place.place_name, 'full_name': place.get_full_name()} for place in places]
     
-def check_template_name(request):
-    name = request.GET.get('name', '')
-    exists = Template.objects.filter(name=name).exists()
-    return JsonResponse({'exists': exists})
+    @require_http_methods(["GET"])
+    def get_templates(self, request):
+        page = int(request.GET.get('page', 1))
+        templates = Template.objects.select_related('location_code', 'place_code', 'species_code').all()
+        paginator = Paginator(templates, self.paginate_by)
+        page_obj = paginator.get_page(page)
+        
+        templates_data = [{
+            'id': template.template_id,
+            'name': template.name,
+            'location_code': template.location_code.location_code,
+            'location_name': template.location_code.location_name,
+            'place_code': template.place_code.place_code,
+            'place_name': template.place_code.place_name,
+            'species_code': template.species_code.species_code,
+            'species_name': template.species_code.common_name,
+            'sex': template.sex
+        } for template in page_obj]
+
+        context = {
+            'templates': templates_data,
+            'page_obj': page_obj,
+            'is_paginated': paginator.num_pages > 1,
+            'paginator': paginator,
+        }
+
+        if request.is_ajax():
+            return JsonResponse(context)
+        else:
+            return self.render_to_response(self.get_context_data(**context))
+    
+    def form_valid(self, form):
+        template = form.save()
+        if self.request.is_ajax():
+            return JsonResponse({
+                'success': True,
+                'template': {
+                    'id': template.template_id,
+                    'name': template.name,
+                    'location_code': template.location_code,
+                    'place_code': template.place_code,
+                    'species_code': template.species_code,
+                    'sex': template.sex
+                }
+            })
+        return redirect('wamtram2:template_manage')
+    
+    @method_decorator(require_http_methods(["GET"]))
+    def check_template_name(self, request):
+        name = request.GET.get('name', '')
+        exists = Template.objects.filter(name=name).exists()
+        return JsonResponse({'exists': exists})
 
 
 class ValidateTagView(View):
