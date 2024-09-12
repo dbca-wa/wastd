@@ -62,6 +62,7 @@
     <nav aria-label="breadcrumb" class="d-none d-md-block">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'wamtram2:batches_curation' %}">Entry batches</a></li>
             <li class="breadcrumb-item active">Manage Templates</li>
         </ol>
     </nav>
@@ -366,7 +367,7 @@
                     $('#place_code').append($('<option>', {
                         value: place.place_code,
                         text: place.place_name,
-                        'data-full-name': place.full_name
+                        'place-full-name': place.full_name
                     }));
                 });
             });
@@ -382,11 +383,11 @@
                     placeSelect.append($('<option>', {
                         value: place.place_code,
                         text: place.place_name,
-                        'data-full-name': place.full_name
+                        'place-full-name': place.full_name
                     }));
                 });
             });
-        {% endfor %}
+            {% endfor %}
     
             $('form').on('submit', utils.showLoadingSpinner);
             $('a').on('click', utils.showLoadingSpinner);
