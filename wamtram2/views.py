@@ -26,6 +26,9 @@ from django.views.decorators.http import require_http_methods
 from django.urls import reverse
 from django.views.decorators.http import require_GET, require_POST, require_http_methods
 from django.template.loader import render_to_string
+from django.core.serializers.json import DjangoJSONEncoder
+import json
+
 
 from wastd.utils import Breadcrumb, PaginateMixin
 from .models import (
@@ -1350,6 +1353,16 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
         context['templates'] = Template.objects.all()
         context['batches'] = self.get_queryset()
         context['is_initial_load'] = not bool(self.request.GET)
+        places = TrtPlaces.objects.select_related('location_code').all()
+        places_data = [
+            {
+                'place_code': place.place_code,
+                'place_name': place.place_name,
+                'full_name': place.get_full_name()
+            }
+            for place in places
+        ]
+        context['places_json'] = json.dumps(places_data, cls=DjangoJSONEncoder)
 
         return context
     def get(self, request, *args, **kwargs):
