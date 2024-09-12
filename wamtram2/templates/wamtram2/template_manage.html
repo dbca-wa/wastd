@@ -1,5 +1,7 @@
 {% extends "base_wastd.html" %}
 {% load static bootstrap4 %}
+{% load proper_paginate %}
+{% load url_replace %}
 
 {% block extra_style %}
     {{ block.super }}
@@ -123,6 +125,50 @@
             </form>
         </div>
 
+
+        <!-- Pagination -->
+        <div class="pagination-container">
+            {% if is_paginated %}
+            <ul class="pagination mb-0">
+                {% if page_obj.number != 1 %}
+                <li class="page-item">
+                    <a class="page-link" href="?{% url_replace request 'page' 1 %}">⇤</a>
+                </li>
+                {% endif %}
+                
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?{% url_replace request 'page' page_obj.previous_page_number %}">&laquo;</a>
+                </li>
+                {% endif %}
+                
+                {% for i in paginator|proper_paginate:page_obj.number %}
+                    {% if page_obj.number == i %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ i }}<span class="sr-only">(current)</span></span>
+                    </li>
+                    {% else %}
+                    <li class="page-item">
+                        <a class="page-link" href="?{% url_replace request 'page' i %}">{{ i }}</a>
+                    </li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?{% url_replace request 'page' page_obj.next_page_number %}">&raquo;</a>
+                </li>
+                {% endif %}
+                
+                {% if page_obj.number != paginator.num_pages %}
+                <li class="page-item">
+                    <a class="page-link" href="?{% url_replace request 'page' paginator.num_pages %}">⇥</a>
+                </li>
+                {% endif %}
+            </ul>
+            {% endif %}
+        </div>
+
         <!-- Existing Templates List -->
         <div class="step-container">
             <div class="step-header">Existing Templates</div>
@@ -202,7 +248,6 @@
 {{ block.super }}
 <script>
     (function($) {
-        // Utility functions
         const utils = {
             getCSRFToken: function() {
                 return document.querySelector('[name=csrfmiddlewaretoken]').value;
@@ -213,7 +258,7 @@
                      .addClass('alert-' + type)
                      .text(message)
                      .slideDown();
-    
+        
                 setTimeout(function() {
                     alert.slideUp();
                 }, 3000);
@@ -226,9 +271,8 @@
             }
         };
     
-        // API calls
         const api = {
-            loadPlaces: function(locationCode, targetElement) {
+            loadPlaces: function(locationCode) {
                 utils.showLoadingSpinner();
                 return $.ajax({
                     url: "{% url 'wamtram2:get_places' %}",
@@ -237,165 +281,115 @@
                     dataType: 'json'
                 }).always(utils.hideLoadingSpinner);
             },
-            checkTemplateName: function(name) {
+            checkTemplateName: function(name, templateKey = null) {
+                // Check for template name uniqueness
                 return $.ajax({
                     url: "{% url 'wamtram2:check_template_name' %}",
                     type: 'GET',
-                    data: { name: name },
+                    data: { name: name, template_key: templateKey },
                     dataType: 'json'
                 });
-            },
-            createTemplate: function(formData) {
-                utils.showLoadingSpinner();
-                return $.ajax({
-                    url: "{% url 'wamtram2:template_manage' %}",
-                    type: "POST",
-                    data: formData,
-                    beforeSend: function(xhr) {
-                        xhr.setRequestHeader("X-CSRFToken", utils.getCSRFToken());
-                    }
-                }).always(utils.hideLoadingSpinner);
-            },
-            updateTemplate: function(templateKey, formData) {
-                utils.showLoadingSpinner();
-                return $.ajax({
-                    url: "{% url 'wamtram2:template_manage_key' 'dummy_key' %}".replace('dummy_key', templateKey),
-                    type: "PUT",
-                    contentType: "application/x-www-form-urlencoded",
-                    data: formData,
-                    beforeSend: function(xhr) {
-                        xhr.setRequestHeader("X-CSRFToken", utils.getCSRFToken());
-                    }
-                }).always(utils.hideLoadingSpinner);
-            },
-            deleteTemplate: function(templateKey) {
-                utils.showLoadingSpinner();
-                return $.ajax({
-                    url: "{% url 'wamtram2:template_manage' %}" + templateKey + "/",
-                    type: "DELETE",
-                    beforeSend: function(xhr) {
-                        xhr.setRequestHeader("X-CSRFToken", utils.getCSRFToken());
-                    }
-                }).always(utils.hideLoadingSpinner);
             }
         };
     
-        // Template management functions
         const templateManager = {
+            checkTemplateNameAvailability: function(templateName, templateKey) {
+                api.checkTemplateName(templateName, templateKey).done(function(response) {
+                    if (response.exists) {
+                        // Mark the input as invalid
+                        $('#name').addClass('is-invalid').removeClass('is-valid');
+                        $('#name-feedback').text('This template name already exists').removeClass('valid-feedback').addClass('invalid-feedback').show();
+                    } else {
+                        // Mark the input as valid
+                        $('#name').removeClass('is-invalid').addClass('is-valid');
+                        $('#name-feedback').text('This template name is available').removeClass('invalid-feedback').addClass('valid-feedback').show();
+                    }
+                }).fail(function() {
+                    utils.showMessage('Error checking template name', 'danger');
+                });
+            },
+    
             generateTemplateName: function() {
                 var selectedPlace = $('#place_code option:selected');
-                var placeFullName = selectedPlace.data('full-name');
+                var placeFullName = selectedPlace.attr('place-full-name');
                 var species = $('#species_code option:selected').text();
                 var sex = $('#sex option:selected').text();
                 
                 if (placeFullName && species && sex) {
                     var templateName = placeFullName + ' - ' + species + ' ' + sex;
                     $('#name').val(templateName);
-    
-                    api.checkTemplateName(templateName).done(function(response) {
-                        if (response.exists) {
-                            $('#name').addClass('is-invalid');
-                            $('#name-feedback').text('(This template already exists)').show();
-                        } else {
-                            $('#name').removeClass('is-invalid');
-                            $('#name-feedback').hide();
-                        }
-                    });
+                    // Check template name for uniqueness during creation
+                    this.checkTemplateNameAvailability(templateName);
                 }
             },
+    
             createTemplate: function() {
-                var templateName = $('#name').val();
-                api.checkTemplateName(templateName).done(function(response) {
-                    if (response.exists) {
-                        utils.showMessage('Error: This template already exists', 'danger');
-                    } else {
-                        var formData = $('#templateForm').serialize();
-                        api.createTemplate(formData)
-                            .done(function() {
-                                utils.showMessage('Template created successfully', 'success');
-                                setTimeout(function() { window.location.reload(true); }, 500);
-                            })
-                            .fail(function(data) {
-                                utils.showMessage('Error creating template: ' + JSON.stringify(data.responseJSON.errors), 'danger');
-                            });
-                    }
+                var formData = $('#templateForm').serialize();
+                utils.showLoadingSpinner();
+                $.ajax({
+                    url: "{% url 'wamtram2:template_manage' %}",
+                    type: 'POST',
+                    data: formData,
+                    success: function(response) {
+                        utils.showMessage('Template created successfully', 'success');
+                        location.reload();
+                    },
+                    error: function(xhr) {
+                        utils.showMessage('Error creating template: ' + xhr.responseJSON.errors, 'danger');
+                    },
+                    complete: utils.hideLoadingSpinner
                 });
             },
+    
             updateTemplate: function(templateKey) {
                 var formData = $('#templateForm-' + templateKey).serialize();
-                api.updateTemplate(templateKey, formData)
-                    .done(function() {
+                utils.showLoadingSpinner();
+                $.ajax({
+                    url: "{% url 'wamtram2:template_manage_key' 'dummy_key' %}".replace('dummy_key', templateKey),
+                    type: 'PUT',
+                    data: formData,
+                    contentType: "application/x-www-form-urlencoded",
+                    success: function(response) {
                         utils.showMessage('Template updated successfully', 'success');
-                        setTimeout(function() { window.location.reload(true); }, 500);
-                    })
-                    .fail(function(xhr) {
-                        var errorMessage = 'Error updating template';
-                        if (xhr.responseJSON && xhr.responseJSON.errors) {
-                            errorMessage += ': ' + JSON.stringify(xhr.responseJSON.errors);
-                        } else if (xhr.responseJSON && xhr.responseJSON.error) {
-                            errorMessage += ': ' + xhr.responseJSON.error;
-                        } else {
-                            errorMessage += '. Please check the server logs for more details.';
-                        }
-                        utils.showMessage(errorMessage, 'danger');
-                    });
-            },
-            deleteTemplate: function(templateKey) {
-                if (confirm('Are you sure you want to delete this template?')) {
-                    api.deleteTemplate(templateKey)
-                        .done(function() {
-                            utils.showMessage('Template deleted successfully', 'success');
-                            setTimeout(function() { location.reload(); }, 500);
-                        })
-                        .fail(function(data) {
-                            utils.showMessage('Error deleting template: ' + JSON.stringify(data.responseJSON.errors), 'danger');
-                        });
-                }
+                        location.reload();
+                    },
+                    error: function(xhr) {
+                        utils.showMessage('Error updating template: ' + xhr.responseJSON.errors, 'danger');
+                    },
+                    complete: utils.hideLoadingSpinner
+                });
             }
         };
     
-        // Event handlers
         $(document).ready(function() {
             $('#location_code').change(function() {
                 var locationCode = $(this).val();
-                api.loadPlaces(locationCode, '#place_code')
-                    .done(function(data) {
-                        var placeSelect = $('#place_code');
-                        placeSelect.empty().append('<option value="">Select Place</option>');
-                        if (Array.isArray(data)) {
-                            $.each(data, function(index, place) {
-                                placeSelect.append('<option value="' + place.place_code + '" data-full-name="' + place.get_full_name + '">' + place.place_name + '</option>');
-                            });
-                        } else {
-                            console.error('Unexpected data format:', data);
-                            utils.showMessage('Error loading places: Unexpected data format', 'danger');
-                        }
-                        placeSelect.trigger('change');
-                    })
-                    .fail(function(xhr) {
-                        console.error('Error fetching places:', xhr.responseText);
-                        utils.showMessage('Error loading places. Please try again.', 'danger');
+                api.loadPlaces(locationCode).done(function(data) {
+                    $('#place_code').empty();
+                    $.each(data, function(index, place) {
+                        $('#place_code').append($('<option>', {
+                            value: place.place_code,
+                            text: place.place_name
+                        }));
                     });
+                }).fail(function() {
+                    utils.showMessage('Error loading places', 'danger');
+                });
             });
     
-            $('#place_code, #species_code, #sex').change(templateManager.generateTemplateName);
+            $('#place_code, #species_code, #sex').change(function() {
+                templateManager.generateTemplateName();
+            });
     
-            {% for template in templates %}
-                $('#location_code_{{ template.template_id }}').change(function() {
-                    var locationCode = $(this).val();
-                    api.loadPlaces(locationCode, '#place_code_{{ template.template_id }}');
-                });
-            {% endfor %}
-    
-            $('form').on('submit', utils.showLoadingSpinner);
-            $('a').on('click', utils.showLoadingSpinner);
-            $(window).on('beforeunload', utils.showLoadingSpinner);
+            $('#name').on('input', function() {
+                // Check template name uniqueness when manually entered
+                var templateName = $(this).val();
+                templateManager.checkTemplateNameAvailability(templateName);
+            });
         });
-    
-        // Expose necessary functions to global scope
-        window.createTemplate = templateManager.createTemplate;
-        window.updateTemplate = templateManager.updateTemplate;
-        window.deleteTemplate = templateManager.deleteTemplate;
     })(jQuery);
-    </script>
+    
+</script>
+{% endblock %}
+
 {% endblock %}

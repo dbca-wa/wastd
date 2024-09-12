@@ -24,6 +24,7 @@ urlpatterns = [
     path("templates-manage/", views.TemplateManageView.as_view(), name="template_manage"),
     path("templates-manage/<str:template_key>/", views.TemplateManageView.as_view(), name="template_manage_key"),
     path('templates-manage/get-places/', views.TemplateManageView.as_view(), name='get_places'),
+     path('templates-manage/check-template-name/', views.TemplateManageView.as_view(), name='check_template_name'),
     path('search-persons/', views.search_persons, name='search-persons'),
     path('search-places/', views.search_places, name='search-places'),
     path('export/', views.ExportDataView.as_view(), name='export_data'),
@@ -36,5 +37,4 @@ urlpatterns = [
     path('batch_code_manage/<int:batch_id>/', views.BatchCodeManageView.as_view(), name='add_batches_code'),
     path('get-places/', views.get_places, name='get_places'),
     path('check_batch_code/', views.BatchCodeManageView.as_view(http_method_names=['get']), {'action': 'check_batch_code'}, name='check_batch_code'),
-    path('check_template_name/', views.check_template_name, name='check_template_name'),
 ]

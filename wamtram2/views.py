@@ -537,7 +537,7 @@ class DeleteBatchView(LoginRequiredMixin, View):
     def post(self, request, batch_id):
         batch = get_object_or_404(TrtEntryBatches, entry_batch_id=batch_id)
         batch.delete()
-        return redirect("wamtram2:entry_batches")
+        return redirect("wamtram2:batches_curation")
 
 
 class ValidateDataEntryBatchView(LoginRequiredMixin, View):
@@ -587,7 +587,7 @@ class ValidateDataEntryBatchView(LoginRequiredMixin, View):
 
 class DeleteEntryView(DeleteView):
     model = TrtDataEntry
-    success_url = reverse_lazy('wamtram2:entry_batches')
+    success_url = reverse_lazy('wamtram2:batches_curation')
 
     def get_success_url(self):
         batch_id = self.kwargs['batch_id']
@@ -868,41 +868,62 @@ SEX_CHOICES = [
     ("I", "Indeterminate"),
 ]
 
+
 class TemplateManageView(LoginRequiredMixin, FormView):
     template_name = 'wamtram2/template_manage.html'
     form_class = TemplateForm
+    paginate_by = 30
+    
     def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_superuser:
-            return HttpResponseForbidden("You do not have permission to access this page.")
+        if not (
+            request.user.groups.filter(name="Tagging Data Curation").exists()
+            or request.user.is_superuser
+        ):
+            return HttpResponseForbidden(
+                "You do not have permission to view this page"
+            )
         
-        if request.method == 'PUT':
-            return self.put(request, *args, **kwargs)
-        elif request.method == 'DELETE':
-            return self.delete(request, *args, **kwargs)
-        elif request.method == 'GET' and 'location_code' in request.GET:
-            return self.get_places(request)
+        if request.is_ajax():
+            if request.method == 'GET' and 'location_code' in request.GET:
+                return self.get_places(request)
+            elif request.method == 'GET' and 'get_templates' in request.GET:
+                return self.get_templates(request)
+            elif request.method == 'POST':
+                return self.create_template(request)
+            elif request.method == 'PUT':
+                return self.update_template(request, *args, **kwargs)
+            elif request.method == 'DELETE':
+                return self.delete_template(request, *args, **kwargs)
         
         return super().dispatch(request, *args, **kwargs)
 
-    def form_valid(self, form):
-        form.save()
-        return redirect('wamtram2:template_manage')
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        # 加载页面数据，使用AJAX加载可以减轻压力
         context['templates'] = Template.objects.all()
         context['locations'] = list(TrtLocations.objects.all())
         context['places'] = list(TrtPlaces.objects.all())
         context['species'] = list(TrtSpecies.objects.all())
         context['sex_choices'] = SEX_CHOICES
+        context['places_json'] = json.dumps(self.get_places_data(), cls=DjangoJSONEncoder)
         return context
 
-    def delete(self, request, template_key):
-        template = get_object_or_404(Template, pk=template_key)
-        template.delete()
-        return JsonResponse({'message': 'Template deleted'})
+    def get_places(self, request):
+        """异步加载places数据"""
+        location_code = request.GET.get('location_code')
+        places = TrtPlaces.objects.filter(location_code=location_code)
+        places_data = [{'place_code': place.place_code, 'place_name': place.place_name} for place in places]
+        return JsonResponse(places_data, safe=False)
 
-    def put(self, request, template_key):
+    def create_template(self, request):
+        form = TemplateForm(request.POST)
+        if form.is_valid():
+            template = form.save()
+            return JsonResponse({'message': 'Template created successfully'}, status=200)
+        return JsonResponse({'errors': form.errors}, status=400)
+
+    def update_template(self, request, *args, **kwargs):
+        template_key = kwargs.get('template_key')
         template = get_object_or_404(Template, pk=template_key)
         form = TemplateForm(QueryDict(request.body), instance=template)
         if form.is_valid():
@@ -915,26 +936,43 @@ class TemplateManageView(LoginRequiredMixin, FormView):
                 'sex': updated_template.sex
             })
         return JsonResponse({'errors': form.errors}, status=400)
-    
-    def get_places(self, request):
-        """
-        Retrieves places based on the provided location code.
 
-        Args:
-            request (HttpRequest): The HTTP request.
-
-        Returns:
-            JsonResponse: The JSON response with places data.
-        """
-        location_code = request.GET.get('location_code')
-        places = TrtPlaces.objects.filter(location_code=location_code)
-        places_list = list(places.values('place_code', 'place_name'))
-        return JsonResponse(places_list, safe=False)
+    def delete_template(self, request, *args, **kwargs):
+        template_key = kwargs.get('template_key')
+        template = get_object_or_404(Template, pk=template_key)
+        template.delete()
+        return JsonResponse({'message': 'Template deleted'}, status=200)
     
-def check_template_name(request):
-    name = request.GET.get('name', '')
-    exists = Template.objects.filter(name=name).exists()
-    return JsonResponse({'exists': exists})
+    @method_decorator(require_http_methods(["GET"]))
+    def check_template_name(self, request):
+        name = request.GET.get('name', '')
+        exists = Template.objects.filter(name=name).exists()
+        return JsonResponse({'exists': exists})
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Fetch all templates
+        templates = Template.objects.all()
+        
+        # Implement pagination
+        paginator = Paginator(templates, self.paginate_by)
+        page_number = self.request.GET.get('page', 1)
+        page_obj = paginator.get_page(page_number)
+        
+        # Add pagination context
+        context['is_paginated'] = paginator.num_pages > 1
+        context['page_obj'] = page_obj
+        context['paginator'] = paginator
+        context['templates'] = page_obj.object_list  # Templates for the current page
+        
+        context['locations'] = list(TrtLocations.objects.all())
+        context['places'] = list(TrtPlaces.objects.all())
+        context['species'] = list(TrtSpecies.objects.all())
+        context['sex_choices'] = SEX_CHOICES
+        context['places_json'] = json.dumps(self.get_places_data(), cls=DjangoJSONEncoder)
+        return context
+
 
 
 class ValidateTagView(View):
