@@ -868,7 +868,6 @@ SEX_CHOICES = [
     ("I", "Indeterminate"),
 ]
 
-
 class TemplateManageView(LoginRequiredMixin, FormView):
     template_name = 'wamtram2/template_manage.html'
     form_class = TemplateForm
@@ -899,7 +898,6 @@ class TemplateManageView(LoginRequiredMixin, FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # 加载页面数据，使用AJAX加载可以减轻压力
         context['templates'] = Template.objects.all()
         context['locations'] = list(TrtLocations.objects.all())
         context['places'] = list(TrtPlaces.objects.all())
@@ -909,10 +907,9 @@ class TemplateManageView(LoginRequiredMixin, FormView):
         return context
 
     def get_places(self, request):
-        """异步加载places数据"""
         location_code = request.GET.get('location_code')
         places = TrtPlaces.objects.filter(location_code=location_code)
-        places_data = [{'place_code': place.place_code, 'place_name': place.place_name} for place in places]
+        places_data = [{'place_code': place.place_code, 'place_name': place.place_name, 'full_name': place.get_full_name() } for place in places]
         return JsonResponse(places_data, safe=False)
 
     def create_template(self, request):
@@ -952,24 +949,25 @@ class TemplateManageView(LoginRequiredMixin, FormView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         
-        # Fetch all templates
+        # Fetch templates with pagination
         templates = Template.objects.all()
-        
-        # Implement pagination
         paginator = Paginator(templates, self.paginate_by)
         page_number = self.request.GET.get('page', 1)
         page_obj = paginator.get_page(page_number)
         
-        # Add pagination context
+        # Add pagination and templates to context
         context['is_paginated'] = paginator.num_pages > 1
         context['page_obj'] = page_obj
         context['paginator'] = paginator
-        context['templates'] = page_obj.object_list  # Templates for the current page
+        context['templates'] = page_obj.object_list
         
+        # Add additional data
         context['locations'] = list(TrtLocations.objects.all())
         context['places'] = list(TrtPlaces.objects.all())
         context['species'] = list(TrtSpecies.objects.all())
         context['sex_choices'] = SEX_CHOICES
+        
+        # This is where get_places_data is needed
         context['places_json'] = json.dumps(self.get_places_data(), cls=DjangoJSONEncoder)
         return context
 

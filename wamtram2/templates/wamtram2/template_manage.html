@@ -271,12 +271,11 @@
             generateTemplateName: function() {
                 var selectedPlace = $('#place_code option:selected');
                 var placeFullName = selectedPlace.attr('place-full-name');
-                var placeFullName = selectedPlace.attr('place-full-name');
                 var species = $('#species_code option:selected').text();
                 var sex = $('#sex option:selected').text();
                 
                 if (placeFullName && species && sex) {
-                    var templateName = placeFullName + ' - ' + species + ' ' + sex;
+                    var templateName = placeFullName + '-' + species + '-' + sex;
                     $('#name').val(templateName);
                     // Check template name for uniqueness during creation
                     this.checkTemplateNameAvailability(templateName);
@@ -330,6 +329,7 @@
                         $('#place_code').append($('<option>', {
                             value: place.place_code,
                             text: place.place_name
+                            'place-full-name': place.full_name 
                         }));
                     });
                 }).fail(function() {
