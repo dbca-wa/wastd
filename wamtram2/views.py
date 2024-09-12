@@ -1288,8 +1288,6 @@ class DudTagManageView(LoginRequiredMixin, View):
 
             observation.save()
 
-            print(f"Observation updated for entry ID: {entry_id}, tag type: {tag_type}")
-
         return redirect('wamtram2:dud_tag_manage')
 
 class BatchesCurationView(LoginRequiredMixin,ListView):
@@ -1304,9 +1302,7 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
         return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
-        print(f"GET parameters: {self.request.GET}")
         if not self.request.GET:
-            print("No GET parameters, returning empty queryset")
             return TrtEntryBatches.objects.none()
 
         queryset = super().get_queryset()
@@ -1315,7 +1311,11 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
         place = self.request.GET.get('place')
         year = self.request.GET.get('year')
         
-        print(f"Filters: location={location}, place={place}, year={year}")
+        if self.request.GET.get('show_all'):
+            return queryset.order_by('-entry_batch_id')
+        
+        if not (location or year):
+            return TrtEntryBatches.objects.none()
 
         query = Q()
 
@@ -1332,16 +1332,10 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
             query = Q(batches_code__endswith=year_code)
             
         if query:
-            print(f"Query: {query}")
             result = queryset.filter(query).order_by('-entry_batch_id')
-            print(f"Query result count: {result.count()}")
-            print("Query results:", list(result.values_list('batches_code', flat=True)[:10]))  # 只打印前10个结果
             return result
         else:
-            print("No filters applied, returning all batches")
             result = queryset.order_by('-entry_batch_id')
-            print(f"All batches count: {result.count()}")
-            print("All batches (first 10):", list(result.values_list('batches_code', flat=True)[:10]))  # 只打印前10个结果
             return result
 
     def get_context_data(self, **kwargs):
@@ -1356,9 +1350,7 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
         context['templates'] = Template.objects.all()
 
         context['batches'] = self.get_queryset()
-        context['is_initial_load'] = not bool(self.request.GET)
-        print(f"Batches count in context: {len(context['batches'])}")
-        print(f"Context data: {context}")
+        context['show_initial_message'] = not (self.request.GET.get('location') or self.request.GET.get('year'))
         return context
     
     def get(self, request, *args, **kwargs):
@@ -1366,26 +1358,14 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
         context = self.get_context_data()
         
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            paginator = Paginator(context['batches'], self.paginate_by)
-            page_number = request.GET.get('page', 1)
-            page_obj = paginator.get_page(page_number)
-            
-            context.update({
-                'batches': page_obj,
-                'page_obj': page_obj,
-                'is_paginated': page_obj.has_other_pages(),
-                'paginator': paginator,
-            })
-            
             html = render_to_string('wamtram2/batches_curation.html', context, request=request)
             return JsonResponse({
                 'html': html,
-                'count': paginator.count,
-                'num_pages': paginator.num_pages,
-                'current_page': page_obj.number,
+                'count': context['paginator'].count if 'paginator' in context else 0,
+                'num_pages': context['paginator'].num_pages if 'paginator' in context else 1,
+                'current_page': context['page_obj'].number if 'page_obj' in context else 1,
             })
         return super().get(request, *args, **kwargs)
-
 class CreateNewEntryView(LoginRequiredMixin, ListView):
     model = TrtEntryBatches
     template_name = 'wamtram2/create_new_entry.html'
@@ -1397,6 +1377,9 @@ class CreateNewEntryView(LoginRequiredMixin, ListView):
         Filter the batches data based on query parameters
         """
         queryset = super().get_queryset()
+        
+        if self.request.GET.get('show_all'):
+            return queryset.order_by('-entry_batch_id')
 
         location = self.request.GET.get('location')
         place = self.request.GET.get('place')
