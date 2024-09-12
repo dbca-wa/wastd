@@ -241,7 +241,7 @@
             },
             checkTemplateName: function(name) {
                 return $.ajax({
-                    url: "{% url 'wamtram2:check_template_name' %}",
+                    url: "{% url 'wamtram2:template_manage' %}",
                     type: 'GET',
                     data: { name: name },
                     dataType: 'json'
