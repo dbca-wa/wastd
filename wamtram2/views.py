@@ -537,7 +537,7 @@ class DeleteBatchView(LoginRequiredMixin, View):
     def post(self, request, batch_id):
         batch = get_object_or_404(TrtEntryBatches, entry_batch_id=batch_id)
         batch.delete()
-        return redirect("wamtram2:entry_batches")
+        return redirect("wamtram2:batches_curation")
 
 
 class ValidateDataEntryBatchView(LoginRequiredMixin, View):
@@ -587,7 +587,7 @@ class ValidateDataEntryBatchView(LoginRequiredMixin, View):
 
 class DeleteEntryView(DeleteView):
     model = TrtDataEntry
-    success_url = reverse_lazy('wamtram2:entry_batches')
+    success_url = reverse_lazy('wamtram2:batches_curation')
 
     def get_success_url(self):
         batch_id = self.kwargs['batch_id']
@@ -895,6 +895,16 @@ class TemplateManageView(LoginRequiredMixin, FormView):
         context['places'] = list(TrtPlaces.objects.all())
         context['species'] = list(TrtSpecies.objects.all())
         context['sex_choices'] = SEX_CHOICES
+        
+        places_data = [
+            {
+                'place_code': place.place_code,
+                'place_name': place.place_name,
+                'full_name': place.get_full_name()
+            }
+            for place in context['places']
+        ]
+        context['places_json'] = json.dumps(places_data, cls=DjangoJSONEncoder)
         return context
 
     def delete(self, request, template_key):
@@ -927,9 +937,17 @@ class TemplateManageView(LoginRequiredMixin, FormView):
             JsonResponse: The JSON response with places data.
         """
         location_code = request.GET.get('location_code')
-        places = TrtPlaces.objects.filter(location_code=location_code)
-        places_list = list(places.values('place_code', 'place_name'))
+        places = TrtPlaces.objects.filter(location_code=location_code).select_related('location_code')
+        places_list = [
+            {
+                'place_code': place.place_code,
+                'place_name': place.place_name,
+                'full_name': place.get_full_name()
+            }
+            for place in places
+        ]
         return JsonResponse(places_list, safe=False)
+
     
 def check_template_name(request):
     name = request.GET.get('name', '')

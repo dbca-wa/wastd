@@ -76,7 +76,7 @@
                 {{ error_message }}
             </div>
         {% endif %}
-
+        
         <!-- Create New Template Form -->
         <div class="step-container">
             <div class="step-header">Create New Template</div>
@@ -210,9 +210,9 @@
             showMessage: function(message, type) {
                 var alert = $('#message-alert');
                 alert.removeClass('alert-success alert-danger')
-                     .addClass('alert-' + type)
-                     .text(message)
-                     .slideDown();
+                    .addClass('alert-' + type)
+                    .text(message)
+                    .slideDown();
     
                 setTimeout(function() {
                     alert.slideUp();
@@ -284,7 +284,7 @@
         const templateManager = {
             generateTemplateName: function() {
                 var selectedPlace = $('#place_code option:selected');
-                var placeFullName = selectedPlace.data('full-name');
+                var placeFullName = selectedOption.data('full-name');
                 var species = $('#species_code option:selected').text();
                 var sex = $('#sex option:selected').text();
                 
@@ -353,39 +353,40 @@
                 }
             }
         };
+
+        var placesData = {{ places_json|safe }};
     
         // Event handlers
         $(document).ready(function() {
             $('#location_code').change(function() {
                 var locationCode = $(this).val();
-                api.loadPlaces(locationCode, '#place_code')
-                    .done(function(data) {
-                        var placeSelect = $('#place_code');
-                        placeSelect.empty().append('<option value="">Select Place</option>');
-                        if (Array.isArray(data)) {
-                            $.each(data, function(index, place) {
-                                placeSelect.append('<option value="' + place.place_code + '" data-full-name="' + place.get_full_name + '">' + place.place_name + '</option>');
-                            });
-                        } else {
-                            console.error('Unexpected data format:', data);
-                            utils.showMessage('Error loading places: Unexpected data format', 'danger');
-                        }
-                        placeSelect.trigger('change');
-                    })
-                    .fail(function(xhr) {
-                        console.error('Error fetching places:', xhr.responseText);
-                        utils.showMessage('Error loading places. Please try again.', 'danger');
-                    });
+                var filteredPlaces = placesData.filter(place => place.place_code.startsWith(locationCode));
+                $('#place_code').empty().append('<option value="">Select Place</option>');
+                filteredPlaces.forEach(place => {
+                    $('#place_code').append($('<option>', {
+                        value: place.place_code,
+                        text: place.place_name,
+                        'data-full-name': place.full_name
+                    }));
+                });
             });
-    
             $('#place_code, #species_code, #sex').change(templateManager.generateTemplateName);
     
             {% for template in templates %}
-                $('#location_code_{{ template.template_id }}').change(function() {
-                    var locationCode = $(this).val();
-                    api.loadPlaces(locationCode, '#place_code_{{ template.template_id }}');
+            $('#location_code_{{ template.template_id }}').change(function() {
+                var locationCode = $(this).val();
+                var filteredPlaces = placesData.filter(place => place.place_code.startsWith(locationCode));
+                var placeSelect = $('#place_code_{{ template.template_id }}');
+                placeSelect.empty().append('<option value="">Select Place</option>');
+                filteredPlaces.forEach(place => {
+                    placeSelect.append($('<option>', {
+                        value: place.place_code,
+                        text: place.place_name,
+                        'data-full-name': place.full_name
+                    }));
                 });
-            {% endfor %}
+            });
+        {% endfor %}
     
             $('form').on('submit', utils.showLoadingSpinner);
             $('a').on('click', utils.showLoadingSpinner);
