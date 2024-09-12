@@ -883,7 +883,7 @@ class TemplateManageView(LoginRequiredMixin, FormView):
                 "You do not have permission to view this page"
             )
         
-        if request.is_ajax():
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             if request.method == 'GET' and 'location_code' in request.GET:
                 return self.get_places(request)
             elif request.method == 'GET' and 'get_templates' in request.GET:
