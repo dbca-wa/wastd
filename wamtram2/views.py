@@ -872,7 +872,7 @@ class TemplateManageView(LoginRequiredMixin, FormView):
     template_name = 'wamtram2/template_manage.html'
     form_class = TemplateForm
     paginate_by = 30
-
+    
     def dispatch(self, request, *args, **kwargs):
         if not (
             request.user.groups.filter(name="Tagging Data Curation").exists()
@@ -886,12 +886,16 @@ class TemplateManageView(LoginRequiredMixin, FormView):
             return self.put(request, *args, **kwargs)
         elif request.method == 'DELETE':
             return self.delete(request, *args, **kwargs)
-        elif request.method == 'GET' and 'location_code' in request.GET:
-            return self.get_places(request)
-        elif request.method == 'GET' and 'get_templates' in request.GET:
-            return self.get_templates(request)
-        elif request.method == 'GET' and 'name' in request.GET:
-            return self.check_template_name(request)
+        elif request.method == 'GET':
+            if 'location_code' in request.GET:
+                return self.get_places(request)
+            elif 'get_templates' in request.GET:
+                return self.get_templates(request)
+            elif 'name' in request.GET:
+                return self.check_template_name(request)
+            else:
+                return super().dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
         form.save()
