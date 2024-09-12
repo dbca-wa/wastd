@@ -1,0 +1,251 @@
+{% extends "base_wastd.html" %}
+{% load bootstrap4 %}
+{% load proper_paginate %}
+{% load url_replace %}
+{% load static %}
+
+{% block extra_style %}
+    {{ block.super }}
+    {{ form.media.css }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
+{% endblock %}
+
+{% block page_content_inner %}
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Batch Filter</h2>
+    </div>
+
+    <!-- Filter Form -->
+    <form id="filterForm" method="get" class="mb-4">
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="location">Location</label>
+                <select name="location" id="location" class="form-control">
+                    <option value="">Select Location</option>
+                    {% for location in locations %}
+                        <option value="{{ location.location_code }}" {% if location.location_code == selected_location %}selected{% endif %}>{{ location.location_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group col-md-4">
+                <label for="place">Place</label>
+                <select name="place" id="place" class="form-control">
+                    <option value="">Select Place</option>
+                    {% if places %}
+                        {% for place in places %}
+                            <option value="{{ place.place_code }}" {% if place.place_code == selected_place %}selected{% endif %}>{{ place.place_name }}</option>
+                        {% endfor %}
+                    {% endif %}
+                </select>
+            </div>
+            <div class="form-group col-md-4">
+                <label for="year">Year</label>
+                <select name="year" id="year" class="form-control">
+                    <option value="">Select Year</option>
+                    {% for year, code in years.items %}
+                        <option value="{{ year }}" {% if year == selected_year %}selected{% endif %}>{{ year }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group col-md-4 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary">Filter</button>
+                <button type="button" id="clearFilter" class="btn btn-secondary ml-4">Clear Filter</button>
+                <button type="button" id="showAllBatches" class="btn btn-info ml-4">Show All Batches</button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Batches Table -->
+    <div id="batches-table">
+        <table class="table table-striped table-hover">
+            <thead class="thead-light">
+                <tr>
+                    <th style="width: 10%;">Batch ID</th>
+                    <th style="width: 15%;">Batch Code</th>
+                    <th style="width: 45%;">Comments</th>
+                    <th style="width: 25%;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for batch in batches %}
+                <tr>
+                    <td>{{ batch.entry_batch_id }}</td>
+                    <td>{{ batch.batches_code|default:"No Code" }}</td>
+                    <td style="width: 15%;">{{ batch.comments|default:"" }}</td>
+                    <td>
+                        <div class="d-flex justify-content-between">
+                            {% if user.is_superuser %}
+                                <a href="{% url 'wamtram2:entry_batch_detail' batch_id=batch.entry_batch_id %}" class="btn btn-sm btn-info mr-1">View Details</a>
+                            {% else %}
+                                <span class="mr-1"></span>
+                            {% endif %}
+                            <a href="{% url 'wamtram2:find_turtle' batch_id=batch.entry_batch_id %}" class="btn btn-sm btn-success">Create New Entry</a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center">No batches found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Pagination -->
+        <div class="pagination-container">
+            {% if is_paginated %}
+            <ul class="pagination mb-0">
+                {% if page_obj.number != 1 %}
+                <li class="page-item">
+                    <a class="page-link" href="?{% url_replace request 'page' 1 %}">⇤</a>
+                </li>
+                {% endif %}
+                
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?{% url_replace request 'page' page_obj.previous_page_number %}">&laquo;</a>
+                </li>
+                {% endif %}
+                
+                {% for i in paginator|proper_paginate:page_obj.number %}
+                    {% if page_obj.number == i %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ i }}<span class="sr-only">(current)</span></span>
+                    </li>
+                    {% else %}
+                    <li class="page-item">
+                        <a class="page-link" href="?{% url_replace request 'page' i %}">{{ i }}</a>
+                    </li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?{% url_replace request 'page' page_obj.next_page_number %}">&raquo;</a>
+                </li>
+                {% endif %}
+                
+                {% if page_obj.number != paginator.num_pages %}
+                <li class="page-item">
+                    <a class="page-link" href="?{% url_replace request 'page' paginator.num_pages %}">⇥</a>
+                </li>
+                {% endif %}
+            </ul>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Loading spinner -->
+<div class="loading-spinner">
+    <div class="spinner-border text-primary" role="status">
+        <span class="sr-only">Loading...</span>
+    </div>
+</div>
+
+<!-- Loading overlay -->
+<div class="loading-overlay"></div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Show loading spinner and overlay
+    function showLoadingSpinner() {
+        $('.loading-spinner, .loading-overlay').show();
+    }
+
+    // Hide loading spinner and overlay
+    function hideLoadingSpinner() {
+        $('.loading-spinner, .loading-overlay').hide();
+    }
+
+    // Initially hide the spinner
+    hideLoadingSpinner();
+
+    // Handle location change and update places via AJAX
+    $('#location').change(function() {
+        var locationCode = $(this).val();
+        if (locationCode) {
+            showLoadingSpinner();
+            $.ajax({
+                url: "{% url 'wamtram2:get_places' %}",
+                data: {'location_code': locationCode},
+                success: function(data) {
+                    $('#place').empty();
+                    $('#place').append('<option value="">Select Place</option>');
+                    $.each(data, function(index, place) {
+                        $('#place').append('<option value="' + place.place_code + '">' + place.place_name + '</option>');
+                    });
+                    hideLoadingSpinner();
+                },
+                error: function() {
+                    hideLoadingSpinner();
+                    alert('An error occurred while loading places.');
+                }
+            });
+        } else {
+            $('#place').empty();
+            $('#place').append('<option value="">Select Place</option>');
+        }
+    });
+
+    // Handle filter form submission and show spinner
+    $('#filterForm').submit(function(e) {
+        showLoadingSpinner();
+    });
+
+    // Handle pagination via AJAX
+    $(document).on('click', '.pagination a', function(e) {
+        e.preventDefault();
+        var url = $(this).attr('href');
+        showLoadingSpinner();
+        loadBatches(url);
+    });
+
+    function loadBatches(url) {
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: function(data) {
+                $('#batches-table').html($(data.html).find('#batches-table').html());
+                $('.pagination-container').html($(data.html).find('.pagination-container').html());
+                hideLoadingSpinner();
+            },
+            error: function() {
+                hideLoadingSpinner();
+                alert('An error occurred while loading batches.');
+            }
+        });
+    }
+    
+    $('#showAllBatches').click(function() {
+        $('#location, #place, #year').val('');
+        showLoadingSpinner();
+        $.ajax({
+            url: "{% url 'wamtram2:create_new_entry' %}",
+            type: 'GET',
+            data: { show_all: true },
+            success: function(data) {
+                $('#batches-table').html($(data.html).find('#batches-table').html());
+                $('.pagination-container').html($(data.html).find('.pagination-container').html());
+                hideLoadingSpinner();
+            },
+            error: function() {
+                hideLoadingSpinner();
+                alert('An error occurred while loading batches.');
+            }
+        });
+    });
+
+    $('#clearFilter').click(function() {
+        $('#location, #place, #year').val('');
+        $('#filterForm').submit();
+    });
+
+});
+</script>
+{% endblock %}

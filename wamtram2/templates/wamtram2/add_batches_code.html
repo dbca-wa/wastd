@@ -1,0 +1,215 @@
+{% extends "base_wastd.html" %}
+{% load bootstrap4 %}
+
+{% block extra_style %}
+    {{ block.super }}
+    <style>
+        .step-container {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .step-header {
+            background-color: #f8f9fa;
+            padding: 10px;
+            margin: -15px -15px 15px -15px;
+            border-bottom: 1px solid #ddd;
+            font-weight: bold;
+        }
+        .alert {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            z-index: 1050;
+            display: none;
+        }
+    </style>
+{% endblock %}
+
+{% block page_content_inner %}
+<div class="container">
+    <!-- Message Alert -->
+    <div id="message-alert" class="alert" role="alert"></div>
+
+    <!-- Batch Code Generator -->
+    <div class="step-container">
+        <div class="step-header">Batch Code Generator</div>
+        <form id="codeGeneratorForm" class="row">
+            {% csrf_token %}
+            <div class="col-md-3">
+                <label for="location_code">Location</label>
+                <select class="form-control" id="location_code" name="location_code">
+                    {% for location in locations %}
+                        <option value="{{ location.location_code }}">{{ location.location_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="place_code">Place</label>
+                <select class="form-control" id="place_code" name="place_code">
+                    <!-- Will be populated dynamically by JavaScript -->
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="year">Year</label>
+                <select class="form-control" id="year" name="year">
+                    {% for year, short_year in years.items %}
+                        <option value="{{ short_year }}" {% if year == current_year|stringformat:"s" %}selected{% endif %}>{{ year }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="night">Night Number</label>
+                <input type="number" class="form-control" id="night" name="night" min="1" max="99" value="1">
+            </div>
+            <div class="col-md-2 mt-4">
+                <button type="button" class="btn btn-primary btn-block" onclick="generateCode()">Generate Code</button>
+            </div>
+        </form>
+        <div class="mt-3">
+            <h5>Generated Code: <span id="generatedCode"></span></h5>
+        </div>
+    </div>
+
+    <!-- Existing Batch Code Form -->
+    <div class="step-container">
+        <div class="step-header">{% if batch_id %}Edit{% else %}Add{% endif %} Batch Detail</div>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="batches_code">{{ form.batches_code.label }}</label>
+                <input type="text" name="batches_code" id="batches_code" class="form-control" value="{{ form.batches_code.value|default_if_none:'' }}">
+                {% if form.batches_code.errors %}
+                    <div class="invalid-feedback" style="display: block;">
+                        {{ form.batches_code.errors }}
+                    </div>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                <label for="comments">{{ form.comments.label }}</label>
+                <textarea name="comments" id="comments" class="form-control" rows="3">{{ form.comments.value|default_if_none:'' }}</textarea>
+            </div>
+            <div class="form-group">
+                <label for="template">{{ form.template.label }}</label>
+                <select name="template" id="template" class="form-control">
+                    <option value="">---------</option>
+                    {% for template in templates %}
+                        <option value="{{ template.id }}" {% if template.id == form.template.value.id %}selected{% endif %}>{{ template.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+            <a href="{% url 'wamtram2:batches_list' %}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+
+    <!-- Batch Code Guide -->
+    <div class="step-container">
+        <div class="step-header">Batch Code Guide</div>
+        <p>The batch code consists of three parts:</p>
+        <ol>
+            <li><strong>Part 1 (2-3 chars):</strong> N followed by the night number (e.g., N1, N2, N10)</li>
+            <li><strong>Part 2 (2 chars):</strong> Place code </li>
+            <li><strong>Part 3 (2 chars):</strong> Year (e.g., 24 for 2024)</li>
+        </ol>
+        <p><strong>Example:</strong> N1GN24 (Night 1, Gnaraloo, 2024)</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Get CSRF Token
+    function getCSRFToken() {
+        return document.querySelector('[name=csrfmiddlewaretoken]').value;
+    }
+
+    // Show Message
+    function showMessage(message, type) {
+        var alert = $('#message-alert');
+        alert.removeClass('alert-success alert-danger');
+        alert.addClass('alert-' + type);
+        alert.text(message);
+        alert.slideDown();
+
+        setTimeout(function() {
+            alert.slideUp();
+        }, 3000);
+    }
+
+    // Load Places
+    function loadPlaces(locationCode) {
+        $.ajax({
+            url: "{% url 'wamtram2:batch_code_manage' %}",
+            type: 'GET',
+            data: { 
+                action: 'get_places', 
+                location_code: locationCode,
+                {% if batch_id %}batch_id: {{ batch_id }}{% endif %}
+            },
+            dataType: 'json',
+            success: function(data) {
+                var placeSelect = $('#place_code');
+                placeSelect.empty();
+                if (Array.isArray(data)) {
+                    $.each(data, function(index, place) {
+                        placeSelect.append('<option value="' + place.place_code + '">' + place.place_name + '</option>');
+                    });
+                } else {
+                    console.error('Unexpected data format:', data);
+                    showMessage('Error loading places: Unexpected data format', 'danger');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error fetching places:', xhr.responseText);
+                showMessage('Error loading places. Please try again.', 'danger');
+            }
+        });
+    }
+
+    // Generate Code
+    function generateCode() {
+        var night = $('#night').val();
+        var placeCode = $('#place_code').val();
+        var year = $('#year').val().slice(-2);
+        var generatedCode = 'N' + night + placeCode + year;
+
+        // Check if the code is unique
+        $.ajax({
+            url: "{% url 'wamtram2:batch_code_manage' %}",
+            type: 'GET',
+            data: { 
+                action: 'check_batch_code', 
+                code: generatedCode,
+                {% if batch_id %}batch_id: {{ batch_id }}{% endif %}
+            },
+            success: function(data) {
+                if (data.is_unique) {
+                    $('#generatedCode').text(generatedCode);
+                    $('#batches_code').val(generatedCode);
+                    showMessage('Code generated successfully', 'success');
+                } else {
+                    showMessage('Code already exists. Please try a different combination.', 'danger');
+                }
+            },
+            error: function() {
+                showMessage('Error checking code uniqueness', 'danger');
+            }
+        });
+    }
+
+    // Initialize event handlers
+    $(document).ready(function() {
+        $('#location_code').change(function() {
+            var locationCode = $(this).val();
+            loadPlaces(locationCode);
+        });
+
+        // Initial load of places
+        loadPlaces($('#location_code').val());
+    });
+</script>
+{% endblock %}
