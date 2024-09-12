@@ -82,10 +82,6 @@
             <div class="step-header">Create New Template</div>
             <form id="templateForm" method="post" class="row">
                 {% csrf_token %}
-                <div class="col-md-12">
-                    <label for="name">Template Name</label>
-                    <input type="text" class="form-control" id="name" name="name" required>
-                </div>
                 <div class="col-md-3">
                     <label for="location_code">Location</label>
                     <select class="form-control" id="location_code" name="location_code" required>
@@ -116,6 +112,10 @@
                             <option value="{{ code }}">{{ name }}</option>
                         {% endfor %}
                     </select>
+                </div>
+                <div class="col-md-12">
+                    <label for="name">Template Name</label>
+                    <input type="text" class="form-control" id="name" name="name" required>
                 </div>
                 <div class="col-md-2 mt-3">
                     <button type="button" class="btn btn-primary btn-block" onclick="createTemplate()">Create</button>
