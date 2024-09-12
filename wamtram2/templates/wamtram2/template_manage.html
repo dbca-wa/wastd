@@ -247,16 +247,28 @@
                     dataType: 'json'
                 });
             },
-            createTemplate: function(formData) {
-                utils.showLoadingSpinner();
-                return $.ajax({
-                    url: "{% url 'wamtram2:template_manage' %}",
-                    type: "POST",
-                    data: formData,
-                    beforeSend: function(xhr) {
-                        xhr.setRequestHeader("X-CSRFToken", utils.getCSRFToken());
-                    }
-                }).always(utils.hideLoadingSpinner);
+            createTemplate: function() {
+                var formData = $('#templateForm').serialize();
+                api.createTemplate(formData)
+                    .done(function(response) {
+                        if (response.success) {
+                            utils.showMessage('Template created successfully', 'success');
+                            setTimeout(function() { window.location.reload(true); }, 500);
+                        } else {
+                            utils.showMessage('Error creating template: ' + response.error, 'danger');
+                        }
+                    })
+                    .fail(function(xhr) {
+                        var errorMessage = 'Error creating template';
+                        if (xhr.responseJSON && xhr.responseJSON.errors) {
+                            errorMessage += ': ' + JSON.stringify(xhr.responseJSON.errors);
+                        } else if (xhr.responseJSON && xhr.responseJSON.error) {
+                            errorMessage += ': ' + xhr.responseJSON.error;
+                        } else {
+                            errorMessage += '. Please check the server logs for more details.';
+                        }
+                        utils.showMessage(errorMessage, 'danger');
+                    });
             },
             updateTemplate: function(templateKey, formData) {
                 utils.showLoadingSpinner();
@@ -389,5 +401,5 @@
         window.updateTemplate = templateManager.updateTemplate;
         window.deleteTemplate = templateManager.deleteTemplate;
     })(jQuery);
-    </script>
+</script>
 {% endblock %}
