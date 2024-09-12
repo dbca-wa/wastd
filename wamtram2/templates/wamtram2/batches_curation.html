@@ -394,14 +394,16 @@
             });
         }
     
+        var placesData = {{ places_json|safe }};
         // Update comments
         function updateComments() {
-            var selectedPlace = $('#quickAddPlace option:selected');
-            var placeFullName = selectedPlace.data('full-name');
+            var selectedPlaceCode = $('#quickAddPlace').val();
+            var selectedPlace = placesData.find(place => place.place_code === selectedPlaceCode);
+            var placeFullName = selectedPlace ? selectedPlace.full_name : '';
             var night = $('#quickAddNight').val();
             var entryDate = $('#quickAddEntryDate').val();
             if (placeFullName && night && entryDate) {
-                var comments = placeFullName + ' - Night ' + night + ' - Expected entry date: ' + entryDate;
+                var comments = placeFullName + ' - Night ' + night + ' - ' + entryDate;
                 $('#quickAddComments').val(comments);
             }
         }
@@ -412,7 +414,19 @@
         });
     
         $('#quickAddLocation').change(function() {
-            handleLocationChange($(this), $('#quickAddPlace'));
+            var locationCode = $(this).val();
+            if (locationCode) {
+                var filteredPlaces = placesData.filter(place => place.place_code.startsWith(locationCode));
+                $('#quickAddPlace').empty().append('<option value="">Select Place</option>');
+                filteredPlaces.forEach(place => {
+                    $('#quickAddPlace').append($('<option>', {
+                        value: place.place_code,
+                        text: place.place_name
+                    }));
+                });
+            } else {
+                $('#quickAddPlace').empty().append('<option value="">Select Place</option>');
+            }
         });
     
         $('#quickAddNight, #quickAddPlace, #quickAddYear').change(generateBatchCode);
