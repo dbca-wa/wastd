@@ -230,7 +230,7 @@ $(document).ready(function() {
         $('#location, #place, #year').val('');
         showLoadingSpinner();
         $.ajax({
-            url: "{% url 'wamtram2:batches_list' %}",
+            url: "{% url 'wamtram2:batches_curation' %}",
             type: 'GET',
             data: { show_all: true },
             success: function(data) {
