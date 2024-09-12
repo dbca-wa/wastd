@@ -967,8 +967,8 @@ class TemplateManageView(LoginRequiredMixin, FormView):
         context['species'] = list(TrtSpecies.objects.all())
         context['sex_choices'] = SEX_CHOICES
         
-        # This is where get_places_data is needed
-        context['places_json'] = json.dumps(self.get_places_data(), cls=DjangoJSONEncoder)
+        # This is where get_places is needed
+        context['places_json'] = json.dumps(self.get_places(), cls=DjangoJSONEncoder)
         return context
 
 
