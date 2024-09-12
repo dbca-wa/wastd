@@ -991,6 +991,10 @@ class TemplateManageView(LoginRequiredMixin, FormView):
         name = request.GET.get('name', '')
         exists = Template.objects.filter(name=name).exists()
         return JsonResponse({'exists': exists})
+    
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        return self.render_to_response(context)
 
 
 class ValidateTagView(View):

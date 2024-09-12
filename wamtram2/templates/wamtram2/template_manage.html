@@ -309,7 +309,7 @@
                 api.updateTemplate(templateKey, formData)
                     .done(function() {
                         utils.showMessage('Template updated successfully', 'success');
-                        templateManager.loadTemplates(1);  // 重新加载第一页
+                        templateManager.loadTemplates(1);
                     })
                     .fail(function(xhr) {
                         templateManager.handleAjaxError(xhr, 'Error updating template');
