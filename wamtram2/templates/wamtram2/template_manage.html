@@ -1,5 +1,7 @@
 {% extends "base_wastd.html" %}
 {% load static bootstrap4 %}
+{% load proper_paginate %}
+{% load url_replace %}
 
 {% block extra_style %}
     {{ block.super }}
@@ -115,7 +117,7 @@
                     </select>
                 </div>
                 <div class="col-md-12 mt-2">
-                    <label for="name">Template Name</label>
+                    <label for="name">Template Name (Auto generate)</label>
                     <input type="text" class="form-control" id="name" name="name" required>
                     <div id="name-feedback" class="valid-feedback"></div>
                 </div>
@@ -125,67 +127,65 @@
             </form>
         </div>
 
+        <!-- Pagination -->
+        <div class="pagination-container">
+            {% if is_paginated %}
+            <ul class="pagination mb-0">
+                {% if page_obj.number != 1 %}
+                <li class="page-item">
+                    <a class="page-link" href="?{% url_replace request 'page' 1 %}">⇤</a>
+                </li>
+                {% endif %}
+                
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?{% url_replace request 'page' page_obj.previous_page_number %}">&laquo;</a>
+                </li>
+                {% endif %}
+                
+                {% for i in paginator|proper_paginate:page_obj.number %}
+                    {% if page_obj.number == i %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ i }}<span class="sr-only">(current)</span></span>
+                    </li>
+                    {% else %}
+                    <li class="page-item">
+                        <a class="page-link" href="?{% url_replace request 'page' i %}">{{ i }}</a>
+                    </li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?{% url_replace request 'page' page_obj.next_page_number %}">&raquo;</a>
+                </li>
+                {% endif %}
+                
+                {% if page_obj.number != paginator.num_pages %}
+                <li class="page-item">
+                    <a class="page-link" href="?{% url_replace request 'page' paginator.num_pages %}">⇥</a>
+                </li>
+                {% endif %}
+            </ul>
+            {% endif %}
+        </div>
+
         <!-- Existing Templates List -->
         <div class="step-container">
             <div class="step-header">Existing Templates</div>
-            {% for template in templates %}
-                <div class="template-form-row">
-                    <div class="row mb-2">
-                        <form id="templateForm-{{ template.template_id }}" class="col-12">
-                            {% csrf_token %}
-                            <div class="form-row">
-                                <div class="form-group col-md-2">
-                                    <label for="name_{{ template.template_id }}" class="template-name">Template</label>
-                                </div>
-                                <div class="form-group col-md-10">
-                                    <input type="text" class="form-control" id="name_{{ template.template_id }}" name="name" value="{{ template.name }}">
-                                </div>
-                                <div class="form-group col-md-3">
-                                    <label for="location_code_{{ template.template_id }}">Location</label>
-                                    <select class="form-control" id="location_code_{{ template.template_id }}" name="location_code">
-                                        {% for location in locations %}
-                                            <option value="{{ location.location_code }}" {% if location.location_code == template.location_code %}selected{% endif %}>{{ location.location_name }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                                <div class="form-group col-md-3">
-                                    <label for="place_code_{{ template.template_id }}">Place</label>
-                                    <select class="form-control" id="place_code_{{ template.template_id }}" name="place_code">
-                                        {% for place in places %}
-                                            <option value="{{ place.place_code }}" {% if place.place_code == template.place_code %}selected{% endif %}>{{ place.place_name }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                                <div class="form-group col-md-3">
-                                    <label for="species_code_{{ template.template_id }}">Species</label>
-                                    <select class="form-control" id="species_code_{{ template.template_id }}" name="species_code">
-                                        {% for specie in species %}
-                                            <option value="{{ specie.species_code }}" {% if specie.species_code == template.species_code %}selected{% endif %}>{{ specie.common_name }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                                <div class="form-group col-md-3">
-                                    <label for="sex_{{ template.template_id }}">Sex</label>
-                                    <select class="form-control" id="sex_{{ template.template_id }}" name="sex">
-                                        {% for code, name in sex_choices %}
-                                            <option value="{{ code }}" {% if code == template.sex %}selected{% endif %}>{{ name }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                            </div>
-                        </form>
+            <div id="templateList">
+                {% for template in templates %}
+                    <div class="template-item" data-id="{{ template.id }}">
+                        <h3>{{ template.name }}</h3>
+                        <p>Location: {{ template.location_name }} ({{ template.location_code }})</p>
+                        <p>Place: {{ template.place_name }} ({{ template.place_code }})</p>
+                        <p>Species: {{ template.species_name }} ({{ template.species_code }})</p>
+                        <p>Sex: {{ template.sex }}</p>
+                        <button onclick="templateManager.updateTemplate({{ template.id }})">Update</button>
+                        <button onclick="templateManager.deleteTemplate({{ template.id }})">Delete</button>
                     </div>
-                    <div class="row mb-3">
-                        <div class="col-md-2">
-                            <button type="button" class="btn btn-success btn-block" onclick="updateTemplate('{{ template.template_id }}')">Update</button>
-                        </div>
-                        <div class="col-md-2">
-                            <button type="button" class="btn btn-danger btn-block" onclick="deleteTemplate('{{ template.template_id }}')">Delete</button>
-                        </div>
-                    </div>
-                </div>
-                <hr>
-            {% endfor %}
+                {% endfor %}
+            </div>
         </div>
 
         <!-- Loading spinner -->
@@ -241,22 +241,11 @@
             },
             checkTemplateName: function(name) {
                 return $.ajax({
-                    url: "{% url 'wamtram2:check_template_name' %}",
+                    url: "{% url 'wamtram2:template_manage' %}",
                     type: 'GET',
                     data: { name: name },
                     dataType: 'json'
                 });
-            },
-            createTemplate: function(formData) {
-                utils.showLoadingSpinner();
-                return $.ajax({
-                    url: "{% url 'wamtram2:template_manage' %}",
-                    type: "POST",
-                    data: formData,
-                    beforeSend: function(xhr) {
-                        xhr.setRequestHeader("X-CSRFToken", utils.getCSRFToken());
-                    }
-                }).always(utils.hideLoadingSpinner);
             },
             updateTemplate: function(templateKey, formData) {
                 utils.showLoadingSpinner();
@@ -297,13 +286,22 @@
                 }
             },
             checkTemplateNameAvailability: function(templateName) {
-                api.checkTemplateName(templateName).done(function(response) {
-                    if (response.exists) {
-                        $('#name').addClass('is-invalid').removeClass('is-valid');
-                        $('#name-feedback').text('This template name already exists').removeClass('valid-feedback').addClass('invalid-feedback').show();
-                    } else {
-                        $('#name').removeClass('is-invalid').addClass('is-valid');
-                        $('#name-feedback').text('This template name is available').removeClass('invalid-feedback').addClass('valid-feedback').show();
+                $.ajax({
+                    url: "{% url 'wamtram2:template_manage' %}",
+                    type: 'GET',
+                    data: { name: templateName },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.exists) {
+                            $('#name').addClass('is-invalid').removeClass('is-valid');
+                            $('#name-feedback').text('This template name already exists').removeClass('valid-feedback').addClass('invalid-feedback').show();
+                        } else {
+                            $('#name').removeClass('is-invalid').addClass('is-valid');
+                            $('#name-feedback').text('This template name is available').removeClass('invalid-feedback').addClass('valid-feedback').show();
+                        }
+                    },
+                    error: function() {
+                        utils.showMessage('Error checking template name', 'danger');
                     }
                 });
             },
@@ -312,18 +310,10 @@
                 api.updateTemplate(templateKey, formData)
                     .done(function() {
                         utils.showMessage('Template updated successfully', 'success');
-                        setTimeout(function() { window.location.reload(true); }, 500);
+                        templateManager.loadTemplates(1);
                     })
                     .fail(function(xhr) {
-                        var errorMessage = 'Error updating template';
-                        if (xhr.responseJSON && xhr.responseJSON.errors) {
-                            errorMessage += ': ' + JSON.stringify(xhr.responseJSON.errors);
-                        } else if (xhr.responseJSON && xhr.responseJSON.error) {
-                            errorMessage += ': ' + xhr.responseJSON.error;
-                        } else {
-                            errorMessage += '. Please check the server logs for more details.';
-                        }
-                        utils.showMessage(errorMessage, 'danger');
+                        templateManager.handleAjaxError(xhr, 'Error updating template');
                     });
             },
             deleteTemplate: function(templateKey) {
@@ -331,13 +321,77 @@
                     api.deleteTemplate(templateKey)
                         .done(function() {
                             utils.showMessage('Template deleted successfully', 'success');
-                            setTimeout(function() { location.reload(); }, 500);
+                            templateManager.loadTemplates(1); 
                         })
-                        .fail(function(data) {
-                            utils.showMessage('Error deleting template: ' + JSON.stringify(data.responseJSON.errors), 'danger');
+                        .fail(function(xhr) {
+                            templateManager.handleAjaxError(xhr, 'Error deleting template');
                         });
                 }
-            }
+            },
+            createTemplate: function() {
+                var formData = $('#templateForm').serialize();
+                utils.showLoadingSpinner();
+                $.ajax({
+                    url: "{% url 'wamtram2:template_manage' %}",
+                    type: 'POST',
+                    data: formData,
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success) {
+                            utils.showMessage('Template created successfully', 'success');
+                            templateManager.loadTemplates(1);  // 重新加载第一页
+                        } else {
+                            utils.showMessage('Error creating template: ' + response.error, 'danger');
+                        }
+                    },
+                    error: function(xhr) {
+                        templateManager.handleAjaxError(xhr, 'Error creating template');
+                    },
+                    complete: utils.hideLoadingSpinner
+                });
+            },
+            renderPagination: function(data) {
+                var pagination = $('#templatePagination');
+                pagination.empty();
+                if (data.has_previous) {
+                    pagination.append('<li class="page-item"><a class="page-link" href="#" data-page="1">⇤</a></li>');
+                    pagination.append('<li class="page-item"><a class="page-link" href="#" data-page="' + (data.current_page - 1) + '">&laquo;</a></li>');
+                }
+                for (var i of proper_paginate(data.num_pages, data.current_page)) {
+                    if (i === data.current_page) {
+                        pagination.append('<li class="page-item active"><span class="page-link">' + i + '<span class="sr-only">(current)</span></span></li>');
+                    } else {
+                        pagination.append('<li class="page-item"><a class="page-link" href="#" data-page="' + i + '">' + i + '</a></li>');
+                    }
+                }
+                if (data.has_next) {
+                    pagination.append('<li class="page-item"><a class="page-link" href="#" data-page="' + (data.current_page + 1) + '">&raquo;</a></li>');
+                    pagination.append('<li class="page-item"><a class="page-link" href="#" data-page="' + data.num_pages + '">⇥</a></li>');
+                }
+            },
+            loadTemplates: function(page) {
+                utils.showLoadingSpinner();
+                $.get("{% url 'wamtram2:template_manage' %}", { page: page, get_templates: true })
+                    .done(function(data) {
+                        $('#templateList').html(data.templates_html);
+                        templateManager.renderPagination(data);
+                        history.pushState(null, '', '?page=' + page);
+                    })
+                    .fail(function(xhr) {
+                        templateManager.handleAjaxError(xhr, 'Error loading templates');
+                    })
+                    .always(utils.hideLoadingSpinner);
+            },
+            handleAjaxError: function(xhr, errorMessage) {
+                if (xhr.responseJSON && xhr.responseJSON.errors) {
+                    errorMessage += ': ' + JSON.stringify(xhr.responseJSON.errors);
+                } else if (xhr.responseJSON && xhr.responseJSON.error) {
+                    errorMessage += ': ' + xhr.responseJSON.error;
+                } else {
+                    errorMessage += '. Please check the server logs for more details.';
+                }
+                utils.showMessage(errorMessage, 'danger');
+            },
         };
 
         var placesData = {{ places_json|safe }};
@@ -383,11 +437,17 @@
             $('a').on('click', utils.showLoadingSpinner);
             $(window).on('beforeunload', utils.showLoadingSpinner);
         });
+
+        $(document).on('click', '.pagination .page-link', function(e) {
+            e.preventDefault();
+            var page = $(this).attr('href').split('page=')[1];
+            templateManager.loadTemplates(page);
+        });
     
         // Expose necessary functions to global scope
         window.createTemplate = templateManager.createTemplate;
         window.updateTemplate = templateManager.updateTemplate;
         window.deleteTemplate = templateManager.deleteTemplate;
     })(jQuery);
-    </script>
+</script>
 {% endblock %}
