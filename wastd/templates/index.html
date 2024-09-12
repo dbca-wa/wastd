@@ -93,13 +93,21 @@
     </a>
   <p>
   {% endcomment %}
-
+  {% if perms.wamtram2.add_trtentrybatches %}
+  <p>
+    <a class="btn btn-primary btn-block"
+      href="{% url 'wamtram2:batches_list'%}"
+      title="Browse entry batches">
+      Browse entry batches »
+    </a>
+  </p>
+  {% endif %}
   {% if perms.wamtram2.add_trtentrybatches %}
   <p>
     <a class="btn btn-success btn-block"
-      href="{% url 'wamtram2:entry_batches'%}"
-      title="Enter tagging data">
-      Enter tagging data »
+      href="{% url 'wamtram2:batch_code_filter'%}"
+      title="Create a new entry">
+      Create a new entry »
     </a>
   </p>
   {% endif %}

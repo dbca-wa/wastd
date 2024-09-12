@@ -23,6 +23,23 @@
   .table-borderless td, .table-borderless th {
     border: 0 !important;
   }
+  .input-group {
+    display: flex;
+    width: 100%;
+  }
+  
+  .input-group-prepend {
+    flex: 0 0 auto;
+  }
+  
+  .input-group .form-group {
+    flex: 1 1 auto;
+    margin-bottom: 0;
+  }
+  
+  .input-group .form-control {
+    width: 100%;
+  }
   .custom-prepend {
     height: 38px;
     line-height: 24px;
@@ -38,6 +55,7 @@
 {% endblock %}  
 
 {% block breadcrumbs %}
+{% if not is_volunteer %}
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
@@ -51,6 +69,7 @@
         <li class="breadcrumb-item active">{{ entry_id }}</li>
     </ol>
 </nav>
+{% endif %}
 {% endblock %}
 
 {% block page_content_inner %}
@@ -119,7 +138,9 @@
                 <div class="input-group-prepend">
                   <span class="input-group-text font-weight-bold custom-prepend">-</span>
                 </div>
-                {% bootstrap_field form.latitude show_label=False %}
+                <div class="flex-grow-1">
+                  {% bootstrap_field form.latitude show_label=False %}
+                </div>
               </div>
             </div>
             <div class="col-md-6 pt-2">
@@ -127,10 +148,12 @@
               {% bootstrap_field form.longitude show_label=False %}
             </div>
           </div>
+
           <div class="row">
             <div class="col-md-6">
               <label for="{{ form.observation_date.id_for_label }}">{{ form.observation_date.label }}</label>
               {% bootstrap_field form.observation_date show_label=False%}
+              <div id="date-error-message" class="text-danger" style="display: none;"></div>
             </div>
           </div>
           <div class="row">
@@ -185,9 +208,9 @@
             <thead>
               <tr>
                 <th></th>
-                <th style="width: 50%;">Tag Number</th>
+                <th style="width: 40%;">Tag Number</th>
                 <th>Tag State</th>
-                <th>Tag Scale</th>
+                <th>Tag Position</th>
                 <th>Barnacles?</th>
               </tr>
             </thead>
@@ -261,7 +284,7 @@
                 <th></th>
                 <th style="width: 50%;">Tag Number</th>
                 <th>Tag State</th>
-                <th>Tag Scale</th>
+                <th>Tag Position</th>
                 <th>         </th>
                 {% comment %} <th>Barnacles?</th> {% endcomment %}
               </tr>
@@ -840,7 +863,7 @@
     </div>
     <div class="col-md-3 text-right">
       {% if not form.observation_id.value %}
-      <button type="submit" class="btn btn-primary save-button" id="saveBtn">Save</button>
+      <button type="button" class="btn btn-primary" id="reviewBtn">Review</button>
       {% endif %}
     </div>
   </div>
@@ -858,8 +881,8 @@
           <!-- Summary content will be injected here -->
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Edit</button>
-          <button type="button" class="btn btn-primary" id="confirmSaveButton">Confirm & Save</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="confirmSaveButton">Confirm & Save</button>
         </div>
       </div>
     </div>
@@ -894,74 +917,90 @@
     const entryId = "{{ entry_id }}";
     const templateId = "{{ selected_template }}";
 
-    // Log the retrieved templateId to confirm it's being fetched
-    console.log("Template ID:", templateId);
+    const form = document.getElementById('dataEntryForm');
+    let isFormDirty = false;
 
-    // If entryId exists, populate the form fields with corresponding data
-    if (entryId) {
-        console.log("Populating form for existing entry with ID:", entryId);
-        const enteredById = "{{ form.entered_by_id.value }}";
-        if (enteredById) {
-            const enteredByFullName = "{{ view.entered_by_full_name|escapejs }}";
-            if (enteredByFullName) {
-                document.getElementById('search_entered_by').value = enteredByFullName;
-            }
-        }
-        const placeCodeFromDb = "{{ form.place_code.value|escapejs }}";
-        const placeNameFromDb = "{{ view.place_full_name|escapejs }}";
-        const searchPlaceInput = document.getElementById('search_place_code');
-        const placeCodeInput = document.getElementById('id_place_code');
-
-        if (placeCodeFromDb && placeNameFromDb) {
-            searchPlaceInput.value = placeNameFromDb;
-            placeCodeInput.value = placeCodeFromDb;
-        }
-
-        const measuredByFullName = "{{ view.measured_by_full_name|escapejs }}";
-        if (measuredByFullName) {
-            document.getElementById('search_measured_by').value = measuredByFullName;
-        }
-
-        const recordedByFullName = "{{ view.recorded_by_full_name|escapejs }}";
-        if (recordedByFullName) {
-            document.getElementById('search_recorded_by').value = recordedByFullName;
-        }
-
-        const taggedByFullName = "{{ view.tagged_by_full_name|escapejs }}";
-        if (taggedByFullName) {
-            document.getElementById('search_tagged_by').value = taggedByFullName;
-        }
-
-        const measuredRecordedByFullName = "{{ view.measured_recorded_by_full_name|escapejs }}";
-        if (measuredRecordedByFullName) {
-            document.getElementById('search_measured_recorded_by').value = measuredRecordedByFullName;
+    // Function to set tag and validate
+    function setTagAndValidate(fieldId, tagId) {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            field.value = tagId;
+            field.dispatchEvent(new Event('input'));
         }
     }
 
-    // If there's no entryId and a templateId is selected, populate the form with template data
-    if (!entryId && templateId) {
-        console.log("No entry ID, using selected template ID:", templateId);
-        const defaultEntererId = "{{ default_enterer }}";
-        const defaultPlaceCode = "{{ default_place_code|escapejs }}";
-        const defaultPlaceFullName = "{{ default_place_full_name|escapejs }}";
-        const searchPlaceInput = document.getElementById('search_place_code');
-        const placeCodeInput = document.getElementById('id_place_code');
+    // Populate form fields based on entryId or templateId
+    function populateForm() {
+        if (entryId) {
+            console.log("Populating form for existing entry with ID:", entryId);
 
-        if (defaultEntererId) {
-            document.getElementById('id_entered_by_id').value = defaultEntererId;
-            const defaultEntererFullName = "{{ default_enterer_full_name }}";
-            if (defaultEntererFullName) {
-                document.getElementById('search_entered_by').value = defaultEntererFullName;
+            const enteredById = "{{ form.entered_by_id.value }}";
+            if (enteredById) {
+                const enteredByFullName = "{{ view.entered_by_full_name|escapejs }}";
+                if (enteredByFullName) {
+                    document.getElementById('search_entered_by').value = enteredByFullName;
+                }
             }
-        }
 
-        if (defaultPlaceFullName && defaultPlaceCode) {
-            searchPlaceInput.value = defaultPlaceFullName;
-            placeCodeInput.value = defaultPlaceCode;
+            const placeCodeFromDb = "{{ form.place_code.value|escapejs }}";
+            const placeNameFromDb = "{{ view.place_full_name|escapejs }}";
+            const searchPlaceInput = document.getElementById('search_place_code');
+            const placeCodeInput = document.getElementById('id_place_code');
+
+            if (placeCodeFromDb && placeNameFromDb) {
+                searchPlaceInput.value = placeNameFromDb;
+                placeCodeInput.value = placeCodeFromDb;
+            }
+
+            const measuredByFullName = "{{ view.measured_by_full_name|escapejs }}";
+            if (measuredByFullName) {
+                document.getElementById('search_measured_by').value = measuredByFullName;
+            }
+
+            const recordedByFullName = "{{ view.recorded_by_full_name|escapejs }}";
+            if (recordedByFullName) {
+                document.getElementById('search_recorded_by').value = recordedByFullName;
+            }
+
+            const taggedByFullName = "{{ view.tagged_by_full_name|escapejs }}";
+            if (taggedByFullName) {
+                document.getElementById('search_tagged_by').value = taggedByFullName;
+            }
+
+            const measuredRecordedByFullName = "{{ view.measured_recorded_by_full_name|escapejs }}";
+            if (measuredRecordedByFullName) {
+                document.getElementById('search_measured_recorded_by').value = measuredRecordedByFullName;
+            }
+        } else if (templateId) {
+            console.log("No entry ID, using selected template ID:", templateId);
+
+            const defaultEntererId = "{{ default_enterer }}";
+            if (defaultEntererId) {
+                document.getElementById('id_entered_by_id').value = defaultEntererId;
+                const defaultEntererFullName = "{{ default_enterer_full_name }}";
+                if (defaultEntererFullName) {
+                    document.getElementById('search_entered_by').value = defaultEntererFullName;
+                }
+            }
+
+            const defaultPlaceCode = "{{ default_place_code|escapejs }}";
+            const defaultPlaceFullName = "{{ default_place_full_name|escapejs }}";
+            const searchPlaceInput = document.getElementById('search_place_code');
+            const placeCodeInput = document.getElementById('id_place_code');
+
+            console.log("Default Place Code:", defaultPlaceCode);
+            console.log("Default Place Full Name:", defaultPlaceFullName)
+
+            if (defaultPlaceFullName && defaultPlaceCode) {
+                searchPlaceInput.value = defaultPlaceFullName;
+                placeCodeInput.value = defaultPlaceCode;
+            }
         }
     }
 
-    //  Set the tag and validate
+    populateForm();
+
+    // Set the tag and validate
     if (cookieTagId && cookieTagType) {
         console.log("Setting tag for", cookieTagType, "with ID:", cookieTagId);
         if (cookieTagType === 'recapture_tag') {
@@ -975,30 +1014,6 @@
         }
     }
 
-    // Disable the save button and show a processing message
-    function disableSaveButton() {
-        const saveButton = document.querySelector('.save-button');
-        if (saveButton) {
-            saveButton.disabled = true;
-            let dots = 0;
-            saveButton.textContent = 'Processing';
-            const originalText = saveButton.textContent;
-            const interval = setInterval(() => {
-                if (dots >= 3) {
-                    dots = 0;
-                    saveButton.textContent = originalText;
-                } else {
-                    dots++;
-                    saveButton.textContent += '.';
-                }
-            }, 500);  // Adjust the speed of the dots as needed
-            saveButton.dataset.intervalId = interval;
-        }
-    }
-
-    const form = document.getElementById('dataEntryForm');
-    let isFormDirty = false;
-
     // Handle form changes to track dirty state
     form.addEventListener('input', function() {
         isFormDirty = true;
@@ -1007,86 +1022,44 @@
     // Prompt the user if they try to leave the page with unsaved changes
     window.addEventListener('beforeunload', function(event) {
         if (isFormDirty) {
-            const confirmationMessage = 'You have unsaved changes. Do you really want to leave?';
-            (event || window.event).returnValue = confirmationMessage;
-            return confirmationMessage;
+            event.preventDefault(); 
+            event.returnValue = ''; 
+            return ''; 
         }
     });
 
     // Handle form submission
-    form.addEventListener('submit', function(event) {
-        isFormDirty = false;
-        disableSaveButton();
+    form.addEventListener('submit', function(event) { 
+        if (form.checkValidity()) {
+            showLoadingOverlay();
+            isFormDirty = false;
+        } else {
+            event.preventDefault();
+        }
     });
 
-    // Reload the page if the back button is clicked
-    if (performance.navigation.type === 2) {
-        location.reload(true);
+    // Show loading overlay
+    function showLoadingOverlay() {
+        const overlay = document.querySelector('.loading-overlay');
+        const spinner = document.querySelector('.loading-spinner');
+
+        if (overlay) overlay.style.display = 'block';
+        if (spinner) spinner.style.display = 'block';
     }
-  });
-  document.addEventListener('DOMContentLoaded', function() {
-      const form = document.getElementById('dataEntryForm');
 
-      // Prevent form submission when Enter is pressed
-      form.addEventListener('keydown', function(event) {
-          if (event.key === 'Enter') {
-              event.preventDefault(); // Prevent the default action of Enter key
-          }
-      });
-
-      let isFormDirty = false;
-
-      function showLoadingOverlay() {
-          const overlay = document.querySelector('.loading-overlay');
-          const spinner = document.querySelector('.loading-spinner');
-
-          if (overlay) {
-              overlay.style.display = 'block';
-          }
-
-          if (spinner) {
-              spinner.style.display = 'block';
-          }
-      }
-
-      // Handle form submission
-      form.addEventListener('submit', function(event) {
-          event.preventDefault();  // Prevent the default form submission behavior
-
-          // Check if the form has any errors
-          if (form.checkValidity()) {
-              showLoadingOverlay();  // No errors, show the overlay and spinner
-              form.submit();  // Submit the form
-          } else {
-              alert("Please fix the errors in the form before submitting.");  // Show a message if there are errors
-          }
-
-          isFormDirty = false;  // Reset the form dirty state
-      });
-
-      form.addEventListener('input', function() {
-          isFormDirty = true;
-      });
-
-      window.addEventListener('beforeunload', function(event) {
-          if (isFormDirty) {
-              const confirmationMessage = 'You have unsaved changes. Do you really want to leave?';
-              (event || window.event).returnValue = confirmationMessage;
-              return confirmationMessage;
-          }
-      });
-
-      // Reload the page when the back button is clicked
-      if (performance.navigation.type === 2) {
-          location.reload(true);  // Reload the page when the back button is clicked
-      }
+    // Handle page reload on back navigation
+    window.addEventListener('pageshow', function(event) {
+        if (event.persisted) {
+            window.location.reload();
+        }
+    });
   });
   document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('dataEntryForm');
     
-    const focusableElements = form.querySelectorAll('input, select, textarea');
+    const focusableElements = form.querySelectorAll('input:not([type="hidden"]), select, textarea');
     
-    const focusableArray = Array.prototype.slice.call(focusableElements);
+    const focusableArray = Array.from(focusableElements);
     
     focusableArray.forEach((element, index) => {
         element.addEventListener('keydown', function(event) {
@@ -1096,20 +1069,28 @@
                 const nextElement = focusableArray[index + 1];
                 if (nextElement) {
                     nextElement.focus();
+                    if (nextElement.tagName === 'SELECT') {
+                        nextElement.click(); 
                 }
             }
-        });
+        }});
     });
   });
   document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('dataEntryForm');
-    const saveButton = document.getElementById('saveBtn');
+    const reviewButton = document.getElementById('reviewBtn');
     const summaryModal = document.getElementById('summaryModal');
     const summaryContent = document.getElementById('summaryContent');
     const confirmSaveButton = document.getElementById('confirmSaveButton');
+    const observationDateInput = document.querySelector('input[name="observation_date"]');
+    const dateErrorMessage = document.getElementById('date-error-message');
 
     const labelMapping = {
-        "id_entered_by_id": "Enterer",
+        "search_entered_by": "Enterer",
+        "search_measured_by": "Measured by",
+        "search_recorded_by": "Recorded by",
+        "search_tagged_by": "Tagged by",
+        "search_place_code": "Place",
         "id_scars_left_scale_1": "Scars Left Scale 1",
         "id_scars_left_scale_2": "Scars Left Scale 2",
         "id_scars_left_scale_3": "Scars Left Scale 3",
@@ -1126,88 +1107,129 @@
         "id_new_pit_tag_4_sticker_present": "New PIT Tag 4 Sticker Present",
         "id_latitude": "Latitude",
         "id_longitude": "Longitude",
+        "id_observation_date": "Observation Date & Time",
     };
 
-    if (saveButton) {
-        saveButton.addEventListener('click', function(event) {
-            event.preventDefault(); // Prevent form submission
+    console.log("Observation Date Input:", observationDateInput.value);
+    console.log("Observation Date label:", observationDateInput.parentElement.querySelector('label').innerText);
+    console.log(document.getElementById('id_observation_date'))
+    console.log(document.getElementById('id_latitude'))
+    
 
-            // Generate summary
-            let summaryHTML = '<ul>';
-            
-            form.querySelectorAll('input, select, textarea').forEach(input => {
-                if (input.type !== 'hidden' && input.value.trim() !== '') {
-                    let labelText = '';
 
-                    // Use detailed label from the mapping if it exists
-                    if (labelMapping[input.id]) {
-                        labelText = labelMapping[input.id];
-                    } else {
-                        const label = form.querySelector(`label[for="${input.id}"]`);
-                        labelText = label ? label.textContent.trim() : input.name;
-                    }
-
-                    // Handle different input types
-                    let inputValue = '';
-
-                    if (input.type === 'checkbox') {
-                        if (input.checked) {
-                            inputValue = 'True';
-                        } else {
-                            return; // Skip unchecked checkboxes
-                        }
-                    } else if (input.tagName.toLowerCase() === 'select') {
-                        // For select elements, use the selected option's text content
-                        inputValue = input.selectedOptions[0].textContent.trim();
-                    } else {
-                        inputValue = input.value.trim();
-                    }
-
-                    // Add negative sign for latitude
-                    if (input.id === 'id_latitude' && inputValue !== '') {
-                        inputValue = '-' + inputValue;
-                    }
-
-                    if (inputValue !== '') {
-                        summaryHTML += `<li><strong>${labelText}:</strong> ${inputValue}</li>`;
-                    }
-                }
-            });
-
-            summaryHTML += '</ul>';
-
-            // Insert the summary into the modal
-            summaryContent.innerHTML = summaryHTML;
-
-            // Show the modal
-            $(summaryModal).modal('show');
-        });
+    function validateDate() {
+      const selectedDate = new Date(observationDateInput.value);
+      const currentDate = new Date();
+  
+      if (selectedDate > currentDate) {
+        dateErrorMessage.textContent = "Date in the future";
+        dateErrorMessage.style.display = 'block';
+        observationDateInput.classList.add('is-invalid');
+      } else {
+        dateErrorMessage.style.display = 'none';
+        observationDateInput.classList.remove('is-invalid');
+      }
     }
 
-    if (confirmSaveButton) {
-        confirmSaveButton.addEventListener('click', function() {
-          window.removeEventListener('beforeunload', function(event) {
-            if (isFormDirty) {
-                const confirmationMessage = 'You have unsaved changes. Do you really want to leave?';
-                (event || window.event).returnValue = confirmationMessage;
-                return confirmationMessage;
-            }
-        });
-
-        $(summaryModal).modal('hide');
-        form.submit();
-        });
-    }
-  });
-    document.addEventListener('DOMContentLoaded', function() {
-      var datetimeInputs = document.querySelectorAll('input[type="datetime-local"]');
+    var datetimeInputs = document.querySelectorAll('input[type="datetime-local"]');
     datetimeInputs.forEach(function(input) {
         flatpickr(input, {
             enableTime: true,
             dateFormat: "Y-m-d H:i",
-            time_24hr: true
+            time_24hr: true,
+            allowInput: true,
+            altInput: true,
+            altFormat: "d/m/Y H:i",
+            onReady: function(selectedDates, dateStr, instance) {
+                var altInput = instance.altInput;
+                altInput.addEventListener('input', function(e) {
+                    let value = e.target.value.replace(/\D/g, ''); 
+                    let formattedValue = '';
+                    if (value.length > 0) {
+                        formattedValue += value.substring(0, 2); 
+                        if (value.length > 2) {
+                            formattedValue += '/' + value.substring(2, 4);
+                            if (value.length > 4) {
+                                formattedValue += '/' + value.substring(4, 8); 
+                                if (value.length > 8) {
+                                    formattedValue += ' ' + value.substring(8, 10);
+                                    if (value.length > 10) {
+                                        formattedValue += ':' + value.substring(10, 12);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    e.target.value = formattedValue;
+                });
+                altInput.addEventListener('input', validateDate);
+            },
+            onChange: function(selectedDates, dateStr, instance) {
+              validateDate();
+            }
         });
     });
+
+    if (reviewButton) {
+      reviewButton.addEventListener('click', function(event) {
+          event.preventDefault(); 
+
+          let summaryHTML = '<ul>';
+          
+          form.querySelectorAll('input, select, textarea').forEach(input => {
+                  if (input.type !== 'hidden') {
+                    let labelText = '';
+                    let inputValue = input.value.trim();;
+                    let inputId = input.id;
+
+
+                  if (inputValue !== '') {
+                      if (labelMapping[inputId]) {
+                          labelText = labelMapping[inputId];
+                      } else {
+                          const label = form.querySelector(`label[for="${inputId}"]`);
+
+                          if (!label) {
+                            const parentLabel = input.parentElement.querySelector('label');
+                            console.log("Parent Label:", parentLabel);
+                            labelText = parentLabel ? parentLabel.textContent.trim() : input.name;
+                          } else {
+                            labelText = label.textContent.trim();
+                          }
+                      }
+
+                      if (input.type === 'checkbox') {
+                        if (input.checked) {
+                          inputValue = 'Yes';
+                        } else {
+                          return;
+                        }
+                      } else if (input.tagName.toLowerCase() === 'select') {
+                          inputValue = input.selectedOptions[0].textContent.trim();
+                      }
+
+                      if (inputId === 'id_latitude' && inputValue !== '') {
+                          inputValue = '-' + inputValue;
+                      }
+
+                      summaryHTML += `<li><strong>${labelText}:</strong> ${inputValue}</li>`;
+                  }
+              }
+          });
+
+          summaryHTML += '</ul>';
+
+          summaryContent.innerHTML = summaryHTML;
+
+          $(summaryModal).modal('show');
+      });
+    }
+
+    if (confirmSaveButton) {
+      confirmSaveButton.addEventListener('click', function(event) {
+          $(summaryModal).modal('hide');
+      });
+  }
   });
 </script>
 <script src="{% static 'js/tagToggleHandler.js' %}"></script>

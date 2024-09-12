@@ -203,9 +203,9 @@ class TrtDataEntry(models.Model):
         ("I", "Indeterminate"),
     ]
     TAG_POSITION_CHOICES = [
-        (1, '1'),
-        (2, '2'),
-        (3, '3'),
+        (1, ' scale 1'),
+        (2, 'scale 2'),
+        (3, 'scale 3'),
     ]
     data_entry_id = models.AutoField(
         db_column="DATA_ENTRY_ID", primary_key=True
@@ -1217,7 +1217,16 @@ class TrtEntryBatches(models.Model):
     pr_date_convention = models.BooleanField(
         db_column="PR_DATE_CONVENTION",default=False
     )  # Field name made lowercase.
-
+    batches_code = models.CharField(
+        db_column="BATCHES_CODE", max_length=10, blank=True, null=True, unique=True
+    )  # Field name made lowercase.
+    template = models.ForeignKey(
+        "Template",  
+        models.SET_NULL,
+        db_column="template",
+        blank=True,
+        null=True,
+    )
     class Meta:
         managed = False
         db_table = "TRT_ENTRY_BATCHES"
@@ -1858,7 +1867,7 @@ class TrtPlaces(models.Model):
         ordering = ["place_name"]
 
     def get_full_name(self):
-        return f"{self.location_code} - {self.place_name}"
+        return f"{self.place_name} ({self.location_code.location_name})"
     
     def __str__(self):
         return self.place_code
@@ -2362,15 +2371,15 @@ SEX_CHOICES = [
     ("I", "Indeterminate"),
 ]
 class Template(models.Model):
-    template_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=255)
+    template_id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=255, unique=True)
     location_code = models.CharField(max_length=50)
     place_code = models.CharField(max_length=50)
     species_code = models.CharField(max_length=50)
     sex = models.CharField(max_length=1, choices=SEX_CHOICES)
 
     class Meta:
-        db_table = 'TRT_TEMPLATES'
+        db_table = 'TRT_TEMPLATE'
         
     def __str__(self):
         return self.name

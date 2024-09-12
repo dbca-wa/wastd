@@ -174,6 +174,27 @@
         </div>
     </div>
 
+    <!-- New Batch Modal -->
+    <div class="modal fade" id="newBatchModal" tabindex="-1" role="dialog" aria-labelledby="newBatchModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="newBatchModalLabel">Create New Batch</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Are you ready to create a new batch or add entry to an existing batch?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="createNewBatchConfirm">Create New Batch</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 {% endblock page_content_inner %}
 
 {% block extra_js %}
@@ -206,6 +227,7 @@
     
     window.addEventListener('load', function() {
         const createNewBatchBtn = document.querySelector("#createNewBatchBtn");
+        const createNewBatchConfirm = document.querySelector("#createNewBatchConfirm");
         const filterSelect = document.querySelector("#filterSelect");
     
         // Select all batch ID links in the table body and pagination links
@@ -257,7 +279,10 @@
         
         // Attach event listeners to the Create New Batch button
         if (createNewBatchBtn) {
-            createNewBatchBtn.addEventListener("click", clickAndDisable);
+            createNewBatchBtn.addEventListener("click", function(e) {
+                e.preventDefault();
+                $('#newBatchModal').modal('show');
+            });
         }
     
         // Attach event listener to the filter select dropdown
@@ -270,6 +295,15 @@
                 showLoadingSpinner();
             });
         }
+
+        if (createNewBatchConfirm) {
+            createNewBatchConfirm.addEventListener("click", function() {
+                $('#newBatchModal').modal('hide');
+                showLoadingSpinner();
+                window.location.href = "{% url 'wamtram2:new_batch_detail' %}";
+            });
+        }
+    
         
         // Attach event listeners to all batch ID links within the table body
         batchLinks.forEach(link => {

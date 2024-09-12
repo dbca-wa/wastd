@@ -543,3 +543,25 @@ class TrtObservationsForm(forms.ModelForm):
         if 'corrected_date' in cleaned_data:
             cleaned_data.pop('corrected_date')
         return cleaned_data
+    
+    
+class BatchesCodeForm(forms.ModelForm):
+    class Meta:
+        model = TrtEntryBatches
+        fields = ['batches_code', 'comments', 'template']
+        labels = {
+            'batches_code': 'Batches Code',
+            'comments': 'Comments',
+            'template': 'Template'
+        }
+        widgets = {
+            'batches_code': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+
+class BatchesSearchForm(forms.Form):
+    batches_code = forms.CharField(
+        max_length=255, 
+        required=False, 
+        widget=forms.TextInput(attrs={'class': 'form-control'}),
+        label='Batch Code'
+    )

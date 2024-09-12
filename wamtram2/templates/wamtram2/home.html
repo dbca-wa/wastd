@@ -29,9 +29,12 @@
 
 {% block page_content_inner %}
   <div class="row">
-    <a href="{% url 'wamtram2:entry_batches' %}">View Data Entry Batches</a>
+    <a href="{% url 'wamtram2:batches_list' %}">Curate Data Entry Batches</a>
   </div>
   <div class="row">
     <a href="{% url 'wamtram2:turtle_list' %}">View Turtles</a>
+  </div>
+  <div class="row">
+    <a href="{% url 'wamtram2:batch_code_filter' %}">Create New Entry</a>
   </div>
 {% endblock %}
