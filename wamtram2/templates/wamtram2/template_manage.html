@@ -2,6 +2,8 @@
 {% load static bootstrap4 %}
 {% load proper_paginate %}
 {% load url_replace %}
+{% load proper_paginate %}
+{% load url_replace %}
 
 {% block extra_style %}
     {{ block.super }}
@@ -64,6 +66,7 @@
     <nav aria-label="breadcrumb" class="d-none d-md-block">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'wamtram2:batches_curation' %}">Batches Curation</a></li>
             <li class="breadcrumb-item active">Manage Templates</li>
         </ol>
     </nav>
@@ -78,16 +81,12 @@
                 {{ error_message }}
             </div>
         {% endif %}
-
+        
         <!-- Create New Template Form -->
         <div class="step-container">
             <div class="step-header">Create New Template</div>
             <form id="templateForm" method="post" class="row">
                 {% csrf_token %}
-                <div class="col-md-12">
-                    <label for="name">Template Name</label>
-                    <input type="text" class="form-control" id="name" name="name" required>
-                </div>
                 <div class="col-md-3">
                     <label for="location_code">Location</label>
                     <select class="form-control" id="location_code" name="location_code" required>
@@ -118,6 +117,11 @@
                             <option value="{{ code }}">{{ name }}</option>
                         {% endfor %}
                     </select>
+                </div>
+                <div class="col-md-12 mt-2">
+                    <label for="name">Template Name (Auto generate)</label>
+                    <input type="text" class="form-control" id="name" name="name" required>
+                    <div id="name-feedback" class="valid-feedback"></div>
                 </div>
                 <div class="col-md-2 mt-3">
                     <button type="button" class="btn btn-primary btn-block" onclick="createTemplate()">Create</button>
@@ -172,64 +176,19 @@
         <!-- Existing Templates List -->
         <div class="step-container">
             <div class="step-header">Existing Templates</div>
-            {% for template in templates %}
-                <div class="template-form-row">
-                    <div class="row mb-2">
-                        <form id="templateForm-{{ template.template_id }}" class="col-12">
-                            {% csrf_token %}
-                            <div class="form-row">
-                                <div class="form-group col-md-2">
-                                    <label for="name_{{ template.template_id }}" class="template-name">Template</label>
-                                </div>
-                                <div class="form-group col-md-10">
-                                    <input type="text" class="form-control" id="name_{{ template.template_id }}" name="name" value="{{ template.name }}">
-                                </div>
-                                <div class="form-group col-md-3">
-                                    <label for="location_code_{{ template.template_id }}">Location</label>
-                                    <select class="form-control" id="location_code_{{ template.template_id }}" name="location_code">
-                                        {% for location in locations %}
-                                            <option value="{{ location.location_code }}" {% if location.location_code == template.location_code %}selected{% endif %}>{{ location.location_name }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                                <div class="form-group col-md-3">
-                                    <label for="place_code_{{ template.template_id }}">Place</label>
-                                    <select class="form-control" id="place_code_{{ template.template_id }}" name="place_code">
-                                        {% for place in places %}
-                                            <option value="{{ place.place_code }}" {% if place.place_code == template.place_code %}selected{% endif %}>{{ place.place_name }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                                <div class="form-group col-md-3">
-                                    <label for="species_code_{{ template.template_id }}">Species</label>
-                                    <select class="form-control" id="species_code_{{ template.template_id }}" name="species_code">
-                                        {% for specie in species %}
-                                            <option value="{{ specie.species_code }}" {% if specie.species_code == template.species_code %}selected{% endif %}>{{ specie.common_name }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                                <div class="form-group col-md-3">
-                                    <label for="sex_{{ template.template_id }}">Sex</label>
-                                    <select class="form-control" id="sex_{{ template.template_id }}" name="sex">
-                                        {% for code, name in sex_choices %}
-                                            <option value="{{ code }}" {% if code == template.sex %}selected{% endif %}>{{ name }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                            </div>
-                        </form>
+            <div id="templateList">
+                {% for template in templates %}
+                    <div class="template-item" data-id="{{ template.id }}">
+                        <h3>{{ template.name }}</h3>
+                        <p>Location: {{ template.location_name }} ({{ template.location_code }})</p>
+                        <p>Place: {{ template.place_name }} ({{ template.place_code }})</p>
+                        <p>Species: {{ template.species_name }} ({{ template.species_code }})</p>
+                        <p>Sex: {{ template.sex }}</p>
+                        <button onclick="templateManager.updateTemplate({{ template.id }})">Update</button>
+                        <button onclick="templateManager.deleteTemplate({{ template.id }})">Delete</button>
                     </div>
-                    <div class="row mb-3">
-                        <div class="col-md-2">
-                            <button type="button" class="btn btn-success btn-block" onclick="updateTemplate('{{ template.template_id }}')">Update</button>
-                        </div>
-                        <div class="col-md-2">
-                            <button type="button" class="btn btn-danger btn-block" onclick="deleteTemplate('{{ template.template_id }}')">Delete</button>
-                        </div>
-                    </div>
-                </div>
-                <hr>
-            {% endfor %}
+                {% endfor %}
+            </div>
         </div>
 
         <!-- Loading spinner -->
@@ -284,7 +243,7 @@
             checkTemplateName: function(name, templateKey = null) {
                 // Check for template name uniqueness
                 return $.ajax({
-                    url: "{% url 'wamtram2:check_template_name' %}",
+                    url: "{% url 'wamtram2:template_manage' %}",
                     type: 'GET',
                     data: { name: name, template_key: templateKey },
                     dataType: 'json'
@@ -311,6 +270,7 @@
     
             generateTemplateName: function() {
                 var selectedPlace = $('#place_code option:selected');
+                var placeFullName = selectedPlace.attr('place-full-name');
                 var placeFullName = selectedPlace.attr('place-full-name');
                 var species = $('#species_code option:selected').text();
                 var sex = $('#sex option:selected').text();
