@@ -872,6 +872,7 @@ class TemplateManageView(LoginRequiredMixin, FormView):
     template_name = 'wamtram2/template_manage.html'
     form_class = TemplateForm
     paginate_by = 30
+    success_url = reverse_lazy('wamtram2:template_manage')
     
     def dispatch(self, request, *args, **kwargs):
         if not (
