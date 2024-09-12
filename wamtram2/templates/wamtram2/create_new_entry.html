@@ -51,6 +51,8 @@
             </div>
             <div class="form-group col-md-4 d-flex align-items-end">
                 <button type="submit" class="btn btn-primary">Filter</button>
+                <button type="button" id="clearFilter" class="btn btn-secondary">Clear Filter</button>
+                <button type="button" id="showAllBatches" class="btn btn-info">Show All Batches</button>
             </div>
         </div>
     </form>
@@ -218,6 +220,29 @@ $(document).ready(function() {
             }
         });
     }
+
+    $('#clearFilter').click(function() {
+        $('#location, #place, #year').val('');
+        $('#filterForm').submit();
+    });
+
+    $('#showAllBatches').click(function() {
+        $('#location, #place, #year').val('');
+        showLoadingSpinner();
+        $.ajax({
+            url: "{% url 'wamtram2:batches_list' %}",
+            type: 'GET',
+            data: { show_all: true },
+            success: function(data) {
+                $('#batches-table').html(data.html);
+                hideLoadingSpinner();
+            },
+            error: function() {
+                hideLoadingSpinner();
+                alert('An error occurred while loading batches.');
+            }
+        });
+    });
 });
 </script>
 {% endblock %}
