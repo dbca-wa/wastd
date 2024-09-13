@@ -899,11 +899,24 @@ class TemplateManageView(LoginRequiredMixin, FormView):
 
         return JsonResponse({'error': 'Invalid request'}, status=400)
 
-    def get_places(self, request):
+    @require_GET
+    def get_places(request):
         location_code = request.GET.get('location_code')
-        places = TrtPlaces.objects.filter(location_code=location_code)
-        places_data = [{'place_code': place.place_code, 'place_name': place.place_name, 'full_name': place.get_full_name()} for place in places]
-        return JsonResponse(places_data, safe=False)
+        if not location_code:
+            return JsonResponse({'error': 'Location code is required'}, status=400)
+
+        try:
+            places = TrtPlaces.objects.filter(location_code=location_code)
+            places_data = [
+                {
+                    'place_code': place.place_code,
+                    'place_name': place.place_name,
+                    'full_name': place.get_full_name()
+                } for place in places
+            ]
+            return JsonResponse(places_data, safe=False)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
 
     def create_template(self, request):
         form = TemplateForm(request.POST)
