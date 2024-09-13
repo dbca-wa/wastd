@@ -875,8 +875,6 @@ class TemplateManageView(LoginRequiredMixin, FormView):
         if not request.user.is_superuser:
             return HttpResponseForbidden("You do not have permission to access this page.")
         
-        if request.method == 'PUT':
-            return self.put(request, *args, **kwargs)
         elif request.method == 'DELETE':
             return self.delete(request, *args, **kwargs)
         elif request.method == 'GET' and 'location_code' in request.GET:
@@ -901,20 +899,6 @@ class TemplateManageView(LoginRequiredMixin, FormView):
         template = get_object_or_404(Template, pk=template_key)
         template.delete()
         return JsonResponse({'message': 'Template deleted'})
-
-    def put(self, request, template_key):
-        template = get_object_or_404(Template, pk=template_key)
-        form = TemplateForm(QueryDict(request.body), instance=template)
-        if form.is_valid():
-            updated_template = form.save()
-            return JsonResponse({
-                'name': updated_template.name,
-                'location_code': updated_template.location_code,
-                'place_code': updated_template.place_code,
-                'species_code': updated_template.species_code,
-                'sex': updated_template.sex
-            })
-        return JsonResponse({'errors': form.errors}, status=400)
     
     def get_places(self, request):
         """
@@ -930,8 +914,6 @@ class TemplateManageView(LoginRequiredMixin, FormView):
         places = TrtPlaces.objects.filter(location_code=location_code)
         places_list = list(places.values('place_code', 'place_name'))
         return JsonResponse(places_list, safe=False)
-    
-
 
 
 class ValidateTagView(View):
