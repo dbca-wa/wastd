@@ -28,7 +28,7 @@ from django.views.decorators.http import require_GET, require_POST, require_http
 from django.template.loader import render_to_string
 from django.core.serializers.json import DjangoJSONEncoder
 import json
-from urllib.parse import unquote
+from django.core.exceptions import ValidationError
 
 from wastd.utils import Breadcrumb, PaginateMixin
 from .models import (
@@ -890,12 +890,10 @@ class TemplateManageView(LoginRequiredMixin, FormView):
         if method == 'GET':
             if 'location_code' in request.GET:
                 return self.get_places(request)
-            if 'get_templates' in request.GET:
-                return self.get_templates(request)
+            if 'check_name' in request.GET:
+                return self.check_template_name(request)
         elif method == 'POST':
             return self.create_template(request)
-        elif method == 'PUT':
-            return self.update_template(request, *args, **kwargs)
         elif method == 'DELETE':
             return self.delete_template(request, *args, **kwargs)
 
@@ -910,24 +908,12 @@ class TemplateManageView(LoginRequiredMixin, FormView):
     def create_template(self, request):
         form = TemplateForm(request.POST)
         if form.is_valid():
-            template = form.save()
-            return JsonResponse({'message': 'Template created successfully'}, status=200)
-        return JsonResponse({'errors': form.errors}, status=400)
-
-    def update_template(self, request, *args, **kwargs):
-        template_key = kwargs.get('template_key')
-        template = get_object_or_404(Template, pk=template_key)
-        form = TemplateForm(QueryDict(request.body), instance=template)
-        if form.is_valid():
-            updated_template = form.save()
-            return JsonResponse({
-                'name': updated_template.name,
-                'location_code': updated_template.location_code,
-                'place_code': updated_template.place_code,
-                'species_code': updated_template.species_code,
-                'sex': updated_template.sex
-            })
-        return JsonResponse({'errors': form.errors}, status=400)
+            try:
+                template = form.save()
+                return JsonResponse({'message': 'Template created successfully', 'is_valid': True}, status=200)
+            except ValidationError as e:
+                return JsonResponse({'errors': e.message_dict, 'is_valid': False}, status=400)
+        return JsonResponse({'errors': form.errors, 'is_valid': False}, status=400)
 
     def delete_template(self, request, *args, **kwargs):
         template_key = kwargs.get('template_key')
@@ -971,19 +957,11 @@ class TemplateManageView(LoginRequiredMixin, FormView):
             } for place in places
         ]
         return places_data
-
-
-@require_http_methods(["GET"])
-def check_template_name(request):
     
-    name = request.GET.get('name', '')
-    print(" name:", name)
-    
-    if not name:
-        return JsonResponse({'error': 'Invalid name'}, status=400)
-    
-    exists = Template.objects.filter(name=name).exists()
-    return JsonResponse({'exists': exists})
+    def check_template_name(self, request):
+        name = request.GET.get('name')
+        exists = Template.objects.filter(name=name).exists()
+        return JsonResponse({'exists': exists})
 
 
 class ValidateTagView(View):

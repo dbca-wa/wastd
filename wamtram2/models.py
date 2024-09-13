@@ -1,5 +1,5 @@
 from django.contrib.gis.db import models
-import uuid
+from django.core.exceptions import ValidationError
 
 class TrtActivities(models.Model):
     activity_code = models.CharField(
@@ -2383,6 +2383,14 @@ class Template(models.Model):
         
     def __str__(self):
         return self.name
+    
+    def clean(self):
+        if Template.objects.filter(name=self.name).exists():
+            raise ValidationError({'name': 'Template with this name already exists.'})
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
 
 # class Tbldamage(models.Model):
 #     observation_id = models.IntegerField(db_column='OBSERVATION_ID')  # Field name made lowercase.
