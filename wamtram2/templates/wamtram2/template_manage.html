@@ -90,9 +90,6 @@
             <div class="step-header">Create New Template</div>
             <form id="templateForm" method="post" class="row">
                 {% csrf_token %}
-                <div class="col-md-12">
-                    {% bootstrap_field form.name show_label=True %}
-                </div>
                 <div class="col-md-3">
                     <label for="location_code">Location</label>
                     <select class="form-control" id="location_code" name="location_code">
@@ -124,6 +121,9 @@
                             <option value="{{ code }}">{{ name }}</option>
                         {% endfor %}
                     </select>
+                </div>
+                <div class="col-md-12">
+                    {% bootstrap_field form.name show_label=True %}
                 </div>
                 <div class="col-md-2 mt-3">
                     <button type="button" class="btn btn-primary btn-block" onclick="createTemplate()">Create</button>
@@ -257,41 +257,34 @@
         }
     }
 
-    // Update Template
-    function updateTemplate(templateKey) {
-        var formData = $('#templateForm-' + templateKey).serialize();
-
-        showLoadingSpinner();
-        
-        $.ajax({
-            url: "{% url 'wamtram2:template_manage_key' 'dummy_key' %}".replace('dummy_key', templateKey),
-            type: "PUT",
-            contentType: "application/x-www-form-urlencoded",
-            data: formData,
-            beforeSend: function(xhr) {
-                xhr.setRequestHeader("X-CSRFToken", getCSRFToken());
-            },
-            success: function(data) {
-                showMessage('Template updated successfully', 'success');
-                setTimeout(function() {
-                    window.location.reload(true);
-                }, 500);
-            },
-            error: function(xhr, status, error) {
-                var errorMessage = 'Error updating template';
-                if (xhr.responseJSON && xhr.responseJSON.errors) {
-                    errorMessage += ': ' + JSON.stringify(xhr.responseJSON.errors);
-                } else if (xhr.responseJSON && xhr.responseJSON.error) {
-                    errorMessage += ': ' + xhr.responseJSON.error;
-                } else {
-                    errorMessage += '. Please check the server logs for more details.';
+    function updateNameField() {
+        var placeCode = $('#place_code').val();
+        var speciesCode = $('#species_code').val();
+        var sex = $('#sex').val();
+    
+        if (placeCode && speciesCode && sex) {
+            showLoadingSpinner();
+            $.ajax({
+                url: "{% url 'wamtram2:get_place_full_name' %}",
+                type: 'GET',
+                data: { place_code: placeCode },
+                dataType: 'json',
+                success: function(data) {
+                    var placeFullName = data.full_name;
+                    var speciesName = $('#species_code option:selected').text();
+                    var sexName = $('#sex option:selected').text();
+                    var templateName = placeFullName + ' ' + speciesName + ' ' + sexName;
+                    $('#id_name').val(templateName);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching place full name:', xhr.responseText);
+                    showMessage('Error loading place full name. Please try again.', 'danger');
+                },
+                complete: function() {
+                    hideLoadingSpinner();
                 }
-                showMessage(errorMessage, 'danger');
-            },
-            complete: function() {
-                hideLoadingSpinner();
-            }
-        });
+            });
+        }
     }
 
     // Create Template
@@ -402,6 +395,10 @@
         // Show spinner when the page is reloading
         $(window).on('beforeunload', function() {
             showLoadingSpinner();
+        });
+
+        $('#place_code, #species_code, #sex').change(function() {
+            updateNameField();
         });
     });
 </script>

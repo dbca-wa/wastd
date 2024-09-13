@@ -915,7 +915,15 @@ class TemplateManageView(LoginRequiredMixin, FormView):
         places_list = list(places.values('place_code', 'place_name'))
         return JsonResponse(places_list, safe=False)
 
-
+def get_place_full_name(request):
+    place_code = request.GET.get('place_code')
+    try:
+        place = TrtPlaces.objects.get(place_code=place_code)
+        full_name = place.get_full_name()
+        return JsonResponse({'full_name': full_name})
+    except TrtPlaces.DoesNotExist:
+        return JsonResponse({'error': 'Place not found'}, status=404)
+    
 class ValidateTagView(View):
     """
     View for validating tags.
