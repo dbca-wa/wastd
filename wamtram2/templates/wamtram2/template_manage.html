@@ -294,7 +294,7 @@
                 return $.ajax({
                     url: "{% url 'wamtram2:check_template_name' %}",
                     type: 'GET',
-                    data: { name: name, template_key: templateKey },
+                    data: { name: name },
                     dataType: 'json'
                 });
             }
@@ -312,17 +312,13 @@
                         inputElement.removeClass('is-invalid').addClass('is-valid');
                         feedbackElement.text('This template name is available').removeClass('invalid-feedback').addClass('valid-feedback').show();
                     }
-                }).fail(function(jqXHR, textStatus, errorThrown)) {
+                }).fail(function(jqXHR, textStatus, errorThrown) {
                     console.error("AJAX request failed:");
-
-                    console.log("Status: " + jqXHR.status);
-
-                    console.log("Error: " + errorThrown);
-
-                    console.log("Response Text: " + jqXHR.responseText);
- 
-                    utils.showMessage('Error checking template name', 'danger');
-                });
+                    console.log("Status: "+ jqXHR.status); // 输出 HTTP 状态码
+                    console.log("Error: "+ errorThrown);  // 输出错误信息
+                    console.log("Response Text: "+ jqXHR.responseText); // 输出响应文本
+                        utils.showMessage('Error checking template name','danger');
+                    });
             },
     
             generateTemplateName: function() {
@@ -334,7 +330,7 @@
                 var sex = $('#sex option:selected').text();
                 console.log(placeFullName, species, sex);
                 if (placeFullName && species && sex) {
-                    var templateName = placeFullName + ' + ' + species + ' + ' + sex;
+                    var templateName = placeFullName + species + sex;
                     console.log('Generating template name:', templateName);
                     $('#name').val(templateName);
                     this.checkTemplateNameAvailability(templateName, $('#name'));
