@@ -1503,6 +1503,21 @@ def quick_add_batch(request):
 
 class BatchCodeManageView(View):
     template_name = 'wamtram2/add_batches_code.html'
+    
+    def dispatch(self, request, *args, **kwargs):
+        if request.method == 'GET' and 'action' in request.GET:
+            action = request.GET.get('action')
+            if action == 'get_places':
+                return self.get_places(request)
+            elif action == 'check_batch_code':
+                return self.check_batch_code(request)
+        return super().dispatch(request, *args, **kwargs)
+    
+    def get_places(self, request):
+        location_code = request.GET.get('location_code')
+        places = TrtPlaces.objects.filter(location_code=location_code).values('place_code', 'place_name')
+        return JsonResponse(list(places), safe=False)
+
 
     def get(self, request, batch_id=None):
         if batch_id:
@@ -1566,14 +1581,6 @@ class BatchCodeManageView(View):
             is_unique = not TrtEntryBatches.objects.filter(batches_code=code).exists()
         return JsonResponse({'is_unique': is_unique})
 
-    def dispatch(self, request, *args, **kwargs):
-        if request.method == 'GET' and 'action' in request.GET:
-            action = request.GET.get('action')
-            if action == 'get_places':
-                return self.get_places(request)
-            elif action == 'check_batch_code':
-                return self.check_batch_code(request)
-        return super().dispatch(request, *args, **kwargs)
     
     
 @require_GET

@@ -35,6 +35,9 @@
         <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
         <li class="breadcrumb-item"><a href="{% url 'wamtram2:batches_curation' %}">Batches Curation</a></li>
         <li class="breadcrumb-item active">Edit Batch Details</li>
+        {% if batch_id %}
+        <input type="hidden" name="batch_id" value="{{ batch_id }}">
+        {% endif %}
     </ol>
 </nav>
 {% endblock %}
@@ -91,7 +94,7 @@
             {% csrf_token %}
             <div class="form-group">
                 <label for="batches_code">{{ form.batches_code.label }}</label>
-                <input type="text" class="form-control" id="batches_code" name="batches_code" required>
+                <input type="text" class="form-control" id="batches_code" name="batches_code" value="{{ form.batches_code.value|default_if_none:'' }}" required>
                 <div class="invalid-feedback">
                     This Batch Code is aleady taken.
                 </div>
@@ -159,20 +162,14 @@
             data: { 
                 action: 'get_places', 
                 location_code: locationCode,
-                {% if batch_id %}batch_id: {{ batch_id }}{% endif %}
             },
             dataType: 'json',
             success: function(data) {
                 var placeSelect = $('#place_code');
                 placeSelect.empty();
-                if (Array.isArray(data)) {
-                    $.each(data, function(index, place) {
-                        placeSelect.append('<option value="' + place.place_code + '">' + place.place_name + '</option>');
-                    });
-                } else {
-                    console.error('Unexpected data format:', data);
-                    showMessage('Error loading places: Unexpected data format', 'danger');
-                }
+                $.each(data, function(index, place) {
+                    placeSelect.append('<option value="' + place.place_code + '">' + place.place_name + '</option>');
+                });
             },
             error: function(xhr, status, error) {
                 console.error('Error fetching places:', xhr.responseText);
@@ -195,7 +192,7 @@
             data: { 
                 action: 'check_batch_code', 
                 code: generatedCode,
-                {% if batch_id %}batch_id: {{ batch_id }}{% endif %}
+                batch_id: batchId
             },
             success: function(data) {
                 if (data.is_unique) {
@@ -228,12 +225,14 @@
 
         batchCodeInput.on('input', function() {
             var code = $(this).val();
+            var batchId = {% if batch_id %}{{ batch_id }}{% else %}null{% endif %};
             if (code) {
                 $.ajax({
                     url: '{% url "wamtram2:check_batch_code" %}',
                     data: {
                         'code': code,
-                        'action': 'check_batch_code'
+                        'action': 'check_batch_code',
+                        'batch_id': batchId
                     },
                     dataType: 'json',
                     success: function(data) {
