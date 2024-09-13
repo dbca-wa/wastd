@@ -294,7 +294,7 @@
                 return $.ajax({
                     url: "{% url 'wamtram2:check_template_name' %}",
                     type: 'GET',
-                    data: { name: encodeURIComponent(name), template_key: templateKey },
+                    data: { name: name, template_key: templateKey },
                     dataType: 'json'
                 });
             }
@@ -334,7 +334,7 @@
                 var sex = $('#sex option:selected').text();
                 console.log(placeFullName, species, sex);
                 if (placeFullName && species && sex) {
-                    var templateName = placeFullName + '-' + species + '-' + sex;
+                    var templateName = placeFullName + ' + ' + species + ' + ' + sex;
                     console.log('Generating template name:', templateName);
                     $('#name').val(templateName);
                     this.checkTemplateNameAvailability(templateName, $('#name'));
