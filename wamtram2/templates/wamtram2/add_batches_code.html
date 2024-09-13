@@ -90,12 +90,13 @@
             {% csrf_token %}
             <div class="form-group">
                 <label for="batches_code">{{ form.batches_code.label }}</label>
-                <input type="text" name="batches_code" id="batches_code" class="form-control" value="{{ form.batches_code.value|default_if_none:'' }}">
-                {% if form.batches_code.errors %}
-                    <div class="invalid-feedback" style="display: block;">
-                        {{ form.batches_code.errors }}
-                    </div>
-                {% endif %}
+                <input type="text" class="form-control" id="batches_code" name="batches_code" required>
+                <div class="invalid-feedback">
+                    This Batch Code is aleady taken.
+                </div>
+                <div class="valid-feedback">
+                    Looks good!
+                </div>
             </div>
             <div class="form-group">
                 <label for="comments">{{ form.comments.label }}</label>
@@ -111,7 +112,7 @@
                 </select>
             </div>
             <button type="submit" class="btn btn-primary">Save</button>
-            <a href="{% url 'wamtram2:batches_list' %}" class="btn btn-secondary">Cancel</a>
+            <a href="{% url 'wamtram2:batches_curation' %}" class="btn btn-secondary">Cancel</a>
         </form>
     </div>
 
@@ -219,6 +220,43 @@
 
         // Initial load of places
         loadPlaces($('#location_code').val());
+
+
+        var batchCodeInput = $('#batches_code');
+        var submitBtn = $('#submitBtn');
+
+        batchCodeInput.on('input', function() {
+            var code = $(this).val();
+            if (code) {
+                $.ajax({
+                    url: '{% url "wamtram2:check_batch_code" %}',
+                    data: {
+                        'code': code,
+                        'action': 'check_batch_code'
+                    },
+                    dataType: 'json',
+                    success: function(data) {
+                        if (data.is_unique) {
+                            batchCodeInput.removeClass('is-invalid').addClass('is-valid');
+                            submitBtn.prop('disabled', false);
+                        } else {
+                            batchCodeInput.removeClass('is-valid').addClass('is-invalid');
+                            submitBtn.prop('disabled', true);
+                        }
+                    }
+                });
+            } else {
+                batchCodeInput.removeClass('is-valid is-invalid');
+                submitBtn.prop('disabled', true);
+            }
+        });
+
+        $('#batchForm').submit(function(e) {
+            if (batchCodeInput.hasClass('is-invalid')) {
+                e.preventDefault();
+                alert('Please enter a valid batch code.');
+            }
+        });
     });
 </script>
 {% endblock %}

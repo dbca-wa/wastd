@@ -203,8 +203,9 @@
                     </div>
                     <div class="form-group">
                         <label for="quickAddBatchCode">Batch Code</label>
-                        <input type="text" class="form-control" id="quickAddBatchCode" name="batches_code" readonly>
-                        <div id="batchCodeFeedback" class="invalid-feedback" style="display:none;"></div>
+                        <input type="text" class="form-control" id="quickAddBatchCode" name="batches_code" required>
+                        <div class="invalid-feedback">This Bathch is alraedy exist.</div>
+                        <div class="valid-feedback">Looks good!</div>
                     </div>
                     <div class="form-group">
                         <label for="quickAddEntryDate">Expected Entry Date</label>
@@ -371,17 +372,15 @@
             $.ajax({
                 url: "{% url 'wamtram2:check_batch_code' %}",
                 type: 'GET',
-                data: { 'batches_code': batchCode },
+                data: { 'code': batchCode, 'action': 'check_batch_code' },
                 dataType: 'json',
                 success: function(response) {
-                    if (response.exists) {
-                        $('#quickAddBatchCode').addClass('is-invalid');
-                        $('#batchCodeFeedback').text('This batch code already exists.').show();
-                        $('#quickAddBatchConfirm').prop('disabled', true);
-                    } else {
-                        $('#quickAddBatchCode').removeClass('is-invalid');
-                        $('#batchCodeFeedback').hide();
+                    if (response.is_unique) {
+                        $('#quickAddBatchCode').removeClass('is-invalid').addClass('is-valid');
                         $('#quickAddBatchConfirm').prop('disabled', false);
+                    } else {
+                        $('#quickAddBatchCode').removeClass('is-valid').addClass('is-invalid');
+                        $('#quickAddBatchConfirm').prop('disabled', true);
                     }
                 },
                 error: function() {
@@ -427,7 +426,10 @@
     
         $('#quickAddNight, #quickAddPlace, #quickAddYear').change(generateBatchCode);
         $('#quickAddPlace, #quickAddNight, #quickAddEntryDate').change(updateComments);
-    
+        
+        $('#quickAddBatchCode').on('input', function() {
+            checkBatchCodeUniqueness($(this).val());
+        });
         // Show Quick Add Batch modal
         $("#quickAddBatchBtn").click(function(e) {
             e.preventDefault();

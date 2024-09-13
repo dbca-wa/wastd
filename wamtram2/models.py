@@ -1236,6 +1236,18 @@ class TrtEntryBatches(models.Model):
 
     def __str__(self):
         return f"{self.entry_batch_id}"
+    
+    def clean(self):
+        if self.batches_code:
+            existing = TrtEntryBatches.objects.filter(batches_code=self.batches_code)
+            if self.pk:
+                existing = existing.exclude(pk=self.pk)
+            if existing.exists():
+                raise ValidationError({'batches_code': 'This batch code already exists.'})
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
 
 
 class TrtIdentification(models.Model):

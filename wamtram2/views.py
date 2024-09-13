@@ -1359,6 +1359,11 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
 
         return context
     def get(self, request, *args, **kwargs):
+        if 'action' in request.GET:
+            action = request.GET.get('action')
+            if action == 'check_batch_code':
+                return self.check_batch_code(request)
+            
         self.object_list = self.get_queryset()
         context = self.get_context_data()
         
@@ -1371,6 +1376,17 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
                 'current_page': context['page_obj'].number if 'page_obj' in context else 1,
             })
         return super().get(request, *args, **kwargs)
+    
+    def check_batch_code(self, request):
+        code = request.GET.get('code')
+        batch_id = request.GET.get('batch_id')
+        if batch_id:
+            is_unique = not TrtEntryBatches.objects.filter(batches_code=code).exclude(pk=batch_id).exists()
+        else:
+            is_unique = not TrtEntryBatches.objects.filter(batches_code=code).exists()
+        return JsonResponse({'is_unique': is_unique})
+    
+    
 class CreateNewEntryView(LoginRequiredMixin, ListView):
     model = TrtEntryBatches
     template_name = 'wamtram2/create_new_entry.html'
