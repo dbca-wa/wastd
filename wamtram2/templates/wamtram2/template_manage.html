@@ -234,10 +234,6 @@
 {{ block.super }}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        {% block extra_js %}
-{{ block.super }}
-<script>
-    (function() {
         const utils = {
             getCSRFToken: function() {
                 return document.querySelector('[name=csrfmiddlewaretoken]').value;
@@ -376,7 +372,6 @@
 
         window.createTemplate = templateManager.createTemplate;
         window.deleteTemplate = templateManager.deleteTemplate;
-    })();
     });
 </script>
 {% endblock %}
