@@ -875,8 +875,6 @@ class TemplateManageView(LoginRequiredMixin, FormView):
     success_url = reverse_lazy('wamtram2:template_manage')
     
     def dispatch(self, request, *args, **kwargs):
-        if kwargs.get('check_template_name'):
-            return self.check_template_name(request)
 
         if not (request.user.groups.filter(name="Tagging Data Curation").exists() or request.user.is_superuser):
             return HttpResponseForbidden("You do not have permission to view this page")
@@ -937,12 +935,6 @@ class TemplateManageView(LoginRequiredMixin, FormView):
         template.delete()
         return JsonResponse({'message': 'Template deleted'}, status=200)
     
-    @method_decorator(require_http_methods(["GET"]))
-    def check_template_name(self, request):
-        name = request.GET.get('name', '')
-        exists = Template.objects.filter(name=name).exists()
-        return JsonResponse({'exists': exists})
-    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         
@@ -979,6 +971,13 @@ class TemplateManageView(LoginRequiredMixin, FormView):
             } for place in places
         ]
         return places_data
+
+@login_required
+@require_http_methods(["GET"])
+def check_template_name(request):
+    name = request.GET.get('name', '')
+    exists = Template.objects.filter(name=name).exists()
+    return JsonResponse({'exists': exists})
 
 
 class ValidateTagView(View):

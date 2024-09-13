@@ -24,7 +24,7 @@ urlpatterns = [
     path("templates-manage/", views.TemplateManageView.as_view(), name="template_manage"),
     path("templates-manage/<str:template_key>/", views.TemplateManageView.as_view(), name="template_manage_key"),
     path('templates-manage/get-places/', views.TemplateManageView.as_view(), name='get_template_places'),
-    path('templates-manage/check-template-name/', views.TemplateManageView.as_view(check_template_name=True), name='check_template_name'),
+     path('templates-manage/check-template-name/', views.check_template_name, name='check_template_name'),
     path('search-persons/', views.search_persons, name='search-persons'),
     path('search-places/', views.search_places, name='search-places'),
     path('export/', views.ExportDataView.as_view(), name='export_data'),
