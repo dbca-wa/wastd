@@ -875,9 +875,12 @@ class TemplateManageView(LoginRequiredMixin, FormView):
     success_url = reverse_lazy('wamtram2:template_manage')
     
     def dispatch(self, request, *args, **kwargs):
+        if kwargs.get('check_template_name'):
+            return self.check_template_name(request)
+
         if not (request.user.groups.filter(name="Tagging Data Curation").exists() or request.user.is_superuser):
             return HttpResponseForbidden("You do not have permission to view this page")
-    
+
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             return self.handle_ajax_request(request, *args, **kwargs)
         
