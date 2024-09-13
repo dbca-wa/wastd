@@ -871,110 +871,67 @@ SEX_CHOICES = [
 class TemplateManageView(LoginRequiredMixin, FormView):
     template_name = 'wamtram2/template_manage.html'
     form_class = TemplateForm
-    paginate_by = 30
-    success_url = reverse_lazy('wamtram2:template_manage')
-    
     def dispatch(self, request, *args, **kwargs):
-
-        if not (request.user.groups.filter(name="Tagging Data Curation").exists() or request.user.is_superuser):
-            return HttpResponseForbidden("You do not have permission to view this page")
-
-        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            return self.handle_ajax_request(request, *args, **kwargs)
+        if not request.user.is_superuser:
+            return HttpResponseForbidden("You do not have permission to access this page.")
+        
+        if request.method == 'PUT':
+            return self.put(request, *args, **kwargs)
+        elif request.method == 'DELETE':
+            return self.delete(request, *args, **kwargs)
+        elif request.method == 'GET' and 'location_code' in request.GET:
+            return self.get_places(request)
         
         return super().dispatch(request, *args, **kwargs)
 
-    def handle_ajax_request(self, request, *args, **kwargs):
-        method = request.method.upper()
+    def form_valid(self, form):
+        form.save()
+        return redirect('wamtram2:template_manage')
 
-        if method == 'GET':
-            if 'location_code' in request.GET:
-                return self.get_places(request)
-            if 'check_name' in request.GET:
-                return self.check_template_name(request)
-        elif method == 'POST':
-            return self.create_template(request)
-        elif method == 'DELETE':
-            return self.delete_template(request, *args, **kwargs)
-
-        return JsonResponse({'error': 'Invalid request'}, status=400)
-
-    @require_GET
-    def get_places(request):
-        location_code = request.GET.get('location_code')
-        if not location_code:
-            return JsonResponse({'error': 'Location code is required'}, status=400)
-
-        try:
-            places = TrtPlaces.objects.filter(location_code=location_code)
-            places_data = [
-                {
-                    'place_code': place.place_code,
-                    'place_name': place.place_name,
-                    'full_name': place.get_full_name()
-                } for place in places
-            ]
-            return JsonResponse(places_data, safe=False)
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
-
-    def create_template(self, request):
-        form = TemplateForm(request.POST)
-        if form.is_valid():
-            try:
-                template = form.save()
-                return JsonResponse({'message': 'Template created successfully', 'is_valid': True}, status=200)
-            except ValidationError as e:
-                return JsonResponse({'errors': e.message_dict, 'is_valid': False}, status=400)
-        return JsonResponse({'errors': form.errors, 'is_valid': False}, status=400)
-
-    def delete_template(self, request, *args, **kwargs):
-        template_key = kwargs.get('template_key')
-        template = get_object_or_404(Template, pk=template_key)
-        template.delete()
-        return JsonResponse({'message': 'Template deleted'}, status=200)
-    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        
-        # Fetch templates with pagination
-        templates = Template.objects.all()
-        paginator = Paginator(templates, self.paginate_by)
-        page_number = self.request.GET.get('page', 1)
-        page_obj = paginator.get_page(page_number)
-        
-        # Add pagination and templates to context
-        context['is_paginated'] = paginator.num_pages > 1
-        context['page_obj'] = page_obj
-        context['paginator'] = paginator
-        context['templates'] = page_obj.object_list
-        
-        # Add additional data
+        context['templates'] = Template.objects.all()
         context['locations'] = list(TrtLocations.objects.all())
         context['places'] = list(TrtPlaces.objects.all())
         context['species'] = list(TrtSpecies.objects.all())
         context['sex_choices'] = SEX_CHOICES
-        
-        # This is where get_places is needed
-        context['places_json'] = json.dumps(self.get_places_data(), cls=DjangoJSONEncoder)
         return context
 
-    def get_places_data(self):
-        """Returns places data including full name."""
-        places = TrtPlaces.objects.select_related('location_code').all()
-        places_data = [
-            {
-                'place_code': place.place_code,
-                'place_name': place.place_name,
-                'full_name': place.get_full_name()
-            } for place in places
-        ]
-        return places_data
+    def delete(self, request, template_key):
+        template = get_object_or_404(Template, pk=template_key)
+        template.delete()
+        return JsonResponse({'message': 'Template deleted'})
+
+    def put(self, request, template_key):
+        template = get_object_or_404(Template, pk=template_key)
+        form = TemplateForm(QueryDict(request.body), instance=template)
+        if form.is_valid():
+            updated_template = form.save()
+            return JsonResponse({
+                'name': updated_template.name,
+                'location_code': updated_template.location_code,
+                'place_code': updated_template.place_code,
+                'species_code': updated_template.species_code,
+                'sex': updated_template.sex
+            })
+        return JsonResponse({'errors': form.errors}, status=400)
     
-    def check_template_name(self, request):
-        name = request.GET.get('name')
-        exists = Template.objects.filter(name=name).exists()
-        return JsonResponse({'exists': exists})
+    def get_places(self, request):
+        """
+        Retrieves places based on the provided location code.
+
+        Args:
+            request (HttpRequest): The HTTP request.
+
+        Returns:
+            JsonResponse: The JSON response with places data.
+        """
+        location_code = request.GET.get('location_code')
+        places = TrtPlaces.objects.filter(location_code=location_code)
+        places_list = list(places.values('place_code', 'place_name'))
+        return JsonResponse(places_list, safe=False)
+    
+
 
 
 class ValidateTagView(View):
