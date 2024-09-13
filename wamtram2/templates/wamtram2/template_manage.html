@@ -122,8 +122,15 @@
                         {% endfor %}
                     </select>
                 </div>
-                <div class="col-md-12">
-                    {% bootstrap_field form.name show_label=True %}
+                <div class="form-group">
+                    <label for="id_name">Template Name(Auto Generated)</label>
+                    <input type="text" class="form-control" id="id_name" name="name" required>
+                    <div class="valid-feedback">
+                        name is available
+                    </div>
+                    <div class="invalid-feedback">
+                        name is exists
+                    </div>
                 </div>
                 <div class="col-md-2 mt-3">
                     <button type="button" class="btn btn-primary btn-block" onclick="createTemplate()">Create</button>
@@ -281,7 +288,7 @@
                 var placeFullName = data.full_name;
                 var speciesName = document.querySelector('#species_code option:checked').textContent;
                 var sexName = document.querySelector('#sex option:checked').textContent;
-                var templateName = placeFullName + ' ' + speciesName + ' ' + sexName;
+                var templateName = placeFullName + ' + ' + speciesName + ' + ' + sexName;
                 document.getElementById('id_name').value = templateName;
                 checkTemplateName(templateName);
             })
@@ -348,32 +355,24 @@
     }
 
     function checkTemplateName(name) {
-        fetch("{% url 'wamtram2:check_template_name' %}?name=" + encodeURIComponent(name), {
-            method: 'GET',
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-                'Accept': 'application/json',
+        $.ajax({
+            url: "{% url 'wamtram2:check_template_name' %}",
+            type: 'GET',
+            data: { name: name },
+            dataType: 'json',
+            success: function(data) {
+                var inputElement = $('#id_name');
+                inputElement.removeClass('is-valid is-invalid');
+
+                if (data.is_available) {
+                    inputElement.addClass('is-valid');
+                } else {
+                    inputElement.addClass('is-invalid');
+                }
             },
-        })
-        .then(response => response.json())
-        .then(data => {
-            var nameField = document.getElementById('id_name');
-            var feedbackElement = document.getElementById('name-feedback');
-            if (!feedbackElement) {
-                feedbackElement = document.createElement('div');
-                feedbackElement.id = 'name-feedback';
-                nameField.parentNode.insertBefore(feedbackElement, nameField.nextSibling);
+            error: function(xhr, status, error) {
+                console.error('Error checking template name:', error);
             }
-            if (data.is_available) {
-                feedbackElement.textContent = 'Template name is available';
-                feedbackElement.className = 'text-success';
-            } else {
-                feedbackElement.textContent = 'Template name already exists';
-                feedbackElement.className = 'text-danger';
-            }
-        })
-        .catch(error => {
-            console.error('Error checking template name:', error);
         });
     }
 

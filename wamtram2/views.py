@@ -888,7 +888,7 @@ class TemplateManageView(LoginRequiredMixin, FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['templates'] = Template.objects.all()
+        context['templates'] = Template.objects.all().order_by('-template_id')
         context['locations'] = list(TrtLocations.objects.all())
         context['places'] = list(TrtPlaces.objects.all())
         context['species'] = list(TrtSpecies.objects.all())
@@ -914,6 +914,7 @@ class TemplateManageView(LoginRequiredMixin, FormView):
         places = TrtPlaces.objects.filter(location_code=location_code)
         places_list = list(places.values('place_code', 'place_name'))
         return JsonResponse(places_list, safe=False)
+
 
 def get_place_full_name(request):
     place_code = request.GET.get('place_code')
