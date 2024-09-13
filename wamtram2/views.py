@@ -1305,8 +1305,7 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
         year = self.request.GET.get('year')
         
         if not self.request.GET:
-            return queryset.order_by('-entry_batch_id')[:10]
-
+            return queryset.order_by('-entry_batch_id')[:20]
         
         if self.request.GET.get('show_all'):
             return queryset.order_by('-entry_batch_id')
