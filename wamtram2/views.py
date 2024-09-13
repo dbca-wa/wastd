@@ -972,15 +972,12 @@ class TemplateManageView(LoginRequiredMixin, FormView):
         ]
         return places_data
 
+
 @require_http_methods(["GET"])
 def check_template_name(request):
-    # 打印调试信息
-    raw_name = request.GET.get('name', '')
-    print("Raw name:", raw_name)
     
-    # 解码 name 参数
-    name = unquote(raw_name)
-    print("Decoded name:", name)
+    name = request.GET.get('name', '')
+    print(" name:", name)
     
     if not name:
         return JsonResponse({'error': 'Invalid name'}, status=400)

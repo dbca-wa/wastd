@@ -293,7 +293,7 @@
                 return $.ajax({
                     url: "{% url 'wamtram2:check_template_name' %}",
                     type: 'GET',
-                    data: { name: name },
+                    data: { name: templateName },
                     dataType: 'json'
                 });
             }
@@ -302,14 +302,12 @@
         const templateManager = {
             checkTemplateNameAvailability: function(templateName, inputElement) {
                 api.checkTemplateName(templateName).done(function(response) {
-                    const feedbackElement = inputElement.siblings('.valid-feedback');
-                    console.log(response);
                     if (response.exists) {
-                        inputElement.addClass('is-invalid').removeClass('is-valid');
-                        feedbackElement.text('This template name already exists').removeClass('valid-feedback').addClass('invalid-feedback').show();
+                        inputElement.addClass('is-invalid');
+                        $('#name-feedback').text('(This template already exists)').show();
                     } else {
-                        inputElement.removeClass('is-invalid').addClass('is-valid');
-                        feedbackElement.text('This template name is available').removeClass('invalid-feedback').addClass('valid-feedback').show();
+                        inputElement.removeClass('is-invalid');
+                        $('#name-feedback').hide();
                     }
                 }).fail(function(jqXHR, textStatus, errorThrown) {
                     console.error("AJAX request failed:");
@@ -322,17 +320,13 @@
     
             generateTemplateName: function() {
                 var selectedPlace = $('#place_code option:selected');
-                console.log(selectedPlace);
                 var placeFullName = selectedPlace.attr('place-full-name');
-                console.log(placeFullName);
                 var species = $('#species_code option:selected').text();
                 var sex = $('#sex option:selected').text();
-                console.log(placeFullName, species, sex);
                 if (placeFullName && species && sex) {
-                    var templateName = placeFullName + species + sex;
-                    console.log('Generating template name:', templateName);
+                    var templateName = placeFullName + ' - ' + species + ' ' + sex;
                     $('#name').val(templateName);
-                    this.checkTemplateNameAvailability(templateName, $('#name'));
+                    templateManager.checkTemplateNameAvailability(templateName, $('#name'));
                 }
             },
     
