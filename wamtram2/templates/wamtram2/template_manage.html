@@ -276,9 +276,19 @@
                     url: "{% url 'wamtram2:get_places' %}",
                     type: 'GET',
                     data: { location_code: locationCode },
-                    dataType: 'json'
+                    dataType: 'json',
+                    success: function(data) {
+                        $('#place_code').empty();
+                        $.each(data, function(index, place) {
+                            $('#place_code').append($('<option>', {
+                                value: place.place_code,
+                                text: place.place_name,
+                                'place-full-name': place.full_name
+                            }));
+                        });
+                    }
                 }).always(utils.hideLoadingSpinner);
-            },
+            };
             checkTemplateName: function(name, templateKey = null) {
                 // Check for template name uniqueness
                 return $.ajax({
@@ -332,8 +342,17 @@
                         location.reload();
                     },
                     error: function(xhr) {
-                        utils.showMessage('Error creating template: ' + xhr.responseJSON.errors, 'danger');
-                    },
+                        var errorMessage = 'An error occurred';
+                        if (xhr.responseJSON && xhr.responseJSON.errors) {
+                            var errors = xhr.responseJSON.errors;
+                            if (errors.name) {
+                                errorMessage = errors.name.join(', ');
+                            }
+                        } else if (xhr.responseText) {
+                            errorMessage = xhr.responseText;
+                        }
+                        utils.showMessage('Error creating template: ' + errorMessage, 'danger');
+                    }
                     complete: utils.hideLoadingSpinner
                 });
             },
@@ -351,8 +370,17 @@
                         location.reload();
                     },
                     error: function(xhr) {
-                        utils.showMessage('Error updating template: ' + xhr.responseJSON.errors, 'danger');
-                    },
+                        var errorMessage = 'An error occurred';
+                        if (xhr.responseJSON && xhr.responseJSON.errors) {
+                            var errors = xhr.responseJSON.errors;
+                            if (errors.name) {
+                                errorMessage = errors.name.join(', ');
+                            }
+                        } else if (xhr.responseText) {
+                            errorMessage = xhr.responseText;
+                        }
+                        utils.showMessage('Error updating template: ' + errorMessage, 'danger');
+                    }
                     complete: utils.hideLoadingSpinner
                 });
             },
@@ -367,8 +395,17 @@
                             location.reload();
                         },
                         error: function(xhr) {
-                            utils.showMessage('Error deleting template: ' + xhr.responseJSON.errors, 'danger');
-                        },
+                            var errorMessage = 'An error occurred';
+                            if (xhr.responseJSON && xhr.responseJSON.errors) {
+                                var errors = xhr.responseJSON.errors;
+                                if (errors.name) {
+                                    errorMessage = errors.name.join(', ');
+                                }
+                            } else if (xhr.responseText) {
+                                errorMessage = xhr.responseText;
+                            }
+                            utils.showMessage('Error deleting template: ' + errorMessage, 'danger');
+                        }
                         complete: utils.hideLoadingSpinner
                     });
                 }
@@ -406,6 +443,7 @@
         window.createTemplate = templateManager.createTemplate;
         window.updateTemplate = templateManager.updateTemplate;
         window.deleteTemplate = templateManager.deleteTemplate;
+        
     })(jQuery);
     
 </script>
