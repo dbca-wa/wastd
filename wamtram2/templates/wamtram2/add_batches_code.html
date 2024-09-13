@@ -29,6 +29,17 @@
     </style>
 {% endblock %}
 
+{% block breadcrumbs %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'wamtram2:batches_curation' %}">Batches Curation</a></li>
+        <li class="breadcrumb-item active">Edit Batch Details</li>
+        <li class="breadcrumb-item"><a href="{% url 'wamtram2:entry_batch_detail' batch_id %}">{{ batch_id }}</a></li>
+    </ol>
+</nav>
+{% endblock %}
+
 {% block page_content_inner %}
 <div class="container">
     <!-- Message Alert -->
@@ -81,12 +92,13 @@
             {% csrf_token %}
             <div class="form-group">
                 <label for="batches_code">{{ form.batches_code.label }}</label>
-                <input type="text" name="batches_code" id="batches_code" class="form-control" value="{{ form.batches_code.value|default_if_none:'' }}">
-                {% if form.batches_code.errors %}
-                    <div class="invalid-feedback" style="display: block;">
-                        {{ form.batches_code.errors }}
-                    </div>
-                {% endif %}
+                <input type="text" class="form-control" id="batches_code" name="batches_code" value="{{ form.batches_code.value|default_if_none:'' }}" required>
+                <div class="invalid-feedback">
+                    This Batch Code is aleady taken.
+                </div>
+                <div class="valid-feedback">
+                    Looks good!
+                </div>
             </div>
             <div class="form-group">
                 <label for="comments">{{ form.comments.label }}</label>
@@ -102,20 +114,8 @@
                 </select>
             </div>
             <button type="submit" class="btn btn-primary">Save</button>
-            <a href="{% url 'wamtram2:batches_list' %}" class="btn btn-secondary">Cancel</a>
+            <a href="{% url 'wamtram2:batches_curation' %}" class="btn btn-secondary">Cancel</a>
         </form>
-    </div>
-
-    <!-- Batch Code Guide -->
-    <div class="step-container">
-        <div class="step-header">Batch Code Guide</div>
-        <p>The batch code consists of three parts:</p>
-        <ol>
-            <li><strong>Part 1 (2-3 chars):</strong> N followed by the night number (e.g., N1, N2, N10)</li>
-            <li><strong>Part 2 (2 chars):</strong> Place code </li>
-            <li><strong>Part 3 (2 chars):</strong> Year (e.g., 24 for 2024)</li>
-        </ol>
-        <p><strong>Example:</strong> N1GN24 (Night 1, Gnaraloo, 2024)</p>
     </div>
 </div>
 {% endblock %}
@@ -148,20 +148,14 @@
             data: { 
                 action: 'get_places', 
                 location_code: locationCode,
-                {% if batch_id %}batch_id: {{ batch_id }}{% endif %}
             },
             dataType: 'json',
             success: function(data) {
                 var placeSelect = $('#place_code');
                 placeSelect.empty();
-                if (Array.isArray(data)) {
-                    $.each(data, function(index, place) {
-                        placeSelect.append('<option value="' + place.place_code + '">' + place.place_name + '</option>');
-                    });
-                } else {
-                    console.error('Unexpected data format:', data);
-                    showMessage('Error loading places: Unexpected data format', 'danger');
-                }
+                $.each(data, function(index, place) {
+                    placeSelect.append('<option value="' + place.place_code + '">' + place.place_name + '</option>');
+                });
             },
             error: function(xhr, status, error) {
                 console.error('Error fetching places:', xhr.responseText);
@@ -176,15 +170,16 @@
         var placeCode = $('#place_code').val();
         var year = $('#year').val().slice(-2);
         var generatedCode = 'N' + night + placeCode + year;
-
+        var batchId = {% if batch_id %}{{ batch_id }}{% else %}null{% endif %};
         // Check if the code is unique
         $.ajax({
+            
             url: "{% url 'wamtram2:batch_code_manage' %}",
             type: 'GET',
             data: { 
                 action: 'check_batch_code', 
                 code: generatedCode,
-                {% if batch_id %}batch_id: {{ batch_id }}{% endif %}
+                batch_id: batchId
             },
             success: function(data) {
                 if (data.is_unique) {
@@ -210,6 +205,45 @@
 
         // Initial load of places
         loadPlaces($('#location_code').val());
+
+
+        var batchCodeInput = $('#batches_code');
+        var submitBtn = $('#submitBtn');
+
+        batchCodeInput.on('input', function() {
+            var code = $(this).val();
+            var batchId = {% if batch_id %}{{ batch_id }}{% else %}null{% endif %};
+            if (code) {
+                $.ajax({
+                    url: '{% url "wamtram2:check_batch_code" %}',
+                    data: {
+                        'code': code,
+                        'action': 'check_batch_code',
+                        'batch_id': batchId
+                    },
+                    dataType: 'json',
+                    success: function(data) {
+                        if (data.is_unique) {
+                            batchCodeInput.removeClass('is-invalid').addClass('is-valid');
+                            submitBtn.prop('disabled', false);
+                        } else {
+                            batchCodeInput.removeClass('is-valid').addClass('is-invalid');
+                            submitBtn.prop('disabled', true);
+                        }
+                    }
+                });
+            } else {
+                batchCodeInput.removeClass('is-valid is-invalid');
+                submitBtn.prop('disabled', true);
+            }
+        });
+
+        $('#batchForm').submit(function(e) {
+            if (batchCodeInput.hasClass('is-invalid')) {
+                e.preventDefault();
+                alert('Please enter a valid batch code.');
+            }
+        });
     });
 </script>
 {% endblock %}

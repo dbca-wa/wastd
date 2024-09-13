@@ -49,6 +49,14 @@
             display: block;
             width: 100%;
         }
+        .form-control-static {
+            padding-top: 7px;
+            margin-bottom: 0;
+            border: 1px solid #ced4da;
+            border-radius: .25rem;
+            padding: .375rem .75rem;
+            background-color: #f8f9fa;
+        }
     </style>
 {% endblock %}
 
@@ -62,6 +70,7 @@
     <nav aria-label="breadcrumb" class="d-none d-md-block">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'wamtram2:batches_curation' %}">Batches Curation</a></li>
             <li class="breadcrumb-item active">Manage Templates</li>
         </ol>
     </nav>
@@ -82,14 +91,9 @@
             <div class="step-header">Create New Template</div>
             <form id="templateForm" method="post" class="row">
                 {% csrf_token %}
-                <div class="col-md-12">
-                    <label for="name">Template Name</label>
-                    <input type="text" class="form-control" id="name" name="name" required>
-                </div>
                 <div class="col-md-3">
                     <label for="location_code">Location</label>
-                    <select class="form-control" id="location_code" name="location_code" required>
-                        <option value="">Select Location</option>
+                    <select class="form-control" id="location_code" name="location_code">
                         {% for location in locations %}
                             <option value="{{ location.location_code }}">{{ location.location_name }}</option>
                         {% endfor %}
@@ -97,13 +101,15 @@
                 </div>
                 <div class="col-md-3">
                     <label for="place_code">Place</label>
-                    <select class="form-control" id="place_code" name="place_code" required>
-                        <option value="">Select Place</option>
+                    <select class="form-control" id="place_code" name="place_code">
+                        {% for place in places %}
+                            <option value="{{ place.place_code }}">{{ place.place_name }}</option>
+                        {% endfor %}
                     </select>
                 </div>
                 <div class="col-md-3">
                     <label for="species_code">Species</label>
-                    <select class="form-control" id="species_code" name="species_code" required>
+                    <select class="form-control" id="species_code" name="species_code">
                         {% for specie in species %}
                             <option value="{{ specie.species_code }}">{{ specie.common_name }}</option>
                         {% endfor %}
@@ -111,14 +117,26 @@
                 </div>
                 <div class="col-md-3">
                     <label for="sex">Sex</label>
-                    <select class="form-control" id="sex" name="sex" required>
+                    <select class="form-control" id="sex" name="sex">
                         {% for code, name in sex_choices %}
                             <option value="{{ code }}">{{ name }}</option>
                         {% endfor %}
                     </select>
                 </div>
+                <div class="col-md-12 mt-3">
+                    <div class="form-group">
+                        <label for="id_name">Template Name (Auto Generated)</label>
+                        <input type="text" class="form-control" id="id_name" name="name" required>
+                        <div class="valid-feedback">
+                            Name is available
+                        </div>
+                        <div class="invalid-feedback">
+                            Name already exists
+                        </div>
+                    </div>
+                </div>
                 <div class="col-md-2 mt-3">
-                    <button type="button" class="btn btn-primary btn-block" onclick="createTemplate()">Create</button>
+                    <button type="button" class="btn btn-primary btn-block" id="createButton" onclick="createTemplate()" disabled>Create</button>
                 </div>
             </form>
         </div>
@@ -136,47 +154,53 @@
                                     <label for="name_{{ template.template_id }}" class="template-name">Template</label>
                                 </div>
                                 <div class="form-group col-md-10">
-                                    <input type="text" class="form-control" id="name_{{ template.template_id }}" name="name" value="{{ template.name }}">
+                                    <label for="name_{{ template.template_id }}" class="sr-only">Template Name</label>
+                                    <h4 id="name_{{ template.template_id }}" class="mb-0">{{ template.name }}</h4>
                                 </div>
                                 <div class="form-group col-md-3">
-                                    <label for="location_code_{{ template.template_id }}">Location</label>
-                                    <select class="form-control" id="location_code_{{ template.template_id }}" name="location_code">
+                                    <label for="location_{{ template.template_id }}">Location</label>
+                                    <p id="location_{{ template.template_id }}" class="form-control-static">
                                         {% for location in locations %}
-                                            <option value="{{ location.location_code }}" {% if location.location_code == template.location_code %}selected{% endif %}>{{ location.location_name }}</option>
+                                            {% if location.location_code == template.location_code %}
+                                                {{ location.location_name }}
+                                            {% endif %}
                                         {% endfor %}
-                                    </select>
+                                    </p>
                                 </div>
                                 <div class="form-group col-md-3">
-                                    <label for="place_code_{{ template.template_id }}">Place</label>
-                                    <select class="form-control" id="place_code_{{ template.template_id }}" name="place_code">
+                                    <label for="place_{{ template.template_id }}">Place</label>
+                                    <p id="place_{{ template.template_id }}" class="form-control-static">
                                         {% for place in places %}
-                                            <option value="{{ place.place_code }}" {% if place.place_code == template.place_code %}selected{% endif %}>{{ place.place_name }}</option>
+                                            {% if place.place_code == template.place_code %}
+                                                {{ place.place_name }}
+                                            {% endif %}
                                         {% endfor %}
-                                    </select>
+                                    </p>
                                 </div>
                                 <div class="form-group col-md-3">
-                                    <label for="species_code_{{ template.template_id }}">Species</label>
-                                    <select class="form-control" id="species_code_{{ template.template_id }}" name="species_code">
+                                    <label for="species_{{ template.template_id }}">Species</label>
+                                    <p id="species_{{ template.template_id }}" class="form-control-static">
                                         {% for specie in species %}
-                                            <option value="{{ specie.species_code }}" {% if specie.species_code == template.species_code %}selected{% endif %}>{{ specie.common_name }}</option>
+                                            {% if specie.species_code == template.species_code %}
+                                                {{ specie.common_name }}
+                                            {% endif %}
                                         {% endfor %}
-                                    </select>
+                                    </p>
                                 </div>
                                 <div class="form-group col-md-3">
                                     <label for="sex_{{ template.template_id }}">Sex</label>
-                                    <select class="form-control" id="sex_{{ template.template_id }}" name="sex">
+                                    <p id="sex_{{ template.template_id }}" class="form-control-static">
                                         {% for code, name in sex_choices %}
-                                            <option value="{{ code }}" {% if code == template.sex %}selected{% endif %}>{{ name }}</option>
+                                            {% if code == template.sex %}
+                                                {{ name }}
+                                            {% endif %}
                                         {% endfor %}
-                                    </select>
+                                    </p>
                                 </div>
                             </div>
                         </form>
                     </div>
                     <div class="row mb-3">
-                        <div class="col-md-2">
-                            <button type="button" class="btn btn-success btn-block" onclick="updateTemplate('{{ template.template_id }}')">Update</button>
-                        </div>
                         <div class="col-md-2">
                             <button type="button" class="btn btn-danger btn-block" onclick="deleteTemplate('{{ template.template_id }}')">Delete</button>
                         </div>
@@ -201,201 +225,228 @@
 {% block extra_js %}
 {{ block.super }}
 <script>
-    (function($) {
-        // Utility functions
-        const utils = {
-            getCSRFToken: function() {
-                return document.querySelector('[name=csrfmiddlewaretoken]').value;
-            },
-            showMessage: function(message, type) {
-                var alert = $('#message-alert');
-                alert.removeClass('alert-success alert-danger')
-                     .addClass('alert-' + type)
-                     .text(message)
-                     .slideDown();
+    // Get CSRF Token
+    function getCSRFToken() {
+        return document.querySelector('[name=csrfmiddlewaretoken]').value;
+    }
+
+    // Show Message
+    function showMessage(message, type) {
+        var alert = $('#message-alert');
+        alert.removeClass('alert-success alert-danger');
+        alert.addClass('alert-' + type);
+        alert.text(message);
+        alert.slideDown();
+
+        setTimeout(function() {
+            alert.slideUp();
+        }, 3000);
+    }
+
+    // Show Loading Spinner and Overlay
+    function showLoadingSpinner() {
+        const loadingSpinner = document.querySelector('.loading-spinner');
+        const loadingOverlay = document.querySelector('.loading-overlay');
+        if (loadingOverlay) {
+            loadingOverlay.style.display = 'block';
+        }
+        if (loadingSpinner) {
+            loadingSpinner.style.display = 'block';
+        }
+    }
+
+    // Hide Loading Spinner and Overlay
+    function hideLoadingSpinner() {
+        const loadingSpinner = document.querySelector('.loading-spinner');
+        const loadingOverlay = document.querySelector('.loading-overlay');
+        if (loadingOverlay) {
+            loadingOverlay.style.display = 'none';
+        }
+        if (loadingSpinner) {
+            loadingSpinner.style.display = 'none';
+        }
+    }
+
+    function updateNameField() {
+        var placeCode = document.getElementById('place_code').value;
+        var speciesCode = document.getElementById('species_code').value;
+        var sex = document.getElementById('sex').value;
     
-                setTimeout(function() {
-                    alert.slideUp();
-                }, 3000);
-            },
-            showLoadingSpinner: function() {
-                $('.loading-spinner, .loading-overlay').show();
-            },
-            hideLoadingSpinner: function() {
-                $('.loading-spinner, .loading-overlay').hide();
-            }
-        };
-    
-        // API calls
-        const api = {
-            loadPlaces: function(locationCode, targetElement) {
-                utils.showLoadingSpinner();
-                return $.ajax({
-                    url: "{% url 'wamtram2:get_places' %}",
-                    type: 'GET',
-                    data: { location_code: locationCode },
-                    dataType: 'json'
-                }).always(utils.hideLoadingSpinner);
-            },
-            checkTemplateName: function(name) {
-                return $.ajax({
-                    url: "{% url 'wamtram2:check_template_name' %}",
-                    type: 'GET',
-                    data: { name: name },
-                    dataType: 'json'
-                });
-            },
-            createTemplate: function(formData) {
-                utils.showLoadingSpinner();
-                return $.ajax({
-                    url: "{% url 'wamtram2:template_manage' %}",
-                    type: "POST",
-                    data: formData,
-                    beforeSend: function(xhr) {
-                        xhr.setRequestHeader("X-CSRFToken", utils.getCSRFToken());
-                    }
-                }).always(utils.hideLoadingSpinner);
-            },
-            updateTemplate: function(templateKey, formData) {
-                utils.showLoadingSpinner();
-                return $.ajax({
-                    url: "{% url 'wamtram2:template_manage_key' 'dummy_key' %}".replace('dummy_key', templateKey),
-                    type: "PUT",
-                    contentType: "application/x-www-form-urlencoded",
-                    data: formData,
-                    beforeSend: function(xhr) {
-                        xhr.setRequestHeader("X-CSRFToken", utils.getCSRFToken());
-                    }
-                }).always(utils.hideLoadingSpinner);
-            },
-            deleteTemplate: function(templateKey) {
-                utils.showLoadingSpinner();
-                return $.ajax({
-                    url: "{% url 'wamtram2:template_manage' %}" + templateKey + "/",
-                    type: "DELETE",
-                    beforeSend: function(xhr) {
-                        xhr.setRequestHeader("X-CSRFToken", utils.getCSRFToken());
-                    }
-                }).always(utils.hideLoadingSpinner);
-            }
-        };
-    
-        // Template management functions
-        const templateManager = {
-            generateTemplateName: function() {
-                var selectedPlace = $('#place_code option:selected');
-                var placeFullName = selectedPlace.data('full-name');
-                var species = $('#species_code option:selected').text();
-                var sex = $('#sex option:selected').text();
-                
-                if (placeFullName && species && sex) {
-                    var templateName = placeFullName + ' - ' + species + ' ' + sex;
-                    $('#name').val(templateName);
-    
-                    api.checkTemplateName(templateName).done(function(response) {
-                        if (response.exists) {
-                            $('#name').addClass('is-invalid');
-                            $('#name-feedback').text('(This template already exists)').show();
-                        } else {
-                            $('#name').removeClass('is-invalid');
-                            $('#name-feedback').hide();
-                        }
-                    });
+        if (placeCode && speciesCode && sex) {
+            showLoadingSpinner();
+            fetch("{% url 'wamtram2:get_place_full_name' %}?place_code=" + encodeURIComponent(placeCode), {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                },
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
                 }
-            },
-            createTemplate: function() {
-                var templateName = $('#name').val();
-                api.checkTemplateName(templateName).done(function(response) {
-                    if (response.exists) {
-                        utils.showMessage('Error: This template already exists', 'danger');
-                    } else {
-                        var formData = $('#templateForm').serialize();
-                        api.createTemplate(formData)
-                            .done(function() {
-                                utils.showMessage('Template created successfully', 'success');
-                                setTimeout(function() { window.location.reload(true); }, 500);
-                            })
-                            .fail(function(data) {
-                                utils.showMessage('Error creating template: ' + JSON.stringify(data.responseJSON.errors), 'danger');
-                            });
-                    }
-                });
-            },
-            updateTemplate: function(templateKey) {
-                var formData = $('#templateForm-' + templateKey).serialize();
-                api.updateTemplate(templateKey, formData)
-                    .done(function() {
-                        utils.showMessage('Template updated successfully', 'success');
-                        setTimeout(function() { window.location.reload(true); }, 500);
-                    })
-                    .fail(function(xhr) {
-                        var errorMessage = 'Error updating template';
-                        if (xhr.responseJSON && xhr.responseJSON.errors) {
-                            errorMessage += ': ' + JSON.stringify(xhr.responseJSON.errors);
-                        } else if (xhr.responseJSON && xhr.responseJSON.error) {
-                            errorMessage += ': ' + xhr.responseJSON.error;
-                        } else {
-                            errorMessage += '. Please check the server logs for more details.';
-                        }
-                        utils.showMessage(errorMessage, 'danger');
-                    });
-            },
-            deleteTemplate: function(templateKey) {
-                if (confirm('Are you sure you want to delete this template?')) {
-                    api.deleteTemplate(templateKey)
-                        .done(function() {
-                            utils.showMessage('Template deleted successfully', 'success');
-                            setTimeout(function() { location.reload(); }, 500);
-                        })
-                        .fail(function(data) {
-                            utils.showMessage('Error deleting template: ' + JSON.stringify(data.responseJSON.errors), 'danger');
-                        });
-                }
-            }
-        };
-    
-        // Event handlers
-        $(document).ready(function() {
-            $('#location_code').change(function() {
-                var locationCode = $(this).val();
-                api.loadPlaces(locationCode, '#place_code')
-                    .done(function(data) {
-                        var placeSelect = $('#place_code');
-                        placeSelect.empty().append('<option value="">Select Place</option>');
-                        if (Array.isArray(data)) {
-                            $.each(data, function(index, place) {
-                                placeSelect.append('<option value="' + place.place_code + '" data-full-name="' + place.get_full_name + '">' + place.place_name + '</option>');
-                            });
-                        } else {
-                            console.error('Unexpected data format:', data);
-                            utils.showMessage('Error loading places: Unexpected data format', 'danger');
-                        }
-                        placeSelect.trigger('change');
-                    })
-                    .fail(function(xhr) {
-                        console.error('Error fetching places:', xhr.responseText);
-                        utils.showMessage('Error loading places. Please try again.', 'danger');
-                    });
+                return response.json();
+            })
+            .then(data => {
+                var placeFullName = data.full_name;
+                var speciesName = document.querySelector('#species_code option:checked').textContent;
+                var sexName = document.querySelector('#sex option:checked').textContent;
+                var templateName = placeFullName + ' + ' + speciesName + ' + ' + sexName;
+                document.getElementById('id_name').value = templateName;
+                checkTemplateName(templateName);
+            })
+            .catch(error => {
+                console.error('Error fetching place full name:', error);
+                showMessage('Error loading place full name. Please try again.', 'danger');
+            })
+            .finally(() => {
+                hideLoadingSpinner();
             });
-    
-            $('#place_code, #species_code, #sex').change(templateManager.generateTemplateName);
-    
-            {% for template in templates %}
-                $('#location_code_{{ template.template_id }}').change(function() {
-                    var locationCode = $(this).val();
-                    api.loadPlaces(locationCode, '#place_code_{{ template.template_id }}');
-                });
-            {% endfor %}
-    
-            $('form').on('submit', utils.showLoadingSpinner);
-            $('a').on('click', utils.showLoadingSpinner);
-            $(window).on('beforeunload', utils.showLoadingSpinner);
+        }
+    }
+
+    // Create Template
+    function createTemplate() {
+        var formData = $('#templateForm').serialize();
+        showLoadingSpinner();
+        $.ajax({
+            url: "{% url 'wamtram2:template_manage' %}",
+            type: "POST",
+            data: formData,
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader("X-CSRFToken", getCSRFToken());
+            },
+            success: function(data) {
+                showMessage('Template created successfully', 'success');
+                setTimeout(function() {
+                    window.location.reload(true);
+                }, 500);
+            },
+            error: function(data) {
+                showMessage('Error creating template: ' + JSON.stringify(data.responseJSON.errors), 'danger');
+            },
+            complete: function() {
+                hideLoadingSpinner();
+            }
         });
-    
-        // Expose necessary functions to global scope
-        window.createTemplate = templateManager.createTemplate;
-        window.updateTemplate = templateManager.updateTemplate;
-        window.deleteTemplate = templateManager.deleteTemplate;
-    })(jQuery);
-    </script>
+    }
+
+    // Delete Template
+    function deleteTemplate(templateKey) {
+        if (confirm('Are you sure you want to delete this template?')) {
+            showLoadingSpinner();
+            $.ajax({
+                url: "{% url 'wamtram2:template_manage' %}" + templateKey + "/",
+                type: "DELETE",
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader("X-CSRFToken", getCSRFToken());
+                },
+                success: function(data) {
+                    showMessage('Template deleted successfully', 'success');
+                    setTimeout(function() {
+                        location.reload();
+                    }, 500);
+                },
+                error: function(data) {
+                    showMessage('Error deleting template: ' + JSON.stringify(data.responseJSON.errors), 'danger');
+                },
+                complete: function() {
+                    hideLoadingSpinner();
+                }
+            });
+        }
+    }
+
+    function checkTemplateName(name) {
+        var createButton = $('#createButton');
+        $.ajax({
+            url: "{% url 'wamtram2:check_template_name' %}",
+            type: 'GET',
+            data: { name: name },
+            dataType: 'json',
+            success: function(data) {
+                var inputElement = $('#id_name');
+                inputElement.removeClass('is-valid is-invalid');
+                createButton.prop('disabled', true);
+                if (data.is_available) {
+                    inputElement.addClass('is-valid');
+                    createButton.prop('disabled', false);
+                } else {
+                    inputElement.addClass('is-invalid');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error checking template name:', error);
+            }
+        });
+    }
+
+    // Load Places based on Location Code
+    function loadPlaces(locationCode, targetElement) {
+        showLoadingSpinner();
+        $.ajax({
+            url: "{% url 'wamtram2:get_template_places' %}",
+            type: 'GET',
+            data: { location_code: locationCode },
+            dataType: 'json',
+            success: function(data) {
+                var placeSelect = $(targetElement);
+                placeSelect.empty();
+                if (Array.isArray(data)) {
+                    $.each(data, function(index, place) {
+                        placeSelect.append('<option value="' + place.place_code + '">' + place.place_name + '</option>');
+                    });
+                } else {
+                    console.error('Unexpected data format:', data);
+                    showMessage('Error loading places: Unexpected data format', 'danger');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error fetching places:', xhr.responseText);
+                showMessage('Error loading places. Please try again.', 'danger');
+            },
+            complete: function() {
+                hideLoadingSpinner();
+            }
+        });
+    }
+
+    // Initialize event handlers on document ready
+    $(document).ready(function() {
+        $('#location_code').change(function() {
+            var locationCode = $(this).val();
+            loadPlaces(locationCode, '#place_code');
+        });
+
+        {% for template in templates %}
+            $('#location_code_{{ template.template_id }}').change(function() {
+                var locationCode = $(this).val();
+                loadPlaces(locationCode, '#place_code_{{ template.template_id }}');
+            });
+        {% endfor %}
+
+        // Show spinner when the form is submitted or a link is clicked
+        $('form').on('submit', function() {
+            showLoadingSpinner();
+        });
+
+        $('a').on('click', function() {
+            showLoadingSpinner();
+        });
+
+        // Show spinner when the page is reloading
+        $(window).on('beforeunload', function() {
+            showLoadingSpinner();
+        });
+
+        $('#place_code, #species_code, #sex').change(function() {
+            updateNameField();
+        });
+
+        $('#id_name').on('input', function() {
+            checkTemplateName($(this).val());
+        });
+    });
+
+</script>
 {% endblock %}
