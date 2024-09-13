@@ -972,7 +972,6 @@ class TemplateManageView(LoginRequiredMixin, FormView):
         ]
         return places_data
 
-@login_required
 @require_http_methods(["GET"])
 def check_template_name(request):
     # 打印调试信息

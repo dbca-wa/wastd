@@ -289,12 +289,10 @@
                     }
                 }).always(utils.hideLoadingSpinner);
             },
-            console.log("Name before AJAX call: ", name);
             checkTemplateName: function(name) {
                 return $.ajax({
                     url: "{% url 'wamtram2:check_template_name' %}",
                     type: 'GET',
-                    data: { name: name },
                     data: { name: name },
                     dataType: 'json'
                 });
