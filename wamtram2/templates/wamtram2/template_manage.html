@@ -276,9 +276,20 @@
                     url: "{% url 'wamtram2:get_places' %}",
                     type: 'GET',
                     data: { location_code: locationCode },
-                    dataType: 'json'
+                    dataType: 'json',
+                    success: function(data) {
+                        $('#place_code').empty();
+                        $.each(data, function(index, place) {
+                            $('#place_code').append($('<option>', {
+                                value: place.place_code,
+                                text: place.place_name,
+                                'place-full-name': place.full_name
+                            }));
+                        });
+                    }
                 }).always(utils.hideLoadingSpinner);
             },
+ 
             checkTemplateName: function(name, templateKey = null) {
                 // Check for template name uniqueness
                 return $.ajax({
@@ -294,7 +305,7 @@
             checkTemplateNameAvailability: function(templateName, inputElement) {
                 api.checkTemplateName(templateName).done(function(response) {
                     const feedbackElement = inputElement.siblings('.valid-feedback');
-    
+                    console.log(response);
                     if (response.exists) {
                         inputElement.addClass('is-invalid').removeClass('is-valid');
                         feedbackElement.text('This template name already exists').removeClass('valid-feedback').addClass('invalid-feedback').show();
@@ -309,12 +320,16 @@
     
             generateTemplateName: function() {
                 var selectedPlace = $('#place_code option:selected');
+                console.log(selectedPlace);
                 var placeFullName = selectedPlace.attr('place-full-name');
+                console.log(placeFullName);
                 var species = $('#species_code option:selected').text();
                 var sex = $('#sex option:selected').text();
-    
+                console.log(placeFullName, species, sex);
                 if (placeFullName && species && sex) {
+                    
                     var templateName = placeFullName + '-' + species + '-' + sex;
+                    console.log('Generating template name:', templateName);
                     $('#name').val(templateName);
                     this.checkTemplateNameAvailability(templateName, $('#name'));
                 }
@@ -406,6 +421,8 @@
         window.createTemplate = templateManager.createTemplate;
         window.updateTemplate = templateManager.updateTemplate;
         window.deleteTemplate = templateManager.deleteTemplate;
+        window.checkTemplateNameAvailability = templateManager.checkTemplateNameAvailability; 
+        window.generateTemplateName = templateManager.generateTemplateName
     })(jQuery);
     
 </script>
