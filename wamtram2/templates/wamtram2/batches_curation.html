@@ -25,7 +25,7 @@
 
 {% block page_content_inner %}
 <div class="mt-5">
-    <h2 class="mb-4">Batches List</h2>
+    <h2 class="mb-4">Batches Curation</h2>
     <div class="d-flex flex-wrap align-items-center mb-3">
         {% if request.user.is_superuser %}
         <!-- Export Data Button -->
@@ -92,14 +92,12 @@
     <table class="table">
         <thead>
             <tr>
-                <th>Batch ID</th>
-                <th>Batches Code</th>
-                <th>Entry Date</th>
-                <th>Enterer</th>
-                <th>Site</th>
-                <th># of Records</th>
-                <th>Comments</th>
-                <th>Actions</th>
+                <th style="width: 5%;">Batch ID</th>
+                <th style="width: 10%;">Batches Code</th>
+                <th style="width: 10%;"># of Records</th>
+                <th style="width: 10%;"># of Flagged Records</th>
+                <th style="width: 45%;">Comments</th>
+                <th style="width: 20%;">Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -107,10 +105,8 @@
             <tr>
                 <td>{{ batch.entry_batch_id }}</td>
                 <td>{{ batch.batches_code|default:"No Code" }}</td>
-                <td>{{ batch.entry_date|date:"Y-m-d" }}</td>
-                <td>{{ batch.entered_person_id.first_name }} {{ batch.entered_person_id.surname }}</td>
-                <td>{{ batch.last_place_name }}</td>
-                <td>{{ batch.entry_count }}</td>
+                <td>{{ batch.entry_count|default: "0"}}</td>
+                <td>{{ batch.do_not_process_count|default:"0" }}</td>
                 <td>{{ batch.comments|truncatechars:100 }}</td>
                 <td>
                     <a href="{% url 'wamtram2:entry_batch_detail' batch_id=batch.entry_batch_id %}" class="btn btn-sm btn-info">View</a>
