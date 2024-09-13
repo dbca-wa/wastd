@@ -1386,6 +1386,11 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
             is_unique = not TrtEntryBatches.objects.filter(batches_code=code).exists()
         return JsonResponse({'is_unique': is_unique})
     
+    def get_places(self, request):
+        location_code = request.GET.get('location_code')
+        places = TrtPlaces.objects.filter(location_code=location_code).values('place_code', 'place_name')
+        return JsonResponse(list(places), safe=False)
+    
     
 class CreateNewEntryView(LoginRequiredMixin, ListView):
     model = TrtEntryBatches
