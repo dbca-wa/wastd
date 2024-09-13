@@ -875,29 +875,30 @@ class TemplateManageView(LoginRequiredMixin, FormView):
     success_url = reverse_lazy('wamtram2:template_manage')
     
     def dispatch(self, request, *args, **kwargs):
-        if not (
-            request.user.groups.filter(name="Tagging Data Curation").exists()
-            or request.user.is_superuser
-        ):
-            return HttpResponseForbidden(
-                "You do not have permission to view this page"
-            )
-        
-        response = super().dispatch(request, *args, **kwargs)
-        
+        if not (request.user.groups.filter(name="Tagging Data Curation").exists() or request.user.is_superuser):
+            return HttpResponseForbidden("You do not have permission to view this page")
+    
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            if request.method == 'GET' and 'location_code' in request.GET:
-                return self.get_places(request)
-            elif request.method == 'GET' and 'get_templates' in request.GET:
-                return self.get_templates(request)
-            elif request.method == 'POST':
-                return self.create_template(request)
-            elif request.method == 'PUT':
-                return self.update_template(request, *args, **kwargs)
-            elif request.method == 'DELETE':
-                return self.delete_template(request, *args, **kwargs)
+            return self.handle_ajax_request(request, *args, **kwargs)
         
-        return response
+        return super().dispatch(request, *args, **kwargs)
+
+    def handle_ajax_request(self, request, *args, **kwargs):
+        method = request.method.upper()
+
+        if method == 'GET':
+            if 'location_code' in request.GET:
+                return self.get_places(request)
+            if 'get_templates' in request.GET:
+                return self.get_templates(request)
+        elif method == 'POST':
+            return self.create_template(request)
+        elif method == 'PUT':
+            return self.update_template(request, *args, **kwargs)
+        elif method == 'DELETE':
+            return self.delete_template(request, *args, **kwargs)
+
+        return JsonResponse({'error': 'Invalid request'}, status=400)
 
     def get_places(self, request):
         location_code = request.GET.get('location_code')

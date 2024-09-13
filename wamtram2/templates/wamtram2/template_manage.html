@@ -273,7 +273,7 @@
             loadPlaces: function(locationCode) {
                 utils.showLoadingSpinner();
                 return $.ajax({
-                    url: "{% url 'wamtram2:get_places' %}",
+                    url: "{% url 'wamtram2:get_template_places' %}",
                     type: 'GET',
                     data: { location_code: locationCode },
                     dataType: 'json',
@@ -326,7 +326,6 @@
                 var sex = $('#sex option:selected').text();
                 console.log(placeFullName, species, sex);
                 if (placeFullName && species && sex) {
-                    
                     var templateName = placeFullName + '-' + species + '-' + sex;
                     console.log('Generating template name:', templateName);
                     $('#name').val(templateName);
@@ -416,32 +415,9 @@
             }
         };
     
-        $(document).ready(function() {
-            $('#location_code').change(function() {
-                var locationCode = $(this).val();
-                api.loadPlaces(locationCode).done(function(data) {
-                    $('#place_code').empty();
-                    $.each(data, function(index, place) {
-                        $('#place_code').append($('<option>', {
-                            value: place.place_code,
-                            text: place.place_name,
-                            'place-full-name': place.full_name 
-                        }));
-                    });
-                }).fail(function() {
-                    utils.showMessage('Error loading places', 'danger');
-                });
-            });
-    
-            $('#place_code, #species_code, #sex').change(function() {
-                templateManager.generateTemplateName();
-            });
-    
-            $('input[id^="name_"]').on('input', function() {
-                const templateName = $(this).val();
-                const inputElement = $(this);
-                templateManager.checkTemplateNameAvailability(templateName, inputElement);
-            });
+        $('#location_code').change(function() {
+            var locationCode = $(this).val();
+            api.loadPlaces(locationCode);
         });
 
         window.createTemplate = templateManager.createTemplate;
