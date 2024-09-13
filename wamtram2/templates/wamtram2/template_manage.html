@@ -407,54 +407,40 @@
     }
 
     // Initialize event handlers on document ready
-    document.addEventListener('DOMContentLoaded', function() {
-        document.getElementById('location_code').addEventListener('change', function() {
-            var locationCode = this.value;
+    $(document).ready(function() {
+        $('#location_code').change(function() {
+            var locationCode = $(this).val();
             loadPlaces(locationCode, '#place_code');
         });
 
         {% for template in templates %}
-            var locationCodeElement = document.getElementById('location_code_{{ template.template_id }}');
-            if (locationCodeElement) {
-                locationCodeElement.addEventListener('change', function() {
-                    var locationCode = this.value;
-                    loadPlaces(locationCode, '#place_code_{{ template.template_id }}');
-                });
-            }
+            $('#location_code_{{ template.template_id }}').change(function() {
+                var locationCode = $(this).val();
+                loadPlaces(locationCode, '#place_code_{{ template.template_id }}');
+            });
         {% endfor %}
 
         // Show spinner when the form is submitted or a link is clicked
-        document.querySelectorAll('form').forEach(function(form) {
-            form.addEventListener('submit', function() {
-                showLoadingSpinner();
-            });
-        });
-
-        document.querySelectorAll('a').forEach(function(link) {
-            link.addEventListener('click', function() {
-                showLoadingSpinner();
-            });
-        });
-
-        // Show spinner when the page is reloading
-        window.addEventListener('beforeunload', function() {
+        $('form').on('submit', function() {
             showLoadingSpinner();
         });
 
-        ['place_code', 'species_code', 'sex'].forEach(function(id) {
-            var element = document.getElementById(id);
-            if (element) {
-                element.addEventListener('change', updateNameField);
-            }
+        $('a').on('click', function() {
+            showLoadingSpinner();
         });
 
-        // Add event listener for template name input
-        var nameInput = document.getElementById('id_name');
-        if (nameInput) {
-            nameInput.addEventListener('input', function() {
-                checkTemplateName(this.value);
-            });
-        }
+        // Show spinner when the page is reloading
+        $(window).on('beforeunload', function() {
+            showLoadingSpinner();
+        });
+
+        $('#place_code, #species_code, #sex').change(function() {
+            updateNameField();
+        });
+
+        $('#id_name').on('input', function() {
+            checkTemplateName($(this).val());
+        });
     });
 </script>
 {% endblock %}
