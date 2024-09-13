@@ -1,9 +1,5 @@
 {% extends "base_wastd.html" %}
 {% load static bootstrap4 %}
-{% load proper_paginate %}
-{% load url_replace %}
-{% load proper_paginate %}
-{% load url_replace %}
 
 {% block extra_style %}
     {{ block.super }}
@@ -66,7 +62,6 @@
     <nav aria-label="breadcrumb" class="d-none d-md-block">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-            <li class="breadcrumb-item"><a href="{% url 'wamtram2:batches_curation' %}">Batches Curation</a></li>
             <li class="breadcrumb-item active">Manage Templates</li>
         </ol>
     </nav>
@@ -81,16 +76,18 @@
                 {{ error_message }}
             </div>
         {% endif %}
-        
+
         <!-- Create New Template Form -->
         <div class="step-container">
             <div class="step-header">Create New Template</div>
             <form id="templateForm" method="post" class="row">
                 {% csrf_token %}
+                <div class="col-md-12">
+                    {% bootstrap_field form.name show_label=True %}
+                </div>
                 <div class="col-md-3">
                     <label for="location_code">Location</label>
-                    <select class="form-control" id="location_code" name="location_code" required>
-                        <option value="">Select Location</option>
+                    <select class="form-control" id="location_code" name="location_code">
                         {% for location in locations %}
                             <option value="{{ location.location_code }}">{{ location.location_name }}</option>
                         {% endfor %}
@@ -98,13 +95,15 @@
                 </div>
                 <div class="col-md-3">
                     <label for="place_code">Place</label>
-                    <select class="form-control" id="place_code" name="place_code" required>
-                        <option value="">Select Place</option>
+                    <select class="form-control" id="place_code" name="place_code">
+                        {% for place in places %}
+                            <option value="{{ place.place_code }}">{{ place.place_name }}</option>
+                        {% endfor %}
                     </select>
                 </div>
                 <div class="col-md-3">
                     <label for="species_code">Species</label>
-                    <select class="form-control" id="species_code" name="species_code" required>
+                    <select class="form-control" id="species_code" name="species_code">
                         {% for specie in species %}
                             <option value="{{ specie.species_code }}">{{ specie.common_name }}</option>
                         {% endfor %}
@@ -112,16 +111,11 @@
                 </div>
                 <div class="col-md-3">
                     <label for="sex">Sex</label>
-                    <select class="form-control" id="sex" name="sex" required>
+                    <select class="form-control" id="sex" name="sex">
                         {% for code, name in sex_choices %}
                             <option value="{{ code }}">{{ name }}</option>
                         {% endfor %}
                     </select>
-                </div>
-                <div class="col-md-12 mt-2">
-                    <label for="name">Template Name (Auto generate)</label>
-                    <input type="text" class="form-control" id="name" name="name" required>
-                    <div id="name-feedback" class="valid-feedback"></div>
                 </div>
                 <div class="col-md-2 mt-3">
                     <button type="button" class="btn btn-primary btn-block" onclick="createTemplate()">Create</button>
@@ -129,102 +123,67 @@
             </form>
         </div>
 
-
-        <!-- Pagination -->
-        <div class="pagination-container">
-            {% if is_paginated %}
-            <ul class="pagination mb-0">
-                {% if page_obj.number != 1 %}
-                <li class="page-item">
-                    <a class="page-link" href="?{% url_replace request 'page' 1 %}">⇤</a>
-                </li>
-                {% endif %}
-                
-                {% if page_obj.has_previous %}
-                <li class="page-item">
-                    <a class="page-link" href="?{% url_replace request 'page' page_obj.previous_page_number %}">&laquo;</a>
-                </li>
-                {% endif %}
-                
-                {% for i in paginator|proper_paginate:page_obj.number %}
-                    {% if page_obj.number == i %}
-                    <li class="page-item active">
-                        <span class="page-link">{{ i }}<span class="sr-only">(current)</span></span>
-                    </li>
-                    {% else %}
-                    <li class="page-item">
-                        <a class="page-link" href="?{% url_replace request 'page' i %}">{{ i }}</a>
-                    </li>
-                    {% endif %}
-                {% endfor %}
-                
-                {% if page_obj.has_next %}
-                <li class="page-item">
-                    <a class="page-link" href="?{% url_replace request 'page' page_obj.next_page_number %}">&raquo;</a>
-                </li>
-                {% endif %}
-                
-                {% if page_obj.number != paginator.num_pages %}
-                <li class="page-item">
-                    <a class="page-link" href="?{% url_replace request 'page' paginator.num_pages %}">⇥</a>
-                </li>
-                {% endif %}
-            </ul>
-            {% endif %}
-        </div>
-
         <!-- Existing Templates List -->
         <div class="step-container">
             <div class="step-header">Existing Templates</div>
-            <div id="templateList">
-                {% for template in templates %}
-                    <div class="template-item template-form-row" data-id="{{ template.id }}">
-                        <form id="templateForm-{{ template.template_id }}" method="post" class="row">
+            {% for template in templates %}
+                <div class="template-form-row">
+                    <div class="row mb-2">
+                        <form id="templateForm-{{ template.template_id }}" class="col-12">
                             {% csrf_token %}
-                            <div class="col-md-3">
-                                <label for="location_code_{{ template.template_id }}">Location</label>
-                                <select class="form-control" id="location_code_{{ template.template_id }}" name="location_code" disabled>
-                                    {% for location in locations %}
-                                        <option value="{{ location.location_code }}" {% if location.location_code == template.location_code %}selected{% endif %}>{{ location.location_name }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <label for="place_code_{{ template.template_id }}">Place</label>
-                                <select class="form-control" id="place_code_{{ template.template_id }}" name="place_code" disabled>
-                                    {% for place in places %}
-                                        <option value="{{ place.place_code }}" {% if place.place_code == template.place_code %}selected{% endif %}>{{ place.place_name }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <label for="species_code_{{ template.template_id }}">Species</label>
-                                <select class="form-control" id="species_code_{{ template.template_id }}" name="species_code" disabled>
-                                    {% for specie in species %}
-                                        <option value="{{ specie.species_code }}" {% if specie.species_code == template.species_code %}selected{% endif %}>{{ specie.common_name }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <label for="sex_{{ template.template_id }}">Sex</label>
-                                <select class="form-control" id="sex_{{ template.template_id }}" name="sex" disabled>
-                                    {% for code, name in sex_choices %}
-                                        <option value="{{ code }}" {% if code == template.sex %}selected{% endif %}>{{ name }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="col-md-12 mt-2">
-                                <label for="name_{{ template.template_id }}">Template Name</label>
-                                <input type="text" class="form-control" id="name_{{ template.template_id }}" name="name" value="{{ template.name }}" disabled>
-                                <div id="name-feedback_{{ template.template_id }}" class="valid-feedback"></div>
-                            </div>
-                            <div class="col-md-2 mt-3">
-                                <button type="button" class="btn btn-danger btn-block" onclick="deleteTemplate('{{ template.template_id }}')">Delete</button>
+                            <div class="form-row">
+                                <div class="form-group col-md-2">
+                                    <label for="name_{{ template.template_id }}" class="template-name">Template</label>
+                                </div>
+                                <div class="form-group col-md-10">
+                                    <input type="text" class="form-control" id="name_{{ template.template_id }}" name="name" value="{{ template.name }}">
+                                </div>
+                                <div class="form-group col-md-3">
+                                    <label for="location_code_{{ template.template_id }}">Location</label>
+                                    <select class="form-control" id="location_code_{{ template.template_id }}" name="location_code">
+                                        {% for location in locations %}
+                                            <option value="{{ location.location_code }}" {% if location.location_code == template.location_code %}selected{% endif %}>{{ location.location_name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-3">
+                                    <label for="place_code_{{ template.template_id }}">Place</label>
+                                    <select class="form-control" id="place_code_{{ template.template_id }}" name="place_code">
+                                        {% for place in places %}
+                                            <option value="{{ place.place_code }}" {% if place.place_code == template.place_code %}selected{% endif %}>{{ place.place_name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-3">
+                                    <label for="species_code_{{ template.template_id }}">Species</label>
+                                    <select class="form-control" id="species_code_{{ template.template_id }}" name="species_code">
+                                        {% for specie in species %}
+                                            <option value="{{ specie.species_code }}" {% if specie.species_code == template.species_code %}selected{% endif %}>{{ specie.common_name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-3">
+                                    <label for="sex_{{ template.template_id }}">Sex</label>
+                                    <select class="form-control" id="sex_{{ template.template_id }}" name="sex">
+                                        {% for code, name in sex_choices %}
+                                            <option value="{{ code }}" {% if code == template.sex %}selected{% endif %}>{{ name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
                             </div>
                         </form>
                     </div>
-                {% endfor %}
-            </div>
+                    <div class="row mb-3">
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-success btn-block" onclick="updateTemplate('{{ template.template_id }}')">Update</button>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-danger btn-block" onclick="deleteTemplate('{{ template.template_id }}')">Delete</button>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+            {% endfor %}
         </div>
 
         <!-- Loading spinner -->
@@ -242,158 +201,194 @@
 {% block extra_js %}
 {{ block.super }}
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const utils = {
-            getCSRFToken: function() {
-                return document.querySelector('[name=csrfmiddlewaretoken]').value;
-            },
-            showMessage: function(message, type) {
-                const alert = document.getElementById('message-alert');
-                alert.classList.remove('alert-success', 'alert-danger');
-                alert.classList.add('alert-' + type);
-                alert.textContent = message;
-                alert.style.display = 'block';
+    // Get CSRF Token
+    function getCSRFToken() {
+        return document.querySelector('[name=csrfmiddlewaretoken]').value;
+    }
+
+    // Show Message
+    function showMessage(message, type) {
+        var alert = $('#message-alert');
+        alert.removeClass('alert-success alert-danger');
+        alert.addClass('alert-' + type);
+        alert.text(message);
+        alert.slideDown();
+
+        setTimeout(function() {
+            alert.slideUp();
+        }, 3000);
+    }
+
+    // Show Loading Spinner and Overlay
+    function showLoadingSpinner() {
+        const loadingSpinner = document.querySelector('.loading-spinner');
+        const loadingOverlay = document.querySelector('.loading-overlay');
+        if (loadingOverlay) {
+            loadingOverlay.style.display = 'block';
+        }
+        if (loadingSpinner) {
+            loadingSpinner.style.display = 'block';
+        }
+    }
+
+    // Hide Loading Spinner and Overlay
+    function hideLoadingSpinner() {
+        const loadingSpinner = document.querySelector('.loading-spinner');
+        const loadingOverlay = document.querySelector('.loading-overlay');
+        if (loadingOverlay) {
+            loadingOverlay.style.display = 'none';
+        }
+        if (loadingSpinner) {
+            loadingSpinner.style.display = 'none';
+        }
+    }
+
+    // Update Template
+    function updateTemplate(templateKey) {
+        var formData = $('#templateForm-' + templateKey).serialize();
+
+        showLoadingSpinner();
         
+        $.ajax({
+            url: "{% url 'wamtram2:template_manage_key' 'dummy_key' %}".replace('dummy_key', templateKey),
+            type: "PUT",
+            contentType: "application/x-www-form-urlencoded",
+            data: formData,
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader("X-CSRFToken", getCSRFToken());
+            },
+            success: function(data) {
+                showMessage('Template updated successfully', 'success');
                 setTimeout(function() {
-                    alert.style.display = 'none';
-                }, 3000);
+                    window.location.reload(true);
+                }, 500);
             },
-            showLoadingSpinner: function() {
-                document.querySelector('.loading-spinner').style.display = 'block';
-                document.querySelector('.loading-overlay').style.display = 'block';
+            error: function(xhr, status, error) {
+                var errorMessage = 'Error updating template';
+                if (xhr.responseJSON && xhr.responseJSON.errors) {
+                    errorMessage += ': ' + JSON.stringify(xhr.responseJSON.errors);
+                } else if (xhr.responseJSON && xhr.responseJSON.error) {
+                    errorMessage += ': ' + xhr.responseJSON.error;
+                } else {
+                    errorMessage += '. Please check the server logs for more details.';
+                }
+                showMessage(errorMessage, 'danger');
             },
-            hideLoadingSpinner: function() {
-                document.querySelector('.loading-spinner').style.display = 'none';
-                document.querySelector('.loading-overlay').style.display = 'none';
+            complete: function() {
+                hideLoadingSpinner();
             }
-        };
-    
-        const api = {
-            loadPlaces: function(locationCode) {
-                utils.showLoadingSpinner();
-                fetch("{% url 'wamtram2:get_template_places' %}?location_code=" + encodeURIComponent(locationCode))
-                    .then(response => {
-                        if (!response.ok) {
-                            return response.text().then(text => {
-                                throw new Error(`HTTP error! status: ${response.status}, body: ${text}`);
-                            });
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        if (!Array.isArray(data)) {
-                            throw new Error('Unexpected data format');
-                        }
-                        const placeCodeSelect = document.getElementById('place_code');
-                        placeCodeSelect.innerHTML = '';
-                        data.forEach(place => {
-                            const option = document.createElement('option');
-                            option.value = place.place_code;
-                            option.textContent = place.place_name;
-                            option.setAttribute('place-full-name', place.full_name);
-                            placeCodeSelect.appendChild(option);
-                        });
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        utils.showMessage('Error loading places: ' + error.message, 'danger');
-                    })
-                    .finally(utils.hideLoadingSpinner);
+        });
+    }
+
+    // Create Template
+    function createTemplate() {
+        var formData = $('#templateForm').serialize();
+        showLoadingSpinner();
+        $.ajax({
+            url: "{% url 'wamtram2:template_manage' %}",
+            type: "POST",
+            data: formData,
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader("X-CSRFToken", getCSRFToken());
             },
-        };
-    
-        const templateManager = {
-            generateTemplateName: function() {
-                const selectedPlace = document.querySelector('#place_code option:checked');
-                const placeFullName = selectedPlace ? selectedPlace.getAttribute('place-full-name') : '';
-                const species = document.querySelector('#species_code option:checked').textContent;
-                const sex = document.querySelector('#sex option:checked').textContent;
-                if (placeFullName && species && sex) {
-                    const templateName = placeFullName + ' - ' + species + ' ' + sex;
-                    document.getElementById('name').value = templateName;
+            success: function(data) {
+                showMessage('Template created successfully', 'success');
+                setTimeout(function() {
+                    window.location.reload(true);
+                }, 500);
+            },
+            error: function(data) {
+                showMessage('Error creating template: ' + JSON.stringify(data.responseJSON.errors), 'danger');
+            },
+            complete: function() {
+                hideLoadingSpinner();
+            }
+        });
+    }
+
+    // Delete Template
+    function deleteTemplate(templateKey) {
+        if (confirm('Are you sure you want to delete this template?')) {
+            showLoadingSpinner();
+            $.ajax({
+                url: "{% url 'wamtram2:template_manage' %}" + templateKey + "/",
+                type: "DELETE",
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader("X-CSRFToken", getCSRFToken());
+                },
+                success: function(data) {
+                    showMessage('Template deleted successfully', 'success');
+                    setTimeout(function() {
+                        location.reload();
+                    }, 500);
+                },
+                error: function(data) {
+                    showMessage('Error deleting template: ' + JSON.stringify(data.responseJSON.errors), 'danger');
+                },
+                complete: function() {
+                    hideLoadingSpinner();
+                }
+            });
+        }
+    }
+
+    // Load Places based on Location Code
+    function loadPlaces(locationCode, targetElement) {
+        showLoadingSpinner();
+        $.ajax({
+            url: "{% url 'wamtram2:get_places' %}",
+            type: 'GET',
+            data: { location_code: locationCode },
+            dataType: 'json',
+            success: function(data) {
+                var placeSelect = $(targetElement);
+                placeSelect.empty();
+                if (Array.isArray(data)) {
+                    $.each(data, function(index, place) {
+                        placeSelect.append('<option value="' + place.place_code + '">' + place.place_name + '</option>');
+                    });
+                } else {
+                    console.error('Unexpected data format:', data);
+                    showMessage('Error loading places: Unexpected data format', 'danger');
                 }
             },
-    
-            createTemplate: function() {
-                const form = document.getElementById('templateForm');
-                const formData = new FormData(form);
-                utils.showLoadingSpinner();
-                fetch("{% url 'wamtram2:template_manage' %}", {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-CSRFToken': utils.getCSRFToken()
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.is_valid) {
-                        utils.showMessage('Template created successfully', 'success');
-                        location.reload();
-                    } else {
-                        throw new Error(data.errors.name || 'An error occurred');
-                    }
-                })
-                .catch(error => {
-                    utils.showMessage('Error creating template: ' + error.message, 'danger');
-                })
-                .finally(utils.hideLoadingSpinner);
+            error: function(xhr, status, error) {
+                console.error('Error fetching places:', xhr.responseText);
+                showMessage('Error loading places. Please try again.', 'danger');
             },
-    
-            deleteTemplate: function(templateKey) {
-                if (confirm('Are you sure you want to delete this template?')) {
-                    utils.showLoadingSpinner();
-                    fetch("{% url 'wamtram2:template_manage_key' 'dummy_key' %}".replace('dummy_key', templateKey), {
-                        method: 'DELETE',
-                        headers: {
-                            'X-CSRFToken': utils.getCSRFToken()
-                        }
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        utils.showMessage('Template deleted successfully', 'success');
-                        location.reload();
-                    })
-                    .catch(error => {
-                        utils.showMessage('Error deleting template: ' + error.message, 'danger');
-                    })
-                    .finally(utils.hideLoadingSpinner);
-                }
-            },
-
-            checkTemplateName: function() {
-                const name = document.getElementById('name').value;
-                fetch("{% url 'wamtram2:template_manage' %}?check_name=true&name=" + encodeURIComponent(name))
-                    .then(response => response.json())
-                    .then(data => {
-                        const feedback = document.getElementById('name-feedback');
-                        if (data.exists) {
-                            feedback.classList.remove('valid-feedback');
-                            feedback.classList.add('invalid-feedback');
-                            feedback.textContent = 'Template name already exists';
-                        } else {
-                            feedback.classList.remove('invalid-feedback');
-                            feedback.classList.add('valid-feedback');
-                            feedback.textContent = 'Template name is available';
-                        }
-                        feedback.style.display = 'block';
-                    })
-                    .catch(error => console.error('Error:', error));
+            complete: function() {
+                hideLoadingSpinner();
             }
-        };
-    
-        document.getElementById('location_code').addEventListener('change', function() {
-            api.loadPlaces(this.value);
+        });
+    }
+
+    // Initialize event handlers on document ready
+    $(document).ready(function() {
+        $('#location_code').change(function() {
+            var locationCode = $(this).val();
+            loadPlaces(locationCode, '#place_code');
         });
 
-        ['place_code', 'species_code', 'sex'].forEach(id => {
-            document.getElementById(id).addEventListener('change', templateManager.generateTemplateName);
+        {% for template in templates %}
+            $('#location_code_{{ template.template_id }}').change(function() {
+                var locationCode = $(this).val();
+                loadPlaces(locationCode, '#place_code_{{ template.template_id }}');
+            });
+        {% endfor %}
+
+        // Show spinner when the form is submitted or a link is clicked
+        $('form').on('submit', function() {
+            showLoadingSpinner();
         });
 
-        document.getElementById('name').addEventListener('input', templateManager.checkTemplateName);
+        $('a').on('click', function() {
+            showLoadingSpinner();
+        });
 
-        window.createTemplate = templateManager.createTemplate;
-        window.deleteTemplate = templateManager.deleteTemplate;
+        // Show spinner when the page is reloading
+        $(window).on('beforeunload', function() {
+            showLoadingSpinner();
+        });
     });
 </script>
 {% endblock %}
