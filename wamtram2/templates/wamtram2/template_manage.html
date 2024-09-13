@@ -122,18 +122,22 @@
                         {% endfor %}
                     </select>
                 </div>
-                <div class="form-group">
-                    <label for="id_name">Template Name(Auto Generated)</label>
-                    <input type="text" class="form-control" id="id_name" name="name" required>
-                    <div class="valid-feedback">
-                        name is available
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="id_name">Template Name (Auto Generated)</label>
+                            <input type="text" class="form-control" id="id_name" name="name" required>
+                            <div class="valid-feedback">
+                                Name is available
+                            </div>
+                            <div class="invalid-feedback">
+                                Name already exists
+                            </div>
+                        </div>
                     </div>
-                    <div class="invalid-feedback">
-                        name is exists
+                    <div class="col-md-2 mt-3">
+                        <button type="button" class="btn btn-primary btn-block" id="createTemplateBtn" onclick="createTemplate()" disabled>Create</button>
                     </div>
-                </div>
-                <div class="col-md-2 mt-3">
-                    <button type="button" class="btn btn-primary btn-block" onclick="createTemplate()">Create</button>
                 </div>
             </form>
         </div>
@@ -363,9 +367,10 @@
             success: function(data) {
                 var inputElement = $('#id_name');
                 inputElement.removeClass('is-valid is-invalid');
-
+                createButton.prop('disabled', true);
                 if (data.is_available) {
                     inputElement.addClass('is-valid');
+                    createButton.prop('disabled', false);
                 } else {
                     inputElement.addClass('is-invalid');
                 }
