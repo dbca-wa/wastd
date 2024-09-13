@@ -788,7 +788,6 @@ class TrtDataEntry(models.Model):
         db_column="MEASUREMENT_VALUE_6", blank=True, null=True
     )  # Field name made lowercase.
     
-    
     flipper_tag_check = models.ForeignKey(
         "TrtYesNo",
         on_delete=models.CASCADE,
@@ -856,7 +855,6 @@ class TrtDataEntry(models.Model):
     new_pit_tag_3_sticker_present = models.BooleanField(default=False, db_column='NEW_PIT_TAG_3_STICKER_PRESENT')
     new_pit_tag_4_sticker_present = models.BooleanField(default=False, db_column='NEW_PIT_TAG_4_STICKER_PRESENT')
 
-
     dud_filpper_tag = models.CharField(
         max_length=10,
         db_column="DUD_FLIPPER_TAG",
@@ -881,6 +879,56 @@ class TrtDataEntry(models.Model):
         blank=True,
         null=True,
     )
+    
+    body_part_4 = models.ForeignKey(
+        "TrtBodyParts",
+        models.SET_NULL,
+        db_column="BODY_PART_4",
+        blank=True,
+        null=True,
+        related_name="bp4",
+    )  # fake foreign key #models.CharField(db_column='BODY_PART_4', max_length=1, blank=True, null=True)  # Field name made lowercase.
+    damage_code_4 = models.ForeignKey(
+        "TrtDamageCodes",
+        models.SET_NULL,
+        db_column="DAMAGE_CODE_4",
+        blank=True,
+        null=True,
+        related_name="dc4",
+    )  # fake foreign key #models.CharField(db_column='DAMAGE_CODE_4', max_length=1, blank=True, null=True)  # Field name made lowercase.
+    body_part_5 = models.ForeignKey(
+        "TrtBodyParts",
+        models.SET_NULL,
+        db_column="BODY_PART_5",
+        blank=True,
+        null=True,
+        related_name="bp5",
+    )
+    damage_code_5 = models.ForeignKey(
+        "TrtDamageCodes",
+        models.SET_NULL,
+        db_column="DAMAGE_CODE_5",
+        blank=True,
+        null=True,
+        related_name="dc5",
+    )
+    body_part_6 = models.ForeignKey(
+        "TrtBodyParts",
+        models.SET_NULL,
+        db_column="BODY_PART_6",
+        blank=True,
+        null=True,
+        related_name="bp6",
+    )
+    damage_code_6 = models.ForeignKey(
+        "TrtDamageCodes",
+        models.SET_NULL,
+        db_column="DAMAGE_CODE_6",
+        blank=True,
+        null=True,
+        related_name="dc6",
+    )
+    
     class Meta:
         managed = False
         db_table = "TRT_DATA_ENTRY"
