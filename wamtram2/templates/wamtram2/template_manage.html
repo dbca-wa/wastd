@@ -336,7 +336,7 @@
     function loadPlaces(locationCode, targetElement) {
         showLoadingSpinner();
         $.ajax({
-            url: "{% url 'wamtram2:get_places' %}",
+            url: "{% url 'wamtram2:get_template_places' %}",
             type: 'GET',
             data: { location_code: locationCode },
             dataType: 'json',
