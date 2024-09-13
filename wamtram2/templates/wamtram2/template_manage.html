@@ -312,7 +312,7 @@
                         inputElement.removeClass('is-invalid').addClass('is-valid');
                         feedbackElement.text('This template name is available').removeClass('invalid-feedback').addClass('valid-feedback').show();
                     }
-                }).fail(function() {
+                }).fail(function(jqXHR, textStatus, errorThrown)) {
                     console.error("AJAX request failed:");
 
                     console.log("Status: " + jqXHR.status);
