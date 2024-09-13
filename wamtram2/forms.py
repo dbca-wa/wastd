@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import DateTimeInput
 from easy_select2 import apply_select2
-from .models import TrtPersons, TrtDataEntry, TrtTags, TrtEntryBatches, TrtPlaces, TrtPitTags, TrtPitTags, Template, TrtObservations,TrtTagStates, TrtDamageCodes
+from .models import TrtPersons, TrtDataEntry, TrtTags, TrtEntryBatches, TrtPlaces, TrtPitTags, TrtPitTags, Template, TrtObservations,TrtTagStates, TrtDamageCodes, TrtBodyParts
 from django_select2.forms import ModelSelect2Widget
 
 
@@ -225,6 +225,13 @@ class TrtDataEntryForm(forms.ModelForm):
             "dud_filpper_tag_2",
             "dud_pit_tag",
             "dud_pit_tag_2",
+            
+            "body_part_4",
+            "damage_code_4",
+            "body_part_5",
+            "damage_code_5",
+            "body_part_6",
+            "damage_code_6",
 
         ]  # "__all__"
 
@@ -268,10 +275,18 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields['recapture_left_tag_state_2'].queryset = old_tag_states
         self.fields['recapture_right_tag_state_2'].queryset = old_tag_states
         
-        # Filter the queryset for damage codes
-        self.fields["damage_carapace"].queryset = TrtDamageCodes.objects.filter(
-            damage_code__in=["0", "5", "6", "7"]
-        )
+        body_parts = TrtBodyParts.objects.all()
+        body_part_choices = [('', '---------')] + [(bp.body_part, bp.description) for bp in body_parts]
+        
+        for i in range(1, 7):
+            self.fields[f'body_part_{i}'] = forms.ChoiceField(
+                choices=body_part_choices,
+                required=False
+            )
+            self.fields[f'damage_code_{i}'] = forms.ModelChoiceField(
+                queryset=TrtDamageCodes.objects.all(),
+                required=False
+            )
 
         self.fields["observation_date"].required = True
         self.fields["species_code"].required = True
@@ -489,6 +504,16 @@ class TrtDataEntryForm(forms.ModelForm):
                 cleaned_data['latitude'] = f'-{latitude}'
             else:
                 cleaned_data['latitude'] = latitude_str
+                
+        for i in range(1, 7):
+            body_part = cleaned_data.get(f'body_part_{i}')
+            damage_code = cleaned_data.get(f'damage_code_{i}')
+            
+            if body_part:
+                body_part_obj = TrtBodyParts.objects.get(body_part=body_part)
+                if not body_part_obj.flipper:
+                    if damage_code and damage_code.damage_code not in ['0', '5', '6', '7']:
+                        self.add_error(f'damage_code_{i}', 'Invalid damage code for this body part.')
         
         return cleaned_data
 

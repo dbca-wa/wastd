@@ -28,7 +28,7 @@ from django.views.decorators.http import require_GET, require_POST, require_http
 from django.template.loader import render_to_string
 from django.core.serializers.json import DjangoJSONEncoder
 import json
-from django.core.exceptions import ValidationError
+
 
 from wastd.utils import Breadcrumb, PaginateMixin
 from .models import (
@@ -41,6 +41,7 @@ from .models import (
     TrtObservations,
     Template,
     TrtTagStates,
+    TrtBodyParts,
 )
 from .forms import TrtDataEntryForm, SearchForm, TrtEntryBatchesForm, TemplateForm, BatchesCodeForm, BatchesSearchForm
 
@@ -482,7 +483,9 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         entry_id = self.kwargs.get("entry_id")
         batch_id = self.kwargs.get("batch_id")
         cookies_key_prefix = batch_id
-        context['is_volunteer'] = self.request.user.groups.filter(name='Tagging Data Entry').exists()
+        
+        flipper_body_parts = list(TrtBodyParts.objects.filter(flipper=False).values_list('body_part', flat=True))
+        context['flipper_body_parts'] = json.dumps(flipper_body_parts)
 
         if entry_id:
             entry = get_object_or_404(TrtDataEntry.objects.select_related('turtle_id'), data_entry_id=entry_id)
