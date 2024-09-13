@@ -49,6 +49,14 @@
             display: block;
             width: 100%;
         }
+        .form-control-static {
+            padding-top: 7px;
+            margin-bottom: 0;
+            border: 1px solid #ced4da;
+            border-radius: .25rem;
+            padding: .375rem .75rem;
+            background-color: #f8f9fa;
+        }
     </style>
 {% endblock %}
 
@@ -136,39 +144,48 @@
                                     <label for="name_{{ template.template_id }}" class="template-name">Template</label>
                                 </div>
                                 <div class="form-group col-md-10">
-                                    <input type="text" class="form-control" id="name_{{ template.template_id }}" name="name" value="{{ template.name }}" disable>
+                                    <label for="name_{{ template.template_id }}" class="sr-only">Template Name</label>
+                                    <h4 id="name_{{ template.template_id }}" class="mb-0">{{ template.name }}</h4>
                                 </div>
                                 <div class="form-group col-md-3">
-                                    <label for="location_code_{{ template.template_id }}">Location</label>
-                                    <select class="form-control" id="location_code_{{ template.template_id }}" name="location_code" disable>
+                                    <label for="location_{{ template.template_id }}">Location</label>
+                                    <p id="location_{{ template.template_id }}" class="form-control-static">
                                         {% for location in locations %}
-                                            <option value="{{ location.location_code }}" {% if location.location_code == template.location_code %}selected{% endif %}>{{ location.location_name }}</option>
+                                            {% if location.location_code == template.location_code %}
+                                                {{ location.location_name }}
+                                            {% endif %}
                                         {% endfor %}
-                                    </select>
+                                    </p>
                                 </div>
                                 <div class="form-group col-md-3">
-                                    <label for="place_code_{{ template.template_id }}">Place</label>
-                                    <select class="form-control" id="place_code_{{ template.template_id }}" name="place_code" disable>
+                                    <label for="place_{{ template.template_id }}">Place</label>
+                                    <p id="place_{{ template.template_id }}" class="form-control-static">
                                         {% for place in places %}
-                                            <option value="{{ place.place_code }}" {% if place.place_code == template.place_code %}selected{% endif %}>{{ place.place_name }}</option>
+                                            {% if place.place_code == template.place_code %}
+                                                {{ place.place_name }}
+                                            {% endif %}
                                         {% endfor %}
-                                    </select>
+                                    </p>
                                 </div>
                                 <div class="form-group col-md-3">
-                                    <label for="species_code_{{ template.template_id }}">Species</label>
-                                    <select class="form-control" id="species_code_{{ template.template_id }}" name="species_code" disable>
+                                    <label for="species_{{ template.template_id }}">Species</label>
+                                    <p id="species_{{ template.template_id }}" class="form-control-static">
                                         {% for specie in species %}
-                                            <option value="{{ specie.species_code }}" {% if specie.species_code == template.species_code %}selected{% endif %}>{{ specie.common_name }}</option>
+                                            {% if specie.species_code == template.species_code %}
+                                                {{ specie.common_name }}
+                                            {% endif %}
                                         {% endfor %}
-                                    </select>
+                                    </p>
                                 </div>
                                 <div class="form-group col-md-3">
                                     <label for="sex_{{ template.template_id }}">Sex</label>
-                                    <select class="form-control" id="sex_{{ template.template_id }}" name="sex">
+                                    <p id="sex_{{ template.template_id }}" class="form-control-static">
                                         {% for code, name in sex_choices %}
-                                            <option value="{{ code }}" {% if code == template.sex %}selected{% endif %}>{{ name }}</option>
+                                            {% if code == template.sex %}
+                                                {{ name }}
+                                            {% endif %}
                                         {% endfor %}
-                                    </select>
+                                    </p>
                                 </div>
                             </div>
                         </form>
