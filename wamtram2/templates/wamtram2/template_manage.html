@@ -70,6 +70,7 @@
     <nav aria-label="breadcrumb" class="d-none d-md-block">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'wamtram2:batches_curation' %}">Batches Curation</a></li>
             <li class="breadcrumb-item active">Manage Templates</li>
         </ol>
     </nav>
@@ -122,22 +123,20 @@
                         {% endfor %}
                     </select>
                 </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label for="id_name">Template Name (Auto Generated)</label>
-                            <input type="text" class="form-control" id="id_name" name="name" required>
-                            <div class="valid-feedback">
-                                Name is available
-                            </div>
-                            <div class="invalid-feedback">
-                                Name already exists
-                            </div>
+                <div class="col-md-12 mt-3">
+                    <div class="form-group">
+                        <label for="id_name">Template Name (Auto Generated)</label>
+                        <input type="text" class="form-control" id="id_name" name="name" required>
+                        <div class="valid-feedback">
+                            Name is available
+                        </div>
+                        <div class="invalid-feedback">
+                            Name already exists
                         </div>
                     </div>
-                    <div class="col-md-2 mt-3">
-                        <button type="button" class="btn btn-primary btn-block" id="createTemplateBtn" onclick="createTemplate()" disabled>Create</button>
-                    </div>
+                </div>
+                <div class="col-md-2 mt-3">
+                    <button type="button" class="btn btn-primary btn-block" id="createTemplateBtn" onclick="createTemplate()" disabled>Create</button>
                 </div>
             </form>
         </div>
