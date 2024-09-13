@@ -105,8 +105,8 @@
             <tr>
                 <td>{{ batch.entry_batch_id }}</td>
                 <td>{{ batch.batches_code|default:"No Code" }}</td>
-                <td>{{ batch.entry_count|default: "0"}}</td>
-                <td>{{ batch.do_not_process_count|default:"0" }}</td>
+                <td>{{ batch.entry_count }}</td>
+                <td>{{ batch.do_not_process_count }}</td>
                 <td>{{ batch.comments|truncatechars:100 }}</td>
                 <td>
                     <a href="{% url 'wamtram2:entry_batch_detail' batch_id=batch.entry_batch_id %}" class="btn btn-sm btn-info">View</a>
