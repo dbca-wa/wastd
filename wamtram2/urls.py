@@ -37,4 +37,5 @@ urlpatterns = [
     path('get-places/', views.get_places, name='get_places'),
     path('check_batch_code/', views.BatchCodeManageView.as_view(http_method_names=['get']), {'action': 'check_batch_code'}, name='check_batch_code'),
     path('get_place_full_name/', views.get_place_full_name, name='get_place_full_name'),
+    path('check_template_name/', views.check_template_name, name='check_template_name'),
 ]

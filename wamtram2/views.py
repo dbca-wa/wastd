@@ -924,6 +924,11 @@ def get_place_full_name(request):
     except TrtPlaces.DoesNotExist:
         return JsonResponse({'error': 'Place not found'}, status=404)
     
+def check_template_name(request):
+    name = request.GET.get('name')
+    is_available = not Template.objects.filter(name=name).exists()
+    return JsonResponse({'is_available': is_available})
+    
 class ValidateTagView(View):
     """
     View for validating tags.

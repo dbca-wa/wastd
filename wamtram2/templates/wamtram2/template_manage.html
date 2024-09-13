@@ -258,33 +258,40 @@
     }
 
     function updateNameField() {
-        var placeCode = $('#place_code').val();
-        var speciesCode = $('#species_code').val();
-        var sex = $('#sex').val();
+        var placeCode = document.getElementById('place_code').value;
+        var speciesCode = document.getElementById('species_code').value;
+        var sex = document.getElementById('sex').value;
     
         if (placeCode && speciesCode && sex) {
             showLoadingSpinner();
-            $.ajax({
-                url: "{% url 'wamtram2:get_place_full_name' %}",
-                type: 'GET',
-                data: { place_code: placeCode },
-                dataType: 'json',
-                success: function(data) {
-                    var placeFullName = data.full_name;
-                    var speciesName = $('#species_code option:selected').text();
-                    var sexName = $('#sex option:selected').text();
-                    var templateName = placeFullName + ' ' + speciesName + ' ' + sexName;
-                    $('#id_name').val(templateName);
+            fetch("{% url 'wamtram2:get_place_full_name' %}?place_code=" + encodeURIComponent(placeCode), {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
                 },
-                error: function(xhr, status, error) {
-                    console.error('Error fetching place full name:', xhr.responseText);
-                    showMessage('Error loading place full name. Please try again.', 'danger');
-                },
-                complete: function() {
-                    hideLoadingSpinner();
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
                 }
+                return response.json();
+            })
+            .then(data => {
+                var placeFullName = data.full_name;
+                var speciesName = document.querySelector('#species_code option:checked').textContent;
+                var sexName = document.querySelector('#sex option:checked').textContent;
+                var templateName = placeFullName + ' ' + speciesName + ' ' + sexName;
+                document.getElementById('id_name').value = templateName;
+                checkTemplateName(templateName);
+            })
+            .catch(error => {
+                console.error('Error fetching place full name:', error);
+                showMessage('Error loading place full name. Please try again.', 'danger');
+            })
+            .finally(() => {
+                hideLoadingSpinner();
             });
-        }
     }
 
     // Create Template
@@ -339,6 +346,36 @@
         }
     }
 
+    function checkTemplateName(name) {
+        fetch("{% url 'wamtram2:check_template_name' %}?name=" + encodeURIComponent(name), {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            var nameField = document.getElementById('id_name');
+            var feedbackElement = document.getElementById('name-feedback');
+            if (!feedbackElement) {
+                feedbackElement = document.createElement('div');
+                feedbackElement.id = 'name-feedback';
+                nameField.parentNode.insertBefore(feedbackElement, nameField.nextSibling);
+            }
+            if (data.is_available) {
+                feedbackElement.textContent = 'Template name is available';
+                feedbackElement.className = 'text-success';
+            } else {
+                feedbackElement.textContent = 'Template name already exists';
+                feedbackElement.className = 'text-danger';
+            }
+        })
+        .catch(error => {
+            console.error('Error checking template name:', error);
+        });
+    }
+
     // Load Places based on Location Code
     function loadPlaces(locationCode, targetElement) {
         showLoadingSpinner();
@@ -370,36 +407,54 @@
     }
 
     // Initialize event handlers on document ready
-    $(document).ready(function() {
-        $('#location_code').change(function() {
-            var locationCode = $(this).val();
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('location_code').addEventListener('change', function() {
+            var locationCode = this.value;
             loadPlaces(locationCode, '#place_code');
         });
 
         {% for template in templates %}
-            $('#location_code_{{ template.template_id }}').change(function() {
-                var locationCode = $(this).val();
-                loadPlaces(locationCode, '#place_code_{{ template.template_id }}');
-            });
+            var locationCodeElement = document.getElementById('location_code_{{ template.template_id }}');
+            if (locationCodeElement) {
+                locationCodeElement.addEventListener('change', function() {
+                    var locationCode = this.value;
+                    loadPlaces(locationCode, '#place_code_{{ template.template_id }}');
+                });
+            }
         {% endfor %}
 
         // Show spinner when the form is submitted or a link is clicked
-        $('form').on('submit', function() {
-            showLoadingSpinner();
+        document.querySelectorAll('form').forEach(function(form) {
+            form.addEventListener('submit', function() {
+                showLoadingSpinner();
+            });
         });
 
-        $('a').on('click', function() {
-            showLoadingSpinner();
+        document.querySelectorAll('a').forEach(function(link) {
+            link.addEventListener('click', function() {
+                showLoadingSpinner();
+            });
         });
 
         // Show spinner when the page is reloading
-        $(window).on('beforeunload', function() {
+        window.addEventListener('beforeunload', function() {
             showLoadingSpinner();
         });
 
-        $('#place_code, #species_code, #sex').change(function() {
-            updateNameField();
+        ['place_code', 'species_code', 'sex'].forEach(function(id) {
+            var element = document.getElementById(id);
+            if (element) {
+                element.addEventListener('change', updateNameField);
+            }
         });
+
+        // Add event listener for template name input
+        var nameInput = document.getElementById('id_name');
+        if (nameInput) {
+            nameInput.addEventListener('input', function() {
+                checkTemplateName(this.value);
+            });
+        }
     });
 </script>
 {% endblock %}
