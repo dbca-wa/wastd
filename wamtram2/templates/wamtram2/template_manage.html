@@ -289,11 +289,12 @@
                     }
                 }).always(utils.hideLoadingSpinner);
             },
-            checkTemplateName: function(name, templateKey = null) {
-                // Check for template name uniqueness
+            console.log("Name before AJAX call: ", name);
+            checkTemplateName: function(name) {
                 return $.ajax({
                     url: "{% url 'wamtram2:check_template_name' %}",
                     type: 'GET',
+                    data: { name: name },
                     data: { name: name },
                     dataType: 'json'
                 });
