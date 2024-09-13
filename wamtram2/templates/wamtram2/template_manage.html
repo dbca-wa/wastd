@@ -356,7 +356,7 @@
                             errorMessage = xhr.responseText;
                         }
                         utils.showMessage('Error creating template: ' + errorMessage, 'danger');
-                    }
+                    },
                     complete: utils.hideLoadingSpinner
                 });
             },
@@ -384,7 +384,7 @@
                             errorMessage = xhr.responseText;
                         }
                         utils.showMessage('Error updating template: ' + errorMessage, 'danger');
-                    }
+                    },
                     complete: utils.hideLoadingSpinner
                 });
             },
@@ -409,7 +409,7 @@
                                 errorMessage = xhr.responseText;
                             }
                             utils.showMessage('Error deleting template: ' + errorMessage, 'danger');
-                        }
+                        },
                         complete: utils.hideLoadingSpinner
                     });
                 }
