@@ -184,9 +184,10 @@
         var placeCode = $('#place_code').val();
         var year = $('#year').val().slice(-2);
         var generatedCode = 'N' + night + placeCode + year;
-
+        var batchId = {% if batch_id %}{{ batch_id }}{% else %}null{% endif %};
         // Check if the code is unique
         $.ajax({
+            
             url: "{% url 'wamtram2:batch_code_manage' %}",
             type: 'GET',
             data: { 
