@@ -28,7 +28,7 @@ from django.views.decorators.http import require_GET, require_POST, require_http
 from django.template.loader import render_to_string
 from django.core.serializers.json import DjangoJSONEncoder
 import json
-
+from urllib.parse import unquote
 
 from wastd.utils import Breadcrumb, PaginateMixin
 from .models import (
@@ -975,7 +975,7 @@ class TemplateManageView(LoginRequiredMixin, FormView):
 @login_required
 @require_http_methods(["GET"])
 def check_template_name(request):
-    name = request.GET.get('name', '')
+    name = unquote(request.GET.get('name', ''))
     exists = Template.objects.filter(name=name).exists()
     return JsonResponse({'exists': exists})
 
