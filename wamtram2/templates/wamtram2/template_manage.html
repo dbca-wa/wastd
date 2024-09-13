@@ -289,7 +289,6 @@
                     }
                 }).always(utils.hideLoadingSpinner);
             },
- 
             checkTemplateName: function(name, templateKey = null) {
                 // Check for template name uniqueness
                 return $.ajax({
@@ -347,8 +346,17 @@
                         location.reload();
                     },
                     error: function(xhr) {
-                        utils.showMessage('Error creating template: ' + xhr.responseJSON.errors, 'danger');
-                    },
+                        var errorMessage = 'An error occurred';
+                        if (xhr.responseJSON && xhr.responseJSON.errors) {
+                            var errors = xhr.responseJSON.errors;
+                            if (errors.name) {
+                                errorMessage = errors.name.join(', ');
+                            }
+                        } else if (xhr.responseText) {
+                            errorMessage = xhr.responseText;
+                        }
+                        utils.showMessage('Error creating template: ' + errorMessage, 'danger');
+                    }
                     complete: utils.hideLoadingSpinner
                 });
             },
@@ -366,8 +374,17 @@
                         location.reload();
                     },
                     error: function(xhr) {
-                        utils.showMessage('Error updating template: ' + xhr.responseJSON.errors, 'danger');
-                    },
+                        var errorMessage = 'An error occurred';
+                        if (xhr.responseJSON && xhr.responseJSON.errors) {
+                            var errors = xhr.responseJSON.errors;
+                            if (errors.name) {
+                                errorMessage = errors.name.join(', ');
+                            }
+                        } else if (xhr.responseText) {
+                            errorMessage = xhr.responseText;
+                        }
+                        utils.showMessage('Error updating template: ' + errorMessage, 'danger');
+                    }
                     complete: utils.hideLoadingSpinner
                 });
             },
@@ -382,8 +399,17 @@
                             location.reload();
                         },
                         error: function(xhr) {
-                            utils.showMessage('Error deleting template: ' + xhr.responseJSON.errors, 'danger');
-                        },
+                            var errorMessage = 'An error occurred';
+                            if (xhr.responseJSON && xhr.responseJSON.errors) {
+                                var errors = xhr.responseJSON.errors;
+                                if (errors.name) {
+                                    errorMessage = errors.name.join(', ');
+                                }
+                            } else if (xhr.responseText) {
+                                errorMessage = xhr.responseText;
+                            }
+                            utils.showMessage('Error deleting template: ' + errorMessage, 'danger');
+                        }
                         complete: utils.hideLoadingSpinner
                     });
                 }
@@ -421,8 +447,6 @@
         window.createTemplate = templateManager.createTemplate;
         window.updateTemplate = templateManager.updateTemplate;
         window.deleteTemplate = templateManager.deleteTemplate;
-        window.checkTemplateNameAvailability = templateManager.checkTemplateNameAvailability; 
-        window.generateTemplateName = templateManager.generateTemplateName
     })(jQuery);
     
 </script>
