@@ -1298,14 +1298,15 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
         return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
-        if not self.request.GET:
-            return TrtEntryBatches.objects.none()
-
         queryset = super().get_queryset()
         
         location = self.request.GET.get('location')
         place = self.request.GET.get('place')
         year = self.request.GET.get('year')
+        
+        if not self.request.GET:
+            return queryset.order_by('-entry_batch_id')[:10]
+
         
         if self.request.GET.get('show_all'):
             return queryset.order_by('-entry_batch_id')
