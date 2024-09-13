@@ -136,7 +136,7 @@
                     </div>
                 </div>
                 <div class="col-md-2 mt-3">
-                    <button type="button" class="btn btn-primary btn-block" id="createTemplateBtn" onclick="createTemplate()" disabled>Create</button>
+                    <button type="button" class="btn btn-primary btn-block" id="createButton" onclick="createTemplate()" disabled>Create</button>
                 </div>
             </form>
         </div>
@@ -358,6 +358,7 @@
     }
 
     function checkTemplateName(name) {
+        var createButton = $('#createButton');
         $.ajax({
             url: "{% url 'wamtram2:check_template_name' %}",
             type: 'GET',
