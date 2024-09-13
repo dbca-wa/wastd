@@ -484,7 +484,7 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         batch_id = self.kwargs.get("batch_id")
         cookies_key_prefix = batch_id
         
-        flipper_body_parts = list(TrtBodyParts.objects.filter(flipper=False).values_list('body_part', flat=True))
+            flipper_body_parts = list(TrtBodyParts.objects.filter(flipper=True).values_list('body_part', flat=True))
         context['flipper_body_parts'] = json.dumps(flipper_body_parts)
 
         if entry_id:
