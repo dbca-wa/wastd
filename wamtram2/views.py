@@ -975,7 +975,17 @@ class TemplateManageView(LoginRequiredMixin, FormView):
 @login_required
 @require_http_methods(["GET"])
 def check_template_name(request):
-    name = unquote(request.GET.get('name', ''))
+    # 打印调试信息
+    raw_name = request.GET.get('name', '')
+    print("Raw name:", raw_name)
+    
+    # 解码 name 参数
+    name = unquote(raw_name)
+    print("Decoded name:", name)
+    
+    if not name:
+        return JsonResponse({'error': 'Invalid name'}, status=400)
+    
     exists = Template.objects.filter(name=name).exists()
     return JsonResponse({'exists': exists})
 
