@@ -41,8 +41,9 @@ The following variables are required for the project to run:
 
 Variables below may also need to be defined (context-dependent):
 
-    SECRET_KEY="ThisIsASecretKey"
+    SECRET_KEY=ThisIsASecretKey
     DEBUG=True
+    GEOSERVER_URL=https://geoserver.url/service
 
 # Running
 
