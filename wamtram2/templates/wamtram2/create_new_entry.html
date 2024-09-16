@@ -22,11 +22,12 @@
 {% block page_content_inner %}
 <div class="container-fluid mt-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Batch Filter</h2>
+        <h2>Create New Entry</h2>
     </div>
 
     <!-- Filter Form -->
     <form id="filterForm" method="get" class="mb-4">
+        <h5>Filter Batches</h5>
         <div class="form-row">
             <div class="form-group col-md-4">
                 <label for="location">Location</label>
@@ -60,7 +61,7 @@
             <div class="form-group col-md-12 d-flex align-items-end">
                 <button type="submit" class="btn btn-primary">Filter</button>
                 <button type="button" id="clearFilter" class="btn btn-secondary ml-4">Clear Filter</button>
-                <button type="button" id="showAllBatches" class="btn btn-info ml-4">Show All Batches</button>
+                <button type="button" id="showAllBatches" class="btn btn-info ml-4">Show All Batches (long loading time)</button>
             </div>
         </div>
     </form>
@@ -77,27 +78,31 @@
                 </tr>
             </thead>
             <tbody>
-                {% for batch in batches %}
-                <tr>
-                    <td>{{ batch.entry_batch_id }}</td>
-                    <td>{{ batch.batches_code|default:"No Code" }}</td>
-                    <td style="width: 15%;">{{ batch.comments|default:"" }}</td>
-                    <td>
-                        <div class="d-flex justify-content-between">
-                            {% if user.is_superuser %}
-                                <a href="{% url 'wamtram2:entry_batch_detail' batch_id=batch.entry_batch_id %}" class="btn btn-sm btn-info mr-1">View Details</a>
-                            {% else %}
-                                <span class="mr-1"></span>
-                            {% endif %}
-                            <a href="{% url 'wamtram2:find_turtle' batch_id=batch.entry_batch_id %}" class="btn btn-sm btn-success">Create New Entry</a>
-                        </div>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="5" class="text-center">No batches found.</td>
-                </tr>
-                {% endfor %}
+                {% if location or place or year %}
+                    {% for batch in batches %}
+                    <tr>
+                        <td>{{ batch.entry_batch_id }}</td>
+                        <td>{{ batch.batches_code|default:"No Code" }}</td>
+                        <td style="width: 15%;">{{ batch.comments|default:"" }}</td>
+                        <td>
+                            <div class="d-flex">
+                                {% if user.is_superuser %}
+                                    <a href="{% url 'wamtram2:entry_batch_detail' batch_id=batch.entry_batch_id %}" class="btn btn-sm btn-info mr-2">View Details</a>
+                                {% endif %}
+                                <a href="{% url 'wamtram2:find_turtle' batch_id=batch.entry_batch_id %}" class="btn btn-sm btn-success">Create New Entry</a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center"><strong>No batches found.</strong></td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center"><strong>Please select location, place, and year to filter the batches.</strong></td>
+                    </tr>
+                {% endif %}
             </tbody>
         </table>
 
