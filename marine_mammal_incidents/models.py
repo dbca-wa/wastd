@@ -24,6 +24,7 @@ class Incident(models.Model):
     ENTRAPMENT = 'Entrapment'
     VESSEL_COLLISION = 'Vessel collision'
     UNUSUAL_MORTALITY_EVENT = 'Unusual mortality event'
+    HAULED_OUT = 'Hauled-out'
     INCIDENT_TYPE_CHOICES = [
         (STRANDING, 'Stranding'),
         (ENTANGLEMENT, 'Entanglement'),
