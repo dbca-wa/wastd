@@ -1478,6 +1478,7 @@ class CreateNewEntryView(LoginRequiredMixin, ListView):
             })
         return super().get(request, *args, **kwargs)
     
+    
 @login_required
 @require_POST
 def quick_add_batch(request):
