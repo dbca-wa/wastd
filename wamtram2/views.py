@@ -42,6 +42,7 @@ from .models import (
     Template,
     TrtTagStates,
     TrtBodyParts,
+    TrtTurtleStatus
 )
 from .forms import TrtDataEntryForm, SearchForm, TrtEntryBatchesForm, TemplateForm, BatchesCodeForm, BatchesSearchForm
 
@@ -1249,7 +1250,38 @@ class FilterFormView(LoginRequiredMixin, View):
         return super().dispatch(request, *args, **kwargs)
 
     def get(self, request):
+        action = request.GET.get('action')
+        if action == 'get_filter_options':
+            return self.get_filter_options(request)
         return render(request, 'wamtram2/export_form.html')
+
+    def get_filter_options(self, request):
+        from_date = request.GET.get('observation_date_from')
+        to_date = request.GET.get('observation_date_to')
+
+        observations = TrtObservations.objects.filter(
+            observation_date__range=[from_date, to_date]
+        )
+        
+        places = observations.values('place__place_code', 'place__location_name', 'place__place_name').distinct()
+        species = TrtSpecies.objects.filter(observations__in=observations).distinct()
+        sexes = observations.values_list('sex', flat=True).distinct()
+        turtle_statuses = TrtTurtleStatus.objects.filter(observations__in=observations).distinct()
+
+        return JsonResponse({
+            'places': [{'value': p.place_code, 'label': f"{p.location_code.location_name} - {p.place_name}"} for p in places],
+            'species': [{'value': s.species_code, 'label': s.common_name} for s in species],
+            'sexes': [{'value': s, 'label': self.get_sex_label(s)} for s in sexes],
+            'turtle_statuses': [{'value': ts.turtle_status, 'label': ts.description} for ts in turtle_statuses],
+        })
+        
+    def get_sex_label(self, sex_code):
+        sex_choices = {
+            'M': 'Male',
+            'F': 'Female',
+            'I': 'Indeterminate',
+        }
+        return sex_choices.get(sex_code, 'Unknown')
 
 
 class DudTagManageView(LoginRequiredMixin, View):
