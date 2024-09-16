@@ -29,7 +29,9 @@ class Incident(models.Model):
         (ENTANGLEMENT, 'Entanglement'),
         (ENTRAPMENT, 'Entrapment'),
         (VESSEL_COLLISION, 'Vessel collision'),
-        (UNUSUAL_MORTALITY_EVENT, 'Unusual mortality event')
+        (UNUSUAL_MORTALITY_EVENT, 'Unusual mortality event'),
+        (HAULED_OUT, 'hauled-out (for pinnipeds)')
+        
     ]
     incident_type = models.CharField(max_length=50,choices=INCIDENT_TYPE_CHOICES)
 
