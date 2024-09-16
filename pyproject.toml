@@ -63,9 +63,9 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.ruff.lint]
 # Enable Pyflakes `E` and `F` codes.
-select = ["E", "F"]
+lint.select = ["E", "F"]
 # Never enforce `E501` (line length violations).
-ignore = ["E501"]
+lint.ignore = ["E501"]
 # Always autofix.
 fix = true
 exclude = ["__pycache__", "migrations"]
