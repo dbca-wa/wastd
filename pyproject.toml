@@ -44,6 +44,7 @@ django-grappelli = "3.0.8"
 django-bootstrap4 = "24.1"
 django-easy-select2 = "1.5.8"
 sentry-sdk = {version = "2.14.0", extras = ["django"]}
+django-debug-toolbar = "^4.2.2"
 
 [tool.poetry.group.dev.dependencies]
 ipython = "^8.23.0"
