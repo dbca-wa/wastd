@@ -25,7 +25,7 @@
 
 {% block page_content_inner %}
 <div class="mt-5">
-    <h2 class="mb-4">Batches List</h2>
+    <h2 class="mb-4">Batches Curation</h2>
     <div class="d-flex flex-wrap align-items-center mb-3">
         {% if request.user.is_superuser %}
         <!-- Export Data Button -->
@@ -51,7 +51,7 @@
     </div>
     <form id="filter-form" method="get" class="mb-4">
         <div class="form-row">
-            <div class="form-group col-md-3">
+            <div class="form-group col-md-4">
                 <label for="location">Location</label>
                 <select name="location" id="location" class="form-control">
                     <option value="">Select Location</option>
@@ -60,7 +60,7 @@
                     {% endfor %}
                 </select>
             </div>
-            <div class="form-group col-md-3">
+            <div class="form-group col-md-4">
                 <label for="place">Place</label>
                 <select name="place" id="place" class="form-control">
                     <option value="">Select Place</option>
@@ -69,7 +69,7 @@
                     {% endfor %}
                 </select>
             </div>
-            <div class="form-group col-md-3">
+            <div class="form-group col-md-4">
                 <label for="year">Year</label>
                 <select name="year" id="year" class="form-control">
                     <option value="">Select Year</option>
@@ -78,10 +78,10 @@
                     {% endfor %}
                 </select>
             </div>
-            <div class="form-group col-md-3 d-flex align-items-end">
+            <div class="form-group col-md-5 d-flex align-items-end">
                 <button type="submit" class="btn btn-primary">Filter</button>
                 <button type="button" id="clearFilter" class="btn btn-secondary ml-4">Clear Filter</button>
-                <button type="button" id="showAllBatches" class="btn btn-info ml-4">Show All Batches</button>
+                <button type="button" id="showAllBatches" class="btn btn-info ml-4">Show All Batches (long loading time)</button>
             </div>
         </div>
     </form>
@@ -92,14 +92,12 @@
     <table class="table">
         <thead>
             <tr>
-                <th>Batch ID</th>
-                <th>Batches Code</th>
-                <th>Entry Date</th>
-                <th>Enterer</th>
-                <th>Site</th>
-                <th># of Records</th>
-                <th>Comments</th>
-                <th>Actions</th>
+                <th style="width: 5%;">Batch ID</th>
+                <th style="width: 10%;">Batches Code</th>
+                <th style="width: 10%;"># of Records</th>
+                <th style="width: 10%;"># of Flagged Records</th>
+                <th style="width: 45%;">Comments</th>
+                <th style="width: 20%;">Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -107,11 +105,9 @@
             <tr>
                 <td>{{ batch.entry_batch_id }}</td>
                 <td>{{ batch.batches_code|default:"No Code" }}</td>
-                <td>{{ batch.entry_date|date:"Y-m-d" }}</td>
-                <td>{{ batch.entered_person_id.first_name }} {{ batch.entered_person_id.surname }}</td>
-                <td>{{ batch.last_place_name }}</td>
                 <td>{{ batch.entry_count }}</td>
-                <td>{{ batch.comments|truncatechars:50 }}</td>
+                <td>{{ batch.do_not_process_count }}</td>
+                <td>{{ batch.comments|truncatechars:100 }}</td>
                 <td>
                     <a href="{% url 'wamtram2:entry_batch_detail' batch_id=batch.entry_batch_id %}" class="btn btn-sm btn-info">View</a>
                     <a href="{% url 'wamtram2:add_batches_code' batch_id=batch.entry_batch_id %}" class="btn btn-sm btn-primary">Edit Details</a>
@@ -207,8 +203,9 @@
                     </div>
                     <div class="form-group">
                         <label for="quickAddBatchCode">Batch Code</label>
-                        <input type="text" class="form-control" id="quickAddBatchCode" name="batches_code" readonly>
-                        <div id="batchCodeFeedback" class="invalid-feedback" style="display:none;"></div>
+                        <input type="text" class="form-control" id="quickAddBatchCode" name="batches_code" required>
+                        <div class="invalid-feedback">This Bathch is alraedy exist.</div>
+                        <div class="valid-feedback">Looks good!</div>
                     </div>
                     <div class="form-group">
                         <label for="quickAddEntryDate">Expected Entry Date</label>
@@ -375,17 +372,15 @@
             $.ajax({
                 url: "{% url 'wamtram2:check_batch_code' %}",
                 type: 'GET',
-                data: { 'batches_code': batchCode },
+                data: { 'code': batchCode, 'action': 'check_batch_code' },
                 dataType: 'json',
                 success: function(response) {
-                    if (response.exists) {
-                        $('#quickAddBatchCode').addClass('is-invalid');
-                        $('#batchCodeFeedback').text('This batch code already exists.').show();
-                        $('#quickAddBatchConfirm').prop('disabled', true);
-                    } else {
-                        $('#quickAddBatchCode').removeClass('is-invalid');
-                        $('#batchCodeFeedback').hide();
+                    if (response.is_unique) {
+                        $('#quickAddBatchCode').removeClass('is-invalid').addClass('is-valid');
                         $('#quickAddBatchConfirm').prop('disabled', false);
+                    } else {
+                        $('#quickAddBatchCode').removeClass('is-valid').addClass('is-invalid');
+                        $('#quickAddBatchConfirm').prop('disabled', true);
                     }
                 },
                 error: function() {
@@ -431,7 +426,10 @@
     
         $('#quickAddNight, #quickAddPlace, #quickAddYear').change(generateBatchCode);
         $('#quickAddPlace, #quickAddNight, #quickAddEntryDate').change(updateComments);
-    
+        
+        $('#quickAddBatchCode').on('input', function() {
+            checkBatchCodeUniqueness($(this).val());
+        });
         // Show Quick Add Batch modal
         $("#quickAddBatchBtn").click(function(e) {
             e.preventDefault();

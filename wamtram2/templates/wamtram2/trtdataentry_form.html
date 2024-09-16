@@ -9,6 +9,7 @@
 <link rel="stylesheet" type="text/css" href="{% static 'css/add_person_btn.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'css/tag_validation.css' %}">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <style>
   .select2 {
@@ -59,7 +60,7 @@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-        <li class="breadcrumb-item"><a href="{% url 'wamtram2:entry_batches'%}">Entry batches</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'wamtram2:batches_curation'%}">Entry batches</a></li>
         {% if entry.entry_batch %}
         <li class="breadcrumb-item"><a href="{% url 'wamtram2:entry_batch_detail' entry.entry_batch %}">{{entry.entry_batch}}</a></li>
         {% endif %}
@@ -711,7 +712,7 @@
             </div>
         </div>
         <div id="injuryDetails">
-            <div class="row">
+            {% comment %} <div class="row">
                 <div class="col-md-6">
                     {% bootstrap_field form.damage_lff %}
                 </div>
@@ -726,11 +727,43 @@
                 <div class="col-md-6">
                   {% bootstrap_field form.damage_rhf %}
                 </div>
-            </div>
+            </div> {% endcomment %}
             <div class="row">
-                <div class="col-md-6">
-                  {% bootstrap_field form.damage_carapace %}
+              <div class="col-md-6">
+                  {% bootstrap_field form.body_part_1 %}
               </div>
+              <div class="col-md-6">
+                  {% bootstrap_field form.damage_code_1 %}
+              </div>
+          </div>
+          <div class="row">
+              <div class="col-md-6">
+                  {% bootstrap_field form.body_part_2 %}
+              </div>
+              <div class="col-md-6">
+                  {% bootstrap_field form.damage_code_2 %}
+              </div>
+          </div>
+          <div class="row">
+              <div class="col-md-6">
+                  {% bootstrap_field form.body_part_3 %}
+              </div>
+              <div class="col-md-6">
+                  {% bootstrap_field form.damage_code_3 %}
+              </div>
+          </div>
+          <div class="row">
+              <div class="col-md-6">
+                  {% bootstrap_field form.body_part_4 %}
+              </div>
+              <div class="col-md-6">
+                  {% bootstrap_field form.damage_code_4 %}
+              </div>
+          </div>
+            <div class="row">
+                {% comment %} <div class="col-md-6">
+                  {% bootstrap_field form.damage_carapace %}
+                </div> {% endcomment %}
                 <div class="col-md-2 pt-3 d-flex align-items-center">
                     <button id="toggleInjuryFieldsButton" type="button" class="btn btn-outline-primary">
                         <i class="fas fa-plus" id="toggleInjuryIcon"></i>
@@ -740,26 +773,18 @@
             <div id="injuryAdditionalFields" style="display: none;">
                 <div class="row">
                     <div class="col-md-6">
-                        {% bootstrap_field form.body_part_1 %}
+                        {% bootstrap_field form.body_part_5 %}
                     </div>
                     <div class="col-md-6">
-                        {% bootstrap_field form.damage_code_1 %}
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        {% bootstrap_field form.body_part_2 %}
-                    </div>
-                    <div class="col-md-6">
-                        {% bootstrap_field form.damage_code_2 %}
+                        {% bootstrap_field form.damage_code_5 %}
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-6">
-                        {% bootstrap_field form.body_part_3 %}
+                        {% bootstrap_field form.body_part_6 %}
                     </div>
                     <div class="col-md-6">
-                        {% bootstrap_field form.damage_code_3 %}
+                        {% bootstrap_field form.damage_code_6 %}
                     </div>
                 </div>
             </div>
@@ -1229,7 +1254,34 @@
       confirmSaveButton.addEventListener('click', function(event) {
           $(summaryModal).modal('hide');
       });
-  }
+    }
+  });
+
+  $(document).ready(function() {
+      var flipperBodyParts = {{ flipper_body_parts|safe }}; 
+
+      function updateDamageCodeOptions(bodyPartSelect, damageCodeSelect) {
+          var selectedBodyPart = $(bodyPartSelect).val();
+          var damageCodeField = $(damageCodeSelect);
+          
+          if (flipperBodyParts.includes(selectedBodyPart)) {
+            damageCodeField.find('option').show();
+        } else {
+            damageCodeField.find('option').hide();
+            damageCodeField.find('option[value="0"], option[value="5"], option[value="6"], option[value="7"]').show();
+        }
+          
+          damageCodeField.val('');
+      }
+
+      for (var i = 1; i <= 6; i++) {
+          $(`#id_body_part_${i}`).change(function() {
+              var index = this.id.split('_').pop();
+              updateDamageCodeOptions(`#id_body_part_${index}`, `#id_damage_code_${index}`);
+          });
+          
+          updateDamageCodeOptions(`#id_body_part_${i}`, `#id_damage_code_${i}`);
+      }
   });
 </script>
 <script src="{% static 'js/tagToggleHandler.js' %}"></script>

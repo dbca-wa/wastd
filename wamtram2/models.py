@@ -1,5 +1,5 @@
 from django.contrib.gis.db import models
-import uuid
+from django.core.exceptions import ValidationError
 
 class TrtActivities(models.Model):
     activity_code = models.CharField(
@@ -788,7 +788,6 @@ class TrtDataEntry(models.Model):
         db_column="MEASUREMENT_VALUE_6", blank=True, null=True
     )  # Field name made lowercase.
     
-    
     flipper_tag_check = models.ForeignKey(
         "TrtYesNo",
         on_delete=models.CASCADE,
@@ -856,7 +855,6 @@ class TrtDataEntry(models.Model):
     new_pit_tag_3_sticker_present = models.BooleanField(default=False, db_column='NEW_PIT_TAG_3_STICKER_PRESENT')
     new_pit_tag_4_sticker_present = models.BooleanField(default=False, db_column='NEW_PIT_TAG_4_STICKER_PRESENT')
 
-
     dud_filpper_tag = models.CharField(
         max_length=10,
         db_column="DUD_FLIPPER_TAG",
@@ -881,6 +879,56 @@ class TrtDataEntry(models.Model):
         blank=True,
         null=True,
     )
+    
+    body_part_4 = models.ForeignKey(
+        "TrtBodyParts",
+        models.SET_NULL,
+        db_column="BODY_PART_4",
+        blank=True,
+        null=True,
+        related_name="bp4",
+    )  # fake foreign key #models.CharField(db_column='BODY_PART_4', max_length=1, blank=True, null=True)  # Field name made lowercase.
+    damage_code_4 = models.ForeignKey(
+        "TrtDamageCodes",
+        models.SET_NULL,
+        db_column="DAMAGE_CODE_4",
+        blank=True,
+        null=True,
+        related_name="dc4",
+    )  # fake foreign key #models.CharField(db_column='DAMAGE_CODE_4', max_length=1, blank=True, null=True)  # Field name made lowercase.
+    body_part_5 = models.ForeignKey(
+        "TrtBodyParts",
+        models.SET_NULL,
+        db_column="BODY_PART_5",
+        blank=True,
+        null=True,
+        related_name="bp5",
+    )
+    damage_code_5 = models.ForeignKey(
+        "TrtDamageCodes",
+        models.SET_NULL,
+        db_column="DAMAGE_CODE_5",
+        blank=True,
+        null=True,
+        related_name="dc5",
+    )
+    body_part_6 = models.ForeignKey(
+        "TrtBodyParts",
+        models.SET_NULL,
+        db_column="BODY_PART_6",
+        blank=True,
+        null=True,
+        related_name="bp6",
+    )
+    damage_code_6 = models.ForeignKey(
+        "TrtDamageCodes",
+        models.SET_NULL,
+        db_column="DAMAGE_CODE_6",
+        blank=True,
+        null=True,
+        related_name="dc6",
+    )
+    
     class Meta:
         managed = False
         db_table = "TRT_DATA_ENTRY"
@@ -1236,6 +1284,18 @@ class TrtEntryBatches(models.Model):
 
     def __str__(self):
         return f"{self.entry_batch_id}"
+    
+    def clean(self):
+        if self.batches_code:
+            existing = TrtEntryBatches.objects.filter(batches_code=self.batches_code)
+            if self.pk:
+                existing = existing.exclude(pk=self.pk)
+            if existing.exists():
+                raise ValidationError({'batches_code': 'This batch code already exists.'})
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
 
 
 class TrtIdentification(models.Model):
@@ -2383,6 +2443,14 @@ class Template(models.Model):
         
     def __str__(self):
         return self.name
+    
+    def clean(self):
+        if Template.objects.filter(name=self.name).exists():
+            raise ValidationError({'name': 'Template with this name already exists.'})
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
 
 # class Tbldamage(models.Model):
 #     observation_id = models.IntegerField(db_column='OBSERVATION_ID')  # Field name made lowercase.

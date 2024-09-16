@@ -41,6 +41,7 @@ from .models import (
     TrtObservations,
     Template,
     TrtTagStates,
+    TrtBodyParts,
 )
 from .forms import TrtDataEntryForm, SearchForm, TrtEntryBatchesForm, TemplateForm, BatchesCodeForm, BatchesSearchForm
 
@@ -482,7 +483,9 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         entry_id = self.kwargs.get("entry_id")
         batch_id = self.kwargs.get("batch_id")
         cookies_key_prefix = batch_id
-        context['is_volunteer'] = self.request.user.groups.filter(name='Tagging Data Entry').exists()
+        
+        flipper_body_parts = list(TrtBodyParts.objects.filter(flipper=True).values_list('body_part', flat=True))
+        context['flipper_body_parts'] = json.dumps(flipper_body_parts)
 
         if entry_id:
             entry = get_object_or_404(TrtDataEntry.objects.select_related('turtle_id'), data_entry_id=entry_id)
@@ -537,7 +540,7 @@ class DeleteBatchView(LoginRequiredMixin, View):
     def post(self, request, batch_id):
         batch = get_object_or_404(TrtEntryBatches, entry_batch_id=batch_id)
         batch.delete()
-        return redirect("wamtram2:entry_batches")
+        return redirect("wamtram2:batches_curation")
 
 
 class ValidateDataEntryBatchView(LoginRequiredMixin, View):
@@ -587,7 +590,7 @@ class ValidateDataEntryBatchView(LoginRequiredMixin, View):
 
 class DeleteEntryView(DeleteView):
     model = TrtDataEntry
-    success_url = reverse_lazy('wamtram2:entry_batches')
+    success_url = reverse_lazy('wamtram2:batches_curation')
 
     def get_success_url(self):
         batch_id = self.kwargs['batch_id']
@@ -902,8 +905,6 @@ class TemplateManageView(LoginRequiredMixin, FormView):
         if not request.user.is_superuser:
             return HttpResponseForbidden("You do not have permission to access this page.")
         
-        if request.method == 'PUT':
-            return self.put(request, *args, **kwargs)
         elif request.method == 'DELETE':
             return self.delete(request, *args, **kwargs)
         elif request.method == 'GET' and 'location_code' in request.GET:
@@ -917,7 +918,7 @@ class TemplateManageView(LoginRequiredMixin, FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['templates'] = Template.objects.all()
+        context['templates'] = Template.objects.all().order_by('-template_id')
         context['locations'] = list(TrtLocations.objects.all())
         context['places'] = list(TrtPlaces.objects.all())
         context['species'] = list(TrtSpecies.objects.all())
@@ -928,20 +929,6 @@ class TemplateManageView(LoginRequiredMixin, FormView):
         template = get_object_or_404(Template, pk=template_key)
         template.delete()
         return JsonResponse({'message': 'Template deleted'})
-
-    def put(self, request, template_key):
-        template = get_object_or_404(Template, pk=template_key)
-        form = TemplateForm(QueryDict(request.body), instance=template)
-        if form.is_valid():
-            updated_template = form.save()
-            return JsonResponse({
-                'name': updated_template.name,
-                'location_code': updated_template.location_code,
-                'place_code': updated_template.place_code,
-                'species_code': updated_template.species_code,
-                'sex': updated_template.sex
-            })
-        return JsonResponse({'errors': form.errors}, status=400)
     
     def get_places(self, request):
         """
@@ -957,13 +944,22 @@ class TemplateManageView(LoginRequiredMixin, FormView):
         places = TrtPlaces.objects.filter(location_code=location_code)
         places_list = list(places.values('place_code', 'place_name'))
         return JsonResponse(places_list, safe=False)
+
+
+def get_place_full_name(request):
+    place_code = request.GET.get('place_code')
+    try:
+        place = TrtPlaces.objects.get(place_code=place_code)
+        full_name = place.get_full_name()
+        return JsonResponse({'full_name': full_name})
+    except TrtPlaces.DoesNotExist:
+        return JsonResponse({'error': 'Place not found'}, status=404)
     
 def check_template_name(request):
-    name = request.GET.get('name', '')
-    exists = Template.objects.filter(name=name).exists()
-    return JsonResponse({'exists': exists})
-
-
+    name = request.GET.get('name')
+    is_available = not Template.objects.filter(name=name).exists()
+    return JsonResponse({'is_available': is_available})
+    
 class ValidateTagView(View):
     """
     View for validating tags.
@@ -1332,14 +1328,14 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
         return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
-        if not self.request.GET:
-            return TrtEntryBatches.objects.none()
-
         queryset = super().get_queryset()
         
         location = self.request.GET.get('location')
         place = self.request.GET.get('place')
         year = self.request.GET.get('year')
+        
+        if not self.request.GET:
+            return queryset.order_by('-entry_batch_id')[:20]
         
         if self.request.GET.get('show_all'):
             return queryset.order_by('-entry_batch_id')
@@ -1393,6 +1389,11 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
 
         return context
     def get(self, request, *args, **kwargs):
+        if 'action' in request.GET:
+            action = request.GET.get('action')
+            if action == 'check_batch_code':
+                return self.check_batch_code(request)
+            
         self.object_list = self.get_queryset()
         context = self.get_context_data()
         
@@ -1405,6 +1406,22 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
                 'current_page': context['page_obj'].number if 'page_obj' in context else 1,
             })
         return super().get(request, *args, **kwargs)
+    
+    def check_batch_code(self, request):
+        code = request.GET.get('code')
+        batch_id = request.GET.get('batch_id')
+        if batch_id:
+            is_unique = not TrtEntryBatches.objects.filter(batches_code=code).exclude(pk=batch_id).exists()
+        else:
+            is_unique = not TrtEntryBatches.objects.filter(batches_code=code).exists()
+        return JsonResponse({'is_unique': is_unique})
+    
+    def get_places(self, request):
+        location_code = request.GET.get('location_code')
+        places = TrtPlaces.objects.filter(location_code=location_code).values('place_code', 'place_name')
+        return JsonResponse(list(places), safe=False)
+    
+    
 class CreateNewEntryView(LoginRequiredMixin, ListView):
     model = TrtEntryBatches
     template_name = 'wamtram2/create_new_entry.html'
@@ -1516,6 +1533,21 @@ def quick_add_batch(request):
 
 class BatchCodeManageView(View):
     template_name = 'wamtram2/add_batches_code.html'
+    
+    def dispatch(self, request, *args, **kwargs):
+        if request.method == 'GET' and 'action' in request.GET:
+            action = request.GET.get('action')
+            if action == 'get_places':
+                return self.get_places(request)
+            elif action == 'check_batch_code':
+                return self.check_batch_code(request)
+        return super().dispatch(request, *args, **kwargs)
+    
+    def get_places(self, request):
+        location_code = request.GET.get('location_code')
+        places = TrtPlaces.objects.filter(location_code=location_code).values('place_code', 'place_name')
+        return JsonResponse(list(places), safe=False)
+
 
     def get(self, request, batch_id=None):
         if batch_id:
@@ -1579,14 +1611,6 @@ class BatchCodeManageView(View):
             is_unique = not TrtEntryBatches.objects.filter(batches_code=code).exists()
         return JsonResponse({'is_unique': is_unique})
 
-    def dispatch(self, request, *args, **kwargs):
-        if request.method == 'GET' and 'action' in request.GET:
-            action = request.GET.get('action')
-            if action == 'get_places':
-                return self.get_places(request)
-            elif action == 'check_batch_code':
-                return self.check_batch_code(request)
-        return super().dispatch(request, *args, **kwargs)
     
     
 @require_GET

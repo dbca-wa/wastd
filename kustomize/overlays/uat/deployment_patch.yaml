@@ -29,11 +29,11 @@ spec:
             secretKeyRef:
               name: turtles-env-uat
               key: SECRET_KEY
-        - name: MAPPROXY_URL
+        - name: GEOSERVER_URL
           valueFrom:
             secretKeyRef:
               name: turtles-env-uat
-              key: MAPPROXY_URL
+              key: GEOSERVER_URL
         - name: MAPBOX_TOKEN
           valueFrom:
             secretKeyRef:
