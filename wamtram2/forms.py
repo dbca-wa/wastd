@@ -275,8 +275,7 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields['recapture_left_tag_state_2'].queryset = old_tag_states
         self.fields['recapture_right_tag_state_2'].queryset = old_tag_states
         
-        body_parts = TrtBodyParts.objects.all()
-        
+        # Add body part and damage code fields
         for i in range(1, 7):
             self.fields[f'body_part_{i}'] = forms.ModelChoiceField(
                 queryset=TrtBodyParts.objects.all(),

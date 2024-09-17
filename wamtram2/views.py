@@ -377,7 +377,8 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
                 if not turtle_id:
                     initial['species_code'] = template_data.get('species_code')
                     initial['sex'] = template_data.get('sex')
-                if default_enterer:
+                    
+                if default_enterer and default_enterer != "None":
                     default_enterer_obj = TrtPersons.objects.filter(person_id=default_enterer).first()
                     if default_enterer_obj:
                         initial['entered_by_id'] = default_enterer
