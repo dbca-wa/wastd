@@ -36,6 +36,7 @@ class HealthCheckMiddleware(object):
             cursor = connections["default"].cursor()
             cursor.execute("SELECT 1;")
             row = cursor.fetchone()
+            cursor.close()
             if row is None:
                 return HttpResponseServerError("db: invalid response")
         except Exception as e:
