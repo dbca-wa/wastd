@@ -69,9 +69,9 @@ class SearchForm(forms.Form):
     place_code = forms.CharField(widget=forms.HiddenInput(), required=False)
     species_code = forms.CharField(widget=forms.HiddenInput(), required=False)
     sex = forms.CharField(widget=forms.HiddenInput(), required=False)
-    default_enterer = forms.CharField(widget=forms.HiddenInput(), required=False)
+    # default_enterer = forms.CharField(widget=forms.HiddenInput(), required=False)
     selected_template = forms.CharField(required=False, widget=forms.HiddenInput())
-    use_default_enterer = forms.BooleanField(required=False, widget=forms.HiddenInput())
+    # use_default_enterer = forms.BooleanField(required=False, widget=forms.HiddenInput())
 
 
 class TrtEntryBatchesForm(forms.ModelForm):

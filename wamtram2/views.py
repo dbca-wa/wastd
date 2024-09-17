@@ -161,6 +161,7 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
 
         # if use_default_enterer and default_enterer:
         #     initial['entered_person_id'] = default_enterer
+        initial['entered_person_id'] = None
         
         return initial
 
@@ -220,11 +221,11 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
 
         cookies_key_prefix = self.kwargs.get("batch_id")
         context['selected_template'] = self.request.COOKIES.get(f'{cookies_key_prefix}_selected_template', '')
-        context['use_default_enterer'] = self.request.COOKIES.get(f'{cookies_key_prefix}_use_default_enterer', False)
-        context['default_enterer'] = self.request.COOKIES.get(f'{cookies_key_prefix}_default_enterer', None)
+        # context['use_default_enterer'] = self.request.COOKIES.get(f'{cookies_key_prefix}_use_default_enterer', False)
+        # context['default_enterer'] = self.request.COOKIES.get(f'{cookies_key_prefix}_default_enterer', None)
 
         context['cookies_key_prefix'] = cookies_key_prefix
-        context['default_enterer_value'] = context['default_enterer']
+        # context['default_enterer_value'] = context['default_enterer']
         
         # Add entries with do_not_process = True to the context
         context["do_not_process_entries"] = TrtDataEntry.objects.filter(
@@ -274,6 +275,7 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
     def get_success_url(self):
         batch_id = self.kwargs.get("batch_id")
         return reverse("wamtram2:entry_batch_detail", args=[batch_id])
+
 
 class TrtDataEntryFormView(LoginRequiredMixin, FormView):
     """
@@ -339,8 +341,8 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         tag_side = self.request.COOKIES.get(f'{cookies_key_prefix}_tag_side')
 
         selected_template = self.request.COOKIES.get(f'{cookies_key_prefix}_selected_template')
-        use_default_enterer = self.request.COOKIES.get(f'{cookies_key_prefix}_use_default_enterer', False)
-        default_enterer = self.request.COOKIES.get(f'{cookies_key_prefix}_default_enterer', None)
+        # use_default_enterer = self.request.COOKIES.get(f'{cookies_key_prefix}_use_default_enterer', False)
+        # default_enterer = self.request.COOKIES.get(f'{cookies_key_prefix}_default_enterer', None)
         
         # If a tag is selected, populate the form with the tag data
         if tag_id and tag_type:
@@ -360,8 +362,8 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
             except TrtEntryBatches.DoesNotExist:
                 pass
 
-        if default_enterer == "None" or not default_enterer:
-            default_enterer = None
+        # if default_enterer == "None" or not default_enterer:
+        #     default_enterer = None
 
         if selected_template:
             template_data = self.get_template_data(selected_template)
@@ -452,7 +454,7 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
             form.instance.do_not_process = True
         form.save()
         success_url = reverse("wamtram2:volunteer_find_turtle", args=[batch_id])
-  
+
         
         if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
             return JsonResponse({'success': True, 'redirect_url': success_url})
