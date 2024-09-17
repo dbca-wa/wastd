@@ -144,11 +144,11 @@ class TrtDataEntryForm(forms.ModelForm):
             "measurement_type_2",
             "tagscarnotchecked",
             "didnotcheckforinjury",
-            "damage_carapace",
-            "damage_lff",
-            "damage_rff",
-            "damage_lhf",
-            "damage_rhf",
+            # "damage_carapace",
+            # "damage_lff",
+            # "damage_rff",
+            # "damage_lhf",
+            # "damage_rhf",
             "body_part_1",
             "damage_code_1",
             "body_part_2",
@@ -187,10 +187,6 @@ class TrtDataEntryForm(forms.ModelForm):
             "recapture_left_tag_barnacles_2",
             "recapture_right_tag_barnacles",
             "recapture_right_tag_barnacles_2",
-            "new_left_tag_barnacles",
-            "new_left_tag_barnacles_2",
-            "new_right_tag_barnacles",
-            "new_right_tag_barnacles_2",
             "identifier",
             "identification_type",
             
@@ -336,11 +332,11 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["curved_carapace_width"].label = "CCW (mm)"
         self.fields["curved_carapace_length_notch"].label = "CCL min (mm)"
         self.fields["clutch_completed"].label = "Did the turtle lay?"
-        self.fields["damage_carapace"].label = "Carapace"
-        self.fields["damage_lff"].label = "Left front flipper"
-        self.fields["damage_rff"].label = "Right front flipper"
-        self.fields["damage_lhf"].label = "Left hind flipper"
-        self.fields["damage_rhf"].label = "Right hind flipper"
+        # self.fields["damage_carapace"].label = "Carapace"
+        # self.fields["damage_lff"].label = "Left front flipper"
+        # self.fields["damage_rff"].label = "Right front flipper"
+        # self.fields["damage_lhf"].label = "Left hind flipper"
+        # self.fields["damage_rhf"].label = "Right hind flipper"
         
         # v2.0 added columns
         self.fields["recapture_left_tag_state"].label = "Recapture Left Tag State"
@@ -363,10 +359,6 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["recapture_left_tag_barnacles_2"].label = ""
         self.fields["recapture_right_tag_barnacles"].label = ""
         self.fields["recapture_right_tag_barnacles_2"].label = ""
-        # self.fields["new_left_tag_barnacles"].label = ""
-        # self.fields["new_left_tag_barnacles_2"].label = ""
-        # self.fields["new_right_tag_barnacles"].label = ""
-        # self.fields["new_right_tag_barnacles_2"].label = ""
         
         self.fields["cc_notch_length_not_measured"].label = "CCL min not measured"
         
@@ -397,10 +389,6 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["recapture_left_tag_barnacles_2"].required = False
         self.fields["recapture_right_tag_barnacles"].required = False
         self.fields["recapture_right_tag_barnacles_2"].required = False
-        self.fields["new_left_tag_barnacles"].required = False
-        self.fields["new_left_tag_barnacles_2"].required = False
-        self.fields["new_right_tag_barnacles"].required = False
-        self.fields["new_right_tag_barnacles_2"].required = False
         self.fields["identifier"].required = False
         self.fields["identification_type"].required = False
         
