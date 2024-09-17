@@ -1259,43 +1259,6 @@
       });
     }
   });
-  document.addEventListener('DOMContentLoaded', function() {
-    var flipperBodyParts = {{ flipper_body_parts|safe }}; 
-
-    function updateDamageCodeOptions(bodyPartSelect, damageCodeSelect) {
-        var selectedBodyPart = bodyPartSelect.value;
-        var options = damageCodeSelect.options;
-
-        for (var i = 0; i < options.length; i++) {
-            var option = options[i];
-            if (flipperBodyParts.includes(selectedBodyPart)) {
-                option.style.display = ''; // Show all options
-            } else {
-                if (['0', '5', '6', '7'].includes(option.value)) {
-                    option.style.display = ''; // Show specific options
-                } else {
-                    option.style.display = 'none'; // Hide others
-                }
-            }
-        }
-        damageCodeSelect.value = ''; // Reset the value
-    }
-
-    for (var i = 1; i <= 6; i++) {
-        var bodyPartSelect = document.getElementById(`id_body_part_${i}`);
-        var damageCodeSelect = document.getElementById(`id_damage_code_${i}`);
-
-        // Attach the change event listener
-        bodyPartSelect.addEventListener('change', function() {
-            var index = this.id.split('_').pop();
-            updateDamageCodeOptions(bodyPartSelect, damageCodeSelect);
-        });
-
-        // Initial update for each select element
-        updateDamageCodeOptions(bodyPartSelect, damageCodeSelect);
-    }
-  });
-
 </script>
 <script src="{% static 'js/tagToggleHandler.js' %}"></script>
 <script src="{% static 'js/scarHandler.js' %}"></script>

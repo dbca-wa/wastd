@@ -216,7 +216,6 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
         for entry in context['object_list']:
             entry.highlight_row = entry.do_not_process and entry.error_message not in ['None', 'Observation added to database']
         
-        # 从数据库加载模板数据并添加到上下文
         context['templates'] = Template.objects.all()
 
         cookies_key_prefix = self.kwargs.get("batch_id")
