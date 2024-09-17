@@ -1255,10 +1255,10 @@
     if (confirmSaveButton) {
       confirmSaveButton.addEventListener('click', function(event) {
           $(summaryModal).modal('hide');
+          form.submit()
       });
     }
   });
-
   $(document).ready(function() {
       var flipperBodyParts = {{ flipper_body_parts|safe }}; 
 
