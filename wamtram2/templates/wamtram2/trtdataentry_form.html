@@ -154,7 +154,9 @@
             <div class="col-md-6">
               <label for="{{ form.observation_date.id_for_label }}">{{ form.observation_date.label }}</label>
               {% bootstrap_field form.observation_date show_label=False%}
-              <div id="date-error-message" class="text-danger" style="display: none;"></div>
+            </div>
+            <div class="col-md-3">
+              <div id="date-error-message" class="text-danger" style="display: none; font-weight: bold;"></div>
             </div>
           </div>
           <div class="row">
