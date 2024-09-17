@@ -1260,7 +1260,7 @@
     }
   });
   document.addEventListener('DOMContentLoaded', function() {
-    var flipperBodyParts = {{ flipper_body_parts|safe }}; 
+    var flipper_body_parts = ['B', 'C', 'D', 'E'];
 
     function updateDamageCodeOptions(bodyPartSelect, damageCodeSelect) {
         var selectedBodyPart = bodyPartSelect.value;
