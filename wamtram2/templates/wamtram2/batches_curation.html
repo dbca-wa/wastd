@@ -486,9 +486,9 @@
         $('#showAllBatches').click(function() {
             $('#location, #place, #year').val('');
             showLoadingSpinner();
-            loadBatches("{% url 'wamtram2:batches_curation' %}?show_all=true");
+            loadBatches("{% url 'wamtram2:batches_curation' %}?show_all=true&page=1");
         });
-    
+
         function loadBatches(url) {
             $.ajax({
                 url: url,
@@ -497,11 +497,14 @@
                     $('#batches-table').html($(data.html).find('#batches-table').html());
                     $('.pagination-container').html($(data.html).find('.pagination-container').html());
                     $('#initial-message').toggle($(data.html).find('#initial-message').length > 0);
+                    
+                    history.pushState(null, '', url);
+                    
                     hideLoadingSpinner();
                 },
                 error: function() {
                     hideLoadingSpinner();
-                    alert('An error occurred while loading batches.');
+                    alert('An error occurred while loading the batches.');
                 }
             });
         }

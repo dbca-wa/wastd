@@ -1338,6 +1338,7 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
         location = self.request.GET.get('location')
         place = self.request.GET.get('place')
         year = self.request.GET.get('year')
+        show_all = self.request.GET.get('show_all')
         
         if not self.request.GET:
             return queryset.order_by('-entry_batch_id')[:20]
@@ -1391,6 +1392,7 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
             for place in places
         ]
         context['places_json'] = json.dumps(places_data, cls=DjangoJSONEncoder)
+        context['show_all'] = self.request.GET.get('show_all', False)
 
         return context
     def get(self, request, *args, **kwargs):
@@ -1409,6 +1411,7 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
                 'count': context['paginator'].count if 'paginator' in context else 0,
                 'num_pages': context['paginator'].num_pages if 'paginator' in context else 1,
                 'current_page': context['page_obj'].number if 'page_obj' in context else 1,
+                'show_all': context.get('show_all', False),
             })
         return super().get(request, *args, **kwargs)
     
