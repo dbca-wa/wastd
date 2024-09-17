@@ -152,15 +152,15 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
     def get_initial(self):
         initial = super().get_initial()
         batch_id = self.kwargs.get("batch_id")
-        cookies_key_prefix = batch_id
-        default_enterer = self.request.COOKIES.get(f'{cookies_key_prefix}_default_enterer')
-        use_default_enterer = self.request.COOKIES.get(f'{cookies_key_prefix}_use_default_enterer', False)
+        # cookies_key_prefix = batch_id
+        # default_enterer = self.request.COOKIES.get(f'{cookies_key_prefix}_default_enterer')
+        # use_default_enterer = self.request.COOKIES.get(f'{cookies_key_prefix}_use_default_enterer', False)
         
-        if default_enterer == "None" or not default_enterer or default_enterer == "":
-            default_enterer = None
+        # if default_enterer == "None" or not default_enterer or default_enterer == "":
+        #     default_enterer = None
 
-        if use_default_enterer and default_enterer:
-            initial['entered_person_id'] = default_enterer
+        # if use_default_enterer and default_enterer:
+        #     initial['entered_person_id'] = default_enterer
         
         return initial
 
@@ -377,20 +377,20 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
                     initial['species_code'] = template_data.get('species_code')
                     initial['sex'] = template_data.get('sex')
                     
-                if default_enterer and default_enterer != "None":
-                    default_enterer_obj = TrtPersons.objects.filter(person_id=default_enterer).first()
-                    if default_enterer_obj:
-                        initial['entered_by_id'] = default_enterer
-                        self.default_enterer_full_name = str(default_enterer_obj)
-                    else:
-                        self.default_enterer_full_name = None
-                else:
-                    self.default_enterer_full_name = None
+                # if default_enterer and default_enterer != "None":
+                #     default_enterer_obj = TrtPersons.objects.filter(person_id=default_enterer).first()
+                #     if default_enterer_obj:
+                #         initial['entered_by_id'] = default_enterer
+                #         self.default_enterer_full_name = str(default_enterer_obj)
+                #     else:
+                #         self.default_enterer_full_name = None
+                # else:
+                #     self.default_enterer_full_name = None
 
         if batch_id:
             initial["entry_batch"] = get_object_or_404(TrtEntryBatches, entry_batch_id=batch_id)
-            if use_default_enterer and default_enterer:
-                initial['entered_by_id'] = default_enterer
+            # if use_default_enterer and default_enterer:
+            #     initial['entered_by_id'] = default_enterer
 
         if turtle_id:
             turtle = get_object_or_404(TrtTurtles.objects.prefetch_related('trttags_set', 'trtpittags_set'), pk=turtle_id)
@@ -481,9 +481,6 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         entry_id = self.kwargs.get("entry_id")
         batch_id = self.kwargs.get("batch_id")
         cookies_key_prefix = batch_id
-        
-        flipper_body_parts = list(TrtBodyParts.objects.filter(flipper=True).values_list('body_part', flat=True))
-        context['flipper_body_parts'] = json.dumps(flipper_body_parts)
 
         if entry_id:
             entry = get_object_or_404(TrtDataEntry.objects.select_related('turtle_id'), data_entry_id=entry_id)
