@@ -445,21 +445,15 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         return initial
 
     def form_valid(self, form):
+        print('form_valid')
         batch_id = form.cleaned_data["entry_batch"].entry_batch_id
         do_not_process_cookie_name = f"{batch_id}_do_not_process"
         do_not_process_cookie_value = self.request.COOKIES.get(do_not_process_cookie_name)
         if do_not_process_cookie_value == 'true':
             form.instance.do_not_process = True
         form.save()
-        
-        
-        if self.request.user.groups.filter(name='Tagging Data Entry').exists() and not self.request.user.is_staff and not self.request.user.is_superuser:
-            template_id = self.request.COOKIES.get(f'{batch_id}_selected_template')
-            success_url = reverse("wamtram2:volunteer_find_turtle", args=[batch_id])
-            if template_id:
-                success_url += f'?templateid={template_id}'
-        else:
-            success_url = reverse("wamtram2:entry_batch_detail", args=[batch_id])
+        success_url = reverse("wamtram2:volunteer_find_turtle", args=[batch_id])
+  
         
         if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
             return JsonResponse({'success': True, 'redirect_url': success_url})
@@ -467,7 +461,10 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
             return redirect(success_url)
 
     def form_invalid(self, form):
+        print('form invalid')
+        print(form.errors)
         if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            print(form.errors)
             return JsonResponse({'success': False, 'errors': form.errors})
         else:
             return super().form_invalid(form)
@@ -763,7 +760,6 @@ class FindTurtleView(LoginRequiredMixin, View):
                 response = redirect(reverse('wamtram2:newtrtdataentry', kwargs={'batch_id': batch_id}))
                 return self.set_cookie(response, batch_id, tag_id, tag_type, tag_side, do_not_process=True)
         else:
-            # 如果表单无效，将表单和状态传递给模板
             response = render(request, "wamtram2/find_turtle.html", {
                 "form": form,
                 "no_turtle_found": no_turtle_found,
