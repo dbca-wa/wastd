@@ -144,11 +144,11 @@ class TrtDataEntryForm(forms.ModelForm):
             "measurement_type_2",
             "tagscarnotchecked",
             "didnotcheckforinjury",
-            # "damage_carapace",
-            # "damage_lff",
-            # "damage_rff",
-            # "damage_lhf",
-            # "damage_rhf",
+            "damage_carapace",
+            "damage_lff",
+            "damage_rff",
+            "damage_lhf",
+            "damage_rhf",
             "body_part_1",
             "damage_code_1",
             "body_part_2",
@@ -187,6 +187,10 @@ class TrtDataEntryForm(forms.ModelForm):
             "recapture_left_tag_barnacles_2",
             "recapture_right_tag_barnacles",
             "recapture_right_tag_barnacles_2",
+            "new_left_tag_barnacles",
+            "new_left_tag_barnacles_2",
+            "new_right_tag_barnacles",
+            "new_right_tag_barnacles_2",
             "identifier",
             "identification_type",
             
@@ -271,26 +275,6 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields['recapture_left_tag_state_2'].queryset = old_tag_states
         self.fields['recapture_right_tag_state_2'].queryset = old_tag_states
         
-        # Define the damage codes for non-flipper body parts
-        non_flipper_damage_codes = TrtDamageCodes.objects.filter(damage_code__in=['0', '5', '6', '7'])
-
-        # Iterate through each body part field and dynamically set damage code options
-        for i in range(1, 7):
-            body_part_field = f'body_part_{i}'
-            damage_code_field = f'damage_code_{i}'
-
-            # Check if body_part_X is in the cleaned data
-            body_part_value = self.data.get(body_part_field) or self.initial.get(body_part_field)
-
-            if body_part_value:
-                body_part_obj = TrtBodyParts.objects.filter(body_part=body_part_value).first()
-
-                if body_part_obj and not body_part_obj.flipper:
-                    # For non-flipper body parts, limit damage codes
-                    self.fields[damage_code_field].queryset = non_flipper_damage_codes
-                else:
-                    # For flipper body parts, allow all damage codes
-                    self.fields[damage_code_field].queryset = TrtDamageCodes.objects.all()
 
         self.fields["observation_date"].required = True
         self.fields["species_code"].required = True
@@ -340,11 +324,11 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["curved_carapace_width"].label = "CCW (mm)"
         self.fields["curved_carapace_length_notch"].label = "CCL min (mm)"
         self.fields["clutch_completed"].label = "Did the turtle lay?"
-        # self.fields["damage_carapace"].label = "Carapace"
-        # self.fields["damage_lff"].label = "Left front flipper"
-        # self.fields["damage_rff"].label = "Right front flipper"
-        # self.fields["damage_lhf"].label = "Left hind flipper"
-        # self.fields["damage_rhf"].label = "Right hind flipper"
+        self.fields["damage_carapace"].label = "Carapace"
+        self.fields["damage_lff"].label = "Left front flipper"
+        self.fields["damage_rff"].label = "Right front flipper"
+        self.fields["damage_lhf"].label = "Left hind flipper"
+        self.fields["damage_rhf"].label = "Right hind flipper"
         
         # v2.0 added columns
         self.fields["recapture_left_tag_state"].label = "Recapture Left Tag State"
@@ -367,6 +351,10 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["recapture_left_tag_barnacles_2"].label = ""
         self.fields["recapture_right_tag_barnacles"].label = ""
         self.fields["recapture_right_tag_barnacles_2"].label = ""
+        # self.fields["new_left_tag_barnacles"].label = ""
+        # self.fields["new_left_tag_barnacles_2"].label = ""
+        # self.fields["new_right_tag_barnacles"].label = ""
+        # self.fields["new_right_tag_barnacles_2"].label = ""
         
         self.fields["cc_notch_length_not_measured"].label = "CCL min not measured"
         
@@ -397,6 +385,10 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["recapture_left_tag_barnacles_2"].required = False
         self.fields["recapture_right_tag_barnacles"].required = False
         self.fields["recapture_right_tag_barnacles_2"].required = False
+        self.fields["new_left_tag_barnacles"].required = False
+        self.fields["new_left_tag_barnacles_2"].required = False
+        self.fields["new_right_tag_barnacles"].required = False
+        self.fields["new_right_tag_barnacles_2"].required = False
         self.fields["identifier"].required = False
         self.fields["identification_type"].required = False
         
@@ -501,18 +493,6 @@ class TrtDataEntryForm(forms.ModelForm):
             else:
                 cleaned_data['latitude'] = latitude_str
                 
-        # Ensure all logic validation for body parts and damage codes is consistent
-        for i in range(1, 7):
-            body_part = cleaned_data.get(f'body_part_{i}')
-            damage_code = cleaned_data.get(f'damage_code_{i}')
-
-            if body_part:
-                body_part_obj = TrtBodyParts.objects.get(body_part=body_part)
-
-                if not body_part_obj.flipper:
-                    # Validate if the correct damage code is selected for non-flipper parts
-                    if damage_code and damage_code.damage_code not in ['0', '5', '6', '7']:
-                        self.add_error(f'damage_code_{i}', 'Invalid damage code for this body part.')
         
         return cleaned_data
 
