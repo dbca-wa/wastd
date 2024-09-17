@@ -42,6 +42,7 @@ from .models import (
     Template,
     TrtTagStates,
     TrtBodyParts,
+    TrtTurtleStatus
 )
 from .forms import TrtDataEntryForm, SearchForm, TrtEntryBatchesForm, TemplateForm, BatchesCodeForm, BatchesSearchForm
 
@@ -650,67 +651,64 @@ class FindTurtleView(LoginRequiredMixin, View):
     View class for finding a turtle based on tag and pit tag ID.
     """
 
-    # FIXME: Permission check
     def dispatch(self, request, *args, **kwargs):
         if not (
             request.user.groups.filter(name="Tagging Data Entry").exists()
             or request.user.groups.filter(name="Tagging Data Curation").exists()
             or request.user.is_superuser
         ):
-            return HttpResponseForbidden(
-                "You do not have permission to view this record"
-            )
+            return HttpResponseForbidden("You do not have permission to view this record")
         return super().dispatch(request, *args, **kwargs)
-    
+
     def get(self, request, *args, **kwargs):
-            batch_id = kwargs.get("batch_id")
-            form = SearchForm(initial={"batch_id": batch_id})
-            no_turtle_found = request.COOKIES.get(f'{batch_id}_no_turtle_found') == "true"
-            tag_id = request.COOKIES.get(f'{batch_id}_tag_id')
-            tag_type = request.COOKIES.get(f'{batch_id}_tag_type')
-            tag_side = request.COOKIES.get(f'{batch_id}_tag_side')
-            turtle = None
-            first_observation_date = None
-            latest_site = None
-            batch = None
-            template_name = "No template associated"
-            
-            if batch_id:
-                batch = TrtEntryBatches.objects.filter(entry_batch_id=batch_id).first()
-                if batch and batch.template:
-                    template_name = batch.template.name
-            
-            if tag_id and tag_type and not no_turtle_found:
-                tag = TrtTags.objects.select_related('turtle').filter(tag_id=tag_id).first()
-                if tag:
-                    turtle = tag.turtle
-                else:
-                    pit_tag = TrtPitTags.objects.select_related('turtle').filter(pittag_id=tag_id).first()
-                    if pit_tag:
-                        turtle = pit_tag.turtle
-                        
-                if turtle:
-                    first_observation = turtle.trtobservations_set.order_by('observation_date').first()
-                    if first_observation:
-                        first_observation_date = first_observation.observation_date
+        batch_id = kwargs.get("batch_id")
+        form = SearchForm(initial={"batch_id": batch_id})
+        no_turtle_found = request.COOKIES.get(f'{batch_id}_no_turtle_found') == "true"
+        tag_id = request.COOKIES.get(f'{batch_id}_tag_id')
+        tag_type = request.COOKIES.get(f'{batch_id}_tag_type')
+        tag_side = request.COOKIES.get(f'{batch_id}_tag_side')
+        turtle = None
+        first_observation_date = None
+        latest_site = None
+        batch = None
+        template_name = "No template associated"
 
-                    latest_observation = turtle.trtobservations_set.order_by('-observation_date').first()
-                    if latest_observation and latest_observation.place_code:
-                        latest_site = latest_observation.place_code.place_name
+        if batch_id:
+            batch = TrtEntryBatches.objects.filter(entry_batch_id=batch_id).first()
+            if batch and batch.template:
+                template_name = batch.template.name
 
-            return render(request, "wamtram2/find_turtle.html", {
-                "form": form,
-                "turtle": turtle,
-                "no_turtle_found": no_turtle_found,
-                "tag_id": tag_id,
-                "tag_type": tag_type,
-                "tag_side": tag_side,
-                "first_observation_date": first_observation_date,
-                "latest_site": latest_site,
-                "batch_id": batch_id,
-                "batch": batch,
-                "template_name": template_name,
-            })
+        if tag_id and tag_type and not no_turtle_found:
+            tag = TrtTags.objects.select_related('turtle').filter(tag_id=tag_id).first()
+            if tag:
+                turtle = tag.turtle
+            else:
+                pit_tag = TrtPitTags.objects.select_related('turtle').filter(pittag_id=tag_id).first()
+                if pit_tag:
+                    turtle = pit_tag.turtle
+
+            if turtle:
+                first_observation = turtle.trtobservations_set.order_by('observation_date').first()
+                if first_observation:
+                    first_observation_date = first_observation.observation_date
+
+                latest_observation = turtle.trtobservations_set.order_by('-observation_date').first()
+                if latest_observation and latest_observation.place_code:
+                    latest_site = latest_observation.place_code.place_name
+
+        return render(request, "wamtram2/find_turtle.html", {
+            "form": form,
+            "turtle": turtle,
+            "no_turtle_found": no_turtle_found,
+            "tag_id": tag_id,
+            "tag_type": tag_type,
+            "tag_side": tag_side,
+            "first_observation_date": first_observation_date,
+            "latest_site": latest_site,
+            "batch_id": batch_id,
+            "batch": batch,
+            "template_name": template_name,
+        })
 
     def set_cookie(self, response, batch_id, tag_id=None, tag_type=None, tag_side=None, no_turtle_found=False, do_not_process=False):
         if tag_id:
@@ -730,6 +728,7 @@ class FindTurtleView(LoginRequiredMixin, View):
         tag_type = None
         tag_id = None
         tag_side = None
+        turtle = None
         create_and_review = request.POST.get('create_and_review') == 'true'
 
         if form.is_valid():
@@ -748,9 +747,10 @@ class FindTurtleView(LoginRequiredMixin, View):
                         tag_type = "recapture_pit_tag"
                     else:
                         tag_type = "unknown_tag"
+                
+                response = redirect(reverse('wamtram2:find_turtle', kwargs={'batch_id': batch_id}))
 
                 if turtle:
-                    response = redirect(reverse('wamtram2:find_turtle', kwargs={'batch_id': batch_id}))
                     return self.set_cookie(response, batch_id, tag_id, tag_type, tag_side)
                 else:
                     no_turtle_found = True
@@ -762,10 +762,18 @@ class FindTurtleView(LoginRequiredMixin, View):
                 response = redirect(reverse('wamtram2:newtrtdataentry', kwargs={'batch_id': batch_id}))
                 return self.set_cookie(response, batch_id, tag_id, tag_type, tag_side, do_not_process=True)
         else:
-            response = render(request, "wamtram2/find_turtle.html", {"form": form})
+            # 如果表单无效，将表单和状态传递给模板
+            response = render(request, "wamtram2/find_turtle.html", {
+                "form": form,
+                "no_turtle_found": no_turtle_found,
+                "tag_id": tag_id,
+                "tag_type": tag_type,
+                "tag_side": tag_side,
+                "batch_id": batch_id,
+            })
 
         return self.set_cookie(response, batch_id, tag_id, tag_type, tag_side)
-    
+
 
 class ObservationDetailView(LoginRequiredMixin, DetailView):
     model = TrtObservations
@@ -1249,7 +1257,38 @@ class FilterFormView(LoginRequiredMixin, View):
         return super().dispatch(request, *args, **kwargs)
 
     def get(self, request):
+        action = request.GET.get('action')
+        if action == 'get_filter_options':
+            return self.get_filter_options(request)
         return render(request, 'wamtram2/export_form.html')
+
+    def get_filter_options(self, request):
+        from_date = request.GET.get('observation_date_from')
+        to_date = request.GET.get('observation_date_to')
+
+        observations = TrtObservations.objects.filter(
+            observation_date__range=[from_date, to_date]
+        )
+        
+        places = observations.values('place__place_code', 'place__location_name', 'place__place_name').distinct()
+        species = TrtSpecies.objects.filter(observations__in=observations).distinct()
+        sexes = observations.values_list('sex', flat=True).distinct()
+        turtle_statuses = TrtTurtleStatus.objects.filter(observations__in=observations).distinct()
+
+        return JsonResponse({
+            'places': [{'value': p.place_code, 'label': f"{p.location_code.location_name} - {p.place_name}"} for p in places],
+            'species': [{'value': s.species_code, 'label': s.common_name} for s in species],
+            'sexes': [{'value': s, 'label': self.get_sex_label(s)} for s in sexes],
+            'turtle_statuses': [{'value': ts.turtle_status, 'label': ts.description} for ts in turtle_statuses],
+        })
+        
+    def get_sex_label(self, sex_code):
+        sex_choices = {
+            'M': 'Male',
+            'F': 'Female',
+            'I': 'Indeterminate',
+        }
+        return sex_choices.get(sex_code, 'Unknown')
 
 
 class DudTagManageView(LoginRequiredMixin, View):

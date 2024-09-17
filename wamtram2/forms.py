@@ -276,12 +276,12 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields['recapture_right_tag_state_2'].queryset = old_tag_states
         
         body_parts = TrtBodyParts.objects.all()
-        body_part_choices = [('', '---------')] + [(bp.body_part, bp.description) for bp in body_parts]
         
         for i in range(1, 7):
-            self.fields[f'body_part_{i}'] = forms.ChoiceField(
-                choices=body_part_choices,
-                required=False
+            self.fields[f'body_part_{i}'] = forms.ModelChoiceField(
+                queryset=TrtBodyParts.objects.all(),
+                required=False,
+                empty_label='---------'
             )
             self.fields[f'damage_code_{i}'] = forms.ModelChoiceField(
                 queryset=TrtDamageCodes.objects.all(),

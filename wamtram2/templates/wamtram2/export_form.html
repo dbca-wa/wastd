@@ -7,9 +7,7 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
     <style>
-        .select2 {
-            width: 100% !important;
-        }
+        .select2 { width: 100% !important; }
         .step-container {
             border: 1px solid #ddd;
             border-radius: 5px;
@@ -23,23 +21,17 @@
             border-bottom: 1px solid #ddd;
             font-weight: bold;
         }
-        .btn-block {
-            display: block;
-            width: 100%;
-        }
+        .btn-block { display: block; width: 100%; }
     </style>
 {% endblock %}
 
 {% block extra_head %}
-    <!-- Load jQuery first -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- Load Bootstrap's JavaScript bundle -->
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
     {{ form.media }}
 {% endblock extra_head %}
 
 {% block breadcrumbs %}
-    <!-- Breadcrumb Navigation -->
     <nav aria-label="breadcrumb" class="d-none d-md-block">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
@@ -50,8 +42,7 @@
 {% endblock %}
 
 {% block page_content_inner %}
-    <div class="container-fluid mt-5">
-        <!-- Message Alert -->
+    <div class="container-fluid mt-5 mb-5">
         {% if messages %}
             <div id="message-alert" class="alert alert-success" role="alert">
                 {% for message in messages %}
@@ -66,38 +57,52 @@
             </div>
         {% endif %}
 
-        <!-- Export Data Form -->
         <form id="exportForm" method="get" action="{% url 'wamtram2:export_data' %}" target="_blank">
-            <!-- Step 1: Select Date Range -->
             <div class="row">
                 <div class="step-container col-12">
                     <div class="step-header">Step 1: Select Date Range</div>
                     {% csrf_token %}
                     <div class="form-group">
                         <label for="observation_date_from">Observation Date From</label>
-                        <input type="date" id="observation_date_from" name="observation_date_from" class="form-control" onchange="loadPlaces()">
+                        <input type="date" id="observation_date_from" name="observation_date_from" class="form-control" onchange="loadFilterOptions()">
                     </div>
                     <div class="form-group">
                         <label for="observation_date_to">Observation Date To</label>
-                        <input type="date" id="observation_date_to" name="observation_date_to" class="form-control" onchange="loadPlaces()">
+                        <input type="date" id="observation_date_to" name="observation_date_to" class="form-control" onchange="loadFilterOptions()">
                     </div>
                 </div>
             </div>
 
-            <!-- Step 2: Select Place -->
             <div class="row">
                 <div class="step-container col-12">
-                    <div class="step-header">Step 2: Select Place</div>
+                    <div class="step-header">Step 2: Select Filters</div>
                     <div class="form-group">
-                        <label for="place_code">Place Code</label>
+                        <label for="place_code">Place</label>
                         <select id="place_code" name="place_code" class="form-control select2">
-                            <!-- Options will be dynamically loaded -->
+                            <option value="">All Places</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="species">Species</label>
+                        <select id="species" name="species" class="form-control select2">
+                            <option value="">All Species</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="sex">Sex</label>
+                        <select id="sex" name="sex" class="form-control select2">
+                            <option value="">All Sexes</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="turtle_status">Turtle Status</label>
+                        <select id="turtle_status" name="turtle_status" class="form-control select2">
+                            <option value="">All Statuses</option>
                         </select>
                     </div>
                 </div>
             </div>
 
-            <!-- Step 3: Select File Format -->
             <div class="row">
                 <div class="step-container col-12">
                     <div class="step-header">Step 3: Select File Format</div>
@@ -111,7 +116,6 @@
                 </div>
             </div>
 
-            <!-- Download Button -->
             <div class="row">
                 <div class="col-12">
                     <button type="submit" class="btn btn-success btn-block">Download</button>
@@ -119,14 +123,12 @@
             </div>
         </form>
 
-        <!-- Loading spinner -->
         <div id="loading-spinner" class="loading-spinner" style="display:none;">
             <div class="spinner-border text-primary" role="status">
                 <span class="sr-only">Loading...</span>
             </div>
         </div>
 
-        <!-- Loading Overlay -->
         <div id="loading-overlay" class="loading-overlay" style="display:none;"></div>
     </div>
 {% endblock %}
@@ -143,8 +145,7 @@
             document.getElementById('loading-overlay').style.display = 'none';
         }
 
-        // AJAX request to load place options based on selected date range
-        function loadPlaces() {
+        function loadFilterOptions() {
             const fromDate = document.getElementById('observation_date_from').value;
             const toDate = document.getElementById('observation_date_to').value;
 
@@ -154,19 +155,15 @@
                 const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
 
                 const xhr = new XMLHttpRequest();
-                xhr.open('GET', `{% url 'wamtram2:export_data' %}?action=get_places&observation_date_from=${fromDate}&observation_date_to=${toDate}`, true);
+                xhr.open('GET', `{% url 'wamtram2:export_data' %}?action=get_filter_options&observation_date_from=${fromDate}&observation_date_to=${toDate}`, true);
                 xhr.setRequestHeader("X-CSRFToken", csrfToken);
                 xhr.onreadystatechange = function() {
                     if (xhr.readyState === 4 && xhr.status === 200) {
                         const data = JSON.parse(xhr.responseText);
-                        const placeSelect = document.getElementById('place_code');
-                        placeSelect.innerHTML = ''; // Clear existing options
-                        data.places.forEach(function(place) {
-                            const option = document.createElement('option');
-                            option.value = place.place_code;
-                            option.textContent = `${place.location_name} - ${place.place_name}`;
-                            placeSelect.appendChild(option);
-                        });
+                        updateSelectOptions('place_code', data.places);
+                        updateSelectOptions('species', data.species);
+                        updateSelectOptions('sex', data.sexes);
+                        updateSelectOptions('turtle_status', data.turtle_statuses);
                     }
                     hideLoadingSpinner();
                 };
@@ -174,5 +171,18 @@
             }
         }
 
+        function updateSelectOptions(selectId, options) {
+            const select = document.getElementById(selectId);
+            select.innerHTML = `<option value="">All ${select.previousElementSibling.textContent}</option>`; // Add "All" option
+            options.forEach(function(option) {
+                const optionElement = document.createElement('option');
+                optionElement.value = option.value;
+                optionElement.textContent = option.label;
+                select.appendChild(optionElement);
+            });
+        }
+
+        document.getElementById('observation_date_from').addEventListener('change', loadFilterOptions);
+        document.getElementById('observation_date_to').addEventListener('change', loadFilterOptions);
     </script>
 {% endblock %}

@@ -96,7 +96,7 @@
   {% if perms.wamtram2.add_trtentrybatches %}
   <p>
     <a class="btn btn-primary btn-block"
-      href="{% url 'wamtram2:batches_list'%}"
+      href="{% url 'wamtram2:batches_curation'%}"
       title="Browse entry batches">
       Browse entry batches »
     </a>
@@ -105,7 +105,7 @@
   {% if perms.wamtram2.add_trtentrybatches %}
   <p>
     <a class="btn btn-success btn-block"
-      href="{% url 'wamtram2:batch_code_filter'%}"
+      href="{% url 'wamtram2:create_new_entry'%}"
       title="Create a new entry">
       Create a new entry »
     </a>
