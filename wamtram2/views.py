@@ -451,7 +451,7 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         if do_not_process_cookie_value == 'true':
             form.instance.do_not_process = True
         form.save()
-        success_url = reverse("wamtram2:volunteer_find_turtle", args=[batch_id])
+        success_url = reverse("wamtram2:find_turtle", args=[batch_id])
   
         
         if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
