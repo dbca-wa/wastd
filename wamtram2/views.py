@@ -454,11 +454,22 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         entry = form.save()
         success_url = reverse("wamtram2:find_turtle", args=[batch_id])
         
-        success_message = f"Entry created successfully. Entry ID: {entry.data_entry_id}"
-        messages.success(self.request, success_message)
+        if form.instance.do_not_process:
+            message = f"Entry created successfully and will be reviewed later. Please write the Entry ID: {entry.data_entry_id} on the data sheet"
+            message_tag = 'warning'
+        else:
+            message = f"Entry created successfully. Entry ID: {entry.data_entry_id}"
+            message_tag = 'success'
+        
+        messages.add_message(self.request, getattr(messages, message_tag.upper()), message)
         
         if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            return JsonResponse({'success': True, 'redirect_url': success_url,'message': success_message})
+            return JsonResponse({
+                'success': True, 
+                'redirect_url': success_url,
+                'message': message,
+                'message_tag': message_tag
+            })
         else:
             return redirect(success_url)
 
