@@ -19,6 +19,9 @@
         color: #007bff;
         margin-left: 5px;
     }
+    .flagged-row {
+        background-color: #ffcccc;
+    }
 </style>
 {% endblock %}
 
@@ -102,7 +105,7 @@
         </thead>
         <tbody>
             {% for batch in batches %}
-            <tr>
+            <tr class="{% if batch.flagged_entry_count > 0 %}flagged-row{% endif %}">
                 <td>{{ batch.entry_batch_id }}</td>
                 <td>{{ batch.batches_code|default:"No Code" }}</td>
                 <td>{{ batch.entry_count }}</td>
