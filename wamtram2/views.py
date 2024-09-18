@@ -161,7 +161,6 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
 
         # if use_default_enterer and default_enterer:
         #     initial['entered_person_id'] = default_enterer
-        initial['entered_person_id'] = None
         
         return initial
 
@@ -452,12 +451,14 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         do_not_process_cookie_value = self.request.COOKIES.get(do_not_process_cookie_name)
         if do_not_process_cookie_value == 'true':
             form.instance.do_not_process = True
-        form.save()
+        entry = form.save()
         success_url = reverse("wamtram2:find_turtle", args=[batch_id])
-  
+        
+        success_message = f"Entry created successfully. Entry ID: {entry.data_entry_id}"
+        messages.success(self.request, success_message)
         
         if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            return JsonResponse({'success': True, 'redirect_url': success_url})
+            return JsonResponse({'success': True, 'redirect_url': success_url,'message': success_message})
         else:
             return redirect(success_url)
 
