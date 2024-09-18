@@ -1001,22 +1001,10 @@
         } else if (templateId) {
             console.log("No entry ID, using selected template ID:", templateId);
 
-            const defaultEntererId = "{{ default_enterer }}";
-            if (defaultEntererId) {
-                document.getElementById('id_entered_by_id').value = defaultEntererId;
-                const defaultEntererFullName = "{{ default_enterer_full_name }}";
-                if (defaultEntererFullName) {
-                    document.getElementById('search_entered_by').value = defaultEntererFullName;
-                }
-            }
-
             const defaultPlaceCode = "{{ default_place_code|escapejs }}";
             const defaultPlaceFullName = "{{ default_place_full_name|escapejs }}";
             const searchPlaceInput = document.getElementById('search_place_code');
             const placeCodeInput = document.getElementById('id_place_code');
-
-            console.log("Default Place Code:", defaultPlaceCode);
-            console.log("Default Place Full Name:", defaultPlaceFullName)
 
             if (defaultPlaceFullName && defaultPlaceCode) {
                 searchPlaceInput.value = defaultPlaceFullName;
