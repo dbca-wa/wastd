@@ -109,6 +109,7 @@ class TrtDataEntryForm(forms.ModelForm):
             "measured_by_id",
             "recorded_by_id",
             "tagged_by_id",
+            "entered_by",
             "entered_by_id",
             "measured_recorded_by_id",
             "recapture_left_tag_id",

@@ -106,7 +106,7 @@
     <div class="card-header">Basic Information</div>
     <div class="card-body">
       <div class="row">
-        <div class="col-md-12">
+        {% comment %} <div class="col-md-12">
           <label for="{{ form.entered_by_id.id_for_label }}">{{ form.entered_by_id.label }}</label>
           <div class="row">
             <div class="col-md-4">
@@ -114,13 +114,14 @@
               {{ form.entered_by_id }}
               <div class="search-results" style="display:none;"></div>
             </div>
-            {% comment %} {% if user.is_superuser %}
-            <div class="col-md-2">
-              <button type="button" class="btn btn-outline-primary add-person-btn" onClick="window.open(adminUrl);" title="Add new person">
-              <i class="fas fa-plus"></i>
-              </button>
+          </div>
+        </div> {% endcomment %}
+        <div class="col-md-12">
+          <label for="{{ form.entered_by.id_for_label }}">{{ form.entered_by.label }}</label>
+          <div class="row">
+            <div class="col-md-4">
+              {{ form.entered_by }}
             </div>
-            {% endif %} {% endcomment %}
           </div>
         </div>
         <div class="col-md-8 pt-2">
@@ -959,10 +960,9 @@
     // Populate form fields based on entryId or templateId
     function populateForm() {
         if (entryId) {
-            console.log("Populating form for existing entry with ID:", entryId);
 
-            const enteredById = "{{ form.entered_by_id.value }}";
-            if (enteredById) {
+            const enteredBy = "{{ form.entered_by.value }}";
+            if (enteredBy) {
                 const enteredByFullName = "{{ view.entered_by_full_name|escapejs }}";
                 if (enteredByFullName) {
                     document.getElementById('search_entered_by').value = enteredByFullName;
