@@ -120,7 +120,7 @@
           <label for="{{ form.entered_by.id_for_label }}">{{ form.entered_by.label }}</label>
           <div class="row">
             <div class="col-md-4">
-              {{ form.entered_by }}
+              {% bootstrap_field form.entered_by show_label=False %}
             </div>
           </div>
         </div>

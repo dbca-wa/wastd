@@ -256,6 +256,10 @@ class TrtDataEntryForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.batch_id = kwargs.pop("batch_id", None)
         super().__init__(*args, **kwargs)
+        self.fields['entered_by'].widget = forms.TextInput(attrs={
+            'class': 'form-control', 
+            'placeholder': 'Enter name',
+        })
         
         # Filter the queryset for new tag fields
         new_tag_states = TrtTagStates.objects.filter(
