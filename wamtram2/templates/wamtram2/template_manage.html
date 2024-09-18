@@ -109,7 +109,7 @@
                 </div>
                 <div class="col-md-3">
                     <label for="species_code">Species (optional)</label>
-                    <option value="">None</option>
+                    <option value="">Select Species</option>
                     <select class="form-control" id="species_code" name="species_code">
                         {% for specie in species %}
                             <option value="{{ specie.species_code }}">{{ specie.common_name }}</option>
@@ -119,7 +119,7 @@
                 <div class="col-md-3">
                     <label for="sex">Sex (optional)</label>
                     <select class="form-control" id="sex" name="sex">
-                        <option value="">None</option>
+                        <option value="">Select Sex</option>
                         {% for code, name in sex_choices %}
                             <option value="{{ code }}">{{ name }}</option>
                         {% endfor %}
