@@ -1354,7 +1354,10 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
         return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        queryset = super().get_queryset().annotate(
+            entry_count=Count('trtdataentry'),
+            flagged_entry_count=Count('trtdataentry', filter=Q(trtdataentry__do_not_process=True))
+        )
         
         location = self.request.GET.get('location')
         place = self.request.GET.get('place')
