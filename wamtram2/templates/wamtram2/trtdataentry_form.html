@@ -52,6 +52,17 @@
     border: 1px solid #ced4da;
     border-radius: .25rem 0 0 .25rem;
   }
+  .species-highlight {
+    color: red;
+    font-weight: bold;
+  }
+  #speciesConfirmCheckbox {
+    margin-left: 10px;
+  }
+  .species-row {
+    display: flex;
+    align-items: center;
+  }
 </style>
 {% endblock %}  
 
@@ -910,7 +921,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-primary" id="confirmSaveButton">Confirm & Save</button>
+          <button type="submit" class="btn btn-primary" id="confirmSaveButton" disabled>Confirm & Save</button>
         </div>
       </div>
     </div>
@@ -1212,6 +1223,18 @@
                             labelText = label.textContent.trim();
                           }
                       }
+                      if (inputId === 'id_species_code') {
+                        summaryHTML += `
+                          <li class="species-row">
+                            <span class="species-highlight"><strong>${labelText}:</strong> ${inputValue}</span>
+                            <div class="form-check">
+                              <input type="checkbox" class="form-check-input" id="speciesConfirmCheckbox">
+                              <label class="form-check-label" for="speciesConfirmCheckbox">I confirm this is the correct species</label>
+                            </div>
+                          </li>`;
+                      } else {
+                        summaryHTML += `<li><strong>${labelText}:</strong> ${inputValue}</li>`;
+                      }
 
                       if (input.type === 'checkbox') {
                         if (input.checked) {
@@ -1237,6 +1260,12 @@
           summaryContent.innerHTML = summaryHTML;
 
           $(summaryModal).modal('show');
+
+          const speciesConfirmCheckbox = document.getElementById('speciesConfirmCheckbox');
+          if (speciesConfirmCheckbox) {
+            speciesConfirmCheckbox.addEventListener('change', function() {
+              confirmSaveButton.disabled = !this.checked;
+            });
       });
     }
 
