@@ -71,7 +71,7 @@
             <div class="col-md-4">
                 <div class="d-flex align-items-end">
                     <div class="flex-grow-1 mr-2">
-                        <label for="search_entered_person_id">{{ form.entered_person_id.label }}</label>
+                        <label for="search_entered_person_id">Team Leader Name</label>
                         <input type="text" id="search_entered_person_id" class="search-field form-control" placeholder="Search person" value="{{ batch.entered_person_id.first_name }} {{ batch.entered_person_id.surname }}">
                         {{ form.entered_person_id }}
                         <div class="search-results" style="display:none;"></div>
@@ -212,6 +212,7 @@
                         <th>Turtle ID</th>
                         <th>Recapture Tags</th>
                         <th>New Tags</th>
+                        <th>Lay?</th>
                         <th>System Message</th>
                         <th>Enterer</th>
                         <th>Needs Review</th>
@@ -245,6 +246,7 @@
                             {% if obj.new_pittag_id %}{{ obj.new_pittag_id }} {% endif %}
                             {% if obj.new_pittag_id_2 %}{{ obj.new_pittag_id_2 }} {% endif %}
                         </td> 
+                        <td>{{ entry.clutch_completed }}</td>
                         <td>{{ obj.error_message }}</td>
                         <td>
                             {% if obj.entered_by_id %}
@@ -273,7 +275,6 @@
                     </tr>
                     {% endfor %}
                 </tbody>
-                
             </table>
         </div>
     </div>
