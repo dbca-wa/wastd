@@ -173,7 +173,33 @@ document.addEventListener('DOMContentLoaded', function() {
                 validationMessage.style.color = 'orange';
                 break;
         }
+
+        if (status === 'invalid' && message.includes('Tag not found')) {
+            detailedMessage.innerHTML = `${detailedMessageText} <a href="#" class="remove-and-comment-link">Remove and add to comment</a>`;
+            const link = detailedMessage.querySelector('.remove-and-comment-link');
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                removeTagAndAddToComment(input);
+            });
+        } else {
+            detailedMessage.innerHTML = detailedMessageText;
+        }
+
     }
+
+    function removeTagAndAddToComment(input) {
+        const tagValue = input.value;
+        const commentArea = document.getElementById('id_comments');
+        
+        if (commentArea) {
+            commentArea.value += (commentArea.value ? '\n' : '') + `Invalid tag: ${tagValue}`;
+        }
+        
+        input.value = '';
+        
+        input.dispatchEvent(new Event('blur'));
+    }
+    
     function addValidationListener(input, validationMessage, detailedMessage, type, side = '') {
         if (input) {
             input.addEventListener('blur', function() {

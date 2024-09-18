@@ -152,15 +152,15 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
     def get_initial(self):
         initial = super().get_initial()
         batch_id = self.kwargs.get("batch_id")
-        cookies_key_prefix = batch_id
-        default_enterer = self.request.COOKIES.get(f'{cookies_key_prefix}_default_enterer')
-        use_default_enterer = self.request.COOKIES.get(f'{cookies_key_prefix}_use_default_enterer', False)
+        # cookies_key_prefix = batch_id
+        # default_enterer = self.request.COOKIES.get(f'{cookies_key_prefix}_default_enterer')
+        # use_default_enterer = self.request.COOKIES.get(f'{cookies_key_prefix}_use_default_enterer', False)
         
-        if default_enterer == "None" or not default_enterer or default_enterer == "":
-            default_enterer = None
+        # if default_enterer == "None" or not default_enterer or default_enterer == "":
+        #     default_enterer = None
 
-        if use_default_enterer and default_enterer:
-            initial['entered_person_id'] = default_enterer
+        # if use_default_enterer and default_enterer:
+        #     initial['entered_person_id'] = default_enterer
         
         return initial
 
@@ -216,16 +216,15 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
         for entry in context['object_list']:
             entry.highlight_row = entry.do_not_process and entry.error_message not in ['None', 'Observation added to database']
         
-        # 从数据库加载模板数据并添加到上下文
         context['templates'] = Template.objects.all()
 
         cookies_key_prefix = self.kwargs.get("batch_id")
         context['selected_template'] = self.request.COOKIES.get(f'{cookies_key_prefix}_selected_template', '')
-        context['use_default_enterer'] = self.request.COOKIES.get(f'{cookies_key_prefix}_use_default_enterer', False)
-        context['default_enterer'] = self.request.COOKIES.get(f'{cookies_key_prefix}_default_enterer', None)
+        # context['use_default_enterer'] = self.request.COOKIES.get(f'{cookies_key_prefix}_use_default_enterer', False)
+        # context['default_enterer'] = self.request.COOKIES.get(f'{cookies_key_prefix}_default_enterer', None)
 
         context['cookies_key_prefix'] = cookies_key_prefix
-        context['default_enterer_value'] = context['default_enterer']
+        # context['default_enterer_value'] = context['default_enterer']
         
         # Add entries with do_not_process = True to the context
         context["do_not_process_entries"] = TrtDataEntry.objects.filter(
@@ -275,6 +274,7 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
     def get_success_url(self):
         batch_id = self.kwargs.get("batch_id")
         return reverse("wamtram2:entry_batch_detail", args=[batch_id])
+
 
 class TrtDataEntryFormView(LoginRequiredMixin, FormView):
     """
@@ -340,8 +340,8 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         tag_side = self.request.COOKIES.get(f'{cookies_key_prefix}_tag_side')
 
         selected_template = self.request.COOKIES.get(f'{cookies_key_prefix}_selected_template')
-        use_default_enterer = self.request.COOKIES.get(f'{cookies_key_prefix}_use_default_enterer', False)
-        default_enterer = self.request.COOKIES.get(f'{cookies_key_prefix}_default_enterer', None)
+        # use_default_enterer = self.request.COOKIES.get(f'{cookies_key_prefix}_use_default_enterer', False)
+        # default_enterer = self.request.COOKIES.get(f'{cookies_key_prefix}_default_enterer', None)
         
         # If a tag is selected, populate the form with the tag data
         if tag_id and tag_type:
@@ -361,8 +361,8 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
             except TrtEntryBatches.DoesNotExist:
                 pass
 
-        if default_enterer == "None" or not default_enterer:
-            default_enterer = None
+        # if default_enterer == "None" or not default_enterer:
+        #     default_enterer = None
 
         if selected_template:
             template_data = self.get_template_data(selected_template)
@@ -377,20 +377,21 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
                 if not turtle_id:
                     initial['species_code'] = template_data.get('species_code')
                     initial['sex'] = template_data.get('sex')
-                if default_enterer:
-                    default_enterer_obj = TrtPersons.objects.filter(person_id=default_enterer).first()
-                    if default_enterer_obj:
-                        initial['entered_by_id'] = default_enterer
-                        self.default_enterer_full_name = str(default_enterer_obj)
-                    else:
-                        self.default_enterer_full_name = None
-                else:
-                    self.default_enterer_full_name = None
+                    
+                # if default_enterer and default_enterer != "None":
+                #     default_enterer_obj = TrtPersons.objects.filter(person_id=default_enterer).first()
+                #     if default_enterer_obj:
+                #         initial['entered_by_id'] = default_enterer
+                #         self.default_enterer_full_name = str(default_enterer_obj)
+                #     else:
+                #         self.default_enterer_full_name = None
+                # else:
+                #     self.default_enterer_full_name = None
 
         if batch_id:
             initial["entry_batch"] = get_object_or_404(TrtEntryBatches, entry_batch_id=batch_id)
-            if use_default_enterer and default_enterer:
-                initial['entered_by_id'] = default_enterer
+            # if use_default_enterer and default_enterer:
+            #     initial['entered_by_id'] = default_enterer
 
         if turtle_id:
             turtle = get_object_or_404(TrtTurtles.objects.prefetch_related('trttags_set', 'trtpittags_set'), pk=turtle_id)
@@ -444,30 +445,47 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         return initial
 
     def form_valid(self, form):
+        print('form_valid')
         batch_id = form.cleaned_data["entry_batch"].entry_batch_id
         do_not_process_cookie_name = f"{batch_id}_do_not_process"
         do_not_process_cookie_value = self.request.COOKIES.get(do_not_process_cookie_name)
         if do_not_process_cookie_value == 'true':
             form.instance.do_not_process = True
-        form.save()
+        entry = form.save()
+        success_url = reverse("wamtram2:find_turtle", args=[batch_id])
         
-        
-        if self.request.user.groups.filter(name='Tagging Data Entry').exists() and not self.request.user.is_staff and not self.request.user.is_superuser:
-            template_id = self.request.COOKIES.get(f'{batch_id}_selected_template')
-            success_url = reverse("wamtram2:volunteer_find_turtle", args=[batch_id])
-            if template_id:
-                success_url += f'?templateid={template_id}'
+        if form.instance.do_not_process:
+            message = f"Entry created successfully and will be reviewed later. Please write the Entry ID: {entry.data_entry_id} on the data sheet"
+            message_tag = 'warning'
         else:
-            success_url = reverse("wamtram2:entry_batch_detail", args=[batch_id])
+            message = f"Entry created successfully. Entry ID: {entry.data_entry_id}"
+            message_tag = 'success'
+        
+        messages.add_message(self.request, getattr(messages, message_tag.upper()), message)
         
         if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            return JsonResponse({'success': True, 'redirect_url': success_url})
+            return JsonResponse({
+                'success': True, 
+                'redirect_url': success_url,
+                'message': message,
+                'message_tag': message_tag
+            })
         else:
             return redirect(success_url)
 
     def form_invalid(self, form):
+        error_message = "Error saving the entry. If you cannot resolve the issue, please set aside this data sheet for admin review and continue with the next data sheet."
+        detailed_errors = ', '.join([f"{field}: {', '.join(errors)}" for field, errors in form.errors.items()])
+        full_message = f"{error_message} Detailed errors: {detailed_errors}"
+        
+        messages.error(self.request, full_message)
+        
         if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            return JsonResponse({'success': False, 'errors': form.errors})
+            return JsonResponse({
+                'success': False, 
+                'errors': form.errors,
+                'message': full_message
+            })
         else:
             return super().form_invalid(form)
 
@@ -484,9 +502,6 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         entry_id = self.kwargs.get("entry_id")
         batch_id = self.kwargs.get("batch_id")
         cookies_key_prefix = batch_id
-        
-        flipper_body_parts = list(TrtBodyParts.objects.filter(flipper=True).values_list('body_part', flat=True))
-        context['flipper_body_parts'] = json.dumps(flipper_body_parts)
 
         if entry_id:
             entry = get_object_or_404(TrtDataEntry.objects.select_related('turtle_id'), data_entry_id=entry_id)
@@ -651,67 +666,64 @@ class FindTurtleView(LoginRequiredMixin, View):
     View class for finding a turtle based on tag and pit tag ID.
     """
 
-    # FIXME: Permission check
     def dispatch(self, request, *args, **kwargs):
         if not (
             request.user.groups.filter(name="Tagging Data Entry").exists()
             or request.user.groups.filter(name="Tagging Data Curation").exists()
             or request.user.is_superuser
         ):
-            return HttpResponseForbidden(
-                "You do not have permission to view this record"
-            )
+            return HttpResponseForbidden("You do not have permission to view this record")
         return super().dispatch(request, *args, **kwargs)
-    
+
     def get(self, request, *args, **kwargs):
-            batch_id = kwargs.get("batch_id")
-            form = SearchForm(initial={"batch_id": batch_id})
-            no_turtle_found = request.COOKIES.get(f'{batch_id}_no_turtle_found') == "true"
-            tag_id = request.COOKIES.get(f'{batch_id}_tag_id')
-            tag_type = request.COOKIES.get(f'{batch_id}_tag_type')
-            tag_side = request.COOKIES.get(f'{batch_id}_tag_side')
-            turtle = None
-            first_observation_date = None
-            latest_site = None
-            batch = None
-            template_name = "No template associated"
-            
-            if batch_id:
-                batch = TrtEntryBatches.objects.filter(entry_batch_id=batch_id).first()
-                if batch and batch.template:
-                    template_name = batch.template.name
-            
-            if tag_id and tag_type and not no_turtle_found:
-                tag = TrtTags.objects.select_related('turtle').filter(tag_id=tag_id).first()
-                if tag:
-                    turtle = tag.turtle
-                else:
-                    pit_tag = TrtPitTags.objects.select_related('turtle').filter(pittag_id=tag_id).first()
-                    if pit_tag:
-                        turtle = pit_tag.turtle
-                        
-                if turtle:
-                    first_observation = turtle.trtobservations_set.order_by('observation_date').first()
-                    if first_observation:
-                        first_observation_date = first_observation.observation_date
+        batch_id = kwargs.get("batch_id")
+        form = SearchForm(initial={"batch_id": batch_id})
+        no_turtle_found = request.COOKIES.get(f'{batch_id}_no_turtle_found') == "true"
+        tag_id = request.COOKIES.get(f'{batch_id}_tag_id')
+        tag_type = request.COOKIES.get(f'{batch_id}_tag_type')
+        tag_side = request.COOKIES.get(f'{batch_id}_tag_side')
+        turtle = None
+        first_observation_date = None
+        latest_site = None
+        batch = None
+        template_name = "No template associated"
 
-                    latest_observation = turtle.trtobservations_set.order_by('-observation_date').first()
-                    if latest_observation and latest_observation.place_code:
-                        latest_site = latest_observation.place_code.place_name
+        if batch_id:
+            batch = TrtEntryBatches.objects.filter(entry_batch_id=batch_id).first()
+            if batch and batch.template:
+                template_name = batch.template.name
 
-            return render(request, "wamtram2/find_turtle.html", {
-                "form": form,
-                "turtle": turtle,
-                "no_turtle_found": no_turtle_found,
-                "tag_id": tag_id,
-                "tag_type": tag_type,
-                "tag_side": tag_side,
-                "first_observation_date": first_observation_date,
-                "latest_site": latest_site,
-                "batch_id": batch_id,
-                "batch": batch,
-                "template_name": template_name,
-            })
+        if tag_id and tag_type and not no_turtle_found:
+            tag = TrtTags.objects.select_related('turtle').filter(tag_id=tag_id).first()
+            if tag:
+                turtle = tag.turtle
+            else:
+                pit_tag = TrtPitTags.objects.select_related('turtle').filter(pittag_id=tag_id).first()
+                if pit_tag:
+                    turtle = pit_tag.turtle
+
+            if turtle:
+                first_observation = turtle.trtobservations_set.order_by('observation_date').first()
+                if first_observation:
+                    first_observation_date = first_observation.observation_date
+
+                latest_observation = turtle.trtobservations_set.order_by('-observation_date').first()
+                if latest_observation and latest_observation.place_code:
+                    latest_site = latest_observation.place_code.place_name
+
+        return render(request, "wamtram2/find_turtle.html", {
+            "form": form,
+            "turtle": turtle,
+            "no_turtle_found": no_turtle_found,
+            "tag_id": tag_id,
+            "tag_type": tag_type,
+            "tag_side": tag_side,
+            "first_observation_date": first_observation_date,
+            "latest_site": latest_site,
+            "batch_id": batch_id,
+            "batch": batch,
+            "template_name": template_name,
+        })
 
     def set_cookie(self, response, batch_id, tag_id=None, tag_type=None, tag_side=None, no_turtle_found=False, do_not_process=False):
         if tag_id:
@@ -731,6 +743,7 @@ class FindTurtleView(LoginRequiredMixin, View):
         tag_type = None
         tag_id = None
         tag_side = None
+        turtle = None
         create_and_review = request.POST.get('create_and_review') == 'true'
 
         if form.is_valid():
@@ -749,9 +762,10 @@ class FindTurtleView(LoginRequiredMixin, View):
                         tag_type = "recapture_pit_tag"
                     else:
                         tag_type = "unknown_tag"
+                
+                response = redirect(reverse('wamtram2:find_turtle', kwargs={'batch_id': batch_id}))
 
                 if turtle:
-                    response = redirect(reverse('wamtram2:find_turtle', kwargs={'batch_id': batch_id}))
                     return self.set_cookie(response, batch_id, tag_id, tag_type, tag_side)
                 else:
                     no_turtle_found = True
@@ -763,10 +777,17 @@ class FindTurtleView(LoginRequiredMixin, View):
                 response = redirect(reverse('wamtram2:newtrtdataentry', kwargs={'batch_id': batch_id}))
                 return self.set_cookie(response, batch_id, tag_id, tag_type, tag_side, do_not_process=True)
         else:
-            response = render(request, "wamtram2/find_turtle.html", {"form": form})
+            response = render(request, "wamtram2/find_turtle.html", {
+                "form": form,
+                "no_turtle_found": no_turtle_found,
+                "tag_id": tag_id,
+                "tag_type": tag_type,
+                "tag_side": tag_side,
+                "batch_id": batch_id,
+            })
 
         return self.set_cookie(response, batch_id, tag_id, tag_type, tag_side)
-    
+
 
 class ObservationDetailView(LoginRequiredMixin, DetailView):
     model = TrtObservations
@@ -1338,6 +1359,7 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
         location = self.request.GET.get('location')
         place = self.request.GET.get('place')
         year = self.request.GET.get('year')
+        show_all = self.request.GET.get('show_all')
         
         if not self.request.GET:
             return queryset.order_by('-entry_batch_id')[:20]
@@ -1391,6 +1413,7 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
             for place in places
         ]
         context['places_json'] = json.dumps(places_data, cls=DjangoJSONEncoder)
+        context['show_all'] = self.request.GET.get('show_all', False)
 
         return context
     def get(self, request, *args, **kwargs):
@@ -1409,6 +1432,7 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
                 'count': context['paginator'].count if 'paginator' in context else 0,
                 'num_pages': context['paginator'].num_pages if 'paginator' in context else 1,
                 'current_page': context['page_obj'].number if 'page_obj' in context else 1,
+                'show_all': context.get('show_all', False),
             })
         return super().get(request, *args, **kwargs)
     

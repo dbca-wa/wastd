@@ -106,7 +106,7 @@
     <div class="card-header">Basic Information</div>
     <div class="card-body">
       <div class="row">
-        <div class="col-md-12">
+        {% comment %} <div class="col-md-12">
           <label for="{{ form.entered_by_id.id_for_label }}">{{ form.entered_by_id.label }}</label>
           <div class="row">
             <div class="col-md-4">
@@ -114,13 +114,14 @@
               {{ form.entered_by_id }}
               <div class="search-results" style="display:none;"></div>
             </div>
-            {% comment %} {% if user.is_superuser %}
-            <div class="col-md-2">
-              <button type="button" class="btn btn-outline-primary add-person-btn" onClick="window.open(adminUrl);" title="Add new person">
-              <i class="fas fa-plus"></i>
-              </button>
+          </div>
+        </div> {% endcomment %}
+        <div class="col-md-12">
+          <label for="{{ form.entered_by.id_for_label }}">{{ form.entered_by.label }}</label>
+          <div class="row">
+            <div class="col-md-4">
+              {% bootstrap_field form.entered_by show_label=False %}
             </div>
-            {% endif %} {% endcomment %}
           </div>
         </div>
         <div class="col-md-8 pt-2">
@@ -154,7 +155,9 @@
             <div class="col-md-6">
               <label for="{{ form.observation_date.id_for_label }}">{{ form.observation_date.label }}</label>
               {% bootstrap_field form.observation_date show_label=False%}
-              <div id="date-error-message" class="text-danger" style="display: none;"></div>
+            </div>
+            <div class="col-md-3">
+              <div id="date-error-message" class="text-danger" style="display: none; font-weight: bold;"></div>
             </div>
           </div>
           <div class="row">
@@ -957,10 +960,9 @@
     // Populate form fields based on entryId or templateId
     function populateForm() {
         if (entryId) {
-            console.log("Populating form for existing entry with ID:", entryId);
 
-            const enteredById = "{{ form.entered_by_id.value }}";
-            if (enteredById) {
+            const enteredBy = "{{ form.entered_by.value }}";
+            if (enteredBy) {
                 const enteredByFullName = "{{ view.entered_by_full_name|escapejs }}";
                 if (enteredByFullName) {
                     document.getElementById('search_entered_by').value = enteredByFullName;
@@ -999,22 +1001,10 @@
         } else if (templateId) {
             console.log("No entry ID, using selected template ID:", templateId);
 
-            const defaultEntererId = "{{ default_enterer }}";
-            if (defaultEntererId) {
-                document.getElementById('id_entered_by_id').value = defaultEntererId;
-                const defaultEntererFullName = "{{ default_enterer_full_name }}";
-                if (defaultEntererFullName) {
-                    document.getElementById('search_entered_by').value = defaultEntererFullName;
-                }
-            }
-
             const defaultPlaceCode = "{{ default_place_code|escapejs }}";
             const defaultPlaceFullName = "{{ default_place_full_name|escapejs }}";
             const searchPlaceInput = document.getElementById('search_place_code');
             const placeCodeInput = document.getElementById('id_place_code');
-
-            console.log("Default Place Code:", defaultPlaceCode);
-            console.log("Default Place Full Name:", defaultPlaceFullName)
 
             if (defaultPlaceFullName && defaultPlaceCode) {
                 searchPlaceInput.value = defaultPlaceFullName;
@@ -1253,36 +1243,47 @@
     if (confirmSaveButton) {
       confirmSaveButton.addEventListener('click', function(event) {
           $(summaryModal).modal('hide');
+          form.submit()
       });
     }
   });
+  document.addEventListener('DOMContentLoaded', function() {
+    var flipperBodyParts = ['B', 'C', 'D', 'E'];
 
-  $(document).ready(function() {
-      var flipperBodyParts = {{ flipper_body_parts|safe }}; 
+    function updateDamageCodeOptions(bodyPartSelect, damageCodeSelect) {
+        var selectedBodyPart = bodyPartSelect.value;
+        var options = damageCodeSelect.options;
 
-      function updateDamageCodeOptions(bodyPartSelect, damageCodeSelect) {
-          var selectedBodyPart = $(bodyPartSelect).val();
-          var damageCodeField = $(damageCodeSelect);
-          
-          if (flipperBodyParts.includes(selectedBodyPart)) {
-            damageCodeField.find('option').show();
-        } else {
-            damageCodeField.find('option').hide();
-            damageCodeField.find('option[value="0"], option[value="5"], option[value="6"], option[value="7"]').show();
+        for (var i = 0; i < options.length; i++) {
+            var option = options[i];
+            if (flipperBodyParts.includes(selectedBodyPart)) {
+                option.style.display = ''; // Show all options
+            } else {
+                if (['0', '5', '6', '7'].includes(option.value)) {
+                    option.style.display = ''; // Show specific options
+                } else {
+                    option.style.display = 'none'; // Hide others
+                }
+            }
         }
-          
-          damageCodeField.val('');
-      }
+        damageCodeSelect.value = ''; // Reset the value
+    }
 
-      for (var i = 1; i <= 6; i++) {
-          $(`#id_body_part_${i}`).change(function() {
-              var index = this.id.split('_').pop();
-              updateDamageCodeOptions(`#id_body_part_${index}`, `#id_damage_code_${index}`);
-          });
-          
-          updateDamageCodeOptions(`#id_body_part_${i}`, `#id_damage_code_${i}`);
-      }
+    for (var i = 1; i <= 6; i++) {
+        var bodyPartSelect = document.getElementById(`id_body_part_${i}`);
+        var damageCodeSelect = document.getElementById(`id_damage_code_${i}`);
+
+        // Attach the change event listener
+        bodyPartSelect.addEventListener('change', function() {
+            var index = this.id.split('_').pop();
+            updateDamageCodeOptions(bodyPartSelect, damageCodeSelect);
+        });
+
+        // Initial update for each select element
+        updateDamageCodeOptions(bodyPartSelect, damageCodeSelect);
+    }
   });
+
 </script>
 <script src="{% static 'js/tagToggleHandler.js' %}"></script>
 <script src="{% static 'js/scarHandler.js' %}"></script>
