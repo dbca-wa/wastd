@@ -117,7 +117,7 @@
     <div class="card-header">Basic Information</div>
     <div class="card-body">
       <div class="row">
-        {% comment %} <div class="col-md-12">
+        <div class="col-md-12">
           <label for="{{ form.entered_by_id.id_for_label }}">{{ form.entered_by_id.label }}</label>
           <div class="row">
             <div class="col-md-4">
@@ -126,15 +126,15 @@
               <div class="search-results" style="display:none;"></div>
             </div>
           </div>
-        </div> {% endcomment %}
-        <div class="col-md-12">
+        </div>
+        {% comment %} <div class="col-md-12">
           <label for="{{ form.entered_by.id_for_label }}">{{ form.entered_by.label }}</label>
           <div class="row">
             <div class="col-md-4">
               {% bootstrap_field form.entered_by show_label=False %}
             </div>
           </div>
-        </div>
+        </div> {% endcomment %}
         <div class="col-md-8 pt-2">
           <div class="row">
             <div class="col-md-6">
@@ -972,8 +972,8 @@
     function populateForm() {
         if (entryId) {
 
-            const enteredBy = "{{ form.entered_by.value }}";
-            if (enteredBy) {
+            const enteredById = "{{ form.entered_by_id.value }}";
+            if (enteredById) {
                 const enteredByFullName = "{{ view.entered_by_full_name|escapejs }}";
                 if (enteredByFullName) {
                     document.getElementById('search_entered_by').value = enteredByFullName;

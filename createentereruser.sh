@@ -22,7 +22,7 @@ try:
     )
     
     # Add user to Tagging Data Entry group
-    tagging_data_entry_group, created = Group.objects.get_or_create(name='Tagging Data Entry')
+    tagging_data_entry_group, created = Group.objects.get_or_create(name='WAMTRAM2_VOLUNTEER')
     user.groups.add(tagging_data_entry_group)
     
     print("Data Entry user created successfully and added to Tagging Data Entry group")
