@@ -1270,7 +1270,7 @@ class ExportDataView(LoginRequiredMixin, View):
 
         # Filter by species
         if species:
-            queryset = queryset.filter(species=species)
+            queryset = queryset.filter(species_code=species)
 
         # Filter by sex
         if sex:
@@ -1308,7 +1308,7 @@ class ExportDataView(LoginRequiredMixin, View):
         place_list = [
             {
                 "place_code": place.place_code,
-                "place_name": place.place_name,
+                "place_name": place.get_full_name(),
                 "location_name": place.location_code.location_name,
             }
             for place in places
