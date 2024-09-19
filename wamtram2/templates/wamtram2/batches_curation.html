@@ -254,11 +254,8 @@
                     <div class="form-group">
                         <label for="quickAddTeamLeader">Team Leader Name</label>
                         <div class="input-group">
-                            <input type="text" id="quickAddTeamLeader" class="search-field form-control" placeholder="搜索人员" autocomplete="off">
+                            <input type="text" id="quickAddTeamLeader" class="search-field form-control" placeholder="Search Person" autocomplete="off">
                             <input type="hidden" id="quickAddTeamLeaderId" name="entered_person_id">
-                            <div class="input-group-append">
-                                <button class="btn btn-outline-secondary" type="button" id="clearTeamLeader">清除</button>
-                            </div>
                         </div>
                         <div class="search-results" style="display:none;"></div>
                     </div>
@@ -599,12 +596,11 @@
         var teamLeaderInput = document.getElementById('quickAddTeamLeader');
         var teamLeaderIdInput = document.getElementById('quickAddTeamLeaderId');
         var searchResults = teamLeaderInput.nextElementSibling;
-        var clearButton = document.getElementById('clearTeamLeader');
     
         teamLeaderInput.addEventListener('input', function() {
             var searchTerm = this.value;
             if (searchTerm.length >= 2) {
-                fetch(`/wamtram2/search_person/?term=${searchTerm}`)
+                fetch(`/wamtram2/search-person/?q=${searchTerm}`)
                     .then(response => response.json())
                     .then(data => {
                         searchResults.innerHTML = '';
@@ -623,11 +619,6 @@
             } else {
                 searchResults.style.display = 'none';
             }
-        });
-    
-        clearButton.addEventListener('click', function() {
-            teamLeaderInput.value = '';
-            teamLeaderIdInput.value = '';
         });
     
         document.addEventListener('click', function(e) {

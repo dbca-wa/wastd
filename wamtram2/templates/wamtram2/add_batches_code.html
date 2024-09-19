@@ -119,11 +119,8 @@
             <div class="form-group">
                 <label for="team_leader">Team Leader Name</label>
                 <div class="input-group">
-                    <input type="text" id="team_leader" class="search-field form-control" placeholder="搜索人员" autocomplete="off" value="{{ form.entered_person_id.value.get_full_name|default_if_none:'' }}">
+                    <input type="text" id="team_leader" class="search-field form-control" placeholder="Search Person" autocomplete="off" value="{{ form.entered_person_id.value.get_full_name|default_if_none:'' }}">
                     <input type="hidden" id="team_leader_id" name="entered_person_id" value="{{ form.entered_person_id.value.id|default_if_none:'' }}">
-                    <div class="input-group-append">
-                        <button class="btn btn-outline-secondary" type="button" id="clearTeamLeader">清除</button>
-                    </div>
                 </div>
                 <div class="search-results" style="display:none;"></div>
             </div>
@@ -289,12 +286,12 @@
         var teamLeaderInput = document.getElementById('team_leader');
         var teamLeaderIdInput = document.getElementById('team_leader_id');
         var searchResults = document.querySelector('.search-results');
-        var clearButton = document.getElementById('clearTeamLeader');
+
     
         teamLeaderInput.addEventListener('input', function() {
             var searchTerm = this.value;
             if (searchTerm.length >= 2) {
-                fetch(`/wamtram2/search_person/?term=${searchTerm}`)
+                fetch(`/wamtram2/search-person/?q=${searchTerm}`)
                     .then(response => response.json())
                     .then(data => {
                         searchResults.innerHTML = '';
@@ -313,11 +310,6 @@
             } else {
                 searchResults.style.display = 'none';
             }
-        });
-    
-        clearButton.addEventListener('click', function() {
-            teamLeaderInput.value = '';
-            teamLeaderIdInput.value = '';
         });
     
         document.addEventListener('click', function(e) {
