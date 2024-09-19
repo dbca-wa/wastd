@@ -1307,8 +1307,8 @@ class ExportDataView(LoginRequiredMixin, View):
 
         place_list = [
             {
-                "place_code": place.place_code,
-                "place_name": place.get_full_name(),
+                "value": place.place_code,
+                "label": place.get_full_name(),
                 "location_name": place.location_code.location_name,
             }
             for place in places
