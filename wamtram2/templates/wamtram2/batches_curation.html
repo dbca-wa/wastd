@@ -601,7 +601,7 @@
         teamLeaderInput.addEventListener('input', function() {
             var searchTerm = this.value;
             if (searchTerm.length >= 2) {
-                fetch(`/wamtram2/search_persons/?q=${searchTerm}`)
+                fetch(`/wamtram2/search-persons/?q=${searchTerm}`)
                     .then(response => response.json())
                     .then(data => {
                         searchResults.innerHTML = '';
