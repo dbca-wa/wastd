@@ -70,7 +70,7 @@
     <nav aria-label="breadcrumb" class="d-none d-md-block">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-            <li class="breadcrumb-item"><a href="{% url 'wamtram2:batches_curation' %}">Batches Curation</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'wamtram2:batches_curation' %}">Batches Mangement</a></li>
             <li class="breadcrumb-item active">Manage Templates</li>
         </ol>
     </nav>
@@ -92,7 +92,7 @@
             <form id="templateForm" method="post" class="row">
                 {% csrf_token %}
                 <div class="col-md-3">
-                    <label for="location_code">Location</label>
+                    <label for="location_code">Location (required)</label>
                     <select class="form-control" id="location_code" name="location_code">
                         {% for location in locations %}
                             <option value="{{ location.location_code }}">{{ location.location_name }}</option>
@@ -100,7 +100,7 @@
                     </select>
                 </div>
                 <div class="col-md-3">
-                    <label for="place_code">Place</label>
+                    <label for="place_code">Place (required)</label>
                     <select class="form-control" id="place_code" name="place_code">
                         {% for place in places %}
                             <option value="{{ place.place_code }}">{{ place.place_name }}</option>
@@ -108,7 +108,8 @@
                     </select>
                 </div>
                 <div class="col-md-3">
-                    <label for="species_code">Species</label>
+                    <label for="species_code">Species (optional)</label>
+                    <option value="">Select Species</option>
                     <select class="form-control" id="species_code" name="species_code">
                         {% for specie in species %}
                             <option value="{{ specie.species_code }}">{{ specie.common_name }}</option>
@@ -116,8 +117,9 @@
                     </select>
                 </div>
                 <div class="col-md-3">
-                    <label for="sex">Sex</label>
+                    <label for="sex">Sex (optional)</label>
                     <select class="form-control" id="sex" name="sex">
+                        <option value="">Select Sex</option>
                         {% for code, name in sex_choices %}
                             <option value="{{ code }}">{{ name }}</option>
                         {% endfor %}
@@ -289,9 +291,18 @@
             })
             .then(data => {
                 var placeFullName = data.full_name;
-                var speciesName = document.querySelector('#species_code option:checked').textContent;
-                var sexName = document.querySelector('#sex option:checked').textContent;
-                var templateName = placeFullName + ' + ' + speciesName + ' + ' + sexName;
+                var templateName = placeFullName;
+                
+                if (speciesCode) {
+                    var speciesName = document.querySelector('#species_code option:checked').textContent;
+                    templateName += ' + ' + speciesName;
+                }
+                
+                if (sex) {
+                    var sexName = document.querySelector('#sex option:checked').textContent;
+                    templateName += ' + ' + sexName;
+                }
+                
                 document.getElementById('id_name').value = templateName;
                 checkTemplateName(templateName);
             })

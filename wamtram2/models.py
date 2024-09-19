@@ -203,7 +203,7 @@ class TrtDataEntry(models.Model):
         ("I", "Indeterminate"),
     ]
     TAG_POSITION_CHOICES = [
-        (1, ' scale 1'),
+        (1, 'scale 1'),
         (2, 'scale 2'),
         (3, 'scale 3'),
     ]

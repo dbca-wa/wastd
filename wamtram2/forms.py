@@ -69,9 +69,9 @@ class SearchForm(forms.Form):
     place_code = forms.CharField(widget=forms.HiddenInput(), required=False)
     species_code = forms.CharField(widget=forms.HiddenInput(), required=False)
     sex = forms.CharField(widget=forms.HiddenInput(), required=False)
-    default_enterer = forms.CharField(widget=forms.HiddenInput(), required=False)
+    # default_enterer = forms.CharField(widget=forms.HiddenInput(), required=False)
     selected_template = forms.CharField(required=False, widget=forms.HiddenInput())
-    use_default_enterer = forms.BooleanField(required=False, widget=forms.HiddenInput())
+    # use_default_enterer = forms.BooleanField(required=False, widget=forms.HiddenInput())
 
 
 class TrtEntryBatchesForm(forms.ModelForm):
@@ -109,6 +109,7 @@ class TrtDataEntryForm(forms.ModelForm):
             "measured_by_id",
             "recorded_by_id",
             "tagged_by_id",
+            "entered_by",
             "entered_by_id",
             "measured_recorded_by_id",
             "recapture_left_tag_id",
@@ -255,6 +256,10 @@ class TrtDataEntryForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.batch_id = kwargs.pop("batch_id", None)
         super().__init__(*args, **kwargs)
+        self.fields['entered_by'].widget = forms.TextInput(attrs={
+            'class': 'form-control', 
+            'placeholder': 'Enter name',
+        })
         
         # Filter the queryset for new tag fields
         new_tag_states = TrtTagStates.objects.filter(
@@ -275,18 +280,6 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields['recapture_left_tag_state_2'].queryset = old_tag_states
         self.fields['recapture_right_tag_state_2'].queryset = old_tag_states
         
-        body_parts = TrtBodyParts.objects.all()
-        
-        for i in range(1, 7):
-            self.fields[f'body_part_{i}'] = forms.ModelChoiceField(
-                queryset=TrtBodyParts.objects.all(),
-                required=False,
-                empty_label='---------'
-            )
-            self.fields[f'damage_code_{i}'] = forms.ModelChoiceField(
-                queryset=TrtDamageCodes.objects.all(),
-                required=False
-            )
 
         self.fields["observation_date"].required = True
         self.fields["species_code"].required = True
@@ -505,15 +498,6 @@ class TrtDataEntryForm(forms.ModelForm):
             else:
                 cleaned_data['latitude'] = latitude_str
                 
-        for i in range(1, 7):
-            body_part = cleaned_data.get(f'body_part_{i}')
-            damage_code = cleaned_data.get(f'damage_code_{i}')
-            
-            if body_part:
-                body_part_obj = TrtBodyParts.objects.get(body_part=body_part)
-                if not body_part_obj.flipper:
-                    if damage_code and damage_code.damage_code not in ['0', '5', '6', '7']:
-                        self.add_error(f'damage_code_{i}', 'Invalid damage code for this body part.')
         
         return cleaned_data
 

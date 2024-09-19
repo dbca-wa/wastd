@@ -52,6 +52,17 @@
     border: 1px solid #ced4da;
     border-radius: .25rem 0 0 .25rem;
   }
+  .species-highlight {
+    color: red;
+    font-weight: bold;
+  }
+  #speciesConfirmCheckbox {
+    margin-left: 10px;
+  }
+  .species-row {
+    display: flex;
+    align-items: center;
+  }
 </style>
 {% endblock %}  
 
@@ -114,15 +125,16 @@
               {{ form.entered_by_id }}
               <div class="search-results" style="display:none;"></div>
             </div>
-            {% comment %} {% if user.is_superuser %}
-            <div class="col-md-2">
-              <button type="button" class="btn btn-outline-primary add-person-btn" onClick="window.open(adminUrl);" title="Add new person">
-              <i class="fas fa-plus"></i>
-              </button>
-            </div>
-            {% endif %} {% endcomment %}
           </div>
         </div>
+        {% comment %} <div class="col-md-12">
+          <label for="{{ form.entered_by.id_for_label }}">{{ form.entered_by.label }}</label>
+          <div class="row">
+            <div class="col-md-4">
+              {% bootstrap_field form.entered_by show_label=False %}
+            </div>
+          </div>
+        </div> {% endcomment %}
         <div class="col-md-8 pt-2">
           <div class="row">
             <div class="col-md-6">
@@ -884,7 +896,8 @@
     <div class="col-md-3 text-right">
       <div class="d-flex align-self-center">
         {% if not form.observation_id.value %}
-        {% bootstrap_field form.do_not_process %}
+        {% comment %} {% bootstrap_field form.do_not_process %} {% endcomment %}
+        {% bootstrap_field form.do_not_process id="id_do_not_process" %}
         {% endif %}
       </div>
     </div>
@@ -909,7 +922,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-primary" id="confirmSaveButton">Confirm & Save</button>
+          <button type="submit" class="btn btn-primary" id="confirmSaveButton" disabled>Confirm & Save</button>
         </div>
       </div>
     </div>
@@ -931,6 +944,14 @@
 {% block extra_js %}
 {{ form.media.js }}
 {{ block.super }}
+<script src="{% static 'js/tagToggleHandler.js' %}"></script>
+<script src="{% static 'js/scarHandler.js' %}"></script>
+<script src="{% static 'js/measurementHandler.js' %}"></script>
+<script src="{% static 'js/injuryHandler.js' %}"></script>
+<script src="{% static 'js/advancedDataHandler.js' %}"></script>
+<script src="{% static 'js/bgColorHandler.js' %}"></script>
+<script src="{% static 'js/tagValidation.js' %}"></script>
+<script src="{% static 'js/searchHandler.js' %}"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
@@ -959,7 +980,6 @@
     // Populate form fields based on entryId or templateId
     function populateForm() {
         if (entryId) {
-            console.log("Populating form for existing entry with ID:", entryId);
 
             const enteredById = "{{ form.entered_by_id.value }}";
             if (enteredById) {
@@ -1001,22 +1021,10 @@
         } else if (templateId) {
             console.log("No entry ID, using selected template ID:", templateId);
 
-            const defaultEntererId = "{{ default_enterer }}";
-            if (defaultEntererId) {
-                document.getElementById('id_entered_by_id').value = defaultEntererId;
-                const defaultEntererFullName = "{{ default_enterer_full_name }}";
-                if (defaultEntererFullName) {
-                    document.getElementById('search_entered_by').value = defaultEntererFullName;
-                }
-            }
-
             const defaultPlaceCode = "{{ default_place_code|escapejs }}";
             const defaultPlaceFullName = "{{ default_place_full_name|escapejs }}";
             const searchPlaceInput = document.getElementById('search_place_code');
             const placeCodeInput = document.getElementById('id_place_code');
-
-            console.log("Default Place Code:", defaultPlaceCode);
-            console.log("Default Place Full Name:", defaultPlaceFullName)
 
             if (defaultPlaceFullName && defaultPlaceCode) {
                 searchPlaceInput.value = defaultPlaceFullName;
@@ -1139,23 +1147,21 @@
 
     console.log("Observation Date Input:", observationDateInput.value);
     console.log("Observation Date label:", observationDateInput.parentElement.querySelector('label').innerText);
-    console.log(document.getElementById('id_observation_date'))
-    console.log(document.getElementById('id_latitude'))
-    
-
+    console.log(document.getElementById('id_observation_date'));
+    console.log(document.getElementById('id_latitude'));
 
     function validateDate() {
-      const selectedDate = new Date(observationDateInput.value);
-      const currentDate = new Date();
-  
-      if (selectedDate > currentDate) {
-        dateErrorMessage.textContent = "Date in the future";
-        dateErrorMessage.style.display = 'block';
-        observationDateInput.classList.add('is-invalid');
-      } else {
-        dateErrorMessage.style.display = 'none';
-        observationDateInput.classList.remove('is-invalid');
-      }
+        const selectedDate = new Date(observationDateInput.value);
+        const currentDate = new Date();
+
+        if (selectedDate > currentDate) {
+            dateErrorMessage.textContent = "Date in the future";
+            dateErrorMessage.style.display = 'block';
+            observationDateInput.classList.add('is-invalid');
+        } else {
+            dateErrorMessage.style.display = 'none';
+            observationDateInput.classList.remove('is-invalid');
+        }
     }
 
     var datetimeInputs = document.querySelectorAll('input[type="datetime-local"]');
@@ -1170,14 +1176,14 @@
             onReady: function(selectedDates, dateStr, instance) {
                 var altInput = instance.altInput;
                 altInput.addEventListener('input', function(e) {
-                    let value = e.target.value.replace(/\D/g, ''); 
+                    let value = e.target.value.replace(/\D/g, '');
                     let formattedValue = '';
                     if (value.length > 0) {
-                        formattedValue += value.substring(0, 2); 
+                        formattedValue += value.substring(0, 2);
                         if (value.length > 2) {
                             formattedValue += '/' + value.substring(2, 4);
                             if (value.length > 4) {
-                                formattedValue += '/' + value.substring(4, 8); 
+                                formattedValue += '/' + value.substring(4, 8);
                                 if (value.length > 8) {
                                     formattedValue += ' ' + value.substring(8, 10);
                                     if (value.length > 10) {
@@ -1192,107 +1198,188 @@
                 altInput.addEventListener('input', validateDate);
             },
             onChange: function(selectedDates, dateStr, instance) {
-              validateDate();
+                validateDate();
             }
         });
     });
 
     if (reviewButton) {
-      reviewButton.addEventListener('click', function(event) {
-          event.preventDefault(); 
+        reviewButton.addEventListener('click', function(event) {
+            event.preventDefault();
 
-          let summaryHTML = '<ul>';
-          
-          form.querySelectorAll('input, select, textarea').forEach(input => {
-                  if (input.type !== 'hidden') {
+            let summaryHTML = '<ul>';
+
+            form.querySelectorAll('input, select, textarea').forEach(input => {
+                if (input.type !== 'hidden') {
                     let labelText = '';
                     let inputValue = input.value.trim();;
                     let inputId = input.id;
 
-
-                  if (inputValue !== '') {
-                      if (labelMapping[inputId]) {
-                          labelText = labelMapping[inputId];
-                      } else {
-                          const label = form.querySelector(`label[for="${inputId}"]`);
-
-                          if (!label) {
-                            const parentLabel = input.parentElement.querySelector('label');
-                            console.log("Parent Label:", parentLabel);
-                            labelText = parentLabel ? parentLabel.textContent.trim() : input.name;
-                          } else {
-                            labelText = label.textContent.trim();
-                          }
-                      }
-
-                      if (input.type === 'checkbox') {
-                        if (input.checked) {
-                          inputValue = 'Yes';
+                    if (inputValue !== '') {
+                        if (labelMapping[inputId]) {
+                            labelText = labelMapping[inputId];
                         } else {
-                          return;
+                            const label = form.querySelector(`label[for="${inputId}"]`);
+
+                            if (!label) {
+                                const parentLabel = input.parentElement.querySelector('label');
+                                console.log("Parent Label:", parentLabel);
+                                labelText = parentLabel ? parentLabel.textContent.trim() : input.name;
+                            } else {
+                                labelText = label.textContent.trim();
+                            }
                         }
-                      } else if (input.tagName.toLowerCase() === 'select') {
-                          inputValue = input.selectedOptions[0].textContent.trim();
-                      }
+                        if (inputId === 'id_species_code') {
+                            summaryHTML += `
+                                <li class="species-row">
+                                    <span class="species-highlight"><strong>${labelText}:</strong> ${inputValue}</span>
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" id="speciesConfirmCheckbox">
+                                        <label class="form-check-label" for="speciesConfirmCheckbox">I confirm this is the correct species</label>
+                                    </div>
+                                </li>`;
+                        } else {
+                            summaryHTML += `<li><strong>${labelText}:</strong> ${inputValue}</li>`;
+                        }
 
-                      if (inputId === 'id_latitude' && inputValue !== '') {
-                          inputValue = '-' + inputValue;
-                      }
+                        if (input.type === 'checkbox') {
+                            if (input.checked) {
+                                inputValue = 'Yes';
+                            } else {
+                                return;
+                            }
+                        } else if (input.tagName.toLowerCase() === 'select') {
+                            inputValue = input.selectedOptions[0].textContent.trim();
+                        }
 
-                      summaryHTML += `<li><strong>${labelText}:</strong> ${inputValue}</li>`;
-                  }
-              }
-          });
+                        if (inputId === 'id_latitude' && inputValue !== '') {
+                            inputValue = '-' + inputValue;
+                        }
 
-          summaryHTML += '</ul>';
+                        summaryHTML += `<li><strong>${labelText}:</strong> ${inputValue}</li>`;
+                    }
+                }
+            });
 
-          summaryContent.innerHTML = summaryHTML;
+            summaryHTML += '</ul>';
 
-          $(summaryModal).modal('show');
-      });
+            summaryContent.innerHTML = summaryHTML;
+
+            $(summaryModal).modal('show');
+
+            const speciesConfirmCheckbox = document.getElementById('speciesConfirmCheckbox');
+            if (speciesConfirmCheckbox) {
+                speciesConfirmCheckbox.addEventListener('change', function() {
+                    confirmSaveButton.disabled = !this.checked;
+                });
+            }
+        });
     }
 
     if (confirmSaveButton) {
-      confirmSaveButton.addEventListener('click', function(event) {
-          $(summaryModal).modal('hide');
-      });
+        confirmSaveButton.addEventListener('click', function(event) {
+            $(summaryModal).modal('hide');
+            form.submit();
+        });
     }
   });
-
-  $(document).ready(function() {
-      var flipperBodyParts = {{ flipper_body_parts|safe }}; 
-
+  document.addEventListener('DOMContentLoaded', function() {
+      var flipperBodyParts = ['B', 'C', 'D', 'E'];
+  
       function updateDamageCodeOptions(bodyPartSelect, damageCodeSelect) {
-          var selectedBodyPart = $(bodyPartSelect).val();
-          var damageCodeField = $(damageCodeSelect);
-          
-          if (flipperBodyParts.includes(selectedBodyPart)) {
-            damageCodeField.find('option').show();
-        } else {
-            damageCodeField.find('option').hide();
-            damageCodeField.find('option[value="0"], option[value="5"], option[value="6"], option[value="7"]').show();
-        }
-          
-          damageCodeField.val('');
+          var selectedBodyPart = bodyPartSelect.value;
+          var options = damageCodeSelect.options;
+  
+          for (var i = 0; i < options.length; i++) {
+              var option = options[i];
+              if (flipperBodyParts.includes(selectedBodyPart)) {
+                  option.style.display = ''; // Show all options
+              } else {
+                  if (['0', '5', '6', '7'].includes(option.value)) {
+                      option.style.display = ''; // Show all options
+                  } else {
+                      option.style.display = 'none'; // Hide other options
+                  }
+              }
+          }
+          damageCodeSelect.value = ''; // Reset the damage code
       }
-
+  
       for (var i = 1; i <= 6; i++) {
-          $(`#id_body_part_${i}`).change(function() {
-              var index = this.id.split('_').pop();
-              updateDamageCodeOptions(`#id_body_part_${index}`, `#id_damage_code_${index}`);
-          });
-          
-          updateDamageCodeOptions(`#id_body_part_${i}`, `#id_damage_code_${i}`);
+          var bodyPartSelect = document.getElementById(`id_body_part_${i}`);
+          var damageCodeSelect = document.getElementById(`id_damage_code_${i}`);
+  
+          if (bodyPartSelect && damageCodeSelect) {
+              bodyPartSelect.addEventListener('change', function() {
+                  var index = this.id.split('_').pop();
+                  var correspondingDamageCodeSelect = document.getElementById(`id_damage_code_${index}`);
+                  updateDamageCodeOptions(this, correspondingDamageCodeSelect);
+              });
+              updateDamageCodeOptions(bodyPartSelect, damageCodeSelect);
+          }
       }
   });
+  document.addEventListener('DOMContentLoaded', function() {
+    var injuryCheckField = document.querySelector('[name="injury_check"]');
+    var bodyPartField = document.querySelector('[name="body_part_1"]');
+    var damageCodeField = document.querySelector('[name="damage_code_1"]');
+
+    injuryCheckField.addEventListener('change', function() {
+        if (this.value === 'N') {  
+            // Set body_part_1 to "Whole animal"
+            bodyPartField.value = 'W';
+            bodyPartField.dispatchEvent(new Event('change'));
+            
+            // Set damage_code_1 to "None signification"
+            damageCodeField.value = '0';
+            damageCodeField.dispatchEvent(new Event('change'));
+        } else {
+          bodyPartField.value = '';
+          bodyPartField.dispatchEvent(new Event('change'));
+          
+          damageCodeField.value = '';
+          damageCodeField.dispatchEvent(new Event('change'));
+      }
+    });
+  });
+  document.addEventListener('DOMContentLoaded', function() {
+    const turtleIdField = document.getElementById('id_turtle_id');
+    const flipperTagCheckField = document.getElementById('id_flipper_tag_check');
+    const pitTagCheckField = document.getElementById('id_pit_tag_check');
+    const doNotProcessField = document.getElementById('id_do_not_process');
+
+    function updateBackgroundColor() {
+        const bodyElement = document.body;
+        const doNotProcessField = document.getElementById('id_do_not_process');
+        if (doNotProcessField.checked) {
+            bodyElement.classList.add('bg-yellow');
+        } else {
+            bodyElement.classList.remove('bg-yellow');
+        }
+    }
+
+    function updateDoNotProcess() {
+        const turtleIdEmpty = !turtleIdField.value;
+        const flipperTagDidntCheck = flipperTagCheckField.value === 'D';
+        const pitTagDidntCheck = pitTagCheckField.value === 'D';
+
+
+        if (turtleIdEmpty && flipperTagDidntCheck && pitTagDidntCheck) {
+            doNotProcessField.checked = true;
+            doNotProcessField.disabled = true;
+        } else {
+            doNotProcessField.disabled = false;
+            doNotProcessField.checked = false;
+        }
+        updateBackgroundColor();
+    }
+
+    turtleIdField.addEventListener('change', updateDoNotProcess);
+    flipperTagCheckField.addEventListener('change', updateDoNotProcess);
+    pitTagCheckField.addEventListener('change', updateDoNotProcess);
+
+    updateDoNotProcess();
+  });
 </script>
-<script src="{% static 'js/tagToggleHandler.js' %}"></script>
-<script src="{% static 'js/scarHandler.js' %}"></script>
-<script src="{% static 'js/measurementHandler.js' %}"></script>
-<script src="{% static 'js/injuryHandler.js' %}"></script>
-<script src="{% static 'js/advancedDataHandler.js' %}"></script>
-<script src="{% static 'js/bgColorHandler.js' %}"></script>
-<script src="{% static 'js/tagValidation.js' %}"></script>
-<script src="{% static 'js/searchHandler.js' %}"></script>
 {% endblock %}
 

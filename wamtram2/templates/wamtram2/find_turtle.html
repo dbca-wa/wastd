@@ -17,12 +17,13 @@
       text-align: center;
     }
     .batch-code {
-      font-size: 1.2em;
+      font-size: 1.0emem;
       font-weight: bold;
+      color: #6c757d;
     }
     .batch-comment {
       font-size: 0.9em;
-      color: #6c757d;
+      font-weight: bold;
     }
   </style>
 {% endblock %}
@@ -37,7 +38,7 @@
 <nav aria-label="breadcrumb">
   <ol class="breadcrumb">
     <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-    <li class="breadcrumb-item"><a href="{% url 'wamtram2:batches_curation' %}">Batches Curation</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'wamtram2:batches_curation' %}">Batches Mangement</a></li>
     {% if form.batch_id.value %}
     <li class="breadcrumb-item"><a href="{% url 'wamtram2:entry_batch_detail' form.batch_id.value %}">{{ form.batch_id.value }}</a></li>
     {% endif %}

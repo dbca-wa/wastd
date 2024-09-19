@@ -98,11 +98,11 @@
     <a class="btn btn-primary btn-block"
       href="{% url 'wamtram2:batches_curation'%}"
       title="Browse entry batches">
-      Browse entry batches »
+      Manage entry batches »
     </a>
   </p>
   {% endif %}
-  {% if perms.wamtram2.add_trtentrybatches %}
+  {% if perms.wamtram2.add_trtdataentry %}
   <p>
     <a class="btn btn-success btn-block"
       href="{% url 'wamtram2:create_new_entry'%}"
