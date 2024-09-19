@@ -28,29 +28,37 @@
 
 {% block page_content_inner %}
 <div class="container-fluid mt-5 mb-5">
-    <h2 class="mb-4">Batches Curation</h2>
+    <h2 class="mb-4">Batches Mangement</h2>
     <div class="d-flex flex-wrap align-items-center mb-3">
-        {% if request.user.is_superuser %}
+        
+        {% if request.user.is_superuser or request.user|has_group:"WAMTRAM2_STAFF" %}
         <!-- Export Data Button -->
         <a href="{% url 'wamtram2:export_form' %}" class="btn btn-outline-secondary mr-2 mb-2">
             <i class="fas fa-download"></i> Export Data
         </a>
-        
+        {% endif %}
+
+        {% if request.user.is_superuser %}
         <!-- Dud Tags Button -->
         <a href="{% url 'wamtram2:dud_tag_manage' %}" class="btn btn-outline-secondary mr-2 mb-2">
             <i class="fas fa-wrench"></i> Dud Tags
         </a>
+        {% endif %}
         
+        {% if request.user.is_superuser or request.user|has_group:"WAMTRAM2_STAFF" or request.user|has_group:"WAMTRAM2_TEAM_LEADER" %}
         <!-- Manage Templates Button -->
         <a href="{% url 'wamtram2:template_manage' %}" class="btn btn-outline-secondary mr-2 mb-2">
             <i class="fas fa-cog"></i> Manage Templates
         </a>
         {% endif %}
         
+        {% if request.user.is_superuser or request.user|has_group:"WAMTRAM2_STAFF" or request.user|has_group:"WAMTRAM2_TEAM_LEADER"  %}
         <!-- Quick Add Batch Button -->
         <button type="button" class="btn btn-outline-primary mr-2 mb-2" id="quickAddBatchBtn" title="Quick Add Batch">
             <i class="fas fa-plus"></i> Add New Batch
         </button>
+        {% endif %}
+
     </div>
     <form id="filter-form" method="get" class="mb-4">
         <div class="form-row">
@@ -178,7 +186,7 @@
                 <form id="quickAddBatchForm">
                     {% csrf_token %}
                     <div class="form-group">
-                        <label for="quickAddLocation">Location</label>
+                        <label for="quickAddLocation">Location (required)</label>
                         <select class="form-control" id="quickAddLocation" name="location_code" required>
                             <option value="">Select Location</option>
                             {% for location in locations %}
@@ -187,13 +195,13 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="quickAddPlace">Place</label>
+                        <label for="quickAddPlace">Place (required)</label>
                         <select class="form-control" id="quickAddPlace" name="place_code" required>
                             <option value="">Select Place</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="quickAddYear">Year</label>
+                        <label for="quickAddYear">Year (required)</label>
                         <select class="form-control" id="quickAddYear" name="year" required>
                             {% for year in years %}
                                 <option value="{{ year }}">{{ year }}</option>
@@ -201,8 +209,8 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="quickAddNight">Night Number</label>
-                        <input type="number" class="form-control" id="quickAddNight" name="night" min="1" required>
+                        <label for="quickAddNight">Night Number (optional)</label>
+                        <input type="number" class="form-control" id="quickAddNight" name="night" min="1">
                     </div>
                     <div class="form-group">
                         <label for="quickAddBatchCode">Batch Code</label>
@@ -211,15 +219,16 @@
                         <div class="valid-feedback">Looks good!</div>
                     </div>
                     <div class="form-group">
-                        <label for="quickAddEntryDate">Expected Entry Date</label>
-                        <input type="date" class="form-control" id="quickAddEntryDate" name="entry_date" required>
+                        <label for="quickAddEntryDate">Expected Data Collection Date (night of) (optional)</label>
+                        {% comment %} <input type="date" class="form-control" id="quickAddEntryDate" name="entry_date" required> {% endcomment %}
+                        <input type="text" class="form-control" id="quickAddEntryDate" name="entry_date">
                     </div>
                     <div class="form-group">
                         <label for="quickAddComments">Comments</label>
                         <textarea class="form-control" id="quickAddComments" name="comments" rows="3"></textarea>
                     </div>
                     <div class="form-group">
-                        <label for="quickAddTemplate">Template</label>
+                        <label for="quickAddTemplate">Template (optional)</label>
                         <select class="form-control" id="quickAddTemplate" name="template">
                             <option value="">Select Template</option>
                             {% for template in templates %}
@@ -253,8 +262,21 @@
     $(document).ready(function() {
         // Initialize tooltips
         $('[data-toggle="tooltip"]').tooltip();
+
+        $('#quickAddEntryDate').datepicker({
+            dateFormat: 'dd/mm/yy',
+            changeMonth: true,
+            changeYear: true
+        });
     
-        // Show loading spinner and overlay
+        $('#quickAddBatchForm').submit(function(e) {
+            var entryDate = $('#quickAddEntryDate').datepicker('getDate');
+            if (entryDate) {
+                var formattedDate = $.datepicker.formatDate('yy-mm-dd', entryDate);
+                $('#quickAddEntryDate').val(formattedDate);
+            }
+        });
+
         function showLoadingSpinner() {
             $('.loading-spinner, .loading-overlay').show();
         }
@@ -358,15 +380,46 @@
             });
         }
     
+        $('#quickAddPlace, #quickAddYear').change(function() {
+            generateBatchCode();
+            updateComments();
+        });
+    
+        $('#quickAddNight').change(generateBatchCode);
+        $('#quickAddNight, #quickAddEntryDate').change(updateComments);
+    
         // Generate batch code
         function generateBatchCode() {
             var night = $('#quickAddNight').val();
             var placeCode = $('#quickAddPlace').val();
-            var year = $('#quickAddYear').val().slice(-2);
-            if (night && placeCode && year) {
-                var batchCode = 'N' + night + placeCode + year;
+            var year = $('#quickAddYear').val();
+            if (placeCode && year) {
+                var batchCode = placeCode + year.slice(-2);
+                if (night) {
+                    batchCode = 'N' + night + batchCode;
+                }
                 $('#quickAddBatchCode').val(batchCode);
                 checkBatchCodeUniqueness(batchCode);
+            }
+        }
+
+        function updateComments() {
+            var selectedPlaceCode = $('#quickAddPlace').val();
+            var selectedPlace = placesData.find(place => place.place_code === selectedPlaceCode);
+            var placeFullName = selectedPlace ? selectedPlace.full_name : '';
+            var night = $('#quickAddNight').val();
+            var entryDate = $('#quickAddEntryDate').val();
+            var year = $('#quickAddYear').val();
+            
+            if (placeFullName && year) {
+                var comments = placeFullName + ' - ' + year;
+                if (night) {
+                    comments += ' - Night ' + night;
+                }
+                if (entryDate) {
+                    comments += ' - ' + entryDate;
+                }
+                $('#quickAddComments').val(comments);
             }
         }
     
@@ -393,18 +446,7 @@
         }
     
         var placesData = {{ places_json|safe }};
-        // Update comments
-        function updateComments() {
-            var selectedPlaceCode = $('#quickAddPlace').val();
-            var selectedPlace = placesData.find(place => place.place_code === selectedPlaceCode);
-            var placeFullName = selectedPlace ? selectedPlace.full_name : '';
-            var night = $('#quickAddNight').val();
-            var entryDate = $('#quickAddEntryDate').val();
-            if (placeFullName && night && entryDate) {
-                var comments = placeFullName + ' - Night ' + night + ' - ' + entryDate;
-                $('#quickAddComments').val(comments);
-            }
-        }
+
     
         // Event listeners
         $('#location').change(function() {
@@ -426,9 +468,6 @@
                 $('#quickAddPlace').empty().append('<option value="">Select Place</option>');
             }
         });
-    
-        $('#quickAddNight, #quickAddPlace, #quickAddYear').change(generateBatchCode);
-        $('#quickAddPlace, #quickAddNight, #quickAddEntryDate').change(updateComments);
         
         $('#quickAddBatchCode').on('input', function() {
             checkBatchCodeUniqueness($(this).val());
