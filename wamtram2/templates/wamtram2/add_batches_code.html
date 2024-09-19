@@ -7,23 +7,8 @@
     {{ block.super }}
     <link rel="stylesheet" href="{% static 'css/search_styles.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
-<link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
     <style>
-        .search-results {
-            position: absolute;
-            background-color: white;
-            border: 1px solid #ddd;
-            max-height: 200px;
-            overflow-y: auto;
-            z-index: 1000;
-        }
-        .search-results div {
-            padding: 5px 10px;
-            cursor: pointer;
-        }
-        .search-results div:hover {
-            background-color: #f0f0f0;
-        }
         .step-container {
             border: 1px solid #ddd;
             border-radius: 5px;
