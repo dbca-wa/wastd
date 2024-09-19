@@ -896,7 +896,8 @@
     <div class="col-md-3 text-right">
       <div class="d-flex align-self-center">
         {% if not form.observation_id.value %}
-        {% bootstrap_field form.do_not_process %}
+        {% comment %} {% bootstrap_field form.do_not_process %} {% endcomment %}
+        {% bootstrap_field form.do_not_process id="id_do_not_process" %}
         {% endif %}
       </div>
     </div>
@@ -1332,6 +1333,31 @@
           damageCodeField.dispatchEvent(new Event('change'));
       }
     });
+  });
+  document.addEventListener('DOMContentLoaded', function() {
+    const turtleIdField = document.getElementById('id_turtle_id');
+    const flipperTagCheckField = document.getElementById('id_flipper_tag_check');
+    const pitTagCheckField = document.getElementById('id_pit_tag_check');
+    const doNotProcessField = document.getElementById('id_do_not_process');
+
+    function updateDoNotProcess() {
+        const turtleIdEmpty = !turtleIdField.value;
+        const flipperTagDidntCheck = flipperTagCheckField.value === 'D';
+        const pitTagDidntCheck = pitTagCheckField.value === 'D';
+
+        if (turtleIdEmpty && flipperTagDidntCheck && pitTagDidntCheck) {
+            doNotProcessField.checked = true;
+            doNotProcessField.disabled = true;
+        } else {
+            doNotProcessField.disabled = false;
+        }
+    }
+
+    turtleIdField.addEventListener('change', updateDoNotProcess);
+    flipperTagCheckField.addEventListener('change', updateDoNotProcess);
+    pitTagCheckField.addEventListener('change', updateDoNotProcess);
+
+    updateDoNotProcess();
   });
 </script>
 <script src="{% static 'js/tagToggleHandler.js' %}"></script>
