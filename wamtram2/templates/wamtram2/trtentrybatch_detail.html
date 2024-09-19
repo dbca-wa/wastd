@@ -1,5 +1,6 @@
 {% extends "base_wastd.html" %}
 {% load static bootstrap4 dict_filter %}
+{% load group_filters %}
 
 {% block extra_style %}
     {{ block.super }}
@@ -65,36 +66,36 @@
 {% block page_content_inner %}
     {# Step1: Display the entry batch details #}
     <div class="step-container">
-        <div class="step-header">Batch Details Management</div>
-        <form id="batchDetailsForm" action="{% url 'wamtram2:entry_batch_detail' batch_id=batch.entry_batch_id %}" method="post" class="row">
-            {% csrf_token %}
+        <div class="step-header">Batch Info</div>
+        <div class="row">
             <div class="col-md-4">
-                <div class="d-flex align-items-end">
-                    <div class="flex-grow-1 mr-2">
-                        <label for="search_entered_person_id">{{ form.entered_person_id.label }}</label>
-                        <input type="text" id="search_entered_person_id" class="search-field form-control" placeholder="Search person" value="{{ batch.entered_person_id.first_name }} {{ batch.entered_person_id.surname }}">
-                        {{ form.entered_person_id }}
-                        <div class="search-results" style="display:none;"></div>
-                    </div>
-                    {% if user.is_superuser %}
-                    <button type="button" class="btn btn-outline-primary add-person-btn align-self-end" onClick="window.open(adminUrl);" title="Add new person">
-                        <i class="fas fa-plus"></i>
-                    </button>
-                    {% endif %}
+                <div class="form-group">
+                    <label>Team Leader Name</label>
+                    <p class="form-control-static">{{ batch.entered_person_id.get_full_name }}</p>
                 </div>
             </div>
-            <div class="col-md-8">
-                <div class="d-flex align-items-center">
-                    <div class="flex-grow-1 mr-2">
-                        {% bootstrap_field form.comments %}
-                    </div>
-                    <button type="submit" class="btn btn-info mt-3" id="saveBatchDetailsBtn">
-                        Save batch details
-                    </button>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Comments</label>
+                    <p class="form-control-static">{{ batch.comments|default:"无" }}</p>
                 </div>
-            </div>            
-        </form>
-        
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Template</label>
+                    <p class="form-control-static">{{ batch.template.name|default:"无" }}</p>
+                </div>
+            </div>
+        </div>
+        {% if request.user.is_superuser or request.user|has_group:"WAMTRAM2_STAFF" or request.user|has_group:"WAMTRAM2_TEAM_LEADER" %}
+        <div class="row mt-3">
+            <div class="col-12">
+                <a href="{% url 'wamtram2:add_batches_code' batch_id=batch.entry_batch_id %}" class="btn btn-primary">
+                    Manage Batch Detail
+                </a>
+            </div>
+        </div>
+        {% endif %}
     </div>
     {% comment %} {# Step2: Create new entry #}
     <div class="step-container">
@@ -129,7 +130,7 @@
         </div>
         <div id="templateSelectedMessage" class="mt-2 text-success" style="display: none;">Template selected</div>
     </div> {% endcomment %}
-    {% if user.is_superuser and object_list %}
+    {% if request.user.is_superuser or request.user|has_group:"WAMTRAM2_STAFF" or request.user|has_group:"WAMTRAM2_TEAM_LEADER" and object_list %}
     {# Step3: Batch Actions #}
     <div class="step-container">
         <div class="step-header">Entries Validation & Processing</div>
@@ -206,12 +207,13 @@
             <table class="table table-striped table-bordered table-sm table-hover">
                 <thead>
                     <tr>
-                        <th>ID</th>
+                        <th>Entry ID</th>
                         <th>Saved Observation</th>
                         <th>Observation date</th>
                         <th>Turtle ID</th>
                         <th>Recapture Tags</th>
                         <th>New Tags</th>
+                        <th>Lay?</th>
                         <th>System Message</th>
                         <th>Enterer</th>
                         <th>Needs Review</th>
@@ -245,6 +247,7 @@
                             {% if obj.new_pittag_id %}{{ obj.new_pittag_id }} {% endif %}
                             {% if obj.new_pittag_id_2 %}{{ obj.new_pittag_id_2 }} {% endif %}
                         </td> 
+                        <td>{{ entry.clutch_completed }}</td>
                         <td>{{ obj.error_message }}</td>
                         <td>
                             {% if obj.entered_by_id %}
@@ -273,7 +276,6 @@
                     </tr>
                     {% endfor %}
                 </tbody>
-                
             </table>
         </div>
     </div>
@@ -385,104 +387,21 @@
 {% block extra_js %}
 {{ block.super }}
 <script>
-    // Get the URL for adding a new person in the admin page
-    var adminUrl = "{% url 'admin:wamtram2_trtpersons_add' %}";
-    var batchId = "{{ batch.entry_batch_id }}";
-    var defaultEnterer = "{{ default_enterer_value }}";
-    
     document.addEventListener('DOMContentLoaded', function() {
-        // Get necessary DOM elements
-        const form = document.getElementById('batchDetailsForm');
-        const submitButton = form.querySelector('button[type="submit"]');
-        const templateSelector = document.getElementById('templateSelector');
-        const setDefaultEnterer = document.getElementById('setDefaultEnterer');
-        const createEntryBtn = document.getElementById('createEntryBtn');
-        const saveBatchDetailsBtn = document.getElementById('saveBatchDetailsBtn');
-        const enteredPersonId = document.getElementById('id_entered_person_id');
+        const addToDatabaseBtn = document.getElementById('processBtn');
+        const confirmActionBtn = document.getElementById('confirmActionBtn');
         const paginationLinks = document.querySelectorAll('.pagination a');
-
-        // Delay execution to ensure DOM elements are fully loaded
-        setTimeout(function() {
-            // Set default value if entered person ID and default enterer option exist
-            if (enteredPersonId && setDefaultEnterer.checked && defaultEnterer) {
-                enteredPersonId.value = defaultEnterer;
-                $(enteredPersonId).trigger('change'); // Trigger change event to update UI
-            }
-        }, 200);
-
-        // Form submission event handler
-        if (form) {
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
-
-                // Create and add hidden template input field
-                const templateInput = document.createElement('input');
-                templateInput.type = 'hidden';
-                templateInput.name = 'selected_template';
-                templateInput.value = templateSelector.value;
-                form.appendChild(templateInput);
-
-                // Create and add hidden default enterer option field
-                const defaultEntererInput = document.createElement('input');
-                defaultEntererInput.type = 'hidden';
-                defaultEntererInput.name = 'use_default_enterer';
-                defaultEntererInput.value = setDefaultEnterer.checked;
-                form.appendChild(defaultEntererInput);
-
-                if (enteredPersonId.value || comments.value.trim()) {
-                    showLoadingOverlay();
-                    form.submit();
-                } else {
-                    alert('please add at least one field');
-                }
-            });
-        }
-
-        // Function to update cookies data
-        function updateCookies() {
-            const selectedTemplate = templateSelector.value;
-            const useDefaultEnterer = setDefaultEnterer.checked;
-            const defaultEnterer = useDefaultEnterer ? enteredPersonId.value : "None";
-
-            document.cookie = `${batchId}_selected_template=${selectedTemplate};path=/;max-age=63072000`;
-            document.cookie = `${batchId}_use_default_enterer=${useDefaultEnterer};path=/;max-age=63072000`;
-            document.cookie = `${batchId}_default_enterer=${defaultEnterer};path=/;max-age=63072000`;
-
-            console.log('Updating cookies with:', {
-                batch_id: batchId,
-                selected_template: selectedTemplate,
-                use_default_enterer: useDefaultEnterer,
-                default_enterer: defaultEnterer
-            });
-        }
-
-        // Add event listeners for cookies update
-        if (templateSelector) templateSelector.addEventListener('change', updateCookies);
-        if (setDefaultEnterer) setDefaultEnterer.addEventListener('change', updateCookies);
-        if (enteredPersonId) enteredPersonId.addEventListener('change', updateCookies);
-
-        // Create entry button click event handler
-        if (createEntryBtn) {
-            createEntryBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                console.log('Create entry button clicked');
-                updateCookies();
-                createEntryBtn.disabled = true;
-                // Short delay before navigation to ensure cookies update is complete
-                setTimeout(() => {
-                    console.log('Navigating to:', this.href);
-                    showLoadingSpinner();
-                    window.location.href = this.href;
-                }, 100);
-            });
-        }
-
+        const customConfirmationModal = new bootstrap.Modal(document.getElementById('customConfirmationModal'), {
+            backdrop: 'static',
+            keyboard: false
+        });
+    
         // Entry delete confirmation modal logic
         const entryDeleteConfirmationInput = document.getElementById('entryDeleteConfirmationInput');
         const confirmEntryDeleteButton = document.getElementById('confirmEntryDeleteButton');
         let entryIdToDelete;
         let deleteUrl;
-
+    
         document.querySelectorAll('.delete-entry-btn').forEach(button => {
             button.addEventListener('click', function() {
                 entryIdToDelete = this.getAttribute('data-entry-id');
@@ -491,16 +410,12 @@
                 document.getElementById('entryIdToDeleteText').innerText = entryIdToDelete;
             });
         });
-
+    
         entryDeleteConfirmationInput.addEventListener('input', function() {
             const confirmationText = `I confirm to delete entry ${entryIdToDelete}`;
-            if (entryDeleteConfirmationInput.value === confirmationText) {
-                confirmEntryDeleteButton.removeAttribute('disabled');
-            } else {
-                confirmEntryDeleteButton.setAttribute('disabled', 'disabled');
-            }
+            confirmEntryDeleteButton.disabled = (entryDeleteConfirmationInput.value !== confirmationText);
         });
-
+    
         confirmEntryDeleteButton.addEventListener('click', function() {
             showLoadingSpinner();
             const form = document.createElement('form');
@@ -511,181 +426,83 @@
             document.body.appendChild(form);
             form.submit();
         });
-
+    
         // Delete batch confirmation modal logic
         const deleteConfirmationInput = document.getElementById('deleteConfirmationInput');
         const confirmDeleteButton = document.getElementById('confirmDeleteButton');
         const deleteBatchId = "{{ batch.entry_batch_id }}";
         const confirmationText = `I confirm to delete batch ${deleteBatchId}`;
-
+    
         deleteConfirmationInput.addEventListener('input', function() {
-            if (deleteConfirmationInput.value === confirmationText) {
-                confirmDeleteButton.removeAttribute('disabled');
-            } else {
-                confirmDeleteButton.setAttribute('disabled', 'disabled');
-            }
+            confirmDeleteButton.disabled = (deleteConfirmationInput.value !== confirmationText);
         });
-
+    
         confirmDeleteButton.addEventListener('click', function() {
             showLoadingSpinner();
             document.getElementById('deleteBatchForm').submit();
         });
-
-        // Search functionality for entered_person_id
-        const searchField = document.getElementById('search_entered_person_id');
-        const resultsContainer = searchField.nextElementSibling.nextElementSibling;
-
-        searchField.addEventListener('input', debounce(function() {
-            const query = this.value;
-            if (query.length > 2) {
-                fetch(`/wamtram2/search-persons/?q=${encodeURIComponent(query)}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log('Search results:', data);
-                        if (data.length > 0) {
-                            resultsContainer.innerHTML = '';
-                            resultsContainer.style.display = 'block';
-                            data.forEach(person => {
-                                const div = document.createElement('div');
-                                div.textContent = `${person.first_name} ${person.surname}`;
-                                div.className = 'search-result';
-                                div.onclick = function() {
-                                    searchField.value = div.textContent;
-                                    enteredPersonId.value = person.person_id;
-                                    resultsContainer.style.display = 'none';
-                                    console.log(`Selected person ID: ${enteredPersonId.value}`);
-                                };
-                                resultsContainer.appendChild(div);
-                            });
-                        } else {
-                            resultsContainer.innerHTML = '<div class="search-result">No data found</div>';
-                            resultsContainer.style.display = 'block';
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error fetching search results:', error);
-                    });
-            } else {
-                resultsContainer.style.display = 'none';
-            }
-        }, 300));
-
-        document.addEventListener('click', function(e) {
-            if (!searchField.contains(e.target) && !resultsContainer.contains(e.target)) {
-                resultsContainer.style.display = 'none';
-            }
+    
+        if (addToDatabaseBtn) {
+            addToDatabaseBtn.addEventListener('click', function(event) {
+                event.preventDefault();
+                customConfirmationModal.show();
+            });
+        }
+    
+        if (confirmActionBtn) {
+            confirmActionBtn.addEventListener('click', function() {
+                customConfirmationModal.hide();
+                showLoadingOverlay();
+                window.location.href = addToDatabaseBtn.href;
+            });
+        }
+    
+        // Handle pagination links click event
+        paginationLinks.forEach(link => {
+            link.addEventListener('click', function(event) {
+                event.preventDefault();
+                showLoadingOverlay();
+                window.location.href = this.href;
+            });
         });
-
-        function debounce(func, wait) {
-            let timeout;
-            return function(...args) {
-                clearTimeout(timeout);
-                timeout = setTimeout(() => func.apply(this, args), wait);
-            };
+    });
+    
+    // Show loading spinner and overlay
+    function showLoadingSpinner() {
+        const loadingSpinner = document.querySelector('.loading-spinner');
+        if (loadingSpinner) {
+            loadingSpinner.style.display = 'block';
+        }
+    }
+    
+    function showLoadingOverlay() {
+        const overlay = document.querySelector('.loading-overlay');
+        const spinner = document.querySelector('.loading-spinner');
+        if (overlay) overlay.style.display = 'block';
+        if (spinner) spinner.style.display = 'block';
+    }
+    
+    // Hide loading spinner and overlay
+    function hideLoadingOverlay() {
+        const overlay = document.querySelector('.loading-overlay');
+        const spinner = document.querySelector('.loading-spinner');
+        if (overlay) overlay.style.display = 'none';
+        if (spinner) spinner.style.display = 'none';
+    }
+    
+    // Filter select change event handler
+    document.querySelector('select[name="filter"]').addEventListener('change', function() {
+        showLoadingOverlay();
+        this.form.submit();
+    });
+    
+    // Hide loading spinner on page load and navigation
+    window.addEventListener('load', hideLoadingOverlay);
+    window.addEventListener('pageshow', function(event) {
+        if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+            hideLoadingOverlay();
+            window.location.reload();
         }
     });
-
-// Show loading spinner
-function showLoadingSpinner() {
-    const loadingSpinner = document.querySelector('.loading-spinner');
-    if (loadingSpinner) {
-        loadingSpinner.style.display = 'block';
-    }
-}
-
-// Hide loading spinner
-function hideLoadingSpinner() {
-    const loadingSpinner = document.querySelector('.loading-spinner');
-    if (loadingSpinner) {
-        loadingSpinner.style.display = 'none';
-    }
-}
-
-// Show loading spinner and overlay
-function showLoadingOverlay() {
-    const overlay = document.querySelector('.loading-overlay');
-    const spinner = document.querySelector('.loading-spinner');
-
-    if (overlay) {
-        overlay.style.display = 'block'; // Show the overlay
-    }
-
-    if (spinner) {
-        spinner.style.display = 'block'; // Show the loading spinner
-    }
-}
-
-// Hide loading spinner and overlay
-function hideLoadingOverlay() {
-    const overlay = document.querySelector('.loading-overlay');
-    const spinner = document.querySelector('.loading-spinner');
-
-    if (overlay) {
-        overlay.style.display = 'none'; // Hide the overlay
-    }
-
-    if (spinner) {
-        spinner.style.display = 'none'; // Hide the loading spinner
-    }
-}
-
-// Filter select change event handler
-document.querySelector('select[name="filter"]').addEventListener('change', function() {
-    showLoadingOverlay();
-    this.form.submit();
-});
-
-// Hide loading spinner on page load
-window.addEventListener('load', function() {
-    hideLoadingOverlay();
-    setTimeout(function() {
-        hideLoadingOverlay();
-        hideLoadingSpinner();
-    }, 500);
-});
-
-window.addEventListener('pageshow', function(event) {
-    if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
-        hideLoadingSpinner();
-        window.location.reload();
-    }
-});
-
-document.addEventListener('DOMContentLoaded', function() {
-    const addToDatabaseBtn = document.getElementById('processBtn');
-    const confirmActionBtn = document.getElementById('confirmActionBtn');
-    const paginationLinks = document.querySelectorAll('.pagination a');
-    const customConfirmationModal = new bootstrap.Modal(document.getElementById('customConfirmationModal'), {
-        backdrop: 'static',
-        keyboard: false
-    });
-
-    if (addToDatabaseBtn) {
-        addToDatabaseBtn.addEventListener('click', function(event) {
-            event.preventDefault(); // Prevent the default action
-            customConfirmationModal.show(); // Show the custom confirmation modal
-        });
-    }
-
-    if (confirmActionBtn) {
-        confirmActionBtn.addEventListener('click', function() {
-            customConfirmationModal.hide(); // Hide the modal
-            showLoadingOverlay(); // Show the loading overlay and spinner
-            window.location.href = addToDatabaseBtn.href; // Proceed with the original action
-        });
-    }
-
-    // Handle pagination links click event
-    paginationLinks.forEach(link => {
-        link.addEventListener('click', function(event) {
-            event.preventDefault(); // Prevent default action
-            showLoadingOverlay(); // Show loading overlay and spinner
-            window.location.href = this.href; // Proceed with navigation after showing the overlay
-        });
-    });
-});
-
-
-</script>
-
+    </script>
 {% endblock %}

@@ -10,15 +10,13 @@ from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.views.generic.edit import FormMixin
 from django.views.generic import TemplateView, ListView, DetailView, FormView, DeleteView
-from django.http import JsonResponse, QueryDict
+from django.http import JsonResponse
 from .models import TrtPlaces, TrtSpecies, TrtLocations
-from django.db.models.functions import Coalesce
 from django.db.models import Count, Exists, OuterRef, Subquery
 from django.core.paginator import Paginator
 from openpyxl import Workbook
-import csv
-from django.db.models import Count, Max, F
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.db.models import Count
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from django.views.decorators.http import require_POST
 from django.utils.decorators import method_decorator
@@ -28,6 +26,7 @@ from django.views.decorators.http import require_GET, require_POST, require_http
 from django.template.loader import render_to_string
 from django.core.serializers.json import DjangoJSONEncoder
 import json
+import csv
 
 
 from wastd.utils import Breadcrumb, PaginateMixin
@@ -41,7 +40,6 @@ from .models import (
     TrtObservations,
     Template,
     TrtTagStates,
-    TrtBodyParts,
     TrtTurtleStatus
 )
 from .forms import TrtDataEntryForm, SearchForm, TrtEntryBatchesForm, TemplateForm, BatchesCodeForm, BatchesSearchForm
@@ -66,8 +64,9 @@ class EntryBatchesListView(LoginRequiredMixin, ListView):
 
     def dispatch(self, request, *args, **kwargs):
         if not (
-            request.user.groups.filter(name="Tagging Data Entry").exists()
-            or request.user.groups.filter(name="Tagging Data Curation").exists()
+            request.user.groups.filter(name="WAMTRAM2_VOLUNTEER").exists()
+            or request.user.groups.filter(name="WAMTRAM2_TEAM_LEADER").exists()
+            or request.user.groups.filter(name="WAMTRAM2_STAFF").exists()
             or request.user.is_superuser
         ):
             return HttpResponseForbidden(
@@ -166,8 +165,9 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
 
     def dispatch(self, request, *args, **kwargs):
         if not (
-            request.user.groups.filter(name="Tagging Data Entry").exists()
-            or request.user.groups.filter(name="Tagging Data Curation").exists()
+            request.user.groups.filter(name="WAMTRAM2_VOLUNTEER").exists()
+            or request.user.groups.filter(name="WAMTRAM2_TEAM_LEADER").exists()
+            or request.user.groups.filter(name="WAMTRAM2_STAFF").exists()
             or request.user.is_superuser
         ):
             return HttpResponseForbidden(
@@ -287,8 +287,9 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
     def dispatch(self, request, *args, **kwargs):
         # FIXME: Permission check
         if not (
-            request.user.groups.filter(name="Tagging Data Entry").exists()
-            or request.user.groups.filter(name="Tagging Data Curation").exists()
+            request.user.groups.filter(name="WAMTRAM2_VOLUNTEER").exists()
+            or request.user.groups.filter(name="WAMTRAM2_TEAM_LEADER").exists()
+            or request.user.groups.filter(name="WAMTRAM2_STAFF").exists()
             or request.user.is_superuser
         ):
             return HttpResponseForbidden(
@@ -544,8 +545,8 @@ class DeleteBatchView(LoginRequiredMixin, View):
     def dispatch(self, request, *args, **kwargs):
         # FIXME: Permission check
         if not (
-            request.user.groups.filter(name="Tagging Data Entry").exists()
-            or request.user.groups.filter(name="Tagging Data Curation").exists()
+            request.user.groups.filter(name="WAMTRAM2_TEAM_LEADER").exists()
+            or request.user.groups.filter(name="WAMTRAM2_STAFF").exists()
             or request.user.is_superuser
         ):
             return HttpResponseForbidden(
@@ -580,8 +581,7 @@ class ValidateDataEntryBatchView(LoginRequiredMixin, View):
     def dispatch(self, request, *args, **kwargs):
         # FIXME: Permission check
         if not (
-            request.user.groups.filter(name="Tagging Data Entry").exists()
-            or request.user.groups.filter(name="Tagging Data Curation").exists()
+            request.user.groups.filter(name="WAMTRAM2_STAFF").exists()
             or request.user.is_superuser
         ):
             return HttpResponseForbidden(
@@ -604,9 +604,20 @@ class ValidateDataEntryBatchView(LoginRequiredMixin, View):
         return redirect("wamtram2:entry_batch_detail", batch_id=self.kwargs["batch_id"])
 
 
-class DeleteEntryView(DeleteView):
+class DeleteEntryView(LoginRequiredMixin,DeleteView):
     model = TrtDataEntry
     success_url = reverse_lazy('wamtram2:batches_curation')
+    
+    def dispatch(self, request, *args, **kwargs):
+        # FIXME: Permission check
+        if not (
+            request.user.groups.filter(name="WAMTRAM2_STAFF").exists()
+            or request.user.is_superuser
+        ):
+            return HttpResponseForbidden(
+                "You do not have permission to view this record"
+            )
+        return super().dispatch(request, *args, **kwargs)
 
     def get_success_url(self):
         batch_id = self.kwargs['batch_id']
@@ -638,8 +649,7 @@ class ProcessDataEntryBatchView(LoginRequiredMixin, View):
     def dispatch(self, request, *args, **kwargs):
         # FIXME: Permission check
         if not (
-            request.user.groups.filter(name="Tagging Data Entry").exists()
-            or request.user.groups.filter(name="Tagging Data Curation").exists()
+            request.user.groups.filter(name="WAMTRAM2_STAFF").exists()
             or request.user.is_superuser
         ):
             return HttpResponseForbidden(
@@ -668,8 +678,9 @@ class FindTurtleView(LoginRequiredMixin, View):
 
     def dispatch(self, request, *args, **kwargs):
         if not (
-            request.user.groups.filter(name="Tagging Data Entry").exists()
-            or request.user.groups.filter(name="Tagging Data Curation").exists()
+            request.user.groups.filter(name="WAMTRAM2_VOLUNTEER").exists()
+            or request.user.groups.filter(name="WAMTRAM2_TEAM_LEADER").exists()
+            or request.user.groups.filter(name="WAMTRAM2_STAFF").exists()
             or request.user.is_superuser
         ):
             return HttpResponseForbidden("You do not have permission to view this record")
@@ -792,6 +803,17 @@ class FindTurtleView(LoginRequiredMixin, View):
 class ObservationDetailView(LoginRequiredMixin, DetailView):
     model = TrtObservations
     template_name = "wamtram2/observation_detail.html"
+    
+    def dispatch(self, request, *args, **kwargs):
+        if not (
+            request.user.groups.filter(name="WAMTRAM2_VOLUNTEER").exists()
+            or request.user.groups.filter(name="WAMTRAM2_TEAM_LEADER").exists()
+            or request.user.groups.filter(name="WAMTRAM2_STAFF").exists()
+            or request.user.is_superuser
+        ):
+            return HttpResponseForbidden("You do not have permission to view this record")
+        return super().dispatch(request, *args, **kwargs)
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -862,6 +884,17 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
     """
 
     model = TrtTurtles
+    
+    def dispatch(self, request, *args, **kwargs):
+        if not (
+            request.user.groups.filter(name="WAMTRAM2_VOLUNTEER").exists()
+            or request.user.groups.filter(name="WAMTRAM2_TEAM_LEADER").exists()
+            or request.user.groups.filter(name="WAMTRAM2_STAFF").exists()
+            or request.user.is_superuser
+        ):
+            return HttpResponseForbidden("You do not have permission to view this record")
+        return super().dispatch(request, *args, **kwargs)
+
 
     def get_context_data(self, **kwargs):
         """
@@ -897,7 +930,11 @@ class TemplateManageView(LoginRequiredMixin, FormView):
     template_name = 'wamtram2/template_manage.html'
     form_class = TemplateForm
     def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_superuser:
+        if not (
+            request.user.groups.filter(name="WAMTRAM2_TEAM_LEADER").exists()
+            or request.user.groups.filter(name="WAMTRAM2_STAFF").exists()
+            or request.user.is_superuser
+        ):
             return HttpResponseForbidden("You do not have permission to access this page.")
         
         elif request.method == 'DELETE':
@@ -1189,7 +1226,8 @@ class ExportDataView(LoginRequiredMixin, View):
     def dispatch(self, request, *args, **kwargs):
         # Permission check: only allow users in the specific groups or superusers
         if not (
-            request.user.is_superuser
+            request.user.groups.filter(name="WAMTRAM2_STAFF").exists()
+            or request.user.is_superuser
         ):
             return HttpResponseForbidden(
                 "You do not have permission to view this record"
@@ -1263,7 +1301,10 @@ class FilterFormView(LoginRequiredMixin, View):
     def dispatch(self, request, *args, **kwargs):
         # Permission check: only allow users in the specific groups or superusers
         if not (
-            request.user.is_superuser
+            request.user.groups.filter(name="WAMTRAM2_VOLUNTEER").exists()
+            or request.user.groups.filter(name="WAMTRAM2_TEAM_LEADER").exists()
+            or request.user.groups.filter(name="WAMTRAM2_STAFF").exists()
+            or request.user.is_superuser
         ):
             return HttpResponseForbidden(
                 "You do not have permission to view this record"
@@ -1349,7 +1390,11 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
     paginate_by = 20
     
     def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_superuser:
+        if not (
+            request.user.groups.filter(name="WAMTRAM2_TEAM_LEADER").exists()
+            or request.user.groups.filter(name="WAMTRAM2_STAFF").exists()
+            or request.user.is_superuser
+        ):
             return HttpResponseForbidden("You do not have permission to view this record")
         return super().dispatch(request, *args, **kwargs)
 
@@ -1459,6 +1504,20 @@ class CreateNewEntryView(LoginRequiredMixin, ListView):
     template_name = 'wamtram2/create_new_entry.html'
     context_object_name = 'batches'
     paginate_by = 20
+    
+    def dispatch(self, request, *args, **kwargs):
+        # Permission check: only allow users in the specific groups or superusers
+        if not (
+            request.user.groups.filter(name="WAMTRAM2_VOLUNTEER").exists()
+            or request.user.groups.filter(name="WAMTRAM2_TEAM_LEADER").exists()
+            or request.user.groups.filter(name="WAMTRAM2_STAFF").exists()
+            or request.user.is_superuser
+        ):
+            return HttpResponseForbidden(
+                "You do not have permission to view this record"
+            )
+        return super().dispatch(request, *args, **kwargs)
+    
 
     def get_queryset(self):
         """
@@ -1566,8 +1625,18 @@ def quick_add_batch(request):
 
 class BatchCodeManageView(View):
     template_name = 'wamtram2/add_batches_code.html'
-    
+
     def dispatch(self, request, *args, **kwargs):
+        
+        if not (
+            request.user.groups.filter(name="WAMTRAM2_TEAM_LEADER").exists()
+            or request.user.groups.filter(name="WAMTRAM2_STAFF").exists()
+            or request.user.is_superuser
+        ):
+            return HttpResponseForbidden(
+                "You do not have permission to view this record"
+            )
+            
         if request.method == 'GET' and 'action' in request.GET:
             action = request.GET.get('action')
             if action == 'get_places':
@@ -1643,8 +1712,7 @@ class BatchCodeManageView(View):
         else:
             is_unique = not TrtEntryBatches.objects.filter(batches_code=code).exists()
         return JsonResponse({'is_unique': is_unique})
-
-    
+ 
     
 @require_GET
 def get_places(request):
