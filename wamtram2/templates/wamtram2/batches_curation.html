@@ -10,6 +10,21 @@
 <link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
 <style>
+    .search-results {
+        position: absolute;
+        background-color: white;
+        border: 1px solid #ddd;
+        max-height: 200px;
+        overflow-y: auto;
+        z-index: 1000;
+    }
+    .search-results div {
+        padding: 5px 10px;
+        cursor: pointer;
+    }
+    .search-results div:hover {
+        background-color: #f0f0f0;
+    }
     .tooltip-inner {
         max-width: 300px;
         text-align: left;
@@ -232,6 +247,17 @@
                     <div class="form-group">
                         <label for="quickAddComments">Comments</label>
                         <textarea class="form-control" id="quickAddComments" name="comments" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="quickAddTeamLeader">Team Leader Name</label>
+                        <div class="input-group">
+                            <input type="text" id="quickAddTeamLeader" class="search-field form-control" placeholder="搜索人员" autocomplete="off">
+                            <input type="hidden" id="quickAddTeamLeaderId" name="entered_person_id">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" type="button" id="clearTeamLeader">清除</button>
+                            </div>
+                        </div>
+                        <div class="search-results" style="display:none;"></div>
                     </div>
                     <div class="form-group">
                         <label for="quickAddTemplate">Template (optional)</label>
@@ -556,6 +582,48 @@
                 }
             });
         }
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var teamLeaderInput = document.getElementById('quickAddTeamLeader');
+        var teamLeaderIdInput = document.getElementById('quickAddTeamLeaderId');
+        var searchResults = teamLeaderInput.nextElementSibling;
+        var clearButton = document.getElementById('clearTeamLeader');
+    
+        teamLeaderInput.addEventListener('input', function() {
+            var searchTerm = this.value;
+            if (searchTerm.length >= 2) {
+                fetch(`/wamtram2/search_person/?term=${searchTerm}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        searchResults.innerHTML = '';
+                        searchResults.style.display = 'block';
+                        data.forEach(person => {
+                            var div = document.createElement('div');
+                            div.textContent = `${person.first_name} ${person.surname}`;
+                            div.addEventListener('click', function() {
+                                teamLeaderInput.value = `${person.first_name} ${person.surname}`;
+                                teamLeaderIdInput.value = person.id;
+                                searchResults.style.display = 'none';
+                            });
+                            searchResults.appendChild(div);
+                        });
+                    });
+            } else {
+                searchResults.style.display = 'none';
+            }
+        });
+    
+        clearButton.addEventListener('click', function() {
+            teamLeaderInput.value = '';
+            teamLeaderIdInput.value = '';
+        });
+    
+        document.addEventListener('click', function(e) {
+            if (e.target !== teamLeaderInput && e.target !== searchResults) {
+                searchResults.style.display = 'none';
+            }
+        });
     });
     </script>
 {% endblock %}
