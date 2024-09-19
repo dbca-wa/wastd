@@ -69,9 +69,10 @@
         {% endif %}
 
         {% if request.user.is_superuser or request.user|has_group:"WAMTRAM2_STAFF" or request.user|has_group:"WAMTRAM2_TEAM_LEADER" %}
-        <button type="button" class="btn btn-outline-primary add-person-btn align-self-end" onClick="window.open(adminUrl);" title="Add new person">
-            <i class="fas fa-cog"> Add Person</i>
-        </button>
+        <!-- Add Person Button -->
+        <a href="#" class="btn btn-outline-secondary mr-2 mb-2" onclick="window.open(adminUrl); return false;" title="Add Person">
+            <i class="fas fa-user-plus"></i> Add Person
+        </a>
         {% endif %}
         
         {% if request.user.is_superuser or request.user|has_group:"WAMTRAM2_STAFF" or request.user|has_group:"WAMTRAM2_TEAM_LEADER"  %}
