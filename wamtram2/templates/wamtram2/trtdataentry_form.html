@@ -1138,23 +1138,21 @@
 
     console.log("Observation Date Input:", observationDateInput.value);
     console.log("Observation Date label:", observationDateInput.parentElement.querySelector('label').innerText);
-    console.log(document.getElementById('id_observation_date'))
-    console.log(document.getElementById('id_latitude'))
-    
-
+    console.log(document.getElementById('id_observation_date'));
+    console.log(document.getElementById('id_latitude'));
 
     function validateDate() {
-      const selectedDate = new Date(observationDateInput.value);
-      const currentDate = new Date();
-  
-      if (selectedDate > currentDate) {
-        dateErrorMessage.textContent = "Date in the future";
-        dateErrorMessage.style.display = 'block';
-        observationDateInput.classList.add('is-invalid');
-      } else {
-        dateErrorMessage.style.display = 'none';
-        observationDateInput.classList.remove('is-invalid');
-      }
+        const selectedDate = new Date(observationDateInput.value);
+        const currentDate = new Date();
+
+        if (selectedDate > currentDate) {
+            dateErrorMessage.textContent = "Date in the future";
+            dateErrorMessage.style.display = 'block';
+            observationDateInput.classList.add('is-invalid');
+        } else {
+            dateErrorMessage.style.display = 'none';
+            observationDateInput.classList.remove('is-invalid');
+        }
     }
 
     var datetimeInputs = document.querySelectorAll('input[type="datetime-local"]');
@@ -1169,14 +1167,14 @@
             onReady: function(selectedDates, dateStr, instance) {
                 var altInput = instance.altInput;
                 altInput.addEventListener('input', function(e) {
-                    let value = e.target.value.replace(/\D/g, ''); 
+                    let value = e.target.value.replace(/\D/g, '');
                     let formattedValue = '';
                     if (value.length > 0) {
-                        formattedValue += value.substring(0, 2); 
+                        formattedValue += value.substring(0, 2);
                         if (value.length > 2) {
                             formattedValue += '/' + value.substring(2, 4);
                             if (value.length > 4) {
-                                formattedValue += '/' + value.substring(4, 8); 
+                                formattedValue += '/' + value.substring(4, 8);
                                 if (value.length > 8) {
                                     formattedValue += ' ' + value.substring(8, 10);
                                     if (value.length > 10) {
@@ -1191,89 +1189,89 @@
                 altInput.addEventListener('input', validateDate);
             },
             onChange: function(selectedDates, dateStr, instance) {
-              validateDate();
+                validateDate();
             }
         });
     });
 
     if (reviewButton) {
-      reviewButton.addEventListener('click', function(event) {
-          event.preventDefault(); 
+        reviewButton.addEventListener('click', function(event) {
+            event.preventDefault();
 
-          let summaryHTML = '<ul>';
-          
-          form.querySelectorAll('input, select, textarea').forEach(input => {
-                  if (input.type !== 'hidden') {
+            let summaryHTML = '<ul>';
+
+            form.querySelectorAll('input, select, textarea').forEach(input => {
+                if (input.type !== 'hidden') {
                     let labelText = '';
                     let inputValue = input.value.trim();;
                     let inputId = input.id;
 
-
-                  if (inputValue !== '') {
-                      if (labelMapping[inputId]) {
-                          labelText = labelMapping[inputId];
-                      } else {
-                          const label = form.querySelector(`label[for="${inputId}"]`);
-
-                          if (!label) {
-                            const parentLabel = input.parentElement.querySelector('label');
-                            console.log("Parent Label:", parentLabel);
-                            labelText = parentLabel ? parentLabel.textContent.trim() : input.name;
-                          } else {
-                            labelText = label.textContent.trim();
-                          }
-                      }
-                      if (inputId === 'id_species_code') {
-                        summaryHTML += `
-                          <li class="species-row">
-                            <span class="species-highlight"><strong>${labelText}:</strong> ${inputValue}</span>
-                            <div class="form-check">
-                              <input type="checkbox" class="form-check-input" id="speciesConfirmCheckbox">
-                              <label class="form-check-label" for="speciesConfirmCheckbox">I confirm this is the correct species</label>
-                            </div>
-                          </li>`;
-                      } else {
-                        summaryHTML += `<li><strong>${labelText}:</strong> ${inputValue}</li>`;
-                      }
-
-                      if (input.type === 'checkbox') {
-                        if (input.checked) {
-                          inputValue = 'Yes';
+                    if (inputValue !== '') {
+                        if (labelMapping[inputId]) {
+                            labelText = labelMapping[inputId];
                         } else {
-                          return;
+                            const label = form.querySelector(`label[for="${inputId}"]`);
+
+                            if (!label) {
+                                const parentLabel = input.parentElement.querySelector('label');
+                                console.log("Parent Label:", parentLabel);
+                                labelText = parentLabel ? parentLabel.textContent.trim() : input.name;
+                            } else {
+                                labelText = label.textContent.trim();
+                            }
                         }
-                      } else if (input.tagName.toLowerCase() === 'select') {
-                          inputValue = input.selectedOptions[0].textContent.trim();
-                      }
+                        if (inputId === 'id_species_code') {
+                            summaryHTML += `
+                                <li class="species-row">
+                                    <span class="species-highlight"><strong>${labelText}:</strong> ${inputValue}</span>
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" id="speciesConfirmCheckbox">
+                                        <label class="form-check-label" for="speciesConfirmCheckbox">I confirm this is the correct species</label>
+                                    </div>
+                                </li>`;
+                        } else {
+                            summaryHTML += `<li><strong>${labelText}:</strong> ${inputValue}</li>`;
+                        }
 
-                      if (inputId === 'id_latitude' && inputValue !== '') {
-                          inputValue = '-' + inputValue;
-                      }
+                        if (input.type === 'checkbox') {
+                            if (input.checked) {
+                                inputValue = 'Yes';
+                            } else {
+                                return;
+                            }
+                        } else if (input.tagName.toLowerCase() === 'select') {
+                            inputValue = input.selectedOptions[0].textContent.trim();
+                        }
 
-                      summaryHTML += `<li><strong>${labelText}:</strong> ${inputValue}</li>`;
-                  }
-              }
-          });
+                        if (inputId === 'id_latitude' && inputValue !== '') {
+                            inputValue = '-' + inputValue;
+                        }
 
-          summaryHTML += '</ul>';
-
-          summaryContent.innerHTML = summaryHTML;
-
-          $(summaryModal).modal('show');
-
-          const speciesConfirmCheckbox = document.getElementById('speciesConfirmCheckbox');
-          if (speciesConfirmCheckbox) {
-            speciesConfirmCheckbox.addEventListener('change', function() {
-              confirmSaveButton.disabled = !this.checked;
+                        summaryHTML += `<li><strong>${labelText}:</strong> ${inputValue}</li>`;
+                    }
+                }
             });
-      });
+
+            summaryHTML += '</ul>';
+
+            summaryContent.innerHTML = summaryHTML;
+
+            $(summaryModal).modal('show');
+
+            const speciesConfirmCheckbox = document.getElementById('speciesConfirmCheckbox');
+            if (speciesConfirmCheckbox) {
+                speciesConfirmCheckbox.addEventListener('change', function() {
+                    confirmSaveButton.disabled = !this.checked;
+                });
+            }
+        });
     }
 
     if (confirmSaveButton) {
-      confirmSaveButton.addEventListener('click', function(event) {
-          $(summaryModal).modal('hide');
-          form.submit()
-      });
+        confirmSaveButton.addEventListener('click', function(event) {
+            $(summaryModal).modal('hide');
+            form.submit();
+        });
     }
   });
   document.addEventListener('DOMContentLoaded', function() {
