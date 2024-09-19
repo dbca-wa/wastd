@@ -152,6 +152,10 @@
             {% endfor %}
         </tbody>
     </table>
+    {% else %}
+    <div class="alert alert-info" role="alert">
+        No Batches Found
+    </div>
     {% endif %}
 </div>
 
@@ -404,6 +408,7 @@
         // Handle location change
         function handleLocationChange(locationSelect, placeSelect) {
             var locationCode = locationSelect.val();
+            showLoadingSpinner()
             $.ajax({
                 url: "{% url 'wamtram2:get_places' %}",
                 data: { 'location_code': locationCode },
@@ -417,6 +422,11 @@
                             'data-full-name': place.get_full_name
                         }));
                     });
+                    hideLoadingSpinner();
+                },
+                error: function() {
+                    hideLoadingSpinner();
+                    alert('An error occurred while loading places.');
                 }
             });
         }
