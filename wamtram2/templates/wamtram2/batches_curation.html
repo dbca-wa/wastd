@@ -51,6 +51,12 @@
             <i class="fas fa-cog"></i> Manage Templates
         </a>
         {% endif %}
+
+        {% if request.user.is_superuser or request.user|has_group:"WAMTRAM2_STAFF" or request.user|has_group:"WAMTRAM2_TEAM_LEADER" %}
+        <button type="button" class="btn btn-outline-primary add-person-btn align-self-end" onClick="window.open(adminUrl);" title="Add new person">
+            <i class="fas fa-cog"> Add Person</i>
+        </button>
+        {% endif %}
         
         {% if request.user.is_superuser or request.user|has_group:"WAMTRAM2_STAFF" or request.user|has_group:"WAMTRAM2_TEAM_LEADER"  %}
         <!-- Quick Add Batch Button -->
