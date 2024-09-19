@@ -33,7 +33,7 @@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-        <li class="breadcrumb-item"><a href="{% url 'wamtram2:batches_curation' %}">Batches Curation</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'wamtram2:batches_curation' %}">Batches Mangement</a></li>
         <li class="breadcrumb-item active">Edit Batch Details</li>
         <li class="breadcrumb-item"><a href="{% url 'wamtram2:entry_batch_detail' batch_id %}">{{ batch_id }}</a></li>
     </ol>
@@ -51,7 +51,7 @@
         <form id="codeGeneratorForm" class="row">
             {% csrf_token %}
             <div class="col-md-3">
-                <label for="location_code">Location</label>
+                <label for="location_code">Location (required)</label>
                 <select class="form-control" id="location_code" name="location_code">
                     {% for location in locations %}
                         <option value="{{ location.location_code }}">{{ location.location_name }}</option>
@@ -59,13 +59,13 @@
                 </select>
             </div>
             <div class="col-md-3">
-                <label for="place_code">Place</label>
+                <label for="place_code">Place (required)</label>
                 <select class="form-control" id="place_code" name="place_code">
                     <!-- Will be populated dynamically by JavaScript -->
                 </select>
             </div>
             <div class="col-md-2">
-                <label for="year">Year</label>
+                <label for="year">Year (required)</label>
                 <select class="form-control" id="year" name="year">
                     {% for year, short_year in years.items %}
                         <option value="{{ short_year }}" {% if year == current_year|stringformat:"s" %}selected{% endif %}>{{ year }}</option>
@@ -73,7 +73,7 @@
                 </select>
             </div>
             <div class="col-md-2">
-                <label for="night">Night Number</label>
+                <label for="night">Night Number (optional)</label>
                 <input type="number" class="form-control" id="night" name="night" min="1" max="99" value="1">
             </div>
             <div class="col-md-2 mt-4">
@@ -169,11 +169,23 @@
         var night = $('#night').val();
         var placeCode = $('#place_code').val();
         var year = $('#year').val().slice(-2);
-        var generatedCode = 'N' + night + placeCode + year;
         var batchId = {% if batch_id %}{{ batch_id }}{% else %}null{% endif %};
+
+        if (!placeCode || !year) {
+            alert('Please select a place and year.');
+            return;
+        }
+
+        var code = '';
+        if (night) {
+            code = 'N' + night;
+        }
+        code += placeCode + year;
+    
+        document.getElementById('generatedCode').textContent = code;
+
         // Check if the code is unique
         $.ajax({
-            
             url: "{% url 'wamtram2:batch_code_manage' %}",
             type: 'GET',
             data: { 
