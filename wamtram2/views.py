@@ -1326,7 +1326,7 @@ class ExportDataView(LoginRequiredMixin, View):
         ).distinct()
 
         species_list = [
-            {"value": specie.species_cod, "label": specie.common_name}
+            {"value": specie.species_code, "label": specie.common_name}
             for specie in species
         ]
 
