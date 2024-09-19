@@ -944,6 +944,14 @@
 {% block extra_js %}
 {{ form.media.js }}
 {{ block.super }}
+<script src="{% static 'js/tagToggleHandler.js' %}"></script>
+<script src="{% static 'js/scarHandler.js' %}"></script>
+<script src="{% static 'js/measurementHandler.js' %}"></script>
+<script src="{% static 'js/injuryHandler.js' %}"></script>
+<script src="{% static 'js/advancedDataHandler.js' %}"></script>
+<script src="{% static 'js/bgColorHandler.js' %}"></script>
+<script src="{% static 'js/tagValidation.js' %}"></script>
+<script src="{% static 'js/searchHandler.js' %}"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
@@ -1340,17 +1348,30 @@
     const pitTagCheckField = document.getElementById('id_pit_tag_check');
     const doNotProcessField = document.getElementById('id_do_not_process');
 
+    function updateBackgroundColor() {
+        const bodyElement = document.body;
+        const doNotProcessField = document.getElementById('id_do_not_process');
+        if (doNotProcessField.checked) {
+            bodyElement.classList.add('bg-yellow');
+        } else {
+            bodyElement.classList.remove('bg-yellow');
+        }
+    }
+
     function updateDoNotProcess() {
         const turtleIdEmpty = !turtleIdField.value;
         const flipperTagDidntCheck = flipperTagCheckField.value === 'D';
         const pitTagDidntCheck = pitTagCheckField.value === 'D';
+
 
         if (turtleIdEmpty && flipperTagDidntCheck && pitTagDidntCheck) {
             doNotProcessField.checked = true;
             doNotProcessField.disabled = true;
         } else {
             doNotProcessField.disabled = false;
+            doNotProcessField.checked = false;
         }
+        updateBackgroundColor();
     }
 
     turtleIdField.addEventListener('change', updateDoNotProcess);
@@ -1360,13 +1381,5 @@
     updateDoNotProcess();
   });
 </script>
-<script src="{% static 'js/tagToggleHandler.js' %}"></script>
-<script src="{% static 'js/scarHandler.js' %}"></script>
-<script src="{% static 'js/measurementHandler.js' %}"></script>
-<script src="{% static 'js/injuryHandler.js' %}"></script>
-<script src="{% static 'js/advancedDataHandler.js' %}"></script>
-<script src="{% static 'js/bgColorHandler.js' %}"></script>
-<script src="{% static 'js/tagValidation.js' %}"></script>
-<script src="{% static 'js/searchHandler.js' %}"></script>
 {% endblock %}
 
