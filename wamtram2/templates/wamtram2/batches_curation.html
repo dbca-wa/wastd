@@ -11,6 +11,7 @@
 <link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
 <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="{% static 'css/search_styles.css' %}">
 <style>
     .search-results {
         position: absolute;
@@ -253,11 +254,11 @@
                     </div>
                     <div class="form-group">
                         <label for="quickAddTeamLeader">Team Leader Name</label>
-                        <div class="input-group">
-                            <input type="text" id="quickAddTeamLeader" class="search-field form-control" placeholder="Search Person" autocomplete="off">
+                        <div class="search-container">
+                            <input type="text" id="quickAddTeamLeader" class="search-field" placeholder="Search Person" autocomplete="off">
                             <input type="hidden" id="quickAddTeamLeaderId" name="entered_person_id">
+                            <div id="searchResults" class="search-results"></div>
                         </div>
-                        <div class="search-results" style="display:none;"></div>
                     </div>
                     <div class="form-group">
                         <label for="quickAddTemplate">Template (optional)</label>
@@ -595,26 +596,35 @@
     document.addEventListener('DOMContentLoaded', function() {
         var teamLeaderInput = document.getElementById('quickAddTeamLeader');
         var teamLeaderIdInput = document.getElementById('quickAddTeamLeaderId');
-        var searchResults = teamLeaderInput.nextElementSibling;
+        var searchResults = document.getElementById('searchResults');
     
         teamLeaderInput.addEventListener('input', function() {
             var searchTerm = this.value;
             if (searchTerm.length >= 2) {
-                fetch(`/wamtram2/search-persons/?q=${searchTerm}`)
+                fetch(`/wamtram2/search_person/?q=${searchTerm}`)
                     .then(response => response.json())
                     .then(data => {
                         searchResults.innerHTML = '';
-                        searchResults.style.display = 'block';
-                        data.forEach(person => {
-                            var div = document.createElement('div');
-                            div.textContent = `${person.first_name} ${person.surname}`;
-                            div.addEventListener('click', function() {
-                                teamLeaderInput.value = `${person.first_name} ${person.surname}`;
-                                teamLeaderIdInput.value = person.id;
-                                searchResults.style.display = 'none';
+                        if (data.length > 0) {
+                            searchResults.style.display = 'block';
+                            data.forEach(person => {
+                                var div = document.createElement('div');
+                                div.className = 'search-result';
+                                div.textContent = `${person.first_name} ${person.surname}`;
+                                div.addEventListener('click', function() {
+                                    teamLeaderInput.value = `${person.first_name} ${person.surname}`;
+                                    teamLeaderIdInput.value = person.person_id;
+                                    searchResults.style.display = 'none';
+                                });
+                                searchResults.appendChild(div);
                             });
-                            searchResults.appendChild(div);
-                        });
+                        } else {
+                            searchResults.style.display = 'none';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        searchResults.style.display = 'none';
                     });
             } else {
                 searchResults.style.display = 'none';
@@ -622,7 +632,7 @@
         });
     
         document.addEventListener('click', function(e) {
-            if (e.target !== teamLeaderInput && e.target !== searchResults) {
+            if (e.target !== teamLeaderInput && !searchResults.contains(e.target)) {
                 searchResults.style.display = 'none';
             }
         });
