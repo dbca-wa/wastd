@@ -76,7 +76,7 @@
                         {{ form.entered_person_id }}
                         <div class="search-results" style="display:none;"></div>
                     </div>
-                    {% if user.is_superuser %}
+                    {% if request.user.is_superuser or request.user|has_group:"WAMTRAM2_STAFF" or request.user|has_group:"WAMTRAM2_TEAM_LEADER" %}
                     <button type="button" class="btn btn-outline-primary add-person-btn align-self-end" onClick="window.open(adminUrl);" title="Add new person">
                         <i class="fas fa-plus"></i>
                     </button>
