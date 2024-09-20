@@ -281,6 +281,7 @@
 
 {% block extra_js %}
 {{ block.super }}
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 <script>
     const adminUrl = "{% url 'admin:wamtram2_trtpersons_add' %}";
     $(document).ready(function() {
