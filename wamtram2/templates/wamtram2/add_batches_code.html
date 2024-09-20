@@ -290,7 +290,15 @@
             if (batchCodeInput.hasClass('is-invalid')) {
                 e.preventDefault();
                 alert('Please enter a valid batch code.');
+            } else {
+                // Show the loading spinner before submitting the form
+                showLoadingSpinner();
             }
+        });
+        
+        // Hide the spinner after the form submission is complete
+        $(document).ajaxComplete(function() {
+            hideLoadingSpinner();
         });
     });
 
