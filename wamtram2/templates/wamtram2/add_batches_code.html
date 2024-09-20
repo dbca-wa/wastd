@@ -142,6 +142,7 @@
 {% endblock %}
 
 {% block extra_js %}
+{{ block.super }}
 <script>
     // Get CSRF Token
     function getCSRFToken() {
