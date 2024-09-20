@@ -341,8 +341,6 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         tag_side = self.request.COOKIES.get(f'{cookies_key_prefix}_tag_side')
 
         selected_template = self.request.COOKIES.get(f'{cookies_key_prefix}_selected_template')
-        # use_default_enterer = self.request.COOKIES.get(f'{cookies_key_prefix}_use_default_enterer', False)
-        # default_enterer = self.request.COOKIES.get(f'{cookies_key_prefix}_default_enterer', None)
         
         # If a tag is selected, populate the form with the tag data
         if tag_id and tag_type:
@@ -362,14 +360,11 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
             except TrtEntryBatches.DoesNotExist:
                 pass
 
-        # if default_enterer == "None" or not default_enterer:
-        #     default_enterer = None
-
         if selected_template:
             template_data = self.get_template_data(selected_template)
             if template_data:
                 place_code = template_data.get('place_code') or ""
-                initial['default_place_code'] = place_code
+                initial['default_place_code'] = place_code or ""
                 self.default_place_code = place_code
                 default_place_obj = TrtPlaces.objects.filter(place_code=self.default_place_code).first()
                 if default_place_obj:
@@ -522,15 +517,15 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
             else:
                 context["selected_template"] = self.request.COOKIES.get(f'{cookies_key_prefix}_selected_template') or None
             context["use_default_enterer"] = self.request.COOKIES.get(f'{cookies_key_prefix}_use_default_enterer', False)
-            context["default_enterer"] = self.request.COOKIES.get(f'{cookies_key_prefix}_default_enterer', None)
+            context["default_enterer"] = self.request.COOKIES.get(f'{cookies_key_prefix}_default_enterer', '')
             # Add the tag id and tag type to the context data
             context["cookie_tag_id"] = self.request.COOKIES.get(f'{cookies_key_prefix}_tag_id')
             context["cookie_tag_type"] = self.request.COOKIES.get(f'{cookies_key_prefix}_tag_type')
             context["cookie_tag_side"] = self.request.COOKIES.get(f'{cookies_key_prefix}_tag_side')
 
-            context["default_enterer_full_name"] = getattr(self, 'default_enterer_full_name', None)
-            context["default_place_full_name"] = getattr(self, 'default_place_full_name', None)
-            context["default_place_code"] = getattr(self, 'default_place_code', None)
+            context["default_enterer_full_name"] = getattr(self, 'default_enterer_full_name', '')
+            context["default_place_full_name"] = getattr(self, 'default_place_full_name', '')
+            context["default_place_code"] = getattr(self, 'default_place_code', '')
         
             context['measured_by_full_name'] = getattr(self, 'measured_by_full_name', '')
             context['recorded_by_full_name'] = getattr(self, 'recorded_by_full_name', '')
