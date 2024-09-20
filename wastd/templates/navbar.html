@@ -121,15 +121,18 @@
                     <i class="fa-solid fa-table" aria-hidden="true"></i>
                     <span class="align-left">Tagged turtles</span>
                 </a>
-
+                {% if perms.wamtram2.add_trtentrybatches %}
                 <a class="dropdown-item" href="{% url 'wamtram2:batches_curation' %}" title="Browse entry batches">
                     <i class="fa-solid fa-table" aria-hidden="true"></i>
                     <span class="align-left">Batches Curation</span>
                 </a>
+                {% endif %}
+                {% if perms.wamtram2.add_trtdataentry %}
                 <a class="dropdown-item" href="{% url 'wamtram2:create_new_entry' %}" title="Browse entry batches">
                     <i class="fa-solid fa-table" aria-hidden="true"></i>
                     <span class="align-left"> Create New Entry </span>
                 </a>
+                {% endif %}
             </div>
         </li>
 
