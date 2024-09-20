@@ -218,7 +218,9 @@
                         <th>Enterer</th>
                         <th>Needs Review</th>
                         <th>Comments</th>
+                        {% if user.is_superuser or user|has_group:"WAMTRAM2_STAFF" %}
                         <th>Delete</th>
+                        {% endif %}
                     </tr>
                 </thead>
 
@@ -266,13 +268,15 @@
                         </td>
                         <td>{% if obj.do_not_process %}Yes{% else %}No{% endif %}</td>
                         <td>{{ obj.comments }}</td>
+                        {% if user.is_superuser or user|has_group:"WAMTRAM2_STAFF" %}
                         <td>
                             {% if obj.observation_id %}
-                                <button type="button" class="btn btn-secondary btn-sm" disabled>Cannot Delete</button>
+                                <button type="button" class="btn btn-secondary btn-sm" disabled>无法删除</button>
                             {% else %}
-                                <button type="button" class="btn btn-danger btn-sm delete-entry-btn" data-toggle="modal" data-target="#entryDeleteConfirmationModal" data-entry-id="{{ obj.data_entry_id }}" data-url="{% url 'wamtram2:delete_entry' pk=obj.data_entry_id batch_id=batch.entry_batch_id %}">Delete</button>
+                                <button type="button" class="btn btn-danger btn-sm delete-entry-btn" data-toggle="modal" data-target="#entryDeleteConfirmationModal" data-entry-id="{{ obj.data_entry_id }}" data-url="{% url 'wamtram2:delete_entry' pk=obj.data_entry_id batch_id=batch.entry_batch_id %}">删除</button>
                             {% endif %}
                         </td>
+                    {% endif %}
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -295,7 +299,7 @@
     </div>
 
     <!-- Danger zone -->
-    {% if user.is_superuser %}
+    {% if user.is_superuser or user|has_group:"WAMTRAM2_STAFF" %}
     <div class="danger-zone">
         <div class="danger-zone-header">Danger Zone</div>
         {% comment %} <span style="font-size: 1.0em; color: #fc8b95;">(only super user can see)</span> {% endcomment %}

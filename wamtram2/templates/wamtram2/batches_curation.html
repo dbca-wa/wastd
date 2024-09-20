@@ -13,21 +13,6 @@
 <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 <link rel="stylesheet" href="{% static 'css/search_styles.css' %}">
 <style>
-    .search-results {
-        position: absolute;
-        background-color: white;
-        border: 1px solid #ddd;
-        max-height: 200px;
-        overflow-y: auto;
-        z-index: 1000;
-    }
-    .search-results div {
-        padding: 5px 10px;
-        cursor: pointer;
-    }
-    .search-results div:hover {
-        background-color: #f0f0f0;
-    }
     .tooltip-inner {
         max-width: 300px;
         text-align: left;
@@ -159,7 +144,7 @@
     {% endif %}
 </div>
 
-<div class="pagination-container">
+{% comment %} <div class="pagination-container">
     {% if is_paginated %}
     <ul class="pagination mb-0">
         {% if page_obj.number != 1 %}
@@ -199,7 +184,7 @@
         {% endif %}
     </ul>
     {% endif %}
-</div>
+</div> {% endcomment %}
 
 <!-- Quick Add Batch Modal -->
 <div class="modal fade" id="quickAddBatchModal" tabindex="-1" role="dialog" aria-labelledby="quickAddBatchModalLabel" aria-hidden="true">

@@ -1235,18 +1235,28 @@ class ExportDataView(LoginRequiredMixin, View):
         return super().dispatch(request, *args, **kwargs)
 
     def get(self, request):
-        if request.GET.get('action') == 'get_places':
+        # Handle different actions based on the 'action' parameter
+        action = request.GET.get('action')
+        if action == 'get_places':
             return self.get_places(request)
+        elif action == 'get_species':
+            return self.get_species(request)
+        elif action == 'get_sexes':
+            return self.get_sexes(request)
         return self.export_data(request)
 
     def export_data(self, request):
+        # Retrieve filter parameters from the request
         observation_date_from = request.GET.get("observation_date_from")
         observation_date_to = request.GET.get("observation_date_to")
         place_code = request.GET.get("place_code")
+        species = request.GET.get("species")
+        sex = request.GET.get("sex")
         file_format = request.GET.get("format", "csv")
 
         queryset = TrtDataEntry.objects.filter(observation_id__isnull=False)
         
+        # Filter by date range
         if observation_date_from and observation_date_to:
             queryset = queryset.filter(observation_date__range=[observation_date_from, observation_date_to])
         elif observation_date_from:
@@ -1254,8 +1264,17 @@ class ExportDataView(LoginRequiredMixin, View):
         elif observation_date_to:
             queryset = queryset.filter(observation_date__lte=observation_date_to)
         
+        # Filter by place
         if place_code:
             queryset = queryset.filter(place_code=place_code)
+
+        # Filter by species
+        if species:
+            queryset = queryset.filter(species_code=species)
+
+        # Filter by sex
+        if sex:
+            queryset = queryset.filter(sex=sex)
 
         # File generation logic
         if file_format == "csv":
@@ -1278,6 +1297,7 @@ class ExportDataView(LoginRequiredMixin, View):
         return response
 
     def get_places(self, request):
+        """Retrieve places based on the specified date range."""
         observation_date_from = request.GET.get("observation_date_from")
         observation_date_to = request.GET.get("observation_date_to")
 
@@ -1287,14 +1307,40 @@ class ExportDataView(LoginRequiredMixin, View):
 
         place_list = [
             {
-                "place_code": place.place_code,
-                "place_name": place.place_name,
+                "value": place.place_code,
+                "label": place.get_full_name(),
                 "location_name": place.location_code.location_name,
             }
             for place in places
         ]
         
         return JsonResponse({"places": place_list})
+
+    def get_species(self, request):
+        """Retrieve species based on the specified date range."""
+        observation_date_from = request.GET.get("observation_date_from")
+        observation_date_to = request.GET.get("observation_date_to")
+
+        species = TrtSpecies.objects.filter(
+            trtdataentry__observation_date__range=[observation_date_from, observation_date_to]
+        ).distinct()
+
+        species_list = [
+            {"value": specie.species_code, "label": specie.common_name}
+            for specie in species
+        ]
+
+        return JsonResponse({"species": species_list})
+
+    def get_sexes(self, request):
+        """Retrieve available sex choices based on the defined SEX_CHOICES."""
+        # Directly use the SEX_CHOICES to return the options for the frontend
+        sex_list = [
+            {"value": choice[0], "label": choice[1]}
+            for choice in SEX_CHOICES
+        ]
+
+        return JsonResponse({"sexes": sex_list})
 
 
 class FilterFormView(LoginRequiredMixin, View):
@@ -1712,7 +1758,7 @@ class BatchCodeManageView(View):
         else:
             is_unique = not TrtEntryBatches.objects.filter(batches_code=code).exists()
         return JsonResponse({'is_unique': is_unique})
- 
+
     
 @require_GET
 def get_places(request):

@@ -1,4 +1,6 @@
 from django.contrib import admin
+from import_export import resources
+from import_export.fields import Field
 import nested_admin
 from .models import (
     TrtPersons,
@@ -135,6 +137,20 @@ class TrtTagOrdersAdmin(ImportExportModelAdmin):
     verbose_name_plural = "Tag Orders"
 
 
+class TrtPersonsResource(resources.ModelResource):
+    recorder = Field(attribute='recorder', column_name='Recorder')
+
+    def before_import_row(self, row, **kwargs):
+        if 'Recorder' not in row or row['Recorder'] == '':
+            row['Recorder'] = False
+
+    class Meta:
+        model = TrtPersons
+        import_id_fields = ('email',)
+        fields = ('first_name', 'surname', 'email', 'recorder')
+        export_order = fields
+
 @admin.register(TrtPersons)
 class TrtPersonsAdmin(ImportExportModelAdmin):
+    resource_class = TrtPersonsResource
     search_fields = ["first_name", "surname", "email"]

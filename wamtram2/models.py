@@ -1779,7 +1779,7 @@ class TrtPersons(models.Model):
     transfer = models.CharField(
         db_column="Transfer", max_length=50, blank=True, null=True
     )  # Field name made lowercase.
-    recorder = models.BooleanField(db_column="Recorder")  # Field name made lowercase.
+    recorder = models.BooleanField(db_column="Recorder", blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
         managed = False
