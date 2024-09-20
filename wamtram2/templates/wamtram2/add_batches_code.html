@@ -142,6 +142,7 @@
 {% endblock %}
 
 {% block extra_js %}
+{{ block.super }}
 <script>
     // Get CSRF Token
     function getCSRFToken() {
@@ -169,8 +170,8 @@
 
     // Hide Loading Spinner
     function hideLoadingSpinner() {
-        $('#loading-overlay').show();
-        $('#loading-spinner').show();
+        $('#loading-overlay').hide();
+        $('#loading-spinner').hide();
     }
     // Load Places
     function loadPlaces(locationCode) {

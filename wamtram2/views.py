@@ -341,8 +341,6 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         tag_side = self.request.COOKIES.get(f'{cookies_key_prefix}_tag_side')
 
         selected_template = self.request.COOKIES.get(f'{cookies_key_prefix}_selected_template')
-        # use_default_enterer = self.request.COOKIES.get(f'{cookies_key_prefix}_use_default_enterer', False)
-        # default_enterer = self.request.COOKIES.get(f'{cookies_key_prefix}_default_enterer', None)
         
         # If a tag is selected, populate the form with the tag data
         if tag_id and tag_type:
@@ -362,22 +360,19 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
             except TrtEntryBatches.DoesNotExist:
                 pass
 
-        # if default_enterer == "None" or not default_enterer:
-        #     default_enterer = None
-
         if selected_template:
             template_data = self.get_template_data(selected_template)
             if template_data:
-                place_code = template_data.get('place_code')
-                initial['default_place_code'] = place_code
+                place_code = template_data.get('place_code') or ""
+                initial['default_place_code'] = place_code or ""
                 self.default_place_code = place_code
                 default_place_obj = TrtPlaces.objects.filter(place_code=self.default_place_code).first()
                 if default_place_obj:
                     self.default_place_full_name = default_place_obj.get_full_name()
-                    initial['default_place_full_name'] = self.default_place_full_name
+                    initial['default_place_full_name'] = self.default_place_full_name or ""
                 if not turtle_id:
-                    initial['species_code'] = template_data.get('species_code')
-                    initial['sex'] = template_data.get('sex')
+                    initial['species_code'] = template_data.get('species_code') or ""
+                    initial['sex'] = template_data.get('sex') or ""
                     
                 # if default_enterer and default_enterer != "None":
                 #     default_enterer_obj = TrtPersons.objects.filter(person_id=default_enterer).first()
@@ -522,15 +517,15 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
             else:
                 context["selected_template"] = self.request.COOKIES.get(f'{cookies_key_prefix}_selected_template') or None
             context["use_default_enterer"] = self.request.COOKIES.get(f'{cookies_key_prefix}_use_default_enterer', False)
-            context["default_enterer"] = self.request.COOKIES.get(f'{cookies_key_prefix}_default_enterer', None)
+            context["default_enterer"] = self.request.COOKIES.get(f'{cookies_key_prefix}_default_enterer', '')
             # Add the tag id and tag type to the context data
             context["cookie_tag_id"] = self.request.COOKIES.get(f'{cookies_key_prefix}_tag_id')
             context["cookie_tag_type"] = self.request.COOKIES.get(f'{cookies_key_prefix}_tag_type')
             context["cookie_tag_side"] = self.request.COOKIES.get(f'{cookies_key_prefix}_tag_side')
 
-            context["default_enterer_full_name"] = getattr(self, 'default_enterer_full_name', None)
-            context["default_place_full_name"] = getattr(self, 'default_place_full_name', None)
-            context["default_place_code"] = getattr(self, 'default_place_code', None)
+            context["default_enterer_full_name"] = getattr(self, 'default_enterer_full_name', '')
+            context["default_place_full_name"] = getattr(self, 'default_place_full_name', '')
+            context["default_place_code"] = getattr(self, 'default_place_code', '')
         
             context['measured_by_full_name'] = getattr(self, 'measured_by_full_name', '')
             context['recorded_by_full_name'] = getattr(self, 'recorded_by_full_name', '')
@@ -987,10 +982,12 @@ def get_place_full_name(request):
     except TrtPlaces.DoesNotExist:
         return JsonResponse({'error': 'Place not found'}, status=404)
     
+    
 def check_template_name(request):
     name = request.GET.get('name')
     is_available = not Template.objects.filter(name=name).exists()
     return JsonResponse({'is_available': is_available})
+    
     
 class ValidateTagView(View):
     """
