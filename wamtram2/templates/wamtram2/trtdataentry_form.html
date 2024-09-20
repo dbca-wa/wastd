@@ -140,7 +140,11 @@
             <div class="col-md-6">
               <label for="search_place_code">{{ form.place_code.label }}</label>
               <input type="text" id="search_place_code" class="search-field form-control required-field" placeholder="Search place">
-              {{ form.place_code }}
+              {% if form.place_code.value and form.place_code.value != "None" %}
+                  {{ form.place_code }}
+              {% else %}
+                  <input type="text" name="place_code" id="id_place_code" class="form-control" value="">
+              {% endif %}
               <div class="search-results" style="display:none;"></div>
             </div>
           </div>
@@ -1275,12 +1279,13 @@
   }
   
 
-    if (confirmSaveButton) {
-        confirmSaveButton.addEventListener('click', function(event) {
-            $(summaryModal).modal('hide');
-            form.submit();
-        });
-    }
+  if (confirmSaveButton) {
+    confirmSaveButton.addEventListener('click', function(event) {
+        $(summaryModal).modal('hide');
+        isFormDirty = false;
+        form.submit();
+    });
+}
   });
   document.addEventListener('DOMContentLoaded', function() {
       var flipperBodyParts = ['B', 'C', 'D', 'E'];
