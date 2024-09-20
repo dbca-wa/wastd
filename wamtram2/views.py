@@ -1670,7 +1670,7 @@ def quick_add_batch(request):
             'batches_code': new_batch.batches_code,
             'comments': new_batch.comments,
             'template': new_batch.template.name if new_batch.template else None,
-            'team_leader': new_batch.entered_person.get_full_name() if new_batch.entered_person else None
+            'team_leader': new_batch.entered_person if new_batch.entered_person else None
         })
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
@@ -1736,6 +1736,8 @@ class BatchCodeManageView(View):
         if form.is_valid():
             new_batch = form.save(commit=False)
             if not TrtEntryBatches.objects.filter(batches_code=new_batch.batches_code).exclude(pk=batch_id).exists():
+                new_batch.entered_person_id = form.cleaned_data['entered_person_id']
+                new_batch.template = form.cleaned_data['template']
                 new_batch.save()
                 return redirect(reverse('wamtram2:batches_curation'))
             else:
