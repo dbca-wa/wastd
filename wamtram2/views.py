@@ -368,16 +368,16 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         if selected_template:
             template_data = self.get_template_data(selected_template)
             if template_data:
-                place_code = template_data.get('place_code')
+                place_code = template_data.get('place_code') or ""
                 initial['default_place_code'] = place_code
                 self.default_place_code = place_code
                 default_place_obj = TrtPlaces.objects.filter(place_code=self.default_place_code).first()
                 if default_place_obj:
                     self.default_place_full_name = default_place_obj.get_full_name()
-                    initial['default_place_full_name'] = self.default_place_full_name
+                    initial['default_place_full_name'] = self.default_place_full_name or ""
                 if not turtle_id:
-                    initial['species_code'] = template_data.get('species_code')
-                    initial['sex'] = template_data.get('sex')
+                    initial['species_code'] = template_data.get('species_code') or ""
+                    initial['sex'] = template_data.get('sex') or ""
                     
                 # if default_enterer and default_enterer != "None":
                 #     default_enterer_obj = TrtPersons.objects.filter(person_id=default_enterer).first()

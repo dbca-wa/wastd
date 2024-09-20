@@ -62,7 +62,13 @@
   .species-row {
     display: flex;
     align-items: center;
-  }
+    flex-wrap: nowrap;
+    width: 100%;
+}
+
+.form-check-input {
+    margin-right: 10px;
+}
 </style>
 {% endblock %}  
 
@@ -140,11 +146,7 @@
             <div class="col-md-6">
               <label for="search_place_code">{{ form.place_code.label }}</label>
               <input type="text" id="search_place_code" class="search-field form-control required-field" placeholder="Search place">
-              {% if form.place_code.value and form.place_code.value != "None" %}
-                  {{ form.place_code }}
-              {% else %}
-                  <input type="text" name="place_code" id="id_place_code" class="form-control" value="">
-              {% endif %}
+              {{ form.place_code }}
               <div class="search-results" style="display:none;"></div>
             </div>
           </div>
@@ -1149,11 +1151,6 @@
         "id_observation_date": "Observation Date & Time",
     };
 
-    console.log("Observation Date Input:", observationDateInput.value);
-    console.log("Observation Date label:", observationDateInput.parentElement.querySelector('label').innerText);
-    console.log(document.getElementById('id_observation_date'));
-    console.log(document.getElementById('id_latitude'));
-
     function validateDate() {
         const selectedDate = new Date(observationDateInput.value);
         const currentDate = new Date();
@@ -1229,7 +1226,7 @@
                       inputValue = input.selectedOptions[0].textContent.trim();
                   }
   
-                  if (inputValue !== '') {
+                  if (inputValue !== '' && inputValue !== '---------') {
                       if (labelMapping[inputId]) {
                           labelText = labelMapping[inputId];
                       } else {
@@ -1251,7 +1248,7 @@
                               <li class="species-row">
                                   <div class="d-flex justify-content-between align-items-center">
                                       <span class="species-highlight"><strong>${labelText}:</strong> ${inputValue}</span>
-                                      <div class="form-check">
+                                      <div class="form-check species-row">
                                           <input type="checkbox" class="form-check-input" id="speciesConfirmCheckbox">
                                           <label class="form-check-label ml-2" for="speciesConfirmCheckbox">I confirm this is the correct species</label>
                                       </div>
@@ -1276,16 +1273,15 @@
               });
           }
       });
-  }
+    }
   
-
-  if (confirmSaveButton) {
-    confirmSaveButton.addEventListener('click', function(event) {
-        $(summaryModal).modal('hide');
-        isFormDirty = false;
-        form.submit();
-    });
-}
+    if (confirmSaveButton) {
+        confirmSaveButton.addEventListener('click', function(event) {
+            $(summaryModal).modal('hide');
+            isFormDirty = false;
+            form.submit();
+        });
+    }
   });
   document.addEventListener('DOMContentLoaded', function() {
       var flipperBodyParts = ['B', 'C', 'D', 'E'];
