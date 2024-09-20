@@ -554,18 +554,30 @@ class TrtObservationsForm(forms.ModelForm):
         return cleaned_data
     
     
+# forms.py
+from django import forms
+from .models import TrtEntryBatches, TrtPersons, Template
+
 class BatchesCodeForm(forms.ModelForm):
     class Meta:
         model = TrtEntryBatches
-        fields = ['batches_code', 'comments', 'template']
+        fields = ['batches_code', 'comments', 'template', 'entered_person_id']
         labels = {
             'batches_code': 'Batches Code',
             'comments': 'Comments',
-            'template': 'Template'
+            'template': 'Template',
+            'entered_person_id': 'Team Leader Name',
         }
         widgets = {
             'batches_code': forms.TextInput(attrs={'class': 'form-control'}),
+            'comments': forms.Textarea(attrs={'class': 'form-control'}),
+            'template': forms.Select(attrs={'class': 'form-control'}),
+            'entered_person_id': forms.HiddenInput(), 
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['entered_person_id'].queryset = TrtPersons.objects.all()
 
 class BatchesSearchForm(forms.Form):
     batches_code = forms.CharField(

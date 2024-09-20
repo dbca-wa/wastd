@@ -731,6 +731,7 @@ class FindTurtleView(LoginRequiredMixin, View):
             "template_name": template_name,
         })
 
+
     def set_cookie(self, response, batch_id, tag_id=None, tag_type=None, tag_side=None, no_turtle_found=False, do_not_process=False):
         if tag_id:
             response.set_cookie(f'{batch_id}_tag_id', tag_id, max_age=63072000)
@@ -1645,6 +1646,7 @@ def quick_add_batch(request):
     batches_code = request.POST.get('batches_code')
     comments = request.POST.get('comments', '')
     template_id = request.POST.get('template')
+    team_leader_id = request.POST.get('entered_person_id')
     try:
         new_batch = TrtEntryBatches.objects.create(
             batches_code=batches_code,
@@ -1653,13 +1655,22 @@ def quick_add_batch(request):
             pr_date_convention=False,
             template_id=template_id if template_id else None
         )
+        
+        if team_leader_id:
+            try:
+                team_leader = TrtPersons.objects.get(pk=team_leader_id)
+                new_batch.entered_person = team_leader
+                new_batch.save()
+            except TrtPersons.DoesNotExist:
+                pass
         return JsonResponse({
             'success': True, 
             'batch_id': new_batch.entry_batch_id,
             'entry_date': new_batch.entry_date.strftime('%Y-%m-%d %H:%M:%S'),
             'batches_code': new_batch.batches_code,
             'comments': new_batch.comments,
-            'template': new_batch.template.name if new_batch.template else None
+            'template': new_batch.template.name if new_batch.template else None,
+            'team_leader': new_batch.entered_person.get_full_name() if new_batch.entered_person else None
         })
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
