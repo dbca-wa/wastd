@@ -1670,7 +1670,10 @@ def quick_add_batch(request):
             'batches_code': new_batch.batches_code,
             'comments': new_batch.comments,
             'template': new_batch.template.name if new_batch.template else None,
-            'team_leader': new_batch.entered_person if new_batch.entered_person else None
+            'team_leader': {
+                'id': new_batch.entered_person.id,
+                'name': new_batch.entered_person.name
+            } if new_batch.entered_person else None
         })
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
@@ -1716,6 +1719,8 @@ class BatchCodeManageView(View):
         years = {str(year): str(year)[-2:] for year in range(2020, current_year+1)}
         templates = Template.objects.all()
 
+        entered_person_full_name = str(form.instance.entered_person_id) if form.instance.entered_person_id else ''
+        template_selected = form.instance.template.template_id if form.instance.template else None
         context = {
             'form': form,
             'locations': locations,
@@ -1723,6 +1728,8 @@ class BatchCodeManageView(View):
             'current_year': current_year,
             'templates': templates,
             'batch_id': batch_id,
+            'entered_person_full_name': entered_person_full_name,
+            'template_selected': template_selected,
         }
         return render(request, self.template_name, context)
 

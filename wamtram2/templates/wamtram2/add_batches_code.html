@@ -109,8 +109,8 @@
             <div class="form-group">
                 <label for="team_leader">Team Leader Name</label>
                 <div class="search-container">
-                    <input type="text" id="team_leader" class="search-field" placeholder="Search Person" autocomplete="off" value="{{ form.entered_person_id.value.get_full_name|default_if_none:'' }}">
-                    <input type="hidden" id="team_leader_id" name="entered_person_id" value="{{ form.entered_person_id.value.id|default_if_none:'' }}">
+                    <input type="text" id="team_leader" class="search-field" placeholder="Search Person" autocomplete="off" value="{{ form.entered_person_id.value|default_if_none:'' }}">
+                    <input type="hidden" id="team_leader_id" name="entered_person_id" value="{{ form.entered_person_id.value.id|default_if_none:'' }}">                    
                     <div id="searchResults" class="search-results"></div>
                 </div>
             </div>
@@ -123,7 +123,7 @@
                 <select name="template" id="template" class="form-control">
                     <option value="">---------</option>
                     {% for template in templates %}
-                        <option value="{{ template.id }}" {% if template.id == form.template.value.id %}selected{% endif %}>{{ template.name }}</option>
+                        <option value="{{ template.id }}" {% if template.id == form.template.value %}selected{% endif %}>{{ template.name }}</option>
                     {% endfor %}
                 </select>
             </div>
