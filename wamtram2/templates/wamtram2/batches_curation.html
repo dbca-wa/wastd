@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 <link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
-<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <link rel="stylesheet" href="{% static 'css/search_styles.css' %}">
 <style>
     .tooltip-inner {
@@ -244,7 +244,7 @@
                     <div class="form-group">
                         <label for="quickAddTeamLeader">Team Leader Name</label>
                         <div class="search-container">
-                            <input type="text" id="quickAddTeamLeader" class="search-field" placeholder="Search Person" autocomplete="off">
+                            <input type="text" id="team_leader" class="search-field" placeholder="Search Person" autocomplete="off" value="{{ entered_person_full_name }}">
                             <input type="hidden" id="quickAddTeamLeaderId" name="entered_person_id">
                             <div id="searchResults" class="search-results"></div>
                         </div>
@@ -254,7 +254,10 @@
                         <select class="form-control" id="quickAddTemplate" name="template">
                             <option value="">Select Template</option>
                             {% for template in templates %}
-                                <option value="{{ template.template_id }}">{{ template.name }}</option>
+                                <option value="{{ template.template_id }}" 
+                                    {% if template_selected and template.template_id == template_selected %}selected{% endif %}>
+                                    {{ template.name }}
+                                </option>
                             {% endfor %}
                         </select>
                     </div>
@@ -281,7 +284,7 @@
 
 {% block extra_js %}
 {{ block.super }}
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
     const adminUrl = "{% url 'admin:wamtram2_trtpersons_add' %}";
     $(document).ready(function() {
@@ -289,20 +292,51 @@
         $('[data-toggle="tooltip"]').tooltip();
         initializeDatepicker()
 
+        // Initialize the Flatpickr datepicker
         function initializeDatepicker() {
-            $('#quickAddEntryDate').datepicker({
-                format: 'dd/mm/yyyy',
-                autoclose: true,
-                todayHighlight: true
+            $('#quickAddEntryDate').flatpickr({
+                dateFormat: 'd/m/Y',  // Set the date format to day/month/year
+                enableTime: false,    // Disable time selection
+                altInput: true,       // Show an alternative input field
+                altFormat: "F j, Y",  // Display format for the alternative input
+                defaultDate: null     // No default date
             });
         }
-    
+
+        // Override the default form submission to handle Flatpickr date format
         $('#quickAddBatchForm').submit(function(e) {
-            var entryDate = $('#quickAddEntryDate').datepicker('getDate');
-            if (entryDate) {
-                var formattedDate = $.datepicker.formatDate('dd-mm-yy', entryDate);
-                $('#quickAddEntryDate').val(formattedDate);
-            }
+            e.preventDefault();  // Prevent default form submission
+            showLoadingSpinner(); // Show loading spinner
+
+            // Prepare form data for submission
+            const form = $(this)[0];
+            const formData = new FormData(form);
+
+            // Use fetch API to submit the form data
+            fetch("{% url 'wamtram2:quick_add_batch' %}", {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    $('#quickAddBatchModal').modal('hide'); // Close modal on success
+                    location.reload(); // Reload the page to reflect changes
+                } else {
+                    alert(data.error); // Show error message
+                    enableButton($('#quickAddBatchConfirm'));
+                    hideLoadingSpinner(); // Hide loading spinner
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while adding the batch.');
+                enableButton($('#quickAddBatchConfirm'));
+                hideLoadingSpinner();
+            });
         });
 
         function showLoadingSpinner() {

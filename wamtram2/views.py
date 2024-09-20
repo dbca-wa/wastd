@@ -1671,8 +1671,8 @@ def quick_add_batch(request):
             'comments': new_batch.comments,
             'template': new_batch.template.name if new_batch.template else None,
             'team_leader': {
-                'id': new_batch.entered_person.id,
-                'name': new_batch.entered_person.name
+                'id': new_batch.entered_person.person_id,
+                'name': new_batch.entered_person
             } if new_batch.entered_person else None
         })
     except Exception as e:
