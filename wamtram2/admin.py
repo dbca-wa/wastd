@@ -1,4 +1,5 @@
 from django.contrib import admin
+from import_export import resources
 import nested_admin
 from .models import (
     TrtPersons,
@@ -135,6 +136,13 @@ class TrtTagOrdersAdmin(ImportExportModelAdmin):
     verbose_name_plural = "Tag Orders"
 
 
+class TrtPersonsResource(resources.ModelResource):
+    class Meta:
+        model = TrtPersons
+        import_id_fields = ('email',) # Use email as primary key
+        fields = ('first_name', 'surname', 'email') 
+
 @admin.register(TrtPersons)
 class TrtPersonsAdmin(ImportExportModelAdmin):
+    resource_class = TrtPersonsResource
     search_fields = ["first_name", "surname", "email"]
