@@ -52,23 +52,41 @@
     border: 1px solid #ced4da;
     border-radius: .25rem 0 0 .25rem;
   }
-  .species-highlight {
-    color: red;
-    font-weight: bold;
-  }
-  #speciesConfirmCheckbox {
-    margin-left: 10px;
-  }
   .species-row {
     display: flex;
     align-items: center;
     flex-wrap: nowrap;
     width: 100%;
-}
+    margin-bottom: 10px;
+  }
+  .species-content {
+      flex: 1; 
+      display: flex;
+      align-items: center;
+  }
+  .species-highlight {
+      color: red;
+      font-weight: bold;
+      margin-right: 20px;
+  }
+  .form-check {
+      display: flex;
+      align-items: center;
+      margin-left: 20px;
+  }
 
-.form-check-input {
-    margin-right: 10px;
-}
+  .form-check-input {
+      margin-right: 5px;
+      transform: scale(1.2);
+  }
+
+  .form-check-label {
+      white-space: nowrap;
+      font-size: 14px;
+      line-height: 1.5;
+  }
+
+
 </style>
 {% endblock %}  
 
@@ -1246,14 +1264,15 @@
                       if (inputId === 'id_species_code') {
                           summaryHTML += `
                               <li class="species-row">
-                                  <div class="d-flex justify-content-between align-items-center">
+                                  <div class="species-content">
                                       <span class="species-highlight"><strong>${labelText}:</strong> ${inputValue}</span>
-                                      <div class="form-check species-row">
-                                          <input type="checkbox" class="form-check-input" id="speciesConfirmCheckbox">
-                                          <label class="form-check-label ml-2" for="speciesConfirmCheckbox">I confirm this is the correct species</label>
-                                      </div>
                                   </div>
-                              </li>`;
+                                  <div class="form-check">
+                                      <input type="checkbox" class="form-check-input" id="speciesConfirmCheckbox">
+                                      <label class="form-check-label ml-2" for="speciesConfirmCheckbox">I confirm this is the correct species</label>
+                                  </div>
+                              </li>
+                              `;
                       } else {
                           summaryHTML += `<li><strong>${labelText}:</strong> ${inputValue}</li>`;
                       }
