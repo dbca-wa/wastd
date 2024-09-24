@@ -109,8 +109,8 @@
                 </div>
                 <div class="col-md-3">
                     <label for="species_code">Species (optional)</label>
-                    <option value="">Select Species</option>
                     <select class="form-control" id="species_code" name="species_code">
+                        <option value="">Select Species</option>
                         {% for specie in species %}
                             <option value="{{ specie.species_code }}">{{ specie.common_name }}</option>
                         {% endfor %}

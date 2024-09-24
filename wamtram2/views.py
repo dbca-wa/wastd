@@ -197,7 +197,7 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
         else:
             queryset = queryset.filter(entry_batch_id=batch_id)
     
-        return queryset.order_by("-data_entry_id")
+        return queryset.select_related('observation_id').order_by("-data_entry_id")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1704,8 +1704,13 @@ class BatchCodeManageView(View):
         if batch_id:
             batch = get_object_or_404(TrtEntryBatches, pk=batch_id)
             form = BatchesCodeForm(instance=batch)
+            entered_person = batch.entered_person_id
+            entered_person_full_name = str(entered_person) if entered_person else ''
+            entered_person_id = entered_person.id if entered_person else ''
         else:
             form = BatchesCodeForm()
+            entered_person_full_name = ''
+            entered_person_id = ''
 
         locations = TrtLocations.objects.all().order_by('location_code')
         current_year = timezone.now().year
@@ -1722,6 +1727,7 @@ class BatchCodeManageView(View):
             'templates': templates,
             'batch_id': batch_id,
             'entered_person_full_name': entered_person_full_name,
+            'entered_person_id': entered_person_id,
             'template_selected': template_selected,
         }
         return render(request, self.template_name, context)

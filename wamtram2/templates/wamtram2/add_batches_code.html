@@ -109,8 +109,8 @@
             <div class="form-group">
                 <label for="team_leader">Team Leader Name</label>
                 <div class="search-container">
-                    <input type="text" id="team_leader" class="search-field" placeholder="Search Person" autocomplete="off" value="{{ form.entered_person_id.value|default_if_none:'' }}">
-                    <input type="hidden" id="team_leader_id" name="entered_person_id" value="{{ form.entered_person_id.value.id|default_if_none:'' }}">                    
+                    <input type="text" id="team_leader" class="search-field" placeholder="Search Person" autocomplete="off" value="{{  entered_person_full_name |default_if_none:'' }}">
+                    <input type="hidden" id="team_leader_id" name="entered_person_id" value="{{ entered_person_id|default_if_none:'' }}">                    
                     <div id="searchResults" class="search-results"></div>
                 </div>
             </div>
