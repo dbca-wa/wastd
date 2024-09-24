@@ -196,7 +196,7 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
             queryset = queryset.filter(entry_batch_id=batch_id, observation_id__isnull=True)
         else:
             queryset = queryset.filter(entry_batch_id=batch_id)
-    
+            
         return queryset.select_related('observation_id').order_by("-data_entry_id")
 
     def get_context_data(self, **kwargs):
@@ -1706,7 +1706,7 @@ class BatchCodeManageView(View):
             form = BatchesCodeForm(instance=batch)
             entered_person = batch.entered_person_id
             entered_person_full_name = str(entered_person) if entered_person else ''
-            entered_person_id = entered_person.id if entered_person else ''
+            entered_person_id = entered_person.person_id if entered_person else ''
         else:
             form = BatchesCodeForm()
             entered_person_full_name = ''

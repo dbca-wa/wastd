@@ -270,11 +270,12 @@
     }
 
     function updateNameField() {
+        var locationCode = document.getElementById('location_code').value;
         var placeCode = document.getElementById('place_code').value;
         var speciesCode = document.getElementById('species_code').value;
         var sex = document.getElementById('sex').value;
     
-        if (placeCode && speciesCode && sex) {
+        if (placeCode) {
             showLoadingSpinner();
             fetch("{% url 'wamtram2:get_place_full_name' %}?place_code=" + encodeURIComponent(placeCode), {
                 method: 'GET',

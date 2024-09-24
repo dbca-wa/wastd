@@ -251,7 +251,8 @@
                             {% if obj.new_pittag_id %}{{ obj.new_pittag_id }} {% endif %}
                             {% if obj.new_pittag_id_2 %}{{ obj.new_pittag_id_2 }} {% endif %}
                         </td> 
-                        <td>{{ entry.clutch_completed }}</td>
+                        <td>{{ obj.clutch_completed }}
+                        </td>
                         <td>{{ obj.error_message }}</td>
                         <td>
                             {% if obj.entered_by_id %}
