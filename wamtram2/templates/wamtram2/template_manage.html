@@ -193,21 +193,29 @@
                                 <div class="form-group col-md-3">
                                     <label for="species_{{ template.template_id }}">Species</label>
                                     <p id="species_{{ template.template_id }}" class="form-control-static">
-                                        {% for specie in species %}
-                                            {% if specie.species_code == template.species_code %}
-                                                {{ specie.common_name }}
-                                            {% endif %}
-                                        {% endfor %}
+                                        {% if template.species_code %}
+                                            {% for specie in species %}
+                                                {% if specie.species_code == template.species_code %}
+                                                    {{ specie.common_name }}
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% else %}
+                                            None
+                                        {% endif %}
                                     </p>
                                 </div>
                                 <div class="form-group col-md-3">
                                     <label for="sex_{{ template.template_id }}">Sex</label>
                                     <p id="sex_{{ template.template_id }}" class="form-control-static">
-                                        {% for code, name in sex_choices %}
-                                            {% if code == template.sex %}
-                                                {{ name }}
-                                            {% endif %}
-                                        {% endfor %}
+                                        {% if template.sex %}
+                                            {% for code, name in sex_choices %}
+                                                {% if code == template.sex %}
+                                                    {{ name }}
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% else %}
+                                            None
+                                        {% endif %}
                                     </p>
                                 </div>
                             </div>
