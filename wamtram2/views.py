@@ -1663,25 +1663,27 @@ def quick_add_batch(request):
             
         if team_leader_id:
             try:
+                team_leader_id = int(team_leader_id)
                 team_leader = TrtPersons.objects.get(pk=team_leader_id)
-                new_batch.entered_person = team_leader
+                new_batch.entered_person_id = team_leader.person_id
                 new_batch.save()
             except TrtPersons.DoesNotExist:
                 pass
-        return JsonResponse({
-            'success': True, 
-            'batch_id': new_batch.entry_batch_id,
-            'entry_date': new_batch.entry_date.strftime('%Y-%m-%d %H:%M:%S'),
-            'batches_code': new_batch.batches_code,
-            'comments': new_batch.comments,
-            'template': new_batch.template.name if new_batch.template else None,
-            'team_leader': {
-                'id': new_batch.entered_person.person_id,
-                'name': str(new_batch.entered_person)
-            } if new_batch.entered_person else None
-        })
+            return JsonResponse({
+                'success': True, 
+                'batch_id': new_batch.entry_batch_id,
+                'entry_date': new_batch.entry_date.strftime('%Y-%m-%d %H:%M:%S'),
+                'batches_code': new_batch.batches_code,
+                'comments': new_batch.comments,
+                'template': new_batch.template.name if new_batch.template else None,
+                'team_leader': {
+                    'id': new_batch.entered_person_id,
+                    'name': f"{new_batch.entered_person.first_name} {new_batch.entered_person.surname}"
+                } if new_batch.entered_person else None
+            })
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
+    
     
 class BatchCodeManageView(View):
     template_name = 'wamtram2/add_batches_code.html'

@@ -1253,8 +1253,10 @@ class TrtEntryBatches(models.Model):
         "TrtPersons",
         models.SET_NULL,
         db_column="ENTERED_PERSON_ID",
+        to_field="person_id",
         blank=True,
         null=True,
+        related_name="entry_batches",
     )  # fake foreign key #models.IntegerField(db_column='ENTERED_PERSON_ID', blank=True, null=True)  # Field name made lowercase.
     filename = models.CharField(
         db_column="FILENAME", max_length=255, blank=True, null=True
