@@ -150,7 +150,7 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
     
     def get_initial(self):
         initial = super().get_initial()
-        batch_id = self.kwargs.get("batch_id")
+        # batch_id = self.kwargs.get("batch_id")
         # cookies_key_prefix = batch_id
         # default_enterer = self.request.COOKIES.get(f'{cookies_key_prefix}_default_enterer')
         # use_default_enterer = self.request.COOKIES.get(f'{cookies_key_prefix}_use_default_enterer', False)
@@ -1653,9 +1653,14 @@ def quick_add_batch(request):
             comments=comments,
             entry_date=timezone.now(),
             pr_date_convention=False,
-            template_id=template_id if template_id else None
         )
-        
+        if template_id:
+            try:
+                template = Template.objects.get(pk=template_id)
+                new_batch.template = template
+            except Template.DoesNotExist:
+                pass
+            
         if team_leader_id:
             try:
                 team_leader = TrtPersons.objects.get(pk=team_leader_id)
@@ -1672,13 +1677,12 @@ def quick_add_batch(request):
             'template': new_batch.template.name if new_batch.template else None,
             'team_leader': {
                 'id': new_batch.entered_person.person_id,
-                'name': new_batch.entered_person
+                'name': str(new_batch.entered_person)
             } if new_batch.entered_person else None
         })
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
     
-
 class BatchCodeManageView(View):
     template_name = 'wamtram2/add_batches_code.html'
 
@@ -1705,7 +1709,6 @@ class BatchCodeManageView(View):
         location_code = request.GET.get('location_code')
         places = TrtPlaces.objects.filter(location_code=location_code).values('place_code', 'place_name')
         return JsonResponse(list(places), safe=False)
-
 
     def get(self, request, batch_id=None):
         if batch_id:

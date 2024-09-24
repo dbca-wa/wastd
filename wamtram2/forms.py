@@ -1,7 +1,6 @@
 from django import forms
-from django.forms import DateTimeInput
 from easy_select2 import apply_select2
-from .models import TrtPersons, TrtDataEntry, TrtTags, TrtEntryBatches, TrtPlaces, TrtPitTags, TrtPitTags, Template, TrtObservations,TrtTagStates, TrtDamageCodes, TrtBodyParts
+from .models import TrtPersons, TrtDataEntry, TrtTags, TrtEntryBatches, TrtPlaces, TrtPitTags, TrtPitTags, Template, TrtObservations,TrtPersons,TrtTagStates
 from django_select2.forms import ModelSelect2Widget
 
 
@@ -552,11 +551,6 @@ class TrtObservationsForm(forms.ModelForm):
         if 'corrected_date' in cleaned_data:
             cleaned_data.pop('corrected_date')
         return cleaned_data
-    
-    
-# forms.py
-from django import forms
-from .models import TrtEntryBatches, TrtPersons, Template
 
 class BatchesCodeForm(forms.ModelForm):
     class Meta:
@@ -578,6 +572,14 @@ class BatchesCodeForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['entered_person_id'].queryset = TrtPersons.objects.all()
+        self.fields['template'].queryset = Template.objects.all()
+        
+    def clean_template(self):
+        template = self.cleaned_data.get('template')
+        if template and not Template.objects.filter(id=template.id).exists():
+            raise forms.ValidationError("The selected template does not exist.")
+        return template
+
 
 class BatchesSearchForm(forms.Form):
     batches_code = forms.CharField(
