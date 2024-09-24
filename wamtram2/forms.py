@@ -539,6 +539,18 @@ class TemplateForm(forms.ModelForm):
         model = Template
         fields = ['name', 'location_code', 'place_code', 'species_code', 'sex']
         
+    def clean(self):
+        cleaned_data = super().clean()
+        species_code = cleaned_data.get('species_code')
+        sex = cleaned_data.get('sex')
+
+        if not species_code:
+            cleaned_data['species_code'] = None
+        if not sex:
+            cleaned_data['sex'] = None
+
+        return cleaned_data
+        
 class TrtObservationsForm(forms.ModelForm):
     class Meta:
         model = TrtObservations
