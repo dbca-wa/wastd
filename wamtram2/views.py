@@ -1649,6 +1649,8 @@ def quick_add_batch(request):
         comments = request.POST.get('comments', '')
         template_id = request.POST.get('template')
         entered_person_id = request.POST.get('entered_person_id')
+        print(entered_person_id)
+        print("Template:",template_id)
         
         entered_person = get_object_or_404(TrtPersons, pk=entered_person_id)
         
@@ -1671,35 +1673,7 @@ def quick_add_batch(request):
                 return JsonResponse({'success': False, 'error': str(e)})
     else:
         return JsonResponse({'success': False, 'error': 'Invalid request method.'})
-        # if template_id:
-        #     try:
-        #         template = Template.objects.get(pk=template_id)
-        #         new_batch.template = template
-        #     except Template.DoesNotExist:
-        #         pass
-            
-        # if team_leader_id:
-        #     try:
-        #         team_leader = TrtPersons.objects.get(person_id=team_leader_id)
-        #         new_batch.entered_person = team_leader
-        #         new_batch.save()
-        #     except TrtPersons.DoesNotExist:
-        #         pass
-    #         return JsonResponse({
-    #             'success': True, 
-    #             'batch_id': new_batch.entry_batch_id,
-    #             'entry_date': new_batch.entry_date.strftime('%Y-%m-%d %H:%M:%S'),
-    #             'batches_code': new_batch.batches_code,
-    #             'comments': new_batch.comments,
-    #             'template': new_batch.template.name if new_batch.template else None,
-    #             'team_leader': {
-    #                 'id': new_batch.entered_person.person_id,
-    #                 'name': f"{new_batch.entered_person.first_name} {new_batch.entered_person.surname}"
-    #             } if new_batch.entered_person else None
-    #         })
-    # except Exception as e:
-    #     return JsonResponse({'success': False, 'error': str(e)})
-    
+
     
 class BatchCodeManageView(View):
     template_name = 'wamtram2/add_batches_code.html'
