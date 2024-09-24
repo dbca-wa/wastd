@@ -10,24 +10,9 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 <link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
-<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <link rel="stylesheet" href="{% static 'css/search_styles.css' %}">
 <style>
-    .search-results {
-        position: absolute;
-        background-color: white;
-        border: 1px solid #ddd;
-        max-height: 200px;
-        overflow-y: auto;
-        z-index: 1000;
-    }
-    .search-results div {
-        padding: 5px 10px;
-        cursor: pointer;
-    }
-    .search-results div:hover {
-        background-color: #f0f0f0;
-    }
     .tooltip-inner {
         max-width: 300px;
         text-align: left;
@@ -159,7 +144,7 @@
     {% endif %}
 </div>
 
-<div class="pagination-container">
+{% comment %} <div class="pagination-container">
     {% if is_paginated %}
     <ul class="pagination mb-0">
         {% if page_obj.number != 1 %}
@@ -199,7 +184,7 @@
         {% endif %}
     </ul>
     {% endif %}
-</div>
+</div> {% endcomment %}
 
 <!-- Quick Add Batch Modal -->
 <div class="modal fade" id="quickAddBatchModal" tabindex="-1" role="dialog" aria-labelledby="quickAddBatchModalLabel" aria-hidden="true">
@@ -242,7 +227,7 @@
                         <input type="number" class="form-control" id="quickAddNight" name="night" min="1" value="">
                     </div>
                     <div class="form-group">
-                        <label for="quickAddBatchCode">Batch Code</label>
+                        <label for="quickAddBatchCode">Batch Code (auto generated)</label>
                         <input type="text" class="form-control" id="quickAddBatchCode" name="batches_code" required>
                         <div class="invalid-feedback">This Bathch is alraedy exist.</div>
                         <div class="valid-feedback">Looks good!</div>
@@ -259,7 +244,7 @@
                     <div class="form-group">
                         <label for="quickAddTeamLeader">Team Leader Name</label>
                         <div class="search-container">
-                            <input type="text" id="quickAddTeamLeader" class="search-field" placeholder="Search Person" autocomplete="off">
+                            <input type="text" id="quickAddTeamLeader" class="search-field" placeholder="Search Person" autocomplete="off" value="{{ entered_person_full_name }}">
                             <input type="hidden" id="quickAddTeamLeaderId" name="entered_person_id">
                             <div id="searchResults" class="search-results"></div>
                         </div>
@@ -269,7 +254,7 @@
                         <select class="form-control" id="quickAddTemplate" name="template">
                             <option value="">Select Template</option>
                             {% for template in templates %}
-                                <option value="{{ template.template_id }}">{{ template.name }}</option>
+                                <option value="{{ template.template_id }}">{{ template.template_id }}:{{ template.name }}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -295,31 +280,66 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+{{ block.super }}
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
     const adminUrl = "{% url 'admin:wamtram2_trtpersons_add' %}";
     $(document).ready(function() {
+
         // Initialize tooltips
         $('[data-toggle="tooltip"]').tooltip();
         initializeDatepicker()
 
+        // Initialize the Flatpickr datepicker
         function initializeDatepicker() {
-            $('#quickAddEntryDate').datepicker({
-                format: 'dd/mm/yyyy',
-                autoclose: true,
-                todayHighlight: true
+            $('#quickAddEntryDate').flatpickr({
+                dateFormat: 'd/m/Y',  // Set the date format to day/month/year
+                enableTime: false,    // Disable time selection
+                altInput: true,       // Show an alternative input field
+                altFormat: "F j, Y",  // Display format for the alternative input
+                defaultDate: null     // No default date
             });
         }
-    
+
+        // Override the default form submission to handle Flatpickr date format
         $('#quickAddBatchForm').submit(function(e) {
-            var entryDate = $('#quickAddEntryDate').datepicker('getDate');
-            if (entryDate) {
-                var formattedDate = $.datepicker.formatDate('dd-mm-yy', entryDate);
-                $('#quickAddEntryDate').val(formattedDate);
+            e.preventDefault();  // Prevent default form submission
+            showLoadingSpinner(); // Show loading spinner
+
+            // Prepare form data for submission
+            const form = $(this)[0];
+            const formData = new FormData(form);
+
+            const templateValue = $('#quickAddTemplate').val();
+            if (templateValue) {
+                formData.set('template', templateValue);
             }
+
+            // Use fetch API to submit the form data
+            fetch("{% url 'wamtram2:quick_add_batch' %}", {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    $('#quickAddBatchModal').modal('hide'); // Close modal on success
+                    location.reload(); // Reload the page to reflect changes
+                } else {
+                    alert(data.error); // Show error message
+                    enableButton($('#quickAddBatchConfirm'));
+                    hideLoadingSpinner(); // Hide loading spinner
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while adding the batch.');
+                enableButton($('#quickAddBatchConfirm'));
+                hideLoadingSpinner();
+            });
         });
 
         function showLoadingSpinner() {
@@ -352,7 +372,6 @@
                 data: $(this).serialize(),
                 type: 'GET',
                 success: function(response) {
-                    console.log("AJAX response received");
                     $('#batches-table').html($(response.html).find('#batches-table').html());
                     $('.pagination-container').html($(response.html).find('.pagination-container').html());
                     enableButton(button);
@@ -608,7 +627,11 @@
         var teamLeaderIdInput = document.getElementById('quickAddTeamLeaderId');
         var searchResults = document.getElementById('searchResults');
     
+        let isSelecting = false; // To indicate selection
+
         teamLeaderInput.addEventListener('input', function() {
+            if (isSelecting) return; // If selecting, ignore input event
+        
             var searchTerm = this.value;
             if (searchTerm.length >= 2) {
                 fetch(`/wamtram2/search-persons/?q=${searchTerm}`)
@@ -622,9 +645,11 @@
                                 div.className = 'search-result';
                                 div.textContent = `${person.first_name} ${person.surname}`;
                                 div.addEventListener('click', function() {
+                                    isSelecting = true; // Mark that selection is happening
                                     teamLeaderInput.value = `${person.first_name} ${person.surname}`;
                                     teamLeaderIdInput.value = person.person_id;
                                     searchResults.style.display = 'none';
+                                    isSelecting = false; // Reset selection mark after choosing
                                 });
                                 searchResults.appendChild(div);
                             });
@@ -640,6 +665,7 @@
                 searchResults.style.display = 'none';
             }
         });
+            
     
         document.addEventListener('click', function(e) {
             if (e.target !== teamLeaderInput && !searchResults.contains(e.target)) {

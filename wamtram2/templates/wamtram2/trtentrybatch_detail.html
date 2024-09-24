@@ -70,29 +70,31 @@
         <div class="row">
             <div class="col-md-4">
                 <div class="form-group">
-                    <label>Team Leader Name</label>
-                    <p class="form-control-static">{{ batch.entered_person_id.get_full_name }}</p>
+                    <label><strong>Team Leader Name</strong></label>
+                    <p class="form-control-static">{{ batch.entered_person_id|default:"None" }}</p>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="form-group">
-                    <label>Comments</label>
-                    <p class="form-control-static">{{ batch.comments|default:"无" }}</p>
+                    <label><strong>Comments</strong></label>
+                    <p class="form-control-static">{{ batch.comments|default:"None" }}</p>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="form-group">
-                    <label>Template</label>
-                    <p class="form-control-static">{{ batch.template.name|default:"无" }}</p>
+                    <label><strong>Template</strong></label>
+                    <p class="form-control-static">{{ batch.template.name|default:"None" }}</p>
                 </div>
             </div>
         </div>
         {% if request.user.is_superuser or request.user|has_group:"WAMTRAM2_STAFF" or request.user|has_group:"WAMTRAM2_TEAM_LEADER" %}
         <div class="row mt-3">
             <div class="col-12">
-                <a href="{% url 'wamtram2:add_batches_code' batch_id=batch.entry_batch_id %}" class="btn btn-primary">
-                    Manage Batch Detail
-                </a>
+                <div class="float-right">
+                    <a href="{% url 'wamtram2:add_batches_code' batch_id=batch.entry_batch_id %}" class="btn btn-primary">
+                        Manage Batch Detail
+                    </a>
+                </div>
             </div>
         </div>
         {% endif %}
@@ -218,7 +220,9 @@
                         <th>Enterer</th>
                         <th>Needs Review</th>
                         <th>Comments</th>
+                        {% if user.is_superuser or user|has_group:"WAMTRAM2_STAFF" %}
                         <th>Delete</th>
+                        {% endif %}
                     </tr>
                 </thead>
 
@@ -266,13 +270,15 @@
                         </td>
                         <td>{% if obj.do_not_process %}Yes{% else %}No{% endif %}</td>
                         <td>{{ obj.comments }}</td>
+                        {% if user.is_superuser or user|has_group:"WAMTRAM2_STAFF" %}
                         <td>
                             {% if obj.observation_id %}
-                                <button type="button" class="btn btn-secondary btn-sm" disabled>Cannot Delete</button>
+                                <button type="button" class="btn btn-secondary btn-sm" disabled>Can not delete</button>
                             {% else %}
                                 <button type="button" class="btn btn-danger btn-sm delete-entry-btn" data-toggle="modal" data-target="#entryDeleteConfirmationModal" data-entry-id="{{ obj.data_entry_id }}" data-url="{% url 'wamtram2:delete_entry' pk=obj.data_entry_id batch_id=batch.entry_batch_id %}">Delete</button>
                             {% endif %}
                         </td>
+                    {% endif %}
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -295,7 +301,7 @@
     </div>
 
     <!-- Danger zone -->
-    {% if user.is_superuser %}
+    {% if user.is_superuser or user|has_group:"WAMTRAM2_STAFF" %}
     <div class="danger-zone">
         <div class="danger-zone-header">Danger Zone</div>
         {% comment %} <span style="font-size: 1.0em; color: #fc8b95;">(only super user can see)</span> {% endcomment %}

@@ -27,6 +27,7 @@ from django.template.loader import render_to_string
 from django.core.serializers.json import DjangoJSONEncoder
 import json
 import csv
+from django.core.exceptions import ValidationError
 
 
 from wastd.utils import Breadcrumb, PaginateMixin
@@ -150,7 +151,7 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
     
     def get_initial(self):
         initial = super().get_initial()
-        batch_id = self.kwargs.get("batch_id")
+        # batch_id = self.kwargs.get("batch_id")
         # cookies_key_prefix = batch_id
         # default_enterer = self.request.COOKIES.get(f'{cookies_key_prefix}_default_enterer')
         # use_default_enterer = self.request.COOKIES.get(f'{cookies_key_prefix}_use_default_enterer', False)
@@ -341,8 +342,6 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         tag_side = self.request.COOKIES.get(f'{cookies_key_prefix}_tag_side')
 
         selected_template = self.request.COOKIES.get(f'{cookies_key_prefix}_selected_template')
-        # use_default_enterer = self.request.COOKIES.get(f'{cookies_key_prefix}_use_default_enterer', False)
-        # default_enterer = self.request.COOKIES.get(f'{cookies_key_prefix}_default_enterer', None)
         
         # If a tag is selected, populate the form with the tag data
         if tag_id and tag_type:
@@ -362,22 +361,19 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
             except TrtEntryBatches.DoesNotExist:
                 pass
 
-        # if default_enterer == "None" or not default_enterer:
-        #     default_enterer = None
-
         if selected_template:
             template_data = self.get_template_data(selected_template)
             if template_data:
-                place_code = template_data.get('place_code')
-                initial['default_place_code'] = place_code
+                place_code = template_data.get('place_code') or ""
+                initial['default_place_code'] = place_code or ""
                 self.default_place_code = place_code
                 default_place_obj = TrtPlaces.objects.filter(place_code=self.default_place_code).first()
                 if default_place_obj:
                     self.default_place_full_name = default_place_obj.get_full_name()
-                    initial['default_place_full_name'] = self.default_place_full_name
+                    initial['default_place_full_name'] = self.default_place_full_name or ""
                 if not turtle_id:
-                    initial['species_code'] = template_data.get('species_code')
-                    initial['sex'] = template_data.get('sex')
+                    initial['species_code'] = template_data.get('species_code') or ""
+                    initial['sex'] = template_data.get('sex') or ""
                     
                 # if default_enterer and default_enterer != "None":
                 #     default_enterer_obj = TrtPersons.objects.filter(person_id=default_enterer).first()
@@ -446,7 +442,6 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         return initial
 
     def form_valid(self, form):
-        print('form_valid')
         batch_id = form.cleaned_data["entry_batch"].entry_batch_id
         do_not_process_cookie_name = f"{batch_id}_do_not_process"
         do_not_process_cookie_value = self.request.COOKIES.get(do_not_process_cookie_name)
@@ -522,15 +517,15 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
             else:
                 context["selected_template"] = self.request.COOKIES.get(f'{cookies_key_prefix}_selected_template') or None
             context["use_default_enterer"] = self.request.COOKIES.get(f'{cookies_key_prefix}_use_default_enterer', False)
-            context["default_enterer"] = self.request.COOKIES.get(f'{cookies_key_prefix}_default_enterer', None)
+            context["default_enterer"] = self.request.COOKIES.get(f'{cookies_key_prefix}_default_enterer', '')
             # Add the tag id and tag type to the context data
             context["cookie_tag_id"] = self.request.COOKIES.get(f'{cookies_key_prefix}_tag_id')
             context["cookie_tag_type"] = self.request.COOKIES.get(f'{cookies_key_prefix}_tag_type')
             context["cookie_tag_side"] = self.request.COOKIES.get(f'{cookies_key_prefix}_tag_side')
 
-            context["default_enterer_full_name"] = getattr(self, 'default_enterer_full_name', None)
-            context["default_place_full_name"] = getattr(self, 'default_place_full_name', None)
-            context["default_place_code"] = getattr(self, 'default_place_code', None)
+            context["default_enterer_full_name"] = getattr(self, 'default_enterer_full_name', '')
+            context["default_place_full_name"] = getattr(self, 'default_place_full_name', '')
+            context["default_place_code"] = getattr(self, 'default_place_code', '')
         
             context['measured_by_full_name'] = getattr(self, 'measured_by_full_name', '')
             context['recorded_by_full_name'] = getattr(self, 'recorded_by_full_name', '')
@@ -735,6 +730,7 @@ class FindTurtleView(LoginRequiredMixin, View):
             "batch": batch,
             "template_name": template_name,
         })
+
 
     def set_cookie(self, response, batch_id, tag_id=None, tag_type=None, tag_side=None, no_turtle_found=False, do_not_process=False):
         if tag_id:
@@ -987,10 +983,12 @@ def get_place_full_name(request):
     except TrtPlaces.DoesNotExist:
         return JsonResponse({'error': 'Place not found'}, status=404)
     
+    
 def check_template_name(request):
     name = request.GET.get('name')
     is_available = not Template.objects.filter(name=name).exists()
     return JsonResponse({'is_available': is_available})
+    
     
 class ValidateTagView(View):
     """
@@ -1235,18 +1233,28 @@ class ExportDataView(LoginRequiredMixin, View):
         return super().dispatch(request, *args, **kwargs)
 
     def get(self, request):
-        if request.GET.get('action') == 'get_places':
+        # Handle different actions based on the 'action' parameter
+        action = request.GET.get('action')
+        if action == 'get_places':
             return self.get_places(request)
+        elif action == 'get_species':
+            return self.get_species(request)
+        elif action == 'get_sexes':
+            return self.get_sexes(request)
         return self.export_data(request)
 
     def export_data(self, request):
+        # Retrieve filter parameters from the request
         observation_date_from = request.GET.get("observation_date_from")
         observation_date_to = request.GET.get("observation_date_to")
         place_code = request.GET.get("place_code")
+        species = request.GET.get("species")
+        sex = request.GET.get("sex")
         file_format = request.GET.get("format", "csv")
 
         queryset = TrtDataEntry.objects.filter(observation_id__isnull=False)
         
+        # Filter by date range
         if observation_date_from and observation_date_to:
             queryset = queryset.filter(observation_date__range=[observation_date_from, observation_date_to])
         elif observation_date_from:
@@ -1254,8 +1262,17 @@ class ExportDataView(LoginRequiredMixin, View):
         elif observation_date_to:
             queryset = queryset.filter(observation_date__lte=observation_date_to)
         
+        # Filter by place
         if place_code:
             queryset = queryset.filter(place_code=place_code)
+
+        # Filter by species
+        if species:
+            queryset = queryset.filter(species_code=species)
+
+        # Filter by sex
+        if sex:
+            queryset = queryset.filter(sex=sex)
 
         # File generation logic
         if file_format == "csv":
@@ -1278,6 +1295,7 @@ class ExportDataView(LoginRequiredMixin, View):
         return response
 
     def get_places(self, request):
+        """Retrieve places based on the specified date range."""
         observation_date_from = request.GET.get("observation_date_from")
         observation_date_to = request.GET.get("observation_date_to")
 
@@ -1287,14 +1305,40 @@ class ExportDataView(LoginRequiredMixin, View):
 
         place_list = [
             {
-                "place_code": place.place_code,
-                "place_name": place.place_name,
+                "value": place.place_code,
+                "label": place.get_full_name(),
                 "location_name": place.location_code.location_name,
             }
             for place in places
         ]
         
         return JsonResponse({"places": place_list})
+
+    def get_species(self, request):
+        """Retrieve species based on the specified date range."""
+        observation_date_from = request.GET.get("observation_date_from")
+        observation_date_to = request.GET.get("observation_date_to")
+
+        species = TrtSpecies.objects.filter(
+            trtdataentry__observation_date__range=[observation_date_from, observation_date_to]
+        ).distinct()
+
+        species_list = [
+            {"value": specie.species_code, "label": specie.common_name}
+            for specie in species
+        ]
+
+        return JsonResponse({"species": species_list})
+
+    def get_sexes(self, request):
+        """Retrieve available sex choices based on the defined SEX_CHOICES."""
+        # Directly use the SEX_CHOICES to return the options for the frontend
+        sex_list = [
+            {"value": choice[0], "label": choice[1]}
+            for choice in SEX_CHOICES
+        ]
+
+        return JsonResponse({"sexes": sex_list})
 
 
 class FilterFormView(LoginRequiredMixin, View):
@@ -1600,29 +1644,35 @@ class CreateNewEntryView(LoginRequiredMixin, ListView):
 @login_required
 @require_POST
 def quick_add_batch(request):
-    batches_code = request.POST.get('batches_code')
-    comments = request.POST.get('comments', '')
-    template_id = request.POST.get('template')
-    try:
-        new_batch = TrtEntryBatches.objects.create(
+    if request.method == 'POST':
+        batches_code = request.POST.get('batches_code')
+        comments = request.POST.get('comments', '')
+        template_id = request.POST.get('template')
+        entered_person_id = request.POST.get('entered_person_id')
+        
+        entered_person = get_object_or_404(TrtPersons, pk=entered_person_id)
+        
+        template = None
+        if template_id:
+            template = get_object_or_404(Template, pk=template_id)
+
+        batch = TrtEntryBatches.objects.create(
             batches_code=batches_code,
             comments=comments,
             entry_date=timezone.now(),
             pr_date_convention=False,
-            template_id=template_id if template_id else None
+            entered_person_id=entered_person,
+            template=template
         )
-        return JsonResponse({
-            'success': True, 
-            'batch_id': new_batch.entry_batch_id,
-            'entry_date': new_batch.entry_date.strftime('%Y-%m-%d %H:%M:%S'),
-            'batches_code': new_batch.batches_code,
-            'comments': new_batch.comments,
-            'template': new_batch.template.name if new_batch.template else None
-        })
-    except Exception as e:
-        return JsonResponse({'success': False, 'error': str(e)})
-    
+        try:
+            batch.save()
+            return JsonResponse({'success': True})
+        except ValidationError as e:
+                return JsonResponse({'success': False, 'error': str(e)})
+    else:
+        return JsonResponse({'success': False, 'error': 'Invalid request method.'})
 
+    
 class BatchCodeManageView(View):
     template_name = 'wamtram2/add_batches_code.html'
 
@@ -1650,7 +1700,6 @@ class BatchCodeManageView(View):
         places = TrtPlaces.objects.filter(location_code=location_code).values('place_code', 'place_name')
         return JsonResponse(list(places), safe=False)
 
-
     def get(self, request, batch_id=None):
         if batch_id:
             batch = get_object_or_404(TrtEntryBatches, pk=batch_id)
@@ -1663,6 +1712,8 @@ class BatchCodeManageView(View):
         years = {str(year): str(year)[-2:] for year in range(2020, current_year+1)}
         templates = Template.objects.all()
 
+        entered_person_full_name = str(form.instance.entered_person_id) if form.instance.entered_person_id else ''
+        template_selected = form.instance.template.template_id if form.instance.template else None
         context = {
             'form': form,
             'locations': locations,
@@ -1670,6 +1721,8 @@ class BatchCodeManageView(View):
             'current_year': current_year,
             'templates': templates,
             'batch_id': batch_id,
+            'entered_person_full_name': entered_person_full_name,
+            'template_selected': template_selected,
         }
         return render(request, self.template_name, context)
 
@@ -1683,6 +1736,8 @@ class BatchCodeManageView(View):
         if form.is_valid():
             new_batch = form.save(commit=False)
             if not TrtEntryBatches.objects.filter(batches_code=new_batch.batches_code).exclude(pk=batch_id).exists():
+                new_batch.entered_person_id = form.cleaned_data['entered_person_id']
+                new_batch.template = form.cleaned_data['template']
                 new_batch.save()
                 return redirect(reverse('wamtram2:batches_curation'))
             else:
@@ -1712,7 +1767,7 @@ class BatchCodeManageView(View):
         else:
             is_unique = not TrtEntryBatches.objects.filter(batches_code=code).exists()
         return JsonResponse({'is_unique': is_unique})
- 
+
     
 @require_GET
 def get_places(request):

@@ -7,23 +7,8 @@
     {{ block.super }}
     <link rel="stylesheet" href="{% static 'css/search_styles.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
-<link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
     <style>
-        .search-results {
-            position: absolute;
-            background-color: white;
-            border: 1px solid #ddd;
-            max-height: 200px;
-            overflow-y: auto;
-            z-index: 1000;
-        }
-        .search-results div {
-            padding: 5px 10px;
-            cursor: pointer;
-        }
-        .search-results div:hover {
-            background-color: #f0f0f0;
-        }
         .step-container {
             border: 1px solid #ddd;
             border-radius: 5px;
@@ -124,8 +109,8 @@
             <div class="form-group">
                 <label for="team_leader">Team Leader Name</label>
                 <div class="search-container">
-                    <input type="text" id="team_leader" class="search-field" placeholder="Search Person" autocomplete="off" value="{{ form.entered_person_id.value.get_full_name|default_if_none:'' }}">
-                    <input type="hidden" id="team_leader_id" name="entered_person_id" value="{{ form.entered_person_id.value.id|default_if_none:'' }}">
+                    <input type="text" id="team_leader" class="search-field" placeholder="Search Person" autocomplete="off" value="{{ form.entered_person_id.value|default_if_none:'' }}">
+                    <input type="hidden" id="team_leader_id" name="entered_person_id" value="{{ form.entered_person_id.value.id|default_if_none:'' }}">                    
                     <div id="searchResults" class="search-results"></div>
                 </div>
             </div>
@@ -138,7 +123,7 @@
                 <select name="template" id="template" class="form-control">
                     <option value="">---------</option>
                     {% for template in templates %}
-                        <option value="{{ template.id }}" {% if template.id == form.template.value.id %}selected{% endif %}>{{ template.name }}</option>
+                        <option value="{{ template.template_id }}" {% if template.template_id == form.initial.template  %}selected{% endif %}>{{ template.name }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -149,7 +134,7 @@
     
     <div class="loading-overlay" id="loading-overlay"></div>
     <div class="loading-spinner" id="loading-spinner">
-        <div class="spinner-border text-light" role="status">
+        <div class="spinner-border text-primary" role="status">
             <span class="sr-only">Loading...</span>
         </div>
     </div>
@@ -157,6 +142,7 @@
 {% endblock %}
 
 {% block extra_js %}
+{{ block.super }}
 <script>
     // Get CSRF Token
     function getCSRFToken() {
@@ -184,8 +170,8 @@
 
     // Hide Loading Spinner
     function hideLoadingSpinner() {
-        $('#loading-overlay').show();
-        $('#loading-spinner').show();
+        $('#loading-overlay').hide();
+        $('#loading-spinner').hide();
     }
     // Load Places
     function loadPlaces(locationCode) {
@@ -304,7 +290,15 @@
             if (batchCodeInput.hasClass('is-invalid')) {
                 e.preventDefault();
                 alert('Please enter a valid batch code.');
+            } else {
+                // Show the loading spinner before submitting the form
+                showLoadingSpinner();
             }
+        });
+        
+        // Hide the spinner after the form submission is complete
+        $(document).ajaxComplete(function() {
+            hideLoadingSpinner();
         });
     });
 
