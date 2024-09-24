@@ -254,10 +254,7 @@
                         <select class="form-control" id="quickAddTemplate" name="template">
                             <option value="">Select Template</option>
                             {% for template in templates %}
-                                <option value="{{ template.id }}" 
-                                    {% if template_selected and template.id == template_selected %}selected{% endif %}>
-                                    {{ template.name }}
-                                </option>
+                                <option value="{{ template.template_id }}">{{ template.template_id }}:{{ template.name }}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -289,11 +286,6 @@
     const adminUrl = "{% url 'admin:wamtram2_trtpersons_add' %}";
     $(document).ready(function() {
 
-        console.log('Available templates:');
-        $('#quickAddTemplate option').each(function() {
-            console.log($(this).val() + ': ' + $(this).text());
-        });
-
         // Initialize tooltips
         $('[data-toggle="tooltip"]').tooltip();
         initializeDatepicker()
@@ -314,9 +306,6 @@
             e.preventDefault();  // Prevent default form submission
             showLoadingSpinner(); // Show loading spinner
 
-            const template = $('#quickAddTemplate').val(); 
-            console.log(template);
-
             // Prepare form data for submission
             const form = $(this)[0];
             const formData = new FormData(form);
@@ -325,12 +314,6 @@
             if (templateValue) {
                 formData.set('template', templateValue);
             }
-
-            for (let pair of formData.entries()) {
-                console.log(pair[0] + ': ' + pair[1]);
-            }
-            console.log('Template value before submission:', $('#quickAddTemplate').val());
-            console.log('Template value in FormData:', formData.get('template'));
 
             // Use fetch API to submit the form data
             fetch("{% url 'wamtram2:quick_add_batch' %}", {
@@ -389,7 +372,6 @@
                 data: $(this).serialize(),
                 type: 'GET',
                 success: function(response) {
-                    console.log("AJAX response received");
                     $('#batches-table').html($(response.html).find('#batches-table').html());
                     $('.pagination-container').html($(response.html).find('.pagination-container').html());
                     enableButton(button);

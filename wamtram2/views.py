@@ -442,7 +442,6 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         return initial
 
     def form_valid(self, form):
-        print('form_valid')
         batch_id = form.cleaned_data["entry_batch"].entry_batch_id
         do_not_process_cookie_name = f"{batch_id}_do_not_process"
         do_not_process_cookie_value = self.request.COOKIES.get(do_not_process_cookie_name)
@@ -1649,8 +1648,6 @@ def quick_add_batch(request):
         comments = request.POST.get('comments', '')
         template_id = request.POST.get('template')
         entered_person_id = request.POST.get('entered_person_id')
-        print(entered_person_id)
-        print("Template:",template_id)
         
         entered_person = get_object_or_404(TrtPersons, pk=entered_person_id)
         
