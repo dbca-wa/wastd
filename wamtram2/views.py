@@ -27,6 +27,7 @@ from django.template.loader import render_to_string
 from django.core.serializers.json import DjangoJSONEncoder
 import json
 import csv
+from django.core.exceptions import ValidationError
 
 
 from wastd.utils import Breadcrumb, PaginateMixin
@@ -1643,45 +1644,55 @@ class CreateNewEntryView(LoginRequiredMixin, ListView):
 @login_required
 @require_POST
 def quick_add_batch(request):
-    batches_code = request.POST.get('batches_code')
-    comments = request.POST.get('comments', '')
-    template_id = request.POST.get('template')
-    team_leader_id = request.POST.get('entered_person_id')
-    try:
-        new_batch = TrtEntryBatches.objects.create(
+    if request.method == 'POST':
+        batches_code = request.POST.get('batches_code')
+        comments = request.POST.get('comments', '')
+        template_id = request.POST.get('template')
+        entered_person_id = request.POST.get('entered_person_id')
+
+        batch = TrtEntryBatches.objects.create(
             batches_code=batches_code,
             comments=comments,
             entry_date=timezone.now(),
             pr_date_convention=False,
+            entered_person_id=entered_person_id,
+            template_id=template_id 
         )
-        if template_id:
-            try:
-                template = Template.objects.get(pk=template_id)
-                new_batch.template = template
-            except Template.DoesNotExist:
-                pass
+        try:
+            batch.save()
+            return JsonResponse({'success': True})
+        except ValidationError as e:
+                return JsonResponse({'success': False, 'error': str(e)})
+    else:
+        return JsonResponse({'success': False, 'error': 'Invalid request method.'})
+        # if template_id:
+        #     try:
+        #         template = Template.objects.get(pk=template_id)
+        #         new_batch.template = template
+        #     except Template.DoesNotExist:
+        #         pass
             
-        if team_leader_id:
-            try:
-                team_leader = TrtPersons.objects.get(person_id=team_leader_id)
-                new_batch.entered_person = team_leader
-                new_batch.save()
-            except TrtPersons.DoesNotExist:
-                pass
-            return JsonResponse({
-                'success': True, 
-                'batch_id': new_batch.entry_batch_id,
-                'entry_date': new_batch.entry_date.strftime('%Y-%m-%d %H:%M:%S'),
-                'batches_code': new_batch.batches_code,
-                'comments': new_batch.comments,
-                'template': new_batch.template.name if new_batch.template else None,
-                'team_leader': {
-                    'id': new_batch.entered_person.person_id,
-                    'name': f"{new_batch.entered_person.first_name} {new_batch.entered_person.surname}"
-                } if new_batch.entered_person else None
-            })
-    except Exception as e:
-        return JsonResponse({'success': False, 'error': str(e)})
+        # if team_leader_id:
+        #     try:
+        #         team_leader = TrtPersons.objects.get(person_id=team_leader_id)
+        #         new_batch.entered_person = team_leader
+        #         new_batch.save()
+        #     except TrtPersons.DoesNotExist:
+        #         pass
+    #         return JsonResponse({
+    #             'success': True, 
+    #             'batch_id': new_batch.entry_batch_id,
+    #             'entry_date': new_batch.entry_date.strftime('%Y-%m-%d %H:%M:%S'),
+    #             'batches_code': new_batch.batches_code,
+    #             'comments': new_batch.comments,
+    #             'template': new_batch.template.name if new_batch.template else None,
+    #             'team_leader': {
+    #                 'id': new_batch.entered_person.person_id,
+    #                 'name': f"{new_batch.entered_person.first_name} {new_batch.entered_person.surname}"
+    #             } if new_batch.entered_person else None
+    #         })
+    # except Exception as e:
+    #     return JsonResponse({'success': False, 'error': str(e)})
     
     
 class BatchCodeManageView(View):
