@@ -573,12 +573,6 @@ class BatchesCodeForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['entered_person_id'].queryset = TrtPersons.objects.all()
         self.fields['template'].queryset = Template.objects.all()
-        
-    def clean_template(self):
-        template = self.cleaned_data.get('template')
-        if template and not Template.objects.filter(id=template.id).exists():
-            raise forms.ValidationError("The selected template does not exist.")
-        return template
 
 
 class BatchesSearchForm(forms.Form):

@@ -288,6 +288,12 @@
 <script>
     const adminUrl = "{% url 'admin:wamtram2_trtpersons_add' %}";
     $(document).ready(function() {
+
+        console.log('Available templates:');
+        $('#quickAddTemplate option').each(function() {
+            console.log($(this).val() + ': ' + $(this).text());
+        });
+
         // Initialize tooltips
         $('[data-toggle="tooltip"]').tooltip();
         initializeDatepicker()
@@ -308,9 +314,23 @@
             e.preventDefault();  // Prevent default form submission
             showLoadingSpinner(); // Show loading spinner
 
+            const template = $('#quickAddTemplate').val(); 
+            console.log(template);
+
             // Prepare form data for submission
             const form = $(this)[0];
             const formData = new FormData(form);
+
+            const templateValue = $('#quickAddTemplate').val();
+            if (templateValue) {
+                formData.set('template', templateValue);
+            }
+
+            for (let pair of formData.entries()) {
+                console.log(pair[0] + ': ' + pair[1]);
+            }
+            console.log('Template value before submission:', $('#quickAddTemplate').val());
+            console.log('Template value in FormData:', formData.get('template'));
 
             // Use fetch API to submit the form data
             fetch("{% url 'wamtram2:quick_add_batch' %}", {
