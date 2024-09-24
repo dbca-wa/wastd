@@ -197,9 +197,6 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
         else:
             queryset = queryset.filter(entry_batch_id=batch_id)
             
-        for entry in queryset:
-            print(f"Entry ID: {entry.data_entry_id}, Clutch Completed: {entry.clutch_completed}")
-    
         return queryset.select_related('observation_id').order_by("-data_entry_id")
 
     def get_context_data(self, **kwargs):
@@ -241,9 +238,6 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
             entry_batch_id=batch.entry_batch_id,
             do_not_process=False
         ).order_by("-data_entry_id")
-        
-        for entry in context['object_list']:
-            print(f"Context Entry ID: {entry.data_entry_id}, Clutch Completed: {entry.clutch_completed}")
         
         return context
 

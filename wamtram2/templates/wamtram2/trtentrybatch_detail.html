@@ -251,10 +251,7 @@
                             {% if obj.new_pittag_id %}{{ obj.new_pittag_id }} {% endif %}
                             {% if obj.new_pittag_id_2 %}{{ obj.new_pittag_id_2 }} {% endif %}
                         </td> 
-                        <td>{{ entry.clutch_completed }}
-                            <script>
-                                console.log("Entry ID: {{ entry.data_entry_id }}, Clutch Completed: {{ entry.clutch_completed }}");
-                            </script>
+                        <td>{{ obj.clutch_completed }}
                         </td>
                         <td>{{ obj.error_message }}</td>
                         <td>
@@ -398,18 +395,6 @@
 {{ block.super }}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-
-        function checkClutchCompletedValues() {
-            const rows = document.querySelectorAll('table tbody tr');
-            rows.forEach(row => {
-                const entryId = row.querySelector('td:first-child').textContent;
-                const clutchCompletedCell = row.querySelector('td:nth-child(7)');
-                console.log(`Entry ID: ${entryId}, Clutch Completed: ${clutchCompletedCell.textContent.trim()}`);
-            });
-        }
-
-        checkClutchCompletedValues();
-
         const addToDatabaseBtn = document.getElementById('processBtn');
         const confirmActionBtn = document.getElementById('confirmActionBtn');
         const paginationLinks = document.querySelectorAll('.pagination a');
