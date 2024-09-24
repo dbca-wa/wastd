@@ -2437,8 +2437,8 @@ class Template(models.Model):
     name = models.CharField(max_length=255, unique=True)
     location_code = models.CharField(max_length=50)
     place_code = models.CharField(max_length=50)
-    species_code = models.CharField(max_length=50)
-    sex = models.CharField(max_length=1, choices=SEX_CHOICES)
+    species_code = models.CharField(max_length=50, blank=True, null=True)
+    sex = models.CharField(max_length=1, choices=SEX_CHOICES, blank=True, null=True)
 
     class Meta:
         db_table = 'TRT_TEMPLATE'
@@ -2453,6 +2453,7 @@ class Template(models.Model):
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
+
 
 # class Tbldamage(models.Model):
 #     observation_id = models.IntegerField(db_column='OBSERVATION_ID')  # Field name made lowercase.
