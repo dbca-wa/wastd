@@ -1649,14 +1649,20 @@ def quick_add_batch(request):
         comments = request.POST.get('comments', '')
         template_id = request.POST.get('template')
         entered_person_id = request.POST.get('entered_person_id')
+        
+        entered_person = get_object_or_404(TrtPersons, pk=entered_person_id)
+        
+        template = None
+        if template_id:
+            template = get_object_or_404(Template, pk=template_id)
 
         batch = TrtEntryBatches.objects.create(
             batches_code=batches_code,
             comments=comments,
             entry_date=timezone.now(),
             pr_date_convention=False,
-            entered_person_id=entered_person_id,
-            template_id=template_id 
+            entered_person_id=entered_person,
+            template=template
         )
         try:
             batch.save()
