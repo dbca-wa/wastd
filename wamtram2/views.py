@@ -196,6 +196,9 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
             queryset = queryset.filter(entry_batch_id=batch_id, observation_id__isnull=True)
         else:
             queryset = queryset.filter(entry_batch_id=batch_id)
+            
+        for entry in queryset:
+            print(f"Entry ID: {entry.data_entry_id}, Clutch Completed: {entry.clutch_completed}")
     
         return queryset.select_related('observation_id').order_by("-data_entry_id")
 
@@ -238,6 +241,9 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
             entry_batch_id=batch.entry_batch_id,
             do_not_process=False
         ).order_by("-data_entry_id")
+        
+        for entry in context['object_list']:
+            print(f"Context Entry ID: {entry.data_entry_id}, Clutch Completed: {entry.clutch_completed}")
         
         return context
 
@@ -1705,7 +1711,7 @@ class BatchCodeManageView(View):
             form = BatchesCodeForm(instance=batch)
             entered_person = batch.entered_person_id
             entered_person_full_name = str(entered_person) if entered_person else ''
-            entered_person_id = entered_person.id if entered_person else ''
+            entered_person_id = entered_person.person_id if entered_person else ''
         else:
             form = BatchesCodeForm()
             entered_person_full_name = ''
