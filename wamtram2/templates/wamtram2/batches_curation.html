@@ -625,7 +625,11 @@
         var teamLeaderIdInput = document.getElementById('quickAddTeamLeaderId');
         var searchResults = document.getElementById('searchResults');
     
+        let isSelecting = false; // To indicate selection
+
         teamLeaderInput.addEventListener('input', function() {
+            if (isSelecting) return; // If selecting, ignore input event
+        
             var searchTerm = this.value;
             if (searchTerm.length >= 2) {
                 fetch(`/wamtram2/search-persons/?q=${searchTerm}`)
@@ -639,9 +643,11 @@
                                 div.className = 'search-result';
                                 div.textContent = `${person.first_name} ${person.surname}`;
                                 div.addEventListener('click', function() {
+                                    isSelecting = true; // Mark that selection is happening
                                     teamLeaderInput.value = `${person.first_name} ${person.surname}`;
                                     teamLeaderIdInput.value = person.person_id;
                                     searchResults.style.display = 'none';
+                                    isSelecting = false; // Reset selection mark after choosing
                                 });
                                 searchResults.appendChild(div);
                             });
@@ -657,6 +663,7 @@
                 searchResults.style.display = 'none';
             }
         });
+            
     
         document.addEventListener('click', function(e) {
             if (e.target !== teamLeaderInput && !searchResults.contains(e.target)) {
