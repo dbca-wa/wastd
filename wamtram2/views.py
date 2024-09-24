@@ -588,7 +588,7 @@ class ValidateDataEntryBatchView(LoginRequiredMixin, View):
         try:
             with connections["wamtram2"].cursor() as cursor:
                 cursor.execute(
-                    "EXEC dbo.ValidateDataEntryBatch @ENTRY_BATCH_ID = %s",
+                    "EXEC dbo.ValidateDataEntryBatchWEB @ENTRY_BATCH_ID = %s",
                     [self.kwargs["batch_id"]],
                 )
                 messages.add_message(request, messages.INFO, "Validation finished.")
@@ -656,7 +656,7 @@ class ProcessDataEntryBatchView(LoginRequiredMixin, View):
         try:
             with connections["wamtram2"].cursor() as cursor:
                 cursor.execute(
-                    "EXEC dbo.EntryBatchProcess @ENTRY_BATCH_ID = %s;",
+                    "EXEC dbo.EntryBatchProcessWEB @ENTRY_BATCH_ID = %s;",
                     [self.kwargs["batch_id"]],
                 )
                 messages.add_message(request, messages.INFO, "Processing finished.")
