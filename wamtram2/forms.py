@@ -273,7 +273,7 @@ class TrtDataEntryForm(forms.ModelForm):
         
         # Filter the queryset for new tag fields
         new_tag_states = TrtTagStates.objects.filter(
-            tag_state__in=["A1", "AE", "P_ED", "P_OK", "#", "R"]
+            tag_state__in=["A1", "AE", "#"]
         )
         self.fields['new_left_tag_state'].queryset = new_tag_states
         self.fields['new_right_tag_state'].queryset = new_tag_states
@@ -282,7 +282,7 @@ class TrtDataEntryForm(forms.ModelForm):
 
         # Filter the queryset for recapture (old) tag fields
         old_tag_states = TrtTagStates.objects.filter(
-            tag_state__in=["RQ", "RC", "OO", "OX", "P", "P_ED", "P_OK", "PX"]
+            tag_state__in=[ "#", "R", "RC", "OO", "P", "P_OK"]
         )
         
         self.fields['recapture_left_tag_state'].queryset = old_tag_states
