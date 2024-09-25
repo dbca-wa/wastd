@@ -85,7 +85,10 @@
       font-size: 14px;
       line-height: 1.5;
   }
-
+  .need-review-label {
+    font-weight: bold;
+    font-size: 1.2em;
+  }
 
 </style>
 {% endblock %}  
@@ -145,7 +148,7 @@
 <div class="container-fluid mt-5">
   <!-- First part: Info -->
   <div class="card border-dark mb-3">
-    <div class="card-header">Basic Information</div>
+    <div class="card-header"><strong>Basic Information</strong></div>
     <div class="card-body">
       <div class="row">
         <div class="col-md-12">
@@ -237,7 +240,7 @@
   </div>
   <!-- Second part: Tags -->
   <div class="card border-dark mb-3">
-    <div class="card-header">Tags</div>
+    <div class="card-header"><strong>Tags</strong></div>
     <div class="card-body">
       <!-- Flipper Tags Section -->
       <section class="container-fluid mt-5">
@@ -633,7 +636,7 @@
   </div>
   <!-- Third part: Measurements -->
   <div class="card border-dark mb-3">
-    <div class="card-header">Measurements</div>
+    <div class="card-header"><strong>Measurements</strong></div>
     <div class="card-body">
         <div class="container-fluid">
             <div class="col-md-12">
@@ -728,7 +731,7 @@
   </div>
   <!-- Fourth part: Nest -->
   <div class="card border-dark mb-3">
-    <div class="card-header">Nest</div>
+    <div class="card-header"><strong>Nesting</strong></div>
     <div class="card-body">
       <div class="row">
         <div class="col-md-12">
@@ -746,7 +749,7 @@
   </div>
   <!-- Fifth part: Injuries -->
   <div class="card border-dark mb-3">
-    <div class="card-header">Injuries</div>
+    <div class="card-header"><strong>Injuries</strong></div>
     <div class="card-body">
         <div class="row">
             <div class="col-md-4">
@@ -838,7 +841,7 @@
   </div>
   <!-- Sixth part: Bio -->
   <div class="card border-dark mb-3">
-    <div class="card-header">Samples</div>
+    <div class="card-header"><strong>Samples</strong></div>
     <div class="card-body">
       <div class="row">
         <div class="col-md-12">
@@ -928,7 +931,8 @@
       <div class="d-flex align-self-center">
         {% if not form.observation_id.value %}
         {% comment %} {% bootstrap_field form.do_not_process %} {% endcomment %}
-        {% bootstrap_field form.do_not_process id="id_do_not_process" %}
+        {% comment %} {% bootstrap_field form.do_not_process id="id_do_not_process" %} {% endcomment %}
+        {% bootstrap_field form.do_not_process id="id_do_not_process" label_class="need-review-label" %}
         {% endif %}
       </div>
     </div>
