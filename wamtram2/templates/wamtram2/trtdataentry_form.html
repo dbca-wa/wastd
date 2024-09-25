@@ -87,7 +87,7 @@
   }
   .need-review-label {
     font-weight: bold;
-    font-size: 1.2em;
+    font-size: 1em;
   }
 
 </style>
@@ -246,8 +246,8 @@
       <section class="container-fluid mt-5">
           <div class="row">
             <label class="col-form-label col-md-3"><strong>FLIPPER Tag(s)</strong></label>
-            <label class="col-form-label col-md-5"><strong>Does turtle have old FLIPPER tag(s)</strong></label>
-            <div class="col-md-2">
+            <label class="col-form-label col-md-4"><strong>Does turtle have old FLIPPER tag(s)</strong></label>
+            <div class="col-md-5">
               {% bootstrap_field form.flipper_tag_check show_label=False %}
             </div>
           </div>
@@ -411,7 +411,7 @@
           <div class="col-form-label col-md-4">
             <label><strong>Flipper Tags Scars Present?</strong></label>
           </div>
-          <div class="col-2">
+          <div class="col-md-8">
             {% bootstrap_field form.scar_check show_label=False%}
           </div>
         </div>
@@ -460,7 +460,7 @@
         <div class="col-md-12">
           <div class="row">
             <label class="col-form-label col-md-4"><strong>PIT Tags Present?</strong></label>
-            <div class="col-md-2">
+            <div class="col-md-8">
               {% bootstrap_field form.pit_tag_check show_label=False %}
             </div>
           </div>
@@ -755,7 +755,7 @@
             <div class="col-md-4">
                 <label><strong>Injuries Present?</strong></label>
             </div>
-            <div class="col-md-2">
+            <div class="col-md-8">
                 {% bootstrap_field form.injury_check show_label=False%}
             </div>
         </div>
@@ -930,9 +930,12 @@
     <div class="col-md-3 text-right">
       <div class="d-flex align-self-center">
         {% if not form.observation_id.value %}
-        {% comment %} {% bootstrap_field form.do_not_process %} {% endcomment %}
-        {% comment %} {% bootstrap_field form.do_not_process id="id_do_not_process" %} {% endcomment %}
-        {% bootstrap_field form.do_not_process id="id_do_not_process" label_class="need-review-label" %}
+        <div class="form-group"> 
+          <label for="{{ form.do_not_process.id_for_label }}" class="need-review-label"> 
+            {{ form.do_not_process.label }}
+         </label>
+            {{ form.do_not_process }}
+         </div>
         {% endif %}
       </div>
     </div>
@@ -1276,7 +1279,7 @@
                                   </div>
                                   <div class="form-check mr-5">
                                       <input type="checkbox" class="form-check-input" id="speciesConfirmCheckbox">
-                                      <label class="form-check-label ml-5" for="speciesConfirmCheckbox"><strong>I confirm this is the correct species</strong></label>
+                                      <label class="form-check-label" for="speciesConfirmCheckbox"><strong>I confirm this is the correct species</strong></label>
                                   </div>
                               </li>
                               `;
