@@ -567,6 +567,7 @@ class TemplateForm(forms.ModelForm):
             cleaned_data['place_code'] = None
 
         return cleaned_data
+       
         
 class TrtObservationsForm(forms.ModelForm):
     class Meta:
