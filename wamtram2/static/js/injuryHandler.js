@@ -1,30 +1,23 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // const injuryCheckSelect = document.getElementById('id_injury_check');
-    // if (injuryCheckSelect) {
-    //     injuryCheckSelect.addEventListener('change', toggleInjuryDetails);
-    //     toggleInjuryDetails();
-    // } else {
-    //     console.error('injuryCheckSelect not found: id_injury_check');
-    // }
-
     const toggleInjuryFieldsButton = document.getElementById('toggleInjuryFieldsButton');
     if (toggleInjuryFieldsButton) {
         toggleInjuryFieldsButton.addEventListener('click', toggleInjuryFields);
     } else {
         console.error('toggleInjuryFieldsButton not found');
     }
+
+    const bodyPartFields = ['body_part_1', 'body_part_2', 'body_part_3', 'body_part_4'];
+    bodyPartFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            field.addEventListener('change', updateBodyPartOptions);
+        } else {
+            console.error(`${fieldId} not found`);
+        }
+    });
+
+    updateBodyPartOptions();
 });
-
-// function toggleInjuryDetails() {
-//     const injuryCheckSelect = document.getElementById('id_injury_check');
-//     const injuryDetails = document.getElementById('injuryDetails');
-
-//     if (injuryCheckSelect && injuryCheckSelect.value === 'N' || injuryCheckSelect.value === 'D') {
-//         injuryDetails.style.display = 'none';
-//     } else {
-//         injuryDetails.style.display = 'block';
-//     }
-// }
 
 function toggleInjuryFields() {
     const injuryAdditionalFields = document.getElementById('injuryAdditionalFields');
@@ -39,4 +32,35 @@ function toggleInjuryFields() {
         toggleButtonIcon.classList.remove('fa-minus');
         toggleButtonIcon.classList.add('fa-plus');
     }
+}
+
+function updateBodyPartOptions() {
+    const bodyPartFields = ['body_part_1', 'body_part_2', 'body_part_3', 'body_part_4'];
+    const selectedValues = new Set();
+
+    bodyPartFields.forEach(fieldId => {
+        const select = document.getElementById(fieldId);
+        if (select && select.value) {
+            selectedValues.add(select.value);
+        }
+    });
+
+    bodyPartFields.forEach(fieldId => {
+        const select = document.getElementById(fieldId);
+        if (select) {
+            const currentValue = select.value;
+
+            selectedValues.delete(currentValue);
+
+            Array.from(select.options).forEach(option => {
+                if (option.value && option.value !== currentValue) {
+                    option.style.display = selectedValues.has(option.value) ? 'none' : '';
+                }
+            });
+
+            if (currentValue) {
+                selectedValues.add(currentValue);
+            }
+        }
+    });
 }

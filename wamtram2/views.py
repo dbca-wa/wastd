@@ -483,7 +483,7 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
                 'message': full_message
             })
         else:
-            return super().form_invalid(form)
+            return self.render_to_response(self.get_context_data(form=form))
 
     def get_context_data(self, **kwargs):
         """
@@ -498,6 +498,16 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         entry_id = self.kwargs.get("entry_id")
         batch_id = self.kwargs.get("batch_id")
         cookies_key_prefix = batch_id
+        form = context.get('form')
+        
+        if form.is_bound:
+            context.update({
+                'entered_by_id': form.data.get('entered_by_id'),
+                'recorded_by_id': form.data.get('recorded_by_id'),
+                'measured_by_id': form.data.get('measured_by_id'),
+                'tagged_by_id': form.data.get('tagged_by_id'),
+                'place_code': form.data.get('place_code'),
+            })
 
         if entry_id:
             entry = get_object_or_404(TrtDataEntry.objects.select_related('turtle_id'), data_entry_id=entry_id)
