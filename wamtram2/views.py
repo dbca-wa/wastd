@@ -471,16 +471,14 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
 
     def form_invalid(self, form):
         error_message = "Error saving the entry. If you cannot resolve the issue, please set aside this data sheet for admin review and continue with the next data sheet."
-        detailed_errors = ', '.join([f"{field}: {', '.join(errors)}" for field, errors in form.errors.items()])
-        full_message = f"{error_message} Detailed errors: {detailed_errors}"
         
-        messages.error(self.request, full_message)
+        messages.error(self.request, error_message)
         
         if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
             return JsonResponse({
                 'success': False, 
                 'errors': form.errors,
-                'message': full_message
+                'message': error_message
             })
         else:
             return self.render_to_response(self.get_context_data(form=form))
