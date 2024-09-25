@@ -15,7 +15,7 @@ from .models import (
     TrtTagOrders,
 )
 from import_export.admin import ImportExportModelAdmin
-from .forms import DataEntryUserModelForm, EnterUserModelForm, TrtObservationsForm
+from .forms import DataEntryUserModelForm, EnterUserModelForm, TrtObservationsForm, TrtPersonsForm
 
 
 class TrtMeasurementsInline(nested_admin.NestedTabularInline):
@@ -136,7 +136,6 @@ class TrtTagOrdersAdmin(ImportExportModelAdmin):
     verbose_name = "Tag Order"  # Singular name for one object
     verbose_name_plural = "Tag Orders"
 
-
 class TrtPersonsResource(resources.ModelResource):
     recorder = Field(attribute='recorder', column_name='Recorder')
 
@@ -153,4 +152,15 @@ class TrtPersonsResource(resources.ModelResource):
 @admin.register(TrtPersons)
 class TrtPersonsAdmin(ImportExportModelAdmin):
     resource_class = TrtPersonsResource
-    search_fields = ["first_name", "surname", "email"]
+    form = TrtPersonsForm
+    list_display = ('first_name', 'surname', 'email', 'recorder')
+    search_fields = ['first_name', 'surname', 'email']
+    fieldsets = (
+        ('Required Information', {
+            'fields': ('first_name', 'surname', 'email', 'recorder'),
+            'description': 'These fields are required.'
+        }),
+        ('Additional Information', {
+            'fields': ('middle_name', 'specialty', 'address_line_1', 'address_line_2', 'town', 'state', 'post_code', 'country', 'telephone', 'fax', 'mobile', 'comments', 'transfer'),
+        }),
+    )

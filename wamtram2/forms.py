@@ -605,3 +605,27 @@ class BatchesSearchForm(forms.Form):
         widget=forms.TextInput(attrs={'class': 'form-control'}),
         label='Batch Code'
     )
+    
+class TrtPersonsForm(forms.ModelForm):
+    class Meta:
+        model = TrtPersons
+        fields = '__all__'
+
+    def clean(self):
+        cleaned_data = super().clean()
+        first_name = cleaned_data.get("first_name")
+        surname = cleaned_data.get("surname")
+        email = cleaned_data.get("email")
+        recorder = cleaned_data.get("recorder")
+
+        if not first_name:
+            self.add_error('first_name', "First name is required.")
+        if not surname:
+            self.add_error('surname', "Surname is required.")
+        if not email:
+            self.add_error('email', "Email is required.")
+        if recorder is None:
+            self.add_error('recorder', "Please specify if this person is a recorder.")
+
+        return cleaned_data
+
