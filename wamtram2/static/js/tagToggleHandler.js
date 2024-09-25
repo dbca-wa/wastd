@@ -89,3 +89,20 @@ function toggleNewPITTags() {
         toggleBtn.innerHTML = '<i class="fas fa-plus"></i>';
     }
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    var flipperTagCheck = document.getElementById('id_flipper_tag_check');
+    var oldFlipperTagSection = document.getElementById('oldFlipperTagSection');
+
+    function toggleOldFlipperTagSection() {
+        if (flipperTagCheck.value === 'N') {
+            oldFlipperTagSection.style.display = 'none';
+        } else {
+            oldFlipperTagSection.style.display = '';
+        }
+    }
+
+    toggleOldFlipperTagSection();
+
+    flipperTagCheck.addEventListener('change', toggleOldFlipperTagSection);
+});

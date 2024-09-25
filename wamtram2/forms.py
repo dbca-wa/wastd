@@ -1,6 +1,6 @@
 from django import forms
 from easy_select2 import apply_select2
-from .models import TrtPersons, TrtDataEntry, TrtTags, TrtEntryBatches, TrtPlaces, TrtPitTags, TrtPitTags, Template, TrtObservations,TrtPersons,TrtTagStates
+from .models import TrtPersons, TrtDataEntry, TrtTags, TrtEntryBatches, TrtPlaces, TrtPitTags, Template, TrtObservations,TrtTagStates, TrtMeasurementTypes
 from django_select2.forms import ModelSelect2Widget
 
 
@@ -259,6 +259,17 @@ class TrtDataEntryForm(forms.ModelForm):
             'class': 'form-control', 
             'placeholder': 'Enter name',
         })
+        
+
+        # Filter the queryset for measurement types
+        filtered_measurement_types = TrtMeasurementTypes.objects.exclude(
+            measurement_type__in=['CCW', 'CCL NOTCH']
+        )
+     
+        for i in range(1, 7):
+            field_name = f'measurement_type_{i}'
+            self.fields[field_name].queryset = filtered_measurement_types
+
         
         # Filter the queryset for new tag fields
         new_tag_states = TrtTagStates.objects.filter(
