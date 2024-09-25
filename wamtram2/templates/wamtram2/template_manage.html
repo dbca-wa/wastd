@@ -103,16 +103,18 @@
             <form id="templateForm" method="post" class="row">
                 {% csrf_token %}
                 <div class="col-md-3">
-                    <label for="location_code">Location (required)</label>
+                    <label for="location_code">Location (optional)</label>
                     <select class="form-control" id="location_code" name="location_code">
+                        <option value="">Select Location</option>
                         {% for location in locations %}
                             <option value="{{ location.location_code }}">{{ location.location_name }}</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="col-md-3">
-                    <label for="place_code">Place (required)</label>
+                    <label for="place_code">Place <span class="text-muted">(required if Location is selected)</span></label>
                     <select class="form-control" id="place_code" name="place_code">
+                        <option value="">Select Place</option>
                         {% for place in places %}
                             <option value="{{ place.place_code }}">{{ place.place_name }}</option>
                         {% endfor %}
@@ -294,48 +296,53 @@
         var speciesCode = document.getElementById('species_code').value;
         var sex = document.getElementById('sex').value;
     
-        if (placeCode) {
+        if (placeCode || speciesCode || sex ) {
             showLoadingSpinner();
-            fetch("{% url 'wamtram2:get_place_full_name' %}?place_code=" + encodeURIComponent(placeCode), {
-                method: 'GET',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Accept': 'application/json',
-                },
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                var placeFullName = data.full_name;
-                var templateName = placeFullName;
-                
+            var templateName = '';
+
+            if (placeCode) {
+                fetch("{% url 'wamtram2:get_place_full_name' %}?place_code=" + encodeURIComponent(placeCode), {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    templateName = data.full_name;
+                    completeNameGeneration();
+                })
+                .catch(error => {
+                    console.error('Error fetching place full name:', error);
+                    showMessage('Error loading place full name. Please try again.', 'danger');
+                    hideLoadingSpinner();
+                });
+            } else {
+                completeNameGeneration();
+            }
+
+            function completeNameGeneration() {
                 if (speciesCode) {
                     var speciesName = document.querySelector('#species_code option:checked').textContent;
-                    templateName += ' + ' + speciesName;
+                    templateName += (templateName ? ' + ' : '') + speciesName;
                 }
                 
                 if (sex) {
                     var sexName = document.querySelector('#sex option:checked').textContent;
-                    templateName += ' + ' + sexName;
+                    templateName += (templateName ? ' + ' : '') + sexName;
                 }
                 
                 document.getElementById('id_name').value = templateName;
                 checkTemplateName(templateName);
-            })
-            .catch(error => {
-                console.error('Error fetching place full name:', error);
-                showMessage('Error loading place full name. Please try again.', 'danger');
-            })
-            .finally(() => {
                 hideLoadingSpinner();
-            });
+            }
+        } else {
+            document.getElementById('id_name').value = '';
+            $('#createButton').prop('disabled', true);
         }
     }
-
+    
     // Create Template
     function createTemplate() {
         var formData = $('#templateForm').serialize();
@@ -427,33 +434,39 @@
     }
 
     // Load Places based on Location Code
-    function loadPlaces(locationCode, targetElement) {
-        showLoadingSpinner();
-        $.ajax({
-            url: "{% url 'wamtram2:get_template_places' %}",
-            type: 'GET',
-            data: { location_code: locationCode },
-            dataType: 'json',
-            success: function(data) {
-                var placeSelect = $(targetElement);
-                placeSelect.empty();
-                if (Array.isArray(data)) {
-                    $.each(data, function(index, place) {
-                        placeSelect.append('<option value="' + place.place_code + '">' + place.place_name + '</option>');
-                    });
-                } else {
-                    console.error('Unexpected data format:', data);
-                    showMessage('Error loading places: Unexpected data format', 'danger');
+    function loadPlaces(locationCode) {
+        var placeSelect = $('#place_code');
+        placeSelect.prop('disabled', true);
+        if (locationCode) {
+            showLoadingSpinner();
+            $.ajax({
+                url: "{% url 'wamtram2:get_template_places' %}",
+                type: 'GET',
+                data: { location_code: locationCode },
+                dataType: 'json',
+                success: function(data) {
+                    placeSelect.empty().append('<option value="">Select Place</option>');
+                    if (Array.isArray(data)) {
+                        $.each(data, function(index, place) {
+                            placeSelect.append('<option value="' + place.place_code + '">' + place.place_name + '</option>');
+                        });
+                        placeSelect.prop('disabled', false);
+                    } else {
+                        console.error('Unexpected data format:', data);
+                        showMessage('Error loading places: Unexpected data format', 'danger');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching places:', xhr.responseText);
+                    showMessage('Error loading places. Please try again.', 'danger');
+                },
+                complete: function() {
+                    hideLoadingSpinner();
                 }
-            },
-            error: function(xhr, status, error) {
-                console.error('Error fetching places:', xhr.responseText);
-                showMessage('Error loading places. Please try again.', 'danger');
-            },
-            complete: function() {
-                hideLoadingSpinner();
-            }
-        });
+            });
+        } else {
+            placeSelect.empty().append('<option value="">Select Place</option>');
+        }
     }
 
     // Initialize event handlers on document ready

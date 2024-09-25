@@ -554,11 +554,17 @@ class TemplateForm(forms.ModelForm):
         cleaned_data = super().clean()
         species_code = cleaned_data.get('species_code')
         sex = cleaned_data.get('sex')
+        location_code = cleaned_data.get('location_code')
+        place_code = cleaned_data.get('place_code')
 
         if not species_code:
             cleaned_data['species_code'] = None
         if not sex:
             cleaned_data['sex'] = None
+        if not location_code:
+            cleaned_data['location_code'] = None
+        if not place_code:
+            cleaned_data['place_code'] = None
 
         return cleaned_data
         
