@@ -964,7 +964,7 @@ class TemplateManageView(LoginRequiredMixin, FormView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['templates'] = Template.objects.all().order_by('-template_id')
-        context['locations'] = list(TrtLocations.objects.all())
+        context['locations'] = list(TrtLocations.get_ordered_locations())
         context['places'] = list(TrtPlaces.objects.all())
         context['species'] = list(TrtSpecies.objects.all())
         context['sex_choices'] = SEX_CHOICES
@@ -1502,7 +1502,7 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['locations'] = TrtLocations.objects.all().order_by('location_name')
+        context['locations'] = list(TrtLocations.get_ordered_locations())
         context['places'] = TrtPlaces.objects.all().order_by('place_name')
         current_year = timezone.now().year
         context['years'] = range(2020, current_year + 1)
@@ -1622,7 +1622,7 @@ class CreateNewEntryView(LoginRequiredMixin, ListView):
         Provide context data to the template, including locations, places, and years
         """
         context = super().get_context_data(**kwargs)
-        locations = TrtLocations.objects.all().order_by('location_name')
+        locations = TrtLocations.get_ordered_locations()
         places = TrtPlaces.objects.none()
 
         if 'location' in self.request.GET and self.request.GET['location']:
@@ -1729,7 +1729,7 @@ class BatchCodeManageView(View):
             entered_person_full_name = ''
             entered_person_id = ''
 
-        locations = TrtLocations.objects.all().order_by('location_code')
+        locations = TrtLocations.get_ordered_locations()
         current_year = timezone.now().year
         years = {str(year): str(year)[-2:] for year in range(2020, current_year+1)}
         templates = Template.objects.all()
@@ -1766,7 +1766,7 @@ class BatchCodeManageView(View):
             else:
                 form.add_error('batches_code', 'This batch code already exists.')
 
-        locations = TrtLocations.objects.all().order_by('location_code')
+        locations = TrtLocations.get_ordered_locations()
         current_year = timezone.now().year
         years = {str(year): str(year)[-2:] for year in range(2020, current_year+1)}
         templates = Template.objects.all()

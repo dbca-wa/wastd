@@ -1,5 +1,7 @@
 from django.contrib.gis.db import models
 from django.core.exceptions import ValidationError
+from django.db.models import Case, When, Value, IntegerField
+
 
 class TrtActivities(models.Model):
     activity_code = models.CharField(
@@ -1343,7 +1345,6 @@ class TrtIdentificationTypes(models.Model):
         return f"{self.description}"
     
 
-
 class TrtLocations(models.Model):
     location_code = models.CharField(
         db_column="LOCATION_CODE", primary_key=True, max_length=2
@@ -1358,6 +1359,18 @@ class TrtLocations(models.Model):
 
     def __str__(self):
         return f"{self.location_name}"
+
+    @staticmethod
+    def get_ordered_locations():
+        priority_codes = ['BW', 'CD', 'CL', 'DA', 'DH', 'LA', 'LO', 'MN', 'RI', 'TH', 'VA', 'WK', 'PH']
+
+        custom_order = Case(
+            *[When(location_code=code, then=Value(i)) for i, code in enumerate(priority_codes)],
+            default=Value(len(priority_codes)),
+            output_field=IntegerField()
+        )
+
+        return TrtLocations.objects.annotate(custom_order=custom_order).order_by('custom_order', 'location_name')
 
 
 class TrtMeasurements(models.Model):
@@ -2441,7 +2454,7 @@ class Template(models.Model):
     sex = models.CharField(max_length=1, choices=SEX_CHOICES, blank=True, null=True)
 
     class Meta:
-        db_table = 'TRT_TEMPLATE'
+        db_table = 'TRT_TEMPLATES'
         
     def __str__(self):
         return self.name
