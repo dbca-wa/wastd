@@ -471,16 +471,14 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
 
     def form_invalid(self, form):
         error_message = "Error saving the entry. If you cannot resolve the issue, please set aside this data sheet for admin review and continue with the next data sheet."
-        detailed_errors = ', '.join([f"{field}: {', '.join(errors)}" for field, errors in form.errors.items()])
-        full_message = f"{error_message} Detailed errors: {detailed_errors}"
         
-        messages.error(self.request, full_message)
+        messages.error(self.request, error_message)
         
         if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
             return JsonResponse({
                 'success': False, 
                 'errors': form.errors,
-                'message': full_message
+                'message': error_message
             })
         else:
             return self.render_to_response(self.get_context_data(form=form))
@@ -507,6 +505,11 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
                 'measured_by_id': form.data.get('measured_by_id'),
                 'tagged_by_id': form.data.get('tagged_by_id'),
                 'place_code': form.data.get('place_code'),
+                'entered_by_name': self.get_person_name(form.data.get('entered_by_id')),
+                'recorded_by_name': self.get_person_name(form.data.get('recorded_by_id')),
+                'measured_by_name': self.get_person_name(form.data.get('measured_by_id')),
+                'tagged_by_name': self.get_person_name(form.data.get('tagged_by_id')),
+                'place_name': self.get_place_name(form.data.get('place_code')),
             })
 
         if entry_id:
@@ -544,6 +547,23 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
 
         return context
 
+    def get_person_name(self, person_id):
+        if person_id:
+            try:
+                person = TrtPersons.objects.get(person_id=person_id)
+                return f"{person.first_name} {person.surname}"
+            except TrtPersons.DoesNotExist:
+                return ""
+        return ""
+        
+    def get_place_name(self, place_code):
+        if place_code:
+            try:
+                place = TrtPlaces.objects.get(place_code=place_code)
+                return place.get_full_name()
+            except TrtPlaces.DoesNotExist:
+                return ""
+        return ""
 
 class DeleteBatchView(LoginRequiredMixin, View):
 
@@ -964,7 +984,7 @@ class TemplateManageView(LoginRequiredMixin, FormView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['templates'] = Template.objects.all().order_by('-template_id')
-        context['locations'] = list(TrtLocations.objects.all())
+        context['locations'] = list(TrtLocations.get_ordered_locations())
         context['places'] = list(TrtPlaces.objects.all())
         context['species'] = list(TrtSpecies.objects.all())
         context['sex_choices'] = SEX_CHOICES
@@ -1502,7 +1522,7 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['locations'] = TrtLocations.objects.all().order_by('location_name')
+        context['locations'] = list(TrtLocations.get_ordered_locations())
         context['places'] = TrtPlaces.objects.all().order_by('place_name')
         current_year = timezone.now().year
         context['years'] = range(2020, current_year + 1)
@@ -1622,7 +1642,7 @@ class CreateNewEntryView(LoginRequiredMixin, ListView):
         Provide context data to the template, including locations, places, and years
         """
         context = super().get_context_data(**kwargs)
-        locations = TrtLocations.objects.all().order_by('location_name')
+        locations = TrtLocations.get_ordered_locations()
         places = TrtPlaces.objects.none()
 
         if 'location' in self.request.GET and self.request.GET['location']:
@@ -1729,7 +1749,7 @@ class BatchCodeManageView(View):
             entered_person_full_name = ''
             entered_person_id = ''
 
-        locations = TrtLocations.objects.all().order_by('location_code')
+        locations = TrtLocations.get_ordered_locations()
         current_year = timezone.now().year
         years = {str(year): str(year)[-2:] for year in range(2020, current_year+1)}
         templates = Template.objects.all()
@@ -1766,7 +1786,7 @@ class BatchCodeManageView(View):
             else:
                 form.add_error('batches_code', 'This batch code already exists.')
 
-        locations = TrtLocations.objects.all().order_by('location_code')
+        locations = TrtLocations.get_ordered_locations()
         current_year = timezone.now().year
         years = {str(year): str(year)[-2:] for year in range(2020, current_year+1)}
         templates = Template.objects.all()

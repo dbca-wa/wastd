@@ -85,7 +85,10 @@
       font-size: 14px;
       line-height: 1.5;
   }
-
+  .need-review-label {
+    font-weight: bold;
+    font-size: 1.2em;
+  }
 
 </style>
 {% endblock %}  
@@ -145,14 +148,14 @@
 <div class="container-fluid mt-5">
   <!-- First part: Info -->
   <div class="card border-dark mb-3">
-    <div class="card-header">Basic Information</div>
+    <div class="card-header"><strong>Basic Information</strong></div>
     <div class="card-body">
       <div class="row">
         <div class="col-md-12">
           <label for="{{ form.entered_by_id.id_for_label }}">{{ form.entered_by_id.label }}</label>
           <div class="row">
             <div class="col-md-4">
-              <input type="text" id="search_entered_by" class="search-field form-control" placeholder="Search person">
+              <input type="text" id="search_entered_by" class="search-field form-control" placeholder="Search person" value="{{ entered_by_name }}">
               {{ form.entered_by_id }}
               <div class="search-results" style="display:none;"></div>
             </div>
@@ -170,7 +173,7 @@
           <div class="row">
             <div class="col-md-6">
               <label for="search_place_code">{{ form.place_code.label }}</label>
-              <input type="text" id="search_place_code" class="search-field form-control required-field" placeholder="Search place">
+              <input type="text" id="search_place_code" class="search-field form-control required-field" placeholder="Search place" value="{{ place_name }}">
               {{ form.place_code }}
               <div class="search-results" style="display:none;"></div>
             </div>
@@ -207,7 +210,7 @@
               <label for="{{ form.recorded_by_id.id_for_label }}">{{ form.recorded_by_id.label }}</label>
             </div>
             <div class="col-md-6">
-              <input type="text" id="search_recorded_by" class="search-field form-control" placeholder="Search recorded by">
+              <input type="text" id="search_recorded_by" class="search-field form-control" placeholder="Search recorded by" value="{{ recorded_by_name }}">
               {{ form.recorded_by_id }}
               <div class="search-results" style="display:none;"></div>
             </div>
@@ -237,20 +240,20 @@
   </div>
   <!-- Second part: Tags -->
   <div class="card border-dark mb-3">
-    <div class="card-header">Tags</div>
+    <div class="card-header"><strong>Tags</strong></div>
     <div class="card-body">
       <!-- Flipper Tags Section -->
       <section class="container-fluid mt-5">
           <div class="row">
             <label class="col-form-label col-md-3"><strong>FLIPPER Tag(s)</strong></label>
-            <label class="col-form-label col-md-5"><strong>Does turtle have old FLIPPER tag(s)</strong></label>
-            <div class="col-md-2">
+            <label class="col-form-label col-md-4"><strong>Does turtle have old FLIPPER tag(s)</strong></label>
+            <div class="col-md-4">
               {% bootstrap_field form.flipper_tag_check show_label=False %}
             </div>
           </div>
         <div id="tagDetails">
           <!-- Table for Flipper Tags -->
-          <table class="table table-borderless">
+          <table class="table table-borderless" id="oldFlipperTagSection">
             <thead>
               <tr>
                 <th></th>
@@ -260,11 +263,11 @@
                 <th>Barnacles?</th>
               </tr>
             </thead>
-            <tbody id="oldFlipperTagSection">
+            <tbody>
               <!-- Old Flipper Tag -->
               <tr>
                 <td colspan="4">
-                  <h5>OLD Flipper Tag(s)</h5>
+                  <h5><span style="color: blue; font-weight: bold">OLD</span> Flipper Tag(s)</h5>
                 </td>
               </tr>
               <!-- Old Left Flipper Tag -->
@@ -324,7 +327,7 @@
               </tr>
             </tbody>
           </table>
-          <table class="table table-borderless">
+          <table class="table table-borderless" id="newFlipperTagSection">
             <thead>
               <tr>
                 <th></th>
@@ -339,7 +342,7 @@
               <!-- New Flipper Tag -->
               <tr>
                 <td colspan="4">
-                  <h5>NEW Flipper Tag(s)</h5>
+                  <h5><span style="color: red; font-weight: bold">NEW</span> Flipper Tag(s)</h5>
                 </td>
               </tr>
               <!-- New Left Flipper Tag -->
@@ -403,20 +406,20 @@
       </section> 
 
       <!-- Flipper Tags Scars Section -->
-      <section class="container-fluid mt-5">
+      <section class="container-fluid mt-5" >
         <div class="row col-md-12">
           <div class="col-form-label col-md-4">
             <label><strong>Flipper Tags Scars Present?</strong></label>
           </div>
-          <div class="col-2">
+          <div class="col-md-4">
             {% bootstrap_field form.scar_check show_label=False%}
           </div>
         </div>
-        <div class="row col-md-12">
-          <div class="col-6" id="scarsDetails">
+        <div class="row col-md-12 mt-3" id="scarsDetails">
+          <div class="col-6">
             <div class="row align-items-center mb-2">
               <div class="col-auto">
-                <label>Scars Left</label>
+                <label><strong>Scars Left</strong></label>
               </div>
               <div class="col-auto d-flex align-items-center">
                 <div class="form-check form-check-inline">
@@ -434,7 +437,7 @@
           <div class="col-6" id="scarsDetailsRight">
             <div class="row align-items-center">
               <div class="col-auto">
-                <label>Scars Right</label>
+                <label><strong>Scars Right</strong></label>
               </div>
               <div class="col-auto d-flex align-items-center">
                 <div class="form-check form-check-inline">
@@ -457,14 +460,14 @@
         <div class="col-md-12">
           <div class="row">
             <label class="col-form-label col-md-4"><strong>PIT Tags Present?</strong></label>
-            <div class="col-md-2">
+            <div class="col-md-4">
               {% bootstrap_field form.pit_tag_check show_label=False %}
             </div>
           </div>
 
           <!-- Recapture PIT Tags -->
           <div id="recapturePIT">
-            <h5>OLD PIT Tag(s)</h5>
+            <h5><span style="color: blue; font-weight: bold">OLD</span> PIT Tag(s)</h5>
             <div class="row mt-2">
               <div class="col-md-6">
                 <div class="row">
@@ -529,7 +532,7 @@
 
           <!-- New PIT Tags -->
           <div id="newPIT" class="mt-5">
-            <h5>NEW PIT Tag(s)</h5>
+            <h5><span style="color: red; font-weight: bold">NEW</span> PIT Tag(s)</h5>
             <div class="row mt-2">
               <!-- First Row for New PIT Tag -->
               <div class="col-md-6">
@@ -617,7 +620,7 @@
           <label for="{{ form.tagged_by_id.id_for_label }}">{{ form.tagged_by_id.label }}</label>
         </div>
         <div class="col-md-4">
-          <input type="text" id="search_tagged_by" class="search-field form-control" placeholder="Search tagged by">
+          <input type="text" id="search_tagged_by" class="search-field form-control" placeholder="Search tagged by" value="{{ tagged_by_name }}">
           {{ form.tagged_by_id }}
           <div class="search-results" style="display:none;"></div>
         </div>
@@ -633,7 +636,7 @@
   </div>
   <!-- Third part: Measurements -->
   <div class="card border-dark mb-3">
-    <div class="card-header">Measurements</div>
+    <div class="card-header"><strong>Measurements</strong></div>
     <div class="card-body">
         <div class="container-fluid">
             <div class="col-md-12">
@@ -711,7 +714,7 @@
                         <label for="{{ form.measured_by_id.id_for_label }}">{{ form.measured_by_id.label }}</label>
                         <div class="d-flex align-items-center">
                             <div class="flex-grow-1">
-                                <input type="text" id="search_measured_by" class="search-field form-control" placeholder="Search measured by">
+                                <input type="text" id="search_measured_by" class="search-field form-control" placeholder="Search measured by" value="{{ measured_by_name }}">
                                 {{ form.measured_by_id }}
                                 <div class="search-results" style="display:none;"></div>
                             </div>
@@ -728,7 +731,7 @@
   </div>
   <!-- Fourth part: Nest -->
   <div class="card border-dark mb-3">
-    <div class="card-header">Nest</div>
+    <div class="card-header"><strong>Nesting</strong></div>
     <div class="card-body">
       <div class="row">
         <div class="col-md-12">
@@ -746,13 +749,13 @@
   </div>
   <!-- Fifth part: Injuries -->
   <div class="card border-dark mb-3">
-    <div class="card-header">Injuries</div>
+    <div class="card-header"><strong>Injuries</strong></div>
     <div class="card-body">
         <div class="row">
             <div class="col-md-4">
                 <label><strong>Injuries Present?</strong></label>
             </div>
-            <div class="col-md-2">
+            <div class="col-md-4">
                 {% bootstrap_field form.injury_check show_label=False%}
             </div>
         </div>
@@ -838,7 +841,7 @@
   </div>
   <!-- Sixth part: Bio -->
   <div class="card border-dark mb-3">
-    <div class="card-header">Samples</div>
+    <div class="card-header"><strong>Samples</strong></div>
     <div class="card-body">
       <div class="row">
         <div class="col-md-12">
@@ -862,7 +865,7 @@
   </div>
   <!-- Seventh part: Comments -->
   <div class="card border-dark mb-3">
-    <div class="card-header">Comments</div>
+    <div class="card-header"><strong>Comments</strong></div>
     <div class="card-body">
         <div class="row">
             <div class="col-md-12">
@@ -927,8 +930,12 @@
     <div class="col-md-3 text-right">
       <div class="d-flex align-self-center">
         {% if not form.observation_id.value %}
-        {% comment %} {% bootstrap_field form.do_not_process %} {% endcomment %}
-        {% bootstrap_field form.do_not_process id="id_do_not_process" %}
+        <div class="form-group"> 
+          <label for="{{ form.do_not_process.id_for_label }}" class="need-review-label"> 
+            {{ form.do_not_process.label }}
+         </label>
+            {{ form.do_not_process }}
+         </div>
         {% endif %}
       </div>
     </div>
@@ -1101,8 +1108,17 @@
             isFormDirty = false;
         } else {
             event.preventDefault();
+            showLoadingOverlay();
+            scrollToErrors();
         }
     });
+
+    function scrollToErrors() {
+      const errorDiv = document.querySelector('.is-invalid');
+      if (errorDiv) {
+          errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+  }
 
     // Show loading overlay
     function showLoadingOverlay() {
@@ -1272,7 +1288,7 @@
                                   </div>
                                   <div class="form-check mr-5">
                                       <input type="checkbox" class="form-check-input" id="speciesConfirmCheckbox">
-                                      <label class="form-check-label ml-2" for="speciesConfirmCheckbox">I confirm this is the correct species</label>
+                                      <label class="form-check-label" for="speciesConfirmCheckbox"><strong>I confirm this is the correct species</strong></label>
                                   </div>
                               </li>
                               `;
