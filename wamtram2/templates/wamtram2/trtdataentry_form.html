@@ -260,7 +260,7 @@
                 <th>Barnacles?</th>
               </tr>
             </thead>
-            <tbody id="oldFlipperTagSection">
+            <tbody>
               <!-- Old Flipper Tag -->
               <tr>
                 <td colspan="4">
@@ -324,7 +324,7 @@
               </tr>
             </tbody>
           </table>
-          <table class="table table-borderless">
+          <table class="table table-borderless" id="newFlipperTagSection">
             <thead>
               <tr>
                 <th></th>
@@ -403,7 +403,7 @@
       </section> 
 
       <!-- Flipper Tags Scars Section -->
-      <section class="container-fluid mt-5">
+      <section class="container-fluid mt-5" >
         <div class="row col-md-12">
           <div class="col-form-label col-md-4">
             <label><strong>Flipper Tags Scars Present?</strong></label>
@@ -412,11 +412,11 @@
             {% bootstrap_field form.scar_check show_label=False%}
           </div>
         </div>
-        <div class="row col-md-12">
-          <div class="col-6" id="scarsDetails">
+        <div class="row col-md-12" id="scarsDetails">
+          <div class="col-6">
             <div class="row align-items-center mb-2">
               <div class="col-auto">
-                <label>Scars Left</label>
+                <label><strong>Scars Left</strong></label>
               </div>
               <div class="col-auto d-flex align-items-center">
                 <div class="form-check form-check-inline">
@@ -434,7 +434,7 @@
           <div class="col-6" id="scarsDetailsRight">
             <div class="row align-items-center">
               <div class="col-auto">
-                <label>Scars Right</label>
+                <label><strong>Scars Right</strong></label>
               </div>
               <div class="col-auto d-flex align-items-center">
                 <div class="form-check form-check-inline">
