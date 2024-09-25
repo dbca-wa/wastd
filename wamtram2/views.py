@@ -507,6 +507,11 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
                 'measured_by_id': form.data.get('measured_by_id'),
                 'tagged_by_id': form.data.get('tagged_by_id'),
                 'place_code': form.data.get('place_code'),
+                'entered_by_name': self.get_person_name(form.data.get('entered_by_id')),
+                'recorded_by_name': self.get_person_name(form.data.get('recorded_by_id')),
+                'measured_by_name': self.get_person_name(form.data.get('measured_by_id')),
+                'tagged_by_name': self.get_person_name(form.data.get('tagged_by_id')),
+                'place_name': self.get_place_name(form.data.get('place_code')),
             })
 
         if entry_id:
@@ -544,6 +549,23 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
 
         return context
 
+    def get_person_name(self, person_id):
+        if person_id:
+            try:
+                person = TrtPersons.objects.get(person_id=person_id)
+                return f"{person.first_name} {person.surname}"
+            except TrtPersons.DoesNotExist:
+                return ""
+        return ""
+        
+    def get_place_name(self, place_code):
+        if place_code:
+            try:
+                place = TrtPlaces.objects.get(place_code=place_code)
+                return place.get_full_name()
+            except TrtPlaces.DoesNotExist:
+                return ""
+        return ""
 
 class DeleteBatchView(LoginRequiredMixin, View):
 

@@ -155,7 +155,7 @@
           <label for="{{ form.entered_by_id.id_for_label }}">{{ form.entered_by_id.label }}</label>
           <div class="row">
             <div class="col-md-4">
-              <input type="text" id="search_entered_by" class="search-field form-control" placeholder="Search person">
+              <input type="text" id="search_entered_by" class="search-field form-control" placeholder="Search person" value="{{ entered_by_name }}">
               {{ form.entered_by_id }}
               <div class="search-results" style="display:none;"></div>
             </div>
@@ -173,7 +173,7 @@
           <div class="row">
             <div class="col-md-6">
               <label for="search_place_code">{{ form.place_code.label }}</label>
-              <input type="text" id="search_place_code" class="search-field form-control required-field" placeholder="Search place">
+              <input type="text" id="search_place_code" class="search-field form-control required-field" placeholder="Search place" value="{{ place_name }}">
               {{ form.place_code }}
               <div class="search-results" style="display:none;"></div>
             </div>
@@ -210,7 +210,7 @@
               <label for="{{ form.recorded_by_id.id_for_label }}">{{ form.recorded_by_id.label }}</label>
             </div>
             <div class="col-md-6">
-              <input type="text" id="search_recorded_by" class="search-field form-control" placeholder="Search recorded by">
+              <input type="text" id="search_recorded_by" class="search-field form-control" placeholder="Search recorded by" value="{{ recorded_by_name }}">
               {{ form.recorded_by_id }}
               <div class="search-results" style="display:none;"></div>
             </div>
@@ -246,8 +246,8 @@
       <section class="container-fluid mt-5">
           <div class="row">
             <label class="col-form-label col-md-3"><strong>FLIPPER Tag(s)</strong></label>
-            <label class="col-form-label col-md-5"><strong>Does turtle have old FLIPPER tag(s)</strong></label>
-            <div class="col-md-2">
+            <label class="col-form-label col-md-4"><strong>Does turtle have old FLIPPER tag(s)</strong></label>
+            <div class="col-md-5">
               {% bootstrap_field form.flipper_tag_check show_label=False %}
             </div>
           </div>
@@ -411,7 +411,7 @@
           <div class="col-form-label col-md-4">
             <label><strong>Flipper Tags Scars Present?</strong></label>
           </div>
-          <div class="col-2">
+          <div class="col-md-8">
             {% bootstrap_field form.scar_check show_label=False%}
           </div>
         </div>
@@ -460,7 +460,7 @@
         <div class="col-md-12">
           <div class="row">
             <label class="col-form-label col-md-4"><strong>PIT Tags Present?</strong></label>
-            <div class="col-md-2">
+            <div class="col-md-8">
               {% bootstrap_field form.pit_tag_check show_label=False %}
             </div>
           </div>
@@ -620,7 +620,7 @@
           <label for="{{ form.tagged_by_id.id_for_label }}">{{ form.tagged_by_id.label }}</label>
         </div>
         <div class="col-md-4">
-          <input type="text" id="search_tagged_by" class="search-field form-control" placeholder="Search tagged by">
+          <input type="text" id="search_tagged_by" class="search-field form-control" placeholder="Search tagged by" value="{{ tagged_by_name }}">
           {{ form.tagged_by_id }}
           <div class="search-results" style="display:none;"></div>
         </div>
@@ -714,7 +714,7 @@
                         <label for="{{ form.measured_by_id.id_for_label }}">{{ form.measured_by_id.label }}</label>
                         <div class="d-flex align-items-center">
                             <div class="flex-grow-1">
-                                <input type="text" id="search_measured_by" class="search-field form-control" placeholder="Search measured by">
+                                <input type="text" id="search_measured_by" class="search-field form-control" placeholder="Search measured by" value="{{ measured_by_name }}">
                                 {{ form.measured_by_id }}
                                 <div class="search-results" style="display:none;"></div>
                             </div>
@@ -1105,8 +1105,16 @@
             isFormDirty = false;
         } else {
             event.preventDefault();
+            scrollToErrors();
         }
     });
+
+    function scrollToErrors() {
+      const errorDiv = document.querySelector('.alert-danger');
+      if (errorDiv) {
+          errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+  }
 
     // Show loading overlay
     function showLoadingOverlay() {
