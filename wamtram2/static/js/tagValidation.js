@@ -122,7 +122,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(data => {
                     if (data.valid && !data.wrong_side) {
                         setValidationStatus(tagInput, validationMessage, detailedMessage, 'valid', '✓ Valid tag');
-                        doNotProcessField.checked = false;
+                        // doNotProcessField.checked = false;
                     } else if (data.wrong_side) {
                         setValidationStatus(tagInput, validationMessage, detailedMessage, 'warning', '! Tag may be on the wrong side');
                         doNotProcessField.checked = true;
