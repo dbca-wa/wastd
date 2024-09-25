@@ -112,13 +112,14 @@
                     </select>
                 </div>
                 <div class="col-md-3">
-                    <label for="place_code">Place <span class="text-muted">(required if Location is selected)</span></label>
+                    <label for="place_code">Place (optional)</label>
                     <select class="form-control" id="place_code" name="place_code">
                         <option value="">Select Place</option>
                         {% for place in places %}
                             <option value="{{ place.place_code }}">{{ place.place_name }}</option>
                         {% endfor %}
                     </select>
+                    <span class="text-muted">(required if Location is selected)</span>
                 </div>
                 <div class="col-md-3">
                     <label for="species_code">Species (optional)</label>
@@ -175,21 +176,29 @@
                                 <div class="form-group col-md-3">
                                     <label for="location_{{ template.template_id }}">Location</label>
                                     <p id="location_{{ template.template_id }}" class="form-control-static">
-                                        {% for location in locations %}
-                                            {% if location.location_code == template.location_code %}
-                                                {{ location.location_name }}
-                                            {% endif %}
-                                        {% endfor %}
+                                        {% if template.location_code %}
+                                            {% for location in locations %}
+                                                {% if location.location_code == template.location_code %}
+                                                    {{ location.location_name }}
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% else %}
+                                            None
+                                        {% endif %}
                                     </p>
                                 </div>
                                 <div class="form-group col-md-3">
                                     <label for="place_{{ template.template_id }}">Place</label>
                                     <p id="place_{{ template.template_id }}" class="form-control-static">
-                                        {% for place in places %}
-                                            {% if place.place_code == template.place_code %}
-                                                {{ place.place_name }}
-                                            {% endif %}
-                                        {% endfor %}
+                                        {% if template.place_code %}
+                                            {% for place in places %}
+                                                {% if place.place_code == template.place_code %}
+                                                    {{ place.place_name }}
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% else %}
+                                            None
+                                        {% endif %}
                                     </p>
                                 </div>
                                 <div class="form-group col-md-3">

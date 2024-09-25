@@ -2448,8 +2448,8 @@ SEX_CHOICES = [
 class Template(models.Model):
     template_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255, unique=True)
-    location_code = models.CharField(max_length=50)
-    place_code = models.CharField(max_length=50)
+    location_code = models.CharField(max_length=50, blank=True, null=True)
+    place_code = models.CharField(max_length=50, blank=True, null=True)
     species_code = models.CharField(max_length=50, blank=True, null=True)
     sex = models.CharField(max_length=1, choices=SEX_CHOICES, blank=True, null=True)
 
