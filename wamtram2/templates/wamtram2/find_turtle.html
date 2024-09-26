@@ -73,6 +73,7 @@
               <input type="text" class="form-control" id="tag_id" name="tag_id" required>
             </div>
             <input type="hidden" id="tag_type" name="tag_type" value="{{ tag_type }}">
+            <input type="hidden" id="tag_side" name="tag_side" value="{{ tag_side }}">
             <input type="hidden" id="set_do_not_process" name="set_do_not_process" value="false">
             <input type="hidden" id="batch_id" name="batch_id" value="{{ form.batch_id.value }}">
             <div class="row justify-content-center">
@@ -81,6 +82,7 @@
           </form>
           
           <div class="text-center mt-4">{% bootstrap_form_errors form %}</div>
+
           <div id="tag-suggestion" class="alert alert-warning mt-3" style="display: none;">
             {% comment %} <p>Sorry we cannot find the tag in our database, or it was set as unavailable.</br></p> {% endcomment %}
             <p>It seems you forgot to add a space in the tag ID: <strong><span id="suggested-tag"></span></strong></p>
@@ -93,6 +95,7 @@
             <button id="exactMatchYes" class="btn btn-primary">Yes, I have double checked</button>
             <button id="exactMatchNo" class="btn btn-secondary">No, I will reenter</button>
           </div>
+          
           {% if turtle %}
           <div class="container border pb-3 mt-3">
             <div class="mt-3 row justify-content-md-center">
@@ -128,7 +131,22 @@
               <input type="hidden" id="batch_id" name="batch_id" value="{{ form.batch_id.value }}">
               <button id="createAndReviewLater" type="submit" class="btn btn-secondary mt-2 ml-md-2">No, create the record and review later</button>
             </form>
-          </div>          
+          </div> 
+          {% elif new_tag_entry %}
+          <div class="alert alert-info mt-3">
+            <p>No existing turtle found with this tag, but a previous entry with this tag was found:</p>
+            <div class="container border pb-3 mt-3">
+              <div class="mt-3 row justify-content-md-center">
+                <div class="col-md-auto"><strong>Entry ID:</strong> {{ new_tag_entry.data_entry_id }}</div>
+                <div class="col-md-auto"><strong>Observation Date:</strong> {{ new_tag_entry.entry_batch.entry_date|date:"Y-m-d" }}</div>
+                <div class="col-md-auto"><strong>Place:</strong> {{ new_tag_entry.place_code.place_name }}</div>
+                <div class="col-md-auto"><strong>Species:</strong> {{ new_tag_entry.species_code.species_code }}</div>
+                <div class="col-md-auto"><strong>Sex:</strong> {{ new_tag_entry.sex }}</div>
+              </div>
+            </div>
+            <p class="mt-3">This may be a recapture of a previously unprocessed turtle.</p>
+            <a href="{% url 'wamtram2:newtrtdataentry' batch_id=form.batch_id.value %}" class="btn btn-primary mt-2">Create New Data Entry</a>
+          </div>
           {% endif %}
         </div>
       </div>
