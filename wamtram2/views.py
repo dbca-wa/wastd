@@ -825,20 +825,35 @@ class FindTurtleView(LoginRequiredMixin, View):
                         Q(new_pittag_id_4__pittag_id=tag_id)
                     ).order_by('-entry_batch__entry_date').first()
 
+
                     if new_tag_entry:
-                        if any([new_tag_entry.new_left_tag_id.tag_id == tag_id, 
-                                new_tag_entry.new_left_tag_id_2.tag_id == tag_id]):
+                        if any([str(new_tag_entry.new_left_tag_id) == str(tag_id), 
+                                str(new_tag_entry.new_left_tag_id_2) == str(tag_id)]):
                             tag_type = "recapture_tag"
-                            tag_side = "left"
-                        elif any([new_tag_entry.new_right_tag_id.tag_id == tag_id, 
-                                    new_tag_entry.new_right_tag_id_2.tag_id == tag_id]):
+                            tag_side = "L"
+                            print(f"tag_side: {tag_side}")
+                        elif any([str(new_tag_entry.new_right_tag_id) == str(tag_id), 
+                                    str(new_tag_entry.new_right_tag_id_2) == str(tag_id)]):
                             tag_type = "recapture_tag"
-                            tag_side = "right"
+                            tag_side = "R"
+                            print(f"tag_side: {tag_side}")
                         else:
                             tag_type = "recapture_pit_tag"
+                            tag_side = None
+                            print(f"tag_type: {tag_type}")
                             
-                        response = redirect(reverse('wamtram2:newtrtdataentry', kwargs={'batch_id': batch_id}))
-                        return self.set_cookie(response, batch_id, tag_id, tag_type, tag_side, do_not_process=False)
+                    response = render(request, "wamtram2/find_turtle.html", {
+                            "form": form,
+                            "turtle": turtle,
+                            "new_tag_entry": new_tag_entry,
+                            "no_turtle_found": no_turtle_found,
+                            "tag_id": tag_id,
+                            "tag_type": tag_type,
+                            "tag_side": tag_side,
+                            "batch_id": batch_id,
+                        })
+   
+                    return self.set_cookie(response, batch_id, tag_id, tag_type, tag_side, no_turtle_found)
                 
                 response = redirect(reverse('wamtram2:find_turtle', kwargs={'batch_id': batch_id}))
 
