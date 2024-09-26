@@ -723,6 +723,18 @@ class FindTurtleView(LoginRequiredMixin, View):
         latest_site = None
         batch = None
         template_name = "No template associated"
+        new_tag_entry = None
+        if tag_id and tag_type and not turtle:
+            new_tag_entry = TrtDataEntry.objects.filter(
+                Q(new_left_tag_id__tag_id=tag_id) |
+                Q(new_left_tag_id_2__tag_id=tag_id) |
+                Q(new_right_tag_id__tag_id=tag_id) |
+                Q(new_right_tag_id_2__tag_id=tag_id) |
+                Q(new_pittag_id__pittag_id=tag_id) |
+                Q(new_pittag_id_2__pittag_id=tag_id) |
+                Q(new_pittag_id_3__pittag_id=tag_id) |
+                Q(new_pittag_id_4__pittag_id=tag_id)
+            ).select_related('entry_batch', 'place_code', 'species_code').order_by('-entry_batch__entry_date').first()
 
         if batch_id:
             batch = TrtEntryBatches.objects.filter(entry_batch_id=batch_id).first()
@@ -759,6 +771,7 @@ class FindTurtleView(LoginRequiredMixin, View):
             "batch_id": batch_id,
             "batch": batch,
             "template_name": template_name,
+            "new_tag_entry": new_tag_entry,
         })
 
 
@@ -799,6 +812,44 @@ class FindTurtleView(LoginRequiredMixin, View):
                         tag_type = "recapture_pit_tag"
                     else:
                         tag_type = "unknown_tag"
+                        
+                if not turtle:
+                    new_tag_entry = TrtDataEntry.objects.filter(
+                        Q(new_left_tag_id__tag_id=tag_id) |
+                        Q(new_left_tag_id_2__tag_id=tag_id) |
+                        Q(new_right_tag_id__tag_id=tag_id) |
+                        Q(new_right_tag_id_2__tag_id=tag_id) |
+                        Q(new_pittag_id__pittag_id=tag_id) |
+                        Q(new_pittag_id_2__pittag_id=tag_id) |
+                        Q(new_pittag_id_3__pittag_id=tag_id) |
+                        Q(new_pittag_id_4__pittag_id=tag_id)
+                    ).order_by('-entry_batch__entry_date').first()
+
+                    if new_tag_entry:
+                        if any([str(new_tag_entry.new_left_tag_id) == str(tag_id), 
+                                str(new_tag_entry.new_left_tag_id_2) == str(tag_id)]):
+                            tag_type = "recapture_tag"
+                            tag_side = "L"
+                        elif any([str(new_tag_entry.new_right_tag_id) == str(tag_id), 
+                                    str(new_tag_entry.new_right_tag_id_2) == str(tag_id)]):
+                            tag_type = "recapture_tag"
+                            tag_side = "R"
+                        else:
+                            tag_type = "recapture_pit_tag"
+                            tag_side = None
+                            
+                    response = render(request, "wamtram2/find_turtle.html", {
+                            "form": form,
+                            "turtle": turtle,
+                            "new_tag_entry": new_tag_entry,
+                            "no_turtle_found": no_turtle_found,
+                            "tag_id": tag_id,
+                            "tag_type": tag_type,
+                            "tag_side": tag_side,
+                            "batch_id": batch_id,
+                        })
+   
+                    return self.set_cookie(response, batch_id, tag_id, tag_type, tag_side, no_turtle_found)
                 
                 response = redirect(reverse('wamtram2:find_turtle', kwargs={'batch_id': batch_id}))
 
@@ -1054,65 +1105,67 @@ class ValidateTagView(View):
         tag = request.GET.get('tag')
         side = request.GET.get('side')
 
-        if not turtle_id or not tag or not side:
+        print(turtle_id, tag, side)
+
+        if not tag or not side:
             return JsonResponse({'valid': False, 'wrong_side': False, 'message': 'Missing parameters'})
+        if turtle_id:
+            try:
+                turtle_id = int(turtle_id)
+                tag_obj = TrtTags.objects.filter(tag_id=tag).first()
 
-        try:
-            turtle_id = int(turtle_id)
-            tag_obj = TrtTags.objects.filter(tag_id=tag).first()
-
-            if tag_obj:
-                if tag_obj.turtle_id != turtle_id:
-                    return JsonResponse({
-                        'valid': False, 
-                        'wrong_side': False, 
-                        'message': 'Tag belongs to another turtle', 
-                        'other_turtle_id': tag_obj.turtle_id,
-                        'status': tag_obj.tag_status.description
-                    })
-                else:
-                    if tag_obj.tag_status.tag_status != 'ATT':
+                if tag_obj:
+                    if tag_obj.turtle_id != turtle_id:
                         return JsonResponse({
-                            'valid': False,
-                            'wrong_side': False,
-                            'message': f'Tag status: {tag_obj.tag_status.description}',
+                            'valid': False, 
+                            'wrong_side': False, 
+                            'message': 'Tag belongs to another turtle', 
+                            'other_turtle_id': tag_obj.turtle_id,
                             'status': tag_obj.tag_status.description
                         })
-                    is_valid = True
-                    wrong_side = (tag_obj.side.lower() != side.lower())
-                    return JsonResponse({
-                        'valid': is_valid, 
-                        'wrong_side': wrong_side, 
-                        'other_turtle_id': None,
-                        'status': tag_obj.tag_status.description
-                    })
-            else:
-                new_tag_entry = TrtDataEntry.objects.filter(
-                Q(new_left_tag_id__tag_id=tag) |
-                Q(new_left_tag_id_2__tag_id=tag) |
-                Q(new_right_tag_id__tag_id=tag) |
-                Q(new_right_tag_id_2__tag_id=tag)
-                ).order_by('-entry_batch__entry_date').first()
-                
-                if new_tag_entry:
-
-                    if new_tag_entry.new_left_tag_id.tag_id == tag or new_tag_entry.new_left_tag_id_2.tag_id == tag:
-                        actual_side = 'left'
                     else:
-                        actual_side = 'right'
-                    
-                    wrong_side = (actual_side.lower() != side.lower())
-                    
-                    return JsonResponse({
-                        'valid': True, 
-                        'wrong_side': wrong_side,
-                        'message': 'Tag found in previous unprocessed entry',
-                        'entry_date': new_tag_entry.entry_batch.entry_date.strftime('%Y-%m-%d')
-                    })
-                else:
-                    return JsonResponse({'valid': False, 'wrong_side': False, 'message': 'Tag not found', 'tag_not_found': True})
-        except TrtTurtles.DoesNotExist:
-            return JsonResponse({'valid': False, 'wrong_side': False, 'message': 'Turtle not found'})
+                        if tag_obj.tag_status.tag_status != 'ATT':
+                            return JsonResponse({
+                                'valid': False,
+                                'wrong_side': False,
+                                'message': f'Tag status: {tag_obj.tag_status.description}',
+                                'status': tag_obj.tag_status.description
+                            })
+                        is_valid = True
+                        wrong_side = (tag_obj.side.lower() != side.lower())
+                        return JsonResponse({
+                            'valid': is_valid, 
+                            'wrong_side': wrong_side, 
+                            'other_turtle_id': None,
+                            'status': tag_obj.tag_status.description
+                        })
+            except TrtTurtles.DoesNotExist:
+                    return JsonResponse({'valid': False, 'wrong_side': False, 'message': 'Turtle not found'})
+
+        new_tag_entry = TrtDataEntry.objects.filter(
+            Q(new_left_tag_id__tag_id=tag) |
+            Q(new_left_tag_id_2__tag_id=tag) |
+            Q(new_right_tag_id__tag_id=tag) |
+            Q(new_right_tag_id_2__tag_id=tag)
+        ).order_by('-entry_batch__entry_date').first()
+                
+        if new_tag_entry:
+            if new_tag_entry.new_left_tag_id.tag_id == tag or new_tag_entry.new_left_tag_id_2.tag_id == tag:
+                actual_side = 'L'
+            else:
+                actual_side = 'R'
+            
+            wrong_side = (actual_side.lower() != side.lower())
+            
+            return JsonResponse({
+                'valid': True, 
+                'wrong_side': wrong_side,
+                'message': 'Tag found in previous unprocessed entry',
+                'entry_date': new_tag_entry.entry_batch.entry_date.strftime('%Y-%m-%d')
+            })
+        else:
+            return JsonResponse({'valid': False, 'wrong_side': False, 'message': 'Tag not found', 'tag_not_found': True})
+
 
 
     def validate_new_tag(self, request):
@@ -1194,27 +1247,32 @@ class ValidateTagView(View):
         turtle_id = request.GET.get('turtle_id')
         tag = request.GET.get('tag')
 
-        if not turtle_id or not tag:
+        if not tag:
             return JsonResponse({'valid': False, 'message': 'Missing parameters'})
 
         try:
-            pit_tag = TrtPitTags.objects.filter(pittag_id=tag).select_related('turtle').first()
-            if pit_tag:
-                if pit_tag.turtle and pit_tag.turtle.turtle_id != int(turtle_id):
-                    return JsonResponse({
-                        'valid': False,
-                        'message': 'PIT tag belongs to another turtle',
-                        'other_turtle_id': pit_tag.turtle.turtle_id,
-                        'status': pit_tag.pit_tag_status.description
-                    })
-                else:
-                    if pit_tag.pit_tag_status.pit_tag_status != 'ATT':
+            if turtle_id:
+                turtle_id = int(turtle_id)
+                pit_tag = TrtPitTags.objects.filter(pittag_id=tag).select_related('turtle').first()
+
+                if pit_tag:
+                    if pit_tag.turtle and pit_tag.turtle.turtle_id != int(turtle_id):
+                        return JsonResponse({
+                            'valid': False,
+                            'message': 'PIT tag belongs to another turtle',
+                            'other_turtle_id': pit_tag.turtle.turtle_id,
+                            'status': pit_tag.pit_tag_status.description
+                        })
+                    elif pit_tag.pit_tag_status.pit_tag_status != 'ATT':
                         return JsonResponse({
                             'valid': False,
                             'message': f'PIT tag status: {pit_tag.pit_tag_status.description}',
                             'status': pit_tag.pit_tag_status.description
                         })
-                    return JsonResponse({'valid': True})
+                    else:
+                        return JsonResponse({'valid': True})
+                else:
+                    return JsonResponse({'valid': False, 'message': 'PIT tag not found'})
             else:
                 new_pit_tag_entry = TrtDataEntry.objects.filter(
                 Q(new_pittag_id__pittag_id=tag) |
@@ -1233,6 +1291,9 @@ class ValidateTagView(View):
                     return JsonResponse({'valid': False, 'message': 'PIT tag not found', 'tag_not_found': True})
         except Exception as e:
             return JsonResponse({'valid': False, 'message': str(e)})
+
+
+
 
     def get(self, request, *args, **kwargs):
         """
