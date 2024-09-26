@@ -1525,7 +1525,7 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
         context['locations'] = list(TrtLocations.get_ordered_locations())
         context['places'] = TrtPlaces.objects.all().order_by('place_name')
         current_year = timezone.now().year
-        context['years'] = range(2020, current_year + 1)
+        context['years'] = reversed(range(2022, current_year + 1))
         context['selected_location'] = self.request.GET.get('location', '')
         context['selected_place'] = self.request.GET.get('place', '')
         context['selected_year'] = self.request.GET.get('year', '')
@@ -1614,7 +1614,8 @@ class CreateNewEntryView(LoginRequiredMixin, ListView):
         year = self.request.GET.get('year')
 
         query = Q()
-        years = {str(year): str(year)[-2:] for year in range(2020, timezone.now().year + 1)}
+        current_year = timezone.now().year
+        years = {str(year): str(year)[-2:] for year in reverse(range(2022, current_year + 1))}
 
         # Generate queries based on different filter parameters
         if location and place and year:
@@ -1649,7 +1650,7 @@ class CreateNewEntryView(LoginRequiredMixin, ListView):
             places = TrtPlaces.objects.filter(location_code=self.request.GET['location'])
 
         current_year = timezone.now().year
-        years = {str(year): str(year)[-2:] for year in range(2020, current_year + 1)}
+        years = {str(year): str(year)[-2:] for year in reverse(range(2022, current_year + 1))}
 
         context.update({
             'locations': locations,
@@ -1751,7 +1752,7 @@ class BatchCodeManageView(View):
 
         locations = TrtLocations.get_ordered_locations()
         current_year = timezone.now().year
-        years = {str(year): str(year)[-2:] for year in range(2020, current_year+1)}
+        years = {str(year): str(year)[-2:] for year in reverse(range(2022, current_year + 1))}
         templates = Template.objects.all()
 
         entered_person_full_name = str(form.instance.entered_person_id) if form.instance.entered_person_id else ''
@@ -1788,7 +1789,7 @@ class BatchCodeManageView(View):
 
         locations = TrtLocations.get_ordered_locations()
         current_year = timezone.now().year
-        years = {str(year): str(year)[-2:] for year in range(2020, current_year+1)}
+        years = {str(year): str(year)[-2:] for year in reverse(range(2022, current_year + 1))}
         templates = Template.objects.all()
 
         context = {
