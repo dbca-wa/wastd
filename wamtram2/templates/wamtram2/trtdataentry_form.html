@@ -933,9 +933,9 @@
         <div class="form-group"> 
           <label for="{{ form.do_not_process.id_for_label }}" class="need-review-label"> 
             {{ form.do_not_process.label }}
-         </label>
+        </label>
             {{ form.do_not_process }}
-         </div>
+        </div>
         {% endif %}
       </div>
     </div>
@@ -1292,6 +1292,9 @@
                                   </div>
                               </li>
                               `;
+                      }  else if (inputId === 'id_latitude') {
+                        inputValue = '-' + inputValue;
+                        summaryHTML += `<li><strong>${labelText}:</strong> ${inputValue}</li>`;
                       } else {
                           summaryHTML += `<li><strong>${labelText}:</strong> ${inputValue}</li>`;
                       }
