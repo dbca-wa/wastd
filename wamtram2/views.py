@@ -1615,7 +1615,7 @@ class CreateNewEntryView(LoginRequiredMixin, ListView):
 
         query = Q()
         current_year = timezone.now().year
-        years = {str(year): str(year)[-2:] for year in reverse(range(2022, current_year + 1))}
+        years = {str(year): str(year)[-2:] for year in range(2022, current_year + 1)}
 
         # Generate queries based on different filter parameters
         if location and place and year:
@@ -1650,7 +1650,7 @@ class CreateNewEntryView(LoginRequiredMixin, ListView):
             places = TrtPlaces.objects.filter(location_code=self.request.GET['location'])
 
         current_year = timezone.now().year
-        years = {str(year): str(year)[-2:] for year in reverse(range(2022, current_year + 1))}
+        years = {str(year): str(year)[-2:] for year in range(2022, current_year + 1)}
 
         context.update({
             'locations': locations,
@@ -1752,7 +1752,7 @@ class BatchCodeManageView(View):
 
         locations = TrtLocations.get_ordered_locations()
         current_year = timezone.now().year
-        years = {str(year): str(year)[-2:] for year in reverse(range(2022, current_year + 1))}
+        years = {str(year): str(year)[-2:] for year in range(2022, current_year + 1)}
         templates = Template.objects.all()
 
         entered_person_full_name = str(form.instance.entered_person_id) if form.instance.entered_person_id else ''
@@ -1789,7 +1789,7 @@ class BatchCodeManageView(View):
 
         locations = TrtLocations.get_ordered_locations()
         current_year = timezone.now().year
-        years = {str(year): str(year)[-2:] for year in reverse(range(2022, current_year + 1))}
+        years = {str(year): str(year)[-2:] for year in range(2022, current_year + 1)}
         templates = Template.objects.all()
 
         context = {
