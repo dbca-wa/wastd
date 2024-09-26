@@ -106,3 +106,37 @@ document.addEventListener('DOMContentLoaded', function() {
 
     flipperTagCheck.addEventListener('change', toggleOldFlipperTagSection);
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    var pitTagCheck = document.getElementById('id_pit_tag_check');
+    var oldPITTagSection = document.getElementById('recapturePIT');
+
+    function toggleOldPITTagSection() {
+        if (pitTagCheck.value === 'N') {
+            oldPITTagSection.style.display = 'none';
+        } else {
+            oldPITTagSection.style.display = '';
+        }
+    }
+
+    toggleOldPITTagSection();
+
+    pitTagCheck.addEventListener('change', toggleOldPITTagSection);
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    var scarCheck = document.getElementById('id_scar_check');
+    var scarSection = document.getElementById('scarsDetails');
+
+    function toggleScarSection() {
+        if (scarCheck.value === 'N') {
+            scarSection.style.display = 'none';
+        } else {
+            scarSection.style.display = '';
+        }
+    }
+
+    toggleScarSection();
+
+    scarCheck.addEventListener('change', toggleScarSection);
+});

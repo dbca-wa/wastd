@@ -102,7 +102,7 @@
             <div class="form-group col-md-5 d-flex align-items-end">
                 <button type="submit" class="btn btn-primary">Filter</button>
                 <button type="button" id="clearFilter" class="btn btn-secondary ml-4">Clear Filter</button>
-                <button type="button" id="showAllBatches" class="btn btn-info ml-4">Show All Batches (long loading time)</button>
+                <button type="button" id="showAllBatches" class="btn btn-info ml-4">Show All Batches</button>
             </div>
         </div>
     </form>
@@ -114,11 +114,12 @@
         <thead class="thead-light">
             <tr>
                 <th style="width: 5%;">Batch ID</th>
-                <th style="width: 10%;">Batches Code</th>
-                <th style="width: 10%;"># of Records</th>
-                <th style="width: 10%;"># of Flagged Records</th>
-                <th style="width: 45%;">Comments</th>
-                <th style="width: 20%;">Actions</th>
+                <th style="width: 8%;">Batches Code</th>
+                <th style="width: 8%;"># of Records</th>
+                <th style="width: 8%;"># of Flagged Records</th>
+                <th style="width: 15%;">Template</th>
+                <th style="width: 40%;">Comments</th>
+                <th style="width: 16%;">Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -128,6 +129,7 @@
                 <td>{{ batch.batches_code|default:"No Code" }}</td>
                 <td>{{ batch.entry_count }}</td>
                 <td>{{ batch.flagged_entry_count }}</td>
+                <td>{{ batch.template|default:"No Template" }}</td>
                 <td>{{ batch.comments|truncatechars:100 }}</td>
                 <td>
                     <a href="{% url 'wamtram2:entry_batch_detail' batch_id=batch.entry_batch_id %}" class="btn btn-sm btn-info">View</a>
@@ -254,7 +256,7 @@
                         <select class="form-control" id="quickAddTemplate" name="template">
                             <option value="">Select Template</option>
                             {% for template in templates %}
-                                <option value="{{ template.template_id }}">{{ template.template_id }}:{{ template.name }}</option>
+                                <option value="{{ template.template_id }}">{{ template.name }}</option>
                             {% endfor %}
                         </select>
                     </div>

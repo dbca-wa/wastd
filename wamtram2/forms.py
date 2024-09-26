@@ -273,7 +273,7 @@ class TrtDataEntryForm(forms.ModelForm):
         
         # Filter the queryset for new tag fields
         new_tag_states = TrtTagStates.objects.filter(
-            tag_state__in=["A1", "AE", "P_ED", "P_OK", "#", "R"]
+            tag_state__in=["A1", "AE", "#"]
         )
         self.fields['new_left_tag_state'].queryset = new_tag_states
         self.fields['new_right_tag_state'].queryset = new_tag_states
@@ -282,7 +282,7 @@ class TrtDataEntryForm(forms.ModelForm):
 
         # Filter the queryset for recapture (old) tag fields
         old_tag_states = TrtTagStates.objects.filter(
-            tag_state__in=["RQ", "RC", "OO", "OX", "P", "P_ED", "P_OK", "PX"]
+            tag_state__in=[ "#", "R", "RC", "OO", "P", "P_OK"]
         )
         
         self.fields['recapture_left_tag_state'].queryset = old_tag_states
@@ -554,13 +554,20 @@ class TemplateForm(forms.ModelForm):
         cleaned_data = super().clean()
         species_code = cleaned_data.get('species_code')
         sex = cleaned_data.get('sex')
+        location_code = cleaned_data.get('location_code')
+        place_code = cleaned_data.get('place_code')
 
         if not species_code:
             cleaned_data['species_code'] = None
         if not sex:
             cleaned_data['sex'] = None
+        if not location_code:
+            cleaned_data['location_code'] = None
+        if not place_code:
+            cleaned_data['place_code'] = None
 
         return cleaned_data
+       
         
 class TrtObservationsForm(forms.ModelForm):
     class Meta:
