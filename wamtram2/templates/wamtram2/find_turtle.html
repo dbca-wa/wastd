@@ -267,13 +267,11 @@
           break;
   
         case 'exactMatchYes':
-          console.log('exactMatchYes button clicked');
           document.cookie = `${batchId}_do_not_process=true; path=/`;
-          console.log(`Cookie set: ${document.cookie}`);
           document.getElementById('set_do_not_process').value = "true";
           // Redirect to the newtrtdataentry page
           const newDataEntryURL = `{% url 'wamtram2:newtrtdataentry' batch_id=form.batch_id.value %}`;
-          console.log(`Redirecting to: ${newDataEntryURL}`);
+
           window.location.href = newDataEntryURL;
           showLoadingSpinner(); // Show spinner for page navigation
           showLoadingOverlay(); // Show overlay for page navigation
@@ -306,7 +304,6 @@
           showLoadingOverlay(); // Show overlay for page navigation
           break;
 
-  
         default:
           hideLoadingSpinner(); // Hide spinner for any other cases not causing navigation or submission
           hideLoadingOverlay(); // Hide overlay for any other cases not causing navigation or submission

@@ -1525,7 +1525,7 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
         context['locations'] = list(TrtLocations.get_ordered_locations())
         context['places'] = TrtPlaces.objects.all().order_by('place_name')
         current_year = timezone.now().year
-        context['years'] = reversed(range(2022, current_year + 1))
+        context['years'] = range(2022, current_year + 1)
         context['selected_location'] = self.request.GET.get('location', '')
         context['selected_place'] = self.request.GET.get('place', '')
         context['selected_year'] = self.request.GET.get('year', '')
