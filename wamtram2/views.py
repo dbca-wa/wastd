@@ -1087,9 +1087,33 @@ class ValidateTagView(View):
                         'status': tag_obj.tag_status.description
                     })
             else:
-                return JsonResponse({'valid': False, 'wrong_side': False, 'message': 'Tag not found', 'tag_not_found': True})
+                new_tag_entry = TrtDataEntry.objects.filter(
+                Q(new_left_tag_id__tag_id=tag) |
+                Q(new_left_tag_id_2__tag_id=tag) |
+                Q(new_right_tag_id__tag_id=tag) |
+                Q(new_right_tag_id_2__tag_id=tag)
+                ).order_by('-entry_batch__entry_date').first()
+                
+                if new_tag_entry:
+
+                    if new_tag_entry.new_left_tag_id.tag_id == tag or new_tag_entry.new_left_tag_id_2.tag_id == tag:
+                        actual_side = 'left'
+                    else:
+                        actual_side = 'right'
+                    
+                    wrong_side = (actual_side.lower() != side.lower())
+                    
+                    return JsonResponse({
+                        'valid': True, 
+                        'wrong_side': wrong_side,
+                        'message': 'Tag found in previous unprocessed entry',
+                        'entry_date': new_tag_entry.entry_batch.entry_date.strftime('%Y-%m-%d')
+                    })
+                else:
+                    return JsonResponse({'valid': False, 'wrong_side': False, 'message': 'Tag not found', 'tag_not_found': True})
         except TrtTurtles.DoesNotExist:
             return JsonResponse({'valid': False, 'wrong_side': False, 'message': 'Turtle not found'})
+
 
     def validate_new_tag(self, request):
         """
@@ -1192,7 +1216,21 @@ class ValidateTagView(View):
                         })
                     return JsonResponse({'valid': True})
             else:
-                return JsonResponse({'valid': False, 'message': 'PIT tag not found', 'tag_not_found': True})
+                new_pit_tag_entry = TrtDataEntry.objects.filter(
+                Q(new_pittag_id__pittag_id=tag) |
+                Q(new_pittag_id_2__pittag_id=tag) |
+                Q(new_pittag_id_3__pittag_id=tag) |
+                Q(new_pittag_id_4__pittag_id=tag),
+                ).order_by('-entry_batch__entry_date').first()
+                
+                if new_pit_tag_entry:
+                    return JsonResponse({
+                        'valid': True, 
+                        'message': 'Tag found in previous unprocessed entry',
+                        'entry_date': new_pit_tag_entry.entry_batch.entry_date.strftime('%Y-%m-%d')
+                    })
+                else:
+                    return JsonResponse({'valid': False, 'message': 'PIT tag not found', 'tag_not_found': True})
         except Exception as e:
             return JsonResponse({'valid': False, 'message': str(e)})
 
