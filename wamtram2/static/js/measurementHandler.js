@@ -79,8 +79,8 @@ function toggleCurvedCarapaceWidth() {
 
 document.addEventListener('DOMContentLoaded', function() {
     const measurementTypes = [
-        'measurement_type_1', 'measurement_type_2', 'measurement_type_3',
-        'measurement_type_4', 'measurement_type_5', 'measurement_type_6'
+        'id_measurement_type_1', 'id_measurement_type_2', 'id_measurement_type_3',
+        'id_measurement_type_4', 'id_measurement_type_5', 'id_measurement_type_6'
     ];
 
     function updateMeasurementOptions() {
