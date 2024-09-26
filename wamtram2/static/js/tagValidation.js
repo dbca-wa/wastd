@@ -123,6 +123,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (data.valid && !data.wrong_side) {
                         setValidationStatus(tagInput, validationMessage, detailedMessage, 'valid', '✓ Valid tag');
                         // doNotProcessField.checked = false;
+                    } else if (data.message && data.message.includes('Tag found in previous unprocessed entry')) {
+                        setValidationStatus(tagInput, validationMessage, detailedMessage, 'valid', '✓ Tag found in previous unprocessed entry');
                     } else if (data.wrong_side) {
                         setValidationStatus(tagInput, validationMessage, detailedMessage, 'warning', '! Tag may be on the wrong side');
                         doNotProcessField.checked = true;
@@ -135,6 +137,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     } else if (data.tag_not_found) {
                         setValidationStatus(tagInput, validationMessage, detailedMessage, 'invalid', '✗ Invalid tag: Tag not found (Please remove it from here and add it to the comment area)');
                         doNotProcessField.checked = true;
+                        
                     } else {
                         setValidationStatus(tagInput, validationMessage, detailedMessage, 'invalid', '✗ Invalid tag');
                         doNotProcessField.checked = true;
