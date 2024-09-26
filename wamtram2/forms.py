@@ -2,6 +2,7 @@ from django import forms
 from easy_select2 import apply_select2
 from .models import TrtPersons, TrtDataEntry, TrtTags, TrtEntryBatches, TrtPlaces, TrtPitTags, Template, TrtObservations,TrtTagStates, TrtMeasurementTypes
 from django_select2.forms import ModelSelect2Widget
+from django.core.validators import RegexValidator
 
 
 tagWidget = ModelSelect2Widget(
@@ -74,6 +75,16 @@ class SearchForm(forms.Form):
 
 
 class TrtEntryBatchesForm(forms.ModelForm):
+    curved_carapace_length_notch = forms.IntegerField(
+        required=False,
+        validators=[RegexValidator(r'^\d+$', 'Enter a valid integer.')],
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'step': '1', 'min': '0'})
+    )
+    curved_carapace_width = forms.IntegerField(
+        required=False,
+        validators=[RegexValidator(r'^\d+$', 'Enter a valid integer.')],
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'step': '1', 'min': '0'})
+    )
     class Meta:
         model = TrtEntryBatches
         fields = ["entered_person_id", "comments", "entry_date"]
@@ -265,7 +276,6 @@ class TrtDataEntryForm(forms.ModelForm):
         filtered_measurement_types = TrtMeasurementTypes.objects.exclude(
             measurement_type__in=['CCW', 'CCL NOTCH']
         )
-     
         for i in range(1, 7):
             field_name = f'measurement_type_{i}'
             self.fields[field_name].queryset = filtered_measurement_types
@@ -366,10 +376,6 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["recapture_left_tag_barnacles_2"].label = ""
         self.fields["recapture_right_tag_barnacles"].label = ""
         self.fields["recapture_right_tag_barnacles_2"].label = ""
-        # self.fields["new_left_tag_barnacles"].label = ""
-        # self.fields["new_left_tag_barnacles_2"].label = ""
-        # self.fields["new_right_tag_barnacles"].label = ""
-        # self.fields["new_right_tag_barnacles_2"].label = ""
         
         self.fields["cc_notch_length_not_measured"].label = "CCL min not measured"
         
