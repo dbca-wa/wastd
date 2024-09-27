@@ -374,21 +374,10 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
                 if not turtle_id:
                     initial['species_code'] = template_data.get('species_code') or ""
                     initial['sex'] = template_data.get('sex') or ""
-                    
-                # if default_enterer and default_enterer != "None":
-                #     default_enterer_obj = TrtPersons.objects.filter(person_id=default_enterer).first()
-                #     if default_enterer_obj:
-                #         initial['entered_by_id'] = default_enterer
-                #         self.default_enterer_full_name = str(default_enterer_obj)
-                #     else:
-                #         self.default_enterer_full_name = None
-                # else:
-                #     self.default_enterer_full_name = None
+                
 
         if batch_id:
             initial["entry_batch"] = get_object_or_404(TrtEntryBatches, entry_batch_id=batch_id)
-            # if use_default_enterer and default_enterer:
-            #     initial['entered_by_id'] = default_enterer
 
         if turtle_id:
             turtle = get_object_or_404(TrtTurtles.objects.prefetch_related('trttags_set', 'trtpittags_set'), pk=turtle_id)
@@ -398,11 +387,21 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
 
         if entry_id:
             trtdataentry = get_object_or_404(TrtDataEntry, data_entry_id=entry_id)
+            
             measured_by = trtdataentry.measured_by
             recorded_by = trtdataentry.recorded_by
             tagged_by = trtdataentry.tagged_by
             entered_by = trtdataentry.entered_by
-
+            place_code = trtdataentry.place_code
+            
+            if place_code:
+                place = TrtPlaces.objects.filter(place_code=place_code).first()
+                if place:
+                    initial["place_code"] = place_code
+                    self.place_full_name = place.get_full_name()
+                else:
+                    self.place_full_name = ""
+            
             if measured_by:
                 first_name, last_name = measured_by.split(" ")
                 person = TrtPersons.objects.filter(first_name=first_name, surname=last_name).first()
@@ -410,7 +409,7 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
                     initial["measured_by_id"] = person.person_id
                     self.measured_by_full_name = measured_by
                 else:
-                    self.measured_by_full_name = None
+                    self.measured_by_full_name = ""
 
             if recorded_by:
                 first_name, last_name = recorded_by.split(" ")
@@ -419,7 +418,7 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
                     initial["recorded_by_id"] = person.person_id
                     self.recorded_by_full_name = recorded_by
                 else:
-                    self.recorded_by_full_name = None
+                    self.recorded_by_full_name = ""
 
             if tagged_by:
                 first_name, last_name = tagged_by.split(" ")
@@ -428,7 +427,7 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
                     initial["tagged_by_id"] = person.person_id
                     self.tagged_by_full_name = tagged_by
                 else:
-                    self.tagged_by_full_name = None
+                    self.tagged_by_full_name = ""
 
             if entered_by:
                 first_name, last_name = entered_by.split(" ")
@@ -437,7 +436,8 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
                     initial["entered_by_id"] = person.person_id
                     self.entered_by_full_name = entered_by
                 else:
-                    self.entered_by_full_name = None
+                    self.entered_by_full_name = ""
+
 
         return initial
 
@@ -529,8 +529,8 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
                 context["selected_template"] = str(batch.template.template_id)
             else:
                 context["selected_template"] = self.request.COOKIES.get(f'{cookies_key_prefix}_selected_template') or None
-            context["use_default_enterer"] = self.request.COOKIES.get(f'{cookies_key_prefix}_use_default_enterer', False)
-            context["default_enterer"] = self.request.COOKIES.get(f'{cookies_key_prefix}_default_enterer', '')
+            # context["use_default_enterer"] = self.request.COOKIES.get(f'{cookies_key_prefix}_use_default_enterer', False)
+            # context["default_enterer"] = self.request.COOKIES.get(f'{cookies_key_prefix}_default_enterer', '')
             # Add the tag id and tag type to the context data
             context["cookie_tag_id"] = self.request.COOKIES.get(f'{cookies_key_prefix}_tag_id')
             context["cookie_tag_type"] = self.request.COOKIES.get(f'{cookies_key_prefix}_tag_type')
@@ -544,6 +544,7 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
             context['recorded_by_full_name'] = getattr(self, 'recorded_by_full_name', '')
             context['tagged_by_full_name'] = getattr(self, 'tagged_by_full_name', '')
             context['entered_by_full_name'] = getattr(self, 'entered_by_full_name', '')
+            context['place_name'] = getattr(self, 'place_full_name', '')
 
         return context
 
@@ -564,6 +565,7 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
             except TrtPlaces.DoesNotExist:
                 return ""
         return ""
+
 
 class DeleteBatchView(LoginRequiredMixin, View):
 
@@ -723,6 +725,18 @@ class FindTurtleView(LoginRequiredMixin, View):
         latest_site = None
         batch = None
         template_name = "No template associated"
+        new_tag_entry = None
+        if tag_id and tag_type and not turtle:
+            new_tag_entry = TrtDataEntry.objects.filter(
+                Q(new_left_tag_id__tag_id=tag_id) |
+                Q(new_left_tag_id_2__tag_id=tag_id) |
+                Q(new_right_tag_id__tag_id=tag_id) |
+                Q(new_right_tag_id_2__tag_id=tag_id) |
+                Q(new_pittag_id__pittag_id=tag_id) |
+                Q(new_pittag_id_2__pittag_id=tag_id) |
+                Q(new_pittag_id_3__pittag_id=tag_id) |
+                Q(new_pittag_id_4__pittag_id=tag_id)
+            ).select_related('entry_batch', 'place_code', 'species_code').order_by('-entry_batch__entry_date').first()
 
         if batch_id:
             batch = TrtEntryBatches.objects.filter(entry_batch_id=batch_id).first()
@@ -759,6 +773,7 @@ class FindTurtleView(LoginRequiredMixin, View):
             "batch_id": batch_id,
             "batch": batch,
             "template_name": template_name,
+            "new_tag_entry": new_tag_entry,
         })
 
 
@@ -799,6 +814,44 @@ class FindTurtleView(LoginRequiredMixin, View):
                         tag_type = "recapture_pit_tag"
                     else:
                         tag_type = "unknown_tag"
+                        
+                if not turtle:
+                    new_tag_entry = TrtDataEntry.objects.filter(
+                        Q(new_left_tag_id__tag_id=tag_id) |
+                        Q(new_left_tag_id_2__tag_id=tag_id) |
+                        Q(new_right_tag_id__tag_id=tag_id) |
+                        Q(new_right_tag_id_2__tag_id=tag_id) |
+                        Q(new_pittag_id__pittag_id=tag_id) |
+                        Q(new_pittag_id_2__pittag_id=tag_id) |
+                        Q(new_pittag_id_3__pittag_id=tag_id) |
+                        Q(new_pittag_id_4__pittag_id=tag_id)
+                    ).order_by('-entry_batch__entry_date').first()
+
+                    if new_tag_entry:
+                        if any([str(new_tag_entry.new_left_tag_id) == str(tag_id), 
+                                str(new_tag_entry.new_left_tag_id_2) == str(tag_id)]):
+                            tag_type = "recapture_tag"
+                            tag_side = "L"
+                        elif any([str(new_tag_entry.new_right_tag_id) == str(tag_id), 
+                                    str(new_tag_entry.new_right_tag_id_2) == str(tag_id)]):
+                            tag_type = "recapture_tag"
+                            tag_side = "R"
+                        else:
+                            tag_type = "recapture_pit_tag"
+                            tag_side = None
+                            
+                    response = render(request, "wamtram2/find_turtle.html", {
+                            "form": form,
+                            "turtle": turtle,
+                            "new_tag_entry": new_tag_entry,
+                            "no_turtle_found": no_turtle_found,
+                            "tag_id": tag_id,
+                            "tag_type": tag_type,
+                            "tag_side": tag_side,
+                            "batch_id": batch_id,
+                        })
+   
+                    return self.set_cookie(response, batch_id, tag_id, tag_type, tag_side, no_turtle_found)
                 
                 response = redirect(reverse('wamtram2:find_turtle', kwargs={'batch_id': batch_id}))
 
@@ -848,6 +901,11 @@ class ObservationDetailView(LoginRequiredMixin, DetailView):
         context["tags"] = obj.trtrecordedtags_set.all()
         context["pittags"] = obj.trtrecordedpittags_set.all()
         context["measurements"] = obj.trtmeasurements_set.all()
+        
+        if obj.place_code:
+            context["place_full_name"] = obj.place_code.get_full_name()
+        else:
+            context["place_full_name"] = ""
         return context
 
 
@@ -1054,12 +1112,14 @@ class ValidateTagView(View):
         tag = request.GET.get('tag')
         side = request.GET.get('side')
 
-        if not turtle_id or not tag or not side:
-            return JsonResponse({'valid': False, 'wrong_side': False, 'message': 'Missing parameters'})
+        print(turtle_id, tag, side)
 
-        try:
-            turtle_id = int(turtle_id)
-            tag_obj = TrtTags.objects.filter(tag_id=tag).first()
+        if not tag or not side:
+            return JsonResponse({'valid': False, 'wrong_side': False, 'message': 'Missing parameters'})
+        if turtle_id:
+            try:
+                turtle_id = int(turtle_id)
+                tag_obj = TrtTags.objects.filter(tag_id=tag).first()
 
             if tag_obj:
                 if tag_obj.turtle_id != turtle_id:
@@ -1194,21 +1254,23 @@ class ValidateTagView(View):
         turtle_id = request.GET.get('turtle_id')
         tag = request.GET.get('tag')
 
-        if not turtle_id or not tag:
+        if not tag:
             return JsonResponse({'valid': False, 'message': 'Missing parameters'})
 
         try:
-            pit_tag = TrtPitTags.objects.filter(pittag_id=tag).select_related('turtle').first()
-            if pit_tag:
-                if pit_tag.turtle and pit_tag.turtle.turtle_id != int(turtle_id):
-                    return JsonResponse({
-                        'valid': False,
-                        'message': 'PIT tag belongs to another turtle',
-                        'other_turtle_id': pit_tag.turtle.turtle_id,
-                        'status': pit_tag.pit_tag_status.description
-                    })
-                else:
-                    if pit_tag.pit_tag_status.pit_tag_status != 'ATT':
+            if turtle_id:
+                turtle_id = int(turtle_id)
+                pit_tag = TrtPitTags.objects.filter(pittag_id=tag).select_related('turtle').first()
+
+                if pit_tag:
+                    if pit_tag.turtle and pit_tag.turtle.turtle_id != int(turtle_id):
+                        return JsonResponse({
+                            'valid': False,
+                            'message': 'PIT tag belongs to another turtle',
+                            'other_turtle_id': pit_tag.turtle.turtle_id,
+                            'status': pit_tag.pit_tag_status.description
+                        })
+                    elif pit_tag.pit_tag_status.pit_tag_status != 'ATT':
                         return JsonResponse({
                             'valid': False,
                             'message': f'PIT tag status: {pit_tag.pit_tag_status.description}',
@@ -1233,6 +1295,9 @@ class ValidateTagView(View):
                     return JsonResponse({'valid': False, 'message': 'PIT tag not found', 'tag_not_found': True})
         except Exception as e:
             return JsonResponse({'valid': False, 'message': str(e)})
+
+
+
 
     def get(self, request, *args, **kwargs):
         """

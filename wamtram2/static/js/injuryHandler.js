@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error('toggleInjuryFieldsButton not found');
     }
 
-    const bodyPartFields = ['body_part_1', 'body_part_2', 'body_part_3', 'body_part_4'];
+    const bodyPartFields = ['id_body_part_1', 'id_body_part_2', 'id_body_part_3', 'id_body_part_4'];
     bodyPartFields.forEach(fieldId => {
         const field = document.getElementById(fieldId);
         if (field) {
@@ -35,7 +35,7 @@ function toggleInjuryFields() {
 }
 
 function updateBodyPartOptions() {
-    const bodyPartFields = ['body_part_1', 'body_part_2', 'body_part_3', 'body_part_4'];
+    const bodyPartFields = ['id_body_part_1', 'id_body_part_2', 'id_body_part_3', 'id_body_part_4'];
     const selectedValues = new Set();
 
     bodyPartFields.forEach(fieldId => {
