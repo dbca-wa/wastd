@@ -797,6 +797,7 @@ class FindTurtleView(LoginRequiredMixin, View):
         tag_side = None
         turtle = None
         create_and_review = request.POST.get('create_and_review') == 'true'
+        new_tag_entry = None
 
         if form.is_valid():
             tag_id = form.cleaned_data["tag_id"]
@@ -839,28 +840,27 @@ class FindTurtleView(LoginRequiredMixin, View):
                         else:
                             tag_type = "recapture_pit_tag"
                             tag_side = None
-                            
-                    response = render(request, "wamtram2/find_turtle.html", {
-                            "form": form,
-                            "turtle": turtle,
-                            "new_tag_entry": new_tag_entry,
-                            "no_turtle_found": no_turtle_found,
-                            "tag_id": tag_id,
-                            "tag_type": tag_type,
-                            "tag_side": tag_side,
-                            "batch_id": batch_id,
-                        })
-   
-                    return self.set_cookie(response, batch_id, tag_id, tag_type, tag_side, no_turtle_found)
-                
-                response = redirect(reverse('wamtram2:find_turtle', kwargs={'batch_id': batch_id}))
+                    else:
+                        no_turtle_found = True
 
                 if turtle:
-                    return self.set_cookie(response, batch_id, tag_id, tag_type, tag_side)
-                else:
-                    no_turtle_found = True
                     response = redirect(reverse('wamtram2:find_turtle', kwargs={'batch_id': batch_id}))
+                    return self.set_cookie(response, batch_id, tag_id, tag_type, tag_side)
+                elif new_tag_entry:
+                    response = render(request, "wamtram2/find_turtle.html", {
+                        "form": form,
+                        "turtle": turtle,
+                        "new_tag_entry": new_tag_entry,
+                        "no_turtle_found": no_turtle_found,
+                        "tag_id": tag_id,
+                        "tag_type": tag_type,
+                        "tag_side": tag_side,
+                        "batch_id": batch_id,
+                    })
                     return self.set_cookie(response, batch_id, tag_id, tag_type, tag_side, no_turtle_found)
+                else:
+                    response = redirect(reverse('wamtram2:find_turtle', kwargs={'batch_id': batch_id}))
+                    return self.set_cookie(response, batch_id, tag_id, tag_type, tag_side, no_turtle_found=True)
             else:
                 tag_type = request.POST.get('tag_type', 'unknown_tag')
                 tag_side = request.POST.get('tag_side', None)
@@ -877,8 +877,7 @@ class FindTurtleView(LoginRequiredMixin, View):
             })
 
         return self.set_cookie(response, batch_id, tag_id, tag_type, tag_side)
-
-
+    
 class ObservationDetailView(LoginRequiredMixin, DetailView):
     model = TrtObservations
     template_name = "wamtram2/observation_detail.html"
