@@ -122,7 +122,6 @@ document.addEventListener('DOMContentLoaded', function() {
             fetch(url)
                 .then(response => response.json())
                 .then(data => {
-                    console.log('RESPONSE DATA:',data);
                     if (data.valid && !data.wrong_side) {
                         if (data.message && data.message.includes('Tag found in previous unprocessed entry')) {
                             setValidationStatus(tagInput, validationMessage, detailedMessage, 'valid', '✓ Tag found in previous unprocessed entry');

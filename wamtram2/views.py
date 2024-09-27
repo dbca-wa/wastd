@@ -1112,8 +1112,6 @@ class ValidateTagView(View):
         tag = request.GET.get('tag')
         side = request.GET.get('side')
 
-        print(turtle_id, tag, side)
-
         if not tag or not side:
             return JsonResponse({'valid': False, 'wrong_side': False, 'message': 'Missing parameters'})
         if turtle_id:
