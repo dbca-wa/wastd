@@ -31,7 +31,7 @@
 
 {% block page_content_inner %}
 <div class="container-fluid mt-5 mb-5">
-    <h2 class="mb-4">Batches Mangement</h2>
+    <h2 class="mb-4">Batch Management</h2>
     <div class="d-flex flex-wrap align-items-center mb-3">
         
         {% if request.user.is_superuser or request.user|has_group:"WAMTRAM2_STAFF" %}
@@ -231,7 +231,7 @@
                     <div class="form-group">
                         <label for="quickAddBatchCode">Batch Code (auto generated)</label>
                         <input type="text" class="form-control" id="quickAddBatchCode" name="batches_code" required>
-                        <div class="invalid-feedback">This Bathch is alraedy exist.</div>
+                        <div class="invalid-feedback">This Batch is alraedy exist.</div>
                         <div class="valid-feedback">Looks good!</div>
                     </div>
                     <div class="form-group">
