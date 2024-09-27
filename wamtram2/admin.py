@@ -1,4 +1,6 @@
 from django.contrib import admin
+from import_export import resources
+from import_export.fields import Field
 import nested_admin
 from .models import (
     TrtPersons,
@@ -13,7 +15,7 @@ from .models import (
     TrtTagOrders,
 )
 from import_export.admin import ImportExportModelAdmin
-from .forms import DataEntryUserModelForm, EnterUserModelForm
+from .forms import DataEntryUserModelForm, EnterUserModelForm, TrtObservationsForm, TrtPersonsForm
 
 
 class TrtMeasurementsInline(nested_admin.NestedTabularInline):
@@ -85,12 +87,22 @@ class TrtTurtlesAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
 
 @admin.register(TrtObservations)
 class TrtObservationsAdmin(nested_admin.NestedModelAdmin):
+    form = TrtObservationsForm
+    readonly_fields = ('observation_status','corrected_date',)
+    
     autocomplete_fields = ["turtle"]
     list_display = ("observation_id", "turtle", "observation_date", "entry_batch")
     date_hierarchy = "observation_date"
     list_filter = ["turtle__species_code", "place_code"]
     search_fields = ["observation_id", "entry_batch__entry_batch_id"]
     inlines = [TrtMeasurementsInline, TrtDamageInline]
+    
+    def save_model(self, request, obj, form, change):
+        if 'observation_status' in form.cleaned_data:
+            form.cleaned_data.pop('observation_status')
+        if 'corrected_date' in form.cleaned_data:
+            form.cleaned_data.pop('corrected_date')
+        super().save_model(request, obj, form, change)
 
 
 @admin.register(TrtMeasurements)
@@ -124,7 +136,31 @@ class TrtTagOrdersAdmin(ImportExportModelAdmin):
     verbose_name = "Tag Order"  # Singular name for one object
     verbose_name_plural = "Tag Orders"
 
+class TrtPersonsResource(resources.ModelResource):
+    recorder = Field(attribute='recorder', column_name='Recorder')
+
+    def before_import_row(self, row, **kwargs):
+        if 'Recorder' not in row or row['Recorder'] == '':
+            row['Recorder'] = False
+
+    class Meta:
+        model = TrtPersons
+        import_id_fields = ('email',)
+        fields = ('first_name', 'surname', 'email', 'recorder')
+        export_order = fields
 
 @admin.register(TrtPersons)
 class TrtPersonsAdmin(ImportExportModelAdmin):
-    search_fields = ["first_name", "surname", "email"]
+    resource_class = TrtPersonsResource
+    form = TrtPersonsForm
+    list_display = ('first_name', 'surname', 'email', 'recorder')
+    search_fields = ['first_name', 'surname', 'email']
+    fieldsets = (
+        ('Required Information', {
+            'fields': ('first_name', 'surname', 'email', 'recorder'),
+            'description': 'These fields are required.'
+        }),
+        ('Additional Information', {
+            'fields': ('middle_name', 'specialty', 'address_line_1', 'address_line_2', 'town', 'state', 'post_code', 'country', 'telephone', 'fax', 'mobile', 'comments', 'transfer'),
+        }),
+    )

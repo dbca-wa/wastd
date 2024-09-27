@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "wastd"
-version = "2.0.4"
+version = "2.0.5"
 description = "Western Australian Sea Turtles Database"
 authors = ["Florian Mayer <florian.mayer@dbca.wa.gov.au>", "Ashley Felton <ashley.felton@dbca.wa.gov.au>","Evan Hallein <evan.hallein@dbca.wa.gov.au>", "Rick Wang <rick.wang@dbca.wa.gov.au>"]
 license = "MIT"
@@ -44,6 +44,7 @@ django-grappelli = "3.0.8"
 django-bootstrap4 = "24.1"
 django-easy-select2 = "1.5.8"
 sentry-sdk = {version = "2.14.0", extras = ["django"]}
+django-debug-toolbar = "^4.2.2"
 
 [tool.poetry.group.dev.dependencies]
 ipython = "^8.23.0"
@@ -54,16 +55,17 @@ sphinx = "^7.0.1"
 vulture = "^2.7"
 django-debug-toolbar = "^4.2.0"
 pre-commit = "^3.7.0"
+coverage = "^7.5.3"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
-[tool.ruff]
+[tool.ruff.lint]
 # Enable Pyflakes `E` and `F` codes.
-select = ["E", "F"]
+lint.select = ["E", "F"]
 # Never enforce `E501` (line length violations).
-ignore = ["E501"]
+lint.ignore = ["E501"]
 # Always autofix.
 fix = true
 exclude = ["__pycache__", "migrations"]

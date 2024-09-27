@@ -1,4 +1,6 @@
 from django.contrib.gis.db import models
+from django.core.exceptions import ValidationError
+from django.db.models import Case, When, Value, IntegerField
 
 
 class TrtActivities(models.Model):
@@ -112,7 +114,12 @@ class TrtDamage(models.Model):
     class Meta:
         managed = False
         db_table = "TRT_DAMAGE"
-        unique_together = (("observation", "body_part", "body_part"),)
+        constraints = [
+            models.UniqueConstraint(
+                fields=["observation", "body_part"],
+                name="unique_observation_body_part"
+            )
+        ]
 
 
 class TrtDamageCause(models.Model):
@@ -196,6 +203,11 @@ class TrtDataEntry(models.Model):
         ("M", "Male"),
         ("F", "Female"),
         ("I", "Indeterminate"),
+    ]
+    TAG_POSITION_CHOICES = [
+        (1, 'scale 1'),
+        (2, 'scale 2'),
+        (3, 'scale 3'),
     ]
     data_entry_id = models.AutoField(
         db_column="DATA_ENTRY_ID", primary_key=True
@@ -318,7 +330,7 @@ class TrtDataEntry(models.Model):
         db_column="OBSERVATION_TIME", blank=True, null=True
     )  # Field name made lowercase.
     nesting = models.ForeignKey(
-        "TrtYesNo", models.SET_NULL, db_column="NESTING", blank=True, null=True
+        "TrtYesNo", models.SET_NULL, db_column="NESTING", blank=True, null=True, limit_choices_to={'code__in': ['D', 'N', 'Y', 'P']}
     )  # fake foreign key #models.CharField(db_column='NESTING', max_length=1, blank=True, null=True)  # Field name made lowercase.
     species_code = models.ForeignKey(
         "TrtSpecies", models.SET_NULL, db_column="SPECIES_CODE", blank=True, null=True
@@ -420,12 +432,26 @@ class TrtDataEntry(models.Model):
     egg_count = models.IntegerField(
         db_column="EGG_COUNT", blank=True, null=True
     )  # Field name made lowercase.
-    egg_count_method = models.CharField(
-        db_column="EGG_COUNT_METHOD", max_length=3, blank=True, null=True
+    egg_count_method = models.ForeignKey(
+        "TrtEggCountMethods",
+        models.SET_NULL,
+        db_column="EGG_COUNT_METHOD", 
+        max_length=3, 
+        blank=True, 
+        null=True,
+        related_name="eggcountmethod",
     )  # Field name made lowercase.
-    clutch_completed = models.CharField(
-        db_column="CLUTCH_COMPLETED", max_length=1, blank=True, null=True
-    )  # Field name made lowercase.
+    clutch_completed = models.ForeignKey(
+        "TrtYesNo",
+        models.SET_NULL,
+        db_column="CLUTCH_COMPLETED",
+        blank=True,
+        null=True,
+        related_name="clutchcompleted"
+    )
+    # clutch_completed = models.CharField(
+    #     db_column="CLUTCH_COMPLETED", max_length=1, blank=True, null=True
+    # )  # Field name made lowercase.
     measured_by = models.CharField(
         db_column="MEASURED_BY", max_length=50, blank=True, null=True
     )  # Field name made lowercase. Used by old MSAccess frontend
@@ -539,9 +565,13 @@ class TrtDataEntry(models.Model):
     longitude_seconds = models.FloatField(
         db_column="LONGITUDE_SECONDS", blank=True, null=True
     )  # Field name made lowercase.
-    identification_type = models.CharField(
-        db_column="IDENTIFICATION_TYPE", max_length=10, blank=True, null=True
-    )  # Field name made lowercase.
+    identification_type = models.ForeignKey(
+        "TrtIdentificationTypes",
+        models.CASCADE,
+        db_column="IDENTIFICATION_TYPE",
+        blank=True,
+        null=True
+    )
     identifier = models.CharField(
         db_column="IDENTIFIER", max_length=20, blank=True, null=True
     )  # Field name made lowercase.
@@ -618,12 +648,22 @@ class TrtDataEntry(models.Model):
         null=True,
         related_name="recapturerighttag3",
     )  # fake foreign key #models.CharField(db_column='RECAPTURE_RIGHT_TAG_ID_3', max_length=10, blank=True, null=True)  # Field name made lowercase.
-    body_part_3 = models.CharField(
-        db_column="BODY_PART_3", max_length=1, blank=True, null=True
-    )  # Field name made lowercase.
-    damage_code_3 = models.CharField(
-        db_column="DAMAGE_CODE_3", max_length=1, blank=True, null=True
-    )  # Field name made lowercase.
+    body_part_3 = models.ForeignKey(
+        "TrtBodyParts",
+        models.SET_NULL,
+        db_column="BODY_PART_3",
+        blank=True,
+        null=True,
+        related_name="bp3",
+    )   # fake foreign key #models.CharField(db_column='BODY_PART_3', max_length=1, blank=True, null=True)  # Field name made lowercase.
+    damage_code_3 = models.ForeignKey(
+        "TrtDamageCodes",
+        models.SET_NULL,
+        db_column="DAMAGE_CODE_3",
+        blank=True,
+        null=True,
+        related_name="dc3",
+    )  # fake foreign key #models.CharField(db_column='DAMAGE_CODE_3', max_length=1, blank=True, null=True)  # Field name made lowercase.
     tissue_type_1 = models.ForeignKey(
         "TrtTissueTypes",
         models.SET_NULL,
@@ -665,11 +705,242 @@ class TrtDataEntry(models.Model):
         null=True,
         related_name="newpittag2",
     )  # fake foreign key for right pit tag #models.CharField(db_column='NEW_PIT_TAG_ID_2', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    
+    # Flipper tag states
+    recapture_left_tag_state = models.ForeignKey('TrtTagStates', models.SET_NULL, null=True, related_name='+', db_column='RECAPTURE_LEFT_TAG_STATE')
+    recapture_left_tag_state_2 = models.ForeignKey('TrtTagStates', models.SET_NULL, null=True, related_name='+', db_column='RECAPTURE_LEFT_TAG_STATE_2')
+    recapture_right_tag_state = models.ForeignKey('TrtTagStates', models.SET_NULL, null=True, related_name='+', db_column='RECAPTURE_RIGHT_TAG_STATE')
+    recapture_right_tag_state_2 = models.ForeignKey('TrtTagStates', models.SET_NULL, null=True, related_name='+', db_column='RECAPTURE_RIGHT_TAG_STATE_2')
+    new_left_tag_state = models.ForeignKey('TrtTagStates', models.SET_NULL, null=True, related_name='+', db_column='NEW_LEFT_TAG_STATE')
+    new_left_tag_state_2 = models.ForeignKey('TrtTagStates', models.SET_NULL, null=True, related_name='+', db_column='NEW_LEFT_TAG_STATE_2')
+    new_right_tag_state = models.ForeignKey('TrtTagStates', models.SET_NULL, null=True, related_name='+', db_column='NEW_RIGHT_TAG_STATE')
+    new_right_tag_state_2 = models.ForeignKey('TrtTagStates', models.SET_NULL, null=True, related_name='+', db_column='NEW_RIGHT_TAG_STATE_2')
 
+    # Flipper tag position
+    recapture_left_tag_position = models.SmallIntegerField(choices=TAG_POSITION_CHOICES, null=True, db_column='RECAPTURE_LEFT_TAG_POSITION')
+    recapture_left_tag_position_2 = models.SmallIntegerField(choices=TAG_POSITION_CHOICES, null=True, db_column='RECAPTURE_LEFT_TAG_POSITION_2')
+    recapture_right_tag_position = models.SmallIntegerField(choices=TAG_POSITION_CHOICES, null=True, db_column='RECAPTURE_RIGHT_TAG_POSITION')
+    recapture_right_tag_position_2 = models.SmallIntegerField(choices=TAG_POSITION_CHOICES, null=True, db_column='RECAPTURE_RIGHT_TAG_POSITION_2')
+    new_left_tag_position = models.SmallIntegerField(choices=TAG_POSITION_CHOICES, null=True, db_column='NEW_LEFT_TAG_POSITION')
+    new_left_tag_position_2 = models.SmallIntegerField(choices=TAG_POSITION_CHOICES, null=True, db_column='NEW_LEFT_TAG_POSITION_2')
+    new_right_tag_position = models.SmallIntegerField(choices=TAG_POSITION_CHOICES, null=True, db_column='NEW_RIGHT_TAG_POSITION')
+    new_right_tag_position_2 = models.SmallIntegerField(choices=TAG_POSITION_CHOICES, null=True, db_column='NEW_RIGHT_TAG_POSITION_2')
+
+    # Flipper tag barnacles
+    recapture_left_tag_barnacles = models.BooleanField(default=False, db_column='RECAPTURE_LEFT_TAG_BARNACLES')
+    recapture_left_tag_barnacles_2 = models.BooleanField(default=False, db_column='RECAPTURE_LEFT_TAG_BARNACLES_2')
+    recapture_right_tag_barnacles = models.BooleanField(default=False, db_column='RECAPTURE_RIGHT_TAG_BARNACLES')
+    recapture_right_tag_barnacles_2 = models.BooleanField(default=False, db_column='RECAPTURE_RIGHT_TAG_BARNACLES_2')
+    new_left_tag_barnacles = models.BooleanField(default=False, db_column='NEW_LEFT_TAG_BARNACLES')
+    new_left_tag_barnacles_2 = models.BooleanField(default=False, db_column='NEW_LEFT_TAG_BARNACLES_2')
+    new_right_tag_barnacles = models.BooleanField(default=False, db_column='NEW_RIGHT_TAG_BARNACLES')
+    new_right_tag_barnacles_2 = models.BooleanField(default=False, db_column='NEW_RIGHT_TAG_BARNACLES_2')
+    
+    # Measurements
+    # Curved carapace length min
+    curved_carapace_length_notch = models.IntegerField(
+        db_column="CURVED_CARAPACE_LENGTH_NOTCH", blank=True, null=True
+    )  
+    # More measurements
+    measurement_type_3 = models.ForeignKey(
+        "TrtMeasurementTypes",
+        models.SET_NULL,
+        db_column="MEASUREMENT_TYPE_3",
+        blank=True,
+        null=True,
+        related_name="measuretype3",
+    )  # fake foreign key #models.CharField(db_column='MEASUREMENT_TYPE_2', max_length=10, blank=True, null=True)  # Field name made lowercase.
+    measurement_value_3 = models.FloatField(
+        db_column="MEASUREMENT_VALUE_3", blank=True, null=True
+    )  # Field name made lowercase.
+    
+    measurement_type_4 = models.ForeignKey(
+        "TrtMeasurementTypes",
+        models.SET_NULL,
+        db_column="MEASUREMENT_TYPE_4",
+        blank=True,
+        null=True,
+        related_name="measuretype4",
+    )  # fake foreign key #models.CharField(db_column='MEASUREMENT_TYPE_2', max_length=10, blank=True, null=True)  # Field name made lowercase.
+    measurement_value_4 = models.FloatField(
+        db_column="MEASUREMENT_VALUE_4", blank=True, null=True
+    )  # Field name made lowercase.
+    
+    measurement_type_5 = models.ForeignKey(
+        "TrtMeasurementTypes",
+        models.SET_NULL,
+        db_column="MEASUREMENT_TYPE_5",
+        blank=True,
+        null=True,
+        related_name="measuretype5",
+    )  # fake foreign key #models.CharField(db_column='MEASUREMENT_TYPE_2', max_length=10, blank=True, null=True)  # Field name made lowercase.
+    measurement_value_5 = models.FloatField(
+        db_column="MEASUREMENT_VALUE_5", blank=True, null=True
+    )  # Field name made lowercase.
+    
+    measurement_type_6 = models.ForeignKey(
+        "TrtMeasurementTypes",
+        models.SET_NULL,
+        db_column="MEASUREMENT_TYPE_6",
+        blank=True,
+        null=True,
+        related_name="measuretype6",
+    )  # fake foreign key #models.CharField(db_column='MEASUREMENT_TYPE_2', max_length=10, blank=True, null=True)  # Field name made lowercase.
+    measurement_value_6 = models.FloatField(
+        db_column="MEASUREMENT_VALUE_6", blank=True, null=True
+    )  # Field name made lowercase.
+    
+    flipper_tag_check = models.ForeignKey(
+        "TrtYesNo",
+        on_delete=models.CASCADE,
+        related_name='flipper_tag_entries',
+        db_column='FLIPPER_TAG_CHECK',
+        limit_choices_to={'code__in': ['D', 'N', 'Y']}
+    )
+    pit_tag_check = models.ForeignKey(
+        "TrtYesNo",
+        on_delete=models.CASCADE,
+        related_name='pit_tag_entries',
+        db_column='PIT_TAG_CHECK',
+        limit_choices_to={'code__in': ['D', 'N', 'Y']}
+    )
+    injury_check = models.ForeignKey(
+        "TrtYesNo",
+        on_delete=models.CASCADE,
+        related_name='injury_entries',
+        db_column='INJURY_CHECK',
+        limit_choices_to={'code__in': ['D', 'N', 'Y']} 
+    )
+    scar_check = models.ForeignKey(
+        "TrtYesNo",
+        on_delete=models.CASCADE,
+        related_name='scar_entries',
+        db_column='SCAR_CHECK',
+        limit_choices_to={'code__in': ['D', 'N', 'Y']}
+    )
+    
+    recapture_pittag_id_3 = models.ForeignKey(
+        "TrtPitTags",
+        models.SET_NULL,
+        db_column="RECAPTURE_PIT_TAG_ID_3",
+        blank=True,
+        null=True,
+        related_name="recapturepittag3",
+    )  # fake foreign key for right pit tag #models.CharField(db_column='recapture_pittag_id_3', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    new_pittag_id_3 = models.ForeignKey(
+        "TrtPitTags",
+        models.SET_NULL,
+        db_column="NEW_PIT_TAG_ID_3",
+        blank=True,
+        null=True,
+        related_name="newpittag3",
+    )  # fake foreign key for right pit tag #models.CharField(db_column='NEW_PIT_TAG_ID_3', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    recapture_pittag_id_4 = models.ForeignKey(
+        "TrtPitTags",
+        models.SET_NULL,
+        db_column="RECAPTURE_PIT_TAG_ID_4",
+        blank=True,
+        null=True,
+        related_name="recapturepittag4",
+    )  # fake foreign key for right pit tag #models.CharField(db_column='recapture_pittag_id_4', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    new_pittag_id_4 = models.ForeignKey(
+        "TrtPitTags",
+        models.SET_NULL,
+        db_column="NEW_PIT_TAG_ID_4",
+        blank=True,
+        null=True,
+        related_name="newpittag4",
+    )  # fake foreign key for right pit tag #models.CharField(db_column='NEW_PIT_TAG_ID_4', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    
+    new_pit_tag_sticker_present = models.BooleanField(default=False, db_column='NEW_PIT_TAG_STICKER_PRESENT')
+    new_pit_tag_2_sticker_present = models.BooleanField(default=False, db_column='NEW_PIT_TAG_2_STICKER_PRESENT')
+    new_pit_tag_3_sticker_present = models.BooleanField(default=False, db_column='NEW_PIT_TAG_3_STICKER_PRESENT')
+    new_pit_tag_4_sticker_present = models.BooleanField(default=False, db_column='NEW_PIT_TAG_4_STICKER_PRESENT')
+
+    dud_filpper_tag = models.CharField(
+        max_length=10,
+        db_column="DUD_FLIPPER_TAG",
+        blank=True,
+        null=True,
+    )  
+    dud_filpper_tag_2 = models.CharField(
+        max_length=10,
+        db_column="DUD_FLIPPER_TAG_2",
+        blank=True,
+        null=True,
+    )
+    dud_pit_tag = models.CharField(
+        max_length=50,
+        db_column="DUD_PIT_TAG",
+        blank=True,
+        null=True,
+    )
+    dud_pit_tag_2 = models.CharField(
+        max_length=50,
+        db_column="DUD_PIT_TAG_2",
+        blank=True,
+        null=True,
+    )
+    
+    body_part_4 = models.ForeignKey(
+        "TrtBodyParts",
+        models.SET_NULL,
+        db_column="BODY_PART_4",
+        blank=True,
+        null=True,
+        related_name="bp4",
+    )  # fake foreign key #models.CharField(db_column='BODY_PART_4', max_length=1, blank=True, null=True)  # Field name made lowercase.
+    damage_code_4 = models.ForeignKey(
+        "TrtDamageCodes",
+        models.SET_NULL,
+        db_column="DAMAGE_CODE_4",
+        blank=True,
+        null=True,
+        related_name="dc4",
+    )  # fake foreign key #models.CharField(db_column='DAMAGE_CODE_4', max_length=1, blank=True, null=True)  # Field name made lowercase.
+    body_part_5 = models.ForeignKey(
+        "TrtBodyParts",
+        models.SET_NULL,
+        db_column="BODY_PART_5",
+        blank=True,
+        null=True,
+        related_name="bp5",
+    )
+    damage_code_5 = models.ForeignKey(
+        "TrtDamageCodes",
+        models.SET_NULL,
+        db_column="DAMAGE_CODE_5",
+        blank=True,
+        null=True,
+        related_name="dc5",
+    )
+    body_part_6 = models.ForeignKey(
+        "TrtBodyParts",
+        models.SET_NULL,
+        db_column="BODY_PART_6",
+        blank=True,
+        null=True,
+        related_name="bp6",
+    )
+    damage_code_6 = models.ForeignKey(
+        "TrtDamageCodes",
+        models.SET_NULL,
+        db_column="DAMAGE_CODE_6",
+        blank=True,
+        null=True,
+        related_name="dc6",
+    )
+    
     class Meta:
         managed = False
         db_table = "TRT_DATA_ENTRY"
-        unique_together = (("entry_batch", "user_entry_id"),)
+        constraints = [
+            models.UniqueConstraint(
+                fields=["entry_batch", "user_entry_id"],
+                name="unique_entry_batch_user_entry_id"
+            )
+        ]
+        
         ordering = ["-data_entry_id"]
 
     def __str__(self):
@@ -843,7 +1114,12 @@ class TrtDataEntryExceptions(models.Model):
     class Meta:
         managed = False
         db_table = "TRT_DATA_ENTRY_EXCEPTIONS"
-        unique_together = (("entry_batch_id", "data_entry_id"),)
+        constraints = [
+            models.UniqueConstraint(
+                fields=["entry_batch_id", "data_entry_id"],
+                name="unique_entry_batch_data_entry"
+            )
+        ]
 
 
 class TrtDataEntryPersons(models.Model):
@@ -863,7 +1139,12 @@ class TrtDataEntryPersons(models.Model):
     class Meta:
         managed = False
         db_table = "TRT_DATA_ENTRY_PERSONS"
-        unique_together = (("entry_batch", "person_name"),)
+        constraints = [
+            models.UniqueConstraint(
+                fields=["entry_batch", "person_name"],
+                name="unique_entry_batch_person"
+            )
+        ]
 
     # def __str__(self):
     #     return f"{self.person_name}"
@@ -959,6 +1240,8 @@ class TrtEggCountMethods(models.Model):
     class Meta:
         managed = False
         db_table = "TRT_EGG_COUNT_METHODS"
+    def __str__(self):
+        return f"{self.description}"
 
 
 class TrtEntryBatches(models.Model):
@@ -972,8 +1255,10 @@ class TrtEntryBatches(models.Model):
         "TrtPersons",
         models.SET_NULL,
         db_column="ENTERED_PERSON_ID",
+        to_field="person_id",
         blank=True,
         null=True,
+        related_name="entry_batches",
     )  # fake foreign key #models.IntegerField(db_column='ENTERED_PERSON_ID', blank=True, null=True)  # Field name made lowercase.
     filename = models.CharField(
         db_column="FILENAME", max_length=255, blank=True, null=True
@@ -982,9 +1267,18 @@ class TrtEntryBatches(models.Model):
         db_column="COMMENTS", max_length=255, blank=True, null=True
     )  # Field name made lowercase.
     pr_date_convention = models.BooleanField(
-        db_column="PR_DATE_CONVENTION"
+        db_column="PR_DATE_CONVENTION",default=False
     )  # Field name made lowercase.
-
+    batches_code = models.CharField(
+        db_column="BATCHES_CODE", max_length=10, blank=True, null=True, unique=True
+    )  # Field name made lowercase.
+    template = models.ForeignKey(
+        "Template",  
+        models.SET_NULL,
+        db_column="TEMPLATE",
+        blank=True,
+        null=True,
+    )
     class Meta:
         managed = False
         db_table = "TRT_ENTRY_BATCHES"
@@ -994,6 +1288,18 @@ class TrtEntryBatches(models.Model):
 
     def __str__(self):
         return f"{self.entry_batch_id}"
+    
+    def clean(self):
+        if self.batches_code:
+            existing = TrtEntryBatches.objects.filter(batches_code=self.batches_code)
+            if self.pk:
+                existing = existing.exclude(pk=self.pk)
+            if existing.exists():
+                raise ValidationError({'batches_code': 'This batch code already exists.'})
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
 
 
 class TrtIdentification(models.Model):
@@ -1016,7 +1322,12 @@ class TrtIdentification(models.Model):
     class Meta:
         managed = False
         db_table = "TRT_IDENTIFICATION"
-        unique_together = (("turtle", "identification_type", "identifier"),)
+        constraints = [
+            models.UniqueConstraint(
+                fields=["turtle", "identification_type", "identifier"],
+                name="unique_turtle_identification"
+            )
+        ]
 
 
 class TrtIdentificationTypes(models.Model):
@@ -1030,7 +1341,9 @@ class TrtIdentificationTypes(models.Model):
     class Meta:
         managed = False
         db_table = "TRT_IDENTIFICATION_TYPES"
-
+    def __str__(self):
+        return f"{self.description}"
+    
 
 class TrtLocations(models.Model):
     location_code = models.CharField(
@@ -1046,6 +1359,18 @@ class TrtLocations(models.Model):
 
     def __str__(self):
         return f"{self.location_name}"
+
+    @staticmethod
+    def get_ordered_locations():
+        priority_codes = ['BW', 'CD', 'CL', 'DA', 'DH', 'LA', 'LO', 'MN', 'RI', 'TH', 'VA', 'WK', 'PH']
+
+        custom_order = Case(
+            *[When(location_code=code, then=Value(i)) for i, code in enumerate(priority_codes)],
+            default=Value(len(priority_codes)),
+            output_field=IntegerField()
+        )
+
+        return TrtLocations.objects.annotate(custom_order=custom_order).order_by('custom_order', 'location_name')
 
 
 class TrtMeasurements(models.Model):
@@ -1066,7 +1391,12 @@ class TrtMeasurements(models.Model):
     class Meta:
         managed = False
         db_table = "TRT_MEASUREMENTS"
-        unique_together = (("observation", "measurement_type"),)
+        constraints = [
+            models.UniqueConstraint(
+                fields=["observation", "measurement_type"],
+                name="unique_observation_measurement_type"
+            )
+        ]
 
 
 class TrtMeasurementTypes(models.Model):
@@ -1111,7 +1441,12 @@ class TrtNesting(models.Model):
     class Meta:
         managed = False
         db_table = "TRT_NESTING"
-        unique_together = (("place_code", "species_code"),)
+        constraints = [
+            models.UniqueConstraint(
+                fields=["place_code", "species_code"],
+                name="unique_place_species"
+            )
+        ]
 
 
 class TrtNestingSeason(models.Model):
@@ -1354,20 +1689,57 @@ class TrtObservations(models.Model):
         db_column="DATE_CONVENTION", max_length=1
     )  # Field name made lowercase.
     observation_status = models.CharField(
-        db_column="OBSERVATION_STATUS", max_length=50, blank=True, null=True
+        db_column="OBSERVATION_STATUS", max_length=50, blank=True, null=True, editable=False
     )  # Field name made lowercase.
     corrected_date = models.DateTimeField(
-        db_column="CORRECTED_DATE", blank=True, null=True
+        db_column="CORRECTED_DATE", blank=True, null=True, editable=False
     )  # Field name made lowercase.
+    dud_filpper_tag = models.CharField(
+        max_length=10, 
+        db_column="DUD_FLIPPER_TAG",
+        blank=True,
+        null=True,
+    )  
+    dud_filpper_tag_2 = models.CharField(
+        max_length=10,
+        db_column="DUD_FLIPPER_TAG_2",
+        blank=True,
+        null=True,
+    )
+    dud_pit_tag = models.CharField(
+        max_length=50,
+        db_column="DUD_PIT_TAG",
+        blank=True,
+        null=True,
+    )
+    dud_pit_tag_2 = models.CharField(
+        max_length=50,
+        db_column="DUD_PIT_TAG_2",
+        blank=True,
+        null=True,
+    )
 
     class Meta:
         managed = False
         db_table = "TRT_OBSERVATIONS"
-        unique_together = (("observation_id", "turtle"),)
+        constraints = [
+            models.UniqueConstraint(
+                fields=["observation_id", "turtle"],
+                name="unique_observation_id_turtle"
+            )
+        ]
         verbose_name = "Observation"
+        verbose_name_plural = "Observations"
 
     def __str__(self):
         return f"{self.observation_date}"
+    
+    def save(self, *args, **kwargs):
+        if 'observation_status' in self.__dict__:
+            del self.__dict__['observation_status']
+        if 'corrected_date' in self.__dict__:
+            del self.__dict__['corrected_date']
+        super().save(*args, **kwargs)
 
 
 class TrtPersons(models.Model):
@@ -1375,13 +1747,13 @@ class TrtPersons(models.Model):
         db_column="PERSON_ID", primary_key=True
     )  # Field name made lowercase.
     first_name = models.CharField(
-        db_column="FIRST_NAME", max_length=50
+        db_column="FIRST_NAME", max_length=50, db_index=True
     )  # Field name made lowercase.
     middle_name = models.CharField(
         db_column="MIDDLE_NAME", max_length=50, blank=True, null=True
     )  # Field name made lowercase.
     surname = models.CharField(
-        db_column="SURNAME", max_length=50, blank=True, null=True
+        db_column="SURNAME", max_length=50, blank=True, null=True, db_index=True
     )  # Field name made lowercase.
     specialty = models.CharField(
         db_column="SPECIALTY", max_length=255, blank=True, null=True
@@ -1480,8 +1852,14 @@ class TrtPitTags(models.Model):
     class Meta:
         managed = False
         db_table = "TRT_PIT_TAGS"
-        unique_together = (("pittag_id", "turtle"),)
+        constraints = [
+            models.UniqueConstraint(
+                fields=["pittag_id", "turtle"],
+                name="unique_pittag_id_turtle"
+            )
+        ]
         verbose_name = "Pit tag"
+        verbose_name_plural = "Pit tags"
         ordering = ["pittag_id"]
 
     def __str__(self):
@@ -1563,8 +1941,11 @@ class TrtPlaces(models.Model):
         db_table = "TRT_PLACES"
         ordering = ["place_name"]
 
+    def get_full_name(self):
+        return f"{self.place_name} ({self.location_code.location_name})"
+    
     def __str__(self):
-        return f"{self.location_code} - {self.place_name}"
+        return self.place_code
 
 
 class TrtRecordedIdentification(models.Model):
@@ -1618,7 +1999,11 @@ class TrtRecordedPitTags(models.Model):
     comments = models.CharField(
         db_column="COMMENTS", max_length=255, blank=True, null=True
     )  # Field name made lowercase.
-    turtle_id = models.IntegerField(db_column="TURTLE_ID")  # Field name made lowercase.
+    turtle_id = models.ForeignKey(
+        "TrtTurtles",
+        on_delete=models.CASCADE,
+        db_column="TURTLE_ID",
+        related_name="recorded_pittags",)  # Field name made lowercase.
     checked = models.BooleanField(db_column="Checked")  # Field name made lowercase.
 
     class Meta:
@@ -1830,8 +2215,14 @@ class TrtTags(models.Model):
     class Meta:
         managed = False
         db_table = "TRT_TAGS"
-        unique_together = (("tag_id", "turtle"),)
+        constraints = [
+            models.UniqueConstraint(
+                fields=["tag_id", "turtle"],
+                name="unique_tag_id_turtle"
+            )
+        ]
         verbose_name = "Flipper tag"
+        verbose_name_plural = "Flipper tags"
         ordering = [
             "tag_id",
         ]
@@ -1934,6 +2325,9 @@ class TrtTissueTypes(models.Model):
     class Meta:
         managed = False
         db_table = "TRT_TISSUE_TYPES"
+        
+    def __str__(self):
+        return self.description
 
 
 class TrtTurtles(models.Model):
@@ -1996,6 +2390,7 @@ class TrtTurtles(models.Model):
         managed = False
         db_table = "TRT_TURTLES"
         verbose_name = "Turtle"
+        verbose_name_plural = "Turtles"
         ordering = ["turtle_id"]
 
     def __str__(self):
@@ -2044,6 +2439,33 @@ class TrtYesNo(models.Model):
 
     def __str__(self):
         return f"{self.description}"
+
+SEX_CHOICES = [
+    ("M", "Male"),
+    ("F", "Female"),
+    ("I", "Indeterminate"),
+]
+class Template(models.Model):
+    template_id = models.AutoField(primary_key=True, db_column="TEMPLATE_ID")
+    name = models.CharField(max_length=255,db_column="NAME", unique=True)
+    location_code = models.CharField(max_length=50, db_column="LOCATIONS_CODE", blank=True, null=True)
+    place_code = models.CharField(max_length=50,db_column="PLACE_CODE", blank=True, null=True)
+    species_code = models.CharField(max_length=50, db_column="SPECIES_CODE", blank=True, null=True)
+    sex = models.CharField(max_length=1, choices=SEX_CHOICES, db_column="SEX", blank=True, null=True)
+
+    class Meta:
+        db_table = 'TRT_TEMPLATES'
+        
+    def __str__(self):
+        return self.name
+    
+    def clean(self):
+        if Template.objects.filter(name=self.name).exists():
+            raise ValidationError({'name': 'Template with this name already exists.'})
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
 
 
 # class Tbldamage(models.Model):
