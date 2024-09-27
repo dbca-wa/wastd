@@ -1,6 +1,6 @@
 from django import forms
 from easy_select2 import apply_select2
-from .models import TrtPersons, TrtDataEntry, TrtTags, TrtEntryBatches, TrtPlaces, TrtPitTags, Template, TrtObservations,TrtTagStates, TrtMeasurementTypes
+from .models import TrtPersons, TrtDataEntry, TrtTags, TrtEntryBatches, TrtPlaces, TrtPitTags, Template, TrtObservations,TrtTagStates, TrtMeasurementTypes,TrtYesNo
 from django_select2.forms import ModelSelect2Widget
 from django.core.validators import RegexValidator
 
@@ -271,6 +271,8 @@ class TrtDataEntryForm(forms.ModelForm):
             'placeholder': 'Enter name',
         })
         
+        nesting_choices = TrtYesNo.objects.filter(code__in=['N', 'P', 'Y'])
+        self.fields['nesting'].queryset = nesting_choices
 
         # Filter the queryset for measurement types
         filtered_measurement_types = TrtMeasurementTypes.objects.exclude(

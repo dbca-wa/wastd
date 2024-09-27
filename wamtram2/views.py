@@ -374,21 +374,10 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
                 if not turtle_id:
                     initial['species_code'] = template_data.get('species_code') or ""
                     initial['sex'] = template_data.get('sex') or ""
-                    
-                # if default_enterer and default_enterer != "None":
-                #     default_enterer_obj = TrtPersons.objects.filter(person_id=default_enterer).first()
-                #     if default_enterer_obj:
-                #         initial['entered_by_id'] = default_enterer
-                #         self.default_enterer_full_name = str(default_enterer_obj)
-                #     else:
-                #         self.default_enterer_full_name = None
-                # else:
-                #     self.default_enterer_full_name = None
+                
 
         if batch_id:
             initial["entry_batch"] = get_object_or_404(TrtEntryBatches, entry_batch_id=batch_id)
-            # if use_default_enterer and default_enterer:
-            #     initial['entered_by_id'] = default_enterer
 
         if turtle_id:
             turtle = get_object_or_404(TrtTurtles.objects.prefetch_related('trttags_set', 'trtpittags_set'), pk=turtle_id)
@@ -398,11 +387,21 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
 
         if entry_id:
             trtdataentry = get_object_or_404(TrtDataEntry, data_entry_id=entry_id)
+            
             measured_by = trtdataentry.measured_by
             recorded_by = trtdataentry.recorded_by
             tagged_by = trtdataentry.tagged_by
             entered_by = trtdataentry.entered_by
-
+            place_code = trtdataentry.place_code
+            
+            if place_code:
+                place = TrtPlaces.objects.filter(place_code=place_code).first()
+                if place:
+                    initial["place_code"] = place_code
+                    self.place_full_name = place.get_full_name()
+                else:
+                    self.place_full_name = ""
+            
             if measured_by:
                 first_name, last_name = measured_by.split(" ")
                 person = TrtPersons.objects.filter(first_name=first_name, surname=last_name).first()
@@ -410,7 +409,7 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
                     initial["measured_by_id"] = person.person_id
                     self.measured_by_full_name = measured_by
                 else:
-                    self.measured_by_full_name = None
+                    self.measured_by_full_name = ""
 
             if recorded_by:
                 first_name, last_name = recorded_by.split(" ")
@@ -419,7 +418,7 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
                     initial["recorded_by_id"] = person.person_id
                     self.recorded_by_full_name = recorded_by
                 else:
-                    self.recorded_by_full_name = None
+                    self.recorded_by_full_name = ""
 
             if tagged_by:
                 first_name, last_name = tagged_by.split(" ")
@@ -428,7 +427,7 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
                     initial["tagged_by_id"] = person.person_id
                     self.tagged_by_full_name = tagged_by
                 else:
-                    self.tagged_by_full_name = None
+                    self.tagged_by_full_name = ""
 
             if entered_by:
                 first_name, last_name = entered_by.split(" ")
@@ -437,7 +436,8 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
                     initial["entered_by_id"] = person.person_id
                     self.entered_by_full_name = entered_by
                 else:
-                    self.entered_by_full_name = None
+                    self.entered_by_full_name = ""
+
 
         return initial
 
@@ -529,8 +529,8 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
                 context["selected_template"] = str(batch.template.template_id)
             else:
                 context["selected_template"] = self.request.COOKIES.get(f'{cookies_key_prefix}_selected_template') or None
-            context["use_default_enterer"] = self.request.COOKIES.get(f'{cookies_key_prefix}_use_default_enterer', False)
-            context["default_enterer"] = self.request.COOKIES.get(f'{cookies_key_prefix}_default_enterer', '')
+            # context["use_default_enterer"] = self.request.COOKIES.get(f'{cookies_key_prefix}_use_default_enterer', False)
+            # context["default_enterer"] = self.request.COOKIES.get(f'{cookies_key_prefix}_default_enterer', '')
             # Add the tag id and tag type to the context data
             context["cookie_tag_id"] = self.request.COOKIES.get(f'{cookies_key_prefix}_tag_id')
             context["cookie_tag_type"] = self.request.COOKIES.get(f'{cookies_key_prefix}_tag_type')
@@ -544,6 +544,7 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
             context['recorded_by_full_name'] = getattr(self, 'recorded_by_full_name', '')
             context['tagged_by_full_name'] = getattr(self, 'tagged_by_full_name', '')
             context['entered_by_full_name'] = getattr(self, 'entered_by_full_name', '')
+            context['place_name'] = getattr(self, 'place_full_name', '')
 
         return context
 
@@ -564,6 +565,7 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
             except TrtPlaces.DoesNotExist:
                 return ""
         return ""
+
 
 class DeleteBatchView(LoginRequiredMixin, View):
 
@@ -899,6 +901,11 @@ class ObservationDetailView(LoginRequiredMixin, DetailView):
         context["tags"] = obj.trtrecordedtags_set.all()
         context["pittags"] = obj.trtrecordedpittags_set.all()
         context["measurements"] = obj.trtmeasurements_set.all()
+        
+        if obj.place_code:
+            context["place_full_name"] = obj.place_code.get_full_name()
+        else:
+            context["place_full_name"] = ""
         return context
 
 
