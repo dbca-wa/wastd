@@ -1147,32 +1147,19 @@ class ValidateTagView(View):
                         'status': tag_obj.tag_status.description
                     })
             else:
-                new_tag_entry = TrtDataEntry.objects.filter(
-                Q(new_left_tag_id__tag_id=tag) |
-                Q(new_left_tag_id_2__tag_id=tag) |
-                Q(new_right_tag_id__tag_id=tag) |
-                Q(new_right_tag_id_2__tag_id=tag)
-                ).order_by('-entry_batch__entry_date').first()
-                
-                if new_tag_entry:
+                actual_side = 'R'
+            
+            wrong_side = (actual_side.lower() != side.lower())
+            
+            return JsonResponse({
+                'valid': True, 
+                'wrong_side': wrong_side,
+                'message': 'Tag found in previous unprocessed entry',
+                'entry_date': new_tag_entry.entry_batch.entry_date.strftime('%Y-%m-%d')
+            })
+        else:
+            return JsonResponse({'valid': False, 'wrong_side': False, 'message': 'Tag not found', 'tag_not_found': True})
 
-                    if new_tag_entry.new_left_tag_id.tag_id == tag or new_tag_entry.new_left_tag_id_2.tag_id == tag:
-                        actual_side = 'left'
-                    else:
-                        actual_side = 'right'
-                    
-                    wrong_side = (actual_side.lower() != side.lower())
-                    
-                    return JsonResponse({
-                        'valid': True, 
-                        'wrong_side': wrong_side,
-                        'message': 'Tag found in previous unprocessed entry',
-                        'entry_date': new_tag_entry.entry_batch.entry_date.strftime('%Y-%m-%d')
-                    })
-                else:
-                    return JsonResponse({'valid': False, 'wrong_side': False, 'message': 'Tag not found', 'tag_not_found': True})
-        except TrtTurtles.DoesNotExist:
-            return JsonResponse({'valid': False, 'wrong_side': False, 'message': 'Turtle not found'})
 
 
     def validate_new_tag(self, request):
