@@ -18,13 +18,13 @@ from observations.models import (
 )
 from users.models import User
 
-
 class Command(BaseCommand):
     help = 'Runs automated QA/QC checks to flag records for manual curation as needed'
 
     def handle(self, *args, **options):
         logger = logging.getLogger('turtles')
         logger.info('Running automated QA/QC checks and flagging records for curation')
+        
         system_user = User.objects.get(pk=1)
         unknown_user = User.objects.get_or_create(name='Unknown user', username='unknown_user')[0]
 
@@ -44,7 +44,7 @@ class Command(BaseCommand):
             enc.flag(by=system_user, description='Flagged for curation by automated checks due to site containing "testing"')
             enc.save()
 
-        # Check: Any turtle nest encounter with uncertain species.cg
+        # Check: Any turtle nest encounter with uncertain species.
         nest_encounters = TurtleNestEncounter.objects.filter(species=TURTLE_SPECIES_DEFAULT, status=Encounter.STATUS_IMPORTED)
         if nest_encounters:
             logger.info(f'Flagging {nest_encounters.count()} turtle nest encounters for curation due to uncertain species')
@@ -96,7 +96,7 @@ class Command(BaseCommand):
 
         # Check: Any records with the following species at any of the following areas.
         # Species: Leatherback, Loggerhead, Olive Ridley
-        # Areas: Delambre Island, Thevenard Island, Port Hedland, Rosemary Island, Eco Beach, Barrow Island, Mundabullungana
+        # Areas: Delambre Island, Thevenard Island, Port Hedland, Rosemary Island, Eco Beach, Barrow Island, Mundabullangana
         localities = [
             "Delambre Island",
             "Thevenard Island",
@@ -188,7 +188,7 @@ class Command(BaseCommand):
         # Check: imported Turtle Nest Encounters with 'Unknown user' as the reporter.
         nest_encounters = TurtleNestEncounter.objects.filter(status=Encounter.STATUS_IMPORTED, reporter=unknown_user)
         if nest_encounters:
-            logger.info(f'Flagging {nest_encounters.count()} turtle nest encounters for curation: unknown reporter')
+            logger.info(f'Flagging {nest_encounters.count()} turtle nest encounters for curation due to unknown reporter')
         for enc in nest_encounters:
             enc.flag(by=system_user, description='Flagged for curation by automated checks due to unknown reporter')
             enc.save()
@@ -204,7 +204,7 @@ class Command(BaseCommand):
         # Check: imported Animal Encounters with 'Unknown user' as the reporter.
         animal_encounters = AnimalEncounter.objects.filter(status=Encounter.STATUS_IMPORTED, reporter=unknown_user)
         if animal_encounters:
-            logger.info(f'Flagging {animal_encounters.count()} animal encounters for curation: unknown reporter')
+            logger.info(f'Flagging {animal_encounters.count()} animal encounters for curation due to unknown reporter')
         for enc in animal_encounters:
             enc.flag(by=system_user, description='Flagged for curation by automated checks due to unknown reporter')
             enc.save()

@@ -1,7 +1,21 @@
 {% extends "base_wastd.html" %}
+{% load static %}
 {% load dict_filter %}
 
+{% block extra_style %}
+{{ block.super }}
+<link rel="stylesheet" type="text/css" href="{% static 'css/disabled_btn.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
+<style>
+    .highlight-row {
+        background-color: #f8d7da !important;
+    }
+</style>
+{% endblock %}
+
 {% block breadcrumbs %}
+<!-- Breadcrumb Navigation -->
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
@@ -9,99 +23,312 @@
 </nav>
 {% endblock %}
 
-
 {% block page_content_inner %}
-
-
-{% block pagination_row %}
-<div class="row" id="pagination-row">
-  <div class="col">
-  {% if is_paginated %}
-    {% load proper_paginate %}
-    {% load url_replace %}
-    <ul class="pagination">
-        {% if page_obj.number == 1 %}
-            <li class="page-item disabled"><span class="page-link">⇤</span></li>
-        {% else %}
-            <li class="page-item"><a class="page-link" href="?{% url_replace request 'page' 1 %}">⇤</a></li>
-        {% endif %}
-        {% if page_obj.has_previous %}
-            <li class="page-item"><a class="page-link" href="?{% url_replace request 'page' page_obj.previous_page_number %}">&laquo;</a></li>
-        {% else %}
-            <li class="page-item disabled""><span class="page-link">&laquo;</span></li>
-        {% endif %}
-        {% for i in paginator|proper_paginate:page_obj.number %}
-            {% if page_obj.number == i %}
-                <li class="page-item active"><span class="page-link">{{ i }} <span class="sr-only">(current)</span></span></li>
-            {% else %}
-                <li class="page-item"><a class="page-link" href="?{% url_replace request 'page' i %}">{{ i }}</a></li>
-            {% endif %}
-        {% endfor %}
-        {% if page_obj.has_next %}
-            <li class="page-item"><a class="page-link" href="?{% url_replace request 'page' page_obj.next_page_number %}">&raquo;</a></li>
-        {% else %}
-            <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
-        {% endif %}
-        {% if page_obj.number == paginator.num_pages %}
-            <li class="page-item disabled"><span class="page-link">⇥</span></li>
-        {% else %}
-            <li class="page-item"><a class="page-link" href="?{% url_replace request 'page' paginator.num_pages %}">⇥</a></li>
-        {% endif %}
-    </ul>
-{% endif %}
-   
-    {% if object_list %}
-
-        {% if object_count %}<div>Found {{ object_count }} records</div>{% endif %}
-        
-    {% endif %}
+    <!-- Action and Pagination Section -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <!-- Pagination Section -->
+        <div class="pagination-container"> 
+            {% if is_paginated %} 
+            {% load proper_paginate %}
+            {% load url_replace %}
+            <ul class="pagination mb-0">
+                {% if page_obj.number == 1 %}
+                <li class="page-item disabled">
+                    <span class="page-link">⇤</span>
+                </li>  
+                {% else %}
+                <li class="page-item">
+                    <a class="page-link" href="?{% url_replace request 'page' 1 %}">⇤</a>
+                </li> 
+                {% endif %} 
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?{% url_replace request 'page' page_obj.previous_page_number %}">&laquo;</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">&laquo;</span>
+                </li> 
+                {% endif %} 
+                {% for i in paginator|proper_paginate:page_obj.number %}
+                    {% if page_obj.number == i %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ i }}<span class="sr-only">(current)</span></span>
+                    </li>
+                    {% else %}
+                    <li class="page-item">
+                        <a class="page-link" href="?{% url_replace request 'page' i %}">{{ i }}</a>
+                    </li> 
+                    {% endif %}
+                {% endfor %}
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?{% url_replace request 'page' page_obj.next_page_number %}">&raquo;</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">&raquo;</span>
+                </li> 
+                {% endif %}
+                {% if page_obj.number == paginator.num_pages %}
+                <li class="page-item disabled">
+                    <span class="page-link">⇥</span>
+                </li>
+                {% else %}
+                <li class="page-item">
+                    <a class="page-link" href="?{% url_replace request 'page' paginator.num_pages %}">⇥</a>
+                </li>
+                {% endif %}  
+            </ul> 
+            {% endif %} 
+        </div>
+    
+        <!-- Export Buttons Section -->
+        <div class="d-flex align-items-center"> 
+            {% if request.user.is_superuser %}
+            <!-- Download Button Visible Only to Admins -->
+            <a href="{% url 'wamtram2:export_form' %}" class="btn btn-outline-secondary mr-3">
+                <i class="fas fa-download"></i> Export Data
+            </a>
+            
+            <!-- Dud Wrench Button -->
+            <a href="{% url 'wamtram2:dud_tag_manage' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-wrench"></i> Dud Tags
+            </a>
+            {% endif %} 
+        </div>
     </div>
-</div>
-{% endblock pagination_row %}
-<div class="d-flex justify-content-between align-items-center">
-    <a href="{% url 'wamtram2:new_batch_detail' %}" class="btn btn-primary">Create a new entry batch</a> 
-    <form method="get" class="form-inline">
-        <div class="form-group">
+    
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <!-- Create New Entry Batch Button Section-->
+        <a href="{% url 'wamtram2:new_batch_detail' %}" class="btn btn-primary" id="createNewBatchBtn">Create a new entry batch</a>
+        <!-- Filter Section -->
+        <form method="get" class="d-flex align-items-center form-inline">
+            <div class="form-group">
             <label class="mr-1" for="filter">Filter</label>
-            <select name="filter" class="form-control" onchange="this.form.submit()">
+            <select name="filter" class="form-control" id="filterSelect" onchange="this.form.submit()">
                 <option value="">All</option>
                 <option value="no_observation_id" {% if request.GET.filter == "no_observation_id" %}selected{% endif %}>Has unprocessed observations</option>
             </select>
+            </div>
+        </form>
+    </div>
+
+
+    <!-- Entry Batch List Table -->
+    {% if object_list %}
+    <div class="row mt-3">
+        <div class="col">
+            <table class="table table-striped table-bordered table-sm table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Date Entered</th>
+                        <th>Enterer</th>
+                        <th>Site</th>
+                        <th># of Records</th>
+                        <th># of Flagged Records</th>
+                        <th>Comments</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for batch in object_list %}
+                    <tr class="{% if batch.highlight_row %}highlight-row{% endif %}">
+                        <td>
+                            {% if request.GET.filter == "no_observation_id" %}
+                                <a href="{% url 'wamtram2:entry_batch_detail' batch.pk %}?filter=no_observation_id">
+                            {% else %}
+                                <a href="{% url 'wamtram2:entry_batch_detail' batch.pk %}">
+                            {% endif %}
+                                {{ batch.pk }}
+                            </a>
+                        </td>
+                        <td>{{ batch.entry_date|date:"j M Y" }}</td>
+                        <td>{{ batch.entered_person_id }}</td>
+                        <td>
+                            {% if batch.last_place_code_obj %}
+                                {{ batch.last_place_code_obj.get_full_name }}
+                            {% else %}
+                                {{ batch.last_place_code }}
+                            {% endif %}
+                        </td>
+                        <td>{{ batch.entry_count }}</td>
+                        <td>{{ batch.do_not_process_count }}</td>
+                        <td>{{ batch.comments }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                
+            </table>
         </div>
-    </form>
-</div>
-{% if object_list %}
-<div class="row mt-3">
-  <div class="col">
-    <table class="table table-striped table-bordered table-sm table-hover">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Date Entered</th>
-                <th>Enterer</th>
-                <th>comments</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for obj in object_list %}
-            <tr>
-                <td>{% if request.GET.filter == "no_observation_id" %}<a href="{% url 'wamtram2:entry_batch_detail' obj.pk %}?filter=no_observation_id">{% else %}<a href="{% url 'wamtram2:entry_batch_detail' obj.pk %}">{% endif %}{{ obj.pk }}</a></td>
-                <td>{{ obj.entry_date|date:"j M Y" }}</td>
-                <td>
-                    {{ obj.entered_person_id }}           
-                </td>
-                <td>{{ obj.comments}}</td>
-           
-        
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-  </div>
-</div>
-{% endif %}
+    </div>
+    {% endif %}
 
+    <!-- Loading Overlay -->
+    <div class="loading-overlay"></div>
 
+    <!-- Loading Spinner -->
+    <div class="loading-spinner">
+        <div class="spinner-border text-primary" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+
+    <!-- New Batch Modal -->
+    <div class="modal fade" id="newBatchModal" tabindex="-1" role="dialog" aria-labelledby="newBatchModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="newBatchModalLabel">Create New Batch</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Are you ready to create a new batch or add entry to an existing batch?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="createNewBatchConfirm">Create New Batch</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 {% endblock page_content_inner %}
 
+{% block extra_js %}
+{{ block.super }}
+<script>
+    function showLoadingMessage() {
+        // Add a loading message to the page
+        loadingMessageElement = document.createElement('div');
+        loadingMessageElement.textContent = 'Loading time might take around 40 seconds...';
+
+        loadingMessageElement.style.position = 'fixed';
+        loadingMessageElement.style.top = '80%';  
+        loadingMessageElement.style.left = '50%';  
+        loadingMessageElement.style.transform = 'translate(-50%, -80%)';
+        loadingMessageElement.style.padding = '10px 20px';
+        loadingMessageElement.style.backgroundColor = '#cce5ff';
+        loadingMessageElement.style.color = '#004085';
+        loadingMessageElement.style.border = '1px solid #b8daff';
+        loadingMessageElement.style.borderRadius = '5px';
+        loadingMessageElement.style.zIndex = '10001';
+        loadingMessageElement.style.pointerEvents = 'none';
+        document.body.appendChild(loadingMessageElement);
+    }
+    
+    function removeLoadingMessage() {
+        if (loadingMessageElement) {
+            loadingMessageElement.remove(); 
+        }
+    }
+    
+    window.addEventListener('load', function() {
+        const createNewBatchBtn = document.querySelector("#createNewBatchBtn");
+        const createNewBatchConfirm = document.querySelector("#createNewBatchConfirm");
+        const filterSelect = document.querySelector("#filterSelect");
+    
+        // Select all batch ID links in the table body and pagination links
+        const batchLinks = document.querySelectorAll('tbody a');
+        const paginationLinks = document.querySelectorAll('.pagination a');
+        
+        let loadingMessageElement;
+    
+        function showLoadingSpinner() {
+            const loadingSpinner = document.querySelector('.loading-spinner');
+            const loadingOverlay = document.querySelector('.loading-overlay');
+            if (loadingOverlay) {
+                loadingOverlay.style.display = 'block';
+            }
+            if (loadingSpinner) {
+                loadingSpinner.style.display = 'block';
+            }
+        }
+        
+        function hideLoadingSpinner() {
+            const loadingSpinner = document.querySelector('.loading-spinner');
+            const loadingOverlay = document.querySelector('.loading-overlay');
+            if (loadingOverlay) {
+                loadingOverlay.style.display = 'none';
+            }
+            if (loadingSpinner) {
+                loadingSpinner.style.display = 'none';
+            }
+        }
+        
+        function clickAndDisable(e) {
+            e.preventDefault();
+            let target = e.currentTarget;
+            target.onclick = null;
+            target.style.pointerEvents = "none";
+            target.classList.add('disabled');
+            showLoadingSpinner();
+        
+            setTimeout(function() {
+                window.location.href = target.href;
+            }, 100);
+        }
+    
+        function initializeLoadingSpinner() {
+            hideLoadingSpinner();
+        }
+        
+        initializeLoadingSpinner();
+        
+        // Attach event listeners to the Create New Batch button
+        if (createNewBatchBtn) {
+            createNewBatchBtn.addEventListener("click", function(e) {
+                e.preventDefault();
+                $('#newBatchModal').modal('show');
+            });
+        }
+    
+        // Attach event listener to the filter select dropdown
+        if (filterSelect) {
+            filterSelect.addEventListener("change", function() {
+                const selectedValue = filterSelect.value;
+                if (selectedValue === "no_observation_id") { 
+                    showLoadingMessage(); 
+                }
+                showLoadingSpinner();
+            });
+        }
+
+        if (createNewBatchConfirm) {
+            createNewBatchConfirm.addEventListener("click", function() {
+                $('#newBatchModal').modal('hide');
+                showLoadingSpinner();
+                window.location.href = "{% url 'wamtram2:new_batch_detail' %}";
+            });
+        }
+    
+        
+        // Attach event listeners to all batch ID links within the table body
+        batchLinks.forEach(link => {
+            link.addEventListener("click", clickAndDisable);
+        });
+        
+        // Attach event listeners to all pagination links
+        paginationLinks.forEach(link => {
+            link.addEventListener("click", clickAndDisable);
+        });
+    
+        // Remove loading message once the page is fully loaded
+        window.addEventListener('load', function() {
+            removeLoadingMessage();
+            hideLoadingSpinner();
+        });
+        
+        // Auto-refresh page when user navigates back
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+                window.location.reload();
+                hideLoadingSpinner();
+            }
+        });
+    });
+    
+</script>
+{% endblock %}
