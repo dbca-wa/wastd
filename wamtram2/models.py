@@ -1275,7 +1275,7 @@ class TrtEntryBatches(models.Model):
     template = models.ForeignKey(
         "Template",  
         models.SET_NULL,
-        db_column="template",
+        db_column="TEMPLATE",
         blank=True,
         null=True,
     )
@@ -2446,12 +2446,12 @@ SEX_CHOICES = [
     ("I", "Indeterminate"),
 ]
 class Template(models.Model):
-    template_id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=255, unique=True)
-    location_code = models.CharField(max_length=50, blank=True, null=True)
-    place_code = models.CharField(max_length=50, blank=True, null=True)
-    species_code = models.CharField(max_length=50, blank=True, null=True)
-    sex = models.CharField(max_length=1, choices=SEX_CHOICES, blank=True, null=True)
+    template_id = models.AutoField(primary_key=True, db_column="TEMPLATE_ID")
+    name = models.CharField(max_length=255,db_column="NAME", unique=True)
+    location_code = models.CharField(max_length=50, db_column="LOCATIONS_CODE", blank=True, null=True)
+    place_code = models.CharField(max_length=50,db_column="PLACE_CODE", blank=True, null=True)
+    species_code = models.CharField(max_length=50, db_column="SPECIES_CODE", blank=True, null=True)
+    sex = models.CharField(max_length=1, choices=SEX_CHOICES, db_column="SEX", blank=True, null=True)
 
     class Meta:
         db_table = 'TRT_TEMPLATES'
