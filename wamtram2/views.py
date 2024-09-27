@@ -1121,31 +1121,44 @@ class ValidateTagView(View):
                 turtle_id = int(turtle_id)
                 tag_obj = TrtTags.objects.filter(tag_id=tag).first()
 
-            if tag_obj:
-                if tag_obj.turtle_id != turtle_id:
-                    return JsonResponse({
-                        'valid': False, 
-                        'wrong_side': False, 
-                        'message': 'Tag belongs to another turtle', 
-                        'other_turtle_id': tag_obj.turtle_id,
-                        'status': tag_obj.tag_status.description
-                    })
-                else:
-                    if tag_obj.tag_status.tag_status != 'ATT':
+                if tag_obj:
+                    if tag_obj.turtle_id != turtle_id:
                         return JsonResponse({
-                            'valid': False,
-                            'wrong_side': False,
-                            'message': f'Tag status: {tag_obj.tag_status.description}',
+                            'valid': False, 
+                            'wrong_side': False, 
+                            'message': 'Tag belongs to another turtle', 
+                            'other_turtle_id': tag_obj.turtle_id,
                             'status': tag_obj.tag_status.description
                         })
-                    is_valid = True
-                    wrong_side = (tag_obj.side.lower() != side.lower())
-                    return JsonResponse({
-                        'valid': is_valid, 
-                        'wrong_side': wrong_side, 
-                        'other_turtle_id': None,
-                        'status': tag_obj.tag_status.description
-                    })
+                    else:
+                        if tag_obj.tag_status.tag_status != 'ATT':
+                            return JsonResponse({
+                                'valid': False,
+                                'wrong_side': False,
+                                'message': f'Tag status: {tag_obj.tag_status.description}',
+                                'status': tag_obj.tag_status.description
+                            })
+                        is_valid = True
+                        wrong_side = (tag_obj.side.lower() != side.lower())
+                        return JsonResponse({
+                            'valid': is_valid, 
+                            'wrong_side': wrong_side, 
+                            'other_turtle_id': None,
+                            'status': tag_obj.tag_status.description
+                        })
+            except TrtTurtles.DoesNotExist:
+                    return JsonResponse({'valid': False, 'wrong_side': False, 'message': 'Turtle not found'})
+
+        new_tag_entry = TrtDataEntry.objects.filter(
+            Q(new_left_tag_id__tag_id=tag) |
+            Q(new_left_tag_id_2__tag_id=tag) |
+            Q(new_right_tag_id__tag_id=tag) |
+            Q(new_right_tag_id_2__tag_id=tag)
+        ).order_by('-entry_batch__entry_date').first()
+                
+        if new_tag_entry:
+            if new_tag_entry.new_left_tag_id.tag_id == tag or new_tag_entry.new_left_tag_id_2.tag_id == tag:
+                actual_side = 'L'
             else:
                 actual_side = 'R'
             
@@ -1263,7 +1276,10 @@ class ValidateTagView(View):
                             'message': f'PIT tag status: {pit_tag.pit_tag_status.description}',
                             'status': pit_tag.pit_tag_status.description
                         })
-                    return JsonResponse({'valid': True})
+                    else:
+                        return JsonResponse({'valid': True})
+                else:
+                    return JsonResponse({'valid': False, 'message': 'PIT tag not found'})
             else:
                 new_pit_tag_entry = TrtDataEntry.objects.filter(
                 Q(new_pittag_id__pittag_id=tag) |
