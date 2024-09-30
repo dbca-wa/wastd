@@ -1362,7 +1362,7 @@ class TrtLocations(models.Model):
 
     @staticmethod
     def get_ordered_locations():
-        priority_codes = ['BW', 'CD', 'CL', 'DA', 'DH', 'LA', 'LO', 'MN', 'RI', 'TH', 'VA', 'WK', 'PH']
+        priority_codes = ['BW', 'CL', 'DA', 'DH', 'LO', 'MN', 'RI', 'TH', 'VA', 'WK', 'PH']
 
         custom_order = Case(
             *[When(location_code=code, then=Value(i)) for i, code in enumerate(priority_codes)],
