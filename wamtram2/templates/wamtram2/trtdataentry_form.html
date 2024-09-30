@@ -1250,6 +1250,13 @@
           event.preventDefault();
   
           let summaryHTML = '<ul>';
+
+          const tag_fields = [
+          'recapture_left_tag_id', 'recapture_left_tag_id_2', 'recapture_left_tag_id_3',
+          'recapture_right_tag_id', 'recapture_right_tag_id_2', 'recapture_right_tag_id_3',
+          'new_left_tag_id', 'new_left_tag_id_2', 'new_right_tag_id', 'new_right_tag_id_2',
+          'dud_filpper_tag', 'dud_filpper_tag_2'
+          ];
   
           form.querySelectorAll('input, select, textarea').forEach(input => {
               if (input.type !== 'hidden') {
@@ -1265,6 +1272,9 @@
                       }
                   } else if (input.tagName.toLowerCase() === 'select') {
                       inputValue = input.selectedOptions[0].textContent.trim();
+                  }
+                  if (tag_fields.includes(inputId.replace('id_', ''))) {
+                    inputValue = inputValue.toUpperCase();
                   }
   
                   if (inputValue !== '' && inputValue !== '---------') {

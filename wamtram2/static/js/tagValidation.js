@@ -98,7 +98,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function validateTag(tagInput, validationMessage, detailedMessage, type, side) {
         const turtleId = turtleIdInput ? turtleIdInput.value : null;
-        const tagId = tagInput ? tagInput.value : null;
+        let tagId = tagInput ? tagInput.value.trim().toUpperCase() : null;
+
+        tagInput.value = tagId;
     
         tagInput.classList.remove('is-valid', 'is-invalid', 'is-warning');
     
