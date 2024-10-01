@@ -65,7 +65,7 @@
             <a id="createForUntaggedTurtle" href="{% url 'wamtram2:newtrtdataentry' batch_id=form.batch_id.value %}" class="btn btn-primary">Create New Untagged Turtle</a>
           </div>
           <div class="text-center mt-4">or</div>
-          <h5 class="text-center mt-4">Search for a Tagged Turtle</h5>
+          <h5 class="text-center mt-4">Create for a Tagged Turtle</h5>
           <form method="post" class="w-50 mx-auto text-center mt-3" id="searchForm">
             {% csrf_token %}
             <div class="form-group">

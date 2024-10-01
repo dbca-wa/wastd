@@ -140,7 +140,14 @@
       {% bootstrap_field form.entry_batch %}
       </div>
       <div class="col-md-6">
-      <h5>Turtle ID: {% if form.turtle_id.value %} <a href="{% url 'wamtram2:turtle_detail' form.turtle_id.value %}">{{ form.turtle_id.value }}</a> {% endif %} </h5>
+        <h5>
+          Turtle ID: 
+          {% if form.turtle_id.value %}
+            <a href="{% url 'wamtram2:turtle_detail' form.turtle_id.value %}">{{ form.turtle_id.value }}</a>
+          {% else %}
+          <span style="color: red; font-weight: bold;">UNTAGGED TURTLE</span>
+          {% endif %}
+        </h5>
       {% bootstrap_field form.turtle_id %}
       </div>
 </div>
@@ -239,9 +246,16 @@
     </div>
   </div>
   <!-- Second part: Tags -->
-  <div class="card border-dark mb-3">
+  <div class="card border-dark mb-3" {% if not form.turtle_id.value %}style="background-color: #e6f3ff;"{% endif %}>
     <div class="card-header"><strong>Tags</strong></div>
     <div class="card-body">
+      {% if not form.turtle_id.value %}
+      <div class="row mb-3">
+        <div class="col-12">
+          <h5><span style="color: red; font-weight: bold;">Untagged turtle</span></h5>
+        </div>
+      </div>
+      {% endif %}
       <!-- Flipper Tags Section -->
       <section class="container-fluid mt-5">
           <div class="row">

@@ -142,9 +142,13 @@ document.addEventListener('DOMContentLoaded', function() {
                         setValidationStatus(tagInput, validationMessage, detailedMessage, 'invalid', '✗ Invalid tag:', `Tag status - ${data.status}`);
                         doNotProcessField.checked = true;
                     } else if (data.tag_not_found) {
-                        setValidationStatus(tagInput, validationMessage, detailedMessage, 'invalid', '✗ Invalid tag: Tag not found (Please remove it from here and add it to the comment area)');
-                        doNotProcessField.checked = true;
-                        
+                        if(turtleId){
+                            setValidationStatus(tagInput, validationMessage, detailedMessage, 'invalid', '✗ Invalid tag: Tag not found (Please remove it from here and add it to the comment area)');
+                            doNotProcessField.checked = true;
+                        }else{
+                            setValidationStatus(tagInput, validationMessage, detailedMessage, 'invalid', '? Untagged turtle with old tag');
+                            doNotProcessField.checked = true;
+                        }
                     } else {
                         setValidationStatus(tagInput, validationMessage, detailedMessage, 'invalid', '✗ Invalid tag');
                         doNotProcessField.checked = true;
