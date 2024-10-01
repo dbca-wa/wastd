@@ -1801,12 +1801,24 @@ def quick_add_batch(request):
         comments = request.POST.get('comments', '')
         template_id = request.POST.get('template')
         entered_person_id = request.POST.get('entered_person_id')
+        location_code = request.POST.get('location_code')
         
-        entered_person = get_object_or_404(TrtPersons, pk=entered_person_id)
+        if entered_person_id:
+            try:
+                entered_person = TrtPersons.objects.get(pk=entered_person_id)
+            except TrtPersons.DoesNotExist:
+                return JsonResponse({'success': False, 'error': 'Invalid entered person ID.'})
+        else:
+            entered_person = None 
         
         template = None
         if template_id:
             template = get_object_or_404(Template, pk=template_id)
+            
+        try:
+            location = TrtLocations.objects.get(location_code=location_code)
+        except TrtLocations.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Invalid location code.'})
 
         batch = TrtEntryBatches.objects.create(
             batches_code=batches_code,
@@ -1814,7 +1826,8 @@ def quick_add_batch(request):
             entry_date=timezone.now(),
             pr_date_convention=False,
             entered_person_id=entered_person,
-            template=template
+            template=template,
+            location=location
         )
         try:
             batch.save()
