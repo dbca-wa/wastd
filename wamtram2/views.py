@@ -1815,10 +1815,6 @@ def quick_add_batch(request):
         if template_id:
             template = get_object_or_404(Template, pk=template_id)
             
-        try:
-            location = TrtLocations.objects.get(location_code=location_code)
-        except TrtLocations.DoesNotExist:
-            return JsonResponse({'success': False, 'error': 'Invalid location code.'})
 
         batch = TrtEntryBatches.objects.create(
             batches_code=batches_code,
@@ -1826,8 +1822,7 @@ def quick_add_batch(request):
             entry_date=timezone.now(),
             pr_date_convention=False,
             entered_person_id=entered_person,
-            template=template,
-            location=location
+            template=template
         )
         try:
             batch.save()
