@@ -3,6 +3,7 @@ from easy_select2 import apply_select2
 from .models import TrtPersons, TrtDataEntry, TrtTags, TrtEntryBatches, TrtPlaces, TrtPitTags, Template, TrtObservations,TrtTagStates, TrtMeasurementTypes,TrtYesNo,TrtSpecies
 from django_select2.forms import ModelSelect2Widget
 from django.core.validators import RegexValidator
+from django.db.models import Case, When, IntegerField
 
 
 tagWidget = ModelSelect2Widget(
@@ -286,19 +287,36 @@ class TrtDataEntryForm(forms.ModelForm):
             self.fields[field_name].queryset = filtered_measurement_types
 
         
+        tag_state_order = ["A1", "AE", "#"]
+        
+        tag_state_order_case = Case(
+            *[When(tag_state=state, then=pos) for pos, state in enumerate(tag_state_order)],
+            default=len(tag_state_order),
+            output_field=IntegerField()
+        )
+        
         # Filter the queryset for new tag fields
         new_tag_states = TrtTagStates.objects.filter(
-            tag_state__in=["A1", "AE", "#"]
-        )
+            tag_state__in=tag_state_order
+        ).order_by(tag_state_order_case)
+        
         self.fields['new_left_tag_state'].queryset = new_tag_states
         self.fields['new_right_tag_state'].queryset = new_tag_states
         self.fields['new_left_tag_state_2'].queryset = new_tag_states
         self.fields['new_right_tag_state_2'].queryset = new_tag_states
 
         # Filter the queryset for recapture (old) tag fields
-        old_tag_states = TrtTagStates.objects.filter(
-            tag_state__in=[ "#", "R", "RC", "OO", "P", "P_OK"]
+        old_tag_state_order = ["P_OK","P", "RC", "OO", "R", "#"]
+        
+        old_tag_state_order_case = Case(
+            *[When(tag_state=state, then=pos) for pos, state in enumerate(old_tag_state_order)],
+            default=len(old_tag_state_order),
+            output_field=IntegerField()
         )
+        
+        old_tag_states = TrtTagStates.objects.filter(
+            tag_state__in=old_tag_state_order
+        ).order_by(old_tag_state_order_case)
         
         self.fields['recapture_left_tag_state'].queryset = old_tag_states
         self.fields['recapture_right_tag_state'].queryset = old_tag_states
