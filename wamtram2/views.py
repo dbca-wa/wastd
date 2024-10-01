@@ -1161,16 +1161,24 @@ class ValidateTagView(View):
             Q(new_left_tag_id__tag_id=tag) |
             Q(new_left_tag_id_2__tag_id=tag) |
             Q(new_right_tag_id__tag_id=tag) |
-            Q(new_right_tag_id_2__tag_id=tag)
+            Q(new_right_tag_id_2__tag_id=tag),
+            observation_id__isnull=True,
+            turtle_id__isnull=True
         ).order_by('-entry_batch__entry_date').first()
                 
         if new_tag_entry:
-            if new_tag_entry.new_left_tag_id.tag_id == tag or new_tag_entry.new_left_tag_id_2.tag_id == tag:
+            actual_side = None
+            if new_tag_entry.new_left_tag_id and new_tag_entry.new_left_tag_id.tag_id == tag:
                 actual_side = 'L'
-            else:
+            elif new_tag_entry.new_left_tag_id_2 and new_tag_entry.new_left_tag_id_2.tag_id == tag:
+                actual_side = 'L'
+            elif new_tag_entry.new_right_tag_id and new_tag_entry.new_right_tag_id.tag_id == tag:
                 actual_side = 'R'
-            
-            wrong_side = (actual_side.lower() != side.lower())
+            elif new_tag_entry.new_right_tag_id_2 and new_tag_entry.new_right_tag_id_2.tag_id == tag:
+                actual_side = 'R'
+                
+            if actual_side:
+                wrong_side = (actual_side.lower() != side.lower())
             
             return JsonResponse({
                 'valid': True, 
@@ -1294,6 +1302,8 @@ class ValidateTagView(View):
                 Q(new_pittag_id_2__pittag_id=tag) |
                 Q(new_pittag_id_3__pittag_id=tag) |
                 Q(new_pittag_id_4__pittag_id=tag),
+                observation_id__isnull=True,
+                turtle_id__isnull=True
                 ).order_by('-entry_batch__entry_date').first()
                 
                 if new_pit_tag_entry:
