@@ -144,7 +144,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     } else if (data.tag_not_found) {
                         setValidationStatus(tagInput, validationMessage, detailedMessage, 'invalid', '✗ Invalid tag: Tag not found (Please remove it from here and add it to the comment area)');
                         doNotProcessField.checked = true;
-                        
                     } else {
                         setValidationStatus(tagInput, validationMessage, detailedMessage, 'invalid', '✗ Invalid tag');
                         doNotProcessField.checked = true;
