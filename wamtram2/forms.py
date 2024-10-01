@@ -522,16 +522,16 @@ class TrtDataEntryForm(forms.ModelForm):
         cleaned_data = super().clean()
         do_not_process = cleaned_data.get("do_not_process")
         
-        tag_fields = [
-            'recapture_left_tag_id', 'recapture_left_tag_id_2', 'recapture_left_tag_id_3',
-            'recapture_right_tag_id', 'recapture_right_tag_id_2', 'recapture_right_tag_id_3',
-            'new_left_tag_id', 'new_left_tag_id_2', 'new_right_tag_id', 'new_right_tag_id_2',
-            'dud_filpper_tag', 'dud_filpper_tag_2'
-        ]
+        # tag_fields = [
+        #     'recapture_left_tag_id', 'recapture_left_tag_id_2', 'recapture_left_tag_id_3',
+        #     'recapture_right_tag_id', 'recapture_right_tag_id_2', 'recapture_right_tag_id_3',
+        #     'new_left_tag_id', 'new_left_tag_id_2', 'new_right_tag_id', 'new_right_tag_id_2',
+        #     'dud_filpper_tag', 'dud_filpper_tag_2'
+        # ]
         
-        for field in tag_fields:
-            if cleaned_data.get(field):
-                cleaned_data[field] = cleaned_data[field].upper()
+        # for field in tag_fields:
+        #     if cleaned_data.get(field):
+        #         cleaned_data[field] = cleaned_data[field].upper()
 
         if do_not_process:
             return cleaned_data

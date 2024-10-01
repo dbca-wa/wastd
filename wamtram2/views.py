@@ -1117,7 +1117,7 @@ class ValidateTagView(View):
             JsonResponse: The JSON response.
         """
         turtle_id = request.GET.get('turtle_id')
-        tag = request.GET.get('tag', '').upper()
+        tag = request.GET.get('tag', '')
         side = request.GET.get('side')
 
         print(turtle_id, tag, side)
@@ -1193,7 +1193,7 @@ class ValidateTagView(View):
         Returns:
             JsonResponse: The JSON response.
         """
-        tag = request.GET.get('tag', '').upper()
+        tag = request.GET.get('tag', '')
         if not tag:
             return JsonResponse({'valid': False, 'message': 'Missing tag parameter'})
 
