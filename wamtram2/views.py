@@ -1881,9 +1881,7 @@ def search_templates(request):
     query = request.GET.get('q', '')
     if len(query) >= 2:
         templates = Template.objects.filter(
-            Q(name__icontains=query) | 
-            Q(location_code__location_name__icontains=query) |
-            Q(place_code__place_name__icontains=query)
+            Q(name__icontains=query)
         )[:10]
         data = [{'template_id': t.template_id, 'name': t.name} for t in templates]
         return JsonResponse(data, safe=False)
