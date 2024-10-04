@@ -1445,6 +1445,22 @@
 
     updateDoNotProcess();
   });
+  document.addEventListener('DOMContentLoaded', function() {
+    var latitudeInput = document.getElementById('{{ form.latitude.id_for_label }}');
+    
+    if (latitudeInput.value.startsWith('-')) {
+      latitudeInput.value = latitudeInput.value.substring(1);
+    }
+    
+    latitudeInput.addEventListener('input', function(e) {
+      this.value = this.value.replace(/-/g, '');
+    });
+    
+    document.querySelector('form').addEventListener('submit', function(e) {
+      latitudeInput.value = '-' + latitudeInput.value;
+    });
+  });
 </script>
+
 {% endblock %}
 
