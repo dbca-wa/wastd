@@ -1452,13 +1452,16 @@
       latitudeInput.value = latitudeInput.value.substring(1);
     }
     
-    latitudeInput.addEventListener('input', function(e) {
-      this.value = this.value.replace(/-/g, '');
+    latitudeInput.addEventListener('blur', removeNegativeSign);
+    latitudeInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        removeNegativeSign.call(this);
+      }
     });
     
-    document.querySelector('form').addEventListener('submit', function(e) {
-      latitudeInput.value = '-' + latitudeInput.value;
-    });
+    function removeNegativeSign() {
+      this.value = this.value.replace(/^-/, '');
+    }
   });
 </script>
 
