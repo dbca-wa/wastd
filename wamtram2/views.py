@@ -1921,6 +1921,9 @@ class BatchCodeManageView(View):
             entered_person = batch.entered_person_id
             entered_person_full_name = str(entered_person) if entered_person else ''
             entered_person_id = entered_person.person_id if entered_person else ''
+            template = batch.template
+            template_name = template.name if template else ''
+            template_id = template.template_id if template else ''
         else:
             form = BatchesCodeForm()
             entered_person_full_name = ''
@@ -1932,7 +1935,6 @@ class BatchCodeManageView(View):
         templates = Template.objects.all()
 
         entered_person_full_name = str(form.instance.entered_person_id) if form.instance.entered_person_id else ''
-        template_selected = form.instance.template.template_id if form.instance.template else None
         context = {
             'form': form,
             'locations': locations,
@@ -1942,7 +1944,8 @@ class BatchCodeManageView(View):
             'batch_id': batch_id,
             'entered_person_full_name': entered_person_full_name,
             'entered_person_id': entered_person_id,
-            'template_selected': template_selected,
+            'template_name': template_name,
+            'template_id': template_id,
         }
         return render(request, self.template_name, context)
 

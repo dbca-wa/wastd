@@ -133,8 +133,9 @@
             <div class="form-group">
                 <label for="template">{{ form.template.label }}</label>
                 <div class="search-container">
-                    <input type="text" id="templateSearch" class="search-field form-control" placeholder="搜索模板" autocomplete="off" value="{{ form.initial.template.name|default:'' }}">
-                    <input type="hidden" id="templateId" name="template" value="{{ form.initial.template.template_id|default:'' }}">
+                    <input type="text" id="templateSearch" class="search-field form-control" placeholder="Search Template" autocomplete="off" value="{{ template_name|default:'' }}">
+                    <input type="hidden" id="templateId" name="template" value="{{ template_id|default:'' }}">
+                    
                     <div id="templateSearchResults" class="search-results"></div>
                 </div>
             </div>
