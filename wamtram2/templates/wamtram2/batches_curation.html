@@ -219,6 +219,7 @@
                     <div class="form-group">
                         <label for="quickAddYear">Year (required)</label>
                         <select class="form-control" id="quickAddYear" name="year" required>
+                            <option value="">Select Year</option>
                             {% for year in years %}
                                 <option value="{{ year }}">{{ year }}</option>
                             {% endfor %}
@@ -251,7 +252,7 @@
                             <div id="searchResults" class="search-results"></div>
                         </div>
                     </div>
-                    <div class="form-group">
+                    {% comment %} <div class="form-group">
                         <label for="quickAddTemplate">Template (optional)</label>
                         <select class="form-control" id="quickAddTemplate" name="template">
                             <option value="">Select Template</option>
@@ -259,6 +260,14 @@
                                 <option value="{{ template.template_id }}">{{ template.name }}</option>
                             {% endfor %}
                         </select>
+                    </div> {% endcomment %}
+                    <div class="form-group">
+                        <label for="quickAddTemplate">Template (optional)</label>
+                        <div class="search-container">
+                            <input type="text" id="quickAddTemplate" class="form-control search-field" placeholder="搜索模板" autocomplete="off">
+                            <input type="hidden" id="quickAddTemplateId" name="template">
+                            <div id="templateSearchResults" class="search-results"></div>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -302,6 +311,45 @@
                 defaultDate: null     // No default date
             });
         }
+
+        // Search for templates
+        $('#quickAddTemplate').on('input', function() {
+            var searchTerm = $(this).val();
+            if (searchTerm.length >= 2) {
+                $.ajax({
+                    url: "{% url 'wamtram2:search_templates' %}",
+                    data: { 'q': searchTerm },
+                    dataType: 'json',
+                    success: function(data) {
+                        var results = $('#templateSearchResults');
+                        results.empty();
+                        if (data.length > 0) {
+                            results.show();
+                            data.forEach(function(template) {
+                                var div = $('<div class="search-result"></div>');
+                                div.text(template.name);
+                                div.on('click', function() {
+                                    $('#quickAddTemplate').val(template.name);
+                                    $('#quickAddTemplateId').val(template.template_id);
+                                    results.hide();
+                                });
+                                results.append(div);
+                            });
+                        } else {
+                            results.hide();
+                        }
+                    }
+                });
+            } else {
+                $('#templateSearchResults').hide();
+            }
+        });
+
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('.search-container').length) {
+                $('#templateSearchResults').hide();
+            }
+        });
 
         // Override the default form submission to handle Flatpickr date format
         $('#quickAddBatchForm').submit(function(e) {

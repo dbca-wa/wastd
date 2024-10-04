@@ -57,21 +57,24 @@
             {% csrf_token %}
             <div class="col-md-3">
                 <label for="location_code">Location (required)</label>
-                <select class="form-control" id="location_code" name="location_code">
+                <select class="form-control" id="location_code" name="location_code" required>
+                    <option value="">Select Location</option>
                     {% for location in locations %}
                         <option value="{{ location.location_code }}">{{ location.location_name }}</option>
                     {% endfor %}
                 </select>
             </div>
             <div class="col-md-3">
-                <label for="place_code">Place (required)</label>
+                <label for="place_code">Place (optional)</label>
                 <select class="form-control" id="place_code" name="place_code">
+                    <option value="">Select Place</option>
                     <!-- Will be populated dynamically by JavaScript -->
                 </select>
             </div>
             <div class="col-md-2">
                 <label for="year">Year (required)</label>
-                <select class="form-control" id="year" name="year">
+                <select class="form-control" id="year" name="year" required>
+                    <option value="">Select Year</option>
                     {% for year, short_year in years.items %}
                         <option value="{{ short_year }}" {% if year == current_year|stringformat:"s" %}selected{% endif %}>{{ year }}</option>
                     {% endfor %}
