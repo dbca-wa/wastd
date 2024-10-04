@@ -1843,7 +1843,6 @@ def quick_add_batch(request):
         comments = request.POST.get('comments', '')
         template_id = request.POST.get('template')
         entered_person_id = request.POST.get('entered_person_id')
-        location_code = request.POST.get('location_code')
         
         if entered_person_id:
             try:
@@ -1855,7 +1854,10 @@ def quick_add_batch(request):
         
         template = None
         if template_id:
-            template = get_object_or_404(Template, pk=template_id)
+            try:
+                template = Template.objects.get(pk=template_id)
+            except Template.DoesNotExist:
+                return JsonResponse({'success': False, 'error': 'Invalid template ID.'})
             
 
         batch = TrtEntryBatches.objects.create(
@@ -1874,6 +1876,18 @@ def quick_add_batch(request):
     else:
         return JsonResponse({'success': False, 'error': 'Invalid request method.'})
 
+    
+def search_templates(request):
+    query = request.GET.get('q', '')
+    if len(query) >= 2:
+        templates = Template.objects.filter(
+            Q(name__icontains=query) | 
+            Q(location_code__location_name__icontains=query) |
+            Q(place_code__place_name__icontains=query)
+        )[:10]
+        data = [{'template_id': t.template_id, 'name': t.name} for t in templates]
+        return JsonResponse(data, safe=False)
+    return JsonResponse([], safe=False)
     
 class BatchCodeManageView(View):
     template_name = 'wamtram2/add_batches_code.html'
