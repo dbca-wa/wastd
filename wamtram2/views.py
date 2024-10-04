@@ -448,7 +448,8 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         if do_not_process_cookie_value == 'true':
             form.instance.do_not_process = True
         entry = form.save()
-        success_url = reverse("wamtram2:find_turtle", args=[batch_id])
+        #success_url = reverse("wamtram2:find_turtle", args=[batch_id])
+        success_url = FindTurtleView.get_clear_cookies_url(batch_id)
         
         if form.instance.do_not_process:
             message = f"Entry created successfully and will be reviewed later. Please write the Entry ID: {entry.data_entry_id} on the data sheet"
@@ -716,6 +717,20 @@ class FindTurtleView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         batch_id = kwargs.get("batch_id")
         form = SearchForm(initial={"batch_id": batch_id})
+        
+        clear_cookies = request.GET.get('clear_cookies', 'false') == 'true'
+    
+        if clear_cookies:
+            response = render(request, "wamtram2/find_turtle.html", {
+                "form": form,
+                "batch_id": batch_id,
+                "batch": TrtEntryBatches.objects.filter(entry_batch_id=batch_id).first(),
+                "template_name": "No template associated",
+            })
+            self.clear_search_cookies(response, batch_id)
+            return response
+            
+        
         no_turtle_found = request.COOKIES.get(f'{batch_id}_no_turtle_found') == "true"
         tag_id = request.COOKIES.get(f'{batch_id}_tag_id')
         tag_type = request.COOKIES.get(f'{batch_id}_tag_type')
@@ -735,7 +750,9 @@ class FindTurtleView(LoginRequiredMixin, View):
                 Q(new_pittag_id__pittag_id=tag_id) |
                 Q(new_pittag_id_2__pittag_id=tag_id) |
                 Q(new_pittag_id_3__pittag_id=tag_id) |
-                Q(new_pittag_id_4__pittag_id=tag_id)
+                Q(new_pittag_id_4__pittag_id=tag_id),
+                observation_id__isnull=True,
+                turtle_id__isnull=True
             ).select_related('entry_batch', 'place_code', 'species_code').order_by('-entry_batch__entry_date').first()
 
         if batch_id:
@@ -775,8 +792,22 @@ class FindTurtleView(LoginRequiredMixin, View):
             "template_name": template_name,
             "new_tag_entry": new_tag_entry,
         })
+        
+    def clear_search_cookies(self, response, batch_id):
+        cookies_to_clear = [
+            f'{batch_id}_tag_id',
+            f'{batch_id}_tag_type',
+            f'{batch_id}_tag_side',
+            f'{batch_id}_no_turtle_found',
+            f'{batch_id}_do_not_process'
+        ]
+        for cookie_name in cookies_to_clear:
+            response.delete_cookie(cookie_name)
 
-
+    @staticmethod
+    def get_clear_cookies_url(batch_id):
+        return reverse("wamtram2:find_turtle", args=[batch_id]) + '?clear_cookies=true'
+    
     def set_cookie(self, response, batch_id, tag_id=None, tag_type=None, tag_side=None, no_turtle_found=False, do_not_process=False):
         if tag_id:
             response.set_cookie(f'{batch_id}_tag_id', tag_id, max_age=63072000)
@@ -886,6 +917,7 @@ class FindTurtleView(LoginRequiredMixin, View):
             })
 
         return self.set_cookie(response, batch_id, tag_id, tag_type, tag_side)
+    
     
 class ObservationDetailView(LoginRequiredMixin, DetailView):
     model = TrtObservations

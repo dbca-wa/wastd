@@ -346,5 +346,25 @@
     }
     {% endif %}
   });
+
+    document.addEventListener('DOMContentLoaded', function() {
+      function clearFormAndResults() {
+        document.getElementById('searchForm').reset();
+        document.getElementById('tag-suggestion').style.display = 'none';
+        document.getElementById('exact-match-prompt').style.display = 'none';
+      }
+  
+      window.addEventListener('pageshow', function(event) {
+        if (event.persisted) {
+          clearFormAndResults();
+        }
+      });
+  
+      var urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('clear_cookies') === 'true') {
+        clearFormAndResults();
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+    });
 </script>
 {% endblock %}
