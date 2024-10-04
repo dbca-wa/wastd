@@ -306,7 +306,7 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields['new_right_tag_state_2'].queryset = new_tag_states
 
         # Filter the queryset for recapture (old) tag fields
-        old_tag_state_order = ["P_OK","P", "RC", "OO", "R", "#"]
+        old_tag_state_order = ["P_OK","P", "RC", "RN", "OO", "R", "#"]
         
         old_tag_state_order_case = Case(
             *[When(tag_state=state, then=pos) for pos, state in enumerate(old_tag_state_order)],
