@@ -1057,8 +1057,14 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
         context["page_title"] = f"{settings.SITE_CODE} | WAMTRAM2 | {obj.pk}"
         context["tags"] = obj.trttags_set.all()
         context["pittags"] = unique_pittags
-        context["observations"] = obj.trtobservations_set.all()
+        context["observations"] = obj.trtobservations_set.annotate(
+            observation_date_as_datetime=Cast('observation_date', DateTimeField())
+        ).all()
+        
         return context
+
+
+
 
 SEX_CHOICES = [
     ("M", "Male"),

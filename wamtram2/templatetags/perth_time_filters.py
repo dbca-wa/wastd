@@ -6,6 +6,8 @@ register = template.Library()
 
 @register.filter(name='perth_time')
 def perth_time(value):
+    print(value)
+    print(type(value))
     if isinstance(value, timezone.datetime):
         return value - timedelta(hours=8)
     return value

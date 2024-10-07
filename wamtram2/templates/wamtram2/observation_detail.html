@@ -15,7 +15,7 @@
 {% block page_content_inner %}
 <div class="row">
     <div class="col-xs-12 col-sm-6">
-        <h2>Observation {{ object.observation_date_as_datetime|perth_time }}</h2>
+        <h2>Observation {{ object.observation_date_as_datetime|perth_time|datetime "j M Y H:i" }}</h2>
     </div>
 </div>
 <div class="row">
