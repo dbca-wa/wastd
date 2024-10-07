@@ -29,6 +29,8 @@ import json
 import csv
 from django.core.exceptions import ValidationError
 from datetime import timedelta
+from django.db.models.functions import Cast
+from django.db.models import DateTimeField
 
 
 from wastd.utils import Breadcrumb, PaginateMixin
@@ -198,7 +200,9 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
         else:
             queryset = queryset.filter(entry_batch_id=batch_id)
             
-        return queryset.select_related('observation_id').order_by("-data_entry_id")
+        return queryset.select_related('observation_id').annotate(
+            observation_date_as_datetime=Cast('observation_date', DateTimeField())
+        ).order_by("-data_entry_id")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

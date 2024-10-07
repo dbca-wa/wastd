@@ -1,6 +1,7 @@
 {% extends "base_wastd.html" %}
 {% load static bootstrap4 dict_filter %}
 {% load group_filters %}
+{% load perth_time_filters %}
 
 {% block extra_style %}
     {{ block.super }}
@@ -236,6 +237,7 @@
                         <td><a href="{% url 'wamtram2:trtdataentry' obj.data_entry_id %}">{{ obj.data_entry_id }}</a></td>
                         <td>{% if obj.observation_id %}<a href="{% url 'wamtram2:observationdetail' pk=obj.observation_id.pk %}">{{ obj.observation_id.pk }}</a>{% endif %}</td>                     
                         <td>{{ obj.observation_date|date:"j M Y" }} {{ obj.observation_time|date:"H:i" }}</td>
+                        <td>{{ obj.observation_date|perth_time}}</td>
                         <td>{% if obj.turtle_id %}<a href="{% url 'wamtram2:turtle_detail' obj.turtle_id %}">{{obj.turtle_id}}</a>{% endif %}</td>
                         <td>
                             {% if obj.recapture_left_tag_id %}{{ obj.recapture_left_tag_id }} {% endif %}
