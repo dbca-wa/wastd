@@ -38,7 +38,7 @@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-        <li class="breadcrumb-item"><a href="{% url 'wamtram2:batches_curation' %}">Batch Management</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'wamtram2:batches_curation' %}">Manage Batches</a></li>
         <li class="breadcrumb-item active">Edit Batch Details</li>
         <li class="breadcrumb-item"><a href="{% url 'wamtram2:entry_batch_detail' batch_id %}">{{ batch_id }}</a></li>
     </ol>
@@ -57,21 +57,24 @@
             {% csrf_token %}
             <div class="col-md-3">
                 <label for="location_code">Location (required)</label>
-                <select class="form-control" id="location_code" name="location_code">
+                <select class="form-control" id="location_code" name="location_code" required>
+                    <option value="">Select Location</option>
                     {% for location in locations %}
                         <option value="{{ location.location_code }}">{{ location.location_name }}</option>
                     {% endfor %}
                 </select>
             </div>
             <div class="col-md-3">
-                <label for="place_code">Place (required)</label>
+                <label for="place_code">Place (optional)</label>
                 <select class="form-control" id="place_code" name="place_code">
+                    <option value="">Select Place</option>
                     <!-- Will be populated dynamically by JavaScript -->
                 </select>
             </div>
             <div class="col-md-2">
                 <label for="year">Year (required)</label>
-                <select class="form-control" id="year" name="year">
+                <select class="form-control" id="year" name="year" required>
+                    <option value="">Select Year</option>
                     {% for year, short_year in years.items %}
                         <option value="{{ short_year }}" {% if year == current_year|stringformat:"s" %}selected{% endif %}>{{ year }}</option>
                     {% endfor %}
@@ -118,14 +121,23 @@
                 <label for="comments">{{ form.comments.label }}</label>
                 <textarea name="comments" id="comments" class="form-control" rows="3">{{ form.comments.value|default_if_none:'' }}</textarea>
             </div>
-            <div class="form-group">
+            {% comment %} <div class="form-group">
                 <label for="template">{{ form.template.label }}</label>
                 <select name="template" id="template" class="form-control">
-                    <option value="">---------</option>
+                    <option value="">Select Template</option>
                     {% for template in templates %}
                         <option value="{{ template.template_id }}" {% if template.template_id == form.initial.template  %}selected{% endif %}>{{ template.name }}</option>
                     {% endfor %}
                 </select>
+            </div> {% endcomment %}
+            <div class="form-group">
+                <label for="template">{{ form.template.label }}</label>
+                <div class="search-container">
+                    <input type="text" id="templateSearch" class="search-field form-control" placeholder="Search Template" autocomplete="off" value="{{ template_name|default:'' }}">
+                    <input type="hidden" id="templateId" name="template" value="{{ template_id|default:'' }}">
+                    
+                    <div id="templateSearchResults" class="search-results"></div>
+                </div>
             </div>
             <button type="submit" class="btn btn-primary">Save</button>
             <a href="{% url 'wamtram2:batches_curation' %}" class="btn btn-secondary">Cancel</a>
@@ -246,6 +258,47 @@
 
     // Initialize event handlers
     $(document).ready(function() {
+
+        // Search for templates
+        $('#templateSearch').on('input', function() {
+            var searchTerm = $(this).val();
+            if (searchTerm.length >= 2) {
+                $.ajax({
+                    url: "{% url 'wamtram2:search_templates' %}",
+                    data: { 'q': searchTerm },
+                    dataType: 'json',
+                    success: function(data) {
+                        var results = $('#templateSearchResults');
+                        results.empty();
+                        if (data.length > 0) {
+                            results.show();
+                            data.forEach(function(template) {
+                                var div = $('<div class="search-result"></div>');
+                                div.text(template.name);
+                                div.on('click', function() {
+                                    $('#templateSearch').val(template.name);
+                                    $('#templateId').val(template.template_id);
+                                    results.hide();
+                                });
+                                results.append(div);
+                            });
+                        } else {
+                            results.hide();
+                        }
+                    }
+                });
+            } else {
+                $('#templateSearchResults').hide();
+            }
+        });
+
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('.search-container').length) {
+                $('.search-results').hide();
+            }
+        });
+
+
         $('#location_code').change(function() {
             var locationCode = $(this).val();
             loadPlaces(locationCode);

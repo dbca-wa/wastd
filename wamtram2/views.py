@@ -448,7 +448,8 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         if do_not_process_cookie_value == 'true':
             form.instance.do_not_process = True
         entry = form.save()
-        success_url = reverse("wamtram2:find_turtle", args=[batch_id])
+        #success_url = reverse("wamtram2:find_turtle", args=[batch_id])
+        success_url = FindTurtleView.get_clear_cookies_url(batch_id)
         
         if form.instance.do_not_process:
             message = f"Entry created successfully and will be reviewed later. Please write the Entry ID: {entry.data_entry_id} on the data sheet"
@@ -568,12 +569,10 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
 
 
 class DeleteBatchView(LoginRequiredMixin, View):
-
     def dispatch(self, request, *args, **kwargs):
         # FIXME: Permission check
         if not (
-            request.user.groups.filter(name="WAMTRAM2_TEAM_LEADER").exists()
-            or request.user.groups.filter(name="WAMTRAM2_STAFF").exists()
+            request.user.groups.filter(name="WAMTRAM2_STAFF").exists()
             or request.user.is_superuser
         ):
             return HttpResponseForbidden(
@@ -608,7 +607,8 @@ class ValidateDataEntryBatchView(LoginRequiredMixin, View):
     def dispatch(self, request, *args, **kwargs):
         # FIXME: Permission check
         if not (
-            request.user.groups.filter(name="WAMTRAM2_STAFF").exists()
+            request.user.groups.filter(name="WAMTRAM2_TEAM_LEADER").exists()
+            or request.user.groups.filter(name="WAMTRAM2_STAFF").exists()
             or request.user.is_superuser
         ):
             return HttpResponseForbidden(
@@ -716,6 +716,20 @@ class FindTurtleView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         batch_id = kwargs.get("batch_id")
         form = SearchForm(initial={"batch_id": batch_id})
+        
+        clear_cookies = request.GET.get('clear_cookies', 'false') == 'true'
+    
+        if clear_cookies:
+            response = render(request, "wamtram2/find_turtle.html", {
+                "form": form,
+                "batch_id": batch_id,
+                "batch": TrtEntryBatches.objects.filter(entry_batch_id=batch_id).first(),
+                "template_name": "No template associated",
+            })
+            self.clear_search_cookies(response, batch_id)
+            return response
+            
+        
         no_turtle_found = request.COOKIES.get(f'{batch_id}_no_turtle_found') == "true"
         tag_id = request.COOKIES.get(f'{batch_id}_tag_id')
         tag_type = request.COOKIES.get(f'{batch_id}_tag_type')
@@ -735,7 +749,9 @@ class FindTurtleView(LoginRequiredMixin, View):
                 Q(new_pittag_id__pittag_id=tag_id) |
                 Q(new_pittag_id_2__pittag_id=tag_id) |
                 Q(new_pittag_id_3__pittag_id=tag_id) |
-                Q(new_pittag_id_4__pittag_id=tag_id)
+                Q(new_pittag_id_4__pittag_id=tag_id),
+                observation_id__isnull=True,
+                turtle_id__isnull=True
             ).select_related('entry_batch', 'place_code', 'species_code').order_by('-entry_batch__entry_date').first()
 
         if batch_id:
@@ -775,8 +791,22 @@ class FindTurtleView(LoginRequiredMixin, View):
             "template_name": template_name,
             "new_tag_entry": new_tag_entry,
         })
+        
+    def clear_search_cookies(self, response, batch_id):
+        cookies_to_clear = [
+            f'{batch_id}_tag_id',
+            f'{batch_id}_tag_type',
+            f'{batch_id}_tag_side',
+            f'{batch_id}_no_turtle_found',
+            f'{batch_id}_do_not_process'
+        ]
+        for cookie_name in cookies_to_clear:
+            response.delete_cookie(cookie_name)
 
-
+    @staticmethod
+    def get_clear_cookies_url(batch_id):
+        return reverse("wamtram2:find_turtle", args=[batch_id]) + '?clear_cookies=true'
+    
     def set_cookie(self, response, batch_id, tag_id=None, tag_type=None, tag_side=None, no_turtle_found=False, do_not_process=False):
         if tag_id:
             response.set_cookie(f'{batch_id}_tag_id', tag_id, max_age=63072000)
@@ -797,6 +827,14 @@ class FindTurtleView(LoginRequiredMixin, View):
         tag_side = None
         turtle = None
         create_and_review = request.POST.get('create_and_review') == 'true'
+        new_tag_entry = None
+        batch = None
+        template_name = "No template associated"
+        
+        if batch_id:
+            batch = TrtEntryBatches.objects.filter(entry_batch_id=batch_id).first()
+            if batch and batch.template:
+                template_name = batch.template.name
 
         if form.is_valid():
             tag_id = form.cleaned_data["tag_id"]
@@ -839,28 +877,29 @@ class FindTurtleView(LoginRequiredMixin, View):
                         else:
                             tag_type = "recapture_pit_tag"
                             tag_side = None
-                            
-                    response = render(request, "wamtram2/find_turtle.html", {
-                            "form": form,
-                            "turtle": turtle,
-                            "new_tag_entry": new_tag_entry,
-                            "no_turtle_found": no_turtle_found,
-                            "tag_id": tag_id,
-                            "tag_type": tag_type,
-                            "tag_side": tag_side,
-                            "batch_id": batch_id,
-                        })
-   
-                    return self.set_cookie(response, batch_id, tag_id, tag_type, tag_side, no_turtle_found)
-                
-                response = redirect(reverse('wamtram2:find_turtle', kwargs={'batch_id': batch_id}))
+                    else:
+                        no_turtle_found = True
 
                 if turtle:
-                    return self.set_cookie(response, batch_id, tag_id, tag_type, tag_side)
-                else:
-                    no_turtle_found = True
                     response = redirect(reverse('wamtram2:find_turtle', kwargs={'batch_id': batch_id}))
+                    return self.set_cookie(response, batch_id, tag_id, tag_type, tag_side)
+                elif new_tag_entry:
+                    response = render(request, "wamtram2/find_turtle.html", {
+                        "form": form,
+                        "turtle": turtle,
+                        "new_tag_entry": new_tag_entry,
+                        "no_turtle_found": no_turtle_found,
+                        "tag_id": tag_id,
+                        "tag_type": tag_type,
+                        "tag_side": tag_side,
+                        "batch_id": batch_id,
+                        "batch": batch,
+                        "template_name": template_name,
+                    })
                     return self.set_cookie(response, batch_id, tag_id, tag_type, tag_side, no_turtle_found)
+                else:
+                    response = redirect(reverse('wamtram2:find_turtle', kwargs={'batch_id': batch_id}))
+                    return self.set_cookie(response, batch_id, tag_id, tag_type, tag_side, no_turtle_found=True)
             else:
                 tag_type = request.POST.get('tag_type', 'unknown_tag')
                 tag_side = request.POST.get('tag_side', None)
@@ -877,8 +916,8 @@ class FindTurtleView(LoginRequiredMixin, View):
             })
 
         return self.set_cookie(response, batch_id, tag_id, tag_type, tag_side)
-
-
+    
+    
 class ObservationDetailView(LoginRequiredMixin, DetailView):
     model = TrtObservations
     template_name = "wamtram2/observation_detail.html"
@@ -1109,7 +1148,7 @@ class ValidateTagView(View):
             JsonResponse: The JSON response.
         """
         turtle_id = request.GET.get('turtle_id')
-        tag = request.GET.get('tag')
+        tag = request.GET.get('tag', '')
         side = request.GET.get('side')
 
         if not tag or not side:
@@ -1151,16 +1190,24 @@ class ValidateTagView(View):
             Q(new_left_tag_id__tag_id=tag) |
             Q(new_left_tag_id_2__tag_id=tag) |
             Q(new_right_tag_id__tag_id=tag) |
-            Q(new_right_tag_id_2__tag_id=tag)
+            Q(new_right_tag_id_2__tag_id=tag),
+            observation_id__isnull=True,
+            turtle_id__isnull=True
         ).order_by('-entry_batch__entry_date').first()
                 
         if new_tag_entry:
-            if new_tag_entry.new_left_tag_id.tag_id == tag or new_tag_entry.new_left_tag_id_2.tag_id == tag:
+            actual_side = None
+            if new_tag_entry.new_left_tag_id and new_tag_entry.new_left_tag_id.tag_id == tag:
                 actual_side = 'L'
-            else:
+            elif new_tag_entry.new_left_tag_id_2 and new_tag_entry.new_left_tag_id_2.tag_id == tag:
+                actual_side = 'L'
+            elif new_tag_entry.new_right_tag_id and new_tag_entry.new_right_tag_id.tag_id == tag:
                 actual_side = 'R'
-            
-            wrong_side = (actual_side.lower() != side.lower())
+            elif new_tag_entry.new_right_tag_id_2 and new_tag_entry.new_right_tag_id_2.tag_id == tag:
+                actual_side = 'R'
+                
+            if actual_side:
+                wrong_side = (actual_side.lower() != side.lower())
             
             return JsonResponse({
                 'valid': True, 
@@ -1183,7 +1230,7 @@ class ValidateTagView(View):
         Returns:
             JsonResponse: The JSON response.
         """
-        tag = request.GET.get('tag')
+        tag = request.GET.get('tag', '')
         if not tag:
             return JsonResponse({'valid': False, 'message': 'Missing tag parameter'})
 
@@ -1284,6 +1331,8 @@ class ValidateTagView(View):
                 Q(new_pittag_id_2__pittag_id=tag) |
                 Q(new_pittag_id_3__pittag_id=tag) |
                 Q(new_pittag_id_4__pittag_id=tag),
+                observation_id__isnull=True,
+                turtle_id__isnull=True
                 ).order_by('-entry_batch__entry_date').first()
                 
                 if new_pit_tag_entry:
@@ -1792,11 +1841,21 @@ def quick_add_batch(request):
         template_id = request.POST.get('template')
         entered_person_id = request.POST.get('entered_person_id')
         
-        entered_person = get_object_or_404(TrtPersons, pk=entered_person_id)
+        if entered_person_id:
+            try:
+                entered_person = TrtPersons.objects.get(pk=entered_person_id)
+            except TrtPersons.DoesNotExist:
+                return JsonResponse({'success': False, 'error': 'Invalid entered person ID.'})
+        else:
+            entered_person = None 
         
         template = None
         if template_id:
-            template = get_object_or_404(Template, pk=template_id)
+            try:
+                template = Template.objects.get(pk=template_id)
+            except Template.DoesNotExist:
+                return JsonResponse({'success': False, 'error': 'Invalid template ID.'})
+            
 
         batch = TrtEntryBatches.objects.create(
             batches_code=batches_code,
@@ -1814,6 +1873,16 @@ def quick_add_batch(request):
     else:
         return JsonResponse({'success': False, 'error': 'Invalid request method.'})
 
+    
+def search_templates(request):
+    query = request.GET.get('q', '')
+    if len(query) >= 2:
+        templates = Template.objects.filter(
+            Q(name__icontains=query)
+        )[:10]
+        data = [{'template_id': t.template_id, 'name': t.name} for t in templates]
+        return JsonResponse(data, safe=False)
+    return JsonResponse([], safe=False)
     
 class BatchCodeManageView(View):
     template_name = 'wamtram2/add_batches_code.html'
@@ -1849,6 +1918,9 @@ class BatchCodeManageView(View):
             entered_person = batch.entered_person_id
             entered_person_full_name = str(entered_person) if entered_person else ''
             entered_person_id = entered_person.person_id if entered_person else ''
+            template = batch.template
+            template_name = template.name if template else ''
+            template_id = template.template_id if template else ''
         else:
             form = BatchesCodeForm()
             entered_person_full_name = ''
@@ -1860,7 +1932,6 @@ class BatchCodeManageView(View):
         templates = Template.objects.all()
 
         entered_person_full_name = str(form.instance.entered_person_id) if form.instance.entered_person_id else ''
-        template_selected = form.instance.template.template_id if form.instance.template else None
         context = {
             'form': form,
             'locations': locations,
@@ -1870,7 +1941,8 @@ class BatchCodeManageView(View):
             'batch_id': batch_id,
             'entered_person_full_name': entered_person_full_name,
             'entered_person_id': entered_person_id,
-            'template_selected': template_selected,
+            'template_name': template_name,
+            'template_id': template_id,
         }
         return render(request, self.template_name, context)
 
