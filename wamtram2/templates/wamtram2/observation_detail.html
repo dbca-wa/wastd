@@ -1,4 +1,5 @@
 {% extends "base_wastd.html" %}
+{% load perth_time_filters %}
 
 {% block breadcrumbs %}
 <!-- Breadcrumb Navigation -->
@@ -27,7 +28,7 @@
             </tr>
             <tr>
               <th>Date observed</th>
-              <td>{{ object.observation_date|date:"j M Y" }} {{ object.observation_time|date:"H:i" }}</td>
+              <td>{{ object.observation_date|perth_date|date:"j M Y" }} {{ object.observation_time|perth_time_only|time:"H:i" }}</td>
             </tr>
             <tr>
               <th>Entered by</th>

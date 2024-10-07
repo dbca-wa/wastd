@@ -937,10 +937,6 @@ class ObservationDetailView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         obj = get_object_or_404(TrtObservations, observation_id=self.kwargs.get("pk"))
         
-        perth_tz = timezone.get_current_timezone()
-        obj.observation_date = timezone.localtime(obj.observation_date, perth_tz)
-        obj.observation_time = timezone.localtime(obj.observation_time, perth_tz)
-        
         context["observation"] = obj
         context["tags"] = obj.trtrecordedtags_set.all()
         context["pittags"] = obj.trtrecordedpittags_set.all()
