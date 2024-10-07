@@ -508,8 +508,8 @@ class TrtDataEntryForm(forms.ModelForm):
         
         
         if instance.observation_date:
-            perth_tz = timezone.pytz.timezone(settings.TIME_ZONE)
-            instance.observation_date = perth_tz.localize(instance.observation_date.replace(tzinfo=None))
+            # 直接给观察日期加8小时
+            instance.observation_date += timedelta(hours=8)
             instance.observation_time = instance.observation_date
 
         # Save the instance to the database
