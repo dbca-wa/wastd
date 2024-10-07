@@ -199,10 +199,6 @@ class TrtDataEntryForm(forms.ModelForm):
             "recapture_left_tag_barnacles_2",
             "recapture_right_tag_barnacles",
             "recapture_right_tag_barnacles_2",
-            "new_left_tag_barnacles",
-            "new_left_tag_barnacles_2",
-            "new_right_tag_barnacles",
-            "new_right_tag_barnacles_2",
             "identifier",
             "identification_type",
             
