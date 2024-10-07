@@ -1,5 +1,7 @@
 from django.contrib.gis.db import models
 from django.core.exceptions import ValidationError
+from django.db.models import Case, When, Value, IntegerField
+
 
 class TrtActivities(models.Model):
     activity_code = models.CharField(
@@ -203,7 +205,7 @@ class TrtDataEntry(models.Model):
         ("I", "Indeterminate"),
     ]
     TAG_POSITION_CHOICES = [
-        (1, ' scale 1'),
+        (1, 'scale 1'),
         (2, 'scale 2'),
         (3, 'scale 3'),
     ]
@@ -729,10 +731,6 @@ class TrtDataEntry(models.Model):
     recapture_left_tag_barnacles_2 = models.BooleanField(default=False, db_column='RECAPTURE_LEFT_TAG_BARNACLES_2')
     recapture_right_tag_barnacles = models.BooleanField(default=False, db_column='RECAPTURE_RIGHT_TAG_BARNACLES')
     recapture_right_tag_barnacles_2 = models.BooleanField(default=False, db_column='RECAPTURE_RIGHT_TAG_BARNACLES_2')
-    new_left_tag_barnacles = models.BooleanField(default=False, db_column='NEW_LEFT_TAG_BARNACLES')
-    new_left_tag_barnacles_2 = models.BooleanField(default=False, db_column='NEW_LEFT_TAG_BARNACLES_2')
-    new_right_tag_barnacles = models.BooleanField(default=False, db_column='NEW_RIGHT_TAG_BARNACLES')
-    new_right_tag_barnacles_2 = models.BooleanField(default=False, db_column='NEW_RIGHT_TAG_BARNACLES_2')
     
     # Measurements
     # Curved carapace length min
@@ -1253,8 +1251,10 @@ class TrtEntryBatches(models.Model):
         "TrtPersons",
         models.SET_NULL,
         db_column="ENTERED_PERSON_ID",
+        to_field="person_id",
         blank=True,
         null=True,
+        related_name="entry_batches",
     )  # fake foreign key #models.IntegerField(db_column='ENTERED_PERSON_ID', blank=True, null=True)  # Field name made lowercase.
     filename = models.CharField(
         db_column="FILENAME", max_length=255, blank=True, null=True
@@ -1271,7 +1271,7 @@ class TrtEntryBatches(models.Model):
     template = models.ForeignKey(
         "Template",  
         models.SET_NULL,
-        db_column="template",
+        db_column="TEMPLATE",
         blank=True,
         null=True,
     )
@@ -1341,7 +1341,6 @@ class TrtIdentificationTypes(models.Model):
         return f"{self.description}"
     
 
-
 class TrtLocations(models.Model):
     location_code = models.CharField(
         db_column="LOCATION_CODE", primary_key=True, max_length=2
@@ -1356,6 +1355,18 @@ class TrtLocations(models.Model):
 
     def __str__(self):
         return f"{self.location_name}"
+
+    @staticmethod
+    def get_ordered_locations():
+        priority_codes = ['BW', 'CL', 'DA', 'DH', 'LO', 'MN', 'RI', 'TH', 'VA', 'WK', 'PH']
+
+        custom_order = Case(
+            *[When(location_code=code, then=Value(i)) for i, code in enumerate(priority_codes)],
+            default=Value(len(priority_codes)),
+            output_field=IntegerField()
+        )
+
+        return TrtLocations.objects.annotate(custom_order=custom_order).order_by('custom_order', 'location_name')
 
 
 class TrtMeasurements(models.Model):
@@ -2135,6 +2146,11 @@ class TrtSighting(models.Model):
     class Meta:
         managed = False
         db_table = "TRT_SIGHTING"
+        
+
+class TrtSpeciesManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().exclude(species_code='0')
 
 
 class TrtSpecies(models.Model):
@@ -2153,6 +2169,8 @@ class TrtSpecies(models.Model):
     hide_dataentry = models.BooleanField(
         db_column="Hide_DataEntry"
     )  # Field name made lowercase.
+    
+    objects = TrtSpeciesManager()
 
     class Meta:
         managed = False
@@ -2160,6 +2178,7 @@ class TrtSpecies(models.Model):
 
     def __str__(self):
         return f"{self.common_name}"
+    
 
 
 class TrtTags(models.Model):
@@ -2431,15 +2450,15 @@ SEX_CHOICES = [
     ("I", "Indeterminate"),
 ]
 class Template(models.Model):
-    template_id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=255, unique=True)
-    location_code = models.CharField(max_length=50)
-    place_code = models.CharField(max_length=50)
-    species_code = models.CharField(max_length=50)
-    sex = models.CharField(max_length=1, choices=SEX_CHOICES)
+    template_id = models.AutoField(primary_key=True, db_column="TEMPLATE_ID")
+    name = models.CharField(max_length=255,db_column="NAME", unique=True)
+    location_code = models.CharField(max_length=50, db_column="LOCATIONS_CODE", blank=True, null=True)
+    place_code = models.CharField(max_length=50,db_column="PLACE_CODE", blank=True, null=True)
+    species_code = models.CharField(max_length=50, db_column="SPECIES_CODE", blank=True, null=True)
+    sex = models.CharField(max_length=1, choices=SEX_CHOICES, db_column="SEX", blank=True, null=True)
 
     class Meta:
-        db_table = 'TRT_TEMPLATE'
+        db_table = 'TRT_TEMPLATES'
         
     def __str__(self):
         return self.name
@@ -2451,6 +2470,7 @@ class Template(models.Model):
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
+
 
 # class Tbldamage(models.Model):
 #     observation_id = models.IntegerField(db_column='OBSERVATION_ID')  # Field name made lowercase.

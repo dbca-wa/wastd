@@ -43,14 +43,14 @@
     <nav aria-label="breadcrumb" class="d-none d-md-block">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-            <li class="breadcrumb-item"><a href="{% url 'wamtram2:batches_curation' %}">Batches Curation</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'wamtram2:batches_curation' %}">Manage Batches</a></li>
             <li class="breadcrumb-item active">Export Data</li>
         </ol>
     </nav>
 {% endblock %}
 
 {% block page_content_inner %}
-    <div class="container-fluid mt-5">
+    <div class="container">
         <!-- Message Alert -->
         {% if messages %}
             <div id="message-alert" class="alert alert-success" role="alert">
@@ -75,22 +75,37 @@
                     {% csrf_token %}
                     <div class="form-group">
                         <label for="observation_date_from">Observation Date From</label>
-                        <input type="date" id="observation_date_from" name="observation_date_from" class="form-control" onchange="loadPlaces()">
+                        <input type="date" id="observation_date_from" name="observation_date_from" class="form-control" onchange="loadFilters()">
                     </div>
                     <div class="form-group">
                         <label for="observation_date_to">Observation Date To</label>
-                        <input type="date" id="observation_date_to" name="observation_date_to" class="form-control" onchange="loadPlaces()">
+                        <input type="date" id="observation_date_to" name="observation_date_to" class="form-control" onchange="loadFilters()">
                     </div>
                 </div>
             </div>
 
-            <!-- Step 2: Select Place -->
+            <!-- Step 2: Select Place, Species, and Sex -->
             <div class="row">
                 <div class="step-container col-12">
-                    <div class="step-header">Step 2: Select Place</div>
+                    <div class="step-header">Step 2: Select Filters</div>
                     <div class="form-group">
                         <label for="place_code">Place Code</label>
                         <select id="place_code" name="place_code" class="form-control select2">
+                            <option value="">All Places</option>
+                            <!-- Options will be dynamically loaded -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="species">Species</label>
+                        <select id="species" name="species" class="form-control select2">
+                            <option value="">All Species</option>
+                            <!-- Options will be dynamically loaded -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="sex">Sex</label>
+                        <select id="sex" name="sex" class="form-control select2">
+                            <option value="">All Sexes</option>
                             <!-- Options will be dynamically loaded -->
                         </select>
                     </div>
@@ -133,46 +148,84 @@
 
 {% block extra_js %}
     <script>
+        // Show loading spinner
         function showLoadingSpinner() {
             document.getElementById('loading-spinner').style.display = 'block';
             document.getElementById('loading-overlay').style.display = 'block';
         }
 
+        // Hide loading spinner
         function hideLoadingSpinner() {
             document.getElementById('loading-spinner').style.display = 'none';
             document.getElementById('loading-overlay').style.display = 'none';
         }
 
-        // AJAX request to load place options based on selected date range
-        function loadPlaces() {
+        // Load places, species, and sex options via AJAX
+        function loadFilters() {
             const fromDate = document.getElementById('observation_date_from').value;
             const toDate = document.getElementById('observation_date_to').value;
 
             if (fromDate && toDate) {
                 showLoadingSpinner();
 
+                // Get CSRF Token
                 const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
 
-                const xhr = new XMLHttpRequest();
-                xhr.open('GET', `{% url 'wamtram2:export_data' %}?action=get_places&observation_date_from=${fromDate}&observation_date_to=${toDate}`, true);
-                xhr.setRequestHeader("X-CSRFToken", csrfToken);
-                xhr.onreadystatechange = function() {
-                    if (xhr.readyState === 4 && xhr.status === 200) {
-                        const data = JSON.parse(xhr.responseText);
-                        const placeSelect = document.getElementById('place_code');
-                        placeSelect.innerHTML = ''; // Clear existing options
-                        data.places.forEach(function(place) {
-                            const option = document.createElement('option');
-                            option.value = place.place_code;
-                            option.textContent = `${place.location_name} - ${place.place_name}`;
-                            placeSelect.appendChild(option);
-                        });
+                // Fetch place options
+                fetch(`{% url 'wamtram2:export_data' %}?action=get_places&observation_date_from=${fromDate}&observation_date_to=${toDate}`, {
+                    method: 'GET',
+                    headers: {
+                        'X-CSRFToken': csrfToken
                     }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    updateSelectOptions('place_code', data.places);
+                    // Fetch species options
+                    return fetch(`{% url 'wamtram2:export_data' %}?action=get_species&observation_date_from=${fromDate}&observation_date_to=${toDate}`, {
+                        method: 'GET',
+                        headers: {
+                            'X-CSRFToken': csrfToken
+                        }
+                    });
+                })
+                .then(response => response.json())
+                .then(data => {
+                    updateSelectOptions('species', data.species);
+                    // Fetch sex options
+                    return fetch(`{% url 'wamtram2:export_data' %}?action=get_sexes&observation_date_from=${fromDate}&observation_date_to=${toDate}`, {
+                        method: 'GET',
+                        headers: {
+                            'X-CSRFToken': csrfToken
+                        }
+                    });
+                })
+                .then(response => response.json())
+                .then(data => {
+                    updateSelectOptions('sex', data.sexes);
                     hideLoadingSpinner();
-                };
-                xhr.send();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    hideLoadingSpinner();
+                });
             }
         }
 
+        // Update select options dynamically
+        function updateSelectOptions(selectId, options) {
+            const select = document.getElementById(selectId);
+            select.innerHTML = `<option value="">All ${select.previousElementSibling.textContent}</option>`; // Add "All" option
+            options.forEach(function(option) {
+                const optionElement = document.createElement('option');
+                optionElement.value = option.value;
+                optionElement.textContent = option.label;
+                select.appendChild(optionElement);
+            });
+        }
+
+        // Listen to date changes to trigger filter loading
+        document.getElementById('observation_date_from').addEventListener('change', loadFilters);
+        document.getElementById('observation_date_to').addEventListener('change', loadFilters);
     </script>
 {% endblock %}

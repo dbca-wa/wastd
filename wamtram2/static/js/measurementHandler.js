@@ -76,3 +76,44 @@ function toggleCurvedCarapaceWidth() {
         console.error('curvedCarapaceWidth not found');
     }
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    const measurementTypes = [
+        'id_measurement_type_1', 'id_measurement_type_2', 'id_measurement_type_3',
+        'id_measurement_type_4', 'id_measurement_type_5', 'id_measurement_type_6'
+    ];
+
+    function updateMeasurementOptions() {
+        const selectedValues = new Set();
+
+        measurementTypes.forEach(id => {
+            const select = document.getElementById(id);
+            if (select.value) {
+                selectedValues.add(select.value);
+            }
+        });
+
+        measurementTypes.forEach(id => {
+            const select = document.getElementById(id);
+            const currentValue = select.value;
+
+            selectedValues.delete(currentValue);
+
+            Array.from(select.options).forEach(option => {
+                if (option.value && option.value !== currentValue) {
+                    option.style.display = selectedValues.has(option.value) ? 'none' : '';
+                }
+            });
+
+            if (currentValue) {
+                selectedValues.add(currentValue);
+            }
+        });
+    }
+
+    measurementTypes.forEach(id => {
+        document.getElementById(id).addEventListener('change', updateMeasurementOptions);
+    });
+
+    updateMeasurementOptions();
+});

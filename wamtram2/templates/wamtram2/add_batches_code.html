@@ -1,8 +1,13 @@
 {% extends "base_wastd.html" %}
 {% load bootstrap4 %}
+{% load static %}
+
 
 {% block extra_style %}
     {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/search_styles.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
     <style>
         .step-container {
             border: 1px solid #ddd;
@@ -33,7 +38,7 @@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-        <li class="breadcrumb-item"><a href="{% url 'wamtram2:batches_curation' %}">Batches Curation</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'wamtram2:batches_curation' %}">Manage Batches</a></li>
         <li class="breadcrumb-item active">Edit Batch Details</li>
         <li class="breadcrumb-item"><a href="{% url 'wamtram2:entry_batch_detail' batch_id %}">{{ batch_id }}</a></li>
     </ol>
@@ -41,7 +46,7 @@
 {% endblock %}
 
 {% block page_content_inner %}
-<div class="container-fluid mt-5">
+<div class="container-fluid mt-5 mb-5">
     <!-- Message Alert -->
     <div id="message-alert" class="alert" role="alert"></div>
 
@@ -51,30 +56,33 @@
         <form id="codeGeneratorForm" class="row">
             {% csrf_token %}
             <div class="col-md-3">
-                <label for="location_code">Location</label>
-                <select class="form-control" id="location_code" name="location_code">
+                <label for="location_code">Location (required)</label>
+                <select class="form-control" id="location_code" name="location_code" required>
+                    <option value="">Select Location</option>
                     {% for location in locations %}
                         <option value="{{ location.location_code }}">{{ location.location_name }}</option>
                     {% endfor %}
                 </select>
             </div>
             <div class="col-md-3">
-                <label for="place_code">Place</label>
+                <label for="place_code">Place (optional)</label>
                 <select class="form-control" id="place_code" name="place_code">
+                    <option value="">Select Place</option>
                     <!-- Will be populated dynamically by JavaScript -->
                 </select>
             </div>
             <div class="col-md-2">
-                <label for="year">Year</label>
-                <select class="form-control" id="year" name="year">
+                <label for="year">Year (required)</label>
+                <select class="form-control" id="year" name="year" required>
+                    <option value="">Select Year</option>
                     {% for year, short_year in years.items %}
                         <option value="{{ short_year }}" {% if year == current_year|stringformat:"s" %}selected{% endif %}>{{ year }}</option>
                     {% endfor %}
                 </select>
             </div>
             <div class="col-md-2">
-                <label for="night">Night Number</label>
-                <input type="number" class="form-control" id="night" name="night" min="1" max="99" value="1">
+                <label for="night">Night Number (optional)</label>
+                <input type="number" class="form-control" id="night" name="night" min="1" value="">
             </div>
             <div class="col-md-2 mt-4">
                 <button type="button" class="btn btn-primary btn-block" onclick="generateCode()">Generate Code</button>
@@ -100,27 +108,53 @@
                     Looks good!
                 </div>
             </div>
+            <!-- Team Leader Full Name -->
+            <div class="form-group">
+                <label for="team_leader">Team Leader Name</label>
+                <div class="search-container">
+                    <input type="text" id="team_leader" class="search-field" placeholder="Search Person" autocomplete="off" value="{{  entered_person_full_name |default_if_none:'' }}">
+                    <input type="hidden" id="team_leader_id" name="entered_person_id" value="{{ entered_person_id|default_if_none:'' }}">                    
+                    <div id="searchResults" class="search-results"></div>
+                </div>
+            </div>
             <div class="form-group">
                 <label for="comments">{{ form.comments.label }}</label>
                 <textarea name="comments" id="comments" class="form-control" rows="3">{{ form.comments.value|default_if_none:'' }}</textarea>
             </div>
-            <div class="form-group">
+            {% comment %} <div class="form-group">
                 <label for="template">{{ form.template.label }}</label>
                 <select name="template" id="template" class="form-control">
-                    <option value="">---------</option>
+                    <option value="">Select Template</option>
                     {% for template in templates %}
-                        <option value="{{ template.id }}" {% if template.id == form.template.value.id %}selected{% endif %}>{{ template.name }}</option>
+                        <option value="{{ template.template_id }}" {% if template.template_id == form.initial.template  %}selected{% endif %}>{{ template.name }}</option>
                     {% endfor %}
                 </select>
+            </div> {% endcomment %}
+            <div class="form-group">
+                <label for="template">{{ form.template.label }}</label>
+                <div class="search-container">
+                    <input type="text" id="templateSearch" class="search-field form-control" placeholder="Search Template" autocomplete="off" value="{{ template_name|default:'' }}">
+                    <input type="hidden" id="templateId" name="template" value="{{ template_id|default:'' }}">
+                    
+                    <div id="templateSearchResults" class="search-results"></div>
+                </div>
             </div>
             <button type="submit" class="btn btn-primary">Save</button>
             <a href="{% url 'wamtram2:batches_curation' %}" class="btn btn-secondary">Cancel</a>
         </form>
     </div>
+    
+    <div class="loading-overlay" id="loading-overlay"></div>
+    <div class="loading-spinner" id="loading-spinner">
+        <div class="spinner-border text-primary" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
+{{ block.super }}
 <script>
     // Get CSRF Token
     function getCSRFToken() {
@@ -140,8 +174,20 @@
         }, 3000);
     }
 
+    // Show Loading Spinner
+    function showLoadingSpinner() {
+        $('#loading-overlay').show();
+        $('#loading-spinner').show();
+    }
+
+    // Hide Loading Spinner
+    function hideLoadingSpinner() {
+        $('#loading-overlay').hide();
+        $('#loading-spinner').hide();
+    }
     // Load Places
     function loadPlaces(locationCode) {
+        showLoadingSpinner();
         $.ajax({
             url: "{% url 'wamtram2:batch_code_manage' %}",
             type: 'GET',
@@ -156,10 +202,12 @@
                 $.each(data, function(index, place) {
                     placeSelect.append('<option value="' + place.place_code + '">' + place.place_name + '</option>');
                 });
+                hideLoadingSpinner();
             },
             error: function(xhr, status, error) {
                 console.error('Error fetching places:', xhr.responseText);
                 showMessage('Error loading places. Please try again.', 'danger');
+                hideLoadingSpinner();
             }
         });
     }
@@ -169,11 +217,23 @@
         var night = $('#night').val();
         var placeCode = $('#place_code').val();
         var year = $('#year').val().slice(-2);
-        var generatedCode = 'N' + night + placeCode + year;
         var batchId = {% if batch_id %}{{ batch_id }}{% else %}null{% endif %};
+
+        if (!placeCode || !year) {
+            alert('Please select a place and year.');
+            return;
+        }
+
+        var code = '';
+        if (night) {
+            code = 'N' + night;
+        }
+        code += placeCode + year;
+    
+        document.getElementById('generatedCode').textContent = code;
+
         // Check if the code is unique
         $.ajax({
-            
             url: "{% url 'wamtram2:batch_code_manage' %}",
             type: 'GET',
             data: { 
@@ -198,6 +258,47 @@
 
     // Initialize event handlers
     $(document).ready(function() {
+
+        // Search for templates
+        $('#templateSearch').on('input', function() {
+            var searchTerm = $(this).val();
+            if (searchTerm.length >= 2) {
+                $.ajax({
+                    url: "{% url 'wamtram2:search_templates' %}",
+                    data: { 'q': searchTerm },
+                    dataType: 'json',
+                    success: function(data) {
+                        var results = $('#templateSearchResults');
+                        results.empty();
+                        if (data.length > 0) {
+                            results.show();
+                            data.forEach(function(template) {
+                                var div = $('<div class="search-result"></div>');
+                                div.text(template.name);
+                                div.on('click', function() {
+                                    $('#templateSearch').val(template.name);
+                                    $('#templateId').val(template.template_id);
+                                    results.hide();
+                                });
+                                results.append(div);
+                            });
+                        } else {
+                            results.hide();
+                        }
+                    }
+                });
+            } else {
+                $('#templateSearchResults').hide();
+            }
+        });
+
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('.search-container').length) {
+                $('.search-results').hide();
+            }
+        });
+
+
         $('#location_code').change(function() {
             var locationCode = $(this).val();
             loadPlaces(locationCode);
@@ -242,6 +343,59 @@
             if (batchCodeInput.hasClass('is-invalid')) {
                 e.preventDefault();
                 alert('Please enter a valid batch code.');
+            } else {
+                // Show the loading spinner before submitting the form
+                showLoadingSpinner();
+            }
+        });
+        
+        // Hide the spinner after the form submission is complete
+        $(document).ajaxComplete(function() {
+            hideLoadingSpinner();
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var teamLeaderInput = document.getElementById('team_leader');
+        var teamLeaderIdInput = document.getElementById('team_leader_id');
+        var searchResults = document.getElementById('searchResults');
+    
+        teamLeaderInput.addEventListener('input', function() {
+            var searchTerm = this.value;
+            if (searchTerm.length >= 2) {
+                fetch(`/wamtram2/search-persons/?q=${searchTerm}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        searchResults.innerHTML = '';
+                        if (data.length > 0) {
+                            searchResults.style.display = 'block';
+                            data.forEach(person => {
+                                var div = document.createElement('div');
+                                div.className = 'search-result';
+                                div.textContent = `${person.first_name} ${person.surname}`;
+                                div.addEventListener('click', function() {
+                                    teamLeaderInput.value = `${person.first_name} ${person.surname}`;
+                                    teamLeaderIdInput.value = person.person_id;
+                                    searchResults.style.display = 'none';
+                                });
+                                searchResults.appendChild(div);
+                            });
+                        } else {
+                            searchResults.style.display = 'none';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        searchResults.style.display = 'none';
+                    });
+            } else {
+                searchResults.style.display = 'none';
+            }
+        });
+    
+        document.addEventListener('click', function(e) {
+            if (e.target !== teamLeaderInput && !searchResults.contains(e.target)) {
+                searchResults.style.display = 'none';
             }
         });
     });

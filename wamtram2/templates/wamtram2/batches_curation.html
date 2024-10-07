@@ -2,6 +2,7 @@
 {% load bootstrap4 static %}
 {% load proper_paginate %}
 {% load url_replace %}
+{% load group_filters %}
 
 {% block extra_style %}
 {{ block.super}}
@@ -9,6 +10,8 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 <link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<link rel="stylesheet" href="{% static 'css/search_styles.css' %}">
 <style>
     .tooltip-inner {
         max-width: 300px;
@@ -19,35 +22,61 @@
         color: #007bff;
         margin-left: 5px;
     }
+    .flagged-row {
+        background-color: #ffcccc !important;
+    }
 </style>
+{% endblock %}
+
+{% block breadcrumbs %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+    </ol>
+</nav>
 {% endblock %}
 
 
 {% block page_content_inner %}
-<div class="container-fluid mt-5">
-    <h2 class="mb-4">Batches Curation</h2>
+<div class="container-fluid mt-5 mb-5">
+    <h2 class="mb-4">Manage Batches</h2>
     <div class="d-flex flex-wrap align-items-center mb-3">
-        {% if request.user.is_superuser %}
+        
+        {% if request.user.is_superuser or request.user|has_group:"WAMTRAM2_STAFF" %}
         <!-- Export Data Button -->
         <a href="{% url 'wamtram2:export_form' %}" class="btn btn-outline-secondary mr-2 mb-2">
             <i class="fas fa-download"></i> Export Data
         </a>
-        
+        {% endif %}
+
+        {% if request.user.is_superuser %}
         <!-- Dud Tags Button -->
         <a href="{% url 'wamtram2:dud_tag_manage' %}" class="btn btn-outline-secondary mr-2 mb-2">
             <i class="fas fa-wrench"></i> Dud Tags
         </a>
+        {% endif %}
         
+        {% if request.user.is_superuser or request.user|has_group:"WAMTRAM2_STAFF" or request.user|has_group:"WAMTRAM2_TEAM_LEADER" %}
         <!-- Manage Templates Button -->
         <a href="{% url 'wamtram2:template_manage' %}" class="btn btn-outline-secondary mr-2 mb-2">
             <i class="fas fa-cog"></i> Manage Templates
         </a>
         {% endif %}
+
+        {% if request.user.is_superuser or request.user|has_group:"WAMTRAM2_STAFF" or request.user|has_group:"WAMTRAM2_TEAM_LEADER" %}
+        <!-- Add Person Button -->
+        <a href="#" class="btn btn-outline-secondary mr-2 mb-2" onclick="window.open(adminUrl); return false;" title="Add Person">
+            <i class="fas fa-user-plus"></i> Add Person
+        </a>
+        {% endif %}
         
+        {% if request.user.is_superuser or request.user|has_group:"WAMTRAM2_STAFF" or request.user|has_group:"WAMTRAM2_TEAM_LEADER"  %}
         <!-- Quick Add Batch Button -->
         <button type="button" class="btn btn-outline-primary mr-2 mb-2" id="quickAddBatchBtn" title="Quick Add Batch">
             <i class="fas fa-plus"></i> Add New Batch
         </button>
+        {% endif %}
+
     </div>
     <form id="filter-form" method="get" class="mb-4">
         <div class="form-row">
@@ -79,9 +108,9 @@
                 </select>
             </div>
             <div class="form-group col-md-5 d-flex align-items-end">
-                <button type="submit" class="btn btn-primary">Filter</button>
+                <button type="submit" class="btn btn-primary">Search</button>
                 <button type="button" id="clearFilter" class="btn btn-secondary ml-4">Clear Filter</button>
-                <button type="button" id="showAllBatches" class="btn btn-info ml-4">Show All Batches (long loading time)</button>
+                <button type="button" id="showAllBatches" class="btn btn-info ml-4">Show All Batches</button>
             </div>
         </div>
     </form>
@@ -93,33 +122,39 @@
         <thead class="thead-light">
             <tr>
                 <th style="width: 5%;">Batch ID</th>
-                <th style="width: 10%;">Batches Code</th>
-                <th style="width: 10%;"># of Records</th>
-                <th style="width: 10%;"># of Flagged Records</th>
-                <th style="width: 45%;">Comments</th>
-                <th style="width: 20%;">Actions</th>
+                <th style="width: 8%;">Batches Code</th>
+                <th style="width: 8%;"># of Records</th>
+                <th style="width: 8%;"># of Flagged Records</th>
+                <th style="width: 15%;">Template</th>
+                <th style="width: 40%;">Comments</th>
+                <th style="width: 16%;">Actions</th>
             </tr>
         </thead>
         <tbody>
             {% for batch in batches %}
-            <tr>
+            <tr class="{% if batch.flagged_entry_count > 0 %}flagged-row{% endif %}">
                 <td>{{ batch.entry_batch_id }}</td>
                 <td>{{ batch.batches_code|default:"No Code" }}</td>
                 <td>{{ batch.entry_count }}</td>
-                <td>{{ batch.do_not_process_count }}</td>
+                <td>{{ batch.flagged_entry_count }}</td>
+                <td>{{ batch.template|default:"No Template" }}</td>
                 <td>{{ batch.comments|truncatechars:100 }}</td>
                 <td>
                     <a href="{% url 'wamtram2:entry_batch_detail' batch_id=batch.entry_batch_id %}" class="btn btn-sm btn-info">View</a>
-                    <a href="{% url 'wamtram2:add_batches_code' batch_id=batch.entry_batch_id %}" class="btn btn-sm btn-primary">Edit Details</a>
+                    <a href="{% url 'wamtram2:add_batches_code' batch_id=batch.entry_batch_id %}" class="btn btn-sm btn-primary">Manage Details</a>
                 </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
+    {% else %}
+    <div class="alert alert-info" role="alert">
+        No Batches Found
+    </div>
     {% endif %}
 </div>
 
-<div class="pagination-container">
+{% comment %} <div class="pagination-container">
     {% if is_paginated %}
     <ul class="pagination mb-0">
         {% if page_obj.number != 1 %}
@@ -159,7 +194,7 @@
         {% endif %}
     </ul>
     {% endif %}
-</div>
+</div> {% endcomment %}
 
 <!-- Quick Add Batch Modal -->
 <div class="modal fade" id="quickAddBatchModal" tabindex="-1" role="dialog" aria-labelledby="quickAddBatchModalLabel" aria-hidden="true">
@@ -175,7 +210,7 @@
                 <form id="quickAddBatchForm">
                     {% csrf_token %}
                     <div class="form-group">
-                        <label for="quickAddLocation">Location</label>
+                        <label for="quickAddLocation">Location (required)</label>
                         <select class="form-control" id="quickAddLocation" name="location_code" required>
                             <option value="">Select Location</option>
                             {% for location in locations %}
@@ -184,45 +219,63 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="quickAddPlace">Place</label>
-                        <select class="form-control" id="quickAddPlace" name="place_code" required>
+                        <label for="quickAddPlace">Place (optional)</label>
+                        <select class="form-control" id="quickAddPlace" name="place_code">
                             <option value="">Select Place</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="quickAddYear">Year</label>
+                        <label for="quickAddYear">Year (required)</label>
                         <select class="form-control" id="quickAddYear" name="year" required>
+                            <option value="">Select Year</option>
                             {% for year in years %}
                                 <option value="{{ year }}">{{ year }}</option>
                             {% endfor %}
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="quickAddNight">Night Number</label>
-                        <input type="number" class="form-control" id="quickAddNight" name="night" min="1" required>
+                        <label for="quickAddNight">Night Number (optional)</label>
+                        <input type="number" class="form-control" id="quickAddNight" name="night" min="1" value="">
                     </div>
                     <div class="form-group">
-                        <label for="quickAddBatchCode">Batch Code</label>
+                        <label for="quickAddBatchCode">Batch Code (auto generated)</label>
                         <input type="text" class="form-control" id="quickAddBatchCode" name="batches_code" required>
-                        <div class="invalid-feedback">This Bathch is alraedy exist.</div>
+                        <div class="invalid-feedback">This Batch is alraedy exist.</div>
                         <div class="valid-feedback">Looks good!</div>
                     </div>
                     <div class="form-group">
-                        <label for="quickAddEntryDate">Expected Entry Date</label>
-                        <input type="date" class="form-control" id="quickAddEntryDate" name="entry_date" required>
+                        <label for="quickAddEntryDate">Expected Data Collection Date (night of) (optional)</label>
+                        {% comment %} <input type="date" class="form-control" id="quickAddEntryDate" name="entry_date" required> {% endcomment %}
+                        <input type="text" class="form-control" id="quickAddEntryDate" name="entry_date">
                     </div>
                     <div class="form-group">
                         <label for="quickAddComments">Comments</label>
                         <textarea class="form-control" id="quickAddComments" name="comments" rows="3"></textarea>
                     </div>
                     <div class="form-group">
-                        <label for="quickAddTemplate">Template</label>
+                        <label for="quickAddTeamLeader">Team Leader Name</label>
+                        <div class="search-container">
+                            <input type="text" id="quickAddTeamLeader" class="search-field" placeholder="Search Person" autocomplete="off" value="{{ entered_person_full_name }}">
+                            <input type="hidden" id="quickAddTeamLeaderId" name="entered_person_id">
+                            <div id="searchResults" class="search-results"></div>
+                        </div>
+                    </div>
+                    {% comment %} <div class="form-group">
+                        <label for="quickAddTemplate">Template (optional)</label>
                         <select class="form-control" id="quickAddTemplate" name="template">
                             <option value="">Select Template</option>
                             {% for template in templates %}
                                 <option value="{{ template.template_id }}">{{ template.name }}</option>
                             {% endfor %}
                         </select>
+                    </div> {% endcomment %}
+                    <div class="form-group">
+                        <label for="quickAddTemplate">Template (optional))</label>
+                        <div class="search-container">
+                            <input type="text" id="quickAddTemplate" class="search-field" placeholder="Search Template" autocomplete="off">
+                            <input type="hidden" id="quickAddTemplateId" name="template">
+                            <div id="templateSearchResults" class="search-results"></div>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -246,12 +299,107 @@
 {% endblock %}
 
 {% block extra_js %}
+{{ block.super }}
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
+    const adminUrl = "{% url 'admin:wamtram2_trtpersons_add' %}";
     $(document).ready(function() {
+
         // Initialize tooltips
         $('[data-toggle="tooltip"]').tooltip();
-    
-        // Show loading spinner and overlay
+        initializeDatepicker()
+
+        // Initialize the Flatpickr datepicker
+        function initializeDatepicker() {
+            $('#quickAddEntryDate').flatpickr({
+                dateFormat: 'd/m/Y',  // Set the date format to day/month/year
+                enableTime: false,    // Disable time selection
+                altInput: true,       // Show an alternative input field
+                altFormat: "F j, Y",  // Display format for the alternative input
+                defaultDate: null     // No default date
+            });
+        }
+
+        // Search for templates
+        $('#quickAddTemplate').on('input', function() {
+            var searchTerm = $(this).val();
+            if (searchTerm.length >= 2) {
+                $.ajax({
+                    url: "{% url 'wamtram2:search_templates' %}",
+                    data: { 'q': searchTerm },
+                    dataType: 'json',
+                    success: function(data) {
+                        var results = $('#templateSearchResults');
+                        results.empty();
+                        if (data.length > 0) {
+                            results.show();
+                            data.forEach(function(template) {
+                                var div = $('<div class="search-result"></div>');
+                                div.text(template.name);
+                                div.on('click', function() {
+                                    $('#quickAddTemplate').val(template.name);
+                                    $('#quickAddTemplateId').val(template.template_id);
+                                    results.hide();
+                                });
+                                results.append(div);
+                            });
+                        } else {
+                            results.hide();
+                        }
+                    }
+                });
+            } else {
+                $('#templateSearchResults').hide();
+            }
+        });
+
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('.search-container').length) {
+                $('#templateSearchResults').hide();
+            }
+        });
+
+        // Override the default form submission to handle Flatpickr date format
+        $('#quickAddBatchForm').submit(function(e) {
+            e.preventDefault();  // Prevent default form submission
+            showLoadingSpinner(); // Show loading spinner
+
+            // Prepare form data for submission
+            const form = $(this)[0];
+            const formData = new FormData(form);
+
+            const templateValue = $('#quickAddTemplate').val();
+            if (templateValue) {
+                formData.set('template', templateValue);
+            }
+
+            // Use fetch API to submit the form data
+            fetch("{% url 'wamtram2:quick_add_batch' %}", {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    $('#quickAddBatchModal').modal('hide'); // Close modal on success
+                    location.reload(); // Reload the page to reflect changes
+                } else {
+                    alert(data.error); // Show error message
+                    enableButton($('#quickAddBatchConfirm'));
+                    hideLoadingSpinner(); // Hide loading spinner
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while adding the batch.');
+                enableButton($('#quickAddBatchConfirm'));
+                hideLoadingSpinner();
+            });
+        });
+
         function showLoadingSpinner() {
             $('.loading-spinner, .loading-overlay').show();
         }
@@ -282,7 +430,6 @@
                 data: $(this).serialize(),
                 type: 'GET',
                 success: function(response) {
-                    console.log("AJAX response received");
                     $('#batches-table').html($(response.html).find('#batches-table').html());
                     $('.pagination-container').html($(response.html).find('.pagination-container').html());
                     enableButton(button);
@@ -338,6 +485,7 @@
         // Handle location change
         function handleLocationChange(locationSelect, placeSelect) {
             var locationCode = locationSelect.val();
+            showLoadingSpinner()
             $.ajax({
                 url: "{% url 'wamtram2:get_places' %}",
                 data: { 'location_code': locationCode },
@@ -351,19 +499,82 @@
                             'data-full-name': place.get_full_name
                         }));
                     });
+                    hideLoadingSpinner();
+                },
+                error: function() {
+                    hideLoadingSpinner();
+                    alert('An error occurred while loading places.');
                 }
             });
         }
+
+        $('#quickAddLocation, #quickAddYear').change(function() {
+            generateBatchCode();
+            updateComments();
+        });
+    
+        $('#quickAddPlace, #quickAddYear').change(function() {
+            generateBatchCode();
+            updateComments();
+        });
+    
+        $('#quickAddNight').change(generateBatchCode);
+        $('#quickAddNight, #quickAddEntryDate').change(updateComments);
     
         // Generate batch code
         function generateBatchCode() {
+            var locationCode = $('#quickAddLocation').val();
             var night = $('#quickAddNight').val();
             var placeCode = $('#quickAddPlace').val();
-            var year = $('#quickAddYear').val().slice(-2);
-            if (night && placeCode && year) {
-                var batchCode = 'N' + night + placeCode + year;
+            var year = $('#quickAddYear').val();
+            if (locationCode && year && !placeCode) {
+                var batchCode = locationCode + year.slice(-2);
+                if (night) {
+                    batchCode = 'N' + night + batchCode;
+                }
                 $('#quickAddBatchCode').val(batchCode);
                 checkBatchCodeUniqueness(batchCode);
+            }
+            if (placeCode && year) {
+                var batchCode = placeCode + year.slice(-2);
+                if (night) {
+                    batchCode = 'N' + night + batchCode;
+                }
+                $('#quickAddBatchCode').val(batchCode);
+                checkBatchCodeUniqueness(batchCode);
+            }
+        }
+
+        function updateComments() {
+            var locationSelect = $('#quickAddLocation');
+            var locationSelectCode = $('#quickAddLocation').val();
+            var selectedLocation = locationSelect.find('option:selected').text();
+            var selectedPlaceCode = $('#quickAddPlace').val();
+            var selectedPlace = placesData.find(place => place.place_code === selectedPlaceCode);
+            var placeFullName = selectedPlace ? selectedPlace.full_name : '';
+            var night = $('#quickAddNight').val();
+            var entryDate = $('#quickAddEntryDate').val();
+            var year = $('#quickAddYear').val();
+            if (selectedLocation && year && !selectedPlaceCode) {
+                var comments = selectedLocation + ' - ' + year;
+                if (night) {
+                    comments += ' - Night ' + night;
+                }
+                if (entryDate) {
+                    comments += ' - ' + entryDate;
+                }
+                $('#quickAddComments').val(comments);
+            }
+            
+            if (placeFullName && year) {
+                var comments = placeFullName + ' - ' + year;
+                if (night) {
+                    comments += ' - Night ' + night;
+                }
+                if (entryDate) {
+                    comments += ' - ' + entryDate;
+                }
+                $('#quickAddComments').val(comments);
             }
         }
     
@@ -390,18 +601,7 @@
         }
     
         var placesData = {{ places_json|safe }};
-        // Update comments
-        function updateComments() {
-            var selectedPlaceCode = $('#quickAddPlace').val();
-            var selectedPlace = placesData.find(place => place.place_code === selectedPlaceCode);
-            var placeFullName = selectedPlace ? selectedPlace.full_name : '';
-            var night = $('#quickAddNight').val();
-            var entryDate = $('#quickAddEntryDate').val();
-            if (placeFullName && night && entryDate) {
-                var comments = placeFullName + ' - Night ' + night + ' - ' + entryDate;
-                $('#quickAddComments').val(comments);
-            }
-        }
+
     
         // Event listeners
         $('#location').change(function() {
@@ -423,9 +623,6 @@
                 $('#quickAddPlace').empty().append('<option value="">Select Place</option>');
             }
         });
-    
-        $('#quickAddNight, #quickAddPlace, #quickAddYear').change(generateBatchCode);
-        $('#quickAddPlace, #quickAddNight, #quickAddEntryDate').change(updateComments);
         
         $('#quickAddBatchCode').on('input', function() {
             checkBatchCodeUniqueness($(this).val());
@@ -486,9 +683,9 @@
         $('#showAllBatches').click(function() {
             $('#location, #place, #year').val('');
             showLoadingSpinner();
-            loadBatches("{% url 'wamtram2:batches_curation' %}?show_all=true");
+            loadBatches("{% url 'wamtram2:batches_curation' %}?show_all=true&page=1");
         });
-    
+
         function loadBatches(url) {
             $.ajax({
                 url: url,
@@ -497,14 +694,69 @@
                     $('#batches-table').html($(data.html).find('#batches-table').html());
                     $('.pagination-container').html($(data.html).find('.pagination-container').html());
                     $('#initial-message').toggle($(data.html).find('#initial-message').length > 0);
+                    
+                    history.pushState(null, '', url);
+                    
                     hideLoadingSpinner();
                 },
                 error: function() {
                     hideLoadingSpinner();
-                    alert('An error occurred while loading batches.');
+                    alert('An error occurred while loading the batches.');
                 }
             });
         }
     });
-    </script>
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var teamLeaderInput = document.getElementById('quickAddTeamLeader');
+        var teamLeaderIdInput = document.getElementById('quickAddTeamLeaderId');
+        var searchResults = document.getElementById('searchResults');
+    
+        let isSelecting = false; // To indicate selection
+
+        teamLeaderInput.addEventListener('input', function() {
+            if (isSelecting) return; // If selecting, ignore input event
+        
+            var searchTerm = this.value;
+            if (searchTerm.length >= 2) {
+                fetch(`/wamtram2/search-persons/?q=${searchTerm}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        searchResults.innerHTML = '';
+                        if (data.length > 0) {
+                            searchResults.style.display = 'block';
+                            data.forEach(person => {
+                                var div = document.createElement('div');
+                                div.className = 'search-result';
+                                div.textContent = `${person.first_name} ${person.surname}`;
+                                div.addEventListener('click', function() {
+                                    isSelecting = true; // Mark that selection is happening
+                                    teamLeaderInput.value = `${person.first_name} ${person.surname}`;
+                                    teamLeaderIdInput.value = person.person_id;
+                                    searchResults.style.display = 'none';
+                                    isSelecting = false; // Reset selection mark after choosing
+                                });
+                                searchResults.appendChild(div);
+                            });
+                        } else {
+                            searchResults.style.display = 'none';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        searchResults.style.display = 'none';
+                    });
+            } else {
+                searchResults.style.display = 'none';
+            }
+        });
+            
+    
+        document.addEventListener('click', function(e) {
+            if (e.target !== teamLeaderInput && !searchResults.contains(e.target)) {
+                searchResults.style.display = 'none';
+            }
+        });
+    });
+</script>
 {% endblock %}
