@@ -272,6 +272,9 @@ class TrtDataEntryForm(forms.ModelForm):
             'placeholder': 'Enter name',
         })
         
+        if self.instance.pk:
+            if self.instance.observation_date:
+                self.initial['observation_date'] = self.instance.observation_date - timedelta(hours=8)
         
         nesting_choices = TrtYesNo.objects.filter(code__in=['N', 'P', 'Y'])
         self.fields['nesting'].queryset = nesting_choices

@@ -1,6 +1,7 @@
 {% extends "base_wastd.html" %}
 {% load static bootstrap4 %}
 {% load group_filters %}
+{% load perth_time_filters %}
 
 {% block extra_style %}
   {{ block.super }}
@@ -113,7 +114,7 @@
               <div class="col-md-auto"><strong>Sex:</strong> {{ turtle.sex }}</div>
               <div class="col-md-auto"><strong>Species:</strong> {{ turtle.species_code }}</div>
               {% if first_observation_date %}
-              <div class="col-md-auto"><strong>First Observed:</strong> {{ first_observation_date|date:"Y-m-d" }}</div>
+              <div class="col-md-auto"><strong>First Observed:</strong> {{ first_observation_date|perth_time|date:"Y-m-d" }}</div>
               {% endif %}
               {% if latest_site %}
               <div class="col-md-auto"><strong>Latest Site:</strong> {{ latest_site }}</div>
