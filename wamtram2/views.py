@@ -393,12 +393,12 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         if entry_id:
             trtdataentry = get_object_or_404(TrtDataEntry, data_entry_id=entry_id)
 
-            if trtdataentry.observation_date:
-                print("orign:",trtdataentry.observation_date)
+            # if trtdataentry.observation_date:
+            #     print("orign:",trtdataentry.observation_date)
                     
-                adjusted_date = trtdataentry.observation_date + timedelta(hours=8)
-                print("fixed",adjusted_date)
-                initial['observation_date'] = adjusted_date
+            #     adjusted_date = trtdataentry.observation_date + timedelta(hours=8)
+            #     print("fixed",adjusted_date)
+            #     initial['observation_date'] = adjusted_date
 
             
             measured_by = trtdataentry.measured_by
