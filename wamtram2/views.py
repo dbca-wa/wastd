@@ -28,6 +28,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 import json
 import csv
 from django.core.exceptions import ValidationError
+from datetime import timedelta
 
 
 from wastd.utils import Breadcrumb, PaginateMixin
@@ -937,7 +938,13 @@ class ObservationDetailView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         obj = get_object_or_404(TrtObservations, observation_id=self.kwargs.get("pk"))
         
+        if obj.observation_date:
+            obj.observation_date -= timedelta(hours=8)
+        if obj.observation_time:
+            obj.observation_time -= timedelta(hours=8)
+        
         context["observation"] = obj
+        
         context["tags"] = obj.trtrecordedtags_set.all()
         context["pittags"] = obj.trtrecordedpittags_set.all()
         context["measurements"] = obj.trtmeasurements_set.all()

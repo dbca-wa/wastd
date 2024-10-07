@@ -508,7 +508,6 @@ class TrtDataEntryForm(forms.ModelForm):
         
         
         if instance.observation_date:
-            # 直接给观察日期加8小时
             instance.observation_date += timedelta(hours=8)
             instance.observation_time = instance.observation_date
 
