@@ -1,5 +1,7 @@
 {% extends "base_wastd.html" %}
 {% load group_filters %}
+{% load perth_time_filters %}
+
 
 {% block breadcrumbs %}
 <!-- Breadcrumb Navigation -->
@@ -129,6 +131,7 @@
                         {% else %}
                             {{ observation.observation_date_as_datetime|perth_time|date:"j M Y H:i" }}
                         </td>
+                        {% endif %}
                     <td>{{ observation.reporter_person }}</td>
                     <td>{{ observation.measurer_person }}</td>
                     <td>{{ observation.place_code }}</td>
