@@ -731,10 +731,6 @@ class TrtDataEntry(models.Model):
     recapture_left_tag_barnacles_2 = models.BooleanField(default=False, db_column='RECAPTURE_LEFT_TAG_BARNACLES_2')
     recapture_right_tag_barnacles = models.BooleanField(default=False, db_column='RECAPTURE_RIGHT_TAG_BARNACLES')
     recapture_right_tag_barnacles_2 = models.BooleanField(default=False, db_column='RECAPTURE_RIGHT_TAG_BARNACLES_2')
-    new_left_tag_barnacles = models.BooleanField(default=False, db_column='NEW_LEFT_TAG_BARNACLES')
-    new_left_tag_barnacles_2 = models.BooleanField(default=False, db_column='NEW_LEFT_TAG_BARNACLES_2')
-    new_right_tag_barnacles = models.BooleanField(default=False, db_column='NEW_RIGHT_TAG_BARNACLES')
-    new_right_tag_barnacles_2 = models.BooleanField(default=False, db_column='NEW_RIGHT_TAG_BARNACLES_2')
     
     # Measurements
     # Curved carapace length min
