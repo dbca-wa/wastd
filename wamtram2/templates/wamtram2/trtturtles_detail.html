@@ -1,4 +1,5 @@
 {% extends "base_wastd.html" %}
+{% load group_filters %}
 
 {% block breadcrumbs %}
 <!-- Breadcrumb Navigation -->
@@ -60,47 +61,49 @@
     </div>
 </div>
 
-<!-- Tags Section -->
-<div class="row">
-    <div class="col">
-        <h3>Tags</h3>
+{% if request.user.is_superuser or request.user|has_group:"WAMTRAM2_STAFF" or request.user|has_group:"WAMTRAM2_TEAM_LEADER" %}
+    <!-- Tags Section -->
+    <div class="row">
+        <div class="col">
+            <h3>Tags</h3>
+        </div>
     </div>
-</div>
-{% if tags or pittags %}
-<div class="row">
-    <div class="col">
-        <table class="table table-striped table-bordered table-sm">
-            <thead>
-                <tr>
-                    <th>Tag type</th>
-                    <th>Serial</th>
-                    <th>Side</th>
-                    <th>Comments</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for tag in tags %}
-                <tr>
-                    <td>Flipper</td>
-                    <td>{{ tag.tag_id }}</td>
-                    <td>{{ tag.side|default_if_none:"" }}</td>
-                    <td>{{ tag.comments|default_if_none:"" }}</td>
-                </tr>
-                {% endfor %}
-                {% for tag in pittags %}
-                <tr>
-                    <td>PIT</td>
-                    <td>{{ tag.pittag_id }}</td>
-                    <td>{{ tag.pit_tag_position|default_if_none:"" }}</td>
-                    <td>{{ tag.comments|default_if_none:"" }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    {% if tags or pittags %}
+    <div class="row">
+        <div class="col">
+            <table class="table table-striped table-bordered table-sm">
+                <thead>
+                    <tr>
+                        <th>Tag type</th>
+                        <th>Serial</th>
+                        <th>Side</th>
+                        <th>Comments</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tag in tags %}
+                    <tr>
+                        <td>Flipper</td>
+                        <td>{{ tag.tag_id }}</td>
+                        <td>{{ tag.side|default_if_none:"" }}</td>
+                        <td>{{ tag.comments|default_if_none:"" }}</td>
+                    </tr>
+                    {% endfor %}
+                    {% for tag in pittags %}
+                    <tr>
+                        <td>PIT</td>
+                        <td>{{ tag.pittag_id }}</td>
+                        <td>{{ tag.pit_tag_position|default_if_none:"" }}</td>
+                        <td>{{ tag.comments|default_if_none:"" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
-</div>
-{% else %}
-<p>None recorded</p>
+    {% else %}
+    <p>None recorded</p>
+    {% endif %}
 {% endif %}
 
 <!-- Observations Section -->
@@ -120,7 +123,13 @@
             <tbody>
                 {% for observation in observations %}
                 <tr>
-                    <td><a href="{% url 'wamtram2:observationdetail' pk=observation.observation_id %}">{{ observation.observation_date|date:"j M Y" }} {{ observation.observation_time|date:"H:i" }}</a></td>
+                    <td>
+                        {% if request.user.is_superuser or request.user|has_group:"WAMTRAM2_STAFF" or request.user|has_group:"WAMTRAM2_TEAM_LEADER" %}
+                            <a href="{% url 'wamtram2:observationdetail' pk=observation.observation_id %}">{{ observation.observation_date|date:"j M Y" }} {{ observation.observation_time|date:"H:i" }}</a>
+                        {% else %}
+                            {{ observation.observation_date|date:"j M Y" }} {{ observation.observation_time|date:"H:i" }}
+                        {% endif %}
+                        </td>
                     <td>{{ observation.reporter_person }}</td>
                     <td>{{ observation.measurer_person }}</td>
                     <td>{{ observation.place_code }}</td>

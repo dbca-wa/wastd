@@ -731,10 +731,6 @@ class TrtDataEntry(models.Model):
     recapture_left_tag_barnacles_2 = models.BooleanField(default=False, db_column='RECAPTURE_LEFT_TAG_BARNACLES_2')
     recapture_right_tag_barnacles = models.BooleanField(default=False, db_column='RECAPTURE_RIGHT_TAG_BARNACLES')
     recapture_right_tag_barnacles_2 = models.BooleanField(default=False, db_column='RECAPTURE_RIGHT_TAG_BARNACLES_2')
-    new_left_tag_barnacles = models.BooleanField(default=False, db_column='NEW_LEFT_TAG_BARNACLES')
-    new_left_tag_barnacles_2 = models.BooleanField(default=False, db_column='NEW_LEFT_TAG_BARNACLES_2')
-    new_right_tag_barnacles = models.BooleanField(default=False, db_column='NEW_RIGHT_TAG_BARNACLES')
-    new_right_tag_barnacles_2 = models.BooleanField(default=False, db_column='NEW_RIGHT_TAG_BARNACLES_2')
     
     # Measurements
     # Curved carapace length min
@@ -1362,7 +1358,7 @@ class TrtLocations(models.Model):
 
     @staticmethod
     def get_ordered_locations():
-        priority_codes = ['BW', 'CD', 'CL', 'DA', 'DH', 'LA', 'LO', 'MN', 'RI', 'TH', 'VA', 'WK', 'PH']
+        priority_codes = ['BW', 'CL', 'DA', 'DH', 'LO', 'MN', 'RI', 'TH', 'VA', 'WK', 'PH']
 
         custom_order = Case(
             *[When(location_code=code, then=Value(i)) for i, code in enumerate(priority_codes)],
@@ -2150,6 +2146,11 @@ class TrtSighting(models.Model):
     class Meta:
         managed = False
         db_table = "TRT_SIGHTING"
+        
+
+class TrtSpeciesManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().exclude(species_code='0')
 
 
 class TrtSpecies(models.Model):
@@ -2168,6 +2169,8 @@ class TrtSpecies(models.Model):
     hide_dataentry = models.BooleanField(
         db_column="Hide_DataEntry"
     )  # Field name made lowercase.
+    
+    objects = TrtSpeciesManager()
 
     class Meta:
         managed = False
@@ -2175,6 +2178,7 @@ class TrtSpecies(models.Model):
 
     def __str__(self):
         return f"{self.common_name}"
+    
 
 
 class TrtTags(models.Model):

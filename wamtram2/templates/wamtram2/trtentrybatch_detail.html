@@ -57,7 +57,7 @@
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-            <li class="breadcrumb-item"><a href="{% url 'wamtram2:batches_curation' %}">Entry batches</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'wamtram2:batches_curation' %}">Manage Batches</a></li>
             <li class="breadcrumb-item active">{{ batch.entry_batch_id }}</li>
         </ol>
     </nav>
@@ -92,7 +92,7 @@
             <div class="col-12">
                 <div class="float-right">
                     <a href="{% url 'wamtram2:add_batches_code' batch_id=batch.entry_batch_id %}" class="btn btn-primary">
-                        Manage Batch Detail
+                        Manage Details
                     </a>
                 </div>
             </div>
@@ -138,8 +138,12 @@
         <div class="step-header">Entries Validation & Processing</div>
         <div class="row">
             <div class="col-md-8">
+                {% if request.user.is_superuser or request.user|has_group:"WAMTRAM2_STAFF" or request.user|has_group:"WAMTRAM2_TEAM_LEADER"%}
                 <a id="validateBtn" href="{% url 'wamtram2:validate_data_entry_batch' batch_id=batch.entry_batch_id %}" class="btn btn-primary mr-2">Validate this Batch</a>
+                {% endif %}
+                {% if request.user.is_superuser %}
                 <a id="processBtn" href="{% url 'wamtram2:process_data_entry_batch' batch_id=batch.entry_batch_id %}" class="btn btn-primary">Add this batch to the database</a>
+                {% endif %}
             </div>
             <div class="col-md-4">
                 <form method="get" class="form-inline float-right">

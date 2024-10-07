@@ -98,7 +98,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function validateTag(tagInput, validationMessage, detailedMessage, type, side) {
         const turtleId = turtleIdInput ? turtleIdInput.value : null;
-        const tagId = tagInput ? tagInput.value : null;
+        let tagId = tagInput ? tagInput.value.trim().toUpperCase() : null;
+
+        tagInput.value = tagId;
     
         tagInput.classList.remove('is-valid', 'is-invalid', 'is-warning');
     
@@ -141,9 +143,13 @@ document.addEventListener('DOMContentLoaded', function() {
                         setValidationStatus(tagInput, validationMessage, detailedMessage, 'invalid', '✗ Invalid tag:', `Tag status - ${data.status}`);
                         doNotProcessField.checked = true;
                     } else if (data.tag_not_found) {
-                        setValidationStatus(tagInput, validationMessage, detailedMessage, 'invalid', '✗ Invalid tag: Tag not found (Please remove it from here and add it to the comment area)');
-                        doNotProcessField.checked = true;
-                        
+                        if(!turtleId && (type === 'recaptured_tag' || type === 'recaptured_pit_tag')) {
+                            setValidationStatus(tagInput, validationMessage, detailedMessage, 'invalid', '? Untagged turtle with old tag');
+                            doNotProcessField.checked = true;
+                        }else{
+                            setValidationStatus(tagInput, validationMessage, detailedMessage, 'invalid', '✗ Invalid tag: Tag not found (Please remove it from here and add it to the comment area)');
+                            doNotProcessField.checked = true;
+                        }
                     } else {
                         setValidationStatus(tagInput, validationMessage, detailedMessage, 'invalid', '✗ Invalid tag');
                         doNotProcessField.checked = true;
@@ -190,10 +196,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 e.preventDefault();
                 removeTagAndAddToComment(input);
             });
+        } else if (status === 'invalid' && message.includes('Untagged turtle with old tag')) {
+            detailedMessage.innerHTML = `${detailedMessageText} <a href="#" class="remove-tag-link">Remove the tag</a>`;
+            const link = detailedMessage.querySelector('.remove-tag-link');
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                removeTag(input);
+            });
         } else {
             detailedMessage.innerHTML = detailedMessageText;
         }
 
+    }
+
+    function removeTag(input) {
+        input.value = '';
+        input.dispatchEvent(new Event('blur'));
     }
 
     function removeTagAndAddToComment(input) {
