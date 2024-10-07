@@ -1,6 +1,6 @@
 from django import forms
 from easy_select2 import apply_select2
-from .models import TrtPersons, TrtDataEntry, TrtTags, TrtEntryBatches, TrtPlaces, TrtPitTags, Template, TrtObservations,TrtTagStates, TrtMeasurementTypes,TrtYesNo,TrtSpecies
+from .models import TrtPersons, TrtDataEntry, TrtTags, TrtEntryBatches, TrtPlaces, TrtPitTags, Template, TrtObservations,TrtTagStates, TrtMeasurementTypes,TrtYesNo
 from django_select2.forms import ModelSelect2Widget
 from django.core.validators import RegexValidator
 from django.db.models import Case, When, IntegerField
@@ -271,8 +271,6 @@ class TrtDataEntryForm(forms.ModelForm):
             'class': 'form-control', 
             'placeholder': 'Enter name',
         })
-        
-        self.fields['species_code'].queryset = TrtSpecies.objects.exclude(species_code='0')
         
         
         nesting_choices = TrtYesNo.objects.filter(code__in=['N', 'P', 'Y'])
