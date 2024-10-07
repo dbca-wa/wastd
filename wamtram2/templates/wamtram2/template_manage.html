@@ -1,5 +1,6 @@
 {% extends "base_wastd.html" %}
 {% load static bootstrap4 %}
+{% load group_filters %}
 
 {% block extra_style %}
     {{ block.super }}
@@ -232,11 +233,13 @@
                             </div>
                         </form>
                     </div>
+                    {% if request.user.is_superuser or request.user|has_group:"WAMTRAM2_STAFF" %}
                     <div class="row mb-3">
                         <div class="col-md-2">
                             <button type="button" class="btn btn-danger btn-block" onclick="deleteTemplate('{{ template.template_id }}')">Delete</button>
                         </div>
                     </div>
+                    {% endif %}
                 </div>
                 <hr>
             {% endfor %}

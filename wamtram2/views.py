@@ -569,12 +569,10 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
 
 
 class DeleteBatchView(LoginRequiredMixin, View):
-
     def dispatch(self, request, *args, **kwargs):
         # FIXME: Permission check
         if not (
-            request.user.groups.filter(name="WAMTRAM2_TEAM_LEADER").exists()
-            or request.user.groups.filter(name="WAMTRAM2_STAFF").exists()
+            request.user.groups.filter(name="WAMTRAM2_STAFF").exists()
             or request.user.is_superuser
         ):
             return HttpResponseForbidden(
@@ -609,7 +607,8 @@ class ValidateDataEntryBatchView(LoginRequiredMixin, View):
     def dispatch(self, request, *args, **kwargs):
         # FIXME: Permission check
         if not (
-            request.user.groups.filter(name="WAMTRAM2_STAFF").exists()
+            request.user.groups.filter(name="WAMTRAM2_TEAM_LEADER").exists()
+            or request.user.groups.filter(name="WAMTRAM2_STAFF").exists()
             or request.user.is_superuser
         ):
             return HttpResponseForbidden(
