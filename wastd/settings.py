@@ -213,7 +213,7 @@ DATETIME_INPUT_FORMATS = (
 TIME_ZONE = "Australia/Perth"
 TZ = ZoneInfo(TIME_ZONE)
 UTC = ZoneInfo("UTC")
-USE_TZ = False
+# USE_TZ = False
 
 
 # Email settings.
