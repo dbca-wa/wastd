@@ -4,6 +4,10 @@ from .models import TrtPersons, TrtDataEntry, TrtTags, TrtEntryBatches, TrtPlace
 from django_select2.forms import ModelSelect2Widget
 from django.core.validators import RegexValidator
 from django.db.models import Case, When, IntegerField
+from django.utils import timezone
+from datetime import timedelta
+from django.conf import settings
+
 
 
 tagWidget = ModelSelect2Widget(
@@ -500,7 +504,13 @@ class TrtDataEntryForm(forms.ModelForm):
         #     instance.measured_recorded_by = "{} {}".format(person.first_name, person.surname)
 
         # Set the observation_time to the same value as the observation_date
-        instance.observation_time = instance.observation_date
+        
+        
+        
+        if instance.observation_date:
+            perth_tz = timezone.pytz.timezone(settings.TIME_ZONE)
+            instance.observation_date = perth_tz.localize(instance.observation_date.replace(tzinfo=None))
+            instance.observation_time = instance.observation_date
 
         # Save the instance to the database
         if commit:
