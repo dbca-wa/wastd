@@ -28,6 +28,14 @@
 </style>
 {% endblock %}
 
+{% block breadcrumbs %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+    </ol>
+</nav>
+{% endblock %}
+
 
 {% block page_content_inner %}
 <div class="container-fluid mt-5 mb-5">
