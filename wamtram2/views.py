@@ -1335,7 +1335,7 @@ class ValidateTagView(View):
                     else:
                         return JsonResponse({'valid': True})
                 else:
-                    return JsonResponse({'valid': False, 'message': 'PIT tag not found'})
+                    return JsonResponse({'valid': False, 'message': 'PIT tag not found', 'tag_not_found': True})
             else:
                 new_pit_tag_entry = TrtDataEntry.objects.filter(
                 Q(new_pittag_id__pittag_id=tag) |
