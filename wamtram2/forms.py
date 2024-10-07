@@ -423,10 +423,6 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["recapture_left_tag_barnacles_2"].required = False
         self.fields["recapture_right_tag_barnacles"].required = False
         self.fields["recapture_right_tag_barnacles_2"].required = False
-        self.fields["new_left_tag_barnacles"].required = False
-        self.fields["new_left_tag_barnacles_2"].required = False
-        self.fields["new_right_tag_barnacles"].required = False
-        self.fields["new_right_tag_barnacles_2"].required = False
         self.fields["identifier"].required = False
         self.fields["identification_type"].required = False
         
