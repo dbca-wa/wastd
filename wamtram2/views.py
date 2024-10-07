@@ -938,21 +938,25 @@ class ObservationDetailView(LoginRequiredMixin, DetailView):
         return super().dispatch(request, *args, **kwargs)
 
 
+    def get_object(self, queryset=None):
+        if queryset is None:
+            queryset = self.get_queryset()
+        
+        queryset = queryset.annotate(
+            observation_date_as_datetime=Cast('observation_date', DateTimeField())
+        )
+        
+        return super().get_object(queryset)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        obj = get_object_or_404(TrtObservations, observation_id=self.kwargs.get("pk"))
-        
-        if obj.observation_date:
-            obj.observation_date -= timedelta(hours=8)
-        if obj.observation_time:
-            obj.observation_time -= timedelta(hours=8)
+        obj = self.object
         
         context["observation"] = obj
         
         context["tags"] = obj.trtrecordedtags_set.all()
         context["pittags"] = obj.trtrecordedpittags_set.all()
         context["measurements"] = obj.trtmeasurements_set.all()
-        
         
         if obj.place_code:
             context["place_full_name"] = obj.place_code.get_full_name()

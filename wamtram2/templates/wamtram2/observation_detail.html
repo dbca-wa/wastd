@@ -15,7 +15,7 @@
 {% block page_content_inner %}
 <div class="row">
     <div class="col-xs-12 col-sm-6">
-        <h2>Observation {{ object.observation_date|perth_time }}</h2>
+        <h2>Observation {{ object.observation_date_as_datetime|perth_time }}</h2>
     </div>
 </div>
 <div class="row">
@@ -28,8 +28,8 @@
             </tr>
             <tr>
               <th>Date observed</th>
-              {% comment %} <td>{{ object.observation_date|perth_time|date:"j M Y" }} {{ object.observation_time|perth_time_only|time:"H:i" }}</td> {% endcomment %}
-              <td>{{ object.observation_date|perth_time }}</td>
+              {% comment %} <td>{{ object.observation_date_as_datetime|perth_time|date:"j M Y" }} {{ object.observation_time|perth_time_only|time:"H:i" }}</td> {% endcomment %}
+              <td>{{ object.observation_date_as_datetime|perth_time }}</td>
             </tr>
             <tr>
               <th>Entered by</th>
