@@ -1,5 +1,6 @@
 {% extends "base_wastd.html" %}
 {% load static bootstrap4 %}
+{% load group_filters %}
 
 {% block extra_style %}
   {{ block.super }}
@@ -17,12 +18,16 @@
       text-align: center;
     }
     .batch-code {
-      font-size: 1.2em;
+      font-size: 1.0emem;
       font-weight: bold;
+      color: #6c757d;
     }
     .batch-comment {
       font-size: 0.9em;
-      color: #6c757d;
+      font-weight: bold;
+    }
+    .alert-info {
+      margin-bottom: 0 !important;
     }
   </style>
 {% endblock %}
@@ -37,7 +42,10 @@
 <nav aria-label="breadcrumb">
   <ol class="breadcrumb">
     <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-    <li class="breadcrumb-item"><a href="{% url 'wamtram2:batches_curation' %}">Batches Curation</a></li>
+    {% if request.user.is_superuser or request.user|has_group:"WAMTRAM2_STAFF" or request.user|has_group:"WAMTRAM2_TEAM_LEADER" %}
+    <li class="breadcrumb-item"><a href="{% url 'wamtram2:batches_curation' %}">Manage Batches</a></li>
+    {% endif %}
+    <li class="breadcrumb-item"><a href="{% url 'wamtram2:create_new_entry' %}">Create New Entry</a></li>
     {% if form.batch_id.value %}
     <li class="breadcrumb-item"><a href="{% url 'wamtram2:entry_batch_detail' form.batch_id.value %}">{{ form.batch_id.value }}</a></li>
     {% endif %}
@@ -46,7 +54,7 @@
 {% endblock %}
 
 {% block page_content_inner %}
-<div class="container-fluid mt-5 mb-5">
+<div class="container mt-5 mb-5">
   <div class="row">
     <div class="col col-12 mb-3">
       <div class="card card-lg shadow-lg">
@@ -64,7 +72,7 @@
             <a id="createForUntaggedTurtle" href="{% url 'wamtram2:newtrtdataentry' batch_id=form.batch_id.value %}" class="btn btn-primary">Create New Untagged Turtle</a>
           </div>
           <div class="text-center mt-4">or</div>
-          <h5 class="text-center mt-4">Search for a Tagged Turtle</h5>
+          <h5 class="text-center mt-4">Create for a Tagged Turtle</h5>
           <form method="post" class="w-50 mx-auto text-center mt-3" id="searchForm">
             {% csrf_token %}
             <div class="form-group">
@@ -72,6 +80,7 @@
               <input type="text" class="form-control" id="tag_id" name="tag_id" required>
             </div>
             <input type="hidden" id="tag_type" name="tag_type" value="{{ tag_type }}">
+            <input type="hidden" id="tag_side" name="tag_side" value="{{ tag_side }}">
             <input type="hidden" id="set_do_not_process" name="set_do_not_process" value="false">
             <input type="hidden" id="batch_id" name="batch_id" value="{{ form.batch_id.value }}">
             <div class="row justify-content-center">
@@ -80,6 +89,7 @@
           </form>
           
           <div class="text-center mt-4">{% bootstrap_form_errors form %}</div>
+
           <div id="tag-suggestion" class="alert alert-warning mt-3" style="display: none;">
             {% comment %} <p>Sorry we cannot find the tag in our database, or it was set as unavailable.</br></p> {% endcomment %}
             <p>It seems you forgot to add a space in the tag ID: <strong><span id="suggested-tag"></span></strong></p>
@@ -92,16 +102,13 @@
             <button id="exactMatchYes" class="btn btn-primary">Yes, I have double checked</button>
             <button id="exactMatchNo" class="btn btn-secondary">No, I will reenter</button>
           </div>
+          
           {% if turtle %}
           <div class="container border pb-3 mt-3">
             <div class="mt-3 row justify-content-md-center">
               <div class="col-md-auto">
                 <strong>ID:</strong> 
-                {% if user.is_superuser or user.groups.all.0.name == 'Tagging Data Curation' %}
                   <a href="{% url 'wamtram2:turtle_detail' turtle.turtle_id %}" target="_blank">{{ turtle.turtle_id }}</a>
-                {% else %}
-                  {{ turtle.turtle_id }}
-                {% endif %}
               </div>
               <div class="col-md-auto"><strong>Sex:</strong> {{ turtle.sex }}</div>
               <div class="col-md-auto"><strong>Species:</strong> {{ turtle.species_code }}</div>
@@ -127,7 +134,24 @@
               <input type="hidden" id="batch_id" name="batch_id" value="{{ form.batch_id.value }}">
               <button id="createAndReviewLater" type="submit" class="btn btn-secondary mt-2 ml-md-2">No, create the record and review later</button>
             </form>
-          </div>          
+          </div> 
+          {% elif new_tag_entry %}
+          <div class="alert alert-info mt-3">
+            <p>No existing turtle found with this tag in the database, but an entry with this tag was found within this season:</p>
+          </div>
+          <div class="container border pb-3 mt-3">
+            <div class="mt-3 row justify-content-md-center">
+              <div class="col-md-auto"><strong>Entry ID:</strong> {{ new_tag_entry.data_entry_id }}</div>
+              <div class="col-md-auto"><strong>Observation Date:</strong> {{ new_tag_entry.entry_batch.entry_date|date:"Y-m-d" }}</div>
+              <div class="col-md-auto"><strong>Place:</strong> {{ new_tag_entry.place_code.place_name }}</div>
+              <div class="col-md-auto"><strong>Species:</strong> {{ new_tag_entry.species_code.common_name }}</div>
+              <div class="col-md-auto"><strong>Sex:</strong> {{ new_tag_entry.sex }}</div>
+            </div>
+          </div>
+          <div class="text-center mt-4">
+            <p class="mt-3">This may be a recapture of a new turtle from this season</p>
+            <a href="{% url 'wamtram2:newtrtdataentry' batch_id=form.batch_id.value %}" class="btn btn-primary mt-2">Create New Data Entry</a>
+          </div>
           {% endif %}
         </div>
       </div>
@@ -266,13 +290,11 @@
           break;
   
         case 'exactMatchYes':
-          console.log('exactMatchYes button clicked');
           document.cookie = `${batchId}_do_not_process=true; path=/`;
-          console.log(`Cookie set: ${document.cookie}`);
           document.getElementById('set_do_not_process').value = "true";
           // Redirect to the newtrtdataentry page
           const newDataEntryURL = `{% url 'wamtram2:newtrtdataentry' batch_id=form.batch_id.value %}`;
-          console.log(`Redirecting to: ${newDataEntryURL}`);
+
           window.location.href = newDataEntryURL;
           showLoadingSpinner(); // Show spinner for page navigation
           showLoadingOverlay(); // Show overlay for page navigation
@@ -305,7 +327,6 @@
           showLoadingOverlay(); // Show overlay for page navigation
           break;
 
-  
         default:
           hideLoadingSpinner(); // Hide spinner for any other cases not causing navigation or submission
           hideLoadingOverlay(); // Hide overlay for any other cases not causing navigation or submission
@@ -328,5 +349,25 @@
     }
     {% endif %}
   });
+
+    document.addEventListener('DOMContentLoaded', function() {
+      function clearFormAndResults() {
+        document.getElementById('searchForm').reset();
+        document.getElementById('tag-suggestion').style.display = 'none';
+        document.getElementById('exact-match-prompt').style.display = 'none';
+      }
+  
+      window.addEventListener('pageshow', function(event) {
+        if (event.persisted) {
+          clearFormAndResults();
+        }
+      });
+  
+      var urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('clear_cookies') === 'true') {
+        clearFormAndResults();
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+    });
 </script>
 {% endblock %}

@@ -97,32 +97,41 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     function validateTag(tagInput, validationMessage, detailedMessage, type, side) {
-        const turtleId = turtleIdInput.value;
-        const tagId = tagInput.value;
+        const turtleId = turtleIdInput ? turtleIdInput.value : null;
+        let tagId = tagInput ? tagInput.value.trim().toUpperCase() : null;
+
+        tagInput.value = tagId;
     
         tagInput.classList.remove('is-valid', 'is-invalid', 'is-warning');
     
-        if (!turtleId && tagId && (type === 'recaptured_tag' || type === 'recaptured_pit_tag')) {
-            setValidationStatus(tagInput, validationMessage, detailedMessage, 'invalid', '✗ invalid untagged turtle with recapture tag');
-            doNotProcessField.checked = true;
-            updateBackgroundColor();
-            return;
-        }
+        // if (!turtleId && tagId && (type === 'recaptured_tag' || type === 'recaptured_pit_tag')) {
+        //     setValidationStatus(tagInput, validationMessage, detailedMessage, 'invalid', '✗ invalid untagged turtle with recapture tag');
+        //     doNotProcessField.checked = true;
+        //     updateBackgroundColor();
+        //     return;
+        // }
     
         if (tagId) {
             let url = `/wamtram2/validate-tag/?type=${type}&tag=${tagId}`;
-            if (type === 'recaptured_tag') {
+            if (type === 'recaptured_tag' && turtleId) {
                 url += `&turtle_id=${turtleId}&side=${side}`;
-            } else if (type === 'recaptured_pit_tag') {
+            } else if (type === 'recaptured_pit_tag' && turtleId) {
                 url += `&turtle_id=${turtleId}`;
+            } else if (type === 'recaptured_tag' && !turtleId) {
+                url += `&side=${side}`;
             }
     
             fetch(url)
                 .then(response => response.json())
                 .then(data => {
+                    console.log('RESPONSE DATA:',data);
                     if (data.valid && !data.wrong_side) {
-                        setValidationStatus(tagInput, validationMessage, detailedMessage, 'valid', '✓ Valid tag');
-                        doNotProcessField.checked = false;
+                        if (data.message && data.message.includes('Tag found in previous unprocessed entry')) {
+                            setValidationStatus(tagInput, validationMessage, detailedMessage, 'valid', '✓ Tag found in previous unprocessed entry');
+                        } else {
+                            setValidationStatus(tagInput, validationMessage, detailedMessage, 'valid', '✓ Valid tag');
+                        }
+                        // doNotProcessField.checked = false;
                     } else if (data.wrong_side) {
                         setValidationStatus(tagInput, validationMessage, detailedMessage, 'warning', '! Tag may be on the wrong side');
                         doNotProcessField.checked = true;
@@ -133,8 +142,13 @@ document.addEventListener('DOMContentLoaded', function() {
                         setValidationStatus(tagInput, validationMessage, detailedMessage, 'invalid', '✗ Invalid tag:', `Tag status - ${data.status}`);
                         doNotProcessField.checked = true;
                     } else if (data.tag_not_found) {
-                        setValidationStatus(tagInput, validationMessage, detailedMessage, 'invalid', '✗ Invalid tag: Tag not found (Please remove it from here and add it to the comment area)');
-                        doNotProcessField.checked = true;
+                        if(!turtleId && (type === 'recaptured_tag' || type === 'recaptured_pit_tag')) {
+                            setValidationStatus(tagInput, validationMessage, detailedMessage, 'invalid', '? Untagged turtle with old tag');
+                            doNotProcessField.checked = true;
+                        }else{
+                            setValidationStatus(tagInput, validationMessage, detailedMessage, 'invalid', '✗ Invalid tag: Tag not found (Please remove it from here and add it to the comment area)');
+                            doNotProcessField.checked = true;
+                        }
                     } else {
                         setValidationStatus(tagInput, validationMessage, detailedMessage, 'invalid', '✗ Invalid tag');
                         doNotProcessField.checked = true;
@@ -173,7 +187,45 @@ document.addEventListener('DOMContentLoaded', function() {
                 validationMessage.style.color = 'orange';
                 break;
         }
+
+        if (status === 'invalid' && message.includes('Tag not found')) {
+            detailedMessage.innerHTML = `${detailedMessageText} <a href="#" class="remove-and-comment-link">Remove and add to comment</a>`;
+            const link = detailedMessage.querySelector('.remove-and-comment-link');
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                removeTagAndAddToComment(input);
+            });
+        } else if (status === 'invalid' && message.includes('Untagged turtle with old tag')) {
+            detailedMessage.innerHTML = `${detailedMessageText} <a href="#" class="remove-tag-link">Remove the tag</a>`;
+            const link = detailedMessage.querySelector('.remove-tag-link');
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                removeTag(input);
+            });
+        } else {
+            detailedMessage.innerHTML = detailedMessageText;
+        }
+
     }
+
+    function removeTag(input) {
+        input.value = '';
+        input.dispatchEvent(new Event('blur'));
+    }
+
+    function removeTagAndAddToComment(input) {
+        const tagValue = input.value;
+        const commentArea = document.getElementById('id_comments');
+        
+        if (commentArea) {
+            commentArea.value += (commentArea.value ? '\n' : '') + `Invalid tag: ${tagValue}`;
+        }
+        
+        input.value = '';
+        
+        input.dispatchEvent(new Event('blur'));
+    }
+    
     function addValidationListener(input, validationMessage, detailedMessage, type, side = '') {
         if (input) {
             input.addEventListener('blur', function() {

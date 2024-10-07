@@ -1,5 +1,6 @@
 {% extends "base_wastd.html" %}
 {% load static bootstrap4 %}
+{% load group_filters %}
 
 {% block extra_style %}
     {{ block.super }}
@@ -70,7 +71,7 @@
     <nav aria-label="breadcrumb" class="d-none d-md-block">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-            <li class="breadcrumb-item"><a href="{% url 'wamtram2:batches_curation' %}">Batches Curation</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'wamtram2:batches_curation' %}">Manage Batches</a></li>
             <li class="breadcrumb-item active">Manage Templates</li>
         </ol>
     </nav>
@@ -78,8 +79,19 @@
 
 {% block page_content_inner %}
     <div class="container">
-        <!-- Message Alert -->
-        <div id="message-alert" class="alert alert-success" role="alert"></div>
+        <!-- Message Alert for JavaScript messages -->
+        <div id="message-alert" class="alert" role="alert" style="display: none;"></div>
+
+        <!-- Django messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Error message from context -->
         {% if error_message %}
             <div class="alert alert-danger" role="alert">
                 {{ error_message }}
@@ -92,32 +104,37 @@
             <form id="templateForm" method="post" class="row">
                 {% csrf_token %}
                 <div class="col-md-3">
-                    <label for="location_code">Location</label>
+                    <label for="location_code">Location (optional)</label>
                     <select class="form-control" id="location_code" name="location_code">
+                        <option value="">Select Location</option>
                         {% for location in locations %}
                             <option value="{{ location.location_code }}">{{ location.location_name }}</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="col-md-3">
-                    <label for="place_code">Place</label>
+                    <label for="place_code">Place (optional)</label>
                     <select class="form-control" id="place_code" name="place_code">
+                        <option value="">Select Place</option>
                         {% for place in places %}
                             <option value="{{ place.place_code }}">{{ place.place_name }}</option>
                         {% endfor %}
                     </select>
+                    <span class="text-muted">(required if Location is selected)</span>
                 </div>
                 <div class="col-md-3">
-                    <label for="species_code">Species</label>
+                    <label for="species_code">Species (optional)</label>
                     <select class="form-control" id="species_code" name="species_code">
+                        <option value="">Select Species</option>
                         {% for specie in species %}
                             <option value="{{ specie.species_code }}">{{ specie.common_name }}</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="col-md-3">
-                    <label for="sex">Sex</label>
+                    <label for="sex">Sex (optional)</label>
                     <select class="form-control" id="sex" name="sex">
+                        <option value="">Select Sex</option>
                         {% for code, name in sex_choices %}
                             <option value="{{ code }}">{{ name }}</option>
                         {% endfor %}
@@ -160,51 +177,69 @@
                                 <div class="form-group col-md-3">
                                     <label for="location_{{ template.template_id }}">Location</label>
                                     <p id="location_{{ template.template_id }}" class="form-control-static">
-                                        {% for location in locations %}
-                                            {% if location.location_code == template.location_code %}
-                                                {{ location.location_name }}
-                                            {% endif %}
-                                        {% endfor %}
+                                        {% if template.location_code %}
+                                            {% for location in locations %}
+                                                {% if location.location_code == template.location_code %}
+                                                    {{ location.location_name }}
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% else %}
+                                            None
+                                        {% endif %}
                                     </p>
                                 </div>
                                 <div class="form-group col-md-3">
                                     <label for="place_{{ template.template_id }}">Place</label>
                                     <p id="place_{{ template.template_id }}" class="form-control-static">
-                                        {% for place in places %}
-                                            {% if place.place_code == template.place_code %}
-                                                {{ place.place_name }}
-                                            {% endif %}
-                                        {% endfor %}
+                                        {% if template.place_code %}
+                                            {% for place in places %}
+                                                {% if place.place_code == template.place_code %}
+                                                    {{ place.place_name }}
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% else %}
+                                            None
+                                        {% endif %}
                                     </p>
                                 </div>
                                 <div class="form-group col-md-3">
                                     <label for="species_{{ template.template_id }}">Species</label>
                                     <p id="species_{{ template.template_id }}" class="form-control-static">
-                                        {% for specie in species %}
-                                            {% if specie.species_code == template.species_code %}
-                                                {{ specie.common_name }}
-                                            {% endif %}
-                                        {% endfor %}
+                                        {% if template.species_code %}
+                                            {% for specie in species %}
+                                                {% if specie.species_code == template.species_code %}
+                                                    {{ specie.common_name }}
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% else %}
+                                            None
+                                        {% endif %}
                                     </p>
                                 </div>
                                 <div class="form-group col-md-3">
                                     <label for="sex_{{ template.template_id }}">Sex</label>
                                     <p id="sex_{{ template.template_id }}" class="form-control-static">
-                                        {% for code, name in sex_choices %}
-                                            {% if code == template.sex %}
-                                                {{ name }}
-                                            {% endif %}
-                                        {% endfor %}
+                                        {% if template.sex %}
+                                            {% for code, name in sex_choices %}
+                                                {% if code == template.sex %}
+                                                    {{ name }}
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% else %}
+                                            None
+                                        {% endif %}
                                     </p>
                                 </div>
                             </div>
                         </form>
                     </div>
+                    {% if request.user.is_superuser or request.user|has_group:"WAMTRAM2_STAFF" %}
                     <div class="row mb-3">
                         <div class="col-md-2">
                             <button type="button" class="btn btn-danger btn-block" onclick="deleteTemplate('{{ template.template_id }}')">Delete</button>
                         </div>
                     </div>
+                    {% endif %}
                 </div>
                 <hr>
             {% endfor %}
@@ -233,11 +268,11 @@
     // Show Message
     function showMessage(message, type) {
         var alert = $('#message-alert');
-        alert.removeClass('alert-success alert-danger');
+        alert.removeClass('alert-success alert-danger alert-warning alert-info');
         alert.addClass('alert-' + type);
         alert.text(message);
         alert.slideDown();
-
+    
         setTimeout(function() {
             alert.slideUp();
         }, 3000);
@@ -268,43 +303,58 @@
     }
 
     function updateNameField() {
+        var locationCode = document.getElementById('location_code').value;
         var placeCode = document.getElementById('place_code').value;
         var speciesCode = document.getElementById('species_code').value;
         var sex = document.getElementById('sex').value;
     
-        if (placeCode && speciesCode && sex) {
+        if (placeCode || speciesCode || sex ) {
             showLoadingSpinner();
-            fetch("{% url 'wamtram2:get_place_full_name' %}?place_code=" + encodeURIComponent(placeCode), {
-                method: 'GET',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Accept': 'application/json',
-                },
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
+            var templateName = '';
+
+            if (placeCode) {
+                fetch("{% url 'wamtram2:get_place_full_name' %}?place_code=" + encodeURIComponent(placeCode), {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    templateName = data.full_name;
+                    completeNameGeneration();
+                })
+                .catch(error => {
+                    console.error('Error fetching place full name:', error);
+                    showMessage('Error loading place full name. Please try again.', 'danger');
+                    hideLoadingSpinner();
+                });
+            } else {
+                completeNameGeneration();
+            }
+
+            function completeNameGeneration() {
+                if (speciesCode) {
+                    var speciesName = document.querySelector('#species_code option:checked').textContent;
+                    templateName += (templateName ? ' + ' : '') + speciesName;
                 }
-                return response.json();
-            })
-            .then(data => {
-                var placeFullName = data.full_name;
-                var speciesName = document.querySelector('#species_code option:checked').textContent;
-                var sexName = document.querySelector('#sex option:checked').textContent;
-                var templateName = placeFullName + ' + ' + speciesName + ' + ' + sexName;
+                
+                if (sex) {
+                    var sexName = document.querySelector('#sex option:checked').textContent;
+                    templateName += (templateName ? ' + ' : '') + sexName;
+                }
+                
                 document.getElementById('id_name').value = templateName;
                 checkTemplateName(templateName);
-            })
-            .catch(error => {
-                console.error('Error fetching place full name:', error);
-                showMessage('Error loading place full name. Please try again.', 'danger');
-            })
-            .finally(() => {
                 hideLoadingSpinner();
-            });
+            }
+        } else {
+            document.getElementById('id_name').value = '';
+            $('#createButton').prop('disabled', true);
         }
     }
-
+    
     // Create Template
     function createTemplate() {
         var formData = $('#templateForm').serialize();
@@ -316,21 +366,35 @@
             beforeSend: function(xhr) {
                 xhr.setRequestHeader("X-CSRFToken", getCSRFToken());
             },
-            success: function(data) {
-                showMessage('Template created successfully', 'success');
-                setTimeout(function() {
+            success: function(data, textStatus, xhr) {
+                // Check if a redirect occurred
+                if (xhr.status === 200 && xhr.responseText.includes('<html')) {
+                    // If it's an HTML response, a redirect happened, so we reload the page
                     window.location.reload(true);
-                }, 500);
+                } else {
+                    // If not a redirect, show a success message
+                    showMessage('Template created successfully', 'success');
+                    setTimeout(function() {
+                        window.location.reload(true);
+                    }, 500);
+                }
             },
-            error: function(data) {
-                showMessage('Error creating template: ' + JSON.stringify(data.responseJSON.errors), 'danger');
+            error: function(xhr, status, error) {
+                // Handle error cases
+                var errorMessage = 'Error creating template';
+                if (xhr.responseText) {
+                    errorMessage += ': ' + xhr.responseText;
+                } else {
+                    errorMessage += ': ' + error;
+                }
+                showMessage(errorMessage, 'danger');
+                console.error('Error details:', xhr.responseText);
             },
             complete: function() {
                 hideLoadingSpinner();
             }
         });
     }
-
     // Delete Template
     function deleteTemplate(templateKey) {
         if (confirm('Are you sure you want to delete this template?')) {
@@ -382,33 +446,39 @@
     }
 
     // Load Places based on Location Code
-    function loadPlaces(locationCode, targetElement) {
-        showLoadingSpinner();
-        $.ajax({
-            url: "{% url 'wamtram2:get_template_places' %}",
-            type: 'GET',
-            data: { location_code: locationCode },
-            dataType: 'json',
-            success: function(data) {
-                var placeSelect = $(targetElement);
-                placeSelect.empty();
-                if (Array.isArray(data)) {
-                    $.each(data, function(index, place) {
-                        placeSelect.append('<option value="' + place.place_code + '">' + place.place_name + '</option>');
-                    });
-                } else {
-                    console.error('Unexpected data format:', data);
-                    showMessage('Error loading places: Unexpected data format', 'danger');
+    function loadPlaces(locationCode) {
+        var placeSelect = $('#place_code');
+        placeSelect.prop('disabled', true);
+        if (locationCode) {
+            showLoadingSpinner();
+            $.ajax({
+                url: "{% url 'wamtram2:get_template_places' %}",
+                type: 'GET',
+                data: { location_code: locationCode },
+                dataType: 'json',
+                success: function(data) {
+                    placeSelect.empty().append('<option value="">Select Place</option>');
+                    if (Array.isArray(data)) {
+                        $.each(data, function(index, place) {
+                            placeSelect.append('<option value="' + place.place_code + '">' + place.place_name + '</option>');
+                        });
+                        placeSelect.prop('disabled', false);
+                    } else {
+                        console.error('Unexpected data format:', data);
+                        showMessage('Error loading places: Unexpected data format', 'danger');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching places:', xhr.responseText);
+                    showMessage('Error loading places. Please try again.', 'danger');
+                },
+                complete: function() {
+                    hideLoadingSpinner();
                 }
-            },
-            error: function(xhr, status, error) {
-                console.error('Error fetching places:', xhr.responseText);
-                showMessage('Error loading places. Please try again.', 'danger');
-            },
-            complete: function() {
-                hideLoadingSpinner();
-            }
-        });
+            });
+        } else {
+            placeSelect.empty().append('<option value="">Select Place</option>');
+        }
     }
 
     // Initialize event handlers on document ready

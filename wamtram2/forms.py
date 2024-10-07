@@ -1,8 +1,9 @@
 from django import forms
-from django.forms import DateTimeInput
 from easy_select2 import apply_select2
-from .models import TrtPersons, TrtDataEntry, TrtTags, TrtEntryBatches, TrtPlaces, TrtPitTags, TrtPitTags, Template, TrtObservations,TrtTagStates, TrtDamageCodes, TrtBodyParts
+from .models import TrtPersons, TrtDataEntry, TrtTags, TrtEntryBatches, TrtPlaces, TrtPitTags, Template, TrtObservations,TrtTagStates, TrtMeasurementTypes,TrtYesNo
 from django_select2.forms import ModelSelect2Widget
+from django.core.validators import RegexValidator
+from django.db.models import Case, When, IntegerField
 
 
 tagWidget = ModelSelect2Widget(
@@ -69,12 +70,22 @@ class SearchForm(forms.Form):
     place_code = forms.CharField(widget=forms.HiddenInput(), required=False)
     species_code = forms.CharField(widget=forms.HiddenInput(), required=False)
     sex = forms.CharField(widget=forms.HiddenInput(), required=False)
-    default_enterer = forms.CharField(widget=forms.HiddenInput(), required=False)
+    # default_enterer = forms.CharField(widget=forms.HiddenInput(), required=False)
     selected_template = forms.CharField(required=False, widget=forms.HiddenInput())
-    use_default_enterer = forms.BooleanField(required=False, widget=forms.HiddenInput())
+    # use_default_enterer = forms.BooleanField(required=False, widget=forms.HiddenInput())
 
 
 class TrtEntryBatchesForm(forms.ModelForm):
+    curved_carapace_length_notch = forms.IntegerField(
+        required=False,
+        validators=[RegexValidator(r'^\d+$', 'Enter a valid integer.')],
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'step': '1', 'min': '0'})
+    )
+    curved_carapace_width = forms.IntegerField(
+        required=False,
+        validators=[RegexValidator(r'^\d+$', 'Enter a valid integer.')],
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'step': '1', 'min': '0'})
+    )
     class Meta:
         model = TrtEntryBatches
         fields = ["entered_person_id", "comments", "entry_date"]
@@ -109,6 +120,7 @@ class TrtDataEntryForm(forms.ModelForm):
             "measured_by_id",
             "recorded_by_id",
             "tagged_by_id",
+            "entered_by",
             "entered_by_id",
             "measured_recorded_by_id",
             "recapture_left_tag_id",
@@ -187,10 +199,6 @@ class TrtDataEntryForm(forms.ModelForm):
             "recapture_left_tag_barnacles_2",
             "recapture_right_tag_barnacles",
             "recapture_right_tag_barnacles_2",
-            "new_left_tag_barnacles",
-            "new_left_tag_barnacles_2",
-            "new_right_tag_barnacles",
-            "new_right_tag_barnacles_2",
             "identifier",
             "identification_type",
             
@@ -255,38 +263,60 @@ class TrtDataEntryForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.batch_id = kwargs.pop("batch_id", None)
         super().__init__(*args, **kwargs)
+        self.fields['entered_by'].widget = forms.TextInput(attrs={
+            'class': 'form-control', 
+            'placeholder': 'Enter name',
+        })
+        
+        
+        nesting_choices = TrtYesNo.objects.filter(code__in=['N', 'P', 'Y'])
+        self.fields['nesting'].queryset = nesting_choices
+
+        # Filter the queryset for measurement types
+        filtered_measurement_types = TrtMeasurementTypes.objects.exclude(
+            measurement_type__in=['CCW', 'CCL NOTCH']
+        )
+        for i in range(1, 7):
+            field_name = f'measurement_type_{i}'
+            self.fields[field_name].queryset = filtered_measurement_types
+
+        
+        tag_state_order = ["A1", "AE", "#"]
+        
+        tag_state_order_case = Case(
+            *[When(tag_state=state, then=pos) for pos, state in enumerate(tag_state_order)],
+            default=len(tag_state_order),
+            output_field=IntegerField()
+        )
         
         # Filter the queryset for new tag fields
         new_tag_states = TrtTagStates.objects.filter(
-            tag_state__in=["A1", "AE", "P_ED", "P_OK", "#", "R"]
-        )
+            tag_state__in=tag_state_order
+        ).order_by(tag_state_order_case)
+        
         self.fields['new_left_tag_state'].queryset = new_tag_states
         self.fields['new_right_tag_state'].queryset = new_tag_states
         self.fields['new_left_tag_state_2'].queryset = new_tag_states
         self.fields['new_right_tag_state_2'].queryset = new_tag_states
 
         # Filter the queryset for recapture (old) tag fields
-        old_tag_states = TrtTagStates.objects.filter(
-            tag_state__in=["RQ", "RC", "OO", "OX", "P", "P_ED", "P_OK", "PX"]
+        old_tag_state_order = ["P_OK","P", "RC", "RN", "OO", "R", "#"]
+        
+        old_tag_state_order_case = Case(
+            *[When(tag_state=state, then=pos) for pos, state in enumerate(old_tag_state_order)],
+            default=len(old_tag_state_order),
+            output_field=IntegerField()
         )
+        
+        old_tag_states = TrtTagStates.objects.filter(
+            tag_state__in=old_tag_state_order
+        ).order_by(old_tag_state_order_case)
         
         self.fields['recapture_left_tag_state'].queryset = old_tag_states
         self.fields['recapture_right_tag_state'].queryset = old_tag_states
         self.fields['recapture_left_tag_state_2'].queryset = old_tag_states
         self.fields['recapture_right_tag_state_2'].queryset = old_tag_states
         
-        body_parts = TrtBodyParts.objects.all()
-        body_part_choices = [('', '---------')] + [(bp.body_part, bp.description) for bp in body_parts]
-        
-        for i in range(1, 7):
-            self.fields[f'body_part_{i}'] = forms.ChoiceField(
-                choices=body_part_choices,
-                required=False
-            )
-            self.fields[f'damage_code_{i}'] = forms.ModelChoiceField(
-                queryset=TrtDamageCodes.objects.all(),
-                required=False
-            )
 
         self.fields["observation_date"].required = True
         self.fields["species_code"].required = True
@@ -363,10 +393,6 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["recapture_left_tag_barnacles_2"].label = ""
         self.fields["recapture_right_tag_barnacles"].label = ""
         self.fields["recapture_right_tag_barnacles_2"].label = ""
-        # self.fields["new_left_tag_barnacles"].label = ""
-        # self.fields["new_left_tag_barnacles_2"].label = ""
-        # self.fields["new_right_tag_barnacles"].label = ""
-        # self.fields["new_right_tag_barnacles_2"].label = ""
         
         self.fields["cc_notch_length_not_measured"].label = "CCL min not measured"
         
@@ -397,10 +423,6 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["recapture_left_tag_barnacles_2"].required = False
         self.fields["recapture_right_tag_barnacles"].required = False
         self.fields["recapture_right_tag_barnacles_2"].required = False
-        self.fields["new_left_tag_barnacles"].required = False
-        self.fields["new_left_tag_barnacles_2"].required = False
-        self.fields["new_right_tag_barnacles"].required = False
-        self.fields["new_right_tag_barnacles_2"].required = False
         self.fields["identifier"].required = False
         self.fields["identification_type"].required = False
         
@@ -489,6 +511,17 @@ class TrtDataEntryForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         do_not_process = cleaned_data.get("do_not_process")
+        
+        # tag_fields = [
+        #     'recapture_left_tag_id', 'recapture_left_tag_id_2', 'recapture_left_tag_id_3',
+        #     'recapture_right_tag_id', 'recapture_right_tag_id_2', 'recapture_right_tag_id_3',
+        #     'new_left_tag_id', 'new_left_tag_id_2', 'new_right_tag_id', 'new_right_tag_id_2',
+        #     'dud_filpper_tag', 'dud_filpper_tag_2'
+        # ]
+        
+        # for field in tag_fields:
+        #     if cleaned_data.get(field):
+        #         cleaned_data[field] = cleaned_data[field].upper()
 
         if do_not_process:
             return cleaned_data
@@ -505,15 +538,6 @@ class TrtDataEntryForm(forms.ModelForm):
             else:
                 cleaned_data['latitude'] = latitude_str
                 
-        for i in range(1, 7):
-            body_part = cleaned_data.get(f'body_part_{i}')
-            damage_code = cleaned_data.get(f'damage_code_{i}')
-            
-            if body_part:
-                body_part_obj = TrtBodyParts.objects.get(body_part=body_part)
-                if not body_part_obj.flipper:
-                    if damage_code and damage_code.damage_code not in ['0', '5', '6', '7']:
-                        self.add_error(f'damage_code_{i}', 'Invalid damage code for this body part.')
         
         return cleaned_data
 
@@ -556,6 +580,24 @@ class TemplateForm(forms.ModelForm):
         model = Template
         fields = ['name', 'location_code', 'place_code', 'species_code', 'sex']
         
+    def clean(self):
+        cleaned_data = super().clean()
+        species_code = cleaned_data.get('species_code')
+        sex = cleaned_data.get('sex')
+        location_code = cleaned_data.get('location_code')
+        place_code = cleaned_data.get('place_code')
+
+        if not species_code:
+            cleaned_data['species_code'] = None
+        if not sex:
+            cleaned_data['sex'] = None
+        if not location_code:
+            cleaned_data['location_code'] = None
+        if not place_code:
+            cleaned_data['place_code'] = None
+
+        return cleaned_data
+        
 class TrtObservationsForm(forms.ModelForm):
     class Meta:
         model = TrtObservations
@@ -568,20 +610,29 @@ class TrtObservationsForm(forms.ModelForm):
         if 'corrected_date' in cleaned_data:
             cleaned_data.pop('corrected_date')
         return cleaned_data
-    
-    
+
 class BatchesCodeForm(forms.ModelForm):
     class Meta:
         model = TrtEntryBatches
-        fields = ['batches_code', 'comments', 'template']
+        fields = ['batches_code', 'comments', 'template', 'entered_person_id']
         labels = {
             'batches_code': 'Batches Code',
             'comments': 'Comments',
-            'template': 'Template'
+            'template': 'Template',
+            'entered_person_id': 'Team Leader Name',
         }
         widgets = {
             'batches_code': forms.TextInput(attrs={'class': 'form-control'}),
+            'comments': forms.Textarea(attrs={'class': 'form-control'}),
+            'template': forms.Select(attrs={'class': 'form-control'}),
+            'entered_person_id': forms.HiddenInput(), 
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['entered_person_id'].queryset = TrtPersons.objects.all()
+        self.fields['template'].queryset = Template.objects.all()
+
 
 class BatchesSearchForm(forms.Form):
     batches_code = forms.CharField(
@@ -590,3 +641,27 @@ class BatchesSearchForm(forms.Form):
         widget=forms.TextInput(attrs={'class': 'form-control'}),
         label='Batch Code'
     )
+    
+class TrtPersonsForm(forms.ModelForm):
+    class Meta:
+        model = TrtPersons
+        fields = '__all__'
+
+    def clean(self):
+        cleaned_data = super().clean()
+        first_name = cleaned_data.get("first_name")
+        surname = cleaned_data.get("surname")
+        email = cleaned_data.get("email")
+        recorder = cleaned_data.get("recorder")
+
+        if not first_name:
+            self.add_error('first_name', "First name is required.")
+        if not surname:
+            self.add_error('surname', "Surname is required.")
+        if not email:
+            self.add_error('email', "Email is required.")
+        if recorder is None:
+            self.add_error('recorder', "Please specify if this person is a recorder.")
+
+        return cleaned_data
+
