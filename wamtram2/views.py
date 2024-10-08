@@ -396,7 +396,7 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
             if trtdataentry.observation_date:
                 print("orign:",trtdataentry.observation_date)
                     
-                adjusted_date = trtdataentry.observation_date + timedelta(hours=8)
+                adjusted_date = trtdataentry.observation_date - timedelta(hours=8)
                 print("fixed",adjusted_date)
                 initial['observation_date'] = adjusted_date
 
