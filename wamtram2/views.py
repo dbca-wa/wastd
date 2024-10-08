@@ -197,6 +197,8 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
             queryset = queryset.filter(entry_batch_id=batch_id, do_not_process=True)
         elif filter_value == "not_saved":
             queryset = queryset.filter(entry_batch_id=batch_id, observation_id__isnull=True)
+        elif filter_value == "needs_review_no_message":
+            queryset = queryset.filter(entry_batch_id=batch_id, do_not_process=True, error_message__isnull=True)
         else:
             queryset = queryset.filter(entry_batch_id=batch_id)
             
@@ -1707,6 +1709,12 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        
+        user_organisations = self.request.user.organisations.all()
+        context['user_organisations'] = user_organisations
+        print(user_organisations)
+        
+        
         context['locations'] = list(TrtLocations.get_ordered_locations())
         context['places'] = TrtPlaces.objects.all().order_by('place_name')
         current_year = timezone.now().year
