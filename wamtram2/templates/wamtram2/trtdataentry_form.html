@@ -144,8 +144,10 @@
           Turtle ID: 
           {% if form.turtle_id.value %}
             <a href="{% url 'wamtram2:turtle_detail' form.turtle_id.value %}">{{ form.turtle_id.value }}</a>
+          {% elif unprocessed_turtle %}
+            <span style="color: blue; font-weight: bold;">UNPROCESSED TURTLE</span>
           {% else %}
-          <span style="color: red; font-weight: bold;">UNTAGGED TURTLE</span>
+            <span style="color: red; font-weight: bold;">UNTAGGED TURTLE</span>
           {% endif %}
         </h5>
       {% bootstrap_field form.turtle_id %}
@@ -252,7 +254,13 @@
       {% if not form.turtle_id.value %}
       <div class="row mb-3">
         <div class="col-12">
-          <h5><span style="color: red; font-weight: bold;">Untagged turtle</span></h5>
+          <h5>
+            {% if unprocessed_turtle %}
+              <span style="color: blue; font-weight: bold;">UNPROCESSED TURTLE</span>
+            {% else %}
+              <span style="color: red; font-weight: bold;">UNTAGGED TURTLE</span>
+            {% endif %}
+          </h5>
         </div>
       </div>
       {% endif %}

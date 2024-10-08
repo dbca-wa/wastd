@@ -394,10 +394,7 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
             trtdataentry = get_object_or_404(TrtDataEntry, data_entry_id=entry_id)
 
             if trtdataentry.observation_date:
-                print("orign:",trtdataentry.observation_date)
-                    
                 adjusted_date = trtdataentry.observation_date - timedelta(hours=8)
-                print("fixed",adjusted_date)
                 initial['observation_date'] = adjusted_date
 
             
@@ -549,6 +546,7 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
             context["cookie_tag_id"] = self.request.COOKIES.get(f'{cookies_key_prefix}_tag_id')
             context["cookie_tag_type"] = self.request.COOKIES.get(f'{cookies_key_prefix}_tag_type')
             context["cookie_tag_side"] = self.request.COOKIES.get(f'{cookies_key_prefix}_tag_side')
+            context["unprocessed_turtle"] = bool(context["cookie_tag_id"])
 
             context["default_enterer_full_name"] = getattr(self, 'default_enterer_full_name', '')
             context["default_place_full_name"] = getattr(self, 'default_place_full_name', '')
@@ -850,7 +848,7 @@ class FindTurtleView(LoginRequiredMixin, View):
                 template_name = batch.template.name
 
         if form.is_valid():
-            tag_id = form.cleaned_data["tag_id"]
+            tag_id = form.cleaned_data["tag_id"].upper()
 
             if not create_and_review:
                 tag = TrtTags.objects.select_related('turtle').filter(tag_id=tag_id).first()
@@ -875,16 +873,18 @@ class FindTurtleView(LoginRequiredMixin, View):
                         Q(new_pittag_id__pittag_id=tag_id) |
                         Q(new_pittag_id_2__pittag_id=tag_id) |
                         Q(new_pittag_id_3__pittag_id=tag_id) |
-                        Q(new_pittag_id_4__pittag_id=tag_id)
+                        Q(new_pittag_id_4__pittag_id=tag_id),
+                        observation_id__isnull=True,
+                        turtle_id__isnull=True
                     ).order_by('-entry_batch__entry_date').first()
 
                     if new_tag_entry:
-                        if any([str(new_tag_entry.new_left_tag_id) == str(tag_id), 
-                                str(new_tag_entry.new_left_tag_id_2) == str(tag_id)]):
+                        if any([str(new_tag_entry.new_left_tag_id).upper() == str(tag_id).upper(), 
+                                str(new_tag_entry.new_left_tag_id_2).upper() == str(tag_id).upper()]):
                             tag_type = "recapture_tag"
                             tag_side = "L"
-                        elif any([str(new_tag_entry.new_right_tag_id) == str(tag_id), 
-                                    str(new_tag_entry.new_right_tag_id_2) == str(tag_id)]):
+                        elif any([str(new_tag_entry.new_right_tag_id).upper() == str(tag_id).upper(), 
+                                str(new_tag_entry.new_right_tag_id_2).upper() == str(tag_id).upper()]):
                             tag_type = "recapture_tag"
                             tag_side = "R"
                         else:
@@ -908,6 +908,7 @@ class FindTurtleView(LoginRequiredMixin, View):
                         "batch_id": batch_id,
                         "batch": batch,
                         "template_name": template_name,
+                        "unprocessed_turtle": True
                     })
                     return self.set_cookie(response, batch_id, tag_id, tag_type, tag_side, no_turtle_found)
                 else:
@@ -1181,8 +1182,6 @@ class ValidateTagView(View):
         turtle_id = request.GET.get('turtle_id')
         tag = request.GET.get('tag', '')
         side = request.GET.get('side')
-
-        print(turtle_id, tag, side)
 
         if not tag or not side:
             return JsonResponse({'valid': False, 'wrong_side': False, 'message': 'Missing parameters'})
