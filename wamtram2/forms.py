@@ -582,6 +582,7 @@ class EnterUserModelForm(forms.ModelForm):
 
     #     return cleaned_data
     
+
 class TemplateForm(forms.ModelForm):
     class Meta:
         model = Template
@@ -604,7 +605,8 @@ class TemplateForm(forms.ModelForm):
             cleaned_data['place_code'] = None
 
         return cleaned_data
-        
+
+    
 class TrtObservationsForm(forms.ModelForm):
     class Meta:
         model = TrtObservations
@@ -617,6 +619,7 @@ class TrtObservationsForm(forms.ModelForm):
         if 'corrected_date' in cleaned_data:
             cleaned_data.pop('corrected_date')
         return cleaned_data
+
 
 class BatchesCodeForm(forms.ModelForm):
     class Meta:
@@ -648,7 +651,8 @@ class BatchesSearchForm(forms.Form):
         widget=forms.TextInput(attrs={'class': 'form-control'}),
         label='Batch Code'
     )
-    
+
+ 
 class TrtPersonsForm(forms.ModelForm):
     class Meta:
         model = TrtPersons

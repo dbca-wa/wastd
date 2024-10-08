@@ -850,7 +850,7 @@ class FindTurtleView(LoginRequiredMixin, View):
                 template_name = batch.template.name
 
         if form.is_valid():
-            tag_id = form.cleaned_data["tag_id"]
+            tag_id = form.cleaned_data["tag_id"].upper()
 
             if not create_and_review:
                 tag = TrtTags.objects.select_related('turtle').filter(tag_id=tag_id).first()
@@ -875,21 +875,30 @@ class FindTurtleView(LoginRequiredMixin, View):
                         Q(new_pittag_id__pittag_id=tag_id) |
                         Q(new_pittag_id_2__pittag_id=tag_id) |
                         Q(new_pittag_id_3__pittag_id=tag_id) |
-                        Q(new_pittag_id_4__pittag_id=tag_id)
+                        Q(new_pittag_id_4__pittag_id=tag_id),
+                        observation_id__isnull=True,
+                        turtle_id__isnull=True
                     ).order_by('-entry_batch__entry_date').first()
+                    print(new_tag_entry)
+                    print(tag_id)
 
                     if new_tag_entry:
-                        if any([str(new_tag_entry.new_left_tag_id) == str(tag_id), 
-                                str(new_tag_entry.new_left_tag_id_2) == str(tag_id)]):
+                        print(new_tag_entry.new_left_tag_id, new_tag_entry.new_left_tag_id_2, new_tag_entry.new_right_tag_id, new_tag_entry.new_right_tag_id_2)
+                        print(tag_id)
+                        if any([str(new_tag_entry.new_left_tag_id).upper() == str(tag_id).upper(), 
+                                str(new_tag_entry.new_left_tag_id_2).upper() == str(tag_id).upper()]):
                             tag_type = "recapture_tag"
                             tag_side = "L"
-                        elif any([str(new_tag_entry.new_right_tag_id) == str(tag_id), 
-                                    str(new_tag_entry.new_right_tag_id_2) == str(tag_id)]):
+                            print("LEFT TAG")
+                        elif any([str(new_tag_entry.new_right_tag_id).upper() == str(tag_id).upper(), 
+                                  str(new_tag_entry.new_right_tag_id_2).upper() == str(tag_id).upper()]):
                             tag_type = "recapture_tag"
                             tag_side = "R"
+                            print("RIGHT TAG")
                         else:
                             tag_type = "recapture_pit_tag"
                             tag_side = None
+                            print("PIT TAG")
                     else:
                         no_turtle_found = True
 
