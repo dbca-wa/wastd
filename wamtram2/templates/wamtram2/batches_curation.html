@@ -28,10 +28,18 @@
 </style>
 {% endblock %}
 
+{% block breadcrumbs %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+    </ol>
+</nav>
+{% endblock %}
+
 
 {% block page_content_inner %}
 <div class="container-fluid mt-5 mb-5">
-    <h2 class="mb-4">Batch Management</h2>
+    <h2 class="mb-4">Manage Batches</h2>
     <div class="d-flex flex-wrap align-items-center mb-3">
         
         {% if request.user.is_superuser or request.user|has_group:"WAMTRAM2_STAFF" %}
@@ -133,7 +141,7 @@
                 <td>{{ batch.comments|truncatechars:100 }}</td>
                 <td>
                     <a href="{% url 'wamtram2:entry_batch_detail' batch_id=batch.entry_batch_id %}" class="btn btn-sm btn-info">View</a>
-                    <a href="{% url 'wamtram2:add_batches_code' batch_id=batch.entry_batch_id %}" class="btn btn-sm btn-primary">Edit Details</a>
+                    <a href="{% url 'wamtram2:add_batches_code' batch_id=batch.entry_batch_id %}" class="btn btn-sm btn-primary">Manage Details</a>
                 </td>
             </tr>
             {% endfor %}
@@ -211,14 +219,15 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="quickAddPlace">Place (required)</label>
-                        <select class="form-control" id="quickAddPlace" name="place_code" required>
+                        <label for="quickAddPlace">Place (optional)</label>
+                        <select class="form-control" id="quickAddPlace" name="place_code">
                             <option value="">Select Place</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label for="quickAddYear">Year (required)</label>
                         <select class="form-control" id="quickAddYear" name="year" required>
+                            <option value="">Select Year</option>
                             {% for year in years %}
                                 <option value="{{ year }}">{{ year }}</option>
                             {% endfor %}
@@ -251,7 +260,7 @@
                             <div id="searchResults" class="search-results"></div>
                         </div>
                     </div>
-                    <div class="form-group">
+                    {% comment %} <div class="form-group">
                         <label for="quickAddTemplate">Template (optional)</label>
                         <select class="form-control" id="quickAddTemplate" name="template">
                             <option value="">Select Template</option>
@@ -259,6 +268,14 @@
                                 <option value="{{ template.template_id }}">{{ template.name }}</option>
                             {% endfor %}
                         </select>
+                    </div> {% endcomment %}
+                    <div class="form-group">
+                        <label for="quickAddTemplate">Template (optional))</label>
+                        <div class="search-container">
+                            <input type="text" id="quickAddTemplate" class="search-field" placeholder="Search Template" autocomplete="off">
+                            <input type="hidden" id="quickAddTemplateId" name="template">
+                            <div id="templateSearchResults" class="search-results"></div>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -302,6 +319,45 @@
                 defaultDate: null     // No default date
             });
         }
+
+        // Search for templates
+        $('#quickAddTemplate').on('input', function() {
+            var searchTerm = $(this).val();
+            if (searchTerm.length >= 2) {
+                $.ajax({
+                    url: "{% url 'wamtram2:search_templates' %}",
+                    data: { 'q': searchTerm },
+                    dataType: 'json',
+                    success: function(data) {
+                        var results = $('#templateSearchResults');
+                        results.empty();
+                        if (data.length > 0) {
+                            results.show();
+                            data.forEach(function(template) {
+                                var div = $('<div class="search-result"></div>');
+                                div.text(template.name);
+                                div.on('click', function() {
+                                    $('#quickAddTemplate').val(template.name);
+                                    $('#quickAddTemplateId').val(template.template_id);
+                                    results.hide();
+                                });
+                                results.append(div);
+                            });
+                        } else {
+                            results.hide();
+                        }
+                    }
+                });
+            } else {
+                $('#templateSearchResults').hide();
+            }
+        });
+
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('.search-container').length) {
+                $('#templateSearchResults').hide();
+            }
+        });
 
         // Override the default form submission to handle Flatpickr date format
         $('#quickAddBatchForm').submit(function(e) {
@@ -451,6 +507,11 @@
                 }
             });
         }
+
+        $('#quickAddLocation, #quickAddYear').change(function() {
+            generateBatchCode();
+            updateComments();
+        });
     
         $('#quickAddPlace, #quickAddYear').change(function() {
             generateBatchCode();
@@ -462,9 +523,18 @@
     
         // Generate batch code
         function generateBatchCode() {
+            var locationCode = $('#quickAddLocation').val();
             var night = $('#quickAddNight').val();
             var placeCode = $('#quickAddPlace').val();
             var year = $('#quickAddYear').val();
+            if (locationCode && year && !placeCode) {
+                var batchCode = locationCode + year.slice(-2);
+                if (night) {
+                    batchCode = 'N' + night + batchCode;
+                }
+                $('#quickAddBatchCode').val(batchCode);
+                checkBatchCodeUniqueness(batchCode);
+            }
             if (placeCode && year) {
                 var batchCode = placeCode + year.slice(-2);
                 if (night) {
@@ -476,12 +546,25 @@
         }
 
         function updateComments() {
+            var locationSelect = $('#quickAddLocation');
+            var locationSelectCode = $('#quickAddLocation').val();
+            var selectedLocation = locationSelect.find('option:selected').text();
             var selectedPlaceCode = $('#quickAddPlace').val();
             var selectedPlace = placesData.find(place => place.place_code === selectedPlaceCode);
             var placeFullName = selectedPlace ? selectedPlace.full_name : '';
             var night = $('#quickAddNight').val();
             var entryDate = $('#quickAddEntryDate').val();
             var year = $('#quickAddYear').val();
+            if (selectedLocation && year && !selectedPlaceCode) {
+                var comments = selectedLocation + ' - ' + year;
+                if (night) {
+                    comments += ' - Night ' + night;
+                }
+                if (entryDate) {
+                    comments += ' - ' + entryDate;
+                }
+                $('#quickAddComments').val(comments);
+            }
             
             if (placeFullName && year) {
                 var comments = placeFullName + ' - ' + year;

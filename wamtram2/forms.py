@@ -3,6 +3,7 @@ from easy_select2 import apply_select2
 from .models import TrtPersons, TrtDataEntry, TrtTags, TrtEntryBatches, TrtPlaces, TrtPitTags, Template, TrtObservations,TrtTagStates, TrtMeasurementTypes,TrtYesNo
 from django_select2.forms import ModelSelect2Widget
 from django.core.validators import RegexValidator
+from django.db.models import Case, When, IntegerField
 
 
 tagWidget = ModelSelect2Widget(
@@ -198,10 +199,6 @@ class TrtDataEntryForm(forms.ModelForm):
             "recapture_left_tag_barnacles_2",
             "recapture_right_tag_barnacles",
             "recapture_right_tag_barnacles_2",
-            "new_left_tag_barnacles",
-            "new_left_tag_barnacles_2",
-            "new_right_tag_barnacles",
-            "new_right_tag_barnacles_2",
             "identifier",
             "identification_type",
             
@@ -271,6 +268,7 @@ class TrtDataEntryForm(forms.ModelForm):
             'placeholder': 'Enter name',
         })
         
+        
         nesting_choices = TrtYesNo.objects.filter(code__in=['N', 'P', 'Y'])
         self.fields['nesting'].queryset = nesting_choices
 
@@ -283,19 +281,36 @@ class TrtDataEntryForm(forms.ModelForm):
             self.fields[field_name].queryset = filtered_measurement_types
 
         
+        tag_state_order = ["A1", "AE", "#"]
+        
+        tag_state_order_case = Case(
+            *[When(tag_state=state, then=pos) for pos, state in enumerate(tag_state_order)],
+            default=len(tag_state_order),
+            output_field=IntegerField()
+        )
+        
         # Filter the queryset for new tag fields
         new_tag_states = TrtTagStates.objects.filter(
-            tag_state__in=["A1", "AE", "#"]
-        )
+            tag_state__in=tag_state_order
+        ).order_by(tag_state_order_case)
+        
         self.fields['new_left_tag_state'].queryset = new_tag_states
         self.fields['new_right_tag_state'].queryset = new_tag_states
         self.fields['new_left_tag_state_2'].queryset = new_tag_states
         self.fields['new_right_tag_state_2'].queryset = new_tag_states
 
         # Filter the queryset for recapture (old) tag fields
-        old_tag_states = TrtTagStates.objects.filter(
-            tag_state__in=[ "#", "R", "RC", "OO", "P", "P_OK"]
+        old_tag_state_order = ["P_OK","P", "RC", "RN", "OO", "R", "#"]
+        
+        old_tag_state_order_case = Case(
+            *[When(tag_state=state, then=pos) for pos, state in enumerate(old_tag_state_order)],
+            default=len(old_tag_state_order),
+            output_field=IntegerField()
         )
+        
+        old_tag_states = TrtTagStates.objects.filter(
+            tag_state__in=old_tag_state_order
+        ).order_by(old_tag_state_order_case)
         
         self.fields['recapture_left_tag_state'].queryset = old_tag_states
         self.fields['recapture_right_tag_state'].queryset = old_tag_states
@@ -408,10 +423,6 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["recapture_left_tag_barnacles_2"].required = False
         self.fields["recapture_right_tag_barnacles"].required = False
         self.fields["recapture_right_tag_barnacles_2"].required = False
-        self.fields["new_left_tag_barnacles"].required = False
-        self.fields["new_left_tag_barnacles_2"].required = False
-        self.fields["new_right_tag_barnacles"].required = False
-        self.fields["new_right_tag_barnacles_2"].required = False
         self.fields["identifier"].required = False
         self.fields["identification_type"].required = False
         
@@ -500,6 +511,17 @@ class TrtDataEntryForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         do_not_process = cleaned_data.get("do_not_process")
+        
+        # tag_fields = [
+        #     'recapture_left_tag_id', 'recapture_left_tag_id_2', 'recapture_left_tag_id_3',
+        #     'recapture_right_tag_id', 'recapture_right_tag_id_2', 'recapture_right_tag_id_3',
+        #     'new_left_tag_id', 'new_left_tag_id_2', 'new_right_tag_id', 'new_right_tag_id_2',
+        #     'dud_filpper_tag', 'dud_filpper_tag_2'
+        # ]
+        
+        # for field in tag_fields:
+        #     if cleaned_data.get(field):
+        #         cleaned_data[field] = cleaned_data[field].upper()
 
         if do_not_process:
             return cleaned_data
@@ -575,7 +597,6 @@ class TemplateForm(forms.ModelForm):
             cleaned_data['place_code'] = None
 
         return cleaned_data
-       
         
 class TrtObservationsForm(forms.ModelForm):
     class Meta:

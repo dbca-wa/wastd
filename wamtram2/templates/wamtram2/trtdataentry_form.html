@@ -98,7 +98,7 @@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-        <li class="breadcrumb-item"><a href="{% url 'wamtram2:batches_curation'%}">Entry batches</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'wamtram2:batches_curation'%}">Manage Batches</a></li>
         {% if entry.entry_batch %}
         <li class="breadcrumb-item"><a href="{% url 'wamtram2:entry_batch_detail' entry.entry_batch %}">{{entry.entry_batch}}</a></li>
         {% endif %}
@@ -140,7 +140,14 @@
       {% bootstrap_field form.entry_batch %}
       </div>
       <div class="col-md-6">
-      <h5>Turtle ID: {% if form.turtle_id.value %} <a href="{% url 'wamtram2:turtle_detail' form.turtle_id.value %}">{{ form.turtle_id.value }}</a> {% endif %} </h5>
+        <h5>
+          Turtle ID: 
+          {% if form.turtle_id.value %}
+            <a href="{% url 'wamtram2:turtle_detail' form.turtle_id.value %}">{{ form.turtle_id.value }}</a>
+          {% else %}
+          <span style="color: red; font-weight: bold;">UNTAGGED TURTLE</span>
+          {% endif %}
+        </h5>
       {% bootstrap_field form.turtle_id %}
       </div>
 </div>
@@ -201,7 +208,7 @@
               <label for="{{ form.observation_date.id_for_label }}">{{ form.observation_date.label }}</label>
               {% bootstrap_field form.observation_date show_label=False%}
             </div>
-            <div class="col-md-3">
+            <div class="col-md-3 mt-4">
               <div id="date-error-message" class="text-danger" style="display: none; font-weight: bold;"></div>
             </div>
           </div>
@@ -242,6 +249,13 @@
   <div class="card border-dark mb-3">
     <div class="card-header"><strong>Tags</strong></div>
     <div class="card-body">
+      {% if not form.turtle_id.value %}
+      <div class="row mb-3">
+        <div class="col-12">
+          <h5><span style="color: red; font-weight: bold;">Untagged turtle</span></h5>
+        </div>
+      </div>
+      {% endif %}
       <!-- Flipper Tags Section -->
       <section class="container-fluid mt-5">
           <div class="row">
@@ -355,7 +369,6 @@
                 </td>
                 <td>{% bootstrap_field form.new_left_tag_state show_label=False %}</td>
                 <td>{% bootstrap_field form.new_left_tag_position show_label=False %}</td>
-                {% comment %} <td>{% bootstrap_field form.new_left_tag_barnacles show_label=False %}</td> {% endcomment %}
               </tr>
               <!-- New Right Flipper Tag -->
               <tr>
@@ -379,7 +392,6 @@
                 </td>
                 <td>{% bootstrap_field form.new_left_tag_state_2 show_label=False %}</td>
                 <td>{% bootstrap_field form.new_left_tag_position_2 show_label=False %}</td>
-                {% comment %} <td>{% bootstrap_field form.new_left_tag_barnacles_2 show_label=False %}</td> {% endcomment %}
               </tr>
               <!-- Additional New Right Flipper Tag -->
               <tr id="additionalNewRightTag" style="display: none;">
@@ -1248,6 +1260,13 @@
           event.preventDefault();
   
           let summaryHTML = '<ul>';
+
+          const tag_fields = [
+          'recapture_left_tag_id', 'recapture_left_tag_id_2', 'recapture_left_tag_id_3',
+          'recapture_right_tag_id', 'recapture_right_tag_id_2', 'recapture_right_tag_id_3',
+          'new_left_tag_id', 'new_left_tag_id_2', 'new_right_tag_id', 'new_right_tag_id_2',
+          'dud_filpper_tag', 'dud_filpper_tag_2'
+          ];
   
           form.querySelectorAll('input, select, textarea').forEach(input => {
               if (input.type !== 'hidden') {
@@ -1263,6 +1282,9 @@
                       }
                   } else if (input.tagName.toLowerCase() === 'select') {
                       inputValue = input.selectedOptions[0].textContent.trim();
+                  }
+                  if (tag_fields.includes(inputId.replace('id_', ''))) {
+                    inputValue = inputValue.toUpperCase();
                   }
   
                   if (inputValue !== '' && inputValue !== '---------') {
@@ -1405,10 +1427,10 @@
 
         if (turtleIdEmpty && flipperTagDidntCheck && pitTagDidntCheck) {
             doNotProcessField.checked = true;
-            doNotProcessField.disabled = true;
-        } else {
-            doNotProcessField.disabled = false;
-            doNotProcessField.checked = false;
+            //doNotProcessField.disabled = true;
+        //} else {
+            //doNotProcessField.disabled = false;
+            //doNotProcessField.checked = false;
         }
         updateBackgroundColor();
     }
@@ -1419,6 +1441,25 @@
 
     updateDoNotProcess();
   });
+  document.addEventListener('DOMContentLoaded', function() {
+    var latitudeInput = document.getElementById('{{ form.latitude.id_for_label }}');
+    
+    if (latitudeInput.value.startsWith('-')) {
+      latitudeInput.value = latitudeInput.value.substring(1);
+    }
+    
+    latitudeInput.addEventListener('blur', removeNegativeSign);
+    latitudeInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        removeNegativeSign.call(this);
+      }
+    });
+    
+    function removeNegativeSign() {
+      this.value = this.value.replace(/^-/, '');
+    }
+  });
 </script>
+
 {% endblock %}
 
