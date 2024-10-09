@@ -1668,16 +1668,23 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
 
     def get_queryset(self):
         user_organisations = self.request.user.organisations.all()
+        print(user_organisations)
+
+        queryset = super().get_queryset()
+
+        if not user_organisations.exists():
+            return queryset.none()
 
         for org in user_organisations:
             related_batch_ids = TrtEntryBatchOrganisation.objects.filter(
                 organisation=org.code
             ).values_list('trtentrybatch_id', flat=True)
 
+        print(related_batch_ids)
+
         queryset = TrtEntryBatches.objects.filter(
             entry_batch_id__in=related_batch_ids
         )
-        
         
         location = self.request.GET.get('location')
         place = self.request.GET.get('place')
@@ -1799,7 +1806,11 @@ class CreateNewEntryView(LoginRequiredMixin, ListView):
         """
         Filter the batches data based on query parameters
         """
+        queryset = super().get_queryset()
         user_organisations = self.request.user.organisations.all()
+
+        if not user_organisations.exists():
+            return queryset.none()
  
         for org in user_organisations:
             related_batch_ids = TrtEntryBatchOrganisation.objects.filter(
