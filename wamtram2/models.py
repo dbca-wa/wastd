@@ -1275,6 +1275,12 @@ class TrtEntryBatches(models.Model):
         blank=True,
         null=True,
     )
+    organisations = models.ManyToManyField(
+        "users.Organisation", 
+        related_name="entry_batches",
+        blank=True,
+        db_table="TRT_ENTRY_BATCHES_ORGANISATION" 
+    )
     class Meta:
         managed = False
         db_table = "TRT_ENTRY_BATCHES"

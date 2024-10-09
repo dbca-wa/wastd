@@ -1875,28 +1875,26 @@ class CreateNewEntryView(LoginRequiredMixin, ListView):
 @login_required
 @require_POST
 def quick_add_batch(request):
-    if request.method == 'POST':
-        batches_code = request.POST.get('batches_code')
-        comments = request.POST.get('comments', '')
-        template_id = request.POST.get('template')
-        entered_person_id = request.POST.get('entered_person_id')
-        
-        if entered_person_id:
-            try:
-                entered_person = TrtPersons.objects.get(pk=entered_person_id)
-            except TrtPersons.DoesNotExist:
-                return JsonResponse({'success': False, 'error': 'Invalid entered person ID.'})
-        else:
-            entered_person = None 
-        
-        template = None
-        if template_id:
-            try:
-                template = Template.objects.get(pk=template_id)
-            except Template.DoesNotExist:
-                return JsonResponse({'success': False, 'error': 'Invalid template ID.'})
-            
+    batches_code = request.POST.get('batches_code')
+    comments = request.POST.get('comments', '')
+    template_id = request.POST.get('template')
+    entered_person_id = request.POST.get('entered_person_id')
 
+    entered_person = None
+    if entered_person_id:
+        try:
+            entered_person = TrtPersons.objects.get(pk=entered_person_id)
+        except TrtPersons.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Invalid entered person ID.'})
+    
+    template = None
+    if template_id:
+        try:
+            template = Template.objects.get(pk=template_id)
+        except Template.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Invalid template ID.'})
+    
+    try:
         batch = TrtEntryBatches.objects.create(
             batches_code=batches_code,
             comments=comments,
@@ -1905,15 +1903,16 @@ def quick_add_batch(request):
             entered_person_id=entered_person,
             template=template
         )
-        try:
-            batch.save()
-            return JsonResponse({'success': True})
-        except ValidationError as e:
-                return JsonResponse({'success': False, 'error': str(e)})
-    else:
-        return JsonResponse({'success': False, 'error': 'Invalid request method.'})
+        
+        user_organisations = request.user.organisations.all()
+        batch.organisations.set(user_organisations)
+        
+        return JsonResponse({'success': True})
+    except ValidationError as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
 
-    
 def search_templates(request):
     query = request.GET.get('q', '')
     if len(query) >= 2:
