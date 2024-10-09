@@ -1715,8 +1715,7 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
         context = super().get_context_data(**kwargs)
         
         user_organisations = self.request.user.organisations.all()
-        context['user_organisations'] = user_organisations
-        
+        context['user_organisation_codes'] = [org.code for org in user_organisations]
         
         context['locations'] = list(TrtLocations.get_ordered_locations())
         context['places'] = TrtPlaces.objects.all().order_by('place_name')
