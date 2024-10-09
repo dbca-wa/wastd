@@ -1799,7 +1799,16 @@ class CreateNewEntryView(LoginRequiredMixin, ListView):
         """
         Filter the batches data based on query parameters
         """
-        queryset = super().get_queryset()
+        user_organisations = self.request.user.organisations.all()
+ 
+        for org in user_organisations:
+            related_batch_ids = TrtEntryBatchOrganisation.objects.using('wamtram2').filter(
+                organisation=org.code
+            ).values_list('trtentrybatch_id', flat=True)
+ 
+        queryset = TrtEntryBatches.objects.using('wamtram2').filter(
+            entry_batch_id__in=related_batch_ids
+        )
         
         if self.request.GET.get('show_all'):
             return queryset.order_by('-entry_batch_id')
@@ -1838,6 +1847,10 @@ class CreateNewEntryView(LoginRequiredMixin, ListView):
         Provide context data to the template, including locations, places, and years
         """
         context = super().get_context_data(**kwargs)
+
+        user_organisations = self.request.user.organisations.all()
+        context['user_organisation_codes'] = [org.code for org in user_organisations]
+
         locations = TrtLocations.get_ordered_locations()
         places = TrtPlaces.objects.none()
 
