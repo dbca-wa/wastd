@@ -1670,11 +1670,11 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
         user_organisations = self.request.user.organisations.all()
 
         for org in user_organisations:
-            related_batch_ids = TrtEntryBatchOrganisation.objects.using('wamtram2').filter(
+            related_batch_ids = TrtEntryBatchOrganisation.objects.filter(
                 organisation=org.code
             ).values_list('trtentrybatch_id', flat=True)
 
-        queryset = TrtEntryBatches.objects.using('wamtram2').filter(
+        queryset = TrtEntryBatches.objects.filter(
             entry_batch_id__in=related_batch_ids
         )
         
@@ -1802,11 +1802,11 @@ class CreateNewEntryView(LoginRequiredMixin, ListView):
         user_organisations = self.request.user.organisations.all()
  
         for org in user_organisations:
-            related_batch_ids = TrtEntryBatchOrganisation.objects.using('wamtram2').filter(
+            related_batch_ids = TrtEntryBatchOrganisation.objects.filter(
                 organisation=org.code
             ).values_list('trtentrybatch_id', flat=True)
  
-        queryset = TrtEntryBatches.objects.using('wamtram2').filter(
+        queryset = TrtEntryBatches.objects.filter(
             entry_batch_id__in=related_batch_ids
         )
         
@@ -1898,19 +1898,19 @@ def quick_add_batch(request):
     entered_person = None
     if entered_person_id:
         try:
-            entered_person = TrtPersons.objects.using('wamtram2').get(pk=entered_person_id)
+            entered_person = TrtPersons.objects.get(pk=entered_person_id)
         except TrtPersons.DoesNotExist:
             return JsonResponse({'success': False, 'error': 'Invalid entered person ID.'})
     
     template = None
     if template_id:
         try:
-            template = Template.objects.using('wamtram2').get(pk=template_id)
+            template = Template.objects.get(pk=template_id)
         except Template.DoesNotExist:
             return JsonResponse({'success': False, 'error': 'Invalid template ID.'})
     
     try:
-        batch = TrtEntryBatches.objects.using('wamtram2').create(
+        batch = TrtEntryBatches.objects.create(
             batches_code=batches_code,
             comments=comments,
             entry_date=timezone.now(),
@@ -1923,7 +1923,7 @@ def quick_add_batch(request):
         
         for org in user_organisations:
             print(org.code)
-            TrtEntryBatchOrganisation.objects.using('wamtram2').create(
+            TrtEntryBatchOrganisation.objects.create(
                 trtentrybatch=batch,
                 organisation=org.code
             )
