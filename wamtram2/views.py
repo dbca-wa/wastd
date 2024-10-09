@@ -1667,7 +1667,18 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
         return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
-        queryset = super().get_queryset().annotate(
+        user_organisations = self.request.user.organisations.all()
+        
+        if not self.request.user.is_superuser:
+            related_batch_ids = TrtEntryBatchOrganisation.objects.using('wamtram2').filter(
+                organisation__in=user_organisations
+            ).values_list('trtentrybatch_id', flat=True)
+            
+            queryset = TrtEntryBatches.objects.using('wamtram2').filter(entry_batch_id__in=related_batch_ids)
+        else:
+            queryset = TrtEntryBatches.objects.using('wamtram2').all()
+        
+        queryset = queryset.annotate(
             entry_count=Count('trtdataentry'),
             flagged_entry_count=Count('trtdataentry', filter=Q(trtdataentry__do_not_process=True))
         )
@@ -1680,7 +1691,8 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
         if not self.request.GET:
             return queryset.order_by('-entry_batch_id')[:20]
         
-        if self.request.GET.get('show_all'):
+
+        if show_all:
             return queryset.order_by('-entry_batch_id')
         
         if not (location or year):
@@ -1699,13 +1711,9 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
         elif year:
             year_code = str(year)[-2:]
             query = Q(batches_code__endswith=year_code)
-            
-        if query:
-            result = queryset.filter(query).order_by('-entry_batch_id')
-            return result
-        else:
-            result = queryset.order_by('-entry_batch_id')
-            return result
+
+        result = queryset.filter(query).order_by('-entry_batch_id') if query else queryset.order_by('-entry_batch_id')
+        return result
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
