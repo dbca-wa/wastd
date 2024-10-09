@@ -1668,20 +1668,16 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
 
     def get_queryset(self):
         user_organisations = self.request.user.organisations.all()
-        
-        if not self.request.user.is_superuser:
+
+        for org in user_organisations:
             related_batch_ids = TrtEntryBatchOrganisation.objects.using('wamtram2').filter(
-                organisation__in=user_organisations
+                organisation=org.code
             ).values_list('trtentrybatch_id', flat=True)
-            
-            queryset = TrtEntryBatches.objects.using('wamtram2').filter(entry_batch_id__in=related_batch_ids)
-        else:
-            queryset = TrtEntryBatches.objects.using('wamtram2').all()
-        
-        queryset = queryset.annotate(
-            entry_count=Count('trtdataentry'),
-            flagged_entry_count=Count('trtdataentry', filter=Q(trtdataentry__do_not_process=True))
+
+        queryset = TrtEntryBatches.objects.using('wamtram2').filter(
+            entry_batch_id__in=related_batch_ids
         )
+        
         
         location = self.request.GET.get('location')
         place = self.request.GET.get('place')
@@ -1720,7 +1716,6 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
         
         user_organisations = self.request.user.organisations.all()
         context['user_organisations'] = user_organisations
-        print(user_organisations)
         
         
         context['locations'] = list(TrtLocations.get_ordered_locations())
@@ -1915,9 +1910,10 @@ def quick_add_batch(request):
         user_organisations = request.user.organisations.all()
         
         for org in user_organisations:
+            print(org.code)
             TrtEntryBatchOrganisation.objects.using('wamtram2').create(
                 trtentrybatch=batch,
-                organisation=org
+                organisation=org.code
             )
         
         return JsonResponse({'success': True})

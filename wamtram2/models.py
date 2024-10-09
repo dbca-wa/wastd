@@ -1247,17 +1247,15 @@ class TrtEntryBatchOrganisation(models.Model):
         db_column="trtentrybatches_id",
         related_name="batch_organisations",
     )
-    organisation = models.ForeignKey(
-        "users.Organisation",
-        on_delete=models.CASCADE,
-        db_column="organisation_id",
-        related_name="batch_organisations",
+    organisation = models.CharField(
+        max_length=50,
+        db_column="organisation_code",
     )
 
     class Meta:
         db_table = "TRT_ENTRY_BATCHES_ORGANISATION"
         managed = False
-        unique_together = ("trtentrybatch", "organisation")
+
 
 class TrtEntryBatches(models.Model):
     entry_batch_id = models.AutoField(
