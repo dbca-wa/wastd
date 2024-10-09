@@ -1240,6 +1240,25 @@ class TrtEggCountMethods(models.Model):
         return f"{self.description}"
 
 
+class TrtEntryBatchOrganisation(models.Model):
+    trtentrybatch = models.ForeignKey(
+        "TrtEntryBatches",
+        on_delete=models.CASCADE,
+        db_column="trtentrybatches_id",
+        related_name="batch_organisations",
+    )
+    organisation = models.ForeignKey(
+        "users.Organisation",
+        on_delete=models.CASCADE,
+        db_column="organisation_id",
+        related_name="batch_organisations",
+    )
+
+    class Meta:
+        db_table = "TRT_ENTRY_BATCHES_ORGANISATION"
+        managed = False
+        unique_together = ("trtentrybatch", "organisation")
+
 class TrtEntryBatches(models.Model):
     entry_batch_id = models.AutoField(
         db_column="ENTRY_BATCH_ID", primary_key=True
@@ -1275,12 +1294,7 @@ class TrtEntryBatches(models.Model):
         blank=True,
         null=True,
     )
-    organisations = models.ManyToManyField(
-        "users.Organisation", 
-        related_name="entry_batches",
-        blank=True,
-        db_table="TRT_ENTRY_BATCHES_ORGANISATION" 
-    )
+
     class Meta:
         managed = False
         db_table = "TRT_ENTRY_BATCHES"

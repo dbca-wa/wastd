@@ -11,7 +11,7 @@ from django.views import View
 from django.views.generic.edit import FormMixin
 from django.views.generic import TemplateView, ListView, DetailView, FormView, DeleteView
 from django.http import JsonResponse
-from .models import TrtPlaces, TrtSpecies, TrtLocations
+from .models import TrtPlaces, TrtSpecies, TrtLocations,TrtEntryBatchOrganisation
 from django.db.models import Count, Exists, OuterRef, Subquery
 from django.core.paginator import Paginator
 from openpyxl import Workbook
@@ -1871,7 +1871,7 @@ class CreateNewEntryView(LoginRequiredMixin, ListView):
             })
         return super().get(request, *args, **kwargs)
     
-    
+
 @login_required
 @require_POST
 def quick_add_batch(request):
@@ -1883,19 +1883,19 @@ def quick_add_batch(request):
     entered_person = None
     if entered_person_id:
         try:
-            entered_person = TrtPersons.objects.get(pk=entered_person_id)
+            entered_person = TrtPersons.objects.using('wamtram2').get(pk=entered_person_id)
         except TrtPersons.DoesNotExist:
             return JsonResponse({'success': False, 'error': 'Invalid entered person ID.'})
     
     template = None
     if template_id:
         try:
-            template = Template.objects.get(pk=template_id)
+            template = Template.objects.using('wamtram2').get(pk=template_id)
         except Template.DoesNotExist:
             return JsonResponse({'success': False, 'error': 'Invalid template ID.'})
     
     try:
-        batch = TrtEntryBatches.objects.create(
+        batch = TrtEntryBatches.objects.using('wamtram2').create(
             batches_code=batches_code,
             comments=comments,
             entry_date=timezone.now(),
@@ -1905,13 +1905,19 @@ def quick_add_batch(request):
         )
         
         user_organisations = request.user.organisations.all()
-        batch.organisations.set(user_organisations)
+        
+        for org in user_organisations:
+            TrtEntryBatchOrganisation.objects.using('wamtram2').create(
+                trtentrybatch=batch,
+                organisation=org
+            )
         
         return JsonResponse({'success': True})
     except ValidationError as e:
         return JsonResponse({'success': False, 'error': str(e)})
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
+
 
 def search_templates(request):
     query = request.GET.get('q', '')
