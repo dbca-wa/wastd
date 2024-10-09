@@ -1710,12 +1710,12 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         
-        user_organizations = self.request.user.organizations.all()
-        context['user_organizations'] = user_organizations
-        print(user_organizations)
+        user_organisations = self.request.user.organisations.all()
+        context['user_organisations'] = user_organisations
+        print(user_organisations)
         
         
-        context['locations'] = list(TrtLocations.get_ordersed_locations())
+        context['locations'] = list(TrtLocations.get_ordered_locations())
         context['places'] = TrtPlaces.objects.all().order_by('place_name')
         current_year = timezone.now().year
         context['years'] = range(2022, current_year + 1)
