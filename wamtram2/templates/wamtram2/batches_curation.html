@@ -40,6 +40,18 @@
 {% block page_content_inner %}
 <div class="container-fluid mt-5 mb-5">
     <h2 class="mb-4">Manage Batches</h2>
+
+    <div class="d-flex justify-content-end mb-3">
+        <h4><strong>Your Organisation(s):</strong></h4>
+        {% if user_organisation_codes %}
+            {% for code in user_organisation_codes %}
+                <h4><span class="badge badge-info ml-1" style="font-size:x-large;">{{ code }}</span></h4>
+            {% endfor %}
+        {% else %}
+            <h4><span class="badge badge-secondary ml-1" style="font-size:x-large;">None</span></h4>
+        {% endif %}
+    </div>
+
     <div class="d-flex flex-wrap align-items-center mb-3">
         
         {% if request.user.is_superuser or request.user|has_group:"WAMTRAM2_STAFF" %}

@@ -11,7 +11,7 @@ from django.views import View
 from django.views.generic.edit import FormMixin
 from django.views.generic import TemplateView, ListView, DetailView, FormView, DeleteView
 from django.http import JsonResponse
-from .models import TrtPlaces, TrtSpecies, TrtLocations
+from .models import TrtPlaces, TrtSpecies, TrtLocations,TrtEntryBatchOrganisation
 from django.db.models import Count, Exists, OuterRef, Subquery
 from django.core.paginator import Paginator
 from openpyxl import Workbook
@@ -1667,10 +1667,17 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
         return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
-        queryset = super().get_queryset().annotate(
-            entry_count=Count('trtdataentry'),
-            flagged_entry_count=Count('trtdataentry', filter=Q(trtdataentry__do_not_process=True))
+        user_organisations = self.request.user.organisations.all()
+
+        for org in user_organisations:
+            related_batch_ids = TrtEntryBatchOrganisation.objects.using('wamtram2').filter(
+                organisation=org.code
+            ).values_list('trtentrybatch_id', flat=True)
+
+        queryset = TrtEntryBatches.objects.using('wamtram2').filter(
+            entry_batch_id__in=related_batch_ids
         )
+        
         
         location = self.request.GET.get('location')
         place = self.request.GET.get('place')
@@ -1680,7 +1687,8 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
         if not self.request.GET:
             return queryset.order_by('-entry_batch_id')[:20]
         
-        if self.request.GET.get('show_all'):
+
+        if show_all:
             return queryset.order_by('-entry_batch_id')
         
         if not (location or year):
@@ -1699,21 +1707,15 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
         elif year:
             year_code = str(year)[-2:]
             query = Q(batches_code__endswith=year_code)
-            
-        if query:
-            result = queryset.filter(query).order_by('-entry_batch_id')
-            return result
-        else:
-            result = queryset.order_by('-entry_batch_id')
-            return result
+
+        result = queryset.filter(query).order_by('-entry_batch_id') if query else queryset.order_by('-entry_batch_id')
+        return result
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         
         user_organisations = self.request.user.organisations.all()
-        context['user_organisations'] = user_organisations
-        print(user_organisations)
-        
+        context['user_organisation_codes'] = [org.code for org in user_organisations]
         
         context['locations'] = list(TrtLocations.get_ordered_locations())
         context['places'] = TrtPlaces.objects.all().order_by('place_name')
@@ -1797,7 +1799,16 @@ class CreateNewEntryView(LoginRequiredMixin, ListView):
         """
         Filter the batches data based on query parameters
         """
-        queryset = super().get_queryset()
+        user_organisations = self.request.user.organisations.all()
+ 
+        for org in user_organisations:
+            related_batch_ids = TrtEntryBatchOrganisation.objects.using('wamtram2').filter(
+                organisation=org.code
+            ).values_list('trtentrybatch_id', flat=True)
+ 
+        queryset = TrtEntryBatches.objects.using('wamtram2').filter(
+            entry_batch_id__in=related_batch_ids
+        )
         
         if self.request.GET.get('show_all'):
             return queryset.order_by('-entry_batch_id')
@@ -1836,6 +1847,10 @@ class CreateNewEntryView(LoginRequiredMixin, ListView):
         Provide context data to the template, including locations, places, and years
         """
         context = super().get_context_data(**kwargs)
+
+        user_organisations = self.request.user.organisations.all()
+        context['user_organisation_codes'] = [org.code for org in user_organisations]
+
         locations = TrtLocations.get_ordered_locations()
         places = TrtPlaces.objects.none()
 
@@ -1871,33 +1886,31 @@ class CreateNewEntryView(LoginRequiredMixin, ListView):
             })
         return super().get(request, *args, **kwargs)
     
-    
+
 @login_required
 @require_POST
 def quick_add_batch(request):
-    if request.method == 'POST':
-        batches_code = request.POST.get('batches_code')
-        comments = request.POST.get('comments', '')
-        template_id = request.POST.get('template')
-        entered_person_id = request.POST.get('entered_person_id')
-        
-        if entered_person_id:
-            try:
-                entered_person = TrtPersons.objects.get(pk=entered_person_id)
-            except TrtPersons.DoesNotExist:
-                return JsonResponse({'success': False, 'error': 'Invalid entered person ID.'})
-        else:
-            entered_person = None 
-        
-        template = None
-        if template_id:
-            try:
-                template = Template.objects.get(pk=template_id)
-            except Template.DoesNotExist:
-                return JsonResponse({'success': False, 'error': 'Invalid template ID.'})
-            
+    batches_code = request.POST.get('batches_code')
+    comments = request.POST.get('comments', '')
+    template_id = request.POST.get('template')
+    entered_person_id = request.POST.get('entered_person_id')
 
-        batch = TrtEntryBatches.objects.create(
+    entered_person = None
+    if entered_person_id:
+        try:
+            entered_person = TrtPersons.objects.using('wamtram2').get(pk=entered_person_id)
+        except TrtPersons.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Invalid entered person ID.'})
+    
+    template = None
+    if template_id:
+        try:
+            template = Template.objects.using('wamtram2').get(pk=template_id)
+        except Template.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Invalid template ID.'})
+    
+    try:
+        batch = TrtEntryBatches.objects.using('wamtram2').create(
             batches_code=batches_code,
             comments=comments,
             entry_date=timezone.now(),
@@ -1905,15 +1918,23 @@ def quick_add_batch(request):
             entered_person_id=entered_person,
             template=template
         )
-        try:
-            batch.save()
-            return JsonResponse({'success': True})
-        except ValidationError as e:
-                return JsonResponse({'success': False, 'error': str(e)})
-    else:
-        return JsonResponse({'success': False, 'error': 'Invalid request method.'})
+        
+        user_organisations = request.user.organisations.all()
+        
+        for org in user_organisations:
+            print(org.code)
+            TrtEntryBatchOrganisation.objects.using('wamtram2').create(
+                trtentrybatch=batch,
+                organisation=org.code
+            )
+        
+        return JsonResponse({'success': True})
+    except ValidationError as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
 
-    
+
 def search_templates(request):
     query = request.GET.get('q', '')
     if len(query) >= 2:
