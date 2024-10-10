@@ -1691,10 +1691,14 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
         elif not user_organisations.exists():
             return queryset.none()
         else:
-            related_batch_ids = TrtEntryBatchOrganisation.objects.filter(
-                organisation__in=user_organisations.values_list('code', flat=True)
-            ).values_list('trtentrybatch_id', flat=True)
-            queryset = queryset.filter(entry_batch_id__in=related_batch_ids)
+            for org in user_organisations:
+                related_batch_ids = TrtEntryBatchOrganisation.objects.filter(
+                    organisation=org.code
+                ).values_list('trtentrybatch_id', flat=True)
+
+            queryset = TrtEntryBatches.objects.filter(
+                entry_batch_id__in=related_batch_ids
+            ).order_by('-entry_batch_id')
 
         last_place_code_subquery = Subquery(
             TrtDataEntry.objects.filter(entry_batch_id=OuterRef("pk"))
@@ -1861,7 +1865,6 @@ class CreateNewEntryView(LoginRequiredMixin, ListView):
         Filter the batches data based on query parameters
         """
         queryset = super().get_queryset().order_by('-entry_batch_id')
- 
 
         user = self.request.user
         if user.is_superuser:
@@ -1880,7 +1883,6 @@ class CreateNewEntryView(LoginRequiredMixin, ListView):
         queryset = TrtEntryBatches.objects.filter(
             entry_batch_id__in=related_batch_ids
         ).order_by('-entry_batch_id')
- 
         
         if self.request.GET.get('show_all'):
             return queryset.order_by('-entry_batch_id')
