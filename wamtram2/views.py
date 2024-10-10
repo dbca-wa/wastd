@@ -1668,9 +1668,12 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
 
     def get_queryset(self):
         user_organisations = self.request.user.organisations.all()
-        print(user_organisations)
+        queryset = super().get_queryset().order_by('-entry_batch_id')
+        user = self.request.user
+        if user.is_superuser:
+            return queryset
 
-        queryset = super().get_queryset()
+        
 
         if not user_organisations.exists():
             return queryset.none()
@@ -1680,11 +1683,10 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
                 organisation=org.code
             ).values_list('trtentrybatch_id', flat=True)
 
-        print(related_batch_ids)
-
         queryset = TrtEntryBatches.objects.filter(
             entry_batch_id__in=related_batch_ids
-        )
+        ).order_by('-entry_batch_id')
+ 
         
         location = self.request.GET.get('location')
         place = self.request.GET.get('place')
@@ -1836,7 +1838,13 @@ class CreateNewEntryView(LoginRequiredMixin, ListView):
         """
         Filter the batches data based on query parameters
         """
-        queryset = super().get_queryset()
+        queryset = super().get_queryset().order_by('-entry_batch_id')
+ 
+
+        user = self.request.user
+        if user.is_superuser:
+            return queryset
+        
         user_organisations = self.request.user.organisations.all()
 
         if not user_organisations.exists():
@@ -1849,7 +1857,8 @@ class CreateNewEntryView(LoginRequiredMixin, ListView):
 
         queryset = TrtEntryBatches.objects.filter(
             entry_batch_id__in=related_batch_ids
-        )
+        ).order_by('-entry_batch_id')
+ 
         
         if self.request.GET.get('show_all'):
             return queryset.order_by('-entry_batch_id')
@@ -1968,7 +1977,6 @@ def quick_add_batch(request):
         user_organisations = request.user.organisations.all()
         
         for org in user_organisations:
-            print(org.code)
             TrtEntryBatchOrganisation.objects.create(
                 trtentrybatch=batch,
                 organisation=org.code
