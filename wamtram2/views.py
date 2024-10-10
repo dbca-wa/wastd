@@ -31,6 +31,7 @@ from django.core.exceptions import ValidationError
 from datetime import timedelta
 from django.db.models.functions import Cast
 from django.db.models import DateTimeField
+from django.core.exceptions import PermissionDenied
 
 
 from wastd.utils import Breadcrumb, PaginateMixin
@@ -168,15 +169,30 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
         return initial
 
     def dispatch(self, request, *args, **kwargs):
+        user = request.user
+        batch_id = kwargs.get("batch_id")
+
+        if user.is_superuser:
+            return super().dispatch(request, *args, **kwargs)
+
+        user_organisations = user.organisations.all()
+        
+        if not user_organisations.exists():
+            raise PermissionDenied("You do not have permission to view this batch")
+
+        related_batch = TrtEntryBatchOrganisation.objects.filter(
+            trtentrybatch_id=batch_id,
+            organisation__in=user_organisations.values_list('code', flat=True)
+        ).exists()
+
+        if not related_batch:
+            raise PermissionDenied("You do not have permission to view this batch")
+
         if not (
-            request.user.groups.filter(name="WAMTRAM2_VOLUNTEER").exists()
-            or request.user.groups.filter(name="WAMTRAM2_TEAM_LEADER").exists()
-            or request.user.groups.filter(name="WAMTRAM2_STAFF").exists()
-            or request.user.is_superuser
+            user.groups.filter(name__in=["WAMTRAM2_VOLUNTEER", "WAMTRAM2_TEAM_LEADER", "WAMTRAM2_STAFF"]).exists()
         ):
-            return HttpResponseForbidden(
-                "You do not have permission to view this record"
-            )
+            raise PermissionDenied("You do not have permission to view this batch")
+
         return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
@@ -191,6 +207,7 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
     def get_queryset(self):
         queryset = super().get_queryset()
         batch_id = self.kwargs.get("batch_id")
+        
     
         filter_value = self.request.GET.get("filter")
         if filter_value == "needs_review":
@@ -398,7 +415,6 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
             if trtdataentry.observation_date:
                 adjusted_date = trtdataentry.observation_date - timedelta(hours=8)
                 initial['observation_date'] = adjusted_date
-
             
             measured_by = trtdataentry.measured_by
             recorded_by = trtdataentry.recorded_by
@@ -1075,8 +1091,6 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
         return context
 
 
-
-
 SEX_CHOICES = [
     ("M", "Male"),
     ("F", "Female"),
@@ -1651,6 +1665,7 @@ class DudTagManageView(LoginRequiredMixin, View):
 
         return redirect('wamtram2:dud_tag_manage')
 
+
 class BatchesCurationView(LoginRequiredMixin,ListView):
     model = TrtEntryBatches
     template_name = 'wamtram2/batches_curation.html'
@@ -1668,22 +1683,32 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
 
     def get_queryset(self):
         user_organisations = self.request.user.organisations.all()
-        print(user_organisations)
-
-        queryset = super().get_queryset()
-
-        if not user_organisations.exists():
+        queryset = super().get_queryset().order_by('-entry_batch_id')
+        user = self.request.user
+        
+        if user.is_superuser:
+            pass
+        elif not user_organisations.exists():
             return queryset.none()
-
-        for org in user_organisations:
+        else:
             related_batch_ids = TrtEntryBatchOrganisation.objects.filter(
-                organisation=org.code
+                organisation__in=user_organisations.values_list('code', flat=True)
             ).values_list('trtentrybatch_id', flat=True)
+            queryset = queryset.filter(entry_batch_id__in=related_batch_ids)
 
-        print(related_batch_ids)
+        last_place_code_subquery = Subquery(
+            TrtDataEntry.objects.filter(entry_batch_id=OuterRef("pk"))
+            .order_by("-data_entry_id")
+            .values("place_code__place_name")[:1]
+        )
 
-        queryset = TrtEntryBatches.objects.filter(
-            entry_batch_id__in=related_batch_ids
+        queryset = queryset.annotate(
+            entry_count=Count('trtdataentry'),
+            last_place_code=last_place_code_subquery,
+            do_not_process_count=Count(
+                'trtdataentry',
+                filter=Q(trtdataentry__do_not_process=True)
+            )
         )
         
         location = self.request.GET.get('location')
@@ -1692,11 +1717,10 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
         show_all = self.request.GET.get('show_all')
         
         if not self.request.GET:
-            return queryset.order_by('-entry_batch_id')[:20]
+            return queryset[:20]
         
-
         if show_all:
-            return queryset.order_by('-entry_batch_id')
+            return queryset
         
         if not (location or year):
             return TrtEntryBatches.objects.none()
@@ -1717,9 +1741,27 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
 
         result = queryset.filter(query).order_by('-entry_batch_id') if query else queryset.order_by('-entry_batch_id')
         return result
+    
+    def get_user_role(self, user):
+        if user.is_superuser:
+            return "Super User"
+        user_groups = user.groups.values_list('name', flat=True)
+        if "WAMTRAM2_STAFF" in user_groups:
+            return "Staff"
+        elif "WAMTRAM2_TEAM_LEADER" in user_groups:
+            return "Team Leader"
+        elif "WAMTRAM2_VOLUNTEER" in user_groups:
+            return "Volunteer"
+        
+        return ""
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        
+        user = self.request.user
+        
+        role = self.get_user_role(user)
+        context['user_role'] = role
         
         user_organisations = self.request.user.organisations.all()
         context['user_organisation_codes'] = [org.code for org in user_organisations]
@@ -1801,25 +1843,44 @@ class CreateNewEntryView(LoginRequiredMixin, ListView):
             )
         return super().dispatch(request, *args, **kwargs)
     
+    def get_user_role(self, user):
+        if user.is_superuser:
+            return "Super User"
+        user_groups = user.groups.values_list('name', flat=True)
+        if "WAMTRAM2_STAFF" in user_groups:
+            return "Staff"
+        elif "WAMTRAM2_TEAM_LEADER" in user_groups:
+            return "Team Leader"
+        elif "WAMTRAM2_VOLUNTEER" in user_groups:
+            return "Volunteer"
+        
+        return ""
 
     def get_queryset(self):
         """
         Filter the batches data based on query parameters
         """
-        queryset = super().get_queryset()
+        queryset = super().get_queryset().order_by('-entry_batch_id')
+ 
+
+        user = self.request.user
+        if user.is_superuser:
+            return queryset
+        
         user_organisations = self.request.user.organisations.all()
 
         if not user_organisations.exists():
             return queryset.none()
- 
+
         for org in user_organisations:
             related_batch_ids = TrtEntryBatchOrganisation.objects.filter(
                 organisation=org.code
             ).values_list('trtentrybatch_id', flat=True)
- 
+
         queryset = TrtEntryBatches.objects.filter(
             entry_batch_id__in=related_batch_ids
-        )
+        ).order_by('-entry_batch_id')
+ 
         
         if self.request.GET.get('show_all'):
             return queryset.order_by('-entry_batch_id')
@@ -1858,6 +1919,11 @@ class CreateNewEntryView(LoginRequiredMixin, ListView):
         Provide context data to the template, including locations, places, and years
         """
         context = super().get_context_data(**kwargs)
+        
+        user = self.request.user
+        
+        role = self.get_user_role(user)
+        context['user_role'] = role
 
         user_organisations = self.request.user.organisations.all()
         context['user_organisation_codes'] = [org.code for org in user_organisations]
@@ -1933,7 +1999,6 @@ def quick_add_batch(request):
         user_organisations = request.user.organisations.all()
         
         for org in user_organisations:
-            print(org.code)
             TrtEntryBatchOrganisation.objects.create(
                 trtentrybatch=batch,
                 organisation=org.code

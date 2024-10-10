@@ -1,6 +1,6 @@
 {% extends "base_wastd.html" %}
 {% load static bootstrap4 %}
-
+<body data-entry-id="{{ entry_id|default:'' }}">
 {% bootstrap_css %}
 {% block extra_style %}
 {{ block.super }}
@@ -896,7 +896,7 @@
   </div>
   <!-- Advanced Data Card -->
   <div id="advancedDataCard" class="card border-dark mt-3" style="display: none;">
-    <div class="card-header">Advanced Data</div>
+    <div class="card-header"><strong>Advanced Data</strong></div>
     <div class="card-body">
       <!-- Egg -->
       <div class="row">
@@ -1010,6 +1010,7 @@
 <script src="{% static 'js/bgColorHandler.js' %}"></script>
 <script src="{% static 'js/tagValidation.js' %}"></script>
 <script src="{% static 'js/searchHandler.js' %}"></script>
+<script src="{% static 'js/expandFields.js' %}"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function() {

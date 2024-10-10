@@ -39,17 +39,32 @@
 
 {% block page_content_inner %}
 <div class="container-fluid mt-5 mb-5">
-    <h2 class="mb-4">Manage Batches</h2>
 
-    <div class="d-flex justify-content-end mb-3">
-        <h4><strong>Your Organisation(s):</strong></h4>
-        {% if user_organisation_codes %}
-            {% for code in user_organisation_codes %}
-                <h4><span class="badge badge-info ml-1" style="font-size:x-large;">{{ code }}</span></h4>
-            {% endfor %}
-        {% else %}
-            <h4><span class="badge badge-secondary ml-1" style="font-size:x-large;">None</span></h4>
-        {% endif %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><strong>Manage Batches</strong></h2>
+
+        <div class="d-flex flex-row align-items-center mb-3">
+            <div class="d-flex flex-column align-items-start mr-4">
+                <h5 class="mb-1"><strong>Your Organisation(s):</strong></h5>
+                <div class="d-flex flex-wrap">
+                    {% if user_organisation_codes %}
+                        {% for code in user_organisation_codes %}
+                            <span class="badge badge-info" style="font-size: x-large;">{{ code }}</span>
+                        {% endfor %}
+                    {% else %}
+                        <span class="badge badge-secondary" style="font-size: x-large;">None</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="d-flex flex-column align-items-start">
+                <h5 class="mb-1"><strong>Your Role:</strong></h5>
+                {% if user_role %}
+                    <span class="badge badge-primary" style="font-size: x-large;">{{ user_role }}</span>
+                {% else %}
+                    <span class="badge badge-secondary" style="font-size: x-large;">Visitor</span>
+                {% endif %}
+            </div>
+        </div>
     </div>
 
     <div class="d-flex flex-wrap align-items-center mb-3">
@@ -135,8 +150,8 @@
             <tr>
                 <th style="width: 5%;">Batch ID</th>
                 <th style="width: 8%;">Batches Code</th>
-                <th style="width: 8%;"># of Records</th>
-                <th style="width: 8%;"># of Flagged Records</th>
+                <th style="width: 8%;"># of Entries</th>
+                <th style="width: 8%;"># of Flagged Entries</th>
                 <th style="width: 15%;">Template</th>
                 <th style="width: 40%;">Comments</th>
                 <th style="width: 16%;">Actions</th>
@@ -144,16 +159,16 @@
         </thead>
         <tbody>
             {% for batch in batches %}
-            <tr class="{% if batch.flagged_entry_count > 0 %}flagged-row{% endif %}">
+            <tr class="{% if batch.do_not_process_count > 0 %}flagged-row{% endif %}">
                 <td>{{ batch.entry_batch_id }}</td>
                 <td>{{ batch.batches_code|default:"No Code" }}</td>
                 <td>{{ batch.entry_count }}</td>
-                <td>{{ batch.flagged_entry_count }}</td>
+                <td>{{ batch.do_not_process_count }}</td>
                 <td>{{ batch.template|default:"No Template" }}</td>
                 <td>{{ batch.comments|truncatechars:100 }}</td>
                 <td>
-                    <a href="{% url 'wamtram2:entry_batch_detail' batch_id=batch.entry_batch_id %}" class="btn btn-sm btn-info">View</a>
-                    <a href="{% url 'wamtram2:add_batches_code' batch_id=batch.entry_batch_id %}" class="btn btn-sm btn-primary">Manage Details</a>
+                    <a href="{% url 'wamtram2:entry_batch_detail' batch_id=batch.entry_batch_id %}" class="btn btn-sm btn-info show-loading">View</a>
+                    <a href="{% url 'wamtram2:add_batches_code' batch_id=batch.entry_batch_id %}" class="btn btn-sm btn-primary show-loading">Manage Details</a>
                 </td>
             </tr>
             {% endfor %}
@@ -455,7 +470,12 @@
                 }
             });
         });
+
+        $(document).on('click', '.show-loading', function(e) {
+            showLoadingSpinner();
+        });
         
+ 
 
         $(document).on('click', '.pagination a', function(e) {
             e.preventDefault();
