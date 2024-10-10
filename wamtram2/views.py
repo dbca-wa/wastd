@@ -31,6 +31,7 @@ from django.core.exceptions import ValidationError
 from datetime import timedelta
 from django.db.models.functions import Cast
 from django.db.models import DateTimeField
+from django.db.models.functions import Coalesce
 
 
 from wastd.utils import Breadcrumb, PaginateMixin
@@ -1670,23 +1671,31 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
         user_organisations = self.request.user.organisations.all()
         queryset = super().get_queryset().order_by('-entry_batch_id')
         user = self.request.user
-        if user.is_superuser:
-            return queryset
-
         
-
-        if not user_organisations.exists():
+        if user.is_superuser:
+            pass
+        elif not user_organisations.exists():
             return queryset.none()
-
-        for org in user_organisations:
+        else:
             related_batch_ids = TrtEntryBatchOrganisation.objects.filter(
-                organisation=org.code
+                organisation__in=user_organisations.values_list('code', flat=True)
             ).values_list('trtentrybatch_id', flat=True)
+            queryset = queryset.filter(entry_batch_id__in=related_batch_ids)
 
-        queryset = TrtEntryBatches.objects.filter(
-            entry_batch_id__in=related_batch_ids
-        ).order_by('-entry_batch_id')
- 
+        last_place_code_subquery = Subquery(
+            TrtDataEntry.objects.filter(entry_batch_id=OuterRef('pk'))
+            .order_by('-data_entry_id')
+            .values('place_code__place_name')[:1]
+        )
+
+        queryset = queryset.annotate(
+            entry_count=Count('trtdataentry'),
+            last_place_code=Coalesce(last_place_code_subquery, 'No entries'),
+            do_not_process_count=Count(
+                'trtdataentry',
+                filter=Q(trtdataentry__do_not_process=True)
+            )
+        ) 
         
         location = self.request.GET.get('location')
         place = self.request.GET.get('place')
@@ -1694,11 +1703,10 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
         show_all = self.request.GET.get('show_all')
         
         if not self.request.GET:
-            return queryset.order_by('-entry_batch_id')[:20]
+            return queryset[:20]
         
-
         if show_all:
-            return queryset.order_by('-entry_batch_id')
+            return queryset
         
         if not (location or year):
             return TrtEntryBatches.objects.none()
