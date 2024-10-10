@@ -180,12 +180,13 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
         if not user_organisations.exists():
             raise PermissionDenied("You do not have permission to view this batch")
 
-        related_batch = TrtEntryBatchOrganisation.objects.filter(
+        org_codes = [org.code for org in user_organisations]
+        has_permission = TrtEntryBatchOrganisation.objects.filter(
             trtentrybatch_id=batch_id,
-            organisation__in=user_organisations.values_list('code', flat=True)
+            organisation__in=org_codes
         ).exists()
 
-        if not related_batch:
+        if not has_permission:
             raise PermissionDenied("You do not have permission to view this batch")
 
         if not (
