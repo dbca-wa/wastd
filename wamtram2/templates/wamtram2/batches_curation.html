@@ -150,8 +150,8 @@
             <tr>
                 <th style="width: 5%;">Batch ID</th>
                 <th style="width: 8%;">Batches Code</th>
-                <th style="width: 8%;"># of Records</th>
-                <th style="width: 8%;"># of Flagged Records</th>
+                <th style="width: 8%;"># of Entries</th>
+                <th style="width: 8%;"># of Flagged Entries</th>
                 <th style="width: 15%;">Template</th>
                 <th style="width: 40%;">Comments</th>
                 <th style="width: 16%;">Actions</th>
@@ -159,11 +159,11 @@
         </thead>
         <tbody>
             {% for batch in batches %}
-            <tr class="{% if batch.flagged_entry_count > 0 %}flagged-row{% endif %}">
+            <tr class="{% if batch.do_not_process_count > 0 %}flagged-row{% endif %}">
                 <td>{{ batch.entry_batch_id }}</td>
                 <td>{{ batch.batches_code|default:"No Code" }}</td>
                 <td>{{ batch.entry_count }}</td>
-                <td>{{ batch.flagged_entry_count }}</td>
+                <td>{{ batch.do_not_process_count }}</td>
                 <td>{{ batch.template|default:"No Template" }}</td>
                 <td>{{ batch.comments|truncatechars:100 }}</td>
                 <td>
@@ -471,12 +471,11 @@
             });
         });
 
-        $(document).ready(function() {
-            $('.show-loading').on('click', function(e) {
-                showLoadingSpinner();
-            });
+        $(document).on('click', '.show-loading', function(e) {
+            showLoadingSpinner();
         });
         
+ 
 
         $(document).on('click', '.pagination a', function(e) {
             e.preventDefault();
