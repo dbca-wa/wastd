@@ -1,11 +1,15 @@
 document.addEventListener('DOMContentLoaded', function() {
     const entryId = document.body.dataset.entryId;
-
+ 
     if (entryId) {
-        expandAdditionalFields();
+        console.log("Entry ID found:", entryId);
+        expandAllFields();
+    } else {
+        console.log("No Entry ID found");
     }
-
-    function expandAdditionalFields() {
+ 
+    function expandAllFields() {
+        console.log("Expanding all fields");
         const fieldsToExpand = [
             'injuryAdditionalFields',
             'additionalRecaptureLeftTag',
@@ -22,41 +26,41 @@ document.addEventListener('DOMContentLoaded', function() {
             'scarsDetails',
             'scarsDetailsRight'
         ];
-
+ 
         fieldsToExpand.forEach(id => {
             const element = document.getElementById(id);
             if (element) {
-            element.style.display = 'block';
+                const displayStyle = element.tagName === 'TR' ? 'table-row' : 'block';
+                console.log(`Expanding ${id} as ${displayStyle}`);
+                element.style.display = displayStyle;
+            } else {
+                console.log(`Element not found: ${id}`);
             }
         });
-
-        updateButtonStates();
+ 
+        removeToggleButtons();
     }
-
-    function updateButtonStates() {
-        const buttonUpdates = [
-            { id: 'toggleInjuryFieldsButton', text: 'Less Injuries' },
-            { id: 'toggleRecaptureTagsBtn', text: 'Less Recapture Tags' },
-            { id: 'toggleNewTagsBtn', text: 'Less New Tags' },
-            { id: 'addMeasurementButton', text: 'Less Measurements' },
-            { id: 'advancedDataButton', action: 'hide' }
+ 
+    function removeToggleButtons() {
+        console.log("Removing toggle buttons");
+        const buttonsToRemove = [
+            'toggleInjuryFieldsButton',
+            'toggleRecaptureTagsBtn',
+            'toggleNewTagsBtn',
+            'toggleMeasurementButton',
+            'toggleRecapturePITTagsBtn',
+            'toggleNewPITTagsBtn',
+            'advancedDataButton'
         ];
-
-        buttonUpdates.forEach(update => {
-            const button = document.getElementById(update.id);
+ 
+        buttonsToRemove.forEach(id => {
+            const button = document.getElementById(id);
             if (button) {
-            if (update.action === 'hide') {
+                console.log(`Removing ${id}`);
                 button.style.display = 'none';
             } else {
-                button.textContent = update.text;
-            }
-            
-            const icon = button.querySelector('i');
-            if (icon) {
-                icon.classList.remove('fa-plus');
-                icon.classList.add('fa-minus');
-            }
+                console.log(`Button not found: ${id}`);
             }
         });
-        }
-    });
+    }
+});

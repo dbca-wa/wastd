@@ -1,6 +1,5 @@
 {% extends "base_wastd.html" %}
 {% load static bootstrap4 %}
-<body data-entry-id="{{ entry_id|default:'' }}">
 {% bootstrap_css %}
 {% block extra_style %}
 {{ block.super }}
@@ -112,7 +111,7 @@
 {% endblock %}
 
 {% block page_content_inner %}
-<body data-do-not-process="{{ form.do_not_process.value|yesno:"true,false" }}">
+<body data-do-not-process="{{ form.do_not_process.value|yesno:"true,false" }}" data-entry-id="{{ entry_id|default:'' }}">
 {% if entry_id %}
   <form id="dataEntryForm" action="{% url 'wamtram2:trtdataentry' entry_id %}" method="post"  class="container">
 {% else %}
