@@ -3,13 +3,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (entryId) {
         console.log("Entry ID found:", entryId);
-        expandAdditionalFields();
+        expandAllFields();
     } else {
         console.log("No Entry ID found");
     }
 
-    function expandAdditionalFields() {
-        console.log("Expanding additional fields");
+    function expandAllFields() {
+        console.log("Expanding all fields");
         const fieldsToExpand = [
             'injuryAdditionalFields',
             'additionalRecaptureLeftTag',
@@ -37,37 +37,28 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        updateButtonStates();
+        removeToggleButtons();
     }
 
-    function updateButtonStates() {
-        console.log("Updating button states");
-        const buttonUpdates = [
-            { id: 'toggleInjuryFieldsButton', text: 'Less Injuries' },
-            { id: 'toggleRecaptureTagsBtn', text: 'Less Recapture Tags' },
-            { id: 'toggleNewTagsBtn', text: 'Less New Tags' },
-            { id: 'toggleMeasurementButton', text: 'Less Measurements' },
-            { id: 'advancedDataButton', action: 'hide' }
+    function removeToggleButtons() {
+        console.log("Removing toggle buttons");
+        const buttonsToRemove = [
+            'toggleInjuryFieldsButton',
+            'toggleRecaptureTagsBtn',
+            'toggleNewTagsBtn',
+            'toggleMeasurementButton',
+            'toggleRecapturePITTagsBtn',
+            'toggleNewPITTagsBtn',
+            'advancedDataButton'
         ];
 
-        buttonUpdates.forEach(update => {
-            const button = document.getElementById(update.id);
+        buttonsToRemove.forEach(id => {
+            const button = document.getElementById(id);
             if (button) {
-                if (update.action === 'hide') {
-                    console.log(`Hiding ${update.id}`);
-                    button.style.display = 'none';
-                } else {
-                    console.log(`Updating text for ${update.id}`);
-                    button.textContent = update.text;
-                }
-                
-                const icon = button.querySelector('i');
-                if (icon) {
-                    icon.classList.remove('fa-plus');
-                    icon.classList.add('fa-minus');
-                }
+                console.log(`Removing ${id}`);
+                button.style.display = 'none';
             } else {
-                console.log(`Button not found: ${update.id}`);
+                console.log(`Button not found: ${id}`);
             }
         });
     }
