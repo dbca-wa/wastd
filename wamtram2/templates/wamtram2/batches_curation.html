@@ -471,10 +471,8 @@
             });
         });
 
-        $(document).ready(function() {
-            $('.show-loading').on('click', function(e) {
-                showLoadingSpinner();
-            });
+        $(document).on('click', '.show-loading', function(e) {
+            showLoadingSpinner();
         });
         
 

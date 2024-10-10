@@ -31,6 +31,7 @@ from django.core.exceptions import ValidationError
 from datetime import timedelta
 from django.db.models.functions import Cast
 from django.db.models import DateTimeField
+from django.core.exceptions import PermissionDenied
 
 
 from wastd.utils import Breadcrumb, PaginateMixin
@@ -168,15 +169,30 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
         return initial
 
     def dispatch(self, request, *args, **kwargs):
+        user = request.user
+        batch_id = kwargs.get("batch_id")
+
+        if user.is_superuser:
+            return super().dispatch(request, *args, **kwargs)
+
+        user_organisations = user.organisations.all()
+        
+        if not user_organisations.exists():
+            raise PermissionDenied("You do not have permission to view this batch")
+
+        related_batch = TrtEntryBatchOrganisation.objects.filter(
+            trtentrybatch_id=batch_id,
+            organisation__in=user_organisations.values_list('code', flat=True)
+        ).exists()
+
+        if not related_batch:
+            raise PermissionDenied("You do not have permission to view this batch")
+
         if not (
-            request.user.groups.filter(name="WAMTRAM2_VOLUNTEER").exists()
-            or request.user.groups.filter(name="WAMTRAM2_TEAM_LEADER").exists()
-            or request.user.groups.filter(name="WAMTRAM2_STAFF").exists()
-            or request.user.is_superuser
+            user.groups.filter(name__in=["WAMTRAM2_VOLUNTEER", "WAMTRAM2_TEAM_LEADER", "WAMTRAM2_STAFF"]).exists()
         ):
-            return HttpResponseForbidden(
-                "You do not have permission to view this record"
-            )
+            raise PermissionDenied("You do not have permission to view this batch")
+
         return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
@@ -1073,8 +1089,6 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
         ).all()
         
         return context
-
-
 
 
 SEX_CHOICES = [
