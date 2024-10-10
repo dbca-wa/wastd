@@ -31,7 +31,6 @@ from django.core.exceptions import ValidationError
 from datetime import timedelta
 from django.db.models.functions import Cast
 from django.db.models import DateTimeField
-from django.db.models.functions import Coalesce
 
 
 from wastd.utils import Breadcrumb, PaginateMixin
@@ -192,6 +191,7 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
     def get_queryset(self):
         queryset = super().get_queryset()
         batch_id = self.kwargs.get("batch_id")
+        
     
         filter_value = self.request.GET.get("filter")
         if filter_value == "needs_review":
@@ -1683,19 +1683,19 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
             queryset = queryset.filter(entry_batch_id__in=related_batch_ids)
 
         last_place_code_subquery = Subquery(
-            TrtDataEntry.objects.filter(entry_batch_id=OuterRef('pk'))
-            .order_by('-data_entry_id')
-            .values('place_code__place_name')[:1]
+            TrtDataEntry.objects.filter(entry_batch_id=OuterRef("pk"))
+            .order_by("-data_entry_id")
+            .values("place_code__place_name")[:1]
         )
 
         queryset = queryset.annotate(
             entry_count=Count('trtdataentry'),
-            last_place_code=Coalesce(last_place_code_subquery, 'No entries'),
+            last_place_code=last_place_code_subquery,
             do_not_process_count=Count(
                 'trtdataentry',
                 filter=Q(trtdataentry__do_not_process=True)
             )
-        ) 
+        )
         
         location = self.request.GET.get('location')
         place = self.request.GET.get('place')
