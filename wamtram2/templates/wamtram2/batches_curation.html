@@ -39,17 +39,30 @@
 
 {% block page_content_inner %}
 <div class="container-fluid mt-5 mb-5">
-    <h2 class="mb-4">Manage Batches</h2>
 
-    <div class="d-flex justify-content-end mb-3">
-        <h4><strong>Your Organisation(s):</strong></h4>
-        {% if user_organisation_codes %}
-            {% for code in user_organisation_codes %}
-                <h4><span class="badge badge-info ml-1" style="font-size:x-large;">{{ code }}</span></h4>
-            {% endfor %}
-        {% else %}
-            <h4><span class="badge badge-secondary ml-1" style="font-size:x-large;">None</span></h4>
-        {% endif %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><strong>Manage Batches</strong></h2>
+
+        <div class="d-flex flex-column align-items-end mb-3">
+            <div class="mb-2">
+                <h5><strong>Your Organisation(s):</strong></h5>
+                {% if user_organisation_codes %}
+                    {% for code in user_organisation_codes %}
+                        <h4><span class="badge badge-info ml-1" style="font-size:x-large;">{{ code }}</span></h4>
+                    {% endfor %}
+                {% else %}
+                    <h4><span class="badge badge-secondary ml-1" style="font-size:x-large;">None</span></h4>
+                {% endif %}
+            </div>
+            <div>
+                <h5><strong>Your Role:</strong></h5>
+                {% if user_role %}
+                    <h4><span class="badge badge-primary ml-1" style="font-size:x-large;">{{ user_role }}</span></h4>
+                {% else %}
+                    <h4><span class="badge badge-secondary ml-1" style="font-size:x-large;">Visitor</span></h4>
+                {% endif %}
+            </div>
+        </div>
     </div>
 
     <div class="d-flex flex-wrap align-items-center mb-3">

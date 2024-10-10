@@ -398,7 +398,6 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
             if trtdataentry.observation_date:
                 adjusted_date = trtdataentry.observation_date - timedelta(hours=8)
                 initial['observation_date'] = adjusted_date
-
             
             measured_by = trtdataentry.measured_by
             recorded_by = trtdataentry.recorded_by
@@ -1651,6 +1650,7 @@ class DudTagManageView(LoginRequiredMixin, View):
 
         return redirect('wamtram2:dud_tag_manage')
 
+
 class BatchesCurationView(LoginRequiredMixin,ListView):
     model = TrtEntryBatches
     template_name = 'wamtram2/batches_curation.html'
@@ -1717,9 +1717,27 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
 
         result = queryset.filter(query).order_by('-entry_batch_id') if query else queryset.order_by('-entry_batch_id')
         return result
+    
+    def get_user_role(self, user):
+        if user.is_superuser:
+            return "Super User"
+        user_groups = user.groups.values_list('name', flat=True)
+        if "WAMTRAM2_STAFF" in user_groups:
+            return "Staff"
+        elif "WAMTRAM2_TEAM_LEADER" in user_groups:
+            return "Team Leader"
+        elif "WAMTRAM2_VOLUNTEER" in user_groups:
+            return "Volunteer"
+        
+        return ""
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        
+        user = self.request.user
+        
+        role = self.get_user_role(user)
+        context['user_role'] = role
         
         user_organisations = self.request.user.organisations.all()
         context['user_organisation_codes'] = [org.code for org in user_organisations]
@@ -1801,6 +1819,18 @@ class CreateNewEntryView(LoginRequiredMixin, ListView):
             )
         return super().dispatch(request, *args, **kwargs)
     
+    def get_user_role(self, user):
+        if user.is_superuser:
+            return "Super User"
+        user_groups = user.groups.values_list('name', flat=True)
+        if "WAMTRAM2_STAFF" in user_groups:
+            return "Staff"
+        elif "WAMTRAM2_TEAM_LEADER" in user_groups:
+            return "Team Leader"
+        elif "WAMTRAM2_VOLUNTEER" in user_groups:
+            return "Volunteer"
+        
+        return ""
 
     def get_queryset(self):
         """
@@ -1811,12 +1841,12 @@ class CreateNewEntryView(LoginRequiredMixin, ListView):
 
         if not user_organisations.exists():
             return queryset.none()
- 
+
         for org in user_organisations:
             related_batch_ids = TrtEntryBatchOrganisation.objects.filter(
                 organisation=org.code
             ).values_list('trtentrybatch_id', flat=True)
- 
+
         queryset = TrtEntryBatches.objects.filter(
             entry_batch_id__in=related_batch_ids
         )
@@ -1858,6 +1888,11 @@ class CreateNewEntryView(LoginRequiredMixin, ListView):
         Provide context data to the template, including locations, places, and years
         """
         context = super().get_context_data(**kwargs)
+        
+        user = self.request.user
+        
+        role = self.get_user_role(user)
+        context['user_role'] = role
 
         user_organisations = self.request.user.organisations.all()
         context['user_organisation_codes'] = [org.code for org in user_organisations]
