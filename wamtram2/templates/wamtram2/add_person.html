@@ -9,17 +9,18 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
     <style>
         .step-container {
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 15px;
-            margin-bottom: 20px;
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 0.25rem;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
         }
         .step-header {
-            background-color: #f8f9fa;
-            padding: 10px;
-            margin: -15px -15px 15px -15px;
-            border-bottom: 1px solid #ddd;
+            font-size: 1.25rem;
             font-weight: bold;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #e9ecef;
         }
         .alert {
             position: fixed;
@@ -30,9 +31,18 @@
             z-index: 1050;
             display: none;
         }
-        .btn-block {
-            display: block;
+        .form-group label {
+            font-weight: bold;
+        }
+        .form-group input, .form-group select, .form-group textarea {
             width: 100%;
+            padding: 0.375rem 0.75rem;
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+        }
+        .required-field::after {
+            content: " *";
+            color: red;
         }
     </style>
 {% endblock %}
@@ -70,19 +80,47 @@
         <!-- Add Single Person Form -->
         <div class="step-container">
             <div class="step-header">Add Single Person</div>
-            <form id="singlePersonForm" method="post" class="row">
+            <form id="singlePersonForm" method="post">
                 {% csrf_token %}
-                {% for field in form %}
-                    <div class="col-md-6 mb-3">
-                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                        {{ field }}
-                        {% if field.help_text %}
-                            <small class="form-text text-muted">{{ field.help_text }}</small>
+                <div class="row">
+                    <!-- Required fields -->
+                    {% for field in form %}
+                        {% if field.field.required %}
+                            <div class="col-md-6 mb-3">
+                                <div class="form-group">
+                                    <label for="{{ field.id_for_label }}" class="required-field">{{ field.label }}</label>
+                                    {{ field }}
+                                    {% if field.help_text %}
+                                        <small class="form-text text-muted">{{ field.help_text }}</small>
+                                    {% endif %}
+                                </div>
+                            </div>
                         {% endif %}
+                    {% endfor %}
+                </div>
+
+                <h5 class="mt-4">Additional Information</h5>
+                <div class="row">
+                    <!-- Optional fields -->
+                    {% for field in form %}
+                        {% if not field.field.required %}
+                            <div class="col-md-4 mb-3">
+                                <div class="form-group">
+                                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                    {{ field }}
+                                    {% if field.help_text %}
+                                        <small class="form-text text-muted">{{ field.help_text }}</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+                <div class="row mt-3">
+                    <div class="col-md-12">
+                        <button type="submit" class="btn btn-primary" name="single_submit">Add Person</button>
                     </div>
-                {% endfor %}
-                <div class="col-md-12">
-                    <button type="submit" class="btn btn-primary" name="single_submit">Add Person</button>
                 </div>
             </form>
         </div>
@@ -90,16 +128,14 @@
         <!-- Batch Add Persons Form -->
         <div class="step-container">
             <div class="step-header">Batch Add Persons</div>
-            <form id="batchPersonForm" method="post" enctype="multipart/form-data" class="row">
+            <form id="batchPersonForm" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
-                <div class="col-md-12 mb-3">
+                <div class="form-group">
                     <label for="file">Upload CSV or Excel File</label>
                     <input type="file" class="form-control-file" id="file" name="file" accept=".csv,.xls,.xlsx">
                     <small class="form-text text-muted">Supported formats: CSV, XLS, XLSX</small>
                 </div>
-                <div class="col-md-12">
-                    <button type="submit" class="btn btn-primary" name="file_submit">Upload and Add</button>
-                </div>
+                <button type="submit" class="btn btn-primary mt-3" name="file_submit">Upload and Add</button>
             </form>
         </div>
 

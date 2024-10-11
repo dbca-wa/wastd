@@ -92,11 +92,9 @@
 
         {% if request.user.is_superuser or request.user|has_group:"WAMTRAM2_STAFF" or request.user|has_group:"WAMTRAM2_TEAM_LEADER" %}
         <!-- Add Person Button -->
-        <div class="col-md-2 mt-3">
-            <a href="{% url 'wamtram2:add_person' %}" class="btn btn-primary btn-block">
-                <i class="fas fa-user-plus"></i> Add Person
-            </a>
-        </div>
+        <a href="{% url 'wamtram2:add_person' %}" class="btn btn-outline-secondary mr-2 mb-2" target="_blank title="Add Person">
+            <i class="fas fa-user-plus"></i> Add Person
+        </a>
         {% endif %}
         
         {% if request.user.is_superuser or request.user|has_group:"WAMTRAM2_STAFF" or request.user|has_group:"WAMTRAM2_TEAM_LEADER"  %}

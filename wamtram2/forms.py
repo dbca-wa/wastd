@@ -652,27 +652,26 @@ class BatchesSearchForm(forms.Form):
         label='Batch Code'
     )
 
- 
 class TrtPersonsForm(forms.ModelForm):
     class Meta:
         model = TrtPersons
         fields = '__all__'
+        required_fields = ['first_name', 'surname', 'email', 'recorder']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name in self.Meta.required_fields:
+            self.fields[field_name].required = True
+            self.fields[field_name].widget.attrs['class'] = 'form-control required'
+        
+        for field_name, field in self.fields.items():
+            if field_name not in self.Meta.required_fields:
+                field.required = False
+                field.widget.attrs['class'] = 'form-control'
 
     def clean(self):
         cleaned_data = super().clean()
-        first_name = cleaned_data.get("first_name")
-        surname = cleaned_data.get("surname")
-        email = cleaned_data.get("email")
-        recorder = cleaned_data.get("recorder")
-
-        if not first_name:
-            self.add_error('first_name', "First name is required.")
-        if not surname:
-            self.add_error('surname', "Surname is required.")
-        if not email:
-            self.add_error('email', "Email is required.")
-        if recorder is None:
-            self.add_error('recorder', "Please specify if this person is a recorder.")
-
+        for field_name in self.Meta.required_fields:
+            if not cleaned_data.get(field_name):
+                self.add_error(field_name, f"{field_name.replace('_', ' ').title()} is required.")
         return cleaned_data
-

@@ -2145,14 +2145,27 @@ def get_places(request):
 class AddPersonView(LoginRequiredMixin, UserPassesTestMixin, FormView):
     template_name = 'wamtram2/add_person.html'
     form_class = TrtPersonsForm
-    success_url = reverse_lazy('add_person')
+    success_url = reverse_lazy('wamtram2:add_person')
 
-    def test_func(self):
-        return (
-            self.request.user.groups.filter(name="WAMTRAM2_TEAM_LEADER").exists()
-            or self.request.user.groups.filter(name="WAMTRAM2_STAFF").exists()
-            or self.request.user.is_superuser
-        )
+    def dispatch(self, request, *args, **kwargs):
+        if not (
+            request.user.groups.filter(name="WAMTRAM2_TEAM_LEADER").exists()
+            or request.user.groups.filter(name="WAMTRAM2_STAFF").exists()
+            or request.user.is_superuser
+        ):
+            raise PermissionDenied("You do not have permission to access this page.")
+        return super().dispatch(request, *args, **kwargs)
+    
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        field_order = [
+            'first_name', 'surname', 'email', 'recorder',
+            'middle_name', 'specialty', 'address_line_1', 'address_line_2',
+            'town', 'state', 'post_code', 'country',
+            'telephone', 'fax', 'mobile', 'comments', 'transfer'
+        ]
+        form.order_fields(field_order)
+        return form
 
     def form_valid(self, form):
         form.save()
