@@ -669,11 +669,4 @@ class TrtPersonsForm(forms.ModelForm):
                 field.required = False
                 field.widget.attrs['class'] = 'form-control'
 
-    def clean(self):
-        cleaned_data = super().clean()
-        for field_name in self.Meta.required_fields:
-            if not cleaned_data.get(field_name):
-                self.add_error(field_name, f"{field_name.replace('_', ' ').title()} is required.")
-        return cleaned_data
-    
     

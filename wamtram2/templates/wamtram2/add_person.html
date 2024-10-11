@@ -122,6 +122,10 @@
                 {% endfor %}
             </div>
             
+            <div class="col-md-12 mt-3">
+                <button type="button" class="btn btn-primary btn-block" id="addPersonButton">Add Person</button>
+            </div>
+            
         </div>
 
         <!-- Batch Add Persons Form -->
@@ -166,6 +170,14 @@
         }, 5000);
     }
 
+    function scrollToTop() {
+        window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+        });
+
+    }
+
     // Show Loading Spinner and Overlay
     function showLoadingSpinner() {
         $('.loading-spinner, .loading-overlay').show();
@@ -192,6 +204,7 @@
                 },
                 success: function(response) {
                     showMessage(response.message, 'success');
+                    scrollToTop();
                     setTimeout(function() {
                         window.location.reload(true);
                     }, 1500);
@@ -200,9 +213,12 @@
                     var response = xhr.responseJSON;
                     var message = response.message || 'Error uploading file';
                     showMessage(message, 'danger');
-                    if (response.errors) {
-                        console.error('File upload errors:', response.errors);
-                    }
+                    scrollToTop();
+                    // If there are specific field errors, display them in console or on the pageif (response.errors) {
+                    console.error('Form errors:', response.errors);
+                    var errorDetails = response.errors.join('<br>');
+                    $('#message-alert').html('<strong>' + message + '</strong><br>' + errorDetails);
+                    $('#message-alert').slideDown();
                 },
                 complete: function() {
                     hideLoadingSpinner();
@@ -225,6 +241,7 @@
                 },
                 success: function(response) {
                     showMessage(response.message, 'success');
+                    scrollToTop();
                     setTimeout(function() {
                         window.location.reload(true);
                     }, 1500);
@@ -233,6 +250,7 @@
                     var response = xhr.responseJSON;
                     var message = response.message || 'Error uploading file';
                     showMessage(message, 'danger');
+                    scrollToTop();
                     if (response.errors) {
                         console.error('File upload errors:', response.errors);
                     }
