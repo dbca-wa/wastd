@@ -2,7 +2,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.utils import timezone
 from django.db import connections, DatabaseError
-from django.db.models import Q, Exists, OuterRef
+from django.db.models import Q, Exists, OuterRef, Count, Subquery
 from django.http import HttpResponseForbidden, HttpResponseRedirect, HttpResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect, get_object_or_404
@@ -12,16 +12,10 @@ from django.views.generic.edit import FormMixin
 from django.views.generic import TemplateView, ListView, DetailView, FormView, DeleteView
 from django.http import JsonResponse
 from .models import TrtPlaces, TrtSpecies, TrtLocations,TrtEntryBatchOrganisation
-from django.db.models import Count, Exists, OuterRef, Subquery
 from django.core.paginator import Paginator
 from openpyxl import Workbook
-from django.db.models import Count
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect
-from django.views.decorators.http import require_POST
 from django.utils.decorators import method_decorator
-from django.views.decorators.http import require_http_methods
-from django.urls import reverse
 from django.views.decorators.http import require_GET, require_POST, require_http_methods
 from django.template.loader import render_to_string
 from django.core.serializers.json import DjangoJSONEncoder
@@ -32,11 +26,7 @@ from datetime import timedelta
 from django.db.models.functions import Cast
 from django.db.models import DateTimeField
 from django.core.exceptions import PermissionDenied
-from django.views.generic import ListView, FormView
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-
-
-
+from django.contrib.messages import get_messages
 import pandas as pd
 
 
@@ -1103,10 +1093,10 @@ SEX_CHOICES = [
     ("F", "Female"),
     ("I", "Indeterminate"),
 ]
-
 class TemplateManageView(LoginRequiredMixin, FormView):
     template_name = 'wamtram2/template_manage.html'
     form_class = TemplateForm
+
     def dispatch(self, request, *args, **kwargs):
         if not (
             request.user.groups.filter(name="WAMTRAM2_TEAM_LEADER").exists()
@@ -1125,12 +1115,29 @@ class TemplateManageView(LoginRequiredMixin, FormView):
     def form_valid(self, form):
         form.save()
         messages.success(self.request, 'Template created successfully')
+        
+        if self.request.is_ajax():
+            return JsonResponse({
+                'message': 'Template created successfully',
+                'status': 'success'
+            })
         return redirect('wamtram2:template_manage')
 
     def form_invalid(self, form):
-        for field, errors in form.errors.items():
-            for error in errors:
-                messages.error(self.request, f'{field}: {error}')
+        errors = []
+        for field, error_list in form.errors.items():
+            for error in error_list:
+                errors.append(f'{field}: {error}')
+        
+        if self.request.is_ajax():
+            return JsonResponse({
+                'message': 'Form submission failed',
+                'errors': errors,
+                'status': 'error'
+            }, status=400)
+
+        for error in errors:
+            messages.error(self.request, error)
         return super().form_invalid(form)
 
     def get_context_data(self, **kwargs):
@@ -1145,23 +1152,18 @@ class TemplateManageView(LoginRequiredMixin, FormView):
     def delete(self, request, template_key):
         template = get_object_or_404(Template, pk=template_key)
         template.delete()
-        return JsonResponse({'message': 'Template deleted'})
+        messages.success(request, 'Template deleted successfully')
+
+        if request.is_ajax():
+            return JsonResponse({'message': 'Template deleted successfully', 'status': 'success'})
+        
+        return redirect('wamtram2:template_manage')
     
     def get_places(self, request):
-        """
-        Retrieves places based on the provided location code.
-
-        Args:
-            request (HttpRequest): The HTTP request.
-
-        Returns:
-            JsonResponse: The JSON response with places data.
-        """
         location_code = request.GET.get('location_code')
         places = TrtPlaces.objects.filter(location_code=location_code)
         places_list = list(places.values('place_code', 'place_name'))
         return JsonResponse(places_list, safe=False)
-
 
 def get_place_full_name(request):
     place_code = request.GET.get('place_code')
@@ -2181,7 +2183,12 @@ class AddPersonView(LoginRequiredMixin, FormView):
         if 'file_submit' in request.POST:
             return self.handle_file_upload(request)
         return super().post(request, *args, **kwargs)
-
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['messages'] = get_messages(self.request)
+        return context
+    
     def handle_file_upload(self, request):
         file = request.FILES.get('file')
         if file:

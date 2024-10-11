@@ -92,7 +92,7 @@
 
         {% if request.user.is_superuser or request.user|has_group:"WAMTRAM2_STAFF" or request.user|has_group:"WAMTRAM2_TEAM_LEADER" %}
         <!-- Add Person Button -->
-        <a href="{% url 'wamtram2:add_person' %}" class="btn btn-outline-secondary mr-2 mb-2" target="_blank title="Add Person">
+        <a href="{% url 'wamtram2:add_person' %}" class="btn btn-outline-secondary mr-2 mb-2" target="_blank" title="Add Person">
             <i class="fas fa-user-plus"></i> Add Person
         </a>
         {% endif %}
@@ -334,6 +334,13 @@
 <script>
     const adminUrl = "{% url 'admin:wamtram2_trtpersons_add' %}";
     $(document).ready(function() {
+
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                hideLoadingSpinner();
+            }
+        });
+
 
         // Initialize tooltips
         $('[data-toggle="tooltip"]').tooltip();
