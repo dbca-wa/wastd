@@ -243,7 +243,14 @@
                     xhr.setRequestHeader("X-CSRFToken", getCSRFToken());
                 },
                 success: function(response) {
-                    showMessage(response.message, 'success');
+                    var message = response.message;
+                    var skippedEmails = response.skipped_emails;
+        
+                    showMessage(message, 'success');
+                    if (skippedEmails && skippedEmails.length > 0) {
+                        var warningMessage = 'The following emails already exist and were skipped: ' + skippedEmails.join(', ');
+                        showMessage(warningMessage, 'warning');
+                    }
                     scrollToTop();
                     setTimeout(function() {
                         window.location.reload(true);
@@ -263,6 +270,7 @@
                 }
             });
         });
+        
 
         function getCSRFToken() {
             return document.querySelector('[name=csrfmiddlewaretoken]').value;
