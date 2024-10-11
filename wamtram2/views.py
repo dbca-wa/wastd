@@ -916,7 +916,7 @@ class FindTurtleView(LoginRequiredMixin, View):
 
                 if turtle:
                     if request.POST.get('create_and_review_later'):
-                        response = redirect(reverse('wamtram2:newtrtdataentry', kwargs={'batch_id': batch_id, 'turtle_id': turtle.turtle_id}))
+                        response = redirect(reverse('wamtram2:existingtrtdataentry', kwargs={'batch_id': batch_id, 'turtle_id': turtle.turtle_id}))
                         response = self.set_cookie(response, batch_id, tag_id, tag_type, tag_side, do_not_process=True)
                         return response
                     else:
