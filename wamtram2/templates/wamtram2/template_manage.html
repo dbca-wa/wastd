@@ -80,7 +80,7 @@
 {% block page_content_inner %}
     <div class="container">
         <!-- Message Alert for JavaScript messages -->
-        <div id="message-alert" class="alert" role="alert" style="display: none;"></div>
+        <div id="message-alert" class="alert mt-5" role="alert" style="display: none;"></div>
 
         <!-- Django messages -->
         {% if messages %}
@@ -275,7 +275,7 @@
     
         setTimeout(function() {
             alert.slideUp();
-        }, 3000);
+        }, 5000);
     }
 
     // Show Loading Spinner and Overlay
@@ -355,7 +355,6 @@
         }
     }
     
-    // Create Template
     function createTemplate() {
         var formData = $('#templateForm').serialize();
         showLoadingSpinner();
@@ -366,36 +365,26 @@
             beforeSend: function(xhr) {
                 xhr.setRequestHeader("X-CSRFToken", getCSRFToken());
             },
-            success: function(data, textStatus, xhr) {
-                // Check if a redirect occurred
-                if (xhr.status === 200 && xhr.responseText.includes('<html')) {
-                    // If it's an HTML response, a redirect happened, so we reload the page
+            success: function(response) {
+                showMessage(response.message, 'success');
+                setTimeout(function() {
                     window.location.reload(true);
-                } else {
-                    // If not a redirect, show a success message
-                    showMessage('Template created successfully', 'success');
-                    setTimeout(function() {
-                        window.location.reload(true);
-                    }, 500);
-                }
+                }, 1500);
             },
-            error: function(xhr, status, error) {
-                // Handle error cases
-                var errorMessage = 'Error creating template';
-                if (xhr.responseText) {
-                    errorMessage += ': ' + xhr.responseText;
-                } else {
-                    errorMessage += ': ' + error;
+            error: function(xhr) {
+                var response = xhr.responseJSON;
+                var message = response.message || 'Error creating template';
+                showMessage(message, 'danger');
+                if (response.errors) {
+                    console.error('Form errors:', response.errors);
                 }
-                showMessage(errorMessage, 'danger');
-                console.error('Error details:', xhr.responseText);
             },
             complete: function() {
                 hideLoadingSpinner();
             }
         });
     }
-    // Delete Template
+    
     function deleteTemplate(templateKey) {
         if (confirm('Are you sure you want to delete this template?')) {
             showLoadingSpinner();
@@ -405,14 +394,19 @@
                 beforeSend: function(xhr) {
                     xhr.setRequestHeader("X-CSRFToken", getCSRFToken());
                 },
-                success: function(data) {
-                    showMessage('Template deleted successfully', 'success');
+                success: function(response) {
+                    showMessage(response.message, 'success');
                     setTimeout(function() {
-                        location.reload();
-                    }, 500);
+                        window.location.reload();
+                    }, 1500);
                 },
-                error: function(data) {
-                    showMessage('Error deleting template: ' + JSON.stringify(data.responseJSON.errors), 'danger');
+                error: function(xhr) {
+                    var response = xhr.responseJSON;
+                    var message = response.message || 'Error deleting template';
+                    showMessage(message, 'danger');
+                    if (response.errors) {
+                        console.error('Error details:', response.errors);
+                    }
                 },
                 complete: function() {
                     hideLoadingSpinner();
@@ -420,6 +414,7 @@
             });
         }
     }
+    
 
     function checkTemplateName(name) {
         var createButton = $('#createButton');
@@ -497,10 +492,6 @@
 
         // Show spinner when the form is submitted or a link is clicked
         $('form').on('submit', function() {
-            showLoadingSpinner();
-        });
-
-        $('a').on('click', function() {
             showLoadingSpinner();
         });
 

@@ -39,4 +39,5 @@ urlpatterns = [
     path('get_place_full_name/', views.get_place_full_name, name='get_place_full_name'),
     path('check_template_name/', views.check_template_name, name='check_template_name'),
     path('search-templates/', views.search_templates, name='search_templates'),
+    path('add_person/', views.AddPersonView.as_view(), name='add_person'),
 ]

@@ -2,7 +2,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.utils import timezone
 from django.db import connections, DatabaseError
-from django.db.models import Q, Exists, OuterRef
+from django.db.models import Q, Exists, OuterRef, Count, Subquery
 from django.http import HttpResponseForbidden, HttpResponseRedirect, HttpResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect, get_object_or_404
@@ -12,16 +12,10 @@ from django.views.generic.edit import FormMixin
 from django.views.generic import TemplateView, ListView, DetailView, FormView, DeleteView
 from django.http import JsonResponse
 from .models import TrtPlaces, TrtSpecies, TrtLocations,TrtEntryBatchOrganisation
-from django.db.models import Count, Exists, OuterRef, Subquery
 from django.core.paginator import Paginator
 from openpyxl import Workbook
-from django.db.models import Count
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect
-from django.views.decorators.http import require_POST
 from django.utils.decorators import method_decorator
-from django.views.decorators.http import require_http_methods
-from django.urls import reverse
 from django.views.decorators.http import require_GET, require_POST, require_http_methods
 from django.template.loader import render_to_string
 from django.core.serializers.json import DjangoJSONEncoder
@@ -32,6 +26,8 @@ from datetime import timedelta
 from django.db.models.functions import Cast
 from django.db.models import DateTimeField
 from django.core.exceptions import PermissionDenied
+from django.contrib.messages import get_messages
+import pandas as pd
 
 
 from wastd.utils import Breadcrumb, PaginateMixin
@@ -47,7 +43,7 @@ from .models import (
     TrtTagStates,
     TrtTurtleStatus
 )
-from .forms import TrtDataEntryForm, SearchForm, TrtEntryBatchesForm, TemplateForm, BatchesCodeForm, BatchesSearchForm
+from .forms import TrtDataEntryForm, SearchForm, TrtEntryBatchesForm, TemplateForm, BatchesCodeForm, TrtPersonsForm
 
 
 class HomePageView(LoginRequiredMixin, TemplateView):
@@ -1097,10 +1093,10 @@ SEX_CHOICES = [
     ("F", "Female"),
     ("I", "Indeterminate"),
 ]
-
 class TemplateManageView(LoginRequiredMixin, FormView):
     template_name = 'wamtram2/template_manage.html'
     form_class = TemplateForm
+
     def dispatch(self, request, *args, **kwargs):
         if not (
             request.user.groups.filter(name="WAMTRAM2_TEAM_LEADER").exists()
@@ -1119,12 +1115,29 @@ class TemplateManageView(LoginRequiredMixin, FormView):
     def form_valid(self, form):
         form.save()
         messages.success(self.request, 'Template created successfully')
+        
+        if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({
+                'message': 'Template created successfully',
+                'status': 'success'
+            })
         return redirect('wamtram2:template_manage')
 
     def form_invalid(self, form):
-        for field, errors in form.errors.items():
-            for error in errors:
-                messages.error(self.request, f'{field}: {error}')
+        errors = []
+        for field, error_list in form.errors.items():
+            for error in error_list:
+                errors.append(f'{field}: {error}')
+        
+        if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({
+                'message': 'Form submission failed',
+                'errors': errors,
+                'status': 'error'
+            }, status=400)
+
+        for error in errors:
+            messages.error(self.request, error)
         return super().form_invalid(form)
 
     def get_context_data(self, **kwargs):
@@ -1139,18 +1152,15 @@ class TemplateManageView(LoginRequiredMixin, FormView):
     def delete(self, request, template_key):
         template = get_object_or_404(Template, pk=template_key)
         template.delete()
-        return JsonResponse({'message': 'Template deleted'})
+        messages.success(request, 'Template deleted successfully')
+
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+
+            return JsonResponse({'message': 'Template deleted successfully', 'status': 'success'})
+        
+        return redirect('wamtram2:template_manage')
     
     def get_places(self, request):
-        """
-        Retrieves places based on the provided location code.
-
-        Args:
-            request (HttpRequest): The HTTP request.
-
-        Returns:
-            JsonResponse: The JSON response with places data.
-        """
         location_code = request.GET.get('location_code')
         places = TrtPlaces.objects.filter(location_code=location_code)
         places_list = list(places.values('place_code', 'place_name'))
@@ -2134,3 +2144,128 @@ def get_places(request):
     location_code = request.GET.get('location_code')
     places = TrtPlaces.objects.filter(location_code=location_code).values('place_code', 'place_name')
     return JsonResponse(list(places), safe=False)
+
+
+class AddPersonView(LoginRequiredMixin, FormView):
+    template_name = 'wamtram2/add_person.html'
+    form_class = TrtPersonsForm
+
+    def dispatch(self, request, *args, **kwargs):
+        if not (
+            request.user.groups.filter(name="WAMTRAM2_TEAM_LEADER").exists()
+            or request.user.groups.filter(name="WAMTRAM2_STAFF").exists()
+            or request.user.is_superuser
+        ):
+            raise PermissionDenied("You do not have permission to access this page.")
+        return super().dispatch(request, *args, **kwargs)
+    
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        field_order = [
+            'first_name', 'surname', 'email', 'recorder',
+            'middle_name', 'specialty', 'address_line_1', 'address_line_2',
+            'town', 'state', 'post_code', 'country',
+            'telephone', 'fax', 'mobile', 'comments', 'transfer'
+        ]
+        form.order_fields(field_order)
+        return form
+
+    def form_valid(self, form):
+        form.cleaned_data['recorder'] = form.cleaned_data.get('recorder', False)
+        form.save()
+        messages.success(self.request, 'Person added!')
+
+        if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({
+                'message': 'Person added!',
+                'status': 'success'
+            })
+        return redirect('wamtram2:add_person')
+
+    def form_invalid(self, form):
+        errors = []
+        for field, error_list in form.errors.items():
+            for error in error_list:
+                errors.append(f'{field}: {error}')
+        
+        if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({
+                'message': 'Form submission failed',
+                'errors': errors,
+                'status': 'error'
+            }, status=400)
+
+        for error in errors:
+            messages.error(self.request, error)
+        return super().form_invalid(form)
+
+    def post(self, request, *args, **kwargs):
+        if 'file' in request.FILES:
+            return self.handle_file_upload(request)
+        return super().post(request, *args, **kwargs)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+    
+    def handle_file_upload(self, request):
+        file = request.FILES.get('file')
+        if file:
+            try:
+                df = pd.read_excel(file) if file.name.endswith(('.xls', '.xlsx')) else pd.read_csv(file)
+                existing_emails = set(TrtPersons.objects.values_list('email', flat=True))
+                new_entries = []
+                skipped_emails = []
+
+                for _, row in df.iterrows():
+                    email = row['email']
+                    if email in existing_emails:
+                        skipped_emails.append(email)
+                        continue
+
+                    new_entries.append(TrtPersons(
+                        first_name=row['first_name'],
+                        surname=row['surname'],
+                        email=email,
+                        recorder=row.get('recorder', False)
+                    ))
+
+                TrtPersons.objects.bulk_create(new_entries)
+                added_count = len(new_entries)
+                skipped_count = len(skipped_emails)
+                
+                messages.success(request, f'{added_count} people added!')
+
+                if skipped_count > 0:
+                    skipped_emails_str = ', '.join(skipped_emails)
+                    messages.warning(request, f'The following emails already exist and were skipped: {skipped_emails_str}')
+
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                    response_data = {
+                        'message': f'{added_count} people added!',
+                        'status': 'success'
+                    }
+                    if skipped_count > 0:
+                        response_data['skipped_emails'] = skipped_emails
+                        response_data['warning'] = f'{skipped_count} email(s) already existed and were skipped.'
+                    
+                    return JsonResponse(response_data)
+
+            except Exception as e:
+                error_message = f'Error: {str(e)}'
+                messages.error(request, error_message)
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                    return JsonResponse({
+                        'message': error_message,
+                        'status': 'error'
+                    }, status=400)
+        else:
+            error_message = 'Please select a file'
+            messages.error(request, error_message)
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'message': error_message,
+                    'status': 'error'
+                }, status=400)
+
+        return redirect('wamtram2:add_person')
