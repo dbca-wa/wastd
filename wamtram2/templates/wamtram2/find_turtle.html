@@ -132,8 +132,8 @@
               <input type="hidden" name="create_and_review" value="true">
               <input type="hidden" id="set_do_not_process" name="set_do_not_process" value="false">
               <input type="hidden" id="no_turtle_found" value="{{ no_turtle_found }}">
-              <input type="hidden" id="batch_id" name="batch_id" value="{{ form.batch_id.value }}">
-              <button id="createAndReviewLater" type="submit" class="btn btn-secondary mt-2 ml-md-2">No, create the record and review later</button>
+              <input type="hidden" id="batch_id" name="batch_id" value="{{ form.batch_id.value }}"> d
+              <button type="submit" name="create_and_review_later" id="createAndReviewLater" value="true" class="btn btn-secondary mt-2 ml-md-2">No, create the record and review later</button>
             </form>
           </div> 
           {% elif new_tag_entry %}
@@ -309,8 +309,10 @@
   
         case 'createAndReviewLater':
           document.getElementById('set_do_not_process').value = "true";
+          document.cookie = `${batchId}_do_not_process=true; path=/`;
           showLoadingSpinner(); // Show spinner for form submission
           showLoadingOverlay(); // Show overlay for form submission
+          document.querySelector('form').submit();
           break;
   
         case 'createForExistingTurtle':
