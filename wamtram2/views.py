@@ -32,6 +32,14 @@ from datetime import timedelta
 from django.db.models.functions import Cast
 from django.db.models import DateTimeField
 from django.core.exceptions import PermissionDenied
+from django.views.generic import ListView, FormView
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.shortcuts import redirect
+from django.contrib import messages
+from django.urls import reverse_lazy
+from .models import TrtPersons
+from .forms import TrtPersonsForm
+import pandas as pd
 
 
 from wastd.utils import Breadcrumb, PaginateMixin
@@ -2134,3 +2142,51 @@ def get_places(request):
     location_code = request.GET.get('location_code')
     places = TrtPlaces.objects.filter(location_code=location_code).values('place_code', 'place_name')
     return JsonResponse(list(places), safe=False)
+
+
+class AddPersonView(LoginRequiredMixin, UserPassesTestMixin, FormView):
+    template_name = 'wamtram2/add_person.html'
+    form_class = TrtPersonsForm
+    success_url = reverse_lazy('add_person')
+
+    def test_func(self):
+        return (
+            self.request.user.groups.filter(name="WAMTRAM2_TEAM_LEADER").exists()
+            or self.request.user.groups.filter(name="WAMTRAM2_STAFF").exists()
+            or self.request.user.is_superuser
+        )
+
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, 'Person added!')
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, 'Please fill in all required fields')
+        return super().form_invalid(form)
+
+    def post(self, request, *args, **kwargs):
+        if 'file_submit' in request.POST:
+            return self.handle_file_upload(request)
+        return super().post(request, *args, **kwargs)
+
+    def handle_file_upload(self, request):
+        file = request.FILES.get('file')
+        if file:
+            try:
+                df = pd.read_excel(file) if file.name.endswith(('.xls', '.xlsx')) else pd.read_csv(file)
+                for _, row in df.iterrows():
+                    TrtPersons.objects.create(
+                        first_name=row['first_name'],
+                        surname=row['surname'],
+                        email=row['email'],
+                        recorder=row.get('recorder', False)
+                    )
+                messages.success(request, f'{len(df)} people added!')
+            except Exception as e:
+                messages.error(request, f'Error: {str(e)}')
+        else:
+            messages.error(request, 'Please select a file')
+        return redirect(self.success_url)
+    
+    
