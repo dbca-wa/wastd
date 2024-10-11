@@ -34,11 +34,9 @@ from django.db.models import DateTimeField
 from django.core.exceptions import PermissionDenied
 from django.views.generic import ListView, FormView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.shortcuts import redirect
-from django.contrib import messages
-from django.urls import reverse_lazy
-from .models import TrtPersons
-from .forms import TrtPersonsForm
+
+
+
 import pandas as pd
 
 
@@ -55,7 +53,7 @@ from .models import (
     TrtTagStates,
     TrtTurtleStatus
 )
-from .forms import TrtDataEntryForm, SearchForm, TrtEntryBatchesForm, TemplateForm, BatchesCodeForm, BatchesSearchForm
+from .forms import TrtDataEntryForm, SearchForm, TrtEntryBatchesForm, TemplateForm, BatchesCodeForm, TrtPersonsForm
 
 
 class HomePageView(LoginRequiredMixin, TemplateView):
