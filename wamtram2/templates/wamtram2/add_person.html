@@ -87,46 +87,49 @@
         <!-- Add Single Person Form -->
         <div class="step-container">
             <div class="step-header">Add Single Person</div>
-            <div class="row">
-                <!-- Required fields -->
-                {% for field in form %}
-                    {% if field.field.required %}
-                        <div class="col-md-6 mb-3">
-                            <div class="form-group">
-                                <label for="{{ field.id_for_label }}" class="required-field">{{ field.label }}</label>
-                                {{ field }}
-                                {% if field.help_text %}
-                                    <small class="form-text text-muted">{{ field.help_text }}</small>
-                                {% endif %}
+            <form id="singlePersonForm" method="post">
+                {% csrf_token %}
+                <div class="row">
+                    <!-- Required fields -->
+                    {% for field in form %}
+                        {% if field.field.required %}
+                            <div class="col-md-6 mb-3">
+                                <div class="form-group">
+                                    <label for="{{ field.id_for_label }}" class="required-field">{{ field.label }}</label>
+                                    {{ field }}
+                                    {% if field.help_text %}
+                                        <small class="form-text text-muted">{{ field.help_text }}</small>
+                                    {% endif %}
+                                </div>
                             </div>
-                        </div>
-                    {% endif %}
-                {% endfor %}
-            </div>
-            
-            <h5 class="mt-4">Additional Information</h5>
-            <div class="row">
-                <!-- Optional fields -->
-                {% for field in form %}
-                    {% if not field.field.required %}
-                        <div class="col-md-4 mb-3">
-                            <div class="form-group">
-                                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                                {{ field }}
-                                {% if field.help_text %}
-                                    <small class="form-text text-muted">{{ field.help_text }}</small>
-                                {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                
+                <h5 class="mt-4">Additional Information</h5>
+                <div class="row">
+                    <!-- Optional fields -->
+                    {% for field in form %}
+                        {% if not field.field.required %}
+                            <div class="col-md-4 mb-3">
+                                <div class="form-group">
+                                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                    {{ field }}
+                                    {% if field.help_text %}
+                                        <small class="form-text text-muted">{{ field.help_text }}</small>
+                                    {% endif %}
+                                </div>
                             </div>
-                        </div>
-                    {% endif %}
-                {% endfor %}
-            </div>
-            
-            <div class="col-md-12 mt-3">
-                <button type="button" class="btn btn-primary btn-block" id="addPersonButton">Add Person</button>
-            </div>
-            
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                
+                <div class="col-md-12 mt-3">
+                    <button type="button" class="btn btn-primary btn-block" id="addPersonButton">Add Person</button>
+                </div>
+            </form>
         </div>
+        
 
         <!-- Batch Add Persons Form -->
         <div class="step-container">
@@ -191,7 +194,7 @@
     $(document).ready(function() {
         // Handle single person form submission via AJAX
         $('#addPersonButton').click(function() {
-            var formData = $('#singlePersonForm').serialize();
+            var formData = new FormData($('#singlePersonForm')[0]);
             showLoadingSpinner();
             $.ajax({
                 url: "{% url 'wamtram2:add_person' %}",
