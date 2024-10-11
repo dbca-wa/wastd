@@ -69,7 +69,8 @@
 
     <div class="d-flex flex-wrap align-items-center mb-3">
         
-        {% if request.user.is_superuser or request.user|has_group:"WAMTRAM2_STAFF" %}
+        {% comment %} {% if request.user.is_superuser or request.user|has_group:"WAMTRAM2_STAFF" %} {% endcomment %}
+        {% if request.user.is_superuser %}
         <!-- Export Data Button -->
         <a href="{% url 'wamtram2:export_form' %}" class="btn btn-outline-secondary mr-2 mb-2">
             <i class="fas fa-download"></i> Export Data
