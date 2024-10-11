@@ -360,7 +360,7 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         do_not_process = self.request.COOKIES.get(f'{cookies_key_prefix}_do_not_process') == 'true'
         if do_not_process:
             initial['do_not_process'] = True
-            initial['comments'] = "Data sheet info don't match with database"
+            initial['comments'] = "The data in the sheet doesn't match the database."
     
         
         tag_id = self.request.COOKIES.get(f'{cookies_key_prefix}_tag_id')
