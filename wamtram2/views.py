@@ -355,8 +355,13 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         batch_id = self.kwargs.get("batch_id")
         turtle_id = self.kwargs.get("turtle_id")
         entry_id = self.kwargs.get("entry_id")
-        
         cookies_key_prefix = batch_id
+        
+        do_not_process = self.request.COOKIES.get(f'{cookies_key_prefix}_do_not_process') == 'true'
+        if do_not_process:
+            initial['do_not_process'] = True
+            initial['comments'] = "Data sheet info don't match with database"
+    
         
         tag_id = self.request.COOKIES.get(f'{cookies_key_prefix}_tag_id')
         tag_type = self.request.COOKIES.get(f'{cookies_key_prefix}_tag_type')
@@ -494,6 +499,7 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
             })
         else:
             return redirect(success_url)
+
 
     def form_invalid(self, form):
         error_message = "Error saving the entry. If you cannot resolve the issue, please set aside this data sheet for admin review and continue with the next data sheet."
@@ -728,7 +734,7 @@ class FindTurtleView(LoginRequiredMixin, View):
     """
     View class for finding a turtle based on tag and pit tag ID.
     """
-
+    template_name= "wamtram2/find_turtle.html"
     def dispatch(self, request, *args, **kwargs):
         if not (
             request.user.groups.filter(name="WAMTRAM2_VOLUNTEER").exists()
@@ -909,6 +915,11 @@ class FindTurtleView(LoginRequiredMixin, View):
                         no_turtle_found = True
 
                 if turtle:
+                    # if request.POST.get('create_and_review_later'):
+                    #     response = redirect(reverse('wamtram2:existingtrtdataentry', kwargs={'batch_id': batch_id, 'turtle_id': turtle.turtle_id}))
+                    #     response = self.set_cookie(response, batch_id, tag_id, tag_type, tag_side, do_not_process=True)
+                    #     return response
+                    # else:
                     response = redirect(reverse('wamtram2:find_turtle', kwargs={'batch_id': batch_id}))
                     return self.set_cookie(response, batch_id, tag_id, tag_type, tag_side)
                 elif new_tag_entry:
