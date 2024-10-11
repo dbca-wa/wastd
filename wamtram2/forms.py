@@ -4,9 +4,9 @@ from .models import TrtPersons, TrtDataEntry, TrtTags, TrtEntryBatches, TrtPlace
 from django_select2.forms import ModelSelect2Widget
 from django.core.validators import RegexValidator
 from django.db.models import Case, When, IntegerField
-from django.utils import timezone
 from datetime import timedelta
 from django.conf import settings
+from django.core.exceptions import ValidationError
 
 
 
@@ -669,4 +669,8 @@ class TrtPersonsForm(forms.ModelForm):
                 field.required = False
                 field.widget.attrs['class'] = 'form-control'
 
-    
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if TrtPersons.objects.filter(email=email).exists():
+            raise ValidationError("A person with this email already exists.")
+        return email

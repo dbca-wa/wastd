@@ -2212,24 +2212,31 @@ class AddPersonView(LoginRequiredMixin, FormView):
         if file:
             try:
                 df = pd.read_excel(file) if file.name.endswith(('.xls', '.xlsx')) else pd.read_csv(file)
+                existing_emails = set(TrtPersons.objects.values_list('email', flat=True))
+                new_entries = []
                 for _, row in df.iterrows():
-                    TrtPersons.objects.create(
+                    email = row['email']
+                    if email in existing_emails:
+                        messages.warning(request, f"Email {email} already exists and will be skipped.")
+                        continue
+                    new_entries.append(TrtPersons(
                         first_name=row['first_name'],
                         surname=row['surname'],
-                        email=row['email'],
+                        email=email,
                         recorder=row.get('recorder', False)
-                    )
-                messages.success(request, f'{len(df)} people added!')
-
+                    ))
+                
+                TrtPersons.objects.bulk_create(new_entries)
+                messages.success(request, f'{len(new_entries)} people added!')
+                # 如果是AJAX请求返回JSON
                 if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                     return JsonResponse({
-                        'message': f'{len(df)} people added!',
+                        'message': f'{len(new_entries)} people added!',
                         'status': 'success'
                     })
             except Exception as e:
                 error_message = f'Error: {str(e)}'
                 messages.error(request, error_message)
-
                 if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                     return JsonResponse({
                         'message': error_message,
@@ -2238,7 +2245,6 @@ class AddPersonView(LoginRequiredMixin, FormView):
         else:
             error_message = 'Please select a file'
             messages.error(request, error_message)
-
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                 return JsonResponse({
                     'message': error_message,
@@ -2246,4 +2252,3 @@ class AddPersonView(LoginRequiredMixin, FormView):
                 }, status=400)
         
         return redirect('wamtram2:add_person')
-
