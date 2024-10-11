@@ -2208,64 +2208,64 @@ class AddPersonView(LoginRequiredMixin, FormView):
         context = super().get_context_data(**kwargs)
         return context
     
-def handle_file_upload(self, request):
-    file = request.FILES.get('file')
-    if file:
-        try:
-            df = pd.read_excel(file) if file.name.endswith(('.xls', '.xlsx')) else pd.read_csv(file)
-            existing_emails = set(TrtPersons.objects.values_list('email', flat=True))
-            new_entries = []
-            skipped_emails = []
+    def handle_file_upload(self, request):
+        file = request.FILES.get('file')
+        if file:
+            try:
+                df = pd.read_excel(file) if file.name.endswith(('.xls', '.xlsx')) else pd.read_csv(file)
+                existing_emails = set(TrtPersons.objects.values_list('email', flat=True))
+                new_entries = []
+                skipped_emails = []
 
-            for _, row in df.iterrows():
-                email = row['email']
-                if email in existing_emails:
-                    skipped_emails.append(email)
-                    continue
+                for _, row in df.iterrows():
+                    email = row['email']
+                    if email in existing_emails:
+                        skipped_emails.append(email)
+                        continue
 
-                new_entries.append(TrtPersons(
-                    first_name=row['first_name'],
-                    surname=row['surname'],
-                    email=email,
-                    recorder=row.get('recorder', False)
-                ))
+                    new_entries.append(TrtPersons(
+                        first_name=row['first_name'],
+                        surname=row['surname'],
+                        email=email,
+                        recorder=row.get('recorder', False)
+                    ))
 
-            TrtPersons.objects.bulk_create(new_entries)
-            added_count = len(new_entries)
-            skipped_count = len(skipped_emails)
-            
-            messages.success(request, f'{added_count} people added!')
-
-            if skipped_count > 0:
-                skipped_emails_str = ', '.join(skipped_emails)
-                messages.warning(request, f'The following emails already exist and were skipped: {skipped_emails_str}')
-
-            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-                response_data = {
-                    'message': f'{added_count} people added!',
-                    'status': 'success'
-                }
-                if skipped_count > 0:
-                    response_data['skipped_emails'] = skipped_emails
-                    response_data['warning'] = f'{skipped_count} email(s) already existed and were skipped.'
+                TrtPersons.objects.bulk_create(new_entries)
+                added_count = len(new_entries)
+                skipped_count = len(skipped_emails)
                 
-                return JsonResponse(response_data)
+                messages.success(request, f'{added_count} people added!')
 
-        except Exception as e:
-            error_message = f'Error: {str(e)}'
+                if skipped_count > 0:
+                    skipped_emails_str = ', '.join(skipped_emails)
+                    messages.warning(request, f'The following emails already exist and were skipped: {skipped_emails_str}')
+
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                    response_data = {
+                        'message': f'{added_count} people added!',
+                        'status': 'success'
+                    }
+                    if skipped_count > 0:
+                        response_data['skipped_emails'] = skipped_emails
+                        response_data['warning'] = f'{skipped_count} email(s) already existed and were skipped.'
+                    
+                    return JsonResponse(response_data)
+
+            except Exception as e:
+                error_message = f'Error: {str(e)}'
+                messages.error(request, error_message)
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                    return JsonResponse({
+                        'message': error_message,
+                        'status': 'error'
+                    }, status=400)
+        else:
+            error_message = 'Please select a file'
             messages.error(request, error_message)
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                 return JsonResponse({
                     'message': error_message,
                     'status': 'error'
                 }, status=400)
-    else:
-        error_message = 'Please select a file'
-        messages.error(request, error_message)
-        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            return JsonResponse({
-                'message': error_message,
-                'status': 'error'
-            }, status=400)
 
-    return redirect('wamtram2:add_person')
+        return redirect('wamtram2:add_person')
