@@ -1470,11 +1470,13 @@ def search_places(request):
 
 
 class ExportDataView(LoginRequiredMixin, View):
+    template_name = 'wamtram2/export_form.html'
     def dispatch(self, request, *args, **kwargs):
         # Permission check: only allow users in the specific groups or superusers
         if not (
-            request.user.groups.filter(name="WAMTRAM2_STAFF").exists()
-            or request.user.is_superuser
+            # request.user.groups.filter(name="WAMTRAM2_STAFF").exists()
+            # or request.user.is_superuser
+            request.user.is_superuser
         ):
             return HttpResponseForbidden(
                 "You do not have permission to view this record"
