@@ -87,23 +87,41 @@
         <!-- Add Single Person Form -->
         <div class="step-container">
             <div class="step-header">Add Single Person</div>
-            <form id="singlePersonForm" method="post" class="row">
-                {% csrf_token %}
-                <div class="col-md-6 mb-3">
-                    {% for field in form %}
-                        <div class="form-group">
-                            <label for="{{ field.id_for_label }}" class="{{ 'required-field' if field.field.required else '' }}">{{ field.label }}</label>
-                            {{ field }}
-                            {% if field.help_text %}
-                                <small class="form-text text-muted">{{ field.help_text }}</small>
-                            {% endif %}
+            <div class="row">
+                <!-- Required fields -->
+                {% for field in form %}
+                    {% if field.field.required %}
+                        <div class="col-md-6 mb-3">
+                            <div class="form-group">
+                                <label for="{{ field.id_for_label }}" class="required-field">{{ field.label }}</label>
+                                {{ field }}
+                                {% if field.help_text %}
+                                    <small class="form-text text-muted">{{ field.help_text }}</small>
+                                {% endif %}
+                            </div>
                         </div>
-                    {% endfor %}
-                </div>
-                <div class="col-md-12 mt-3">
-                    <button type="button" class="btn btn-primary btn-block" id="addPersonButton">Add Person</button>
-                </div>
-            </form>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            
+            <h5 class="mt-4">Additional Information</h5>
+            <div class="row">
+                <!-- Optional fields -->
+                {% for field in form %}
+                    {% if not field.field.required %}
+                        <div class="col-md-4 mb-3">
+                            <div class="form-group">
+                                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                {{ field }}
+                                {% if field.help_text %}
+                                    <small class="form-text text-muted">{{ field.help_text }}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            
         </div>
 
         <!-- Batch Add Persons Form -->
@@ -167,6 +185,8 @@
                 url: "{% url 'wamtram2:add_person' %}",
                 type: "POST",
                 data: formData,
+                processData: false,
+                contentType: false,
                 beforeSend: function(xhr) {
                     xhr.setRequestHeader("X-CSRFToken", getCSRFToken());
                 },
@@ -178,10 +198,10 @@
                 },
                 error: function(xhr) {
                     var response = xhr.responseJSON;
-                    var message = response.message || 'Error adding person';
+                    var message = response.message || 'Error uploading file';
                     showMessage(message, 'danger');
                     if (response.errors) {
-                        console.error('Form errors:', response.errors);
+                        console.error('File upload errors:', response.errors);
                     }
                 },
                 complete: function() {

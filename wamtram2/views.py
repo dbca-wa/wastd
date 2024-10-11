@@ -2199,7 +2199,7 @@ class AddPersonView(LoginRequiredMixin, FormView):
         return super().form_invalid(form)
 
     def post(self, request, *args, **kwargs):
-        if 'file_submit' in request.POST:
+        if 'file' in request.FILES:
             return self.handle_file_upload(request)
         return super().post(request, *args, **kwargs)
     
@@ -2246,3 +2246,4 @@ class AddPersonView(LoginRequiredMixin, FormView):
                 }, status=400)
         
         return redirect('wamtram2:add_person')
+
