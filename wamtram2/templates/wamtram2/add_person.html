@@ -8,41 +8,46 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
     <style>
+        .select2 {
+            width: 100% !important;
+        }
+        .add-person-btn {
+            height: 28px;
+            width: 28px;
+            padding: 0;
+        }
         .step-container {
-            background-color: #f8f9fa;
-            border: 1px solid #e9ecef;
-            border-radius: 0.25rem;
-            padding: 1.5rem;
-            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
         }
         .step-header {
-            font-size: 1.25rem;
+            background-color: #f8f9fa;
+            padding: 10px;
+            margin: -15px -15px 15px -15px;
+            border-bottom: 1px solid #ddd;
             font-weight: bold;
-            margin-bottom: 1rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px solid #e9ecef;
         }
         .alert {
-            position: fixed;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
+            position: relative;
             width: 100%;
             z-index: 1050;
             display: none;
+            margin-top: 10px;
         }
-        .form-group label {
+        .template-name {
             font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 10px;
         }
-        .form-group input, .form-group select, .form-group textarea {
-            width: 100%;
-            padding: 0.375rem 0.75rem;
+        .form-control-static {
+            padding-top: 7px;
+            margin-bottom: 0;
             border: 1px solid #ced4da;
-            border-radius: 0.25rem;
-        }
-        .required-field::after {
-            content: " *";
-            color: red;
+            border-radius: .25rem;
+            padding: .375rem .75rem;
+            background-color: #f8f9fa;
         }
     </style>
 {% endblock %}
@@ -66,61 +71,37 @@
 {% block page_content_inner %}
     <div class="container">
         <!-- Message Alert for JavaScript messages -->
-        <div id="message-alert" class="alert" role="alert" style="display: none;"></div>
+        <div id="message-alert" class="alert mt-3" role="alert" style="display: none;"></div>
 
         <!-- Django messages -->
         {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}" role="alert">
-                    {{ message }}
-                </div>
-            {% endfor %}
+            <div class="mt-3">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}" role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
         {% endif %}
 
         <!-- Add Single Person Form -->
         <div class="step-container">
             <div class="step-header">Add Single Person</div>
-            <form id="singlePersonForm" method="post">
+            <form id="singlePersonForm" method="post" class="row">
                 {% csrf_token %}
-                <div class="row">
-                    <!-- Required fields -->
+                <div class="col-md-6 mb-3">
                     {% for field in form %}
-                        {% if field.field.required %}
-                            <div class="col-md-6 mb-3">
-                                <div class="form-group">
-                                    <label for="{{ field.id_for_label }}" class="required-field">{{ field.label }}</label>
-                                    {{ field }}
-                                    {% if field.help_text %}
-                                        <small class="form-text text-muted">{{ field.help_text }}</small>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        {% endif %}
+                        <div class="form-group">
+                            <label for="{{ field.id_for_label }}" class="{{ 'required-field' if field.field.required else '' }}">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.help_text %}
+                                <small class="form-text text-muted">{{ field.help_text }}</small>
+                            {% endif %}
+                        </div>
                     {% endfor %}
                 </div>
-
-                <h5 class="mt-4">Additional Information</h5>
-                <div class="row">
-                    <!-- Optional fields -->
-                    {% for field in form %}
-                        {% if not field.field.required %}
-                            <div class="col-md-4 mb-3">
-                                <div class="form-group">
-                                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                                    {{ field }}
-                                    {% if field.help_text %}
-                                        <small class="form-text text-muted">{{ field.help_text }}</small>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        {% endif %}
-                    {% endfor %}
-                </div>
-
-                <div class="row mt-3">
-                    <div class="col-md-12">
-                        <button type="submit" class="btn btn-primary" name="single_submit">Add Person</button>
-                    </div>
+                <div class="col-md-12 mt-3">
+                    <button type="button" class="btn btn-primary btn-block" id="addPersonButton">Add Person</button>
                 </div>
             </form>
         </div>
@@ -135,19 +116,19 @@
                     <input type="file" class="form-control-file" id="file" name="file" accept=".csv,.xls,.xlsx">
                     <small class="form-text text-muted">Supported formats: CSV, XLS, XLSX</small>
                 </div>
-                <button type="submit" class="btn btn-primary mt-3" name="file_submit">Upload and Add</button>
+                <button type="button" class="btn btn-primary mt-3 btn-block" id="uploadButton">Upload and Add</button>
             </form>
         </div>
 
         <!-- Loading spinner -->
-        <div class="loading-spinner">
+        <div class="loading-spinner" style="display: none;">
             <div class="spinner-border text-primary" role="status">
                 <span class="sr-only">Loading...</span>
             </div>
         </div>
 
         <!-- Loading Overlay -->
-        <div class="loading-overlay"></div>
+        <div class="loading-overlay" style="display: none;"></div>
     </div>
 {% endblock %}
 
@@ -164,7 +145,7 @@
     
         setTimeout(function() {
             alert.slideUp();
-        }, 3000);
+        }, 5000);
     }
 
     // Show Loading Spinner and Overlay
@@ -178,20 +159,73 @@
     }
 
     $(document).ready(function() {
-        // Show spinner when the form is submitted
-        $('form').on('submit', function() {
+        // Handle single person form submission via AJAX
+        $('#addPersonButton').click(function() {
+            var formData = $('#singlePersonForm').serialize();
             showLoadingSpinner();
+            $.ajax({
+                url: "{% url 'wamtram2:add_person' %}",
+                type: "POST",
+                data: formData,
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader("X-CSRFToken", getCSRFToken());
+                },
+                success: function(response) {
+                    showMessage(response.message, 'success');
+                    setTimeout(function() {
+                        window.location.reload(true);
+                    }, 1500);
+                },
+                error: function(xhr) {
+                    var response = xhr.responseJSON;
+                    var message = response.message || 'Error adding person';
+                    showMessage(message, 'danger');
+                    if (response.errors) {
+                        console.error('Form errors:', response.errors);
+                    }
+                },
+                complete: function() {
+                    hideLoadingSpinner();
+                }
+            });
         });
 
-        // Show spinner when a link is clicked
-        $('a').on('click', function() {
+        // Handle file upload form submission via AJAX
+        $('#uploadButton').click(function() {
+            var formData = new FormData($('#batchPersonForm')[0]);
             showLoadingSpinner();
+            $.ajax({
+                url: "{% url 'wamtram2:add_person' %}",
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader("X-CSRFToken", getCSRFToken());
+                },
+                success: function(response) {
+                    showMessage(response.message, 'success');
+                    setTimeout(function() {
+                        window.location.reload(true);
+                    }, 1500);
+                },
+                error: function(xhr) {
+                    var response = xhr.responseJSON;
+                    var message = response.message || 'Error uploading file';
+                    showMessage(message, 'danger');
+                    if (response.errors) {
+                        console.error('File upload errors:', response.errors);
+                    }
+                },
+                complete: function() {
+                    hideLoadingSpinner();
+                }
+            });
         });
 
-        // Show spinner when the page is reloading
-        $(window).on('beforeunload', function() {
-            showLoadingSpinner();
-        });
+        function getCSRFToken() {
+            return document.querySelector('[name=csrfmiddlewaretoken]').value;
+        }
     });
 </script>
 {% endblock %}

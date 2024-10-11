@@ -1166,6 +1166,7 @@ class TemplateManageView(LoginRequiredMixin, FormView):
         places_list = list(places.values('place_code', 'place_name'))
         return JsonResponse(places_list, safe=False)
 
+
 def get_place_full_name(request):
     place_code = request.GET.get('place_code')
     try:
@@ -2172,12 +2173,29 @@ class AddPersonView(LoginRequiredMixin, FormView):
     def form_valid(self, form):
         form.save()
         messages.success(self.request, 'Person added!')
+
+        if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({
+                'message': 'Person added!',
+                'status': 'success'
+            })
         return redirect('wamtram2:add_person')
 
     def form_invalid(self, form):
-        for field, errors in form.errors.items():
-            for error in errors:
-                messages.error(self.request, f'{field}: {error}')
+        errors = []
+        for field, error_list in form.errors.items():
+            for error in error_list:
+                errors.append(f'{field}: {error}')
+        
+        if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({
+                'message': 'Form submission failed',
+                'errors': errors,
+                'status': 'error'
+            }, status=400)
+
+        for error in errors:
+            messages.error(self.request, error)
         return super().form_invalid(form)
 
     def post(self, request, *args, **kwargs):
@@ -2187,7 +2205,6 @@ class AddPersonView(LoginRequiredMixin, FormView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['messages'] = get_messages(self.request)
         return context
     
     def handle_file_upload(self, request):
@@ -2203,10 +2220,29 @@ class AddPersonView(LoginRequiredMixin, FormView):
                         recorder=row.get('recorder', False)
                     )
                 messages.success(request, f'{len(df)} people added!')
+
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                    return JsonResponse({
+                        'message': f'{len(df)} people added!',
+                        'status': 'success'
+                    })
             except Exception as e:
-                messages.error(request, f'Error: {str(e)}')
+                error_message = f'Error: {str(e)}'
+                messages.error(request, error_message)
+
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                    return JsonResponse({
+                        'message': error_message,
+                        'status': 'error'
+                    }, status=400)
         else:
-            messages.error(request, 'Please select a file')
+            error_message = 'Please select a file'
+            messages.error(request, error_message)
+
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'message': error_message,
+                    'status': 'error'
+                }, status=400)
+        
         return redirect('wamtram2:add_person')
-    
-    
