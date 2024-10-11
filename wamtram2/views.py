@@ -915,13 +915,13 @@ class FindTurtleView(LoginRequiredMixin, View):
                         no_turtle_found = True
 
                 if turtle:
-                    if request.POST.get('create_and_review_later'):
-                        response = redirect(reverse('wamtram2:existingtrtdataentry', kwargs={'batch_id': batch_id, 'turtle_id': turtle.turtle_id}))
-                        response = self.set_cookie(response, batch_id, tag_id, tag_type, tag_side, do_not_process=True)
-                        return response
-                    else:
-                        response = redirect(reverse('wamtram2:find_turtle', kwargs={'batch_id': batch_id}))
-                        return self.set_cookie(response, batch_id, tag_id, tag_type, tag_side)
+                    # if request.POST.get('create_and_review_later'):
+                    #     response = redirect(reverse('wamtram2:existingtrtdataentry', kwargs={'batch_id': batch_id, 'turtle_id': turtle.turtle_id}))
+                    #     response = self.set_cookie(response, batch_id, tag_id, tag_type, tag_side, do_not_process=True)
+                    #     return response
+                    # else:
+                    response = redirect(reverse('wamtram2:find_turtle', kwargs={'batch_id': batch_id}))
+                    return self.set_cookie(response, batch_id, tag_id, tag_type, tag_side)
                 elif new_tag_entry:
                     response = render(request, "wamtram2/find_turtle.html", {
                         "form": form,

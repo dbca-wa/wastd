@@ -133,7 +133,12 @@
               <input type="hidden" id="set_do_not_process" name="set_do_not_process" value="false">
               <input type="hidden" id="no_turtle_found" value="{{ no_turtle_found }}">
               <input type="hidden" id="batch_id" name="batch_id" value="{{ form.batch_id.value }}">
-              <button type="submit" name="create_and_review_later" id="createAndReviewLater" value="true" class="btn btn-secondary mt-2 ml-md-2">No, create the record and review later</button>
+              {% comment %} <button type="submit" name="create_and_review_later" id="createAndReviewLater" value="true" class="btn btn-secondary mt-2 ml-md-2">No, create the record and review later</button> {% endcomment %}
+              <a href="{% url 'wamtram2:existingtrtdataentry' batch_id=form.batch_id.value turtle_id=turtle.turtle_id %}?do_not_process=true" 
+                id="createAndReviewLater" 
+                class="btn btn-secondary mt-2 ml-md-2">
+                No, create the record and review later
+              </a>
             </form>
           </div> 
           {% elif new_tag_entry %}
