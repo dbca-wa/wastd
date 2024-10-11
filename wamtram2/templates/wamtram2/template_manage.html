@@ -80,7 +80,7 @@
 {% block page_content_inner %}
     <div class="container">
         <!-- Message Alert for JavaScript messages -->
-        <div id="message-alert" class="alert" role="alert" style="display: none;"></div>
+        <div id="message-alert" class="alert mt-5" role="alert" style="display: none;"></div>
 
         <!-- Django messages -->
         {% if messages %}
@@ -275,7 +275,7 @@
     
         setTimeout(function() {
             alert.slideUp();
-        }, 3000);
+        }, 5000);
     }
 
     // Show Loading Spinner and Overlay

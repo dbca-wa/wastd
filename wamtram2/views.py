@@ -1116,7 +1116,7 @@ class TemplateManageView(LoginRequiredMixin, FormView):
         form.save()
         messages.success(self.request, 'Template created successfully')
         
-        if self.request.is_ajax():
+        if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
             return JsonResponse({
                 'message': 'Template created successfully',
                 'status': 'success'
@@ -1129,7 +1129,7 @@ class TemplateManageView(LoginRequiredMixin, FormView):
             for error in error_list:
                 errors.append(f'{field}: {error}')
         
-        if self.request.is_ajax():
+        if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
             return JsonResponse({
                 'message': 'Form submission failed',
                 'errors': errors,
@@ -1154,7 +1154,8 @@ class TemplateManageView(LoginRequiredMixin, FormView):
         template.delete()
         messages.success(request, 'Template deleted successfully')
 
-        if request.is_ajax():
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+
             return JsonResponse({'message': 'Template deleted successfully', 'status': 'success'})
         
         return redirect('wamtram2:template_manage')
