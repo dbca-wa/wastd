@@ -675,3 +675,5 @@ class TrtPersonsForm(forms.ModelForm):
             if not cleaned_data.get(field_name):
                 self.add_error(field_name, f"{field_name.replace('_', ' ').title()} is required.")
         return cleaned_data
+    
+    

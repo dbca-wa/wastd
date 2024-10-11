@@ -2142,10 +2142,9 @@ def get_places(request):
     return JsonResponse(list(places), safe=False)
 
 
-class AddPersonView(LoginRequiredMixin, UserPassesTestMixin, FormView):
+class AddPersonView(LoginRequiredMixin, FormView):
     template_name = 'wamtram2/add_person.html'
     form_class = TrtPersonsForm
-    success_url = reverse_lazy('wamtram2:add_person')
 
     def dispatch(self, request, *args, **kwargs):
         if not (
@@ -2170,10 +2169,12 @@ class AddPersonView(LoginRequiredMixin, UserPassesTestMixin, FormView):
     def form_valid(self, form):
         form.save()
         messages.success(self.request, 'Person added!')
-        return super().form_valid(form)
+        return redirect('wamtram2:add_person')
 
     def form_invalid(self, form):
-        messages.error(self.request, 'Please fill in all required fields')
+        for field, errors in form.errors.items():
+            for error in errors:
+                messages.error(self.request, f'{field}: {error}')
         return super().form_invalid(form)
 
     def post(self, request, *args, **kwargs):
@@ -2198,6 +2199,6 @@ class AddPersonView(LoginRequiredMixin, UserPassesTestMixin, FormView):
                 messages.error(request, f'Error: {str(e)}')
         else:
             messages.error(request, 'Please select a file')
-        return redirect(self.success_url)
+        return redirect('wamtram2:add_person')
     
     
