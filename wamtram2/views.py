@@ -2171,6 +2171,7 @@ class AddPersonView(LoginRequiredMixin, FormView):
         return form
 
     def form_valid(self, form):
+        form.cleaned_data['recorder'] = form.cleaned_data.get('recorder', False)
         form.save()
         messages.success(self.request, 'Person added!')
 

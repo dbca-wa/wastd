@@ -656,13 +656,17 @@ class TrtPersonsForm(forms.ModelForm):
     class Meta:
         model = TrtPersons
         fields = '__all__'
-        required_fields = ['first_name', 'surname', 'email', 'recorder']
+        required_fields = ['first_name', 'surname', 'email']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field_name in self.Meta.required_fields:
             self.fields[field_name].required = True
             self.fields[field_name].widget.attrs['class'] = 'form-control required'
+            
+            self.fields['recorder'].required = False
+            self.fields['recorder'].initial = False
+            self.fields['recorder'].widget.attrs['class'] = 'form-control'
         
         for field_name, field in self.fields.items():
             if field_name not in self.Meta.required_fields:
@@ -674,3 +678,7 @@ class TrtPersonsForm(forms.ModelForm):
         if TrtPersons.objects.filter(email=email).exists():
             raise ValidationError("A person with this email already exists.")
         return email
+    
+    def clean_recorder(self):
+        recorder = self.cleaned_data.get('recorder', False)
+        return bool(recorder)
