@@ -1,0 +1,282 @@
+{% extends "base_wastd.html" %}
+{% load static bootstrap4 %}
+{% load group_filters %}
+
+{% block extra_style %}
+    {{ block.super }}
+    {{ form.media.css }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
+    <style>
+        .select2 {
+            width: 100% !important;
+        }
+        .add-person-btn {
+            height: 28px;
+            width: 28px;
+            padding: 0;
+        }
+        .step-container {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .step-header {
+            background-color: #f8f9fa;
+            padding: 10px;
+            margin: -15px -15px 15px -15px;
+            border-bottom: 1px solid #ddd;
+            font-weight: bold;
+        }
+        .alert {
+            position: relative;
+            width: 100%;
+            z-index: 1050;
+            display: none;
+            margin-top: 10px;
+        }
+        .template-name {
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+        .form-control-static {
+            padding-top: 7px;
+            margin-bottom: 0;
+            border: 1px solid #ced4da;
+            border-radius: .25rem;
+            padding: .375rem .75rem;
+            background-color: #f8f9fa;
+        }
+    </style>
+{% endblock %}
+
+{% block extra_head %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    {{ form.media }}
+{% endblock extra_head %}
+
+{% block breadcrumbs %}
+    <!-- Breadcrumb Navigation -->
+    <nav aria-label="breadcrumb" class="d-none d-md-block">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'wamtram2:batches_curation' %}">Manage Batches</a></li>
+            <li class="breadcrumb-item active">Add Person</li>
+        </ol>
+    </nav>
+{% endblock %}
+
+{% block page_content_inner %}
+    <div class="container">
+        <!-- Message Alert for JavaScript messages -->
+        <div id="message-alert" class="alert mt-3" role="alert" style="display: none;"></div>
+
+        <!-- Django messages -->
+        {% if messages %}
+            <div class="mt-3">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}" role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- Add Single Person Form -->
+        <div class="step-container">
+            <div class="step-header">Add Single Person</div>
+            <form id="singlePersonForm" method="post">
+                {% csrf_token %}
+                <div class="row">
+                    <!-- Required fields -->
+                    {% for field in form %}
+                        {% if field.field.required %}
+                            <div class="col-md-6 mb-3">
+                                <div class="form-group">
+                                    <label for="{{ field.id_for_label }}" class="required-field">{{ field.label }}</label>
+                                    {{ field }}
+                                    {% if field.help_text %}
+                                        <small class="form-text text-muted">{{ field.help_text }}</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                
+                <h5 class="mt-4">Additional Information</h5>
+                <div class="row">
+                    <!-- Optional fields -->
+                    {% for field in form %}
+                        {% if not field.field.required %}
+                            <div class="col-md-4 mb-3">
+                                <div class="form-group">
+                                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                    {{ field }}
+                                    {% if field.help_text %}
+                                        <small class="form-text text-muted">{{ field.help_text }}</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                
+                <div class="col-md-4 mt-3">
+                    <button type="button" class="btn btn-primary btn-block" id="addPersonButton">Add Person</button>
+                </div>
+            </form>
+        </div>
+        
+
+        <!-- Batch Add Persons Form -->
+        <div class="step-container">
+            <div class="step-header">Batch Add Persons</div>
+            <form id="batchPersonForm" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="file">Upload CSV or Excel File</label>
+                    <input type="file" class="form-control-file" id="file" name="file" accept=".csv,.xls,.xlsx">
+                    <small class="form-text text-muted">Supported formats: CSV, XLS, XLSX</small>
+                </div>
+                <div class="col-md-4 mt-3">
+                    <button type="button" class="btn btn-primary mt-3 btn-block" id="uploadButton">Upload and Add</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Loading spinner -->
+        <div class="loading-spinner" style="display: none;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div class="loading-overlay" style="display: none;"></div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+    // Show Message
+    function showMessage(message, type) {
+        var alert = $('#message-alert');
+        alert.removeClass('alert-success alert-danger alert-warning alert-info');
+        alert.addClass('alert-' + type);
+        alert.text(message);
+        alert.slideDown();
+    
+        setTimeout(function() {
+            alert.slideUp();
+        }, 5000);
+    }
+
+    function scrollToTop() {
+        window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+        });
+
+    }
+
+    // Show Loading Spinner and Overlay
+    function showLoadingSpinner() {
+        $('.loading-spinner, .loading-overlay').show();
+    }
+
+    // Hide Loading Spinner and Overlay
+    function hideLoadingSpinner() {
+        $('.loading-spinner, .loading-overlay').hide();
+    }
+
+    $(document).ready(function() {
+        // Handle single person form submission via AJAX
+        $('#addPersonButton').click(function() {
+            var formData = new FormData($('#singlePersonForm')[0]);
+            showLoadingSpinner();
+            $.ajax({
+                url: "{% url 'wamtram2:add_person' %}",
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader("X-CSRFToken", getCSRFToken());
+                },
+                success: function(response) {
+                    showMessage(response.message, 'success');
+                    scrollToTop();
+                    setTimeout(function() {
+                        window.location.reload(true);
+                    }, 3500);
+                },
+                error: function(xhr) {
+                    var response = xhr.responseJSON;
+                    var message = response.message || 'Error uploading file';
+                    showMessage(message, 'danger');
+                    scrollToTop();
+                    // If there are specific field errors, display them in console or on the pageif (response.errors) {
+                    console.error('Form errors:', response.errors);
+                    var errorDetails = response.errors.join('<br>');
+                    $('#message-alert').html('<strong>' + message + '</strong><br>' + errorDetails);
+                    $('#message-alert').slideDown();
+                },
+                complete: function() {
+                    hideLoadingSpinner();
+                }
+            });
+        });
+
+        // Handle file upload form submission via AJAX
+        $('#uploadButton').click(function() {
+            var formData = new FormData($('#batchPersonForm')[0]);
+            showLoadingSpinner();
+            $.ajax({
+                url: "{% url 'wamtram2:add_person' %}",
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader("X-CSRFToken", getCSRFToken());
+                },
+                success: function(response) {
+                    var message = response.message;
+                    var skippedEmails = response.skipped_emails;
+        
+                    showMessage(message, 'success');
+                    if (skippedEmails && skippedEmails.length > 0) {
+                        var warningMessage = 'The following emails already exist and were skipped: ' + skippedEmails.join(', ');
+                        showMessage(warningMessage, 'warning');
+                    }
+                    scrollToTop();
+                    setTimeout(function() {
+                        window.location.reload(true);
+                    }, 3500);
+                },
+                error: function(xhr) {
+                    var response = xhr.responseJSON;
+                    var message = response.message || 'Error uploading file';
+                    showMessage(message, 'danger');
+                    scrollToTop();
+                    if (response.errors) {
+                        console.error('File upload errors:', response.errors);
+                    }
+                },
+                complete: function() {
+                    hideLoadingSpinner();
+                }
+            });
+        });
+        
+
+        function getCSRFToken() {
+            return document.querySelector('[name=csrfmiddlewaretoken]').value;
+        }
+    });
+</script>
+{% endblock %}

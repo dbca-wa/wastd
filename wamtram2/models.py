@@ -1240,6 +1240,23 @@ class TrtEggCountMethods(models.Model):
         return f"{self.description}"
 
 
+class TrtEntryBatchOrganisation(models.Model):
+    trtentrybatch = models.ForeignKey(
+        "TrtEntryBatches",
+        on_delete=models.CASCADE,
+        db_column="trtentrybatches_id",
+        related_name="batch_organisations",
+    )
+    organisation = models.CharField(
+        max_length=50,
+        db_column="organisation_code",
+    )
+
+    class Meta:
+        db_table = "TRT_ENTRY_BATCHES_ORGANISATION"
+        managed = False
+
+
 class TrtEntryBatches(models.Model):
     entry_batch_id = models.AutoField(
         db_column="ENTRY_BATCH_ID", primary_key=True
@@ -1275,6 +1292,7 @@ class TrtEntryBatches(models.Model):
         blank=True,
         null=True,
     )
+
     class Meta:
         managed = False
         db_table = "TRT_ENTRY_BATCHES"
@@ -1790,7 +1808,7 @@ class TrtPersons(models.Model):
     transfer = models.CharField(
         db_column="Transfer", max_length=50, blank=True, null=True
     )  # Field name made lowercase.
-    recorder = models.BooleanField(db_column="Recorder")  # Field name made lowercase.
+    recorder = models.BooleanField(db_column="Recorder",default=False)  # Field name made lowercase.
 
     class Meta:
         managed = False

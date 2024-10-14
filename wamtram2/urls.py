@@ -12,7 +12,7 @@ urlpatterns = [
     path("new-data-entry/<int:batch_id>/<int:turtle_id>/", views.TrtDataEntryFormView.as_view(), name="existingtrtdataentry"),
     path("data-entry/<int:entry_id>/", views.TrtDataEntryFormView.as_view(), name="trtdataentry"),
     path("find-tagged-turtle/<int:batch_id>/", views.FindTurtleView.as_view(), name="find_turtle"),
-    path("entry-batches/", views.EntryBatchesListView.as_view(), name="entry_batches"),
+    # path("entry-batches/", views.EntryBatchesListView.as_view(), name="entry_batches"),
     path("entry-batches/<int:batch_id>/", views.EntryBatchDetailView.as_view(), name="entry_batch_detail"),
     path("delete-entry/<int:pk>/<int:batch_id>/", views.DeleteEntryView.as_view(), name="delete_entry"),
     path("new-entry-batch/", views.EntryBatchDetailView.as_view(), name="new_batch_detail"),
@@ -39,4 +39,5 @@ urlpatterns = [
     path('get_place_full_name/', views.get_place_full_name, name='get_place_full_name'),
     path('check_template_name/', views.check_template_name, name='check_template_name'),
     path('search-templates/', views.search_templates, name='search_templates'),
+    path('add_person/', views.AddPersonView.as_view(), name='add_person'),
 ]

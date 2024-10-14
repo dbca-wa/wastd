@@ -4,6 +4,10 @@ from .models import TrtPersons, TrtDataEntry, TrtTags, TrtEntryBatches, TrtPlace
 from django_select2.forms import ModelSelect2Widget
 from django.core.validators import RegexValidator
 from django.db.models import Case, When, IntegerField
+from datetime import timedelta
+from django.conf import settings
+from django.core.exceptions import ValidationError
+
 
 
 tagWidget = ModelSelect2Widget(
@@ -268,7 +272,7 @@ class TrtDataEntryForm(forms.ModelForm):
             'placeholder': 'Enter name',
         })
         
-        
+                        
         nesting_choices = TrtYesNo.objects.filter(code__in=['N', 'P', 'Y'])
         self.fields['nesting'].queryset = nesting_choices
 
@@ -500,7 +504,10 @@ class TrtDataEntryForm(forms.ModelForm):
         #     instance.measured_recorded_by = "{} {}".format(person.first_name, person.surname)
 
         # Set the observation_time to the same value as the observation_date
-        instance.observation_time = instance.observation_date
+        
+        if instance.observation_date:
+            instance.observation_date += timedelta(hours=8)
+            instance.observation_time = instance.observation_date
 
         # Save the instance to the database
         if commit:
@@ -575,6 +582,7 @@ class EnterUserModelForm(forms.ModelForm):
 
     #     return cleaned_data
     
+
 class TemplateForm(forms.ModelForm):
     class Meta:
         model = Template
@@ -597,7 +605,8 @@ class TemplateForm(forms.ModelForm):
             cleaned_data['place_code'] = None
 
         return cleaned_data
-        
+
+    
 class TrtObservationsForm(forms.ModelForm):
     class Meta:
         model = TrtObservations
@@ -610,6 +619,7 @@ class TrtObservationsForm(forms.ModelForm):
         if 'corrected_date' in cleaned_data:
             cleaned_data.pop('corrected_date')
         return cleaned_data
+
 
 class BatchesCodeForm(forms.ModelForm):
     class Meta:
@@ -641,27 +651,34 @@ class BatchesSearchForm(forms.Form):
         widget=forms.TextInput(attrs={'class': 'form-control'}),
         label='Batch Code'
     )
-    
+
 class TrtPersonsForm(forms.ModelForm):
     class Meta:
         model = TrtPersons
         fields = '__all__'
+        required_fields = ['first_name', 'surname', 'email']
 
-    def clean(self):
-        cleaned_data = super().clean()
-        first_name = cleaned_data.get("first_name")
-        surname = cleaned_data.get("surname")
-        email = cleaned_data.get("email")
-        recorder = cleaned_data.get("recorder")
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name in self.Meta.required_fields:
+            self.fields[field_name].required = True
+            self.fields[field_name].widget.attrs['class'] = 'form-control required'
+            
+            self.fields['recorder'].required = False
+            self.fields['recorder'].initial = False
+            self.fields['recorder'].widget.attrs['class'] = 'form-control'
+        
+        for field_name, field in self.fields.items():
+            if field_name not in self.Meta.required_fields:
+                field.required = False
+                field.widget.attrs['class'] = 'form-control'
 
-        if not first_name:
-            self.add_error('first_name', "First name is required.")
-        if not surname:
-            self.add_error('surname', "Surname is required.")
-        if not email:
-            self.add_error('email', "Email is required.")
-        if recorder is None:
-            self.add_error('recorder', "Please specify if this person is a recorder.")
-
-        return cleaned_data
-
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if TrtPersons.objects.filter(email=email).exists():
+            raise ValidationError("A person with this email already exists.")
+        return email
+    
+    def clean_recorder(self):
+        recorder = self.cleaned_data.get('recorder', False)
+        return bool(recorder)
