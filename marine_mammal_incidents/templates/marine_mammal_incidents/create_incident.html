@@ -6,6 +6,7 @@
     {{ form.media.css }}
     <link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <style>
         .select2 {
             width: 100% !important;
@@ -29,6 +30,20 @@
             z-index: 1050;
             display: none;
             margin-top: 10px;
+        }
+        .form-group label {
+            font-weight: bold;
+        }
+        .required-field:after {
+            content: "*";
+            color: red;
+        }
+        .form-control {
+            margin-bottom: 10px;
+        }
+        .help-text {
+            font-size: 0.9em;
+            color: #6c757d;
         }
     </style>
 {% endblock %}
@@ -67,18 +82,73 @@
             <form id="incidentForm" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="row">
-                    {% for field in form %}
-                        <div class="col-md-6 mb-3">
-                            <div class="form-group">
-                                <label for="{{ field.id_for_label }}" {% if field.field.required %}class="required-field"{% endif %}>{{ field.label }}</label>
-                                {{ field }}
-                                {% if field.help_text %}
-                                    <small class="form-text text-muted">{{ field.help_text }}</small>
-                                {% endif %}
-                            </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="form-group">
+                            <label for="{{ form.incident_date.id_for_label }}" class="required-field">Incident Date</label>
+                            {{ form.incident_date }}
+                            {% if form.incident_date.help_text %}
+                                <small class="form-text text-muted">{{ form.incident_date.help_text }}</small>
+                            {% endif %}
                         </div>
-                    {% endfor %}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="form-group">
+                            <label for="{{ form.incident_time.id_for_label }}">Incident Time</label>
+                            {{ form.incident_time }}
+                            {% if form.incident_time.help_text %}
+                                <small class="form-text text-muted">{{ form.incident_time.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="form-group">
+                            <label for="{{ form.species.id_for_label }}" class="required-field">Species</label>
+                            {{ form.species }}
+                            {% if form.species.help_text %}
+                                <small class="form-text text-muted">{{ form.species.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="form-group">
+                            <label for="{{ form.species_confirmed_genetically.id_for_label }}">Species Confirmed Genetically</label>
+                            {{ form.species_confirmed_genetically }}
+                            {% if form.species_confirmed_genetically.help_text %}
+                                <small class="form-text text-muted">{{ form.species_confirmed_genetically.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="form-group">
+                            <label for="{{ form.location_name.id_for_label }}" class="required-field">Location Name</label>
+                            {{ form.location_name }}
+                            {% if form.location_name.help_text %}
+                                <small class="form-text text-muted">{{ form.location_name.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="form-group">
+                            <label for="{{ form.geo_location.id_for_label }}">Geo Location</label>
+                            {{ form.geo_location }}
+                            {% if form.geo_location.help_text %}
+                                <small class="form-text text-muted">{{ form.geo_location.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+        
+
                 
                 <h5 class="mt-4">Upload Files</h5>
                 {{ formset.management_form }}
@@ -114,7 +184,22 @@
 {% block extra_js %}
 {{ block.super }}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
+
+    flatpickr("#{{ form.incident_date.id_for_label }}", {
+        dateFormat: "Y-m-d",
+        allowInput: true
+    });
+
+    flatpickr("#{{ form.incident_time.id_for_label }}", {
+        enableTime: true,
+        noCalendar: true,
+        dateFormat: "H:i",
+        time_24hr: true,
+        allowInput: true
+    });
+    
     function showMessage(message, type) {
         var alert = $('#message-alert');
         alert.removeClass('alert-success alert-danger alert-warning alert-info');
