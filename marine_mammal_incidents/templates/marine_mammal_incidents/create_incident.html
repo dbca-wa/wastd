@@ -1,0 +1,21 @@
+{% extends "base_wastd.html" %}
+{% load bootstrap4 %}
+{% load static %}
+
+{% block content %}
+<h1>Create Incident</h1>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <h2>Upload Files</h2>
+    {{ formset.management_form }}
+    {% for form in formset %}
+        {{ form.as_p }}
+    {% endfor %}
+    <button type="submit">Save</button>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+{{ form.media }}
+{% endblock %}
