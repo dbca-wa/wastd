@@ -33,11 +33,6 @@
     </style>
 {% endblock %}
 
-{% block extra_head %}
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    {{ form.media }}
-{% endblock extra_head %}
-
 {% block breadcrumbs %}
     <nav aria-label="breadcrumb" class="d-none d-md-block">
         <ol class="breadcrumb">
@@ -47,6 +42,11 @@
         </ol>
     </nav>
 {% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    {{ form.media }}
+{% endblock extra_head %}
 
 {% block page_content_inner %}
     <div class="container">
@@ -113,6 +113,7 @@
 
 {% block extra_js %}
 {{ block.super }}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     function showMessage(message, type) {
         var alert = $('#message-alert');
