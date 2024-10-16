@@ -77,27 +77,22 @@
             </div>
         {% endif %}
 
-        <div class="step-container">
-            <div class="step-header">Create New Incident</div>
-            <form id="incidentForm" method="post" enctype="multipart/form-data">
-                {% csrf_token %}
+
+        <form id="incidentForm" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="step-container">
+                <div class="step-header">Create New Incident</div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <div class="form-group">
                             <label for="{{ form.incident_date.id_for_label }}" class="required-field">Incident Date</label>
                             {{ form.incident_date }}
-                            {% if form.incident_date.help_text %}
-                                <small class="form-text text-muted">{{ form.incident_date.help_text }}</small>
-                            {% endif %}
                         </div>
                     </div>
                     <div class="col-md-6 mb-3">
                         <div class="form-group">
                             <label for="{{ form.incident_time.id_for_label }}">Incident Time</label>
                             {{ form.incident_time }}
-                            {% if form.incident_time.help_text %}
-                                <small class="form-text text-muted">{{ form.incident_time.help_text }}</small>
-                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -107,18 +102,12 @@
                         <div class="form-group">
                             <label for="{{ form.species.id_for_label }}" class="required-field">Species</label>
                             {{ form.species }}
-                            {% if form.species.help_text %}
-                                <small class="form-text text-muted">{{ form.species.help_text }}</small>
-                            {% endif %}
                         </div>
                     </div>
                     <div class="col-md-6 mb-3">
                         <div class="form-group">
                             <label for="{{ form.species_confirmed_genetically.id_for_label }}">Species Confirmed Genetically</label>
                             {{ form.species_confirmed_genetically }}
-                            {% if form.species_confirmed_genetically.help_text %}
-                                <small class="form-text text-muted">{{ form.species_confirmed_genetically.help_text }}</small>
-                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -128,8 +117,104 @@
                         <div class="form-group">
                             <label for="{{ form.location_name.id_for_label }}" class="required-field">Location Name</label>
                             {{ form.location_name }}
-                            {% if form.location_name.help_text %}
-                                <small class="form-text text-muted">{{ form.location_name.help_text }}</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <div class="form-group">
+                            <label for="{{ form.geo_location.id_for_label }}">Geo Location</label>
+                            {{ form.geo_location }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="form-group">
+                            <label for="{{ form.number_of_animals.id_for_label }}">Number of Animals</label>
+                            {{ form.number_of_animals }}
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="form-group">
+                            <label for="{{ form.mass_incident.id_for_label }}">Mass Incident</label>
+                            {{ form.mass_incident }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <div class="form-group">
+                            <label for="{{ form.incident_type.id_for_label }}">Incident Type</label>
+                            {{ form.incident_type }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="form-group">
+                            <label for="{{ form.sex.id_for_label }}">Sex</label>
+                            {{ form.sex }}
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="form-group">
+                            <label for="{{ form.age_class.id_for_label }}">Age Class</label>
+                            {{ form.age_class }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div class="form-group">
+                            <label for="{{ form.length.id_for_label }}">Length</label>
+                            {{ form.length }}
+                            {% if form.length.help_text %}
+                                <small class="form-text text-muted">{{ form.length.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="form-group">
+                            <label for="{{ form.weight.id_for_label }}">Weight</label>
+                            {{ form.weight }}
+                            {% if form.weight.help_text %}
+                                <small class="form-text text-muted">{{ form.weight.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="form-group">
+                            <label for="{{ form.weight_is_estimated.id_for_label }}">Weight Is Estimated</label>
+                            {{ form.weight_is_estimated }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <div class="form-group">
+                            <label for="{{ form.carcass_location_fate.id_for_label }}">Carcass Location Fate</label>
+                            {{ form.carcass_location_fate }}
+                            {% if form.carcass_location_fate.help_text %}
+                                <small class="form-text text-muted">{{ form.carcass_location_fate.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <div class="form-group">
+                            <label for="{{ form.carcass_location_fate.id_for_label }}">Carcass Location Fate</label>
+                            {{ form.carcass_location_fate }}
+                            {% if form.carcass_location_fate.help_text %}
+                                <small class="form-text text-muted">{{ form.carcass_location_fate.help_text }}</small>
                             {% endif %}
                         </div>
                     </div>
@@ -138,38 +223,101 @@
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <div class="form-group">
-                            <label for="{{ form.geo_location.id_for_label }}">Geo Location</label>
-                            {{ form.geo_location }}
-                            {% if form.geo_location.help_text %}
-                                <small class="form-text text-muted">{{ form.geo_location.help_text }}</small>
-                            {% endif %}
+                            <label for="{{ form.entanglement_gear.id_for_label }}">Entanglement Gear</label>
+                            {{ form.entanglement_gear }}
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="form-group">
+                            <label for="{{ form.DBCA_staff_attended.id_for_label }}">DBCA Staff Attended</label>
+                            {{ form.DBCA_staff_attended }}
                         </div>
                     </div>
                 </div>
 
-        
-
-                
-                <h5 class="mt-4">Upload Files</h5>
-                {{ formset.management_form }}
-                {% for form in formset %}
-                    <div class="row">
-                        {% for field in form %}
-                            <div class="col-md-6 mb-3">
-                                <div class="form-group">
-                                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                                    {{ field }}
-                                </div>
-                            </div>
-                        {% endfor %}
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="form-group">
+                            <label for="{{ form.condition_when_found.id_for_label }}">Condition When Found</label>
+                            {{ form.condition_when_found }}
+                        </div>
                     </div>
-                {% endfor %}
-                
-                <div class="col-md-4 mt-3">
+                    <div class="col-md-6 mb-3">
+                        <div class="form-group">
+                            <label for="{{ form.outcome.id_for_label }}">Outcome</label>
+                            {{ form.outcome }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <div class="form-group">
+                            <label for="{{ form.cause_of_death.id_for_label }}">Cause Of Death</label>
+                            {{ form.cause_of_death }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div class="form-group">
+                            <label for="{{ form.photos_taken.id_for_label }}">Photos Taken</label>
+                            {{ form.photos_taken }}
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="form-group">
+                            <label for="{{ form.samples_taken.id_for_label }}">Samples Taken</label>
+                            {{ form.samples_taken }}
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="form-group">
+                            <label for="{{ form.post_mortem.id_for_label }}">Post Mortem</label>
+                            {{ form.post_mortem }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <div class="form-group">
+                            <label for="{{ form.comments.id_for_label }}">Comments</label>
+                            {{ form.comments }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+                    
+            <div class="step-container mt-4">
+                <div class="step-header">Upload Files</div>
+                {{ formset.management_form }}
+                <div id="file-upload-forms">
+                    {% for form in formset %}
+                        <div class="row file-form">
+                            {% for field in form %}
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-group">
+                                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                        {{ field }}
+                                        {% if field.help_text %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                </div>
+                <button type="button" id="add-more-files" class="btn btn-secondary">Add More Files</button>
+            </div>
+                    
+            <div class="row mt-4">
+                <div class="col-md-4">
                     <button type="submit" class="btn btn-primary btn-block" id="createIncidentButton">Create Incident</button>
                 </div>
-            </form>
-        </div>
+            </div>
+        </form>
+
 
         <div class="loading-spinner" style="display: none;">
             <div class="spinner-border text-primary" role="status">
@@ -188,7 +336,7 @@
 <script>
 
     flatpickr("#{{ form.incident_date.id_for_label }}", {
-        dateFormat: "Y-m-d",
+        dateFormat: "m-d-Y",
         allowInput: true
     });
 
@@ -199,7 +347,7 @@
         time_24hr: true,
         allowInput: true
     });
-    
+
     function showMessage(message, type) {
         var alert = $('#message-alert');
         alert.removeClass('alert-success alert-danger alert-warning alert-info');
