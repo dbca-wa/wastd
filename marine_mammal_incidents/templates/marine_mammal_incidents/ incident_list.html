@@ -1,0 +1,75 @@
+{% extends "base_wastd.html" %}
+{% load static bootstrap4 %}
+
+{% block extra_style %}
+    {{ block.super }}
+    <style>
+        .step-container {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .step-header {
+            background-color: #f8f9fa;
+            padding: 10px;
+            margin: -15px -15px 15px -15px;
+            border-bottom: 1px solid #ddd;
+            font-weight: bold;
+        }
+    </style>
+{% endblock %}
+
+{% block breadcrumbs %}
+    <nav aria-label="breadcrumb" class="d-none d-md-block">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item active">Incident List</li>
+        </ol>
+    </nav>
+{% endblock %}
+
+{% block page_content_inner %}
+    <div class="container">
+        {% if messages %}
+            <div class="mt-3">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}" role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="step-container">
+            <div class="step-header">Incident List</div>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Species</th>
+                            <th>Location</th>
+                            <th>Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for incident in incidents %}
+                        <tr>
+                            <td>{{ incident.incident_date }}</td>
+                            <td>{{ incident.species }}</td>
+                            <td>{{ incident.location_name }}</td>
+                            <td>{{ incident.get_incident_type_display }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="4">No incidents recorded yet.</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-3">
+                <a href="{% url 'marine_mammal_incidents:create_incident' %}" class="btn btn-primary">Create New Incident</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

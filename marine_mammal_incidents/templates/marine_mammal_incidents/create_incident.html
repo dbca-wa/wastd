@@ -1,21 +1,166 @@
 {% extends "base_wastd.html" %}
-{% load bootstrap4 %}
-{% load static %}
+{% load static bootstrap4 %}
 
-{% block content %}
-<h1>Create Incident</h1>
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <h2>Upload Files</h2>
-    {{ formset.management_form }}
-    {% for form in formset %}
-        {{ form.as_p }}
-    {% endfor %}
-    <button type="submit">Save</button>
-</form>
+{% block extra_style %}
+    {{ block.super }}
+    {{ form.media.css }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
+    <style>
+        .select2 {
+            width: 100% !important;
+        }
+        .step-container {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .step-header {
+            background-color: #f8f9fa;
+            padding: 10px;
+            margin: -15px -15px 15px -15px;
+            border-bottom: 1px solid #ddd;
+            font-weight: bold;
+        }
+        .alert {
+            position: relative;
+            width: 100%;
+            z-index: 1050;
+            display: none;
+            margin-top: 10px;
+        }
+    </style>
+{% endblock %}
+
+{% block extra_head %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    {{ form.media }}
+{% endblock extra_head %}
+
+{% block breadcrumbs %}
+    <nav aria-label="breadcrumb" class="d-none d-md-block">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'marine_mammal_incidents:incident_list' %}">Incident List</a></li>
+            <li class="breadcrumb-item active">Create Incident</li>
+        </ol>
+    </nav>
+{% endblock %}
+
+{% block page_content_inner %}
+    <div class="container">
+        <div id="message-alert" class="alert mt-3" role="alert" style="display: none;"></div>
+
+        {% if messages %}
+            <div class="mt-3">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}" role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="step-container">
+            <div class="step-header">Create New Incident</div>
+            <form id="incidentForm" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="row">
+                    {% for field in form %}
+                        <div class="col-md-6 mb-3">
+                            <div class="form-group">
+                                <label for="{{ field.id_for_label }}" {% if field.field.required %}class="required-field"{% endif %}>{{ field.label }}</label>
+                                {{ field }}
+                                {% if field.help_text %}
+                                    <small class="form-text text-muted">{{ field.help_text }}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                
+                <h5 class="mt-4">Upload Files</h5>
+                {{ formset.management_form }}
+                {% for form in formset %}
+                    <div class="row">
+                        {% for field in form %}
+                            <div class="col-md-6 mb-3">
+                                <div class="form-group">
+                                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                    {{ field }}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+                
+                <div class="col-md-4 mt-3">
+                    <button type="submit" class="btn btn-primary btn-block" id="createIncidentButton">Create Incident</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="loading-spinner" style="display: none;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+
+        <div class="loading-overlay" style="display: none;"></div>
+    </div>
 {% endblock %}
 
 {% block extra_js %}
-{{ form.media }}
+{{ block.super }}
+<script>
+    function showMessage(message, type) {
+        var alert = $('#message-alert');
+        alert.removeClass('alert-success alert-danger alert-warning alert-info');
+        alert.addClass('alert-' + type);
+        alert.text(message);
+        alert.slideDown();
+    
+        setTimeout(function() {
+            alert.slideUp();
+        }, 5000);
+    }
+
+    function showLoadingSpinner() {
+        $('.loading-spinner, .loading-overlay').show();
+    }
+
+    function hideLoadingSpinner() {
+        $('.loading-spinner, .loading-overlay').hide();
+    }
+
+    $(document).ready(function() {
+        $('#incidentForm').submit(function(e) {
+            e.preventDefault();
+            var formData = new FormData(this);
+            showLoadingSpinner();
+            $.ajax({
+                url: "{% url 'marine_mammal_incidents:create_incident' %}",
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    showMessage('Incident created successfully', 'success');
+                    setTimeout(function() {
+                        window.location.href = "{% url 'marine_mammal_incidents:incident_list' %}";
+                    }, 2000);
+                },
+                error: function(xhr) {
+                    var response = xhr.responseJSON;
+                    var message = response.message || 'Error creating incident';
+                    showMessage(message, 'danger');
+                },
+                complete: function() {
+                    hideLoadingSpinner();
+                }
+            });
+        });
+    });
+</script>
 {% endblock %}
