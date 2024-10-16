@@ -5,7 +5,13 @@ from .forms import IncidentForm, UploadedFileForm
 from django.contrib import messages
 
 def create_incident(request):
-    UploadedFileFormSet = inlineformset_factory(Incident, Uploaded_file, form=UploadedFileForm, extra=1)
+    UploadedFileFormSet = inlineformset_factory(
+        Incident, 
+        Uploaded_file, 
+        form=UploadedFileForm, 
+        extra=1, 
+        can_delete=False
+    )
     
     if request.method == 'POST':
         form = IncidentForm(request.POST)
@@ -17,7 +23,7 @@ def create_incident(request):
             messages.success(request, 'Incident created successfully')
             return redirect('marine_mammal_incidents:incident_list')
         else:
-            messages.error(request, 'Error creating incident')
+            messages.error(request, 'Error creating incident. Please check the form.')
     else:
         form = IncidentForm()
         formset = UploadedFileFormSet()
@@ -27,7 +33,6 @@ def create_incident(request):
         'formset': formset,
     }
     return render(request, 'marine_mammal_incidents/create_incident.html', context)
-
 def incident_list(request):
     incidents = Incident.objects.all().order_by('-incident_date')
     context = {

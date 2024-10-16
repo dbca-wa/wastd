@@ -19,3 +19,7 @@ class UploadedFileForm(forms.ModelForm):
     class Meta:
         model = Uploaded_file
         fields = ['title', 'file']
+        labels = {
+            'title': 'Attachment name',
+            'file': 'File'
+        }

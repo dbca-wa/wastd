@@ -296,7 +296,7 @@
                 <div id="file-upload-forms">
                     {% for form in formset %}
                         <div class="row file-form">
-                            {% for field in form %}
+                            {% for field in form.visible_fields %}
                                 <div class="col-md-6 mb-3">
                                     <div class="form-group">
                                         <label for="{{ field.id_for_label }}">{{ field.label }}</label>
@@ -393,6 +393,21 @@
                     hideLoadingSpinner();
                 }
             });
+        });
+        $('#add-more-files').click(function() {
+            var form_idx = $('#id_uploaded_file_set-TOTAL_FORMS').val();
+            var newForm = $('.file-form:first').clone(true);
+            newForm.find(':input').each(function() {
+                var name = $(this).attr('name').replace('-0-', '-' + form_idx + '-');
+                var id = 'id_' + name;
+                $(this).attr({'name': name, 'id': id}).val('').removeAttr('checked');
+            });
+            newForm.find('label').each(function() {
+                var newFor = $(this).attr('for').replace('-0-', '-' + form_idx + '-');
+                $(this).attr('for', newFor);
+            });
+            $('#file-upload-forms').append(newForm);
+            $('#id_uploaded_file_set-TOTAL_FORMS').val(parseInt(form_idx) + 1);
         });
     });
 </script>
