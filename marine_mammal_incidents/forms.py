@@ -34,8 +34,6 @@ class IncidentForm(forms.ModelForm):
         ]
         widgets = {
             'geo_location': MapboxPointFieldWidget(),
-            'incident_date': forms.DateInput(attrs={'class': 'flatpickr-date'}),
-            'incident_time': forms.TimeInput(attrs={'class': 'flatpickr-time'}),
             'comments': forms.Textarea(attrs={'cols': '100', 'rows': '10'}),
         }
         
