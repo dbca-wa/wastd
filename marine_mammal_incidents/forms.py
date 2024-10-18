@@ -3,17 +3,52 @@ from .models import Incident, Uploaded_file
 from mapwidgets.widgets import MapboxPointFieldWidget
 
 class IncidentForm(forms.ModelForm):
-    comments = forms.CharField(
-        widget=forms.Textarea(attrs={'cols': '100', 'rows': '10'}),
-        required=False
-    )
 
     class Meta:
         model = Incident
-        fields = '__all__'
+        fields = [
+            'incident_date',
+            'incident_time',
+            'species',
+            'species_confirmed_genetically',
+            'location_name',
+            'geo_location',
+            'number_of_animals',
+            'mass_incident',
+            'incident_type',
+            'sex',
+            'age_class',
+            'length',
+            'weight',
+            'weight_is_estimated',
+            'carcass_location_fate',
+            'entanglement_gear',
+            'DBCA_staff_attended',
+            'condition_when_found',
+            'outcome',
+            'cause_of_death',
+            'photos_taken',
+            'samples_taken',
+            'post_mortem',
+            'comments'
+        ]
         widgets = {
             'geo_location': MapboxPointFieldWidget(),
+            'incident_date': forms.DateInput(attrs={'class': 'flatpickr-date'}),
+            'incident_time': forms.TimeInput(attrs={'class': 'flatpickr-time'}),
+            'comments': forms.Textarea(attrs={'cols': '100', 'rows': '10'}),
         }
+        
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        required_fields = [
+            'incident_date', 'species', 'location_name', 'number_of_animals',
+            'incident_type', 'sex', 'age_class', 'condition_when_found', 'outcome'
+        ]
+        
+        for field in required_fields:
+            self.fields[field].required = True
 
 class UploadedFileForm(forms.ModelForm):
     class Meta:

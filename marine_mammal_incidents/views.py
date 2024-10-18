@@ -37,6 +37,8 @@ def create_incident(request):
     }
     return render(request, 'marine_mammal_incidents/create_incident.html', context)
 
+
+
 def incident_list(request):
     incidents = Incident.objects.all().order_by('-incident_date')
     context = {
