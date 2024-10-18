@@ -5,6 +5,7 @@ from .forms import IncidentForm, UploadedFileForm
 from django.contrib import messages
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render, redirect
+from django.views.generic import ListView
 
 
 def create_incident(request):
@@ -57,5 +58,6 @@ def incident_list(request):
     context = {
         'incidents': incidents,
         'object_count': paginator.count,
+        'is_paginated': incidents.has_other_pages(),
     }
     return render(request, 'marine_mammal_incidents/incident_list.html', context)
