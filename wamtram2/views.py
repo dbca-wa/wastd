@@ -1793,6 +1793,7 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
         result = queryset.filter(query).order_by('-entry_batch_id') if query else queryset.order_by('-entry_batch_id')
         return result
     
+    
     def get_user_role(self, user):
         if user.is_superuser:
             return "Super User"
@@ -1914,25 +1915,19 @@ class CreateNewEntryView(LoginRequiredMixin, ListView):
         queryset = super().get_queryset().order_by('-entry_batch_id')
 
         user = self.request.user
-        if user.is_superuser:
-            return queryset
-        
-        user_organisations = self.request.user.organisations.all()
+        if not user.is_superuser:
+            user_organisations = self.request.user.organisations.all()
+            if not user_organisations.exists():
+                return queryset.none()
 
-        if not user_organisations.exists():
-            return queryset.none()
-
-        for org in user_organisations:
             related_batch_ids = TrtEntryBatchOrganisation.objects.filter(
-                organisation=org.code
+                organisation__in=[org.code for org in user_organisations]
             ).values_list('trtentrybatch_id', flat=True)
 
-        queryset = TrtEntryBatches.objects.filter(
-            entry_batch_id__in=related_batch_ids
-        ).order_by('-entry_batch_id')
+            queryset = queryset.filter(entry_batch_id__in=related_batch_ids)
         
         if self.request.GET.get('show_all'):
-            return queryset.order_by('-entry_batch_id')
+            return queryset
 
         location = self.request.GET.get('location')
         place = self.request.GET.get('place')
@@ -1958,10 +1953,8 @@ class CreateNewEntryView(LoginRequiredMixin, ListView):
             if year_code:
                 query = Q(batches_code__endswith=year_code)
 
-        if query:
-            return queryset.filter(query).order_by('-entry_batch_id')
-        else:
-            return TrtEntryBatches.objects.none()
+        return queryset.filter(query).order_by('-entry_batch_id')
+
 
     def get_context_data(self, **kwargs):
         """
