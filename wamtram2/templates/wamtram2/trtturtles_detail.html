@@ -127,9 +127,9 @@
                 <tr>
                     <td>
                         {% if request.user.is_superuser or request.user|has_group:"WAMTRAM2_STAFF" or request.user|has_group:"WAMTRAM2_TEAM_LEADER" %}
-                            <a href="{% url 'wamtram2:observationdetail' pk=observation.observation_id %}">{{ observation.observation_date_as_datetime|perth_time|date:"j M Y H:i" }}</a>
+                            <a href="{% url 'wamtram2:observationdetail' pk=observation.observation_id %}">{{ observation.observation_date|perth_time|date:"j M Y H:i" }}</a>
                         {% else %}
-                            {{ observation.observation_date_as_datetime|perth_time|date:"j M Y H:i" }}
+                            {{ observation.observation_date|perth_time|date:"j M Y H:i" }}
                         </td>
                         {% endif %}
                     <td>{{ observation.reporter_person }}</td>
