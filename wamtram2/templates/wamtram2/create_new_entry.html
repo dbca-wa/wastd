@@ -33,10 +33,12 @@
                             <span class="badge badge-info" style="font-size: x-large;">{{ code }}</span>
                         {% endfor %}
                     {% else %}
-                        <span class="badge badge-secondary" style="font-size: x-large;">None</span>
-                        <small class="text-muted">
-                            Please <a href="mailto:rick.wang@dbca.wa.gov.au" class="text-decoration-none">contact admin</a> to add.
-                        </small>
+                        <div class="d-flex flex-column">
+                            <span class="badge badge-secondary" style="font-size: x-large;">None</span>
+                            <small class="text-muted mt-2">
+                                Please<a href="mailto:rick.wang@dbca.wa.gov.au" class="text-decoration-none"> contact admin</a> to add your organisation code.
+                            </small>
+                        </div>
                     {% endif %}
                 </div>
             </div>
