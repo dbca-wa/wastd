@@ -218,9 +218,7 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
         else:
             queryset = queryset.filter(entry_batch_id=batch_id)
             
-        return queryset.select_related('observation_id').annotate(
-            observation_date_as_datetime=Cast('observation_date', DateTimeField())
-        ).order_by("-data_entry_id")
+        return queryset.select_related('observation_id').order_by("-data_entry_id")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -978,20 +976,6 @@ class ObservationDetailView(LoginRequiredMixin, DetailView):
     def get_object(self, queryset=None):
         if queryset is None:
             queryset = self.get_queryset()
-        
-        perth_tz = ZoneInfo("Australia/Perth")
-        queryset = queryset.annotate(
-            observation_date_as_datetime=Case(
-                When(observation_date__isnull=False, then=Case(
-                    When(observation_date__hour__isnull=True, 
-                        then=timezone.make_aware(TruncSecond('observation_date'), timezone=perth_tz)),
-                    default=TruncSecond('observation_date'),
-                )),
-                default=Value(None),
-                output_field=DateTimeField()
-            )
-        )
-                
         return super().get_object(queryset)
 
     def get_context_data(self, **kwargs):
@@ -1104,20 +1088,7 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
         context["tags"] = obj.trttags_set.all()
         context["pittags"] = unique_pittags
         
-        perth_tz = ZoneInfo("Australia/Perth")
-        
-        context["observations"] = obj.trtobservations_set.annotate(
-            observation_date_as_datetime=Case(
-                When(observation_date__isnull=False, then=Case(
-                    When(observation_date__hour__isnull=True, 
-                        then=timezone.make_aware(TruncSecond('observation_date'), timezone=perth_tz)),
-
-                    default=TruncSecond('observation_date'),
-                )),
-                default=Value(None),
-                output_field=DateTimeField()
-            )
-        ).all()
+        context["observations"] = obj.trtobservations_set.all()
                 
         return context
 
