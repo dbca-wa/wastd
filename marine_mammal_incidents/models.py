@@ -82,7 +82,7 @@ class Incident(models.Model):
     ]
     entanglement_gear = models.CharField(max_length=50, blank=True, choices=ENTANGLEMENT_GEAR_CHOICES)
 
-    DBCA_staff_attended = models.BooleanField()
+    DBCA_staff_attended = models.BooleanField(default=False)
 
     CONDITION_FOUND_CHOICES = [
         ('Stage 1 = alive','Stage 1 = alive'),
@@ -104,11 +104,11 @@ class Incident(models.Model):
     outcome = models.CharField(max_length=30, choices=OUTCOME_CHOICES)
 
     cause_of_death = models.CharField(max_length=100, blank=True)
-    photos_taken = models.BooleanField()
+    photos_taken = models.BooleanField(default=False)
 
-    samples_taken = models.BooleanField()
+    samples_taken = models.BooleanField(default=False)
 
-    post_mortem = models.BooleanField()
+    post_mortem = models.BooleanField(default=False)
     comments = models.TextField(blank=True)
 
 

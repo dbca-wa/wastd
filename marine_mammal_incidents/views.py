@@ -3,6 +3,9 @@ from django.forms import inlineformset_factory
 from .models import Incident, Uploaded_file
 from .forms import IncidentForm, UploadedFileForm
 from django.contrib import messages
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.shortcuts import render, redirect
+
 
 def create_incident(request):
     UploadedFileFormSet = inlineformset_factory(
@@ -37,9 +40,23 @@ def create_incident(request):
     }
     return render(request, 'marine_mammal_incidents/create_incident.html', context)
 
+
 def incident_list(request):
     incidents = Incident.objects.all().order_by('-incident_date')
+    
+    paginator = Paginator(incidents, 30) 
+    page = request.GET.get('page')
+    
+    try:
+        incidents = paginator.page(page)
+    except PageNotAnInteger:
+        incidents = paginator.page(1)
+    except EmptyPage:
+        incidents = paginator.page(paginator.num_pages)
+    
     context = {
         'incidents': incidents,
+        'object_count': paginator.count,
+        'is_paginated': incidents.has_other_pages(),
     }
     return render(request, 'marine_mammal_incidents/incident_list.html', context)
