@@ -24,7 +24,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2><strong>Create New Entry</strong></h2>
 
-        <div class="d-flex flex-row align-items-center mb-3">
+        <div class="d-flex flex-row justify-content-between align-items-center mb-3">
             <div class="d-flex flex-column align-items-start mr-4">
                 <h5 class="mb-1"><strong>Your Organisation(s):</strong></h5>
                 <div class="d-flex flex-column align-items-start">
@@ -35,12 +35,12 @@
                     {% else %}
                         <span class="badge badge-secondary" style="font-size: x-large;">None</span>
                         <small class="text-muted mt-2">
-                            Please<a href="mailto:rick.wang@dbca.wa.gov.au" class="text-decoration-none"> contact admin</a> to add your organisation code.
+                            Please <a href="mailto:rick.wang@dbca.wa.gov.au" class="text-decoration-none">contact admin</a> to add your organisation code.
                         </small>
                     {% endif %}
                 </div>
             </div>
-            <div class="d-flex flex-column align-items-end">
+            <div class="d-flex flex-column align-items-start">
                 <h5 class="mb-1"><strong>Your Role:</strong></h5>
                 {% if user_role %}
                     <span class="badge badge-primary" style="font-size: x-large;">{{ user_role }}</span>
@@ -48,7 +48,7 @@
                     <span class="badge badge-secondary" style="font-size: x-large;">Visitor</span>
                 {% endif %}
             </div>
-        </div>        
+        </div>
 
     </div>
 
