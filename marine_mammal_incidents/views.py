@@ -44,7 +44,7 @@ def create_incident(request):
 def incident_list(request):
     incidents = Incident.objects.all().order_by('-incident_date')
     
-    paginator = Paginator(incidents, 30) 
+    paginator = Paginator(incidents, 3) 
     page = request.GET.get('page')
     
     try:
