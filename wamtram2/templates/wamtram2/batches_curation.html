@@ -46,22 +46,20 @@
         <div class="d-flex flex-row align-items-center mb-3">
             <div class="d-flex flex-column align-items-start mr-4">
                 <h5 class="mb-1"><strong>Your Organisation(s):</strong></h5>
-                <div class="d-flex flex-wrap">
+                <div class="d-flex flex-column align-items-start">
                     {% if user_organisation_codes %}
                         {% for code in user_organisation_codes %}
                             <span class="badge badge-info" style="font-size: x-large;">{{ code }}</span>
                         {% endfor %}
                     {% else %}
-                        <div class="d-flex flex-column">
-                            <span class="badge badge-secondary" style="font-size: x-large;">None</span>
-                            <small class="text-muted mt-2">
-                                Please<a href="mailto:rick.wang@dbca.wa.gov.au" class="text-decoration-none"> contact admin</a> to add your organisation code.
-                            </small>
-                        </div>
+                        <span class="badge badge-secondary" style="font-size: x-large;">None</span>
+                        <small class="text-muted mt-2">
+                            Please<a href="mailto:rick.wang@dbca.wa.gov.au" class="text-decoration-none"> contact admin</a> to add your organisation code.
+                        </small>
                     {% endif %}
                 </div>
             </div>
-            <div class="d-flex flex-column align-items-start">
+            <div class="d-flex flex-column align-items-end">
                 <h5 class="mb-1"><strong>Your Role:</strong></h5>
                 {% if user_role %}
                     <span class="badge badge-primary" style="font-size: x-large;">{{ user_role }}</span>
@@ -70,6 +68,7 @@
                 {% endif %}
             </div>
         </div>
+        
     </div>
 
     <div class="d-flex flex-wrap align-items-center mb-3">
