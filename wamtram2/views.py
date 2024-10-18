@@ -26,8 +26,9 @@ from datetime import timedelta
 from django.db.models.functions import Cast
 from django.db.models import DateTimeField
 from django.core.exceptions import PermissionDenied
-from django.contrib.messages import get_messages
 import pandas as pd
+from django.db.models import Case, When, F, Value
+from zoneinfo import ZoneInfo
 
 
 from wastd.utils import Breadcrumb, PaginateMixin
@@ -977,10 +978,20 @@ class ObservationDetailView(LoginRequiredMixin, DetailView):
         if queryset is None:
             queryset = self.get_queryset()
         
+        perth_tz = ZoneInfo("Australia/Perth")
+
         queryset = queryset.annotate(
-            observation_date_as_datetime=Cast('observation_date', DateTimeField())
+            observation_date_as_datetime=Case(
+                When(observation_date__isnull=False, then=Case(
+                    When(observation_date__hour__isnull=True, 
+                        then=timezone.make_aware(Cast('observation_date', DateTimeField()), timezone=perth_tz)),
+                    default=Cast('observation_date', DateTimeField()),
+                )),
+                default=None,
+                output_field=DateTimeField()
+            )
         )
-        
+                
         return super().get_object(queryset)
 
     def get_context_data(self, **kwargs):
@@ -1092,10 +1103,20 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
         context["page_title"] = f"{settings.SITE_CODE} | WAMTRAM2 | {obj.pk}"
         context["tags"] = obj.trttags_set.all()
         context["pittags"] = unique_pittags
-        context["observations"] = obj.trtobservations_set.annotate(
-            observation_date_as_datetime=Cast('observation_date', DateTimeField())
-        ).all()
         
+        perth_tz = ZoneInfo("Australia/Perth")
+        
+        context["observations"] = obj.trtobservations_set.annotate(
+            observation_date_as_datetime=Case(
+                When(observation_date__isnull=False, then=Case(
+                    When(observation_date__hour__isnull=True, then=timezone.make_aware(F('observation_date'), timezone=perth_tz)),
+                    default=Cast('observation_date', DateTimeField()),
+                )),
+                default=Value(None),
+                output_field=DateTimeField()
+            )
+        ).all()
+                
         return context
 
 
