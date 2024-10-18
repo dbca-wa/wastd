@@ -1283,7 +1283,7 @@ class TrtEntryBatches(models.Model):
         db_column="PR_DATE_CONVENTION",default=False
     )  # Field name made lowercase.
     batches_code = models.CharField(
-        db_column="BATCHES_CODE", max_length=10, blank=True, null=True, unique=True
+        db_column="BATCHES_CODE", max_length=20, blank=True, null=True, unique=True
     )  # Field name made lowercase.
     template = models.ForeignKey(
         "Template",  
