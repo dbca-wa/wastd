@@ -5,7 +5,6 @@ from .forms import IncidentForm, UploadedFileForm
 from django.contrib import messages
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render, redirect
-from django.views.generic import ListView
 
 
 def create_incident(request):
@@ -45,7 +44,7 @@ def create_incident(request):
 def incident_list(request):
     incidents = Incident.objects.all().order_by('-incident_date')
     
-    paginator = Paginator(incidents, 3) 
+    paginator = Paginator(incidents, 30) 
     page = request.GET.get('page')
     
     try:
