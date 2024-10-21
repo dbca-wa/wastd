@@ -135,7 +135,7 @@
                             <td>{{ incident.location_name }}</td>
                             <td>{{ incident.get_incident_type_display }}</td>
                             <td>
-                                <a href="{% url 'marine_mammal_incidents:update_incident' incident.id %}" class="btn btn-sm btn-success">View / Update</a>
+                                <a href="{% url 'marine_mammal_incidents:update_incident' incident.id %}" class="btn btn-sm btn-primary">View / Update</a>
                             </td>
                         </tr>
                     {% empty %}
