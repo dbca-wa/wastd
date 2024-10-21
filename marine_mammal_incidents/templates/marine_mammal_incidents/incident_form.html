@@ -302,6 +302,39 @@
                 </div>
                 <button type="button" id="add-more-files" class="btn btn-secondary mt-2">Add More Files</button>
             </div>
+
+            <div class="step-container mt-4">
+                <div class="step-header">Upload Files</div>
+                {{ formset.management_form }}
+                <div id="file-upload-forms">
+                    {% for form in formset %}
+                        <div class="row file-form mb-3">
+                            {% if form.instance.file %}
+                                <div class="col-md-6">
+                                    <strong>{{ form.instance.title }}</strong>
+                                    <p class="mb-0">Current file(s): {{ form.instance.file.name }}</p>
+                                </div>
+                                <div class="col-md-3 text-right">
+                                    <button type="button" class="btn btn-danger delete-file">Delete</button>
+                                </div>
+                                {{ form.id }}
+                                {{ form.DELETE.as_hidden }}
+                            {% else %}
+                                <div class="col-md-5">
+                                    {{ form.title }}
+                                </div>
+                                <div class="col-md-5">
+                                    {{ form.file }}
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="button" class="btn btn-danger delete-file">Delete</button>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+                <button type="button" id="add-more-files" class="btn btn-secondary mt-2">Add More Files</button>
+            </div>
                     
             <div class="row mt-4">
                 <div class="col-md-4">

@@ -111,7 +111,7 @@
         <div class="step-container mt-5">
             <div class="incident-header">
                 <h1 class="incident-title">Marine Mammal Incidents</h1>
-                <a href="{% url 'marine_mammal_incidents:create_incident' %}" class="btn btn-primary btn-create">
+                <a href="{% url 'marine_mammal_incidents:create_incident' %}" class="btn btn-success btn-create">
                     <i class="fas fa-plus-circle"></i> Create Incident
                 </a>
             </div>
@@ -135,7 +135,7 @@
                             <td>{{ incident.location_name }}</td>
                             <td>{{ incident.get_incident_type_display }}</td>
                             <td>
-                                <a href="{% url 'marine_mammal_incidents:update_incident' incident.id %}" class="btn btn-sm btn-primary">View / Update</a>
+                                <a href="{% url 'marine_mammal_incidents:update_incident' incident.id %}" class="btn btn-sm btn-success">View / Update</a>
                             </td>
                         </tr>
                     {% empty %}
