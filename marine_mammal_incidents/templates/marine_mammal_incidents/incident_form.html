@@ -278,46 +278,44 @@
                 </div>
             </div>
                     
-            <div class="step-container mt-4">
-                <div class="step-header">Upload Files</div>
-                {{ formset.management_form }}
-                <div id="file-upload-forms">
-                    {% for form in formset %}
-                        <div class="row file-form mb-3">
-                            {% if form.instance.file %}
-                                <div class="col-md-5">
-                                    <strong>{{ form.instance.title }}</strong>
-                                    <p class="mb-0">Current file: 
-                                        <a href="{{ form.instance.file.url }}" target="_blank">{{ form.instance.file.name }}</a>
-                                    </p>
-                                </div>
-                                <div class="col-md-5">
-                                    {{ form.file.label_tag }}
-                                    {{ form.file }}
-                                </div>
-                                <div class="col-md-2 text-right">
-                                    <button type="button" class="btn btn-danger delete-file">Delete</button>
-                                </div>
-                                {{ form.id }}
-                                {{ form.DELETE.as_hidden }}
-                            {% else %}
-                                <div class="col-md-5">
-                                    {{ form.title.label_tag }}
-                                    {{ form.title }}
-                                </div>
-                                <div class="col-md-5">
-                                    {{ form.file.label_tag }}
-                                    {{ form.file }}
-                                </div>
-                                <div class="col-md-2">
-                                    <button type="button" class="btn btn-danger delete-file">Delete</button>
-                                </div>
-                            {% endif %}
-                        </div>
-                    {% endfor %}
-                </div>
-                <button type="button" id="add-more-files" class="btn btn-secondary mt-2">Add More Files</button>
+<div class="step-container mt-4">
+    <div class="step-header">Upload Files</div>
+    {{ formset.management_form }}
+    <div id="file-upload-forms">
+        {% for form in formset %}
+            <div class="row file-form mb-3">
+                {% if form.instance.file %}
+                    <div class="col-md-4">
+                        <strong>{{ form.instance.title }}</strong>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="mb-0">
+                            Current file: <a href="{{ form.instance.file.url }}" target="_blank">{{ form.instance.file.name }}</a>
+                        </p>
+                    </div>
+                    <div class="col-md-2 text-right">
+                        <button type="button" class="btn btn-danger delete-file">Delete</button>
+                    </div>
+                    {{ form.id }}
+                    {{ form.DELETE.as_hidden }}
+                {% else %}
+                    <div class="col-md-4">
+                        {{ form.title.label_tag }}
+                        {{ form.title }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form.file.label_tag }}
+                        {{ form.file }}
+                    </div>
+                    <div class="col-md-2 text-right">
+                        <button type="button" class="btn btn-danger delete-file">Delete</button>
+                    </div>
+                {% endif %}
             </div>
+        {% endfor %}
+    </div>
+    <button type="button" id="add-more-files" class="btn btn-secondary mt-2">Add More Files</button>
+</div>
                     
             <div class="row mt-4">
                 <div class="col-md-4">
@@ -380,6 +378,9 @@
     }
 
     $(document).ready(function() {
+        if ($('.file-form:visible').length === 0) {
+            addFileForm();
+        }
         $('#incidentForm').submit(function(e) {
             e.preventDefault();
             var formData = new FormData(this);
@@ -422,6 +423,8 @@
             });
             $('#file-upload-forms').append(newForm);
             $('#id_uploaded_file_set-TOTAL_FORMS').val(parseInt(form_idx) + 1);
+            newForm.find('input[type="file"]').val('');
+            newForm.find('.file-name-display').remove();
         }
 
         $('#add-more-files').click(addFileForm);
