@@ -673,10 +673,22 @@ class TrtPersonsForm(forms.ModelForm):
                 field.required = False
                 field.widget.attrs['class'] = 'form-control'
 
+    def clean_first_name(self):
+        first_name = self.cleaned_data.get('first_name')
+        return first_name.replace(' ', '-')
+
+    def clean_surname(self):
+        surname = self.cleaned_data.get('surname')
+        return surname.replace(' ', '-')
+    
     def clean_email(self):
         email = self.cleaned_data.get('email')
-        if TrtPersons.objects.filter(email=email).exists():
-            raise ValidationError("A person with this email already exists.")
+        if not self.instance.pk:  
+            if TrtPersons.objects.filter(email=email).exists():
+                raise ValidationError("This email is already in use.")
+        else: 
+            if TrtPersons.objects.filter(email=email).exclude(pk=self.instance.pk).exists():
+                raise ValidationError("This email is already in use for another person.")
         return email
     
     def clean_recorder(self):
