@@ -377,10 +377,34 @@
         $('.loading-spinner, .loading-overlay').hide();
     }
 
+    function addFileForm() {
+        var form_idx = $('#id_uploaded_file_set-TOTAL_FORMS').val();
+        var newForm = $('.file-form:last').clone(true);
+        newForm.find(':input').each(function() {
+            var name = $(this).attr('name');
+            if (name) {
+                name = name.replace('-' + (form_idx-1) + '-', '-' + form_idx + '-');
+                var id = 'id_' + name;
+                $(this).attr({'name': name, 'id': id}).val('').removeAttr('checked');
+            }
+        });
+        newForm.find('label').each(function() {
+            var newFor = $(this).attr('for');
+            if (newFor) {
+                newFor = newFor.replace('-' + (form_idx-1) + '-', '-' + form_idx + '-');
+                $(this).attr('for', newFor);
+            }
+        });
+        $('#file-upload-forms').append(newForm);
+        $('#id_uploaded_file_set-TOTAL_FORMS').val(parseInt(form_idx) + 1);
+        newForm.find('input[type="file"]').val('');
+        newForm.find('.file-name-display').remove();
+    }
+
     $(document).ready(function() {
-        if ($('.file-form:visible').length === 0) {
+        if ($('#file-upload-forms .file-form:visible').length === 0) {
             addFileForm();
-        }
+        }    
         $('#incidentForm').submit(function(e) {
             e.preventDefault();
             var formData = new FormData(this);
@@ -408,24 +432,6 @@
                 }
             });
         });
-
-        function addFileForm() {
-            var form_idx = $('#id_uploaded_file_set-TOTAL_FORMS').val();
-            var newForm = $('.file-form:last').clone(true);
-            newForm.find(':input').each(function() {
-                var name = $(this).attr('name').replace('-' + (form_idx-1) + '-', '-' + form_idx + '-');
-                var id = 'id_' + name;
-                $(this).attr({'name': name, 'id': id}).val('').removeAttr('checked');
-            });
-            newForm.find('label').each(function() {
-                var newFor = $(this).attr('for').replace('-' + (form_idx-1) + '-', '-' + form_idx + '-');
-                $(this).attr('for', newFor);
-            });
-            $('#file-upload-forms').append(newForm);
-            $('#id_uploaded_file_set-TOTAL_FORMS').val(parseInt(form_idx) + 1);
-            newForm.find('input[type="file"]').val('');
-            newForm.find('.file-name-display').remove();
-        }
 
         $('#add-more-files').click(addFileForm);
 
