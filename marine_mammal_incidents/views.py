@@ -1,10 +1,10 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.forms import inlineformset_factory
 from .models import Incident, Uploaded_file
 from .forms import IncidentForm, UploadedFileForm
 from django.contrib import messages
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.shortcuts import render, redirect
+
 
 
 def create_incident(request):
@@ -34,6 +34,8 @@ def create_incident(request):
     context = {
         'form': form,
         'formset': formset,
+        'form_title': 'Create New Incident',
+        'submit_button_text': 'Create Incident',
     }
     return render(request, 'marine_mammal_incidents/create_incident.html', context)
 
@@ -57,3 +59,26 @@ def incident_list(request):
         'is_paginated': incidents.has_other_pages(),
     }
     return render(request, 'marine_mammal_incidents/incident_list.html', context)
+
+def update_incident(request, pk):
+    incident = get_object_or_404(Incident, pk=pk)
+    if request.method == 'POST':
+        form = IncidentForm(request.POST, instance=incident)
+        file_form = UploadedFileForm(request.POST, request.FILES)
+        if form.is_valid() and file_form.is_valid():
+            form.save()
+            if file_form.cleaned_data['file']:
+                uploaded_file = file_form.save(commit=False)
+                uploaded_file.incident = incident
+                uploaded_file.save()
+            return redirect('marine_mammal_incidents:incident_list')
+    else:
+        form = IncidentForm(instance=incident)
+        file_form = UploadedFileForm()
+
+    return render(request, 'marine_mammal_incidents/incident_form.html', {
+        'form': form,
+        'file_form': file_form,
+        'form_title': 'Update Incident',
+        'submit_button_text': 'Update Incident',
+    })

@@ -81,7 +81,7 @@
         <form id="incidentForm" method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="step-container">
-                <div class="step-header">Create New Incident</div>
+                <div class="step-header">{{ form_title }}</div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <div class="form-group">
@@ -313,7 +313,7 @@
                     
             <div class="row mt-4">
                 <div class="col-md-4">
-                    <button type="submit" class="btn btn-primary btn-block" id="createIncidentButton">Create Incident</button>
+                    <button type="submit" class="btn btn-primary btn-block" id="submitIncidentButton">{{ submit_button_text }}</button>
                 </div>
             </div>
         </form>
