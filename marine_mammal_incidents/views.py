@@ -76,7 +76,7 @@ def update_incident(request, pk):
         form = IncidentForm(instance=incident)
         file_form = UploadedFileForm()
 
-    return render(request, 'marine_mammal_incidents/incident_form.html', {
+    return render(request, 'marine_mammal_incidents/create_incident.html', {
         'form': form,
         'file_form': file_form,
         'form_title': 'Update Incident',
