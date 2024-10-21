@@ -21,14 +21,11 @@ def create_incident(request):
         formset = UploadedFileFormSet(request.POST, request.FILES)
         if form.is_valid() and formset.is_valid():
             incident = form.save()
-            print(f"Incident created: {incident.id}")
             formset.instance = incident
             formset.save()
             messages.success(request, 'Incident created successfully')
             return redirect('marine_mammal_incidents:incident_list')
         else:
-            print(form.errors)
-            print(formset.errors)
             messages.error(request, 'Error creating incident. Please check the form.')
     else:
         form = IncidentForm()
