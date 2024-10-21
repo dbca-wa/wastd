@@ -109,6 +109,7 @@
                             <th>Species</th>
                             <th>Location</th>
                             <th>Type</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -118,6 +119,9 @@
                             <td>{{ incident.species }}</td>
                             <td>{{ incident.location_name }}</td>
                             <td>{{ incident.get_incident_type_display }}</td>
+                            <td>
+                                <a href="{% url 'marine_mammal_incidents:update_incident' incident.id %}" class="btn btn-sm btn-primary">View / Update</a>
+                            </td>
                         </tr>
                     {% empty %}
                         <tr><td colspan="4">No incidents recorded yet.</td></tr>
