@@ -100,6 +100,9 @@
 
 
         <div class="step-container mt-5">
+            <div class="mt-3">
+                <a href="{% url 'marine_mammal_incidents:create_incident' %}" class="btn btn-primary">Create New Incident</a>
+            </div>
             <div class="step-header">Incident List</div>
             <div class="table-responsive">
                 <table class="table table-striped">
@@ -128,9 +131,6 @@
                     {% endfor %}
                     </tbody>
                 </table>
-            </div>
-            <div class="mt-3">
-                <a href="{% url 'marine_mammal_incidents:create_incident' %}" class="btn btn-primary">Create New Incident</a>
             </div>
         </div>
     </div>

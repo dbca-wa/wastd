@@ -7,37 +7,38 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 
-def create_incident(request):
+def incident_form(request, pk=None):
+    incident = get_object_or_404(Incident, pk=pk) if pk else None
     UploadedFileFormSet = inlineformset_factory(
         Incident, 
         Uploaded_file, 
         form=UploadedFileForm, 
         extra=1, 
-        can_delete=False
+        can_delete=True
     )
     
     if request.method == 'POST':
-        form = IncidentForm(request.POST)
-        formset = UploadedFileFormSet(request.POST, request.FILES)
+        form = IncidentForm(request.POST, instance=incident)
+        formset = UploadedFileFormSet(request.POST, request.FILES, instance=incident)
         if form.is_valid() and formset.is_valid():
             incident = form.save()
             formset.instance = incident
             formset.save()
-            messages.success(request, 'Incident created successfully')
+            messages.success(request, 'Incident saved successfully')
             return redirect('marine_mammal_incidents:incident_list')
         else:
-            messages.error(request, 'Error creating incident. Please check the form.')
+            messages.error(request, 'Error saving incident. Please check the form.')
     else:
-        form = IncidentForm()
-        formset = UploadedFileFormSet()
+        form = IncidentForm(instance=incident)
+        formset = UploadedFileFormSet(instance=incident)
     
     context = {
         'form': form,
         'formset': formset,
-        'form_title': 'Create New Incident',
-        'submit_button_text': 'Create Incident',
+        'form_title': 'Update Incident' if incident else 'Create New Incident',
+        'submit_button_text': 'Update Incident' if incident else 'Create Incident',
     }
-    return render(request, 'marine_mammal_incidents/create_incident.html', context)
+    return render(request, 'marine_mammal_incidents/incident_form.html', context)
 
 
 def incident_list(request):
@@ -60,25 +61,4 @@ def incident_list(request):
     }
     return render(request, 'marine_mammal_incidents/incident_list.html', context)
 
-def update_incident(request, pk):
-    incident = get_object_or_404(Incident, pk=pk)
-    if request.method == 'POST':
-        form = IncidentForm(request.POST, instance=incident)
-        file_form = UploadedFileForm(request.POST, request.FILES)
-        if form.is_valid() and file_form.is_valid():
-            form.save()
-            if file_form.cleaned_data['file']:
-                uploaded_file = file_form.save(commit=False)
-                uploaded_file.incident = incident
-                uploaded_file.save()
-            return redirect('marine_mammal_incidents:incident_list')
-    else:
-        form = IncidentForm(instance=incident)
-        file_form = UploadedFileForm()
 
-    return render(request, 'marine_mammal_incidents/create_incident.html', {
-        'form': form,
-        'file_form': file_form,
-        'form_title': 'Update Incident',
-        'submit_button_text': 'Update Incident',
-    })
