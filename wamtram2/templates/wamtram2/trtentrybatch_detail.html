@@ -43,6 +43,9 @@
         .highlight-row {
             background-color: #f8d7da !important;
         }
+        .has-observation {
+            background-color: #e6ffe6 !important;
+        }
     
     </style>
 {% endblock %}
@@ -153,7 +156,7 @@
                         <select name="filter" class="form-control" onchange="this.form.submit()">
                             <option value="">All</option>
                             <option value="needs_review" {% if request.GET.filter == "needs_review" %}selected{% endif %}>Needs Review</option>
-                            <option value="not_saved" {% if request.GET.filter == "not_saved" %}selected{% endif %}>Haven't Saved</option>
+                            <option value="not_saved" {% if request.GET.filter == "not_saved" %}selected{% endif %}>Haven't Processed</option>
                             <option value="needs_review_no_message" {% if request.GET.filter == "needs_review_no_message" %}selected{% endif %}>Needs Review (No System Message)</option>
                         </select>
                     </div>
@@ -234,7 +237,7 @@
 
                 <tbody>
                     {% for obj in object_list %}
-                    <tr class="{% if obj.highlight_row %}highlight-row{% endif %}">
+                    <tr class="{% if obj.highlight_row %}highlight-row{% endif %} {% if obj.observation_id %}has-observation{% endif %}">
                         <td><a href="{% url 'wamtram2:trtdataentry' obj.data_entry_id %}">{{ obj.data_entry_id }}</a></td>
                         <td>{% if obj.observation_id %}<a href="{% url 'wamtram2:observationdetail' pk=obj.observation_id.pk %}">{{ obj.observation_id.pk }}</a>{% endif %}</td>                     
                         <td>{{ obj.observation_date|perth_time|date:"j M Y H:i" }}</td>

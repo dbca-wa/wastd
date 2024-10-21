@@ -11,6 +11,15 @@
 <link rel="stylesheet" type="text/css" href="{% static 'css/tag_validation.css' %}">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <style>
+  .note {
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+  }
+  .tag {
+      margin: 0 5px;
+      font-weight: bold;
+  }
   .select2 {
     width: 100% !important;
   }
@@ -270,6 +279,12 @@
             <label class="col-form-label col-md-4"><strong>Does turtle have old FLIPPER tag(s)</strong></label>
             <div class="col-md-4">
               {% bootstrap_field form.flipper_tag_check show_label=False %}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12 note">
+                <span class="tag">4-digit tags:</span> need a space (e.g., WA 1234) <span class="tag">|</span>
+                <span class="tag">5-digit tags:</span> do not require a space (e.g., WA12345)
             </div>
           </div>
         <div id="tagDetails">
