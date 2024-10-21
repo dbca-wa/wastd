@@ -85,7 +85,7 @@
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <div class="form-group">
-                            <label for="{{ form.incident_date.id_for_label }}" class="required-field">Incident Date</label>
+                            <label for="{{ form.incident_date.id_for_label }}" class="required-field">Incident Date (YYYY-MM-DD)</label>
                             {{ form.incident_date }}
                         </div>
                     </div>
@@ -296,8 +296,8 @@
                 <div id="file-upload-forms">
                     {% for form in formset %}
                         <div class="row file-form">
-                            {% for field in form.visible_fields %}
                             <p> Attachment name is required when uploading files. </p>
+                            {% for field in form.visible_fields %}
                                 <div class="col-md-6 mb-3">
                                     <div class="form-group">
                                         <label for="{{ field.id_for_label }}">{{ field.label }}</label>
