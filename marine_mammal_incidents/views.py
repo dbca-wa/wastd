@@ -70,8 +70,6 @@ def export_form(request):
     return render(request, 'marine_mammal_incidents/export_form.html', {'species_list': species_list})
 
 
-
-
 def export_data(request):
 
     incident_date_from = request.GET.get('incident_date_from')

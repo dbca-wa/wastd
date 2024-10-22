@@ -28,6 +28,18 @@
             border-radius: 5px;
             overflow: hidden;
         }
+        .btn-create i, .btn-export i {
+            margin-right: 5px;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
+        .btn-create, .btn-export {
+            padding: 10px 20px;
+            font-size: 16px;
+        }        
+        
     </style>
 {% endblock %}
 
@@ -111,12 +123,14 @@
         <div class="step-container mt-5">
             <div class="incident-header">
                 <h1 class="incident-title">Marine Mammal Incidents</h1>
-                <a href="{% url 'marine_mammal_incidents:create_incident' %}" class="btn btn-success btn-create">
-                    <i class="fas fa-plus-circle"></i> Create Incident
-                </a>
-                <a href="{% url 'marine_mammal_incidents:export_form' %}" class="btn btn-outline-secondary mr-2 mb-2">
-                    <i class="fas fa-download"></i> Export Incidents
-                </a>
+                <div class="button-group">
+                    <a href="{% url 'marine_mammal_incidents:create_incident' %}" class="btn btn-success btn-create">
+                        <i class="fas fa-plus-circle"></i> Create Incident
+                    </a>
+                    <a href="{% url 'marine_mammal_incidents:export_form' %}" class="btn btn-primary btn-export">
+                        <i class="fas fa-download"></i> Export Incidents
+                    </a>
+                </div>
             </div>
 
             <div class="table-container">
