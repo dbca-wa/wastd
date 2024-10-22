@@ -65,8 +65,16 @@ def incident_list(request):
     }
     return render(request, 'marine_mammal_incidents/incident_list.html', context)
 
+import logging
+logger = logging.getLogger(__name__)
+
 def export_form(request):
-    species_list = Species.objects.all()
+    try:
+        species_list = Species.objects.all()
+        logger.info(f"Number of species: {species_list.count()}")
+    except Exception as e:
+        logger.error(f"Error fetching species: {e}", exc_info=True)
+        species_list = []
     return render(request, 'marine_mammal_incidents/export_form.html', {'species_list': species_list})
 
 
@@ -87,17 +95,6 @@ def export_data(request):
         incidents = incidents.filter(species_id=species_id)
     if location_name:
         incidents = incidents.filter(location_name__icontains=location_name)
-
-
-    data = [['事件日期', '物种', '位置名称', '事件类型', '动物数量']]
-    for incident in incidents:
-        data.append([
-            incident.incident_date,
-            str(incident.species),
-            incident.location_name,
-            incident.incident_type,
-            incident.number_of_animals
-        ])
 
     # Prepare data
     data = [['Species', 'Latitude', 'Longitude', 'ID', 'Incident Date', 'Incident Time', 
