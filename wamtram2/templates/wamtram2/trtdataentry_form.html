@@ -674,6 +674,11 @@
     <div class="card-body">
         <div class="container-fluid">
             <div class="col-md-12">
+              <div class="row">
+                <div class="col-md-12 note">
+                  <p> <strong>Note:</strong> Please use the + buttons to add more measurements (e.g., CCLmax).</p>
+                </div>
+              </div>
                 <div class="row">
                     <div class="col-md-6 mt-4">
                         {% bootstrap_field form.cc_notch_length_not_measured %}
@@ -687,11 +692,6 @@
                     <div class="col-md-6 mt-2">
                         {% bootstrap_field form.curved_carapace_width %}
                     </div>
-                </div>
-                <div class="row">
-                  <div class="col-md-12 note">
-                    <p> <strong>Note:</strong> Please use the + buttons to add more measurements (e.g., CCLmax).</p>
-                  </div>
                 </div>
                 <div class="col-md-2 pt-3 d-flex align-items-center">
                   <button id="toggleMeasurementButton" type="button" class="btn btn-outline-primary">
