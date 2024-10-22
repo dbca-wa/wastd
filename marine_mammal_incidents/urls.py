@@ -7,4 +7,5 @@ urlpatterns = [
     path('<int:pk>/update/', views.incident_form, name='update_incident'),
     path('export/', views.export_form, name='export_form'),
     path('export/data/', views.export_data, name='export_data'),
+    path('get-locations/', views.get_locations, name='get_locations'),
 ]

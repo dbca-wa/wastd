@@ -8,6 +8,8 @@ import csv
 import xlwt
 from openpyxl import Workbook
 from django.http import HttpResponse
+from django.http import JsonResponse
+from django.views.decorators.http import require_GET
 
 
 
@@ -162,3 +164,14 @@ def export_data(request):
         return HttpResponse("Invalid file format")
 
     return response
+
+@require_GET
+def get_locations(request):
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+    
+    locations = Incident.objects.filter(
+        incident_date__range=[start_date, end_date]
+    ).values_list('location_name', flat=True).distinct()
+    
+    return JsonResponse(list(locations), safe=False)
