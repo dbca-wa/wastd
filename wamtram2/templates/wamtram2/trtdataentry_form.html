@@ -423,7 +423,8 @@
             </div>
           </div>
 
-          <table class="table table-borderless" id="newFlipperTagSection">
+          <!-- New Flipper Tag Section -->
+          <table class="table table-borderless mt-5" id="newFlipperTagSection">
             <thead>
               <tr>
                 <th></th>
@@ -589,12 +590,12 @@
                   <div class="col-md-2 d-flex align-items-center">
                     <strong>L1</strong>
                   </div>
-                  <div class="col-md-7">
+                  <div class="col-md-7 mt-4">
                     {% bootstrap_field form.new_pittag_id show_label=False %}
                     <div id="new-pit-tag-validation-message"></div>
                     <div id="new-pit-tag-message"></div>
                   </div>
-                  <div class="col-md-3 mt-2">
+                  <div class="col-md-3 mt-4">
                     {% bootstrap_field form.new_pit_tag_sticker_present show_label=False %}
                   </div>
                 </div>
@@ -677,91 +678,87 @@
                   <p> <strong>Note:</strong> Please use the + buttons to add more measurements (e.g., CCLmax).</p>
                 </div>
               </div>
-                <div class="row">
-                    <div class="col-md-6 mt-4">
-                        {% bootstrap_field form.cc_notch_length_not_measured %}
-                    </div>
-                    <div class="col-md-6 mt-2">
-                        {% bootstrap_field form.curved_carapace_length_notch %}
-                    </div>
-                    <div class="col-md-6 mt-4">
-                        {% bootstrap_field form.cc_width_not_measured %}
-                    </div>
-                    <div class="col-md-6 mt-2">
-                        {% bootstrap_field form.curved_carapace_width %}
-                    </div>
-                </div>
-                <div class="col-md-2 pt-3 d-flex align-items-center">
-                  <button id="toggleMeasurementButton" type="button" class="btn btn-outline-primary">
-                      <i class="fas fa-plus" id="toggleMeasurementIcon"></i>
-                  </button>
-                </div>
-                <div id="moreMeasurement" class="row" style="display: none;">
-                    <div class="col-md-12 d-flex align-items-center mt-3">
-                        <div class="mr-2 flex-grow-1">
-                            {% bootstrap_field form.measurement_type_1 field_id="measurement_type_1" %}
-                        </div>
-                        <div class="ml-2 flex-grow-1">
-                            {% bootstrap_field form.measurement_value_1 %}
-                        </div>
-                    </div>
-                    <div class="col-md-12 d-flex align-items-center mt-2">
-                        <div class="mr-2 flex-grow-1">
-                            {% bootstrap_field form.measurement_type_2 field_id="measurement_type_2" %}
-                        </div>
-                        <div class="ml-2 flex-grow-1">
-                            {% bootstrap_field form.measurement_value_2 %}
-                        </div>
-                    </div>
-                    <div class="col-md-12 d-flex align-items-center mt-2">
-                      <div class="mr-2 flex-grow-1">
-                          {% bootstrap_field form.measurement_type_3 field_id="measurement_type_3"%}
-                      </div>
-                      <div class="ml-2 flex-grow-1">
-                          {% bootstrap_field form.measurement_value_3 %}
-                      </div>
-                    </div>
-                    <div class="col-md-12 d-flex align-items-center mt-2">
-                      <div class="mr-2 flex-grow-1">
-                          {% bootstrap_field form.measurement_type_4 field_id="measurement_type_4"%}
-                      </div>
-                      <div class="ml-2 flex-grow-1">
-                          {% bootstrap_field form.measurement_value_4 %}
-                      </div>
-                    </div>
-                    <div class="col-md-12 d-flex align-items-center mt-2">
-                      <div class="mr-2 flex-grow-1">
-                          {% bootstrap_field form.measurement_type_5 field_id="measurement_type_5"%}
-                      </div>
-                      <div class="ml-2 flex-grow-1">
-                          {% bootstrap_field form.measurement_value_5 %}
-                      </div>
-                    </div>
-                    <div class="col-md-12 d-flex align-items-center mt-2">
-                      <div class="mr-2 flex-grow-1">
-                          {% bootstrap_field form.measurement_type_6 field_id="measurement_type_6"%}
-                      </div>
-                      <div class="ml-2 flex-grow-1">
-                          {% bootstrap_field form.measurement_value_6 %}
-                      </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 p-4">
-                        <label for="{{ form.measured_by_id.id_for_label }}">{{ form.measured_by_id.label }}</label>
-                        <div class="d-flex align-items-center">
-                            <div class="flex-grow-1">
-                                <input type="text" id="search_measured_by" class="search-field form-control" placeholder="Search measured by" value="{{ measured_by_name }}">
-                                {{ form.measured_by_id }}
-                                <div class="search-results" style="display:none;"></div>
-                            </div>
-                            {% comment %} {% if user.is_superuser %}
-                            <button type="button" class="btn btn-outline-primary add-person-btn ml-2 align-self-start" onClick="window.open(adminUrl);" title="Add new person">
-                                <i class="fas fa-plus"></i></button>
-                            {% endif %} {% endcomment %}
+              <div class="row">
+                <div class="col-md-6 p-4">
+                    <label for="{{ form.measured_by_id.id_for_label }}">{{ form.measured_by_id.label }}</label>
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <input type="text" id="search_measured_by" class="search-field form-control" placeholder="Search measured by" value="{{ measured_by_name }}">
+                            {{ form.measured_by_id }}
+                            <div class="search-results" style="display:none;"></div>
                         </div>
                     </div>
                 </div>
+              </div>
+              <div class="row">
+                  <div class="col-md-6 mt-4">
+                      {% bootstrap_field form.cc_notch_length_not_measured %}
+                  </div>
+                  <div class="col-md-6 mt-2">
+                      {% bootstrap_field form.curved_carapace_length_notch %}
+                  </div>
+                  <div class="col-md-6 mt-4">
+                      {% bootstrap_field form.cc_width_not_measured %}
+                  </div>
+                  <div class="col-md-6 mt-2">
+                      {% bootstrap_field form.curved_carapace_width %}
+                  </div>
+              </div>
+              <div class="col-md-2 pt-3 d-flex align-items-center">
+                <button id="toggleMeasurementButton" type="button" class="btn btn-outline-primary">
+                    <i class="fas fa-plus" id="toggleMeasurementIcon"></i>
+                </button>
+              </div>
+              <div id="moreMeasurement" class="row" style="display: none;">
+                  <div class="col-md-12 d-flex align-items-center mt-3">
+                      <div class="mr-2 flex-grow-1">
+                          {% bootstrap_field form.measurement_type_1 field_id="measurement_type_1" %}
+                      </div>
+                      <div class="ml-2 flex-grow-1">
+                          {% bootstrap_field form.measurement_value_1 %}
+                      </div>
+                  </div>
+                  <div class="col-md-12 d-flex align-items-center mt-2">
+                      <div class="mr-2 flex-grow-1">
+                          {% bootstrap_field form.measurement_type_2 field_id="measurement_type_2" %}
+                      </div>
+                      <div class="ml-2 flex-grow-1">
+                          {% bootstrap_field form.measurement_value_2 %}
+                      </div>
+                  </div>
+                  <div class="col-md-12 d-flex align-items-center mt-2">
+                    <div class="mr-2 flex-grow-1">
+                        {% bootstrap_field form.measurement_type_3 field_id="measurement_type_3"%}
+                    </div>
+                    <div class="ml-2 flex-grow-1">
+                        {% bootstrap_field form.measurement_value_3 %}
+                    </div>
+                  </div>
+                  <div class="col-md-12 d-flex align-items-center mt-2">
+                    <div class="mr-2 flex-grow-1">
+                        {% bootstrap_field form.measurement_type_4 field_id="measurement_type_4"%}
+                    </div>
+                    <div class="ml-2 flex-grow-1">
+                        {% bootstrap_field form.measurement_value_4 %}
+                    </div>
+                  </div>
+                  <div class="col-md-12 d-flex align-items-center mt-2">
+                    <div class="mr-2 flex-grow-1">
+                        {% bootstrap_field form.measurement_type_5 field_id="measurement_type_5"%}
+                    </div>
+                    <div class="ml-2 flex-grow-1">
+                        {% bootstrap_field form.measurement_value_5 %}
+                    </div>
+                  </div>
+                  <div class="col-md-12 d-flex align-items-center mt-2">
+                    <div class="mr-2 flex-grow-1">
+                        {% bootstrap_field form.measurement_type_6 field_id="measurement_type_6"%}
+                    </div>
+                    <div class="ml-2 flex-grow-1">
+                        {% bootstrap_field form.measurement_value_6 %}
+                    </div>
+                  </div>
+              </div>
             </div>
         </div>
     </div>
@@ -968,7 +965,7 @@
       <div class="d-flex align-self-center">
         {% if not form.observation_id.value %}
         <div class="form-group"> 
-          <label for="{{ form.do_not_process.id_for_label }}" class="need-review-label"> 
+          <label for="{{ form.do_not_process.id_for_label }}" class="need-review-label">
             {{ form.do_not_process.label }}
         </label>
             {{ form.do_not_process }}
