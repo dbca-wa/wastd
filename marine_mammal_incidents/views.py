@@ -8,7 +8,9 @@ import csv
 import xlwt
 from openpyxl import Workbook
 from django.http import HttpResponse
-
+from django.http import JsonResponse
+from django.views.decorators.http import require_GET
+from .decorators import superuser_or_data_curator_required
 
 
 def incident_form(request, pk=None):
@@ -65,19 +67,15 @@ def incident_list(request):
     }
     return render(request, 'marine_mammal_incidents/incident_list.html', context)
 
-import logging
-logger = logging.getLogger(__name__)
-
+@superuser_or_data_curator_required
 def export_form(request):
     try:
         species_list = Species.objects.all()
-        logger.info(f"Number of species: {species_list.count()}")
     except Exception as e:
-        logger.error(f"Error fetching species: {e}", exc_info=True)
         species_list = []
     return render(request, 'marine_mammal_incidents/export_form.html', {'species_list': species_list})
 
-
+@superuser_or_data_curator_required
 def export_data(request):
 
     incident_date_from = request.GET.get('incident_date_from')
@@ -162,3 +160,14 @@ def export_data(request):
         return HttpResponse("Invalid file format")
 
     return response
+
+@require_GET
+def get_locations(request):
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+    
+    locations = Incident.objects.filter(
+        incident_date__range=[start_date, end_date]
+    ).values_list('location_name', flat=True).distinct()
+    
+    return JsonResponse(list(locations), safe=False)

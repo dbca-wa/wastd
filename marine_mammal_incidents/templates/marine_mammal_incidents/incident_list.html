@@ -2,6 +2,7 @@
 {% load static bootstrap4 %}
 {% load proper_paginate %}
 {% load url_replace %}
+{% load group_filters %}
 
 {% block extra_style %}
     {{ block.super }}
@@ -127,9 +128,11 @@
                     <a href="{% url 'marine_mammal_incidents:create_incident' %}" class="btn btn-success btn-create">
                         <i class="fas fa-plus-circle"></i> Create Incident
                     </a>
+                    {% if request.user|has_group:"data curator" or request.user.is_superuser %}
                     <a href="{% url 'marine_mammal_incidents:export_form' %}" class="btn btn-primary btn-export">
                         <i class="fas fa-download"></i> Export Incidents
                     </a>
+                    {% else %}
                 </div>
             </div>
 
