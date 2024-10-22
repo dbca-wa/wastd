@@ -272,6 +272,17 @@
         </div>
       </div>
       {% endif %}
+      <!-- Tagged By Section -->
+      <section class="container-fluid mt-5">
+        <div class="col-md-12">
+          <label for="{{ form.tagged_by_id.id_for_label }}">{{ form.tagged_by_id.label }}</label>
+        </div>
+        <div class="col-md-4">
+          <input type="text" id="search_tagged_by" class="search-field form-control" placeholder="Search tagged by" value="{{ tagged_by_name }}">
+          {{ form.tagged_by_id }}
+          <div class="search-results" style="display:none;"></div>
+        </div>
+      </section>
       <!-- Flipper Tags Section -->
       <section class="container-fluid mt-5">
           <div class="row">
@@ -363,6 +374,55 @@
               </tr>
             </tbody>
           </table>
+          
+          <!-- Flipper Tags Scars Section -->
+          <div class="row col-md-12 mt-5">
+            <div class="col-form-label col-md-4">
+              <label><strong>Flipper Tags Scars Present?</strong></label>
+            </div>
+            <div class="col-md-4">
+              {% bootstrap_field form.scar_check show_label=False%}
+            </div>
+          </div>
+          <div class="row col-md-12 mt-3" id="scarsDetails">
+            <div class="col-6">
+              <div class="row align-items-center mb-2">
+                <div class="col-auto">
+                  <label><strong>Scars Left</strong></label>
+                </div>
+                <div class="col-auto d-flex align-items-center">
+                  <div class="form-check form-check-inline">
+                    {% bootstrap_field form.scars_left_scale_1 %}
+                  </div>
+                  <div class="form-check form-check-inline">
+                    {% bootstrap_field form.scars_left_scale_2 %}
+                  </div>
+                  <div class="form-check form-check-inline">
+                    {% bootstrap_field form.scars_left_scale_3 %}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-6" id="scarsDetailsRight">
+              <div class="row align-items-center">
+                <div class="col-auto">
+                  <label><strong>Scars Right</strong></label>
+                </div>
+                <div class="col-auto d-flex align-items-center">
+                  <div class="form-check form-check-inline">
+                    {% bootstrap_field form.scars_right_scale_1 %}
+                  </div>
+                  <div class="form-check form-check-inline">
+                    {% bootstrap_field form.scars_right_scale_2 %}
+                  </div>
+                  <div class="form-check form-check-inline">
+                    {% bootstrap_field form.scars_right_scale_3 %}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <table class="table table-borderless" id="newFlipperTagSection">
             <thead>
               <tr>
@@ -439,55 +499,10 @@
         </div>
       </section> 
 
-      <!-- Flipper Tags Scars Section -->
+      {% comment %} 
       <section class="container-fluid mt-5" >
-        <div class="row col-md-12">
-          <div class="col-form-label col-md-4">
-            <label><strong>Flipper Tags Scars Present?</strong></label>
-          </div>
-          <div class="col-md-4">
-            {% bootstrap_field form.scar_check show_label=False%}
-          </div>
-        </div>
-        <div class="row col-md-12 mt-3" id="scarsDetails">
-          <div class="col-6">
-            <div class="row align-items-center mb-2">
-              <div class="col-auto">
-                <label><strong>Scars Left</strong></label>
-              </div>
-              <div class="col-auto d-flex align-items-center">
-                <div class="form-check form-check-inline">
-                  {% bootstrap_field form.scars_left_scale_1 %}
-                </div>
-                <div class="form-check form-check-inline">
-                  {% bootstrap_field form.scars_left_scale_2 %}
-                </div>
-                <div class="form-check form-check-inline">
-                  {% bootstrap_field form.scars_left_scale_3 %}
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-6" id="scarsDetailsRight">
-            <div class="row align-items-center">
-              <div class="col-auto">
-                <label><strong>Scars Right</strong></label>
-              </div>
-              <div class="col-auto d-flex align-items-center">
-                <div class="form-check form-check-inline">
-                  {% bootstrap_field form.scars_right_scale_1 %}
-                </div>
-                <div class="form-check form-check-inline">
-                  {% bootstrap_field form.scars_right_scale_2 %}
-                </div>
-                <div class="form-check form-check-inline">
-                  {% bootstrap_field form.scars_right_scale_3 %}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+
+      </section> {% endcomment %}
 
       <!-- PIT Tags Section -->
       <section class="container-fluid mt-5">
@@ -648,24 +663,7 @@
           </div>
         </div>
       </section>
-      <!-- Tagged By Section -->
-      <section class="container-fluid mt-5">
-        <div class="col-md-12">
-          <label for="{{ form.tagged_by_id.id_for_label }}">{{ form.tagged_by_id.label }}</label>
-        </div>
-        <div class="col-md-4">
-          <input type="text" id="search_tagged_by" class="search-field form-control" placeholder="Search tagged by" value="{{ tagged_by_name }}">
-          {{ form.tagged_by_id }}
-          <div class="search-results" style="display:none;"></div>
-        </div>
-        <div class="col-md-2">
-          {% comment %} {% if user.is_superuser %}
-          <button type="button" class="btn btn-outline-primary add-person-btn" onclick="window.open(adminUrl);" title="Add new person">
-            <i class="fas fa-plus"></i>
-          </button>
-          {% endif %} {% endcomment %}
-        </div>
-      </section>
+
     </div>
   </div>
   <!-- Third part: Measurements -->
