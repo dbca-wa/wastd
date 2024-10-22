@@ -10,7 +10,7 @@ from openpyxl import Workbook
 from django.http import HttpResponse
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
-
+from .decorators import superuser_or_data_curator_required
 
 
 def incident_form(request, pk=None):
@@ -67,6 +67,7 @@ def incident_list(request):
     }
     return render(request, 'marine_mammal_incidents/incident_list.html', context)
 
+@superuser_or_data_curator_required
 def export_form(request):
     try:
         species_list = Species.objects.all()
@@ -74,7 +75,7 @@ def export_form(request):
         species_list = []
     return render(request, 'marine_mammal_incidents/export_form.html', {'species_list': species_list})
 
-
+@superuser_or_data_curator_required
 def export_data(request):
 
     incident_date_from = request.GET.get('incident_date_from')

@@ -30,6 +30,16 @@
     </style>
 {% endblock %}
 
+{% block breadcrumbs %}
+    <nav aria-label="breadcrumb" class="d-none d-md-block">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'marine_mammal_incidents:incident_list' %}">Incident List</a></li>
+            <li class="breadcrumb-item active">Export Incidents</li>
+        </ol>
+    </nav>
+{% endblock %}
+
 {% block page_content_inner %}
     <div class="container">
         <h2>Export Marine Mammal Incidents</h2>
@@ -63,7 +73,7 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="location_name">Location</label>
+                    <label for="location_name">Location<small class="text-muted">(Loads after selecting time range)</small></label>
                     <select id="location_name" name="location_name" class="form-control">
                         <option value="">All Locations</option>
                     </select>
