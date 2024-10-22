@@ -272,6 +272,17 @@ class TrtDataEntryForm(forms.ModelForm):
             'placeholder': 'Enter name',
         })
         
+        clutch_completed_choices = list(TrtYesNo.objects.filter(code__in=['D', 'N', 'P', 'U', 'Y']).values_list('code', 'description'))
+        clutch_completed_choices = [
+            (code, 'Yes, saw eggs' if code == 'Y' else
+                'No nest' if code == 'N' else
+                "Possible nest, didn't see eggs" if code == 'P' else
+                desc)
+            for code, desc in clutch_completed_choices
+        ]
+        
+        self.fields['clutch_completed'].choices = clutch_completed_choices
+        
                         
         nesting_choices = TrtYesNo.objects.filter(code__in=['N', 'P', 'Y'])
         self.fields['nesting'].queryset = nesting_choices

@@ -508,7 +508,7 @@
                   <div class="col-md-2 d-flex align-items-center">
                     <strong>L1</strong>
                   </div>
-                  <div class="col-md-10 mt-2">
+                  <div class="col-md-10 mt-4">
                     {% bootstrap_field form.recapture_pittag_id show_label=False %}
                     <div id="recapture-pit-tag-validation-message"></div>
                     <div id="recapture-pit-tag-message"></div>
@@ -520,7 +520,7 @@
                   <div class="col-md-2 d-flex align-items-center">
                     <strong>R1</strong>
                   </div>
-                  <div class="col-md-10 mt-2">
+                  <div class="col-md-10 mt-4">
                     {% bootstrap_field form.recapture_pittag_id_2 show_label=False %}
                     <div id="recapture-pit-tag-validation-message-2"></div>
                     <div id="recapture-pit-tag-message-2"></div>
@@ -536,7 +536,7 @@
                     <div class="col-md-2 d-flex align-items-center">
                       <strong>L2</strong>
                     </div>
-                    <div class="col-md-10 mt-2">
+                    <div class="col-md-10 mt-4">
                       {% bootstrap_field form.recapture_pittag_id_3 show_label=False %}
                       <div id="recapture-pit-tag-validation-message-3"></div>
                       <div id="recapture-pit-tag-message-3"></div>
@@ -548,7 +548,7 @@
                     <div class="col-md-2 d-flex align-items-center">
                       <strong>R2</strong>
                     </div>
-                    <div class="col-md-10 mt-2">
+                    <div class="col-md-10 mt-4">
                       {% bootstrap_field form.recapture_pittag_id_4 show_label=False %}
                       <div id="recapture-pit-tag-validation-message-4"></div>
                       <div id="recapture-pit-tag-message-4"></div>
@@ -591,12 +591,12 @@
                   <div class="col-md-2 d-flex align-items-center">
                     <strong>R1</strong>
                   </div>
-                  <div class="col-md-7">
+                  <div class="col-md-7 mt-4">
                     {% bootstrap_field form.new_pittag_id_2 show_label=False %}
                     <div id="new-pit-tag-validation-message-2"></div>
                     <div id="new-pit-tag-message-2"></div>
                   </div>
-                  <div class="col-md-3 mt-2">
+                  <div class="col-md-3 mt-4">
                     {% bootstrap_field form.new_pit_tag_2_sticker_present show_label=False %}
                   </div>
                 </div>
@@ -611,12 +611,12 @@
                     <div class="col-md-2 d-flex align-items-center">
                       <strong>L2</strong>
                     </div>
-                    <div class="col-md-7">
+                    <div class="col-md-7 mt-4">
                       {% bootstrap_field form.new_pittag_id_3 show_label=False %}
                       <div id="new-pit-tag-validation-message-3"></div>
                       <div id="new-pit-tag-message-3"></div>
                     </div>
-                    <div class="col-md-3 mt-2">
+                    <div class="col-md-3 mt-4">
                       {% bootstrap_field form.new_pit_tag_3_sticker_present show_label=False %}
                     </div>
                   </div>
@@ -628,12 +628,12 @@
                     <div class="col-md-2 d-flex align-items-center">
                       <strong>R2</strong>
                     </div>
-                    <div class="col-md-7">
+                    <div class="col-md-7 mt-4">
                       {% bootstrap_field form.new_pittag_id_4 show_label=False %}
                       <div id="new-pit-tag-validation-message-4"></div>
                       <div id="new-pit-tag-message-4"></div>
                     </div>
-                    <div class="col-md-3 mt-2">
+                    <div class="col-md-3 mt-4">
                       {% bootstrap_field form.new_pit_tag_4_sticker_present show_label=False %}
                     </div>
                   </div>
@@ -687,6 +687,11 @@
                     <div class="col-md-6 mt-2">
                         {% bootstrap_field form.curved_carapace_width %}
                     </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-12 note">
+                    <p> <strong>Note:</strong> Please use the + buttons to add more measurements (e.g., CCLmax).</p>
+                  </div>
                 </div>
                 <div class="col-md-2 pt-3 d-flex align-items-center">
                   <button id="toggleMeasurementButton" type="button" class="btn btn-outline-primary">
