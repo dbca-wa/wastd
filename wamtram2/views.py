@@ -1091,7 +1091,7 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
 SEX_CHOICES = [
     ("M", "Male"),
     ("F", "Female"),
-    ("I", "Indeterminate"),
+    ("I", "Unsure"),
 ]
 class TemplateManageView(LoginRequiredMixin, FormView):
     template_name = 'wamtram2/template_manage.html'
@@ -1636,7 +1636,7 @@ class FilterFormView(LoginRequiredMixin, View):
         sex_choices = {
             'M': 'Male',
             'F': 'Female',
-            'I': 'Indeterminate',
+            'I': 'Unsure',
         }
         return sex_choices.get(sex_code, 'Unknown')
 
