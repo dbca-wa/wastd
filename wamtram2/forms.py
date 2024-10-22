@@ -274,14 +274,14 @@ class TrtDataEntryForm(forms.ModelForm):
         
         clutch_completed_choices = list(TrtYesNo.objects.filter(code__in=['D', 'N', 'P', 'U', 'Y']).values_list('code', 'description'))
         clutch_completed_choices = [
-            (code, 'Yes, saw eggs' if code == 'Y' else
-                'No nest' if code == 'N' else
-                "Possible nest, didn't see eggs" if code == 'P' else
-                desc)
-            for code, desc in clutch_completed_choices
-        ]
+            ('', '---------'),
+            ('Y', 'Yes, saw eggs'),
+            ('N', 'No nest'),
+            ('P', "Possible nest, didn't see eggs"),
+        ] + [(code, desc) for code, desc in clutch_completed_choices if code not in ['Y', 'N', 'P']]
         
         self.fields['clutch_completed'].choices = clutch_completed_choices
+        self.fields['clutch_completed'].initial = ''
         
                         
         nesting_choices = TrtYesNo.objects.filter(code__in=['N', 'P', 'Y'])
@@ -338,6 +338,11 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["place_code"].required = True
         self.fields["sex"].required = True
         self.fields["clutch_completed"].required = True
+        
+        self.fields["flipper_tag_check"].label = "Flipper tags present?"
+        self.fields["pit_tag_check"].label = "PIT tags present?"
+        self.fields["injury_check"].label = "Injury present?"
+        self.fields["scar_check"].label = "Tag scar present?"
         
         self.fields["latitude"].label = "Latitude - (xx.xxxxxx)"
         self.fields["longitude"].label = "Longitude (xxx.xxxxxx)"
