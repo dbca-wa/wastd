@@ -272,6 +272,7 @@ class TrtDataEntryForm(forms.ModelForm):
             'placeholder': 'Enter name',
         })
         
+        
         clutch_completed_choices = list(TrtYesNo.objects.filter(code__in=['D', 'N', 'P', 'U', 'Y']).values_list('code', 'description'))
         clutch_completed_choices = [
             ('', '---------'),
