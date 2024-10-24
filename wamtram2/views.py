@@ -1089,8 +1089,8 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
 
 
 SEX_CHOICES = [
-    ("M", "Male"),
     ("F", "Female"),
+    ("M", "Male"),
     ("I", "Indeterminate"),
 ]
 class TemplateManageView(LoginRequiredMixin, FormView):
@@ -1634,8 +1634,8 @@ class FilterFormView(LoginRequiredMixin, View):
         
     def get_sex_label(self, sex_code):
         sex_choices = {
-            'M': 'Male',
             'F': 'Female',
+            'M': 'Male',
             'I': 'Indeterminate',
         }
         return sex_choices.get(sex_code, 'Unknown')
