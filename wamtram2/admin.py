@@ -148,48 +148,39 @@ class TrtDataEntryAdmin(admin.ModelAdmin):
         return 'Yes' if obj.do_not_process else 'No'
     needs_review.short_description = 'Needs Review'
 
-    def recapture_tags(self, obj):
-        tags = [str(tag) for tag in obj.recapture_tags.all()]
-        return ', '.join(tags)
-    recapture_tags.short_description = 'Recapture Tags'
-
-    def new_tags(self, obj):
-        tags = [str(tag) for tag in obj.new_tags.all()]
-        return ', '.join(tags)
-    new_tags.short_description = 'New Tags'
-
+    # def get_object(self, request, object_id, from_field=None):
+    #     print(f"Attempting to get TrtDataEntry with ID: {object_id}")
+    #     object_id = int(object_id)
+    #     print(f"Type of object_id: {type(object_id)}")
+    #     try:
+    #         obj = TrtDataEntry.objects.filter(data_entry_id=object_id).first()
+    #         if obj is None:
+    #             print(f"TrtDataEntry with ID {object_id} not found")
+    #         else:
+    #             print(f"Found TrtDataEntry: {obj}")
+    #         return obj
+    #     except Exception as e:
+    #         print(f"Error getting TrtDataEntry: {e}")
+    #         return None
+    
     def get_object(self, request, object_id, from_field=None):
-        print(f"Attempting to get TrtDataEntry with ID: {object_id}")
         object_id = int(object_id)
-        print(f"Type of object_id: {type(object_id)}")
         try:
-            obj = TrtDataEntry.objects.filter(data_entry_id=object_id).first()
-            if obj is None:
-                print(f"TrtDataEntry with ID {object_id} not found")
-            else:
-                print(f"Found TrtDataEntry: {obj}")
-            return obj
-        except Exception as e:
-            print(f"Error getting TrtDataEntry: {e}")
+            return self.get_queryset(request).get(pk=object_id)
+        except TrtDataEntry.DoesNotExist:
             return None
- 
+
     def change_view(self, request, object_id, form_url='', extra_context=None):
         print(f"Change view called for object_id: {object_id}")
         return super().change_view(request, object_id, form_url, extra_context)
 
     def get_queryset(self, request):
-        qs = super().get_queryset(request)
-        return qs.select_related(
+        return super().get_queryset(request).select_related(
             'entry_batch', 'turtle_id', 'observation_id', 'place_code', 'species_code',
             'activity_code', 'damage_carapace', 'damage_lff', 'damage_rff', 'damage_lhf', 'damage_rhf'
-        ).prefetch_related(
-            Prefetch('recapture_left_tag_id', queryset=TrtTags.objects.all(), to_attr='recapture_tags'),
-            Prefetch('recapture_right_tag_id', queryset=TrtTags.objects.all(), to_attr='recapture_tags'),
-            Prefetch('recapture_pittag_id', queryset=TrtPitTags.objects.all(), to_attr='recapture_tags'),
-            Prefetch('new_left_tag_id', queryset=TrtTags.objects.all(), to_attr='new_tags'),
-            Prefetch('new_right_tag_id', queryset=TrtTags.objects.all(), to_attr='new_tags'),
-            Prefetch('new_pittag_id', queryset=TrtPitTags.objects.all(), to_attr='new_tags')
         )
+        
+        
         
 @admin.register(TrtTurtles)
 class TrtTurtlesAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
