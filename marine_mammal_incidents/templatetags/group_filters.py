@@ -3,7 +3,7 @@ from django.contrib.auth.models import Group
 
 register = template.Library()
 
-@register.filter(name='has_group')
+@register.filter(name='mmi_has_group')
 def has_group(user, group_name):
     """Check if a user belongs to a specific group."""
     try:
