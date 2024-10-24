@@ -52,14 +52,47 @@ class TrtDamageInline(nested_admin.NestedStackedInline):
     extra = 0
 
 
-class TrtDataEntryInline(admin.StackedInline):
+class TrtDataEntryInline(admin.TabularInline):
     model = TrtDataEntry
     extra = 0
-    fields = ('saved_observation', 'observation_date', 'turtle_id', 'recapture_tags', 'new_tags', 'lay', 'system_message', 'enterer', 'needs_review', 'comments')
-    readonly_fields = ('saved_observation', 'observation_date', 'turtle_id', 'recapture_tags', 'new_tags', 'lay', 'system_message', 'enterer', 'needs_review', 'comments')
+    fields = ('saved_observation', 'observation_date', 'turtle', 'recapture_tags', 'new_tags', 'lay', 'system_message', 'enterer', 'needs_review', 'comments')
+    readonly_fields = ('saved_observation', 'observation_date', 'turtle', 'recapture_tags', 'new_tags', 'lay', 'system_message', 'enterer', 'needs_review', 'comments')
     can_delete = False
     max_num = 0
 
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def saved_observation(self, obj):
+        return obj.observation_id
+
+    def turtle(self, obj):
+        return obj.turtle_id
+
+    def recapture_tags(self, obj):
+        tags = []
+        for field in ['recapture_left_tag_id', 'recapture_right_tag_id', 'recapture_pittag_id']:
+            tag = getattr(obj, field)
+            if tag:
+                tags.append(str(tag))
+        return ', '.join(tags)
+
+    def new_tags(self, obj):
+        tags = []
+        for field in ['new_left_tag_id', 'new_right_tag_id', 'new_pittag_id']:
+            tag = getattr(obj, field)
+            if tag:
+                tags.append(str(tag))
+        return ', '.join(tags)
+
+    def lay(self, obj):
+        return 'Yes' if obj.nesting and obj.nesting.code == 'Y' else 'No'
+
+    def enterer(self, obj):
+        return obj.entered_by_id
+
+    def needs_review(self, obj):
+        return 'Yes' if obj.do_not_process else 'No'
 
 @admin.register(TrtEntryBatches)
 class TrtEntryBatchesAdmin(admin.ModelAdmin):
