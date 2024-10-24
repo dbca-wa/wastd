@@ -16,6 +16,8 @@ from .models import (
 )
 from import_export.admin import ImportExportModelAdmin
 from .forms import DataEntryUserModelForm, EnterUserModelForm, TrtObservationsForm, TrtPersonsForm
+from django.urls import reverse
+from django.utils.html import format_html
 
 
 class TrtMeasurementsInline(nested_admin.NestedTabularInline):
@@ -52,18 +54,28 @@ class TrtDamageInline(nested_admin.NestedStackedInline):
 
 class TrtDataEntryInline(admin.StackedInline):
     model = TrtDataEntry
-    verbose_name = "Data entry"
-    form = DataEntryUserModelForm
     extra = 0
+    fields = ('saved_observation', 'observation_date', 'turtle_id', 'recapture_tags', 'new_tags', 'lay', 'system_message', 'enterer', 'needs_review', 'comments')
+    readonly_fields = ('saved_observation', 'observation_date', 'turtle_id', 'recapture_tags', 'new_tags', 'lay', 'system_message', 'enterer', 'needs_review', 'comments')
+    can_delete = False
+    max_num = 0
 
 
 @admin.register(TrtEntryBatches)
 class TrtEntryBatchesAdmin(admin.ModelAdmin):
-    list_display = ("entry_batch_id", "entry_date", "entered_person_id", "comments")
+    list_display = ("linked_entry_batch_id", "entry_date", "entered_person_id", "comments")
     ordering = ["-entry_batch_id"]
     inlines = [TrtDataEntryInline]
     form = EnterUserModelForm
 
+    def linked_entry_batch_id(self, obj):
+        url = reverse('admin:wamtram2_trtentrybatches_change', args=[obj.pk])
+        return format_html('<a href="{}">{}</a>', url, obj.entry_batch_id)
+    linked_entry_batch_id.short_description = 'Entry batch id'
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.prefetch_related('trtdataentry_set')
 
 @admin.register(TrtDataEntry)
 class TrtDataEntryAdmin(admin.ModelAdmin):
