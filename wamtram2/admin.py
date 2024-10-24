@@ -15,9 +15,10 @@ from .models import (
     TrtTagOrders,
 )
 from import_export.admin import ImportExportModelAdmin
-from .forms import DataEntryUserModelForm, EnterUserModelForm, TrtObservationsForm, TrtPersonsForm
+from .forms import EnterUserModelForm, TrtObservationsForm, TrtPersonsForm
 from django.urls import reverse
 from django.utils.html import format_html
+from django.db.models import Prefetch
 
 
 class TrtMeasurementsInline(nested_admin.NestedTabularInline):
@@ -55,8 +56,8 @@ class TrtDamageInline(nested_admin.NestedStackedInline):
 class TrtDataEntryInline(admin.TabularInline):
     model = TrtDataEntry
     extra = 0
-    fields = ('linked_data_entry_id','saved_observation', 'observation_date', 'turtle', 'recapture_tags', 'new_tags', 'lay', 'system_message', 'enterer', 'needs_review', 'comments')
-    readonly_fields = ('linked_data_entry_id','saved_observation', 'observation_date', 'turtle', 'recapture_tags', 'new_tags', 'lay', 'system_message', 'enterer', 'needs_review', 'comments')
+    fields = ('linked_data_entry_id','saved_observation', 'observation_date', 'turtle', 'recapture_tags', 'new_tags', 'lay', 'enterer', 'needs_review', 'comments')
+    readonly_fields = ('linked_data_entry_id','saved_observation', 'observation_date', 'turtle', 'recapture_tags', 'new_tags', 'lay', 'enterer', 'needs_review', 'comments')
     can_delete = False
     max_num = 0
 
@@ -116,24 +117,19 @@ class TrtEntryBatchesAdmin(admin.ModelAdmin):
         return qs.prefetch_related('trtdataentry_set')
 
 
+
+
 @admin.register(TrtDataEntry)
 class TrtDataEntryAdmin(admin.ModelAdmin):
     def get_model_perms(self, request):
-        """
-        Return empty perms dict thus hiding the model from admin index.
-        """
         return {}
 
     def has_module_permission(self, request):
-        """
-        Return False to hide this model from the admin index page.
-        """
         return False
 
     fields = (
         'entry_batch', 'user_entry_id', 'turtle_id', 'observation_id', 'do_not_process',
-        'recapture_left_tag_id', 'recapture_right_tag_id', 'recapture_pittag_id',
-        'new_left_tag_id', 'new_right_tag_id', 'new_pittag_id',
+        'recapture_tags', 'new_tags',
         'place_code', 'observation_date', 'observation_time',
         'nesting', 'species_code', 'identification_confidence', 'sex',
         'curved_carapace_length', 'curved_carapace_width',
@@ -142,7 +138,7 @@ class TrtDataEntryAdmin(admin.ModelAdmin):
         'comments', 'error_number', 'error_message'
     )
 
-    readonly_fields = ('entry_batch', 'user_entry_id')
+    readonly_fields = ('entry_batch', 'user_entry_id', 'recapture_tags', 'new_tags')
 
     list_display = ('data_entry_id', 'entry_batch', 'observation_date', 'turtle_id', 'needs_review')
     list_filter = ('do_not_process', 'species_code', 'nesting')
@@ -152,11 +148,30 @@ class TrtDataEntryAdmin(admin.ModelAdmin):
         return 'Yes' if obj.do_not_process else 'No'
     needs_review.short_description = 'Needs Review'
 
+    def recapture_tags(self, obj):
+        tags = [str(tag) for tag in obj.recapture_tags.all()]
+        return ', '.join(tags)
+    recapture_tags.short_description = 'Recapture Tags'
+
+    def new_tags(self, obj):
+        tags = [str(tag) for tag in obj.new_tags.all()]
+        return ', '.join(tags)
+    new_tags.short_description = 'New Tags'
+
     def get_queryset(self, request):
-        return super().get_queryset(request).select_related(
+        qs = super().get_queryset(request)
+        return qs.select_related(
             'entry_batch', 'turtle_id', 'observation_id', 'place_code', 'species_code',
             'activity_code', 'damage_carapace', 'damage_lff', 'damage_rff', 'damage_lhf', 'damage_rhf'
+        ).prefetch_related(
+            Prefetch('recapture_left_tag_id', queryset=TrtTags.objects.all(), to_attr='recapture_tags'),
+            Prefetch('recapture_right_tag_id', queryset=TrtTags.objects.all(), to_attr='recapture_tags'),
+            Prefetch('recapture_pittag_id', queryset=TrtPitTags.objects.all(), to_attr='recapture_tags'),
+            Prefetch('new_left_tag_id', queryset=TrtTags.objects.all(), to_attr='new_tags'),
+            Prefetch('new_right_tag_id', queryset=TrtTags.objects.all(), to_attr='new_tags'),
+            Prefetch('new_pittag_id', queryset=TrtPitTags.objects.all(), to_attr='new_tags')
         )
+        
 @admin.register(TrtTurtles)
 class TrtTurtlesAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
 
