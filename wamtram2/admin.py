@@ -158,6 +158,25 @@ class TrtDataEntryAdmin(admin.ModelAdmin):
         return ', '.join(tags)
     new_tags.short_description = 'New Tags'
 
+    def get_object(self, request, object_id, from_field=None):
+        print(f"Attempting to get TrtDataEntry with ID: {object_id}")
+        object_id = int(object_id)
+        print(f"Type of object_id: {type(object_id)}")
+        try:
+            obj = TrtDataEntry.objects.filter(data_entry_id=object_id).first()
+            if obj is None:
+                print(f"TrtDataEntry with ID {object_id} not found")
+            else:
+                print(f"Found TrtDataEntry: {obj}")
+            return obj
+        except Exception as e:
+            print(f"Error getting TrtDataEntry: {e}")
+            return None
+ 
+    def change_view(self, request, object_id, form_url='', extra_context=None):
+        print(f"Change view called for object_id: {object_id}")
+        return super().change_view(request, object_id, form_url, extra_context)
+
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         return qs.select_related(
