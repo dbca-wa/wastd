@@ -1092,7 +1092,6 @@
                 document.getElementById('search_measured_recorded_by').value = measuredRecordedByFullName;
             }
         } else if (templateId) {
-            console.log("No entry ID, using selected template ID:", templateId);
 
             const defaultPlaceCode = "{{ default_place_code|escapejs }}";
             const defaultPlaceFullName = "{{ default_place_full_name|escapejs }}";
@@ -1110,7 +1109,6 @@
 
     // Set the tag and validate
     if (cookieTagId && cookieTagType) {
-        console.log("Setting tag for", cookieTagType, "with ID:", cookieTagId);
         if (cookieTagType === 'recapture_tag') {
             if (cookieTagSide === 'L') {
                 setTagAndValidate('id_recapture_left_tag_id', cookieTagId);
