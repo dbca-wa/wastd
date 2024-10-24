@@ -15,7 +15,7 @@ from django.contrib.auth.decorators import user_passes_test
 from django.core.exceptions import PermissionDenied
 
 def user_in_marine_animal_incidents_group(user):
-    return user.is_superuser or user.groups.filter(name='MARINE_ANIMAL_INCIDENTS').exists()
+    return user.is_superuser or user.groups.filter(name='MARINE_ANIMAL_INCIDENTS') or user.groups.filter(name='data curator').exists()
 
 @user_passes_test(user_in_marine_animal_incidents_group, login_url=None, redirect_field_name=None)
 def incident_form(request, pk=None):
