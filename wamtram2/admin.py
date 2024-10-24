@@ -55,13 +55,18 @@ class TrtDamageInline(nested_admin.NestedStackedInline):
 class TrtDataEntryInline(admin.TabularInline):
     model = TrtDataEntry
     extra = 0
-    fields = ('saved_observation', 'observation_date', 'turtle', 'recapture_tags', 'new_tags', 'lay', 'system_message', 'enterer', 'needs_review', 'comments')
-    readonly_fields = ('saved_observation', 'observation_date', 'turtle', 'recapture_tags', 'new_tags', 'lay', 'system_message', 'enterer', 'needs_review', 'comments')
+    fields = ('linked_data_entry_id','saved_observation', 'observation_date', 'turtle', 'recapture_tags', 'new_tags', 'lay', 'system_message', 'enterer', 'needs_review', 'comments')
+    readonly_fields = ('linked_data_entry_id','saved_observation', 'observation_date', 'turtle', 'recapture_tags', 'new_tags', 'lay', 'system_message', 'enterer', 'needs_review', 'comments')
     can_delete = False
     max_num = 0
 
     def has_add_permission(self, request, obj=None):
         return False
+    
+    def linked_data_entry_id(self, obj):
+        url = reverse('admin:wamtram2_trtdataentry_change', args=[obj.data_entry_id])
+        return format_html('<a href="{}">{}</a>', url, obj.data_entry_id)
+    linked_data_entry_id.short_description = 'Data Entry ID'
 
     def saved_observation(self, obj):
         return obj.observation_id
@@ -117,6 +122,40 @@ class TrtDataEntryAdmin(admin.ModelAdmin):
         Return empty perms dict thus hiding the model from admin index.
         """
         return {}
+
+    def has_module_permission(self, request):
+        """
+        Return False to hide this model from the admin index page.
+        """
+        return False
+
+    fields = ('entry_batch', 'observation_date', 'turtle_id', 'recapture_tags', 'new_tags', 'lay', 'enterer', 'needs_review', 'comments')
+    readonly_fields = ('entry_batch', 'observation_date', 'turtle_id', 'recapture_tags', 'new_tags', 'lay', 'enterer', 'needs_review', 'comments')
+
+    def recapture_tags(self, obj):
+        tags = []
+        for field in ['recapture_left_tag_id', 'recapture_right_tag_id', 'recapture_pittag_id']:
+            tag = getattr(obj, field)
+            if tag:
+                tags.append(str(tag))
+        return ', '.join(tags)
+
+    def new_tags(self, obj):
+        tags = []
+        for field in ['new_left_tag_id', 'new_right_tag_id', 'new_pittag_id']:
+            tag = getattr(obj, field)
+            if tag:
+                tags.append(str(tag))
+        return ', '.join(tags)
+
+    def lay(self, obj):
+        return 'Yes' if obj.nesting and obj.nesting.code == 'Y' else 'No'
+
+    def enterer(self, obj):
+        return obj.entered_by_id
+
+    def needs_review(self, obj):
+        return 'Yes' if obj.do_not_process else 'No'
 
 
 @admin.register(TrtTurtles)
