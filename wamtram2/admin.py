@@ -116,9 +116,6 @@ class TrtEntryBatchesAdmin(admin.ModelAdmin):
         qs = super().get_queryset(request)
         return qs.prefetch_related('trtdataentry_set')
 
-
-
-
 @admin.register(TrtDataEntry)
 class TrtDataEntryAdmin(admin.ModelAdmin):
     def get_model_perms(self, request):
@@ -148,39 +145,19 @@ class TrtDataEntryAdmin(admin.ModelAdmin):
         return 'Yes' if obj.do_not_process else 'No'
     needs_review.short_description = 'Needs Review'
 
-    # def get_object(self, request, object_id, from_field=None):
-    #     print(f"Attempting to get TrtDataEntry with ID: {object_id}")
-    #     object_id = int(object_id)
-    #     print(f"Type of object_id: {type(object_id)}")
-    #     try:
-    #         obj = TrtDataEntry.objects.filter(data_entry_id=object_id).first()
-    #         if obj is None:
-    #             print(f"TrtDataEntry with ID {object_id} not found")
-    #         else:
-    #             print(f"Found TrtDataEntry: {obj}")
-    #         return obj
-    #     except Exception as e:
-    #         print(f"Error getting TrtDataEntry: {e}")
-    #         return None
-    
-    def get_object(self, request, object_id, from_field=None):
-        object_id = int(object_id)
-        try:
-            return self.get_queryset(request).get(pk=object_id)
-        except TrtDataEntry.DoesNotExist:
-            return None
-
-    def change_view(self, request, object_id, form_url='', extra_context=None):
-        print(f"Change view called for object_id: {object_id}")
-        return super().change_view(request, object_id, form_url, extra_context)
-
     def get_queryset(self, request):
         return super().get_queryset(request).select_related(
             'entry_batch', 'turtle_id', 'observation_id', 'place_code', 'species_code',
-            'activity_code', 'damage_carapace', 'damage_lff', 'damage_rff', 'damage_lhf', 'damage_rhf'
+            'activity_code'
         )
-        
-        
+
+    def get_object(self, request, object_id, from_field=None):
+        try:
+            object_id = int(object_id)
+            return self.get_queryset(request).get(data_entry_id=object_id)
+        except (ValueError, TrtDataEntry.DoesNotExist):
+            return None
+
         
 @admin.register(TrtTurtles)
 class TrtTurtlesAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
