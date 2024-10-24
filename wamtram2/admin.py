@@ -129,7 +129,8 @@ class TrtDataEntryAdmin(admin.ModelAdmin):
 
     fields = (
         'entry_batch', 'user_entry_id', 'turtle_id', 'observation_id', 'do_not_process',
-        'recapture_tags', 'new_tags',
+        'recapture_left_tag_id', 'recapture_right_tag_id', 'recapture_pittag_id',
+        'new_left_tag_id', 'new_right_tag_id', 'new_pittag_id',
         'place_code', 'observation_date', 'observation_time',
         'nesting', 'species_code', 'identification_confidence', 'sex',
         'curved_carapace_length', 'curved_carapace_width',
@@ -137,10 +138,9 @@ class TrtDataEntryAdmin(admin.ModelAdmin):
         'damage_carapace', 'damage_lff', 'damage_rff', 'damage_lhf', 'damage_rhf',
         'comments', 'error_number', 'error_message'
     )
+    readonly_fields = ('entry_batch', 'user_entry_id')
 
-    readonly_fields = ('entry_batch', 'user_entry_id', 'recapture_tags', 'new_tags')
-
-    list_display = ('data_entry_id', 'entry_batch', 'observation_date', 'turtle_id', 'needs_review')
+    list_display = ('data_entry_id', 'entry_batch', 'observation_date', 'turtle_id', 'do_not_process')
     list_filter = ('do_not_process', 'species_code', 'nesting')
     search_fields = ('data_entry_id', 'turtle_id__turtle_id', 'observation_id__observation_id')
 
