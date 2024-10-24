@@ -200,8 +200,8 @@ class TrtDataChanged(models.Model):
 
 class TrtDataEntry(models.Model):
     SEX_CHOICES = [
-        ("M", "Male"),
         ("F", "Female"),
+        ("M", "Male"),
         ("I", "Indeterminate"),
     ]
     TAG_POSITION_CHOICES = [
@@ -2168,7 +2168,18 @@ class TrtSighting(models.Model):
 
 class TrtSpeciesManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().exclude(species_code='0')
+        priority_codes = ['FB', 'HK', 'LO', 'GN', 'LB', 'OR']
+        
+        custom_order = Case(
+            *[When(species_code=code, then=Value(i)) for i, code in enumerate(priority_codes)],
+            default=Value(len(priority_codes)),
+            output_field=IntegerField()
+        )
+        
+        return super().get_queryset().exclude(species_code='0').annotate(
+            custom_order=custom_order
+        ).order_by('custom_order', 'species_code')
+
 
 
 class TrtSpecies(models.Model):
@@ -2463,8 +2474,8 @@ class TrtYesNo(models.Model):
         return f"{self.description}"
 
 SEX_CHOICES = [
-    ("M", "Male"),
     ("F", "Female"),
+    ("M", "Male"),
     ("I", "Indeterminate"),
 ]
 class Template(models.Model):

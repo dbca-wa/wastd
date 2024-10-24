@@ -1,6 +1,6 @@
 from django import forms
 from easy_select2 import apply_select2
-from .models import TrtPersons, TrtDataEntry, TrtTags, TrtEntryBatches, TrtPlaces, TrtPitTags, Template, TrtObservations,TrtTagStates, TrtMeasurementTypes,TrtYesNo
+from .models import TrtPersons, TrtDataEntry, TrtTags, TrtEntryBatches, TrtPlaces, TrtPitTags, Template, TrtObservations,TrtTagStates, TrtMeasurementTypes,TrtYesNo,SEX_CHOICES
 from django_select2.forms import ModelSelect2Widget
 from django.core.validators import RegexValidator
 from django.db.models import Case, When, IntegerField
@@ -262,6 +262,7 @@ class TrtDataEntryForm(forms.ModelForm):
             "egg_count": forms.NumberInput(attrs={"class": "form-control"}),
             "egg_count_method": forms.Select(attrs={"class": "form-control"}),
             "identification_type": forms.Select(attrs={"class": "form-control"}),
+            "sex": forms.Select(attrs={"class": "form-control"}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -271,6 +272,24 @@ class TrtDataEntryForm(forms.ModelForm):
             'class': 'form-control', 
             'placeholder': 'Enter name',
         })
+        
+        custom_sex_order = ['F', 'M', 'I']
+        sex_dict = dict(SEX_CHOICES)
+        ordered_choices = [('', '---------')] + [(s, sex_dict[s]) for s in custom_sex_order if s in sex_dict]
+        
+        self.fields['sex'].choices = ordered_choices
+        
+        
+        clutch_completed_choices = list(TrtYesNo.objects.filter(code__in=['D', 'N', 'P', 'U', 'Y']).values_list('code', 'description'))
+        clutch_completed_choices = [
+            ('', '---------'),
+            ('Y', 'Yes, saw eggs'),
+            ('N', 'No nest'),
+            ('P', "Possible nest, didn't see eggs"),
+        ] + [(code, desc) for code, desc in clutch_completed_choices if code not in ['Y', 'N', 'P']]
+        
+        self.fields['clutch_completed'].choices = clutch_completed_choices
+        self.fields['clutch_completed'].initial = ''
         
                         
         nesting_choices = TrtYesNo.objects.filter(code__in=['N', 'P', 'Y'])
@@ -327,6 +346,11 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["place_code"].required = True
         self.fields["sex"].required = True
         self.fields["clutch_completed"].required = True
+        
+        self.fields["flipper_tag_check"].label = "Flipper tags present?"
+        self.fields["pit_tag_check"].label = "PIT tags present?"
+        self.fields["injury_check"].label = "Injury present?"
+        self.fields["scar_check"].label = "Tag scar present?"
         
         self.fields["latitude"].label = "Latitude - (xx.xxxxxx)"
         self.fields["longitude"].label = "Longitude (xxx.xxxxxx)"
@@ -588,6 +612,16 @@ class TemplateForm(forms.ModelForm):
         model = Template
         fields = ['name', 'location_code', 'place_code', 'species_code', 'sex']
         
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        custom_sex_order = ['F', 'M', 'I']
+        sex_dict = dict(SEX_CHOICES)
+        ordered_choices = [('', '---------')] + [(s, sex_dict[s]) for s in custom_sex_order if s in sex_dict]
+        
+        self.fields['sex'].choices = ordered_choices
+        self.fields['sex'].widget = forms.Select(attrs={'class': 'form-control'})
+    
     def clean(self):
         cleaned_data = super().clean()
         species_code = cleaned_data.get('species_code')
@@ -673,10 +707,22 @@ class TrtPersonsForm(forms.ModelForm):
                 field.required = False
                 field.widget.attrs['class'] = 'form-control'
 
+    def clean_first_name(self):
+        first_name = self.cleaned_data.get('first_name')
+        return first_name.replace(' ', '-')
+
+    def clean_surname(self):
+        surname = self.cleaned_data.get('surname')
+        return surname.replace(' ', '-')
+    
     def clean_email(self):
         email = self.cleaned_data.get('email')
-        if TrtPersons.objects.filter(email=email).exists():
-            raise ValidationError("A person with this email already exists.")
+        if not self.instance.pk:  
+            if TrtPersons.objects.filter(email=email).exists():
+                raise ValidationError("This email is already in use.")
+        else: 
+            if TrtPersons.objects.filter(email=email).exclude(pk=self.instance.pk).exists():
+                raise ValidationError("This email is already in use for another person.")
         return email
     
     def clean_recorder(self):

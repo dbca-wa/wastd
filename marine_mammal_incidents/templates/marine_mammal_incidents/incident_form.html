@@ -1,6 +1,7 @@
 {% extends "base_wastd.html" %}
 {% load static bootstrap4 %}
 
+
 {% block extra_style %}
     {{ block.super }}
     {{ form.media.css }}
@@ -78,14 +79,14 @@
         {% endif %}
 
 
-        <form id="incidentForm" method="post" enctype="multipart/form-data">
+        <form id="incidentForm" method="post" enctype="multipart/form-data" action="{% if form.instance.pk %}{% url 'marine_mammal_incidents:update_incident' form.instance.pk %}{% else %}{% url 'marine_mammal_incidents:create_incident' %}{% endif %}">
             {% csrf_token %}
             <div class="step-container">
-                <div class="step-header">Create New Incident</div>
+                <div class="step-header">{{ form_title }}</div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <div class="form-group">
-                            <label for="{{ form.incident_date.id_for_label }}" class="required-field">Incident Date</label>
+                            <label for="{{ form.incident_date.id_for_label }}" class="required-field">Incident Date (YYYY-MM-DD)</label>
                             {{ form.incident_date }}
                         </div>
                     </div>
@@ -133,7 +134,7 @@
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <div class="form-group">
-                            <label for="{{ form.number_of_animals.id_for_label }}">Number of Animals</label>
+                            <label for="{{ form.number_of_animals.id_for_label }}" class="required-field">Number of Animals</label>
                             {{ form.number_of_animals }}
                         </div>
                     </div>
@@ -148,7 +149,7 @@
                 <div class="row">
                     <div class="col-md-12 mb-3">
                         <div class="form-group">
-                            <label for="{{ form.incident_type.id_for_label }}">Incident Type</label>
+                            <label for="{{ form.incident_type.id_for_label }}" class="required-field">Incident Type</label>
                             {{ form.incident_type }}
                         </div>
                     </div>
@@ -157,13 +158,13 @@
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <div class="form-group">
-                            <label for="{{ form.sex.id_for_label }}">Sex</label>
+                            <label for="{{ form.sex.id_for_label }}" class="required-field">Sex</label>
                             {{ form.sex }}
                         </div>
                     </div>
                     <div class="col-md-6 mb-3">
                         <div class="form-group">
-                            <label for="{{ form.age_class.id_for_label }}">Age Class</label>
+                            <label for="{{ form.age_class.id_for_label }}" class="required-field">Age Class</label>
                             {{ form.age_class }}
                         </div>
                     </div>
@@ -209,18 +210,6 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-md-12 mb-3">
-                        <div class="form-group">
-                            <label for="{{ form.carcass_location_fate.id_for_label }}">Carcass Location Fate</label>
-                            {{ form.carcass_location_fate }}
-                            {% if form.carcass_location_fate.help_text %}
-                                <small class="form-text text-muted">{{ form.carcass_location_fate.help_text }}</small>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
                     <div class="col-md-6 mb-3">
                         <div class="form-group">
                             <label for="{{ form.entanglement_gear.id_for_label }}">Entanglement Gear</label>
@@ -238,13 +227,13 @@
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <div class="form-group">
-                            <label for="{{ form.condition_when_found.id_for_label }}">Condition When Found</label>
+                            <label for="{{ form.condition_when_found.id_for_label }}" class="required-field">Condition When Found</label>
                             {{ form.condition_when_found }}
                         </div>
                     </div>
                     <div class="col-md-6 mb-3">
                         <div class="form-group">
-                            <label for="{{ form.outcome.id_for_label }}">Outcome</label>
+                            <label for="{{ form.outcome.id_for_label }}" class="required-field">Outcome</label>
                             {{ form.outcome }}
                         </div>
                     </div>
@@ -290,29 +279,48 @@
                 </div>
             </div>
                     
-            <div class="step-container mt-4">
-                <div class="step-header">Upload Files</div>
-                {{ formset.management_form }}
-                <div id="file-upload-forms">
-                    {% for form in formset %}
-                        <div class="row file-form">
-                            {% for field in form.visible_fields %}
-                                <div class="col-md-6 mb-3">
-                                    <div class="form-group">
-                                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                                        {{ field }}
-                                    </div>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% endfor %}
-                </div>
-                <button type="button" id="add-more-files" class="btn btn-secondary">Add More Files</button>
+<div class="step-container mt-4">
+    <div class="step-header">Upload Files</div>
+    {{ formset.management_form }}
+    <div id="file-upload-forms">
+        {% for form in formset %}
+            <div class="row file-form mb-3">
+                {% if form.instance.file %}
+                    <div class="col-md-4">
+                        <strong>{{ form.instance.title }}</strong>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="mb-0">
+                            Current file: <a href="{{ form.instance.file.url }}" target="_blank">{{ form.instance.file.name }}</a>
+                        </p>
+                    </div>
+                    <div class="col-md-2 text-right">
+                        <button type="button" class="btn btn-danger delete-file">Delete</button>
+                    </div>
+                    {{ form.id }}
+                    {{ form.DELETE.as_hidden }}
+                {% else %}
+                    <div class="col-md-4">
+                        {{ form.title.label_tag }}
+                        {{ form.title }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form.file.label_tag }}
+                        {{ form.file }}
+                    </div>
+                    <div class="col-md-2 text-right">
+                        <button type="button" class="btn btn-danger delete-file">Delete</button>
+                    </div>
+                {% endif %}
             </div>
+        {% endfor %}
+    </div>
+    <button type="button" id="add-more-files" class="btn btn-secondary mt-2">Add More Files</button>
+</div>
                     
             <div class="row mt-4">
                 <div class="col-md-4">
-                    <button type="submit" class="btn btn-primary btn-block" id="createIncidentButton">Create Incident</button>
+                    <button type="submit" class="btn btn-primary btn-block" id="submitIncidentButton">{{ submit_button_text }}</button>
                 </div>
             </div>
         </form>
@@ -333,9 +341,8 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
-
     flatpickr("#{{ form.incident_date.id_for_label }}", {
-        dateFormat: "m-d-Y",
+        dateFormat: "Y-m-d",
         allowInput: true
     });
 
@@ -353,6 +360,10 @@
         alert.addClass('alert-' + type);
         alert.text(message);
         alert.slideDown();
+
+        $('html, body').animate({ scrollTop: 0 }, 'slow', function() {
+            alert.slideDown();
+        });
     
         setTimeout(function() {
             alert.slideUp();
@@ -367,26 +378,70 @@
         $('.loading-spinner, .loading-overlay').hide();
     }
 
+    function updateDeleteButtons() {
+        var visibleForms = $('.file-form:visible');
+        if (visibleForms.length === 1) {
+            visibleForms.find('.delete-file').prop('disabled', true);
+        } else {
+            $('.delete-file').prop('disabled', false);
+        }
+    }
+
+    function addFileForm() {
+        var form_idx = $('#id_uploaded_file_set-TOTAL_FORMS').val();
+        var newForm = $('.file-form:last').clone(true);
+        newForm.find(':input').each(function() {
+            var name = $(this).attr('name');
+            if (name) {
+                name = name.replace('-' + (form_idx-1) + '-', '-' + form_idx + '-');
+                var id = 'id_' + name;
+                $(this).attr({'name': name, 'id': id}).val('').removeAttr('checked');
+            }
+        });
+        newForm.find('label').each(function() {
+            var newFor = $(this).attr('for');
+            if (newFor) {
+                newFor = newFor.replace('-' + (form_idx-1) + '-', '-' + form_idx + '-');
+                $(this).attr('for', newFor);
+            }
+        });
+        $('#file-upload-forms').append(newForm);
+        $('#id_uploaded_file_set-TOTAL_FORMS').val(parseInt(form_idx) + 1);
+        newForm.find('input[type="file"]').val('');
+        newForm.find('.file-name-display').remove();
+        updateDeleteButtons();
+    }
+
+
+    
+
     $(document).ready(function() {
+        if ($('#file-upload-forms .file-form:visible').length === 0) {
+            addFileForm();
+        }    
+
+        updateDeleteButtons();
+
         $('#incidentForm').submit(function(e) {
             e.preventDefault();
             var formData = new FormData(this);
             showLoadingSpinner();
+            var url = $(this).attr('action');
             $.ajax({
-                url: "{% url 'marine_mammal_incidents:create_incident' %}",
+                url: url,
                 type: "POST",
                 data: formData,
                 processData: false,
                 contentType: false,
                 success: function(response) {
-                    showMessage('Incident created successfully', 'success');
+                    showMessage('Incident saved successfully', 'success');
                     setTimeout(function() {
                         window.location.href = "{% url 'marine_mammal_incidents:incident_list' %}";
                     }, 2000);
                 },
                 error: function(xhr) {
                     var response = xhr.responseJSON;
-                    var message = response.message || 'Error creating incident';
+                    var message = response.message || 'Error saving incident';
                     showMessage(message, 'danger');
                 },
                 complete: function() {
@@ -394,21 +449,25 @@
                 }
             });
         });
-        $('#add-more-files').click(function() {
-            var form_idx = $('#id_uploaded_file_set-TOTAL_FORMS').val();
-            var newForm = $('.file-form:first').clone(true);
-            newForm.find(':input').each(function() {
-                var name = $(this).attr('name').replace('-0-', '-' + form_idx + '-');
-                var id = 'id_' + name;
-                $(this).attr({'name': name, 'id': id}).val('').removeAttr('checked');
-            });
-            newForm.find('label').each(function() {
-                var newFor = $(this).attr('for').replace('-0-', '-' + form_idx + '-');
-                $(this).attr('for', newFor);
-            });
-            $('#file-upload-forms').append(newForm);
-            $('#id_uploaded_file_set-TOTAL_FORMS').val(parseInt(form_idx) + 1);
+
+        $('#add-more-files').click(addFileForm);
+
+        $(document).on('click', '.delete-file', function() {
+            var fileForm = $(this).closest('.file-form');
+            var deleteCheckbox = fileForm.find('input[type=checkbox][name$=DELETE]');
+            if (deleteCheckbox.length) {
+                deleteCheckbox.prop('checked', true);
+                fileForm.hide();
+            } else {
+                fileForm.remove();
+            }
+            if ($('.file-form:visible').length === 0) {
+                addFileForm();
+            }
+            updateDeleteButtons();
         });
     });
+
+    
 </script>
 {% endblock %}

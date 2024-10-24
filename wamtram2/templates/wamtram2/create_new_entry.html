@@ -24,18 +24,18 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2><strong>Create New Entry</strong></h2>
 
-        <div class="d-flex flex-row align-items-center mb-3">
+        <div class="d-flex flex-row justify-content-between align-items-center mb-3">
             <div class="d-flex flex-column align-items-start mr-4">
                 <h5 class="mb-1"><strong>Your Organisation(s):</strong></h5>
-                <div class="d-flex flex-wrap">
+                <div class="d-flex flex-column align-items-start">
                     {% if user_organisation_codes %}
                         {% for code in user_organisation_codes %}
                             <span class="badge badge-info" style="font-size: x-large;">{{ code }}</span>
                         {% endfor %}
                     {% else %}
                         <span class="badge badge-secondary" style="font-size: x-large;">None</span>
-                        <small class="text-muted">
-                            Please <a href="mailto:rick.wang@dbca.wa.gov.au" class="text-decoration-none">contact admin</a> to add.
+                        <small class="text-muted mt-2">
+                            Please <a href="mailto:rick.wang@dbca.wa.gov.au" class="text-decoration-none">contact admin</a> to add your organisation code.
                         </small>
                     {% endif %}
                 </div>

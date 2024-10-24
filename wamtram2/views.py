@@ -23,10 +23,7 @@ import json
 import csv
 from django.core.exceptions import ValidationError
 from datetime import timedelta
-from django.db.models.functions import Cast
-from django.db.models import DateTimeField
 from django.core.exceptions import PermissionDenied
-from django.contrib.messages import get_messages
 import pandas as pd
 
 
@@ -216,9 +213,7 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
         else:
             queryset = queryset.filter(entry_batch_id=batch_id)
             
-        return queryset.select_related('observation_id').annotate(
-            observation_date_as_datetime=Cast('observation_date', DateTimeField())
-        ).order_by("-data_entry_id")
+        return queryset.select_related('observation_id').order_by("-data_entry_id")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -976,11 +971,6 @@ class ObservationDetailView(LoginRequiredMixin, DetailView):
     def get_object(self, queryset=None):
         if queryset is None:
             queryset = self.get_queryset()
-        
-        queryset = queryset.annotate(
-            observation_date_as_datetime=Cast('observation_date', DateTimeField())
-        )
-        
         return super().get_object(queryset)
 
     def get_context_data(self, **kwargs):
@@ -1092,16 +1082,15 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
         context["page_title"] = f"{settings.SITE_CODE} | WAMTRAM2 | {obj.pk}"
         context["tags"] = obj.trttags_set.all()
         context["pittags"] = unique_pittags
-        context["observations"] = obj.trtobservations_set.annotate(
-            observation_date_as_datetime=Cast('observation_date', DateTimeField())
-        ).all()
         
+        context["observations"] = obj.trtobservations_set.all()
+                
         return context
 
 
 SEX_CHOICES = [
-    ("M", "Male"),
     ("F", "Female"),
+    ("M", "Male"),
     ("I", "Indeterminate"),
 ]
 class TemplateManageView(LoginRequiredMixin, FormView):
@@ -1633,23 +1622,18 @@ class FilterFormView(LoginRequiredMixin, View):
         
         places = observations.values('place__place_code', 'place__location_name', 'place__place_name').distinct()
         species = TrtSpecies.objects.filter(observations__in=observations).distinct()
-        sexes = observations.values_list('sex', flat=True).distinct()
+        custom_sex_order = ['F', 'M', 'I']
+        sex_dict = dict(SEX_CHOICES)
+        sexes = [{'value': s, 'label': sex_dict[s]} for s in custom_sex_order if s in sex_dict]
         turtle_statuses = TrtTurtleStatus.objects.filter(observations__in=observations).distinct()
 
         return JsonResponse({
             'places': [{'value': p.place_code, 'label': f"{p.location_code.location_name} - {p.place_name}"} for p in places],
             'species': [{'value': s.species_code, 'label': s.common_name} for s in species],
-            'sexes': [{'value': s, 'label': self.get_sex_label(s)} for s in sexes],
+            'sexes': sexes,
             'turtle_statuses': [{'value': ts.turtle_status, 'label': ts.description} for ts in turtle_statuses],
         })
         
-    def get_sex_label(self, sex_code):
-        sex_choices = {
-            'M': 'Male',
-            'F': 'Female',
-            'I': 'Indeterminate',
-        }
-        return sex_choices.get(sex_code, 'Unknown')
 
 
 class DudTagManageView(LoginRequiredMixin, View):
@@ -1769,6 +1753,7 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
 
         result = queryset.filter(query).order_by('-entry_batch_id') if query else queryset.order_by('-entry_batch_id')
         return result
+    
     
     def get_user_role(self, user):
         if user.is_superuser:
@@ -1891,25 +1876,19 @@ class CreateNewEntryView(LoginRequiredMixin, ListView):
         queryset = super().get_queryset().order_by('-entry_batch_id')
 
         user = self.request.user
-        if user.is_superuser:
-            return queryset
-        
-        user_organisations = self.request.user.organisations.all()
+        if not user.is_superuser:
+            user_organisations = self.request.user.organisations.all()
+            if not user_organisations.exists():
+                return queryset.none()
 
-        if not user_organisations.exists():
-            return queryset.none()
-
-        for org in user_organisations:
             related_batch_ids = TrtEntryBatchOrganisation.objects.filter(
-                organisation=org.code
+                organisation__in=[org.code for org in user_organisations]
             ).values_list('trtentrybatch_id', flat=True)
 
-        queryset = TrtEntryBatches.objects.filter(
-            entry_batch_id__in=related_batch_ids
-        ).order_by('-entry_batch_id')
+            queryset = queryset.filter(entry_batch_id__in=related_batch_ids)
         
         if self.request.GET.get('show_all'):
-            return queryset.order_by('-entry_batch_id')
+            return queryset
 
         location = self.request.GET.get('location')
         place = self.request.GET.get('place')
@@ -1935,10 +1914,8 @@ class CreateNewEntryView(LoginRequiredMixin, ListView):
             if year_code:
                 query = Q(batches_code__endswith=year_code)
 
-        if query:
-            return queryset.filter(query).order_by('-entry_batch_id')
-        else:
-            return TrtEntryBatches.objects.none()
+        return queryset.filter(query).order_by('-entry_batch_id')
+
 
     def get_context_data(self, **kwargs):
         """

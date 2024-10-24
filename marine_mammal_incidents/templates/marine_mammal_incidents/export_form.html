@@ -1,0 +1,194 @@
+{% extends "base_wastd.html" %}
+{% load static bootstrap4 %}
+
+{% block extra_style %}
+    {{ block.super }}
+    {{ form.media.css }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
+    <style>
+        .select2 {
+            width: 100% !important;
+        }
+        .step-container {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .step-header {
+            background-color: #f8f9fa;
+            padding: 10px;
+            margin: -15px -15px 15px -15px;
+            border-bottom: 1px solid #ddd;
+            font-weight: bold;
+        }
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+    </style>
+{% endblock %}
+
+{% block breadcrumbs %}
+    <nav aria-label="breadcrumb" class="d-none d-md-block">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'marine_mammal_incidents:incident_list' %}">Incident List</a></li>
+            <li class="breadcrumb-item active">Export Incidents</li>
+        </ol>
+    </nav>
+{% endblock %}
+
+{% block page_content_inner %}
+    <div class="container">
+        <h2>Export Marine Mammal Incidents</h2>
+        
+        <form id="exportForm" method="get" action="{% url 'marine_mammal_incidents:export_data' %}" target="_blank">
+            {% csrf_token %}
+            
+            <!-- Step 1: Select Date Range -->
+            <div class="step-container">
+                <div class="step-header">Step 1: Select Date Range</div>
+                <div class="form-group">
+                    <label for="incident_date_from">Start Date</label>
+                    <input type="date" id="incident_date_from" name="incident_date_from" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="incident_date_to">End Date</label>
+                    <input type="date" id="incident_date_to" name="incident_date_to" class="form-control">
+                </div>
+            </div>
+            
+            <!-- Step 2: Select Filters -->
+            <div class="step-container">
+                <div class="step-header">Step 2: Select Filter</div>
+                <div class="form-group">
+                    <label for="species">Species</label>
+                    <select id="species" name="species" class="form-control select2">
+                        <option value="">All Species</option>
+                        {% for species in species_list %}
+                            <option value="{{ species.id }}">{{ species }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="location_name">Location<small class="text-muted">(Loads after selecting time range)</small></label>
+                    <select id="location_name" name="location_name" class="form-control">
+                        <option value="">All Locations</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Step 3: Select File Format -->
+            <div class="step-container">
+                <div class="step-header">Step 3: Select File Format</div>
+                <div class="form-group">
+                    <label for="format">File Format</label>
+                    <select id="format" name="format" class="form-control">
+                        <option value="csv">CSV</option>
+                        <option value="xls">XLS</option>
+                        <option value="xlsx">XLSX</option>
+                    </select>
+                </div>
+            </div>
+            
+            <button type="submit" id="submitBtn" class="btn btn-success btn-block">Export</button>
+        </form>
+
+        <div class="loading-spinner" style="display: none;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+
+        <div class="loading-overlay" style="display: none;"></div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+
+        function showLoadingSpinner() {
+            $('.loading-spinner, .loading-overlay').show();
+        }
+    
+        function hideLoadingSpinner() {
+            $('.loading-spinner, .loading-overlay').hide();
+        }
+
+        $(document).ready(function() {
+            $('#species').select2({
+                minimumResultsForSearch: Infinity,
+                dropdownCssClass: 'select2-dropdown-custom'
+            });
+
+            function validateForm() {
+                var startDate = new Date($('#incident_date_from').val());
+                var endDate = new Date($('#incident_date_to').val());
+            
+                if (startDate > endDate) {
+                    $('#incident_date_to').addClass('is-invalid');
+                    $('#submitBtn').prop('disabled', true);
+                    return false;
+                } else {
+                    $('#incident_date_to').removeClass('is-invalid');
+                    $('#submitBtn').prop('disabled', false);
+                    return true;
+                }
+            }
+
+            function loadLocations() {
+                var startDate = $('#incident_date_from').val();
+                var endDate = $('#incident_date_to').val();
+                
+                if (!startDate || !endDate) {
+                    return;
+                }
+                
+                showLoadingSpinner()
+                
+                $.ajax({
+                    url: '{% url "marine_mammal_incidents:get_locations" %}',
+                    data: {
+                        start_date: startDate,
+                        end_date: endDate
+                    },
+                    success: function(locations) {
+                        var locationSelect = $('#location_name');
+                        locationSelect.empty();
+                        locationSelect.append($('<option>', {
+                            value: '',
+                            text: 'All Locations'
+                        }));
+                        
+                        $.each(locations, function(index, location) {
+                            locationSelect.append($('<option>', {
+                                value: location,
+                                text: location
+                            }));
+                        });
+                    },
+                    error: function() {
+                        alert('Error loading locations');
+                    },
+                    complete: function() {
+                        hideLoadingSpinner();
+                    }
+                });
+            }
+
+            $('#exportForm').on('submit', function(e) {
+                if (!validateForm()) {
+                    e.preventDefault();
+                }
+            });
+
+            $('#incident_date_from, #incident_date_to').change(function() {
+                loadLocations();
+                validateForm();
+            });
+        });
+    </script>
+{% endblock %}
