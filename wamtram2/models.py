@@ -2204,6 +2204,7 @@ class TrtSpecies(models.Model):
     class Meta:
         managed = False
         db_table = "TRT_SPECIES"
+        ordering = ['custom_order', 'species_code']
 
     def __str__(self):
         return f"{self.common_name}"

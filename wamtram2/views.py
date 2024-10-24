@@ -1622,23 +1622,18 @@ class FilterFormView(LoginRequiredMixin, View):
         
         places = observations.values('place__place_code', 'place__location_name', 'place__place_name').distinct()
         species = TrtSpecies.objects.filter(observations__in=observations).distinct()
-        sexes = observations.values_list('sex', flat=True).distinct()
+        custom_sex_order = ['F', 'M', 'I']
+        sex_dict = dict(SEX_CHOICES)
+        sexes = [{'value': s, 'label': sex_dict[s]} for s in custom_sex_order if s in sex_dict]
         turtle_statuses = TrtTurtleStatus.objects.filter(observations__in=observations).distinct()
 
         return JsonResponse({
             'places': [{'value': p.place_code, 'label': f"{p.location_code.location_name} - {p.place_name}"} for p in places],
             'species': [{'value': s.species_code, 'label': s.common_name} for s in species],
-            'sexes': [{'value': s, 'label': self.get_sex_label(s)} for s in sexes],
+            'sexes': sexes,
             'turtle_statuses': [{'value': ts.turtle_status, 'label': ts.description} for ts in turtle_statuses],
         })
         
-    def get_sex_label(self, sex_code):
-        sex_choices = {
-            'F': 'Female',
-            'M': 'Male',
-            'I': 'Indeterminate',
-        }
-        return sex_choices.get(sex_code, 'Unknown')
 
 
 class DudTagManageView(LoginRequiredMixin, View):
