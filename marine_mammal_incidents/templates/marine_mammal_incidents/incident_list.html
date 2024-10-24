@@ -125,9 +125,11 @@
             <div class="incident-header">
                 <h1 class="incident-title">Marine Mammal Incidents</h1>
                 <div class="button-group">
+                    {% if request.user|has_group:"data curator" or request.user.is_superuser or request.user|has_group:"MARINE_ANIMAL_INCIDENTS"%}
                     <a href="{% url 'marine_mammal_incidents:create_incident' %}" class="btn btn-success btn-create">
                         <i class="fas fa-plus-circle"></i> Create Incident
                     </a>
+                    {% endif %}
                     {% if request.user|has_group:"data curator" or request.user.is_superuser %}
                     <a href="{% url 'marine_mammal_incidents:export_form' %}" class="btn btn-primary btn-export">
                         <i class="fas fa-download"></i> Export Incidents

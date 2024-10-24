@@ -11,9 +11,17 @@ from django.http import HttpResponse
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
 from .decorators import superuser_or_data_curator_required
+from django.contrib.auth.decorators import user_passes_test
+from django.core.exceptions import PermissionDenied
 
+def user_in_marine_animal_incidents_group(user):
+    return user.is_superuser or user.groups.filter(name='MARINE_ANIMAL_INCIDENTS').exists()
 
+@user_passes_test(user_in_marine_animal_incidents_group, login_url=None, redirect_field_name=None)
 def incident_form(request, pk=None):
+    if not user_in_marine_animal_incidents_group(request.user):
+        raise PermissionDenied("You do not have permission to access this page.")
+    
     incident = get_object_or_404(Incident, pk=pk) if pk else None
     UploadedFileFormSet = inlineformset_factory(
         Incident, 
