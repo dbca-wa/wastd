@@ -2,7 +2,7 @@
 {% load static bootstrap4 %}
 {% load proper_paginate %}
 {% load url_replace %}
-{% load group_filters %}
+{% load mmi_group_filters %}
 
 {% block extra_style %}
     {{ block.super }}
@@ -146,7 +146,9 @@
                             <th>Species</th>
                             <th>Location</th>
                             <th>Type</th>
+                            {% if request.user|mmi_has_group:"data curator" or request.user.is_superuser or request.user|mmi_has_group:"MARINE_ANIMAL_INCIDENTS"%}
                             <th>Actions</th>
+                            {% endif %}
                         </tr>
                     </thead>
                     <tbody>
@@ -156,9 +158,11 @@
                             <td>{{ incident.species }}</td>
                             <td>{{ incident.location_name }}</td>
                             <td>{{ incident.get_incident_type_display }}</td>
+                            {% if request.user|mmi_has_group:"data curator" or request.user.is_superuser or request.user|mmi_has_group:"MARINE_ANIMAL_INCIDENTS"%}
                             <td>
                                 <a href="{% url 'marine_mammal_incidents:update_incident' incident.id %}" class="btn btn-sm btn-primary">View / Update</a>
                             </td>
+                            {% endif %}
                         </tr>
                     {% empty %}
                         <tr><td colspan="5">No incidents recorded yet.</td></tr>
