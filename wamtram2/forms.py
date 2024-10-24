@@ -1,6 +1,6 @@
 from django import forms
 from easy_select2 import apply_select2
-from .models import TrtPersons, TrtDataEntry, TrtTags, TrtEntryBatches, TrtPlaces, TrtPitTags, Template, TrtObservations,TrtTagStates, TrtMeasurementTypes,TrtYesNo
+from .models import TrtPersons, TrtDataEntry, TrtTags, TrtEntryBatches, TrtPlaces, TrtPitTags, Template, TrtObservations,TrtTagStates, TrtMeasurementTypes,TrtYesNo,SEX_CHOICES
 from django_select2.forms import ModelSelect2Widget
 from django.core.validators import RegexValidator
 from django.db.models import Case, When, IntegerField
@@ -262,6 +262,7 @@ class TrtDataEntryForm(forms.ModelForm):
             "egg_count": forms.NumberInput(attrs={"class": "form-control"}),
             "egg_count_method": forms.Select(attrs={"class": "form-control"}),
             "identification_type": forms.Select(attrs={"class": "form-control"}),
+            "sex": forms.Select(attrs={"class": "form-control"}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -271,6 +272,12 @@ class TrtDataEntryForm(forms.ModelForm):
             'class': 'form-control', 
             'placeholder': 'Enter name',
         })
+        
+        custom_sex_order = ['F', 'M', 'I']
+        sex_dict = dict(SEX_CHOICES)
+        ordered_choices = [('', '---------')] + [(s, sex_dict[s]) for s in custom_sex_order if s in sex_dict]
+        
+        self.fields['sex'].choices = ordered_choices
         
         
         clutch_completed_choices = list(TrtYesNo.objects.filter(code__in=['D', 'N', 'P', 'U', 'Y']).values_list('code', 'description'))
@@ -605,6 +612,16 @@ class TemplateForm(forms.ModelForm):
         model = Template
         fields = ['name', 'location_code', 'place_code', 'species_code', 'sex']
         
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        custom_sex_order = ['F', 'M', 'I']
+        sex_dict = dict(SEX_CHOICES)
+        ordered_choices = [('', '---------')] + [(s, sex_dict[s]) for s in custom_sex_order if s in sex_dict]
+        
+        self.fields['sex'].choices = ordered_choices
+        self.fields['sex'].widget = forms.Select(attrs={'class': 'form-control'})
+    
     def clean(self):
         cleaned_data = super().clean()
         species_code = cleaned_data.get('species_code')
