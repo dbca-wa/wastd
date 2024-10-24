@@ -115,6 +115,7 @@ class TrtEntryBatchesAdmin(admin.ModelAdmin):
         qs = super().get_queryset(request)
         return qs.prefetch_related('trtdataentry_set')
 
+
 @admin.register(TrtDataEntry)
 class TrtDataEntryAdmin(admin.ModelAdmin):
     def get_model_perms(self, request):
@@ -129,35 +130,33 @@ class TrtDataEntryAdmin(admin.ModelAdmin):
         """
         return False
 
-    fields = ('entry_batch', 'observation_date', 'turtle_id', 'recapture_tags', 'new_tags', 'lay', 'enterer', 'needs_review', 'comments')
-    readonly_fields = ('entry_batch', 'observation_date', 'turtle_id', 'recapture_tags', 'new_tags', 'lay', 'enterer', 'needs_review', 'comments')
+    fields = (
+        'entry_batch', 'user_entry_id', 'turtle_id', 'observation_id', 'do_not_process',
+        'recapture_left_tag_id', 'recapture_right_tag_id', 'recapture_pittag_id',
+        'new_left_tag_id', 'new_right_tag_id', 'new_pittag_id',
+        'place_code', 'observation_date', 'observation_time',
+        'nesting', 'species_code', 'identification_confidence', 'sex',
+        'curved_carapace_length', 'curved_carapace_width',
+        'activity_code', 'beach_position_code',
+        'damage_carapace', 'damage_lff', 'damage_rff', 'damage_lhf', 'damage_rhf',
+        'comments', 'error_number', 'error_message'
+    )
 
-    def recapture_tags(self, obj):
-        tags = []
-        for field in ['recapture_left_tag_id', 'recapture_right_tag_id', 'recapture_pittag_id']:
-            tag = getattr(obj, field)
-            if tag:
-                tags.append(str(tag))
-        return ', '.join(tags)
+    readonly_fields = ('entry_batch', 'user_entry_id')
 
-    def new_tags(self, obj):
-        tags = []
-        for field in ['new_left_tag_id', 'new_right_tag_id', 'new_pittag_id']:
-            tag = getattr(obj, field)
-            if tag:
-                tags.append(str(tag))
-        return ', '.join(tags)
-
-    def lay(self, obj):
-        return 'Yes' if obj.nesting and obj.nesting.code == 'Y' else 'No'
-
-    def enterer(self, obj):
-        return obj.entered_by_id
+    list_display = ('data_entry_id', 'entry_batch', 'observation_date', 'turtle_id', 'needs_review')
+    list_filter = ('do_not_process', 'species_code', 'nesting')
+    search_fields = ('data_entry_id', 'turtle_id__turtle_id', 'observation_id__observation_id')
 
     def needs_review(self, obj):
         return 'Yes' if obj.do_not_process else 'No'
+    needs_review.short_description = 'Needs Review'
 
-
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related(
+            'entry_batch', 'turtle_id', 'observation_id', 'place_code', 'species_code',
+            'activity_code', 'damage_carapace', 'damage_lff', 'damage_rff', 'damage_lhf', 'damage_rhf'
+        )
 @admin.register(TrtTurtles)
 class TrtTurtlesAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
 
