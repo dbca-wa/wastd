@@ -15,7 +15,10 @@ from .models import (
     TrtTagOrders,
 )
 from import_export.admin import ImportExportModelAdmin
-from .forms import DataEntryUserModelForm, EnterUserModelForm, TrtObservationsForm, TrtPersonsForm
+from .forms import EnterUserModelForm, TrtObservationsForm, TrtPersonsForm
+from django.urls import reverse
+from django.utils.html import format_html
+from django.db.models import Prefetch
 
 
 class TrtMeasurementsInline(nested_admin.NestedTabularInline):
@@ -50,30 +53,112 @@ class TrtDamageInline(nested_admin.NestedStackedInline):
     extra = 0
 
 
-class TrtDataEntryInline(admin.StackedInline):
+class TrtDataEntryInline(admin.TabularInline):
     model = TrtDataEntry
-    verbose_name = "Data entry"
-    form = DataEntryUserModelForm
     extra = 0
+    fields = ('linked_data_entry_id','saved_observation', 'observation_date', 'turtle', 'recapture_tags', 'new_tags', 'lay', 'enterer', 'needs_review', 'comments')
+    readonly_fields = ('linked_data_entry_id','saved_observation', 'observation_date', 'turtle', 'recapture_tags', 'new_tags', 'lay', 'enterer', 'needs_review', 'comments')
+    can_delete = False
+    max_num = 0
 
+    def has_add_permission(self, request, obj=None):
+        return False
+    
+    def linked_data_entry_id(self, obj):
+        url = reverse('admin:wamtram2_trtdataentry_change', args=[obj.data_entry_id])
+        return format_html('<a href="{}">{}</a>', url, obj.data_entry_id)
+    linked_data_entry_id.short_description = 'Data Entry ID'
+
+    def saved_observation(self, obj):
+        return obj.observation_id
+
+    def turtle(self, obj):
+        return obj.turtle_id
+
+    def recapture_tags(self, obj):
+        tags = []
+        for field in ['recapture_left_tag_id', 'recapture_right_tag_id', 'recapture_pittag_id']:
+            tag = getattr(obj, field)
+            if tag:
+                tags.append(str(tag))
+        return ', '.join(tags)
+
+    def new_tags(self, obj):
+        tags = []
+        for field in ['new_left_tag_id', 'new_right_tag_id', 'new_pittag_id']:
+            tag = getattr(obj, field)
+            if tag:
+                tags.append(str(tag))
+        return ', '.join(tags)
+
+    def lay(self, obj):
+        return 'Yes' if obj.nesting and obj.nesting.code == 'Y' else 'No'
+
+    def enterer(self, obj):
+        return obj.entered_by_id
+
+    def needs_review(self, obj):
+        return 'Yes' if obj.do_not_process else 'No'
 
 @admin.register(TrtEntryBatches)
 class TrtEntryBatchesAdmin(admin.ModelAdmin):
-    list_display = ("entry_batch_id", "entry_date", "entered_person_id", "comments")
+    list_display = ("linked_entry_batch_id", "entry_date", "entered_person_id", "comments")
     ordering = ["-entry_batch_id"]
     inlines = [TrtDataEntryInline]
     form = EnterUserModelForm
 
+    def linked_entry_batch_id(self, obj):
+        url = reverse('admin:wamtram2_trtentrybatches_change', args=[obj.pk])
+        return format_html('<a href="{}">{}</a>', url, obj.entry_batch_id)
+    linked_entry_batch_id.short_description = 'Entry batch id'
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.prefetch_related('trtdataentry_set')
 
 @admin.register(TrtDataEntry)
 class TrtDataEntryAdmin(admin.ModelAdmin):
     def get_model_perms(self, request):
-        """
-        Return empty perms dict thus hiding the model from admin index.
-        """
         return {}
 
+    def has_module_permission(self, request):
+        return False
 
+    fields = (
+        'entry_batch', 'user_entry_id', 'turtle_id', 'observation_id', 'do_not_process',
+        'recapture_left_tag_id', 'recapture_right_tag_id', 'recapture_pittag_id',
+        'new_left_tag_id', 'new_right_tag_id', 'new_pittag_id',
+        'place_code', 'observation_date', 'observation_time',
+        'nesting', 'species_code', 'identification_confidence', 'sex',
+        'curved_carapace_length', 'curved_carapace_width',
+        'activity_code', 'beach_position_code',
+        'damage_carapace', 'damage_lff', 'damage_rff', 'damage_lhf', 'damage_rhf',
+        'comments', 'error_number', 'error_message'
+    )
+    readonly_fields = ('entry_batch', 'user_entry_id')
+
+    list_display = ('data_entry_id', 'entry_batch', 'observation_date', 'turtle_id', 'do_not_process')
+    list_filter = ('do_not_process', 'species_code', 'nesting')
+    search_fields = ('data_entry_id', 'turtle_id__turtle_id', 'observation_id__observation_id')
+
+    def needs_review(self, obj):
+        return 'Yes' if obj.do_not_process else 'No'
+    needs_review.short_description = 'Needs Review'
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related(
+            'entry_batch', 'turtle_id', 'observation_id', 'place_code', 'species_code',
+            'activity_code'
+        )
+
+    def get_object(self, request, object_id, from_field=None):
+        try:
+            object_id = int(object_id)
+            return self.get_queryset(request).get(data_entry_id=object_id)
+        except (ValueError, TrtDataEntry.DoesNotExist):
+            return None
+
+        
 @admin.register(TrtTurtles)
 class TrtTurtlesAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
 
