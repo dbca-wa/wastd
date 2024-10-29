@@ -22,7 +22,7 @@ urlpatterns = [
     path("users/", include(("users.urls", "users"), namespace="users")),
     path("observations/", include(("observations.urls"), namespace="observations")),
     path("wamtram2/", include(("wamtram2.urls"), namespace="wamtram2")),
-        path("marine-mammal-incidents/", include(("marine_mammal_incidents.urls", "marine_mammal_incidents"), namespace="marine_mammal_incidents")),
+    path("marine-mammal-incidents/", include(("marine_mammal_incidents.urls", "marine_mammal_incidents"), namespace="marine_mammal_incidents")),
     path("map/", observations_views.MapView.as_view(), name="map"),
     # API
     path('api/1/', include((api_urlpatterns, "wastd"), namespace="api")),
