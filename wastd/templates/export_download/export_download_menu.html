@@ -1,4 +1,4 @@
-{% if request.user.is_superuser or request.user.is_staff %}
+{% comment %} {% if request.user.is_superuser or request.user.is_staff %} {% endcomment %}
     {% if resources %}
         <div class="btn-group" role="group">
         {% for format_name, format in resources.items %}
@@ -24,4 +24,4 @@
         {% endfor %}
         </div>
     {% endif %}
-{% endif %}
+{% comment %} {% endif %} {% endcomment %}
