@@ -63,7 +63,7 @@
     </div>
 </div>
 
-{% if request.user.is_superuser or request.user|has_group:"WAMTRAM2_STAFF" or request.user|has_group:"WAMTRAM2_TEAM_LEADER" %}
+{% if request.user.is_superuser or request.user|has_group:"WAMTRAM2_STAFF" %}
     <!-- Tags Section -->
     <div class="row">
         <div class="col">

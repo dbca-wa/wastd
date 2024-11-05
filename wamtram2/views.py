@@ -1212,6 +1212,7 @@ class ValidateTagView(View):
 
         if not tag or not side:
             return JsonResponse({'valid': False, 'wrong_side': False, 'message': 'Missing parameters'})
+        
         if turtle_id:
             try:
                 turtle_id = int(turtle_id)
@@ -1264,7 +1265,7 @@ class ValidateTagView(View):
                 actual_side = 'R'
             elif new_tag_entry.new_right_tag_id_2 and new_tag_entry.new_right_tag_id_2.tag_id == tag:
                 actual_side = 'R'
-                
+            
             if actual_side:
                 wrong_side = (actual_side.lower() != side.lower())
             
@@ -1276,8 +1277,6 @@ class ValidateTagView(View):
             })
         else:
             return JsonResponse({'valid': False, 'wrong_side': False, 'message': 'Tag not found', 'tag_not_found': True})
-
-
 
     def validate_new_tag(self, request):
         """
@@ -1503,8 +1502,20 @@ class ExportDataView(LoginRequiredMixin, View):
         sex = request.GET.get("sex")
         file_format = request.GET.get("format", "csv")
 
-        queryset = TrtDataEntry.objects.filter(observation_id__isnull=False)
+        #queryset = TrtDataEntry.objects.filter(observation_id__isnull=False)
+        queryset = TrtDataEntry.objects.all()
         
+        user = request.user
+        if not user.is_superuser:
+            user_organisations = user.organisations.all()
+            if user_organisations.exists():
+                related_batch_ids = TrtEntryBatchOrganisation.objects.filter(
+                    organisation__in=[org.code for org in user_organisations]
+                ).values_list('trtentrybatch_id', flat=True)
+                queryset = queryset.filter(entry_batch_id__in=related_batch_ids)
+            else:
+                return HttpResponse("No data available for your organisation")
+            
         # Filter by date range
         if observation_date_from and observation_date_to:
             queryset = queryset.filter(observation_date__range=[observation_date_from, observation_date_to])
@@ -1524,23 +1535,48 @@ class ExportDataView(LoginRequiredMixin, View):
         # Filter by sex
         if sex:
             queryset = queryset.filter(sex=sex)
+            
+        queryset = queryset.select_related('entry_batch')
 
         # File generation logic
         if file_format == "csv":
             response = HttpResponse(content_type="text/csv")
             response["Content-Disposition"] = 'attachment; filename="data_export.csv"'
             writer = csv.writer(response)
-            writer.writerow([field.name for field in TrtDataEntry._meta.fields])  # Write header
+
+            headers = [field.name for field in TrtDataEntry._meta.fields]
+            headers.append('organisations')
+            writer.writerow(headers)
+        
             for entry in queryset:
-                writer.writerow([getattr(entry, field.name) for field in TrtDataEntry._meta.fields])
+                organisations = TrtEntryBatchOrganisation.objects.filter(
+                    trtentrybatch=entry.entry_batch
+                ).values_list('organisation', flat=True)
+                org_str = ', '.join(organisations)
+                
+                row = [getattr(entry, field.name) for field in TrtDataEntry._meta.fields]
+                row.append(org_str)
+                writer.writerow(row)
+                
         elif file_format == "xlsx":
             response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
             response["Content-Disposition"] = 'attachment; filename="data_export.xlsx"'
             wb = Workbook()
             ws = wb.active
-            ws.append([field.name for field in TrtDataEntry._meta.fields])  # Write header
+            
+            headers = [field.name for field in TrtDataEntry._meta.fields]
+            headers.append('organisations')
+            ws.append(headers)
+            
             for entry in queryset:
-                ws.append([getattr(entry, field.name) for field in TrtDataEntry._meta.fields])
+                organisations = TrtEntryBatchOrganisation.objects.filter(
+                    trtentrybatch=entry.entry_batch
+                ).values_list('organisation', flat=True)
+                org_str = ', '.join(organisations)
+                
+                row = [getattr(entry, field.name) for field in TrtDataEntry._meta.fields]
+                row.append(org_str)
+                ws.append(row)
             wb.save(response)
 
         return response
@@ -1646,7 +1682,7 @@ class DudTagManageView(LoginRequiredMixin, View):
 
     def get(self, request):
         entries = TrtDataEntry.objects.filter(
-            dud_filpper_tag__isnull=False
+            dud_flipper_tag__isnull=False
         ).select_related('observation_id', 'turtle_id')
         tag_states = TrtTagStates.objects.all()
         return render(request, self.template_name, {'entries': entries, 'tag_states': tag_states})
@@ -1661,9 +1697,9 @@ class DudTagManageView(LoginRequiredMixin, View):
             observation = entry.observation_id
             
             if tag_type == 'flipper':
-                observation.dud_filpper_tag = tag_id
+                observation.dud_flipper_tag = tag_id
             elif tag_type == 'flipper_2':
-                observation.dud_filpper_tag_2 = tag_id
+                observation.dud_flipper_tag_2 = tag_id
             elif tag_type == 'pit':
                 observation.dud_pit_tag = tag_id
             elif tag_type == 'pit_2':
