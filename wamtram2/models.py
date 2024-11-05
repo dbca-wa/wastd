@@ -330,10 +330,10 @@ class TrtDataEntry(models.Model):
         db_column="OBSERVATION_TIME", blank=True, null=True
     )  # Field name made lowercase.
     nesting = models.ForeignKey(
-        "TrtYesNo", models.SET_NULL, db_column="NESTING", blank=True, null=True, limit_choices_to={'code__in': ['D', 'N', 'Y', 'P']}
+        "TrtYesNo", models.SET_NULL, db_column="NESTING", blank=True, null=True, related_name="nesting_entries",limit_choices_to={'code__in': ['D', 'N', 'Y', 'P']}
     )  # fake foreign key #models.CharField(db_column='NESTING', max_length=1, blank=True, null=True)  # Field name made lowercase.
     interrupted = models.ForeignKey(
-        "TrtYesNo", models.SET_NULL, db_column="INTERRUPTED", blank=True, null=True, limit_choices_to={'code__in': ['D', 'N', 'Y', 'P']}
+        "TrtYesNo", models.SET_NULL, db_column="INTERRUPTED", related_name="interrupted_entries", blank=True, null=True, limit_choices_to={'code__in': ['D', 'N', 'Y', 'P']}
     )  # fake foreign key #models.CharField(db_column='INTERRUPTED', max_length=1, blank=True, null=True)  # Field name made lowercase.
     species_code = models.ForeignKey(
         "TrtSpecies", models.SET_NULL, db_column="SPECIES_CODE", blank=True, null=True
