@@ -332,6 +332,9 @@ class TrtDataEntry(models.Model):
     nesting = models.ForeignKey(
         "TrtYesNo", models.SET_NULL, db_column="NESTING", blank=True, null=True, limit_choices_to={'code__in': ['D', 'N', 'Y', 'P']}
     )  # fake foreign key #models.CharField(db_column='NESTING', max_length=1, blank=True, null=True)  # Field name made lowercase.
+    interrupted = models.ForeignKey(
+        "TrtYesNo", models.SET_NULL, db_column="INTERRUPTED", blank=True, null=True, limit_choices_to={'code__in': ['D', 'N', 'Y', 'P']}
+    )  # fake foreign key #models.CharField(db_column='INTERRUPTED', max_length=1, blank=True, null=True)  # Field name made lowercase.
     species_code = models.ForeignKey(
         "TrtSpecies", models.SET_NULL, db_column="SPECIES_CODE", blank=True, null=True
     )  # fake foreign key #models.CharField(db_column='SPECIES_CODE', max_length=2, blank=True, null=True)  # Field name made lowercase.
@@ -853,13 +856,13 @@ class TrtDataEntry(models.Model):
     new_pit_tag_3_sticker_present = models.BooleanField(default=False, db_column='NEW_PIT_TAG_3_STICKER_PRESENT')
     new_pit_tag_4_sticker_present = models.BooleanField(default=False, db_column='NEW_PIT_TAG_4_STICKER_PRESENT')
 
-    dud_filpper_tag = models.CharField(
+    dud_flipper_tag = models.CharField(
         max_length=10,
         db_column="DUD_FLIPPER_TAG",
         blank=True,
         null=True,
     )  
-    dud_filpper_tag_2 = models.CharField(
+    dud_flipper_tag_2 = models.CharField(
         max_length=10,
         db_column="DUD_FLIPPER_TAG_2",
         blank=True,
@@ -1708,13 +1711,13 @@ class TrtObservations(models.Model):
     corrected_date = models.DateTimeField(
         db_column="CORRECTED_DATE", blank=True, null=True, editable=False
     )  # Field name made lowercase.
-    dud_filpper_tag = models.CharField(
+    dud_flipper_tag = models.CharField(
         max_length=10, 
         db_column="DUD_FLIPPER_TAG",
         blank=True,
         null=True,
     )  
-    dud_filpper_tag_2 = models.CharField(
+    dud_flipper_tag_2 = models.CharField(
         max_length=10,
         db_column="DUD_FLIPPER_TAG_2",
         blank=True,

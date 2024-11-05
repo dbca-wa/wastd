@@ -173,6 +173,7 @@ class TrtDataEntryForm(forms.ModelForm):
             "damage_code_3",
             "activity_code",
             "nesting",
+            "interrupted",
             "sample_label_1",
             "tissue_type_1",
             "sample_label_2",
@@ -233,8 +234,8 @@ class TrtDataEntryForm(forms.ModelForm):
             "new_pit_tag_3_sticker_present",
             "new_pit_tag_4_sticker_present",
 
-            "dud_filpper_tag",
-            "dud_filpper_tag_2",
+            "dud_flipper_tag",
+            "dud_flipper_tag_2",
             "dud_pit_tag",
             "dud_pit_tag_2",
             
@@ -292,8 +293,8 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields['clutch_completed'].initial = ''
         
                         
-        nesting_choices = TrtYesNo.objects.filter(code__in=['N', 'P', 'Y'])
-        self.fields['nesting'].queryset = nesting_choices
+        interrupted_choices = TrtYesNo.objects.filter(code__in=['N', 'P', 'Y'])
+        self.fields['interrupted'].queryset = interrupted_choices
 
         # Filter the queryset for measurement types
         filtered_measurement_types = TrtMeasurementTypes.objects.exclude(
@@ -354,7 +355,7 @@ class TrtDataEntryForm(forms.ModelForm):
         
         self.fields["latitude"].label = "Latitude - (xx.xxxxxx)"
         self.fields["longitude"].label = "Longitude (xxx.xxxxxx)"
-        self.fields["nesting"].label = "Was nesting interrupted by tagging team?"
+        self.fields["interrupted"].label = "Was nesting interrupted by tagging team?"
         self.fields["entered_by_id"].label = "Entered by"
         self.fields["place_code"].label = "Location/Beach"
         self.fields["species_code"].label = "Species"
@@ -431,8 +432,8 @@ class TrtDataEntryForm(forms.ModelForm):
         
         self.fields["do_not_process"].label = "Needs Review"
         
-        self.fields["dud_filpper_tag"].label = "Dud Flipper Tag 1"
-        self.fields["dud_filpper_tag"].label = "Dud Flipper Tag 2"
+        self.fields["dud_flipper_tag"].label = "Dud Flipper Tag 1"
+        self.fields["dud_flipper_tag"].label = "Dud Flipper Tag 2"
         
         self.fields["recapture_left_tag_state"].required = False
         self.fields["recapture_left_tag_state_2"].required = False
@@ -489,8 +490,8 @@ class TrtDataEntryForm(forms.ModelForm):
             "recapture_pittag_id_4",
             "new_pittag_id_3",
             "new_pittag_id_4",
-            "dud_filpper_tag",
-            "dud_filpper_tag_2",
+            "dud_flipper_tag",
+            "dud_flipper_tag_2",
             "dud_pit_tag",
             "dud_pit_tag_2",
         ]
@@ -550,13 +551,28 @@ class TrtDataEntryForm(forms.ModelForm):
         #     'recapture_left_tag_id', 'recapture_left_tag_id_2', 'recapture_left_tag_id_3',
         #     'recapture_right_tag_id', 'recapture_right_tag_id_2', 'recapture_right_tag_id_3',
         #     'new_left_tag_id', 'new_left_tag_id_2', 'new_right_tag_id', 'new_right_tag_id_2',
-        #     'dud_filpper_tag', 'dud_filpper_tag_2'
+        #     'dud_flipper_tag', 'dud_flipper_tag_2'
         # ]
         
         # for field in tag_fields:
         #     if cleaned_data.get(field):
         #         cleaned_data[field] = cleaned_data[field].upper()
+        
+        scar_check = cleaned_data.get('scar_check')
+        if scar_check == 'N':
+            cleaned_data['tagscarnotchecked'] = True
+        elif scar_check in ['Y', 'P']:
+            cleaned_data['tagscarnotchecked'] = False
+    
+        injury_check = cleaned_data.get('injury_check')
+        if injury_check == 'N':
+            cleaned_data['didnotcheckforinjury'] = True
+        elif injury_check in ['Y', 'P']:
+            cleaned_data['didnotcheckforinjury'] = False
 
+        if cleaned_data.get('clutch_completed') == 'Y':
+            cleaned_data['interrupted'] = 'Y'
+        
         if do_not_process:
             return cleaned_data
         
