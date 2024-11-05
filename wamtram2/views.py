@@ -25,7 +25,7 @@ from django.core.exceptions import ValidationError
 from datetime import timedelta
 from django.core.exceptions import PermissionDenied
 import pandas as pd
-
+from datetime import datetime, date
 
 from wastd.utils import Breadcrumb, PaginateMixin
 from .models import (
@@ -1473,9 +1473,10 @@ class ExportDataView(LoginRequiredMixin, View):
     def dispatch(self, request, *args, **kwargs):
         # Permission check: only allow users in the specific groups or superusers
         if not (
-            # request.user.groups.filter(name="WAMTRAM2_STAFF").exists()
-            # or request.user.is_superuser
-            request.user.is_superuser
+            request.user.groups.filter(name="WAMTRAM2_STAFF").exists()
+            or request.user.groups.filter(name="WAMTRAM2_TEAM_LEADER").exists()
+            or request.user.is_superuser
+            # request.user.is_superuser
         ):
             return HttpResponseForbidden(
                 "You do not have permission to view this record"
@@ -1574,9 +1575,22 @@ class ExportDataView(LoginRequiredMixin, View):
                 ).values_list('organisation', flat=True)
                 org_str = ', '.join(organisations)
                 
-                row = [getattr(entry, field.name) for field in TrtDataEntry._meta.fields]
+                row = []
+                for field in TrtDataEntry._meta.fields:
+                    value = getattr(entry, field.name)
+                    if field.is_relation:
+                        value = str(value) if value else ''
+                    elif isinstance(value, datetime):
+                        value = value.strftime('%Y-%m-%d %H:%M:%S')
+                    elif isinstance(value, date):
+                        value = value.strftime('%Y-%m-%d')
+                    elif value is None:
+                        value = ''
+                    row.append(value)
+                
                 row.append(org_str)
                 ws.append(row)
+            
             wb.save(response)
 
         return response
