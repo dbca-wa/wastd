@@ -129,7 +129,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var scarSection = document.getElementById('scarsDetails');
 
     function toggleScarSection() {
-        if (scarCheck.value === 'N') {
+        if (scarCheck.value === 'N' || scarCheck.value === 'D') {
             scarSection.style.display = 'none';
         } else {
             scarSection.style.display = '';
