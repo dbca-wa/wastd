@@ -1278,7 +1278,6 @@ class ValidateTagView(View):
         else:
             return JsonResponse({'valid': False, 'wrong_side': False, 'message': 'Tag not found', 'tag_not_found': True})
 
-
     def validate_new_tag(self, request):
         """
         Validates a new tag.
@@ -1386,12 +1385,12 @@ class ValidateTagView(View):
                     return JsonResponse({'valid': False, 'message': 'PIT tag not found', 'tag_not_found': True})
             else:
                 new_pit_tag_entry = TrtDataEntry.objects.filter(
-                    Q(new_pittag_id__pittag_id=tag) |
-                    Q(new_pittag_id_2__pittag_id=tag) |
-                    Q(new_pittag_id_3__pittag_id=tag) |
-                    Q(new_pittag_id_4__pittag_id=tag),
-                    observation_id__isnull=True,
-                    turtle_id__isnull=True
+                Q(new_pittag_id__pittag_id=tag) |
+                Q(new_pittag_id_2__pittag_id=tag) |
+                Q(new_pittag_id_3__pittag_id=tag) |
+                Q(new_pittag_id_4__pittag_id=tag),
+                observation_id__isnull=True,
+                turtle_id__isnull=True
                 ).order_by('-entry_batch__entry_date').first()
                 
                 if new_pit_tag_entry:
