@@ -433,7 +433,9 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["do_not_process"].label = "Needs Review"
         
         self.fields["dud_flipper_tag"].label = "Dud Flipper Tag 1"
-        self.fields["dud_flipper_tag"].label = "Dud Flipper Tag 2"
+        self.fields["dud_flipper_tag_2"].label = "Dud Flipper Tag 2"
+        self.fields["dud_pit_tag"].label = "Dud PIT Tag 1"
+        self.fields["dud_pit_tag_2"].label = "Dud PIT Tag 2"
         
         self.fields["recapture_left_tag_state"].required = False
         self.fields["recapture_left_tag_state_2"].required = False

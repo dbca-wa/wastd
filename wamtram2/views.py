@@ -1514,7 +1514,7 @@ class ExportDataView(LoginRequiredMixin, View):
                 ).values_list('trtentrybatch_id', flat=True)
                 queryset = queryset.filter(entry_batch_id__in=related_batch_ids)
             else:
-                return HttpResponse("No data available for your organization")
+                return HttpResponse("No data available for your organisation")
             
         # Filter by date range
         if observation_date_from and observation_date_to:
