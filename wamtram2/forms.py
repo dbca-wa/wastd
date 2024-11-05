@@ -573,7 +573,7 @@ class TrtDataEntryForm(forms.ModelForm):
             cleaned_data['didnotcheckforinjury'] = False
 
         if cleaned_data.get('clutch_completed') == 'Y':
-            cleaned_data['interrupted'] = 'Y'
+            cleaned_data['nesting'] = 'Y'
         
         if do_not_process:
             return cleaned_data

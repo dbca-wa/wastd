@@ -891,7 +891,6 @@ class FindTurtleView(LoginRequiredMixin, View):
                         Q(new_pittag_id_3__pittag_id=tag_id) |
                         Q(new_pittag_id_4__pittag_id=tag_id),
                         observation_id__isnull=True,
-                        turtle_id__isnull=True
                     ).order_by('-entry_batch__entry_date').first()
 
                     if new_tag_entry:
@@ -1252,7 +1251,6 @@ class ValidateTagView(View):
             Q(new_right_tag_id__tag_id=tag) |
             Q(new_right_tag_id_2__tag_id=tag),
             observation_id__isnull=True,
-            turtle_id__isnull=True
         ).order_by('-entry_batch__entry_date').first()
                 
         if new_tag_entry:
@@ -1390,7 +1388,6 @@ class ValidateTagView(View):
                 Q(new_pittag_id_3__pittag_id=tag) |
                 Q(new_pittag_id_4__pittag_id=tag),
                 observation_id__isnull=True,
-                turtle_id__isnull=True
                 ).order_by('-entry_batch__entry_date').first()
                 
                 if new_pit_tag_entry:

@@ -863,14 +863,14 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
     """The base Encounter class.
 
     * When: Datetime of encounter, stored in UTC, entered and displayed in local
-      timezome.
+        timezone.
     * Where: Point in WGS84.
     * Who: The observer has to be a registered system user.
     * Source: The previous point of truth for the record.
     * Source ID: The ID of the encounter at the previous point of truth. This
-      can be a corporate file number, a database primary key, and likely is
-      prefixed or post-fixed. Batch imports can (if they use the ID consistently)
-      use the ID to identify previously imported records and avoid duplication.
+        can be a corporate file number, a database primary key, and likely is
+        prefixed or post-fixed. Batch imports can (if they use the ID consistently)
+        use the ID to identify previously imported records and avoid duplication.
 
     A suggested naming standard for paper records is
     ``<prefix><date><running-number>``, with possible
