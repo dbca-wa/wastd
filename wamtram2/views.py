@@ -1465,15 +1465,50 @@ def search_places(request):
     return JsonResponse(list(places), safe=False)
 
 
+from django.views.generic import View
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import JsonResponse, HttpResponse, HttpResponseForbidden
+from django.shortcuts import render
+from django.utils import timezone
+from datetime import datetime, time
+import csv
+from openpyxl import Workbook
+
 class ExportDataView(LoginRequiredMixin, View):
     template_name = 'wamtram2/export_form.html'
+
+    def _get_date_range(self, date_from, date_to):
+        """
+        Convert date strings to timezone-aware datetime objects
+        Args:
+            date_from: YYYY-MM-DD string
+            date_to: YYYY-MM-DD string
+        Returns:
+            tuple of (start_datetime, end_datetime)
+        """
+        if not date_from or not date_to:
+            return None, None
+            
+        start_date = timezone.make_aware(
+            datetime.combine(
+                datetime.strptime(date_from, '%Y-%m-%d').date(),
+                time.min
+            )
+        )
+        end_date = timezone.make_aware(
+            datetime.combine(
+                datetime.strptime(date_to, '%Y-%m-%d').date(),
+                time.max
+            )
+        )
+        return start_date, end_date
+
     def dispatch(self, request, *args, **kwargs):
         # Permission check: only allow users in the specific groups or superusers
         if not (
             request.user.groups.filter(name="WAMTRAM2_STAFF").exists()
             or request.user.groups.filter(name="WAMTRAM2_TEAM_LEADER").exists()
             or request.user.is_superuser
-            # request.user.is_superuser
         ):
             return HttpResponseForbidden(
                 "You do not have permission to view this record"
@@ -1481,14 +1516,13 @@ class ExportDataView(LoginRequiredMixin, View):
         return super().dispatch(request, *args, **kwargs)
 
     def get(self, request):
-        # Handle different actions based on the 'action' parameter
-        action = request.GET.get('action')
-    
+        
         # If it's an export request (has format parameter)
         if request.GET.get("format"):
             return self.export_data(request)
             
-        # If it's a filter request
+        # Handle different actions based on the 'action' parameter
+        action = request.GET.get('action')
         if action:
             if action == 'get_places':
                 return self.get_places(request)
@@ -1500,111 +1534,12 @@ class ExportDataView(LoginRequiredMixin, View):
         # If no action or format, render the form
         return render(request, self.template_name)
 
-    def export_data(self, request):
-        # Retrieve filter parameters from the request
-        observation_date_from = request.GET.get("observation_date_from")
-        observation_date_to = request.GET.get("observation_date_to")
-        place_code = request.GET.get("place_code")
-        species = request.GET.get("species")
-        sex = request.GET.get("sex")
-        file_format = request.GET.get("format", "csv")
-        
-        #queryset = TrtDataEntry.objects.filter(observation_id__isnull=False)
-        queryset = TrtDataEntry.objects.all()
-        
-        user = request.user
-        if not user.is_superuser:
-            user_organisations = user.organisations.all()
-            if user_organisations.exists():
-                related_batch_ids = TrtEntryBatchOrganisation.objects.filter(
-                    organisation__in=[org.code for org in user_organisations]
-                ).values_list('trtentrybatch_id', flat=True)
-                queryset = queryset.filter(entry_batch_id__in=related_batch_ids)
-            else:
-                return HttpResponse("No data available for your organisation")
-            
-        # Filter by date range
-        if observation_date_from and observation_date_to:
-            queryset = queryset.filter(observation_date__range=[observation_date_from, observation_date_to])
-        elif observation_date_from:
-            queryset = queryset.filter(observation_date__gte=observation_date_from)
-        elif observation_date_to:
-            queryset = queryset.filter(observation_date__lte=observation_date_to)
-        
-        # Filter by place
-        if place_code:
-            queryset = queryset.filter(place_code=place_code)
-
-        # Filter by species
-        if species:
-            queryset = queryset.filter(species_code=species)
-
-        # Filter by sex
-        if sex:
-            queryset = queryset.filter(sex=sex)
-            
-        queryset = queryset.select_related('entry_batch')
-
-        # File generation logic
-        if file_format == "csv":
-            response = HttpResponse(content_type="text/csv")
-            response["Content-Disposition"] = 'attachment; filename="data_export.csv"'
-            writer = csv.writer(response)
-
-            headers = [field.name for field in TrtDataEntry._meta.fields]
-            headers.append('organisations')
-            writer.writerow(headers)
-        
-            for entry in queryset:
-                organisations = TrtEntryBatchOrganisation.objects.filter(
-                    trtentrybatch=entry.entry_batch
-                ).values_list('organisation', flat=True)
-                org_str = ', '.join(organisations)
-                
-                row = [getattr(entry, field.name) for field in TrtDataEntry._meta.fields]
-                row.append(org_str)
-                writer.writerow(row)
-                
-        elif file_format == "xlsx":
-            response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-            response["Content-Disposition"] = 'attachment; filename="data_export.xlsx"'
-            wb = Workbook()
-            ws = wb.active
-            
-            headers = [field.name for field in TrtDataEntry._meta.fields]
-            headers.append('organisations')
-            ws.append(headers)
-            
-            for entry in queryset:
-                organisations = TrtEntryBatchOrganisation.objects.filter(
-                    trtentrybatch=entry.entry_batch
-                ).values_list('organisation', flat=True)
-                org_str = ', '.join(organisations)
-                
-                row = []
-                for field in TrtDataEntry._meta.fields:
-                    value = getattr(entry, field.name)
-                    if field.is_relation:
-                        value = str(value) if value else ''
-                    elif isinstance(value, datetime):
-                        value = value.strftime('%Y-%m-%d %H:%M:%S')
-                    elif isinstance(value, date):
-                        value = value.strftime('%Y-%m-%d')
-                    elif value is None:
-                        value = ''
-                    row.append(value)
-                
-                row.append(org_str)
-                ws.append(row)
-            
-            wb.save(response)
-
-        return response
-
     def get_places(self, request):
         """Retrieve places based on the specified date range."""
-        observation_date_from = request.GET.get("observation_date_from")
-        observation_date_to = request.GET.get("observation_date_to")
+        from_date, to_date = self._get_date_range(
+            request.GET.get("observation_date_from"),
+            request.GET.get("observation_date_to")
+        )
 
         # First get data accessible to the user
         queryset = TrtDataEntry.objects.all()
@@ -1619,11 +1554,11 @@ class ExportDataView(LoginRequiredMixin, View):
             else:
                 return JsonResponse({"places": []})
 
-        # Get places from filtered data
+        if from_date and to_date:
+            queryset = queryset.filter(observation_date__range=[from_date, to_date])
+
         places = TrtPlaces.objects.filter(
-            place_code__in=queryset.filter(
-                observation_date__range=[observation_date_from, observation_date_to]
-            ).values_list('place_code', flat=True)
+            place_code__in=queryset.values_list('place_code', flat=True)
         ).select_related('location_code').distinct()
 
         place_list = [
@@ -1639,10 +1574,11 @@ class ExportDataView(LoginRequiredMixin, View):
 
     def get_species(self, request):
         """Retrieve species based on the specified date range."""
-        observation_date_from = request.GET.get("observation_date_from")
-        observation_date_to = request.GET.get("observation_date_to")
+        from_date, to_date = self._get_date_range(
+            request.GET.get("observation_date_from"),
+            request.GET.get("observation_date_to")
+        )
 
-        # First get data accessible to the user
         queryset = TrtDataEntry.objects.all()
         user = request.user
         if not user.is_superuser:
@@ -1655,11 +1591,11 @@ class ExportDataView(LoginRequiredMixin, View):
             else:
                 return JsonResponse({"species": []})
 
-        # Get species from filtered data
+        if from_date and to_date:
+            queryset = queryset.filter(observation_date__range=[from_date, to_date])
+
         species = TrtSpecies.objects.filter(
-            species_code__in=queryset.filter(
-                observation_date__range=[observation_date_from, observation_date_to]
-            ).values_list('species_code', flat=True)
+            species_code__in=queryset.values_list('species_code', flat=True)
         ).distinct()
 
         species_list = [
@@ -1671,10 +1607,11 @@ class ExportDataView(LoginRequiredMixin, View):
 
     def get_sexes(self, request):
         """Retrieve available sex choices based on the defined SEX_CHOICES."""
-        observation_date_from = request.GET.get("observation_date_from")
-        observation_date_to = request.GET.get("observation_date_to")
+        from_date, to_date = self._get_date_range(
+            request.GET.get("observation_date_from"),
+            request.GET.get("observation_date_to")
+        )
 
-        # First get data accessible to the user
         queryset = TrtDataEntry.objects.all()
         user = request.user
         if not user.is_superuser:
@@ -1687,11 +1624,10 @@ class ExportDataView(LoginRequiredMixin, View):
             else:
                 return JsonResponse({"sexes": []})
 
-        # Get actually used sex values from filtered data
-        used_sexes = queryset.filter(
-            observation_date__range=[observation_date_from, observation_date_to]
-        ).values_list('sex', flat=True).distinct()
+        if from_date and to_date:
+            queryset = queryset.filter(observation_date__range=[from_date, to_date])
 
+        used_sexes = queryset.values_list('sex', flat=True).distinct()
         sex_list = [
             {"value": choice[0], "label": choice[1]}
             for choice in SEX_CHOICES
@@ -1700,7 +1636,113 @@ class ExportDataView(LoginRequiredMixin, View):
 
         return JsonResponse({"sexes": sex_list})
 
+    def export_data(self, request):
+        try:
+            from_date, to_date = self._get_date_range(
+                request.GET.get("observation_date_from"),
+                request.GET.get("observation_date_to")
+            )
+            
+            place_code = request.GET.get("place_code")
+            species = request.GET.get("species")
+            sex = request.GET.get("sex")
+            file_format = request.GET.get("format", "csv")
 
+            queryset = TrtDataEntry.objects.all()
+            
+            # Apply organization filter
+            user = request.user
+            if not user.is_superuser:
+                user_organisations = user.organisations.all()
+                if user_organisations.exists():
+                    related_batch_ids = TrtEntryBatchOrganisation.objects.filter(
+                        organisation__in=[org.code for org in user_organisations]
+                    ).values_list('trtentrybatch_id', flat=True)
+                    queryset = queryset.filter(entry_batch_id__in=related_batch_ids)
+                else:
+                    return HttpResponse("No data available for your organisation")
+            
+            # Apply filters
+            if from_date and to_date:
+                queryset = queryset.filter(observation_date__range=[from_date, to_date])
+            if place_code:
+                queryset = queryset.filter(place_code=place_code)
+            if species:
+                queryset = queryset.filter(species_code=species)
+            if sex:
+                queryset = queryset.filter(sex=sex)
+                
+            queryset = queryset.select_related('entry_batch')
+
+            if file_format == "csv":
+                response = HttpResponse(
+                    content_type='text/csv',
+                    headers={
+                        'Content-Disposition': 'attachment; filename="data_export.csv"',
+                        'Content-Type': 'text/csv; charset=utf-8'
+                    },
+                )
+                
+                writer = csv.writer(response)
+                headers = [field.name for field in TrtDataEntry._meta.fields]
+                headers.append('organisations')
+                writer.writerow(headers)
+                
+                for entry in queryset:
+                    organisations = TrtEntryBatchOrganisation.objects.filter(
+                        trtentrybatch=entry.entry_batch
+                    ).values_list('organisation', flat=True)
+                    org_str = ', '.join(organisations)
+                    
+                    row = [getattr(entry, field.name) for field in TrtDataEntry._meta.fields]
+                    row.append(org_str)
+                    writer.writerow(row)
+                    
+            else:  # xlsx format
+                response = HttpResponse(
+                    content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                    headers={
+                        'Content-Disposition': 'attachment; filename="data_export.xlsx"',
+                    },
+                )
+                
+                wb = Workbook()
+                ws = wb.active
+                
+                headers = [field.name for field in TrtDataEntry._meta.fields]
+                headers.append('organisations')
+                ws.append(headers)
+                
+                for entry in queryset:
+                    organisations = TrtEntryBatchOrganisation.objects.filter(
+                        trtentrybatch=entry.entry_batch
+                    ).values_list('organisation', flat=True)
+                    org_str = ', '.join(organisations)
+                    
+                    row = []
+                    for field in TrtDataEntry._meta.fields:
+                        value = getattr(entry, field.name)
+                        if field.is_relation:
+                            value = str(value) if value else ''
+                        elif isinstance(value, datetime):
+                            value = value.strftime('%Y-%m-%d %H:%M:%S')
+                        elif isinstance(value, date):
+                            value = value.strftime('%Y-%m-%d')
+                        elif value is None:
+                            value = ''
+                        row.append(value)
+                    
+                    row.append(org_str)
+                    ws.append(row)
+                
+                wb.save(response)
+
+            return response
+
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            return HttpResponse(f"Error during export: {str(e)}", status=500)
 class DudTagManageView(LoginRequiredMixin, View):
     template_name = 'wamtram2/dud_tag_manage.html'
 
