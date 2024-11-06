@@ -1483,13 +1483,28 @@ class ExportDataView(LoginRequiredMixin, View):
     def get(self, request):
         # Handle different actions based on the 'action' parameter
         action = request.GET.get('action')
+        if not action:
+            return render(request, self.template_name)
+        
         if action == 'get_places':
             return self.get_places(request)
         elif action == 'get_species':
             return self.get_species(request)
         elif action == 'get_sexes':
             return self.get_sexes(request)
-        return self.export_data(request)
+        
+        if any([
+            request.GET.get("observation_date_from"),
+            request.GET.get("observation_date_to"),
+            request.GET.get("place_code"),
+            request.GET.get("species"),
+            request.GET.get("sex"),
+            request.GET.get("format")
+        ]):
+            return self.export_data(request)
+            
+        # Default to rendering the form
+        return render(request, self.template_name)
 
     def export_data(self, request):
         # Retrieve filter parameters from the request
@@ -1690,93 +1705,6 @@ class ExportDataView(LoginRequiredMixin, View):
         ]
 
         return JsonResponse({"sexes": sex_list})
-
-class FilterFormView(LoginRequiredMixin, View):
-    def dispatch(self, request, *args, **kwargs):
-        # Permission check: only allow users in the specific groups or superusers
-        if not (
-            request.user.groups.filter(name="WAMTRAM2_VOLUNTEER").exists()
-            or request.user.groups.filter(name="WAMTRAM2_TEAM_LEADER").exists()
-            or request.user.groups.filter(name="WAMTRAM2_STAFF").exists()
-            or request.user.is_superuser
-        ):
-            return HttpResponseForbidden(
-                "You do not have permission to view this record"
-            )
-        return super().dispatch(request, *args, **kwargs)
-
-    def get(self, request):
-        action = request.GET.get('action')
-        if action == 'get_filter_options':
-            return self.get_filter_options(request)
-        return render(request, 'wamtram2/export_form.html')
-
-    def get_filter_options(self, request):
-        from_date = request.GET.get('observation_date_from')
-        to_date = request.GET.get('observation_date_to')
-
-        # Get user's accessible batch IDs
-        user = request.user
-        if not user.is_superuser:
-            user_organisations = user.organisations.all()
-            if not user_organisations.exists():
-                return JsonResponse({
-                    'places': [],
-                    'species': [],
-                    'sexes': [],
-                    'turtle_statuses': []
-                })
-            
-            related_batch_ids = TrtEntryBatchOrganisation.objects.filter(
-                organisation__in=[org.code for org in user_organisations]
-            ).values_list('trtentrybatch_id', flat=True)
-            
-            # Filter data entries by batch IDs and date range
-            data_entries = TrtDataEntry.objects.filter(
-                entry_batch_id__in=related_batch_ids,
-                observation_date__range=[from_date, to_date]
-            )
-        else:
-            data_entries = TrtDataEntry.objects.filter(
-                observation_date__range=[from_date, to_date]
-            )
-
-        # Get distinct places
-        places = TrtPlaces.objects.filter(
-            place_code__in=data_entries.values_list('place_code', flat=True)
-        ).select_related('location_code').distinct()
-
-        species = TrtSpecies.objects.filter(
-            species_code__in=data_entries.values_list('species_code', flat=True)
-        ).distinct()
-
-        # Get distinct sexes
-        used_sexes = data_entries.values_list('sex', flat=True).distinct()
-        custom_sex_order = ['F', 'M', 'I']
-        sex_dict = dict(SEX_CHOICES)
-        sexes = [
-            {'value': s, 'label': sex_dict[s]} 
-            for s in custom_sex_order 
-            if s in sex_dict and s in used_sexes
-        ]
-
-        return JsonResponse({
-            'places': [
-                {
-                    'value': p.place_code, 
-                    'label': f"{p.location_code.location_name} - {p.place_name}"
-                } 
-                for p in places
-            ],
-            'species': [
-                {
-                    'value': s.species_code, 
-                    'label': s.common_name
-                } 
-                for s in species
-            ],
-            'sexes': sexes
-    })
 
 class DudTagManageView(LoginRequiredMixin, View):
     template_name = 'wamtram2/dud_tag_manage.html'

@@ -170,45 +170,23 @@
 
                 // Get CSRF Token
                 const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
-
-                // Fetch place options
-                fetch(`{% url 'wamtram2:export_data' %}?action=get_places&observation_date_from=${fromDate}&observation_date_to=${toDate}`, {
-                    method: 'GET',
-                    headers: {
-                        'X-CSRFToken': csrfToken
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    updateSelectOptions('place_code', data.places);
-                    // Fetch species options
-                    return fetch(`{% url 'wamtram2:export_data' %}?action=get_species&observation_date_from=${fromDate}&observation_date_to=${toDate}`, {
-                        method: 'GET',
-                        headers: {
-                            'X-CSRFToken': csrfToken
-                        }
-                    });
-                })
-                .then(response => response.json())
-                .then(data => {
-                    updateSelectOptions('species', data.species);
-                    // Fetch sex options
-                    return fetch(`{% url 'wamtram2:export_data' %}?action=get_sexes&observation_date_from=${fromDate}&observation_date_to=${toDate}`, {
-                        method: 'GET',
-                        headers: {
-                            'X-CSRFToken': csrfToken
-                        }
-                    });
-                })
-                .then(response => response.json())
-                .then(data => {
-                    updateSelectOptions('sex', data.sexes);
+                Promise.all([
+                    fetch(`{% url 'wamtram2:export_data' %}?action=get_places&observation_date_from=${fromDate}&observation_date_to=${toDate}`),
+                    fetch(`{% url 'wamtram2:export_data' %}?action=get_species&observation_date_from=${fromDate}&observation_date_to=${toDate}`),
+                    fetch(`{% url 'wamtram2:export_data' %}?action=get_sexes&observation_date_from=${fromDate}&observation_date_to=${toDate}`)
+                ])
+                .then(responses => Promise.all(responses.map(r => r.json())))
+                .then(([placesData, speciesData, sexesData]) => {
+                    updateSelectOptions('place_code', placesData.places);
+                    updateSelectOptions('species', speciesData.species);
+                    updateSelectOptions('sex', sexesData.sexes);
                     hideLoadingSpinner();
                 })
                 .catch(error => {
                     console.error('Error:', error);
                     hideLoadingSpinner();
                 });
+
             }
         }
 
