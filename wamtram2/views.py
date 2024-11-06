@@ -1483,27 +1483,20 @@ class ExportDataView(LoginRequiredMixin, View):
     def get(self, request):
         # Handle different actions based on the 'action' parameter
         action = request.GET.get('action')
-        if not action:
-            return render(request, self.template_name)
-        
-        if action == 'get_places':
-            return self.get_places(request)
-        elif action == 'get_species':
-            return self.get_species(request)
-        elif action == 'get_sexes':
-            return self.get_sexes(request)
-        
-        if any([
-            request.GET.get("observation_date_from"),
-            request.GET.get("observation_date_to"),
-            request.GET.get("place_code"),
-            request.GET.get("species"),
-            request.GET.get("sex"),
-            request.GET.get("format")
-        ]):
+        if request.GET.get("format"):
             return self.export_data(request)
-            
-        # Default to rendering the form
+        
+    # If it's a filter request
+        if action:
+            print(f"Handling action: {action}")
+            if action == 'get_places':
+                return self.get_places(request)
+            elif action == 'get_species':
+                return self.get_species(request)
+            elif action == 'get_sexes':
+                return self.get_sexes(request)
+        
+        # If no action or format, render the form
         return render(request, self.template_name)
 
     def export_data(self, request):
