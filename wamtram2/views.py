@@ -21,11 +21,10 @@ from django.template.loader import render_to_string
 from django.core.serializers.json import DjangoJSONEncoder
 import json
 import csv
-from django.core.exceptions import ValidationError
 from datetime import timedelta
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied,ValidationError
 import pandas as pd
-from datetime import datetime, date
+from datetime import datetime, date, time
 
 from wastd.utils import Breadcrumb, PaginateMixin
 from .models import (
@@ -38,7 +37,6 @@ from .models import (
     TrtObservations,
     Template,
     TrtTagStates,
-    TrtTurtleStatus
 )
 from .forms import TrtDataEntryForm, SearchForm, TrtEntryBatchesForm, TemplateForm, BatchesCodeForm, TrtPersonsForm
 
@@ -1464,16 +1462,6 @@ def search_places(request):
     
     return JsonResponse(list(places), safe=False)
 
-
-from django.views.generic import View
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import JsonResponse, HttpResponse, HttpResponseForbidden
-from django.shortcuts import render
-from django.utils import timezone
-from datetime import datetime, time
-import csv
-from openpyxl import Workbook
-
 class ExportDataView(LoginRequiredMixin, View):
     template_name = 'wamtram2/export_form.html'
 
@@ -1675,18 +1663,14 @@ class ExportDataView(LoginRequiredMixin, View):
             queryset = queryset.select_related('entry_batch')
 
             if file_format == "csv":
-                response = HttpResponse(
-                    content_type='text/csv',
-                    headers={
-                        'Content-Disposition': 'attachment; filename="data_export.csv"',
-                        'Content-Type': 'text/csv; charset=utf-8'
-                    },
-                )
-                
+                response = HttpResponse(content_type="text/csv")
+                response["Content-Disposition"] = 'attachment; filename="data_export.csv"'
                 writer = csv.writer(response)
+
                 headers = [field.name for field in TrtDataEntry._meta.fields]
                 headers.append('organisations')
                 writer.writerow(headers)
+        
                 
                 for entry in queryset:
                     organisations = TrtEntryBatchOrganisation.objects.filter(
@@ -1699,13 +1683,8 @@ class ExportDataView(LoginRequiredMixin, View):
                     writer.writerow(row)
                     
             else:  # xlsx format
-                response = HttpResponse(
-                    content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                    headers={
-                        'Content-Disposition': 'attachment; filename="data_export.xlsx"',
-                    },
-                )
-                
+                response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                response["Content-Disposition"] = 'attachment; filename="data_export.xlsx"'
                 wb = Workbook()
                 ws = wb.active
                 
