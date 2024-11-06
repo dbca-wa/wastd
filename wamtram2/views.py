@@ -1483,12 +1483,13 @@ class ExportDataView(LoginRequiredMixin, View):
     def get(self, request):
         # Handle different actions based on the 'action' parameter
         action = request.GET.get('action')
+    
+        # If it's an export request (has format parameter)
         if request.GET.get("format"):
             return self.export_data(request)
-        
-    # If it's a filter request
+            
+        # If it's a filter request
         if action:
-            print(f"Handling action: {action}")
             if action == 'get_places':
                 return self.get_places(request)
             elif action == 'get_species':
@@ -1500,128 +1501,105 @@ class ExportDataView(LoginRequiredMixin, View):
         return render(request, self.template_name)
 
     def export_data(self, request):
-        try:
-            # Retrieve filter parameters from the request
-            observation_date_from = request.GET.get("observation_date_from")
-            observation_date_to = request.GET.get("observation_date_to")
-            place_code = request.GET.get("place_code")
-            species = request.GET.get("species")
-            sex = request.GET.get("sex")
-            file_format = request.GET.get("format", "csv")
-            
-            print(f"Export parameters: dates={observation_date_from} to {observation_date_to}, format={file_format}")
-
-            #queryset = TrtDataEntry.objects.filter(observation_id__isnull=False)
-            queryset = TrtDataEntry.objects.all()
-            
-            user = request.user
-            if not user.is_superuser:
-                user_organisations = user.organisations.all()
-                if user_organisations.exists():
-                    related_batch_ids = TrtEntryBatchOrganisation.objects.filter(
-                        organisation__in=[org.code for org in user_organisations]
-                    ).values_list('trtentrybatch_id', flat=True)
-                    queryset = queryset.filter(entry_batch_id__in=related_batch_ids)
-                else:
-                    return HttpResponse("No data available for your organisation")
-                
-            # Filter by date range
-            if observation_date_from and observation_date_to:
-                queryset = queryset.filter(observation_date__range=[observation_date_from, observation_date_to])
-            elif observation_date_from:
-                queryset = queryset.filter(observation_date__gte=observation_date_from)
-            elif observation_date_to:
-                queryset = queryset.filter(observation_date__lte=observation_date_to)
-            
-            # Filter by place
-            if place_code:
-                queryset = queryset.filter(place_code=place_code)
-
-            # Filter by species
-            if species:
-                queryset = queryset.filter(species_code=species)
-
-            # Filter by sex
-            if sex:
-                queryset = queryset.filter(sex=sex)
-                
-            queryset = queryset.select_related('entry_batch')
-            
-            print(f"Query count: {queryset.count()}")
-
-            # File generation logic
-            if file_format == "csv":
-                response = HttpResponse(
-                    content_type='text/csv',
-                    headers={
-                        'Content-Disposition': 'attachment; filename="data_export.csv"',
-                        'Content-Type': 'text/csv; charset=utf-8'
-                    },
-                )
-                
-                writer = csv.writer(response)
-                headers = [field.name for field in TrtDataEntry._meta.fields]
-                headers.append('organisations')
-                writer.writerow(headers)
-            
-                for entry in queryset:
-                    organisations = TrtEntryBatchOrganisation.objects.filter(
-                        trtentrybatch=entry.entry_batch
-                    ).values_list('organisation', flat=True)
-                    org_str = ', '.join(organisations)
-                    
-                    row = [getattr(entry, field.name) for field in TrtDataEntry._meta.fields]
-                    row.append(org_str)
-                    writer.writerow(row)
-                    
-            elif file_format == "xlsx":
-                response = HttpResponse(
-                    content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                    headers={
-                        'Content-Disposition': 'attachment; filename="data_export.xlsx"',
-                    },
-                )
-                
-                wb = Workbook()
-                ws = wb.active
-                
-                headers = [field.name for field in TrtDataEntry._meta.fields]
-                headers.append('organisations')
-                ws.append(headers)
-                
-                for entry in queryset:
-                    organisations = TrtEntryBatchOrganisation.objects.filter(
-                        trtentrybatch=entry.entry_batch
-                    ).values_list('organisation', flat=True)
-                    org_str = ', '.join(organisations)
-                    
-                    row = []
-                    for field in TrtDataEntry._meta.fields:
-                        value = getattr(entry, field.name)
-                        if field.is_relation:
-                            value = str(value) if value else ''
-                        elif isinstance(value, datetime):
-                            value = value.strftime('%Y-%m-%d %H:%M:%S')
-                        elif isinstance(value, date):
-                            value = value.strftime('%Y-%m-%d')
-                        elif value is None:
-                            value = ''
-                        row.append(value)
-                    
-                    row.append(org_str)
-                    ws.append(row)
-                
-                wb.save(response)
-                
-            print("Export completed successfully")
-
-            return response
+        # Retrieve filter parameters from the request
+        observation_date_from = request.GET.get("observation_date_from")
+        observation_date_to = request.GET.get("observation_date_to")
+        place_code = request.GET.get("place_code")
+        species = request.GET.get("species")
+        sex = request.GET.get("sex")
+        file_format = request.GET.get("format", "csv")
         
-        except Exception as e:
-            print(f"Export error: {str(e)}")
-            import traceback
-            traceback.print_exc()
-            return HttpResponse(f"Error during export: {str(e)}", status=500)
+        #queryset = TrtDataEntry.objects.filter(observation_id__isnull=False)
+        queryset = TrtDataEntry.objects.all()
+        
+        user = request.user
+        if not user.is_superuser:
+            user_organisations = user.organisations.all()
+            if user_organisations.exists():
+                related_batch_ids = TrtEntryBatchOrganisation.objects.filter(
+                    organisation__in=[org.code for org in user_organisations]
+                ).values_list('trtentrybatch_id', flat=True)
+                queryset = queryset.filter(entry_batch_id__in=related_batch_ids)
+            else:
+                return HttpResponse("No data available for your organisation")
+            
+        # Filter by date range
+        if observation_date_from and observation_date_to:
+            queryset = queryset.filter(observation_date__range=[observation_date_from, observation_date_to])
+        elif observation_date_from:
+            queryset = queryset.filter(observation_date__gte=observation_date_from)
+        elif observation_date_to:
+            queryset = queryset.filter(observation_date__lte=observation_date_to)
+        
+        # Filter by place
+        if place_code:
+            queryset = queryset.filter(place_code=place_code)
+
+        # Filter by species
+        if species:
+            queryset = queryset.filter(species_code=species)
+
+        # Filter by sex
+        if sex:
+            queryset = queryset.filter(sex=sex)
+            
+        queryset = queryset.select_related('entry_batch')
+
+        # File generation logic
+        if file_format == "csv":
+            response = HttpResponse(content_type="text/csv")
+            response["Content-Disposition"] = 'attachment; filename="data_export.csv"'
+            writer = csv.writer(response)
+
+            headers = [field.name for field in TrtDataEntry._meta.fields]
+            headers.append('organisations')
+            writer.writerow(headers)
+        
+            for entry in queryset:
+                organisations = TrtEntryBatchOrganisation.objects.filter(
+                    trtentrybatch=entry.entry_batch
+                ).values_list('organisation', flat=True)
+                org_str = ', '.join(organisations)
+                
+                row = [getattr(entry, field.name) for field in TrtDataEntry._meta.fields]
+                row.append(org_str)
+                writer.writerow(row)
+                
+        elif file_format == "xlsx":
+            response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+            response["Content-Disposition"] = 'attachment; filename="data_export.xlsx"'
+            wb = Workbook()
+            ws = wb.active
+            
+            headers = [field.name for field in TrtDataEntry._meta.fields]
+            headers.append('organisations')
+            ws.append(headers)
+            
+            for entry in queryset:
+                organisations = TrtEntryBatchOrganisation.objects.filter(
+                    trtentrybatch=entry.entry_batch
+                ).values_list('organisation', flat=True)
+                org_str = ', '.join(organisations)
+                
+                row = []
+                for field in TrtDataEntry._meta.fields:
+                    value = getattr(entry, field.name)
+                    if field.is_relation:
+                        value = str(value) if value else ''
+                    elif isinstance(value, datetime):
+                        value = value.strftime('%Y-%m-%d %H:%M:%S')
+                    elif isinstance(value, date):
+                        value = value.strftime('%Y-%m-%d')
+                    elif value is None:
+                        value = ''
+                    row.append(value)
+                
+                row.append(org_str)
+                ws.append(row)
+            
+            wb.save(response)
+
+        return response
 
     def get_places(self, request):
         """Retrieve places based on the specified date range."""
