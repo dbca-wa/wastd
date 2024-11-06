@@ -570,7 +570,7 @@
             currentEntryId = entryId;
             // Get available batches
             $.ajax({
-                url: '{% url "available_batches" %}',  // Use Django URL template tag
+                url: '{% url "wamtram2:available_batches" %}',  // Use Django URL template tag
                 method: 'GET',
                 success: function(data) {
                     const select = $('#targetBatchSelect');
@@ -596,7 +596,7 @@
             
             // Get batch details
             $.ajax({
-                url: `{% url "batch_info" 0 %}`.replace('0', batchId),  // Use Django URL template tag
+                url: `{% url "wamtram2:batch_info" 0 %}`.replace('0', batchId),  // Use Django URL template tag
                 method: 'GET',
                 success: function(data) {
                     $('#batchInfo').text(`Code: ${data.code}, Comment: ${data.comment}`);
@@ -624,7 +624,7 @@
             }
             
             $.ajax({
-                url: '{% url "move_entry" %}',  // Use Django URL template tag
+                url: '{% url "wamtram2:move_entry" %}',  // Use Django URL template tag
                 method: 'POST',
                 data: {
                     entry_id: currentEntryId,
