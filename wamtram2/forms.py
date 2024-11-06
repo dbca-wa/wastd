@@ -517,6 +517,21 @@ class TrtDataEntryForm(forms.ModelForm):
     def save(self, commit=True):
         # Call the parent class's save method to get the instance
         instance = super().save(commit=False)
+        
+        
+        if instance.scar_check == 'N':
+            instance.tagscarnotchecked = True
+        elif instance.scar_check in ['Y', 'P']:
+            instance.tagscarnotchecked = False
+
+        if instance.injury_check == 'N':
+            instance.didnotcheckforinjury = True
+        elif instance.injury_check in ['Y', 'P']:
+            instance.didnotcheckforinjury = False
+            
+        if instance.clutch_completed == 'Y':
+            instance.nesting = 'Y'
+            
         if instance.measured_by_id:
             person = TrtPersons.objects.get(person_id=instance.measured_by_id.person_id)
             instance.measured_by = "{} {}".format(person.first_name, person.surname)
@@ -559,21 +574,6 @@ class TrtDataEntryForm(forms.ModelForm):
         # for field in tag_fields:
         #     if cleaned_data.get(field):
         #         cleaned_data[field] = cleaned_data[field].upper()
-        
-        scar_check = cleaned_data.get('scar_check')
-        if scar_check == 'N':
-            cleaned_data['tagscarnotchecked'] = True
-        elif scar_check in ['Y', 'P']:
-            cleaned_data['tagscarnotchecked'] = False
-    
-        injury_check = cleaned_data.get('injury_check')
-        if injury_check == 'N':
-            cleaned_data['didnotcheckforinjury'] = True
-        elif injury_check in ['Y', 'P']:
-            cleaned_data['didnotcheckforinjury'] = False
-
-        if cleaned_data.get('clutch_completed') == 'Y':
-            cleaned_data['nesting'] = 'Y'
         
         if do_not_process:
             return cleaned_data

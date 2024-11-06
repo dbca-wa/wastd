@@ -27,7 +27,6 @@ urlpatterns = [
     path('search-persons/', views.search_persons, name='search-persons'),
     path('search-places/', views.search_places, name='search-places'),
     path('export/', views.ExportDataView.as_view(), name='export_data'),
-    path('export/form/', views.FilterFormView.as_view(), name='export_form'),
     path('dud-tag-manage/', views.DudTagManageView.as_view(), name='dud_tag_manage'),
     path('batches-curation/', views.BatchesCurationView.as_view(), name='batches_curation'),
     path('create-new-entry/', views.CreateNewEntryView.as_view(), name='create_new_entry'),
