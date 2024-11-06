@@ -2345,3 +2345,68 @@ class AddPersonView(LoginRequiredMixin, FormView):
                 }, status=400)
 
         return redirect('wamtram2:add_person')
+
+class AvailableBatchesView(LoginRequiredMixin, View):
+    def get(self, request):
+        user_orgs = request.user.organisations.all() 
+        batches = TrtEntryBatches.objects.filter(organization__in=user_orgs)
+        return JsonResponse([{
+            'id': batch.entry_batch_id,
+            'code': batch.code,
+            'comment': batch.comments 
+        } for batch in batches], safe=False)
+
+class BatchInfoView(LoginRequiredMixin, View):
+    def get(self, request, batch_id):
+        try:
+            batch = TrtEntryBatches.objects.get(
+                entry_batch_id=batch_id, 
+                organization__in=request.user.organisations.all()
+            )
+            return JsonResponse({
+                'code': batch.code,
+                'comment': batch.comments
+            })
+        except TrtEntryBatches.DoesNotExist:
+            return JsonResponse({'error': 'Batch not found'}, status=404)
+
+class MoveEntryView(LoginRequiredMixin, View):
+    def post(self, request):
+        entry_id = request.POST.get('entry_id')
+        target_batch_id = request.POST.get('target_batch_id')
+        
+        if not entry_id or not target_batch_id:
+            return JsonResponse({'error': 'Missing required parameters'}, status=400)
+            
+        try:
+            # Get entry and check permissions
+            entry = TrtDataEntry.objects.get(data_entry_id=entry_id) 
+            current_batch = entry.entry_batch
+            
+            # Check if user has permission to operate on current batch
+            if current_batch.organization not in request.user.organisations.all():
+                raise PermissionDenied('No permission to operate on this entry')
+            
+            # Get target batch and check permissions
+            target_batch = TrtEntryBatches.objects.get(
+                entry_batch_id=target_batch_id,
+                organization__in=request.user.organisations.all()
+            )
+            
+            # Move entry
+            entry.entry_batch = target_batch 
+            entry.save()
+            
+            return JsonResponse({
+                'success': True,
+                'message': f'Successfully moved entry to batch {target_batch.code}'
+            })
+            
+        except TrtDataEntry.DoesNotExist:
+            return JsonResponse({'error': 'Entry not found'}, status=404)
+        except TrtEntryBatches.DoesNotExist:
+            return JsonResponse({'error': 'Target batch not found'}, status=404)
+        except PermissionDenied as e:
+            return JsonResponse({'error': str(e)}, status=403)
+        except Exception as e:
+            return JsonResponse({'error': f'Operation failed: {str(e)}'}, status=500)

@@ -231,6 +231,7 @@
                         <th>Comments</th>
                         {% if user.is_superuser or user|has_group:"WAMTRAM2_STAFF" %}
                         <th>Delete</th>
+                        <th>Move Entry</th> 
                         {% endif %}
                     </tr>
                 </thead>
@@ -288,6 +289,14 @@
                                 <button type="button" class="btn btn-danger btn-sm delete-entry-btn" data-toggle="modal" data-target="#entryDeleteConfirmationModal" data-entry-id="{{ obj.data_entry_id }}" data-url="{% url 'wamtram2:delete_entry' pk=obj.data_entry_id batch_id=batch.entry_batch_id %}">Delete</button>
                             {% endif %}
                         </td>
+                        <td>
+                            {% if obj.observation_id %}
+                                <button type="button" class="btn btn-secondary btn-sm" disabled>Can not move</button>
+                            {% else %}
+                                <button type="button" class="btn btn-warning btn-sm" onclick="showMoveDialog('{{ obj.data_entry_id }}')">
+                                    <i class="fas fa-exchange-alt"></i> Move
+                            </button>
+                        </td>
                     {% endif %}
                     </tr>
                     {% endfor %}
@@ -307,6 +316,37 @@
     <div class="loading-spinner">
         <div class="spinner-border text-primary" role="status">
             <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+
+    <!-- Move Entry Modal -->
+    <div class="modal fade" id="moveEntryModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Move Entry to Another Batch</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Target Batch ID:</label>
+                        <select id="targetBatchSelect" class="form-control">
+                        </select>
+                        <small id="batchInfo" class="form-text text-muted"></small>
+                    </div>
+                    <div class="form-group mt-3">
+                        <label>Confirmation:</label>
+                        <input type="text" class="form-control" id="moveConfirmation" 
+                            placeholder="Type: 'I confirm moving to [batch_id]'">
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-warning" id="confirmMoveBtn">Move Entry</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -520,5 +560,95 @@
             window.location.reload();
         }
     });
-    </script>
+
+    let currentEntryId = null;
+        
+    // Wait for document ready
+    $(document).ready(function() {
+        function showMoveDialog(entryId) {
+            currentEntryId = entryId;
+            // Get available batches
+            $.ajax({
+                url: '{% url "available_batches" %}',  // Use Django URL template tag
+                method: 'GET',
+                success: function(data) {
+                    const select = $('#targetBatchSelect');
+                    select.empty();
+                    data.forEach(batch => {
+                        select.append(`<option value="${batch.id}">${batch.id} - ${batch.code}</option>`);
+                    });
+                    $('#moveEntryModal').modal('show');
+                },
+                error: function(xhr, status, error) {
+                    alert('Failed to load available batches: ' + error);
+                }
+            });
+        }
+        
+        // Make showMoveDialog available globally
+        window.showMoveDialog = showMoveDialog;
+        
+        // Batch select change handler
+        $('#targetBatchSelect').on('change', function() {
+            const batchId = $(this).val();
+            if (!batchId) return;  // Handle empty selection
+            
+            // Get batch details
+            $.ajax({
+                url: `{% url "batch_info" 0 %}`.replace('0', batchId),  // Use Django URL template tag
+                method: 'GET',
+                success: function(data) {
+                    $('#batchInfo').text(`Code: ${data.code}, Comment: ${data.comment}`);
+                },
+                error: function(xhr, status, error) {
+                    $('#batchInfo').text('Failed to load batch info');
+                }
+            });
+        });
+        
+        // Confirm move button handler
+        $('#confirmMoveBtn').on('click', function() {
+            const targetBatchId = $('#targetBatchSelect').val();
+            if (!targetBatchId || !currentEntryId) {
+                alert('Please select a target batch');
+                return;
+            }
+            
+            const confirmation = $('#moveConfirmation').val();
+            const expectedConfirmation = `I confirm moving to ${targetBatchId}`;
+            
+            if (confirmation !== expectedConfirmation) {
+                alert('Please enter the correct confirmation text');
+                return;
+            }
+            
+            $.ajax({
+                url: '{% url "move_entry" %}',  // Use Django URL template tag
+                method: 'POST',
+                data: {
+                    entry_id: currentEntryId,
+                    target_batch_id: targetBatchId,
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    if (response.success) {
+                        location.reload();
+                    } else {
+                        alert(response.error || 'Move operation failed');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    alert('Failed to move entry: ' + error);
+                }
+            });
+        });
+        
+        // Clear form when modal is hidden
+        $('#moveEntryModal').on('hidden.bs.modal', function() {
+            $('#moveConfirmation').val('');
+            $('#batchInfo').text('');
+            currentEntryId = null;
+        });
+    });
+</script>
 {% endblock %}
