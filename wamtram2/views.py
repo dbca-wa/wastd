@@ -1663,25 +1663,68 @@ class FilterFormView(LoginRequiredMixin, View):
         from_date = request.GET.get('observation_date_from')
         to_date = request.GET.get('observation_date_to')
 
-        observations = TrtObservations.objects.filter(
-            observation_date__range=[from_date, to_date]
-        )
-        
-        places = observations.values('place__place_code', 'place__location_name', 'place__place_name').distinct()
-        species = TrtSpecies.objects.filter(observations__in=observations).distinct()
+        # Get user's accessible batch IDs
+        user = request.user
+        if not user.is_superuser:
+            user_organisations = user.organisations.all()
+            if not user_organisations.exists():
+                return JsonResponse({
+                    'places': [],
+                    'species': [],
+                    'sexes': [],
+                    'turtle_statuses': []
+                })
+            
+            related_batch_ids = TrtEntryBatchOrganisation.objects.filter(
+                organisation__in=[org.code for org in user_organisations]
+            ).values_list('trtentrybatch_id', flat=True)
+            
+            # Filter data entries by batch IDs and date range
+            data_entries = TrtDataEntry.objects.filter(
+                entry_batch_id__in=related_batch_ids,
+                observation_date__range=[from_date, to_date]
+            )
+        else:
+            data_entries = TrtDataEntry.objects.filter(
+                observation_date__range=[from_date, to_date]
+            )
+
+        # Get distinct places
+        places = TrtPlaces.objects.filter(
+            place_code__in=data_entries.values_list('place_code', flat=True)
+        ).select_related('location_code').distinct()
+
+        species = TrtSpecies.objects.filter(
+            species_code__in=data_entries.values_list('species_code', flat=True)
+        ).distinct()
+
+        # Get distinct sexes
+        used_sexes = data_entries.values_list('sex', flat=True).distinct()
         custom_sex_order = ['F', 'M', 'I']
         sex_dict = dict(SEX_CHOICES)
-        sexes = [{'value': s, 'label': sex_dict[s]} for s in custom_sex_order if s in sex_dict]
-        turtle_statuses = TrtTurtleStatus.objects.filter(observations__in=observations).distinct()
+        sexes = [
+            {'value': s, 'label': sex_dict[s]} 
+            for s in custom_sex_order 
+            if s in sex_dict and s in used_sexes
+        ]
 
         return JsonResponse({
-            'places': [{'value': p.place_code, 'label': f"{p.location_code.location_name} - {p.place_name}"} for p in places],
-            'species': [{'value': s.species_code, 'label': s.common_name} for s in species],
-            'sexes': sexes,
-            'turtle_statuses': [{'value': ts.turtle_status, 'label': ts.description} for ts in turtle_statuses],
-        })
-        
-
+            'places': [
+                {
+                    'value': p.place_code, 
+                    'label': f"{p.location_code.location_name} - {p.place_name}"
+                } 
+                for p in places
+            ],
+            'species': [
+                {
+                    'value': s.species_code, 
+                    'label': s.common_name
+                } 
+                for s in species
+            ],
+            'sexes': sexes
+    })
 
 class DudTagManageView(LoginRequiredMixin, View):
     template_name = 'wamtram2/dud_tag_manage.html'
