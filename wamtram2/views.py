@@ -1597,8 +1597,24 @@ class ExportDataView(LoginRequiredMixin, View):
         observation_date_from = request.GET.get("observation_date_from")
         observation_date_to = request.GET.get("observation_date_to")
 
+        # First get data accessible to the user
+        queryset = TrtDataEntry.objects.all()
+        user = request.user
+        if not user.is_superuser:
+            user_organisations = user.organisations.all()
+            if user_organisations.exists():
+                related_batch_ids = TrtEntryBatchOrganisation.objects.filter(
+                    organisation__in=[org.code for org in user_organisations]
+                ).values_list('trtentrybatch_id', flat=True)
+                queryset = queryset.filter(entry_batch_id__in=related_batch_ids)
+            else:
+                return JsonResponse({"places": []})
+
+        # Get places from filtered data
         places = TrtPlaces.objects.filter(
-            trtdataentry__observation_date__range=[observation_date_from, observation_date_to]
+            place_code__in=queryset.filter(
+                observation_date__range=[observation_date_from, observation_date_to]
+            ).values_list('place_code', flat=True)
         ).select_related('location_code').distinct()
 
         place_list = [
@@ -1617,8 +1633,24 @@ class ExportDataView(LoginRequiredMixin, View):
         observation_date_from = request.GET.get("observation_date_from")
         observation_date_to = request.GET.get("observation_date_to")
 
+        # First get data accessible to the user
+        queryset = TrtDataEntry.objects.all()
+        user = request.user
+        if not user.is_superuser:
+            user_organisations = user.organisations.all()
+            if user_organisations.exists():
+                related_batch_ids = TrtEntryBatchOrganisation.objects.filter(
+                    organisation__in=[org.code for org in user_organisations]
+                ).values_list('trtentrybatch_id', flat=True)
+                queryset = queryset.filter(entry_batch_id__in=related_batch_ids)
+            else:
+                return JsonResponse({"species": []})
+
+        # Get species from filtered data
         species = TrtSpecies.objects.filter(
-            trtdataentry__observation_date__range=[observation_date_from, observation_date_to]
+            species_code__in=queryset.filter(
+                observation_date__range=[observation_date_from, observation_date_to]
+            ).values_list('species_code', flat=True)
         ).distinct()
 
         species_list = [
@@ -1630,14 +1662,34 @@ class ExportDataView(LoginRequiredMixin, View):
 
     def get_sexes(self, request):
         """Retrieve available sex choices based on the defined SEX_CHOICES."""
-        # Directly use the SEX_CHOICES to return the options for the frontend
+        observation_date_from = request.GET.get("observation_date_from")
+        observation_date_to = request.GET.get("observation_date_to")
+
+        # First get data accessible to the user
+        queryset = TrtDataEntry.objects.all()
+        user = request.user
+        if not user.is_superuser:
+            user_organisations = user.organisations.all()
+            if user_organisations.exists():
+                related_batch_ids = TrtEntryBatchOrganisation.objects.filter(
+                    organisation__in=[org.code for org in user_organisations]
+                ).values_list('trtentrybatch_id', flat=True)
+                queryset = queryset.filter(entry_batch_id__in=related_batch_ids)
+            else:
+                return JsonResponse({"sexes": []})
+
+        # Get actually used sex values from filtered data
+        used_sexes = queryset.filter(
+            observation_date__range=[observation_date_from, observation_date_to]
+        ).values_list('sex', flat=True).distinct()
+
         sex_list = [
             {"value": choice[0], "label": choice[1]}
             for choice in SEX_CHOICES
+            if choice[0] in used_sexes
         ]
 
         return JsonResponse({"sexes": sex_list})
-
 
 class FilterFormView(LoginRequiredMixin, View):
     def dispatch(self, request, *args, **kwargs):
