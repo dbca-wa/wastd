@@ -2348,23 +2348,28 @@ class AddPersonView(LoginRequiredMixin, FormView):
 
 class AvailableBatchesView(LoginRequiredMixin, View):
     def get(self, request):
-        user_orgs = request.user.organisations.all() 
-        batches = TrtEntryBatches.objects.filter(organization__in=user_orgs)
+        user_orgs = request.user.organisations.all()
+        # 使用batch_organisations关联查询
+        batches = TrtEntryBatches.objects.filter(
+            batch_organisations__organisation__in=[org.code for org in user_orgs]
+        ).distinct()
+        
         return JsonResponse([{
             'id': batch.entry_batch_id,
-            'code': batch.code,
-            'comment': batch.comments 
+            'code': batch.batches_code,  # 修正字段名
+            'comment': batch.comments
         } for batch in batches], safe=False)
 
 class BatchInfoView(LoginRequiredMixin, View):
     def get(self, request, batch_id):
         try:
+            user_org_codes = [org.code for org in request.user.organisations.all()]
             batch = TrtEntryBatches.objects.get(
-                entry_batch_id=batch_id, 
-                organization__in=request.user.organisations.all()
+                entry_batch_id=batch_id,
+                batch_organisations__organisation__in=user_org_codes
             )
             return JsonResponse({
-                'code': batch.code,
+                'code': batch.batches_code,
                 'comment': batch.comments
             })
         except TrtEntryBatches.DoesNotExist:
@@ -2379,27 +2384,29 @@ class MoveEntryView(LoginRequiredMixin, View):
             return JsonResponse({'error': 'Missing required parameters'}, status=400)
             
         try:
-            # Get entry and check permissions
-            entry = TrtDataEntry.objects.get(data_entry_id=entry_id) 
+            user_org_codes = [org.code for org in request.user.organisations.all()]
+            
+            entry = TrtDataEntry.objects.select_related('entry_batch').get(
+                data_entry_id=entry_id
+            )
             current_batch = entry.entry_batch
             
-            # Check if user has permission to operate on current batch
-            if current_batch.organization not in request.user.organisations.all():
+            if not current_batch.batch_organisations.filter(
+                organisation__in=user_org_codes
+            ).exists():
                 raise PermissionDenied('No permission to operate on this entry')
             
-            # Get target batch and check permissions
             target_batch = TrtEntryBatches.objects.get(
                 entry_batch_id=target_batch_id,
-                organization__in=request.user.organisations.all()
+                batch_organisations__organisation__in=user_org_codes
             )
             
-            # Move entry
-            entry.entry_batch = target_batch 
+            entry.entry_batch = target_batch
             entry.save()
             
             return JsonResponse({
                 'success': True,
-                'message': f'Successfully moved entry to batch {target_batch.code}'
+                'message': f'Successfully moved entry to batch {target_batch.batches_code}'
             })
             
         except TrtDataEntry.DoesNotExist:
