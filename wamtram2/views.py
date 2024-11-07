@@ -2349,14 +2349,17 @@ class AddPersonView(LoginRequiredMixin, FormView):
 class AvailableBatchesView(LoginRequiredMixin, View):
     def get(self, request):
         user_orgs = request.user.organisations.all()
-        # 使用batch_organisations关联查询
+        current_batch_id = request.GET.get('current_batch_id')
+        
         batches = TrtEntryBatches.objects.filter(
             batch_organisations__organisation__in=[org.code for org in user_orgs]
+        ).exclude(
+            entry_batch_id=current_batch_id
         ).distinct()
         
         return JsonResponse([{
             'id': batch.entry_batch_id,
-            'code': batch.batches_code,  # 修正字段名
+            'code': batch.batches_code,
             'comment': batch.comments
         } for batch in batches], safe=False)
 
