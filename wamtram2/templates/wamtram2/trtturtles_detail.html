@@ -170,17 +170,17 @@
                         <table class="table table-sm table-bordered">
                             <thead>
                                 <tr>
-                                    <th>Measurement</th>
-                                    <th>Value</th>
-                                    <th>Comments</th>
+                                    <th  style="width: 30%">Measurement</th>
+                                    <th  style="width: 30%">Value</th>
+                                    <th  style="width: 40%">Comments</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for measurement in obs_data.measurements %}
                                 <tr>
-                                    <td>{{ measurement.measurement_type }}</td>
-                                    <td>{{ measurement.measurement_value }}</td>
-                                    <td>{{ measurement.comments|default_if_none:"" }}</td>
+                                    <td style="width: 30%">{{ measurement.measurement_type }}</td>
+                                    <td style="width: 30%">{{ measurement.measurement_value }}</td>
+                                    <td style="width: 40%">{{ measurement.comments|default_if_none:"" }}</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>

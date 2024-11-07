@@ -9,7 +9,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.views.generic.edit import FormMixin
-from django.views.generic import TemplateView, ListView, DetailView, FormView, DeleteView
+from django.views.generic import TemplateView, ListView, DetailView, FormView, DeleteView, UpdateView
 from django.http import JsonResponse
 from .models import TrtPlaces, TrtSpecies, TrtLocations,TrtEntryBatchOrganisation
 from django.core.paginator import Paginator
@@ -25,6 +25,8 @@ from datetime import timedelta
 from django.core.exceptions import PermissionDenied,ValidationError
 import pandas as pd
 from datetime import datetime, date, time
+from django.db import transaction
+from django.apps import apps 
 
 from wastd.utils import Breadcrumb, PaginateMixin
 from .models import (
@@ -39,7 +41,7 @@ from .models import (
     TrtTagStates,
     TrtIdentification
 )
-from .forms import TrtDataEntryForm, SearchForm, TrtEntryBatchesForm, TemplateForm, BatchesCodeForm, TrtPersonsForm
+from .forms import TrtDataEntryForm, SearchForm, TrtEntryBatchesForm, TemplateForm, BatchesCodeForm, TrtPersonsForm, PersonMergeForm, PersonUpdateForm
 
 
 class HomePageView(LoginRequiredMixin, TemplateView):
@@ -147,17 +149,6 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
     
     def get_initial(self):
         initial = super().get_initial()
-        # batch_id = self.kwargs.get("batch_id")
-        # cookies_key_prefix = batch_id
-        # default_enterer = self.request.COOKIES.get(f'{cookies_key_prefix}_default_enterer')
-        # use_default_enterer = self.request.COOKIES.get(f'{cookies_key_prefix}_use_default_enterer', False)
-        
-        # if default_enterer == "None" or not default_enterer or default_enterer == "":
-        #     default_enterer = None
-
-        # if use_default_enterer and default_enterer:
-        #     initial['entered_person_id'] = default_enterer
-        
         return initial
 
     def dispatch(self, request, *args, **kwargs):
@@ -2437,3 +2428,99 @@ class MoveEntryView(LoginRequiredMixin, View):
             return JsonResponse({'error': str(e)}, status=403)
         except Exception as e:
             return JsonResponse({'error': f'Operation failed: {str(e)}'}, status=500)
+        
+
+class PersonManageView(LoginRequiredMixin, ListView):
+    model = TrtPersons
+    template_name = 'wamtram2/manage_person.html'
+    context_object_name = 'persons'
+    paginate_by = 50
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search_term = self.request.GET.get('search', '')
+        if search_term:
+            queryset = queryset.filter(
+                Q(first_name__icontains=search_term) |
+                Q(surname__icontains=search_term) |
+                Q(email__icontains=search_term)
+            )
+        return queryset
+
+    @transaction.atomic
+    def post(self, request, *args, **kwargs):
+        action = request.POST.get('action')
+        
+        if action == 'merge':
+            return self.handle_merge()
+        elif action == 'update':
+            return self.handle_update()
+        
+        return self.get(request, *args, **kwargs)
+
+    def handle_merge(self):
+        primary_id = self.request.POST.get('primary_person')
+        secondary_id = self.request.POST.get('secondary_person')
+        
+        try:
+            primary = TrtPersons.objects.get(pk=primary_id)
+            secondary = TrtPersons.objects.get(pk=secondary_id)
+            
+            if primary == secondary:
+                messages.error(self.request, "Cannot merge a person with themselves")
+                return self.get(self.request)
+                
+            models_to_update = [
+                ('TrtDataEntry', ['measured_by_id', 'recorded_by_id', 'tagged_by_id', 
+                                'entered_by_id', 'measured_recorded_by_id']),
+                ('TrtObservations', ['reporter_person', 'entered_by_person','tagger_person',
+                                   'measurer_reporter_person','measurer_person']),
+            ]
+            
+            for model_name, fields in models_to_update:
+                model = apps.get_model('wamtram2', model_name)
+                for field in fields:
+                    model.objects.filter(**{field: secondary}).update(**{field: primary})
+            
+            secondary_info = f"{secondary.first_name} {secondary.surname}"
+            merge_note = f"Merged with {secondary_info} on {timezone.now().strftime('%Y-%m-%d')}"
+            
+            if primary.comments:
+                primary.comments += f"\n{merge_note}"
+            else:
+                primary.comments = merge_note
+            primary.save()
+            
+            secondary.delete()
+            messages.success(self.request, 
+                           f"Successfully merged {secondary_info} into {primary.first_name} {primary.surname}")
+            
+        except Exception as e:
+            messages.error(self.request, f"Error during merge: {str(e)}")
+        
+        return self.get(self.request)
+
+    def handle_update(self):
+        person_id = self.request.POST.get('person_id')
+        try:
+            person = TrtPersons.objects.get(pk=person_id)
+            old_name = f"{person.first_name} {person.surname}"
+            
+            person.first_name = self.request.POST.get('first_name', person.first_name)
+            person.surname = self.request.POST.get('surname', person.surname)
+            new_name = f"{person.first_name} {person.surname}"
+            
+            if old_name != new_name:
+                change_note = f"Name changed from {old_name} to {new_name} on {timezone.now().strftime('%Y-%m-%d')}"
+                if person.comments:
+                    person.comments += f"\n{change_note}"
+                else:
+                    person.comments = change_note
+                    
+            person.save()
+            messages.success(self.request, "Successfully updated person information")
+            
+        except Exception as e:
+            messages.error(self.request, f"Error updating person: {str(e)}")
+        
+        return self.get(self.request)

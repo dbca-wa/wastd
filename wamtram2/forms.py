@@ -749,3 +749,24 @@ class TrtPersonsForm(forms.ModelForm):
     def clean_recorder(self):
         recorder = self.cleaned_data.get('recorder', False)
         return bool(recorder)
+    
+class PersonMergeForm(forms.Form):
+    primary_person = forms.ModelChoiceField(
+        queryset=TrtPersons.objects.all(),
+        label="Keep this person (Primary)",
+        help_text="All records will be transferred to this person"
+    )
+    secondary_person = forms.ModelChoiceField(
+        queryset=TrtPersons.objects.all(),
+        label="Merge this person (Will be removed)",
+        help_text="This person's records will be transferred to the primary person"
+    )
+
+class PersonUpdateForm(forms.ModelForm):
+    class Meta:
+        model = TrtPersons
+        fields = ['first_name', 'surname', 'email', 'comments']
+        
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['comments'].help_text = "Add a note about name changes here"

@@ -42,4 +42,5 @@ urlpatterns = [
     path('api/available-batches/', views.AvailableBatchesView.as_view(), name='available_batches'),
     path('api/batch/<int:batch_id>/info/', views.BatchInfoView.as_view(), name='batch_info'),
     path('api/move-entry/', views.MoveEntryView.as_view(), name='move_entry'),
+    path('persons/manage/', views.PersonManageView.as_view(), name='manage_person'),
 ]
