@@ -1088,7 +1088,11 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
             }
             observations_data.append(obs_data)
             
-            identifications = TrtIdentification.objects.filter(turtle=obj)
+            identifications = TrtIdentification.objects.filter(turtle_id=obj.pk)
+            
+            print(f"Turtle ID: {obj.pk}")
+            print(f"Identifications found: {identifications.count()}")
+            print(f"Raw SQL: {identifications.query}")
         
         context.update({
             "page_title": f"{settings.SITE_CODE} | WAMTRAM2 | {obj.pk}",
