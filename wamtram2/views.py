@@ -1090,6 +1090,9 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
             
             identifications = TrtIdentification.objects.filter(turtle_id=obj.pk)
             
+            for ident in identifications:
+                print(f"Identification record: Type={ident.identification_type}, ID={ident.identifier}, Comments={ident.comments}")
+            
             print(f"Turtle ID: {obj.pk}")
             print(f"Identifications found: {identifications.count()}")
             print(f"Raw SQL: {identifications.query}")
