@@ -1088,10 +1088,7 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
             }
             observations_data.append(obs_data)
             
-        try:
-            identification = obj.trtidentification
-        except TrtIdentification.DoesNotExist:
-            identification = None
+            identifications = TrtIdentification.objects.filter(turtle=obj)
         
         context.update({
             "page_title": f"{settings.SITE_CODE} | WAMTRAM2 | {obj.pk}",
@@ -1099,7 +1096,7 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
             "pittags": unique_pittags,
             "observations_data": observations_data,
             "samples": obj.trtsamples_set.all(),
-            "identification": identification 
+            "identification": identifications 
         })
                 
         return context
