@@ -1090,12 +1090,6 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
             
             identifications = TrtIdentification.objects.filter(turtle_id=obj.pk)
             
-            for ident in identifications:
-                print(f"Identification record: Type={ident.identification_type}, ID={ident.identifier}, Comments={ident.comments}")
-            
-            print(f"Turtle ID: {obj.pk}")
-            print(f"Identifications found: {identifications.count()}")
-            print(f"Raw SQL: {identifications.query}")
         
         context.update({
             "page_title": f"{settings.SITE_CODE} | WAMTRAM2 | {obj.pk}",
@@ -1103,7 +1097,7 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
             "pittags": unique_pittags,
             "observations_data": observations_data,
             "samples": obj.trtsamples_set.all(),
-            "identification": identifications 
+            "identifications": identifications 
         })
                 
         return context

@@ -108,70 +108,35 @@
     {% endif %}
 {% endif %}
 
-{% comment %} <!-- Observations Section -->
-<h3>Observations</h3>
-{% if observations %}
-<div class="row">
-    <div class="col">
-        <table class="table table-striped table-bordered table-sm">
-            <thead>
-                <tr>
-                    <th>Date & time</th>
-                    <th>Reporter</th>
-                    <th>Measurer</th>
-                    <th>Site</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for observation in observations %}
-                <tr>
-                    <td>
-                        {% if request.user.is_superuser or request.user|has_group:"WAMTRAM2_STAFF" or request.user|has_group:"WAMTRAM2_TEAM_LEADER" %}
-                            <a href="{% url 'wamtram2:observationdetail' pk=observation.observation_id %}">{{ observation.observation_date|perth_time|date:"j M Y H:i" }}</a>
-                        {% else %}
-                            {{ observation.observation_date|perth_time|date:"j M Y H:i" }}
-                        </td>
-                        {% endif %}
-                    <td>{{ observation.reporter_person }}</td>
-                    <td>{{ observation.measurer_person }}</td>
-                    <td>{{ observation.place_code }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+{% if request.user.is_superuser or request.user|has_group:"WAMTRAM2_STAFF" %}
+    <!-- Other Identifications Section -->
+    <h3>Other Identifications</h3>
+    {% if identifications.exists %}
+    <div class="row">
+        <div class="col">
+            <table class="table table-sm table-bordered">
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Identifier</th>
+                        <th>Comments</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for identification in identifications %}
+                    <tr>
+                        <td>{{ identification.identification_type }}</td>
+                        <td>{{ identification.identifier }}</td>
+                        <td>{{ identification.comments|default_if_none:"" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
-</div>
-{% else %}
-<p>None recorded</p>
-{% endif %} {% endcomment %}
-
-<!-- Other Identifications Section -->
-<h3>Other Identifications</h3>
-{% if identifications.exists %}
-<div class="row">
-    <div class="col">
-        <table class="table table-sm table-bordered">
-            <thead>
-                <tr>
-                    <th>Type</th>
-                    <th>Identifier</th>
-                    <th>Comments</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for identification in identifications %}
-                <tr>
-                    <td>{{ identification.identification_type }}</td>
-                    <td>{{ identification.identifier }}</td>
-                    <td>{{ identification.comments|default_if_none:"" }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</div>
-{% else %}
-<p>No other identifications recorded</p>
+    {% else %}
+    <p>No other identifications recorded</p>
+    {% endif %}
 {% endif %}
 
 
@@ -194,36 +159,38 @@
                 </h5>
             </div>
             <div class="card-body">
-                <!-- 基本观察信息 -->
+                <!-- Observation details -->
                 <div class="row mb-3">
                     <div class="col-md-3"><strong>Reporter:</strong> {{ obs_data.observation.reporter_person }}</div>
                     <div class="col-md-3"><strong>Measurer:</strong> {{ obs_data.observation.measurer_person }}</div>
-                    <div class="col-md-3"><strong>Site:</strong> {{ obs_data.observation.place_code.get_full_name }}</div>
+                    <div class="col-md-6"><strong>Site:</strong> {{ obs_data.observation.place_code.get_full_name }}</div>
                 </div>
 
-                <!-- Measurements -->
-                {% if obs_data.measurements %}
-                <div class="mb-3">
-                    <h6>Measurements:</h6>
-                    <table class="table table-sm table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Measurement</th>
-                                <th>Value</th>
-                                <th>Comments</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for measurement in obs_data.measurements %}
-                            <tr>
-                                <td>{{ measurement.measurement_type }}</td>
-                                <td>{{ measurement.measurement_value }}</td>
-                                <td>{{ measurement.comments|default_if_none:"" }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+                {% if request.user.is_superuser or request.user|has_group:"WAMTRAM2_STAFF" %}
+                    <!-- Measurements -->
+                    {% if obs_data.measurements %}
+                    <div class="mb-3">
+                        <h6>Measurements:</h6>
+                        <table class="table table-sm table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Measurement</th>
+                                    <th>Value</th>
+                                    <th>Comments</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for measurement in obs_data.measurements %}
+                                <tr>
+                                    <td>{{ measurement.measurement_type }}</td>
+                                    <td>{{ measurement.measurement_value }}</td>
+                                    <td>{{ measurement.comments|default_if_none:"" }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endif %}
                 {% endif %}
             </div>
         </div>
@@ -234,35 +201,37 @@
 <p>No observations recorded</p>
 {% endif %}
 
-<!-- Samples Section -->
-<h3>Samples</h3>
-{% if samples %}
-<div class="row">
-    <div class="col">
-        <table class="table table-sm table-bordered">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Tissue Type</th>
-                    <th>Label</th>
-                    <th>Comments</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for sample in samples %}
-                <tr>
-                    <td>{{ sample.sample_date|date:"j M Y"|default_if_none:"" }}</td>
-                    <td>{{ sample.tissue_type }}</td>
-                    <td>{{ sample.sample_label|default_if_none:"" }}</td>
-                    <td>{{ sample.comments|default_if_none:"" }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+{% if request.user.is_superuser or request.user|has_group:"WAMTRAM2_STAFF" %}
+    <!-- Samples Section -->
+    <h3>Samples</h3>
+    {% if samples %}
+    <div class="row">
+        <div class="col">
+            <table class="table table-sm table-bordered">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Tissue Type</th>
+                        <th>Label</th>
+                        <th>Comments</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sample in samples %}
+                    <tr>
+                        <td>{{ sample.sample_date|date:"j M Y"|default_if_none:"" }}</td>
+                        <td>{{ sample.tissue_type }}</td>
+                        <td>{{ sample.sample_label|default_if_none:"" }}</td>
+                        <td>{{ sample.comments|default_if_none:"" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
-</div>
-{% else %}
-<p>No samples recorded</p>
+    {% else %}
+    <p>No samples recorded</p>
+    {% endif %}
 {% endif %}
 
 
