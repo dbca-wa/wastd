@@ -37,6 +37,7 @@ from .models import (
     TrtObservations,
     Template,
     TrtTagStates,
+    TrtIdentification
 )
 from .forms import TrtDataEntryForm, SearchForm, TrtEntryBatchesForm, TemplateForm, BatchesCodeForm, TrtPersonsForm
 
@@ -1086,6 +1087,11 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
                 'measurements': obs.trtmeasurements_set.all()
             }
             observations_data.append(obs_data)
+            
+        try:
+            identification = obj.trtidentification
+        except TrtIdentification.DoesNotExist:
+            identification = None
         
         context.update({
             "page_title": f"{settings.SITE_CODE} | WAMTRAM2 | {obj.pk}",
@@ -1093,7 +1099,7 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
             "pittags": unique_pittags,
             "observations_data": observations_data,
             "samples": obj.trtsamples_set.all(),
-            "identifications": obj.trtidentification_set.all()
+            "identification": identification 
         })
                 
         return context
