@@ -108,7 +108,7 @@
     {% endif %}
 {% endif %}
 
-<!-- Observations Section -->
+{% comment %} <!-- Observations Section -->
 <h3>Observations</h3>
 {% if observations %}
 <div class="row">
@@ -139,6 +139,117 @@
                 {% endfor %}
             </tbody>
         </table>
+    </div>
+</div>
+{% else %}
+<p>None recorded</p>
+{% endif %} {% endcomment %}
+
+<!-- Observations Section -->
+<h3>Observations</h3>
+{% if observations_data %}
+<div class="row">
+    <div class="col">
+        {% for obs_data in observations_data %}
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    {% if request.user.is_superuser or request.user|has_group:"WAMTRAM2_STAFF" or request.user|has_group:"WAMTRAM2_TEAM_LEADER" %}
+                        <a href="{% url 'wamtram2:observationdetail' pk=obs_data.observation.observation_id %}">
+                            Observation on {{ obs_data.observation.observation_date|perth_time|date:"j M Y H:i" }}
+                        </a>
+                    {% else %}
+                        Observation on {{ obs_data.observation.observation_date|perth_time|date:"j M Y H:i" }}
+                    {% endif %}
+                </h5>
+            </div>
+            <div class="card-body">
+                <!-- Observation details -->
+                <div class="row mb-3">
+                    <div class="col-md-3"><strong>Reporter:</strong> {{ obs_data.observation.reporter_person }}</div>
+                    <div class="col-md-3"><strong>Measurer:</strong> {{ obs_data.observation.measurer_person }}</div>
+                    <div class="col-md-3"><strong>Site:</strong> {{ obs_data.observation.place_code }}</div>
+                </div>
+
+                <!-- Measurements -->
+                {% if obs_data.measurements %}
+                <div class="mb-3">
+                    <h6>Measurements:</h6>
+                    <table class="table table-sm table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Measurement</th>
+                                <th>Value</th>
+                                <th>Comments</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for measurement in obs_data.measurements %}
+                            <tr>
+                                <td>{{ measurement.measurement_type }}</td>
+                                <td>{{ measurement.measurement_value }}</td>
+                                <td>{{ measurement.comments|default_if_none:"" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endif %}
+
+                <!-- Samples -->
+                {% if obs_data.samples %}
+                <div class="mb-3">
+                    <h6>Samples:</h6>
+                    <table class="table table-sm table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Tissue</th>
+                                <th>Date</th>
+                                <th>Label</th>
+                                <th>Comments</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for sample in obs_data.samples %}
+                            <tr>
+                                <td>{{ sample.tissue_type }}</td>
+                                <td>{{ sample.sample_date|date:"j M Y"|default_if_none:"" }}</td>
+                                <td>{{ sample.label }}</td>
+                                <td>{{ sample.comments|default_if_none:"" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endif %}
+
+                <!-- Other Identifications -->
+                {% if obs_data.other_identifications %}
+                <div class="mb-3">
+                    <h6>Other Identifications:</h6>
+                    <table class="table table-sm table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>Identifier</th>
+                                <th>Comments</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for identification in obs_data.other_identifications %}
+                            <tr>
+                                <td>{{ identification.identification_type }}</td>
+                                <td>{{ identification.identifier }}</td>
+                                <td>{{ identification.comments|default_if_none:"" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
     </div>
 </div>
 {% else %}

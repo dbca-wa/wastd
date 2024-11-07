@@ -998,6 +998,7 @@ class TurtleListView(LoginRequiredMixin, PaginateMixin, ListView):
 
     model = TrtTurtles
     paginate_by = 50
+    template_name = "wamtram2/trtturtles_list.html"
 
     def get_context_data(self, **kwargs):
         """
@@ -1046,6 +1047,7 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
     """
 
     model = TrtTurtles
+    template_name = "wamtram2/trtturtles_detail.html"
     
     def dispatch(self, request, *args, **kwargs):
         if not (
@@ -1075,15 +1077,31 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
             if tag.pittag_id_id not in seen:
                 unique_pittags.append(tag)
                 seen.add(tag.pittag_id_id)
+                
+        observations = obj.trtobservations_set.all().prefetch_related(
+            'trtmeasurements_set',
+            'trtsamples_set',
+            'trtotheridentification_set'
+        )
         
-        context["page_title"] = f"{settings.SITE_CODE} | WAMTRAM2 | {obj.pk}"
-        context["tags"] = obj.trttags_set.all()
-        context["pittags"] = unique_pittags
+        observations_data = []
+        for obs in observations:
+            obs_data = {
+                'observation': obs,
+                'measurements': obs.trtmeasurements_set.all(),
+                'samples': obs.trtsamples_set.all(),
+                'other_identifications': obs.trtotheridentification_set.all()
+            }
+            observations_data.append(obs_data)
         
-        context["observations"] = obj.trtobservations_set.all()
+        context.update({
+            "page_title": f"{settings.SITE_CODE} | WAMTRAM2 | {obj.pk}",
+            "tags": obj.trttags_set.all(),
+            "pittags": unique_pittags,
+            "observations_data": observations_data
+        })
                 
         return context
-
 
 SEX_CHOICES = [
     ("F", "Female"),
