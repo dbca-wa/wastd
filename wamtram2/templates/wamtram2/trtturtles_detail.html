@@ -145,6 +145,36 @@
 <p>None recorded</p>
 {% endif %} {% endcomment %}
 
+<!-- Other Identifications Section -->
+<h3>Other Identifications</h3>
+{% if identifications %}
+<div class="row">
+    <div class="col">
+        <table class="table table-sm table-bordered">
+            <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Identifier</th>
+                    <th>Comments</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for identification in identifications %}
+                <tr>
+                    <td>{{ identification.identification_type }}</td>
+                    <td>{{ identification.identifier }}</td>
+                    <td>{{ identification.comments|default_if_none:"" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% else %}
+<p>No other identifications recorded</p>
+{% endif %}
+
+
 <!-- Observations Section -->
 <h3>Observations</h3>
 {% if observations_data %}
@@ -164,7 +194,7 @@
                 </h5>
             </div>
             <div class="card-body">
-                <!-- Observation details -->
+                <!-- 基本观察信息 -->
                 <div class="row mb-3">
                     <div class="col-md-3"><strong>Reporter:</strong> {{ obs_data.observation.reporter_person }}</div>
                     <div class="col-md-3"><strong>Measurer:</strong> {{ obs_data.observation.measurer_person }}</div>
@@ -195,65 +225,46 @@
                     </table>
                 </div>
                 {% endif %}
-
-                <!-- Samples -->
-                {% if obs_data.samples %}
-                <div class="mb-3">
-                    <h6>Samples:</h6>
-                    <table class="table table-sm table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Tissue</th>
-                                <th>Date</th>
-                                <th>Label</th>
-                                <th>Comments</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for sample in obs_data.samples %}
-                            <tr>
-                                <td>{{ sample.tissue_type }}</td>
-                                <td>{{ sample.sample_date|date:"j M Y"|default_if_none:"" }}</td>
-                                <td>{{ sample.label }}</td>
-                                <td>{{ sample.comments|default_if_none:"" }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                {% endif %}
-
-                <!-- Other Identifications -->
-                {% if obs_data.other_identifications %}
-                <div class="mb-3">
-                    <h6>Other Identifications:</h6>
-                    <table class="table table-sm table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Type</th>
-                                <th>Identifier</th>
-                                <th>Comments</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for identification in obs_data.other_identifications %}
-                            <tr>
-                                <td>{{ identification.identification_type }}</td>
-                                <td>{{ identification.identifier }}</td>
-                                <td>{{ identification.comments|default_if_none:"" }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                {% endif %}
             </div>
         </div>
         {% endfor %}
     </div>
 </div>
 {% else %}
-<p>None recorded</p>
+<p>No observations recorded</p>
 {% endif %}
+
+<!-- Samples Section -->
+<h3>Samples</h3>
+{% if samples %}
+<div class="row">
+    <div class="col">
+        <table class="table table-sm table-bordered">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Tissue Type</th>
+                    <th>Label</th>
+                    <th>Comments</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sample in samples %}
+                <tr>
+                    <td>{{ sample.sample_date|date:"j M Y"|default_if_none:"" }}</td>
+                    <td>{{ sample.tissue_type }}</td>
+                    <td>{{ sample.sample_label|default_if_none:"" }}</td>
+                    <td>{{ sample.comments|default_if_none:"" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% else %}
+<p>No samples recorded</p>
+{% endif %}
+
+
 
 {% endblock page_content_inner %}

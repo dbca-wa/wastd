@@ -1078,19 +1078,12 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
                 unique_pittags.append(tag)
                 seen.add(tag.pittag_id_id)
                 
-        observations = obj.trtobservations_set.all().prefetch_related(
-            'trtmeasurements_set',
-            'trtsamples_set',
-            'trtotheridentification_set'
-        )
-        
+        observations = obj.trtobservations_set.all()
         observations_data = []
         for obs in observations:
             obs_data = {
                 'observation': obs,
-                'measurements': obs.trtmeasurements_set.all(),
-                'samples': obs.trtsamples_set.all(),
-                'other_identifications': obs.trtotheridentification_set.all()
+                'measurements': obs.trtmeasurements_set.all()
             }
             observations_data.append(obs_data)
         
@@ -1098,7 +1091,9 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
             "page_title": f"{settings.SITE_CODE} | WAMTRAM2 | {obj.pk}",
             "tags": obj.trttags_set.all(),
             "pittags": unique_pittags,
-            "observations_data": observations_data
+            "observations_data": observations_data,
+            "samples": obj.trtsamples_set.all(),
+            "identifications": obj.trtidentification_set.all()
         })
                 
         return context
