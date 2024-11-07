@@ -198,7 +198,7 @@
                 <div class="row mb-3">
                     <div class="col-md-3"><strong>Reporter:</strong> {{ obs_data.observation.reporter_person }}</div>
                     <div class="col-md-3"><strong>Measurer:</strong> {{ obs_data.observation.measurer_person }}</div>
-                    <div class="col-md-3"><strong>Site:</strong> {{ obs_data.observation.place_code }}</div>
+                    <div class="col-md-3"><strong>Site:</strong> {{ obs_data.observation.place_code.get_full_name }}</div>
                 </div>
 
                 <!-- Measurements -->
