@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.db import connections, DatabaseError
 from django.db.models import Q, Exists, OuterRef, Count, Subquery
 from django.http import HttpResponseForbidden, HttpResponseRedirect, HttpResponse
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin,UserPassesTestMixin
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.views import View
@@ -2430,11 +2430,19 @@ class MoveEntryView(LoginRequiredMixin, View):
             return JsonResponse({'error': f'Operation failed: {str(e)}'}, status=500)
         
 
-class PersonManageView(LoginRequiredMixin, ListView):
+class PersonManageView(LoginRequiredMixin,  UserPassesTestMixin, ListView):
     model = TrtPersons
     template_name = 'wamtram2/manage_person.html'
     context_object_name = 'persons'
     paginate_by = 50
+    
+    def test_func(self):
+        return self.request.user.is_superuser
+    
+    def handle_no_permission(self):
+        if not self.request.user.is_authenticated:
+            return super().handle_no_permission()
+        raise PermissionDenied("You must be a superuser to access this page.")
 
     def get_queryset(self):
         queryset = super().get_queryset()
