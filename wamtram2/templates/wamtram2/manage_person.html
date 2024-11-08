@@ -1,5 +1,12 @@
 {% extends "base_wastd.html" %}
 
+{% block extra_style %}
+    {{ block.super }}
+    {{ form.media.css }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
+{% endblock %}
+
 {% block breadcrumbs %}
     <!-- Breadcrumb Navigation -->
     <nav aria-label="breadcrumb" class="d-none d-md-block">
@@ -103,7 +110,8 @@
                                 </span>
                                 <form id="edit-form-{{ person.pk }}" 
                                     style="display: none;" 
-                                    method="post">
+                                    method="post"
+                                    onsubmit="return handleEditSubmit(this)">
                                     {% csrf_token %}
                                     <input type="hidden" name="action" value="update">
                                     <input type="hidden" name="person_id" value="{{ person.pk }}">
@@ -187,13 +195,23 @@
             {% endif %}
         </div>
     </div>
+
+
+    <!-- Loading spinner -->
+    <div class="loading-spinner" style="display: none;">
+        <div class="spinner-border text-primary" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" style="display: none;"></div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
 {{ block.super }}
 <script>
-
     function validateMerge() {
         const primary = document.querySelector('select[name="primary_person"]').value;
         const secondary = document.querySelector('select[name="secondary_person"]').value;
@@ -208,7 +226,11 @@
             return false;
         }
         
-        return confirm('Are you sure you want to merge these records? This action cannot be undone.');
+        if (confirm('Are you sure you want to merge these records? This action cannot be undone.')) {
+            showLoadingSpinner();
+            return true;
+        }
+        return false;
     }
     function toggleEdit(personId) {
         const displayElement = document.getElementById(`display-name-${personId}`);
@@ -223,10 +245,30 @@
         }
     }
 
+    function handleEditSubmit(formElement) {
+        showLoadingSpinner();
+        formElement.submit();
+        return true;
+    }
+
     function selectForMerge(personId) {
+        showLoadingSpinner();
         const currentUrl = new URL(window.location.href);
         currentUrl.searchParams.set('merge_id', personId);
         window.location.href = currentUrl.toString();
     }
+    // Show Loading Spinner and Overlay
+    function showLoadingSpinner() {
+        $('.loading-spinner, .loading-overlay').show();
+    }
+
+    // Hide Loading Spinner and Overlay
+    function hideLoadingSpinner() {
+        $('.loading-spinner, .loading-overlay').hide();
+    }
+    // Hide spinner when page is fully loaded
+    $(document).ready(function() {
+        hideLoadingSpinner();
+    });
 </script>
 {% endblock %}
