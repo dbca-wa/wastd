@@ -46,6 +46,7 @@
                         <label>Keep this person (Primary)</label>
                         <select name="primary_person" class="form-control">
                             {% for person in persons %}
+                            <option value="">-- Choose a person to keep --</option>
                             <option value="{{ person.pk }}">
                                 {{ person.first_name }} {{ person.surname }} (ID: {{ person.pk }})
                             </option>
@@ -55,6 +56,7 @@
                     <div class="col-md-5">
                         <label>Merge this person (Will be removed)</label>
                         <select name="secondary_person" class="form-control">
+                            <option value="">-- Choose a person to remove --</option>
                             {% for person in persons %}
                             <option value="{{ person.pk }}" {% if request.GET.merge_id == person.pk|stringformat:"s" %}selected{% endif %}>
                                 {{ person.first_name }} {{ person.surname }} (ID: {{ person.pk }})
@@ -65,7 +67,7 @@
                     <div class="col-md-2">
                         <label>&nbsp;</label>
                         <button type="submit" class="btn btn-warning btn-block" 
-                                onclick="return confirm('Are you sure you want to merge these records? This action cannot be undone.')">
+                            onclick="return validateMerge()">
                             Merge
                         </button>
                     </div>
@@ -84,39 +86,39 @@
                 <table class="table table-striped">
                     <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Related Records</th>
-                            <th>Actions</th>
+                            <th style="width: 5%;">ID</th>
+                            <th style="width: 10%;">Name</th>
+                            <th style="width: 25%;">Email</th>
+                            <th style="width: 30%;">Related Records</th>
+                            <th style="width: 30%;">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for person in persons %}
                         <tr>
-                            <td>{{ person.person_id }}</td>
-                            <td>
+                            <td style="width: 5%;">{{ person.person_id }}</td>
+                            <td style="width: 10%;">
                                 <span id="display-name-{{ person.pk }}">
                                     {{ person.first_name }} {{ person.surname }}
                                 </span>
                                 <form id="edit-form-{{ person.pk }}" 
-                                      style="display: none;" 
-                                      method="post">
+                                    style="display: none;" 
+                                    method="post">
                                     {% csrf_token %}
                                     <input type="hidden" name="action" value="update">
                                     <input type="hidden" name="person_id" value="{{ person.pk }}">
                                     <div class="form-row">
                                         <div class="col">
                                             <input type="text" 
-                                                   name="first_name" 
-                                                   class="form-control form-control-sm" 
-                                                   value="{{ person.first_name }}">
+                                                name="first_name" 
+                                                class="form-control form-control-sm" 
+                                                value="{{ person.first_name }}">
                                         </div>
                                         <div class="col">
                                             <input type="text" 
-                                                   name="surname" 
-                                                   class="form-control form-control-sm" 
-                                                   value="{{ person.surname }}">
+                                                name="surname" 
+                                                class="form-control form-control-sm" 
+                                                value="{{ person.surname }}">
                                         </div>
                                         <div class="col-auto">
                                             <button type="submit" class="btn btn-sm btn-success">Save</button>
@@ -126,14 +128,17 @@
                                     </div>
                                 </form>
                             </td>
-                            <td>{{ person.email|default:"-" }}</td>
-                            <td>
-                                <small>
-                                    Measured: {{ person.trtobservations_measurer.count }}<br>
-                                    Reported: {{ person.trtobservations_reporter.count }}
-                                </small>
+                            <td style="width: 25%;">{{ person.email|default:"-" }}</td>
+                            <td style="width: 30%;">
+                                <td style="width: 30%;">
+                                    <small>
+                                        Measured: {{ person.measurer_person.count }}<br>
+                                        Tagged: {{ person.tagger_person.count }}<br>
+                                        Entered: {{ person.entered_by_person.count }}
+                                    </small>
+                                </td>
                             </td>
-                            <td>
+                            <td style="width: 30%;">
                                 <button class="btn btn-sm btn-primary" 
                                         onclick="toggleEdit({{ person.pk }})">
                                     Edit
@@ -181,23 +186,40 @@
 {% block extra_js %}
 {{ block.super }}
 <script>
-function toggleEdit(personId) {
-    const displayElement = document.getElementById(`display-name-${personId}`);
-    const formElement = document.getElementById(`edit-form-${personId}`);
-    
-    if (formElement.style.display === 'none') {
-        displayElement.style.display = 'none';
-        formElement.style.display = 'block';
-    } else {
-        displayElement.style.display = 'block';
-        formElement.style.display = 'none';
-    }
-}
 
-function selectForMerge(personId) {
-    const currentUrl = new URL(window.location.href);
-    currentUrl.searchParams.set('merge_id', personId);
-    window.location.href = currentUrl.toString();
-}
+    function validateMerge() {
+        const primary = document.querySelector('select[name="primary_person"]').value;
+        const secondary = document.querySelector('select[name="secondary_person"]').value;
+        
+        if (!primary || !secondary) {
+            alert('Please select both persons for merging');
+            return false;
+        }
+        
+        if (primary === secondary) {
+            alert('Cannot merge a person with themselves');
+            return false;
+        }
+        
+        return confirm('Are you sure you want to merge these records? This action cannot be undone.');
+    }
+    function toggleEdit(personId) {
+        const displayElement = document.getElementById(`display-name-${personId}`);
+        const formElement = document.getElementById(`edit-form-${personId}`);
+        
+        if (formElement.style.display === 'none') {
+            displayElement.style.display = 'none';
+            formElement.style.display = 'block';
+        } else {
+            displayElement.style.display = 'block';
+            formElement.style.display = 'none';
+        }
+    }
+
+    function selectForMerge(personId) {
+        const currentUrl = new URL(window.location.href);
+        currentUrl.searchParams.set('merge_id', personId);
+        window.location.href = currentUrl.toString();
+    }
 </script>
 {% endblock %}

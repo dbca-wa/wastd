@@ -2445,7 +2445,11 @@ class PersonManageView(LoginRequiredMixin, ListView):
                 Q(surname__icontains=search_term) |
                 Q(email__icontains=search_term)
             )
-        return queryset
+        return queryset.prefetch_related(
+            'measurer_person',
+            'tagger_person',
+            'entered_by_person'
+        )
 
     @transaction.atomic
     def post(self, request, *args, **kwargs):
