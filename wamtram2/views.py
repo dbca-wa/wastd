@@ -44,7 +44,7 @@ from .models import (
     TrtTagStates,
     TrtIdentification
 )
-from .forms import TrtDataEntryForm, SearchForm, TrtEntryBatchesForm, TemplateForm, BatchesCodeForm, TrtPersonsForm
+from .forms import TrtDataEntryForm, SearchForm, TrtEntryBatchesForm, TemplateForm, BatchesCodeForm, TrtPersonsForm, TagRegisterForm
 
 
 class HomePageView(LoginRequiredMixin, TemplateView):
@@ -2695,4 +2695,88 @@ class PersonManageView(LoginRequiredMixin,  UserPassesTestMixin, ListView):
         
         return self.get(self.request)
     
+
+class TagRegisterView(LoginRequiredMixin, FormView):
+    template_name = 'wamtram2/tag_register.html'
+    form_class = TagRegisterForm
+    success_url = reverse_lazy('wamtram2:tag_register')
+
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or 
+                request.user.groups.filter(name="WAMTRAM2_STAFF").exists()):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        try:
+            tag_type = form.cleaned_data['tag_type']
+            prefix = form.cleaned_data['tag_prefix']
+            start = int(form.cleaned_data['start_number'])
+            end = int(form.cleaned_data['end_number'])
+            
+            if end - start > 1000: 
+                return JsonResponse({
+                    'success': False, 
+                    'error': 'Cannot create more than 1000 tags at once'
+                })
+
+            with transaction.atomic():  
+                for num in range(start, end + 1):
+                    tag_id = f"{prefix}{str(num).zfill(len(str(start)))}"
+                    
+                    if tag_type == 'flipper':
+                        
+                        if TrtTags.objects.filter(tag_id=tag_id).exists():
+                            return JsonResponse({
+                                'success': False,
+                                'error': f'Tag {tag_id} already exists'
+                            })
+                            
+                        TrtTags.objects.create(
+                            tag_id=tag_id,
+                            tag_order_id=form.cleaned_data['tag_order_id'],
+                            issue_location=form.cleaned_data['issue_location'],
+                            custodian_person_id=form.cleaned_data['custodian_person_id'],
+                            field_person_id=form.cleaned_data['field_person_id'],
+                            comments=form.cleaned_data['comments']
+                        )
+                    else:  # pit tags
+                        
+                        if TrtPitTags.objects.filter(pittag_id=tag_id).exists():
+                            return JsonResponse({
+                                'success': False,
+                                'error': f'PIT tag {tag_id} already exists'
+                            })
+                            
+                        TrtPitTags.objects.create(
+                            pittag_id=tag_id,
+                            tag_order_id=form.cleaned_data['tag_order_id'],
+                            issue_location=form.cleaned_data['issue_location'],
+                            custodian_person_id=form.cleaned_data['custodian_person_id'],
+                            field_person_id=form.cleaned_data['field_person_id'],
+                            comments=form.cleaned_data['comments']
+                        )
+
+            return JsonResponse({
+                'success': True,
+                'message': f'Successfully registered {end - start + 1} tags'
+            })
+
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'error': str(e)
+            })
+
+    def form_invalid(self, form):
+        return JsonResponse({
+            'success': False,
+            'error': 'Invalid form data. Please check your inputs.'
+        })
+
+class AdminToolsView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
+    template_name = 'wamtram2/admin_tools.html'
     
+    def test_func(self):
+        return (self.request.user.is_superuser)
+

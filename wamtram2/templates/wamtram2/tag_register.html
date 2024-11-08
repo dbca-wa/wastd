@@ -1,0 +1,254 @@
+{% extends "base_wastd.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block extra_style %}
+<link rel="stylesheet" href="{% static 'css/search_styles.css' %}">
+<style>
+    .form-section {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+    }
+
+    .form-section h4 {
+        color: #2c5282;
+        margin-bottom: 20px;
+    }
+
+    .loading-spinner {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 9999;
+        background: rgba(255, 255, 255, 0.8);
+        padding: 20px;
+        border-radius: 10px;
+        display: none;
+    }
+</style>
+{% endblock %}
+
+
+{% block page_content_inner %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <h2 class="text-center mb-4">Tag Registration</h2>
+            
+            <div class="card">
+                <div class="card-body">
+                    <form method="post" id="tagRegisterForm">
+                        {% csrf_token %}
+                        
+                        <!-- Tag Type Selection -->
+                        <div class="form-section">
+                            <h4>Tag Type</h4>
+                            <div class="form-group">
+                                <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                                    <label class="btn btn-outline-primary active">
+                                        <input type="radio" name="tag_type" value="flipper" checked> Flipper Tags
+                                    </label>
+                                    <label class="btn btn-outline-primary">
+                                        <input type="radio" name="tag_type" value="pit"> PIT Tags
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tag Information -->
+                        <div class="form-section">
+                            <h4>Tag Information</h4>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="tagPrefix">Tag Prefix</label>
+                                        <input type="text" class="form-control" id="tagPrefix" name="tag_prefix" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="startNumber">Start Number</label>
+                                        <input type="text" class="form-control" id="startNumber" name="start_number" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="endNumber">End Number</label>
+                                        <input type="text" class="form-control" id="endNumber" name="end_number" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="tagOrderId">Tag Order ID</label>
+                                        <input type="number" class="form-control" id="tagOrderId" name="tag_order_id" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Location and Personnel -->
+                        <div class="form-section">
+                            <h4>Location and Personnel</h4>
+                            <div class="form-group">
+                                <label for="issueLocation">Issue Location</label>
+                                <input type="text" class="form-control" id="issueLocation" name="issue_location" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="custodianPerson">Custodian Person</label>
+                                <div class="search-container">
+                                    <input type="text" id="custodianPerson" class="search-field form-control" 
+                                           placeholder="Search for custodian..." autocomplete="off">
+                                    <input type="hidden" id="custodianPersonId" name="custodian_person_id">
+                                    <div id="custodianSearchResults" class="search-results"></div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="fieldPerson">Field Person</label>
+                                <div class="search-container">
+                                    <input type="text" id="fieldPerson" class="search-field form-control" 
+                                           placeholder="Search for field person..." autocomplete="off">
+                                    <input type="hidden" id="fieldPersonId" name="field_person_id">
+                                    <div id="fieldSearchResults" class="search-results"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Additional Information -->
+                        <div class="form-section">
+                            <h4>Additional Information</h4>
+                            <div class="form-group">
+                                <label for="comments">Comments</label>
+                                <textarea class="form-control" id="comments" name="comments" rows="3"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">Register Tags</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Spinner -->
+<div class="loading-spinner" style="display: none;">
+    <div class="spinner-border text-primary" role="status">
+        <span class="sr-only">Loading...</span>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    setupPersonSearch('custodianPerson', 'custodianPersonId', 'custodianSearchResults');
+    setupPersonSearch('fieldPerson', 'fieldPersonId', 'fieldSearchResults');
+    
+    // Form validation and submission
+    const form = document.getElementById('tagRegisterForm');
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Show loading spinner
+        document.querySelector('.loading-spinner').style.display = 'block';
+        
+        // Collect form data
+        const formData = new FormData(form);
+        
+        // Submit form
+        fetch("{% url 'wamtram2:tag_register' %}", {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Tags registered successfully!');
+                window.location.reload();
+            } else {
+                alert(data.error || 'An error occurred while registering tags.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while registering tags.');
+        })
+        .finally(() => {
+            document.querySelector('.loading-spinner').style.display = 'none';
+        });
+    });
+});
+
+function setupPersonSearch(inputId, hiddenInputId, resultsId) {
+    var input = document.getElementById(inputId);
+    var hiddenInput = document.getElementById(hiddenInputId);
+    var searchResults = document.getElementById(resultsId);
+    let isSelecting = false;
+
+    input.addEventListener('input', function() {
+        if (isSelecting) return;
+    
+        var searchTerm = this.value;
+        if (searchTerm.length >= 2) {
+            fetch(`/wamtram2/search-persons/?q=${searchTerm}`)
+                .then(response => response.json())
+                .then(data => {
+                    searchResults.innerHTML = '';
+                    if (data.length > 0) {
+                        searchResults.style.display = 'block';
+                        data.forEach(person => {
+                            var div = document.createElement('div');
+                            div.className = 'search-result';
+                            div.textContent = `${person.first_name} ${person.surname}`;
+                            div.addEventListener('click', function() {
+                                isSelecting = true;
+                                input.value = `${person.first_name} ${person.surname}`;
+                                hiddenInput.value = person.person_id;
+                                searchResults.style.display = 'none';
+                                isSelecting = false;
+                            });
+                            searchResults.appendChild(div);
+                        });
+                    } else {
+                        searchResults.style.display = 'none';
+                    }
+                });
+        } else {
+            searchResults.style.display = 'none';
+        }
+    });
+
+    document.addEventListener('click', function(e) {
+        if (e.target !== input && !searchResults.contains(e.target)) {
+            searchResults.style.display = 'none';
+        }
+    });
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %}

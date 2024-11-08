@@ -1,0 +1,154 @@
+{% extends "base_wastd.html" %}
+{% load static %}
+
+{% block extra_style %}
+<style>
+    .admin-tools {
+        padding: 40px 0;
+    }
+    
+    .tool-card {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        transition: transform 0.2s, box-shadow 0.2s;
+        height: 100%;
+    }
+    
+    .tool-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    
+    .tool-icon {
+        font-size: 2.5rem;
+        color: #2c5282;
+        margin-bottom: 15px;
+    }
+    
+    .tool-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 10px;
+    }
+    
+    .tool-description {
+        color: #718096;
+        font-size: 0.9rem;
+        margin-bottom: 20px;
+    }
+    
+    .section-title {
+        color: #2d3748;
+        font-weight: 600;
+        margin-bottom: 30px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #e2e8f0;
+    }
+</style>
+{% endblock %}
+
+{% block page_content_inner %}
+<div class="container admin-tools">
+    <h2 class="section-title">Administration Tools</h2>
+    
+    <div class="row">
+        <!-- Tag Registration -->
+        <div class="col-md-4 mb-4">
+            <a href="{% url 'wamtram2:tag_register' %}" class="text-decoration-none">
+                <div class="tool-card p-4 text-center">
+                    <div class="tool-icon">
+                        <i class="fas fa-tags"></i>
+                    </div>
+                    <h3 class="tool-title">Tag Registration</h3>
+                    <p class="tool-description">Register new flipper tags and PIT tags in bulk.</p>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-arrow-right mr-2"></i>Access Tool
+                    </button>
+                </div>
+            </a>
+        </div>
+
+        <!-- Person Management -->
+        <div class="col-md-4 mb-4">
+            <a href="{% url 'wamtram2:manage_person' %}" class="text-decoration-none">
+                <div class="tool-card p-4 text-center">
+                    <div class="tool-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3 class="tool-title">Person Management</h3>
+                    <p class="tool-description">Manage personnel records and permissions.</p>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-arrow-right mr-2"></i>Access Tool
+                    </button>
+                </div>
+            </a>
+        </div>
+
+        <!-- Data Export -->
+        <div class="col-md-4 mb-4">
+            <a href="{% url 'wamtram2:export_data' %}" class="text-decoration-none">
+                <div class="tool-card p-4 text-center">
+                    <div class="tool-icon">
+                        <i class="fas fa-file-export"></i>
+                    </div>
+                    <h3 class="tool-title">Data Export</h3>
+                    <p class="tool-description">Export data in various formats for analysis.</p>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-arrow-right mr-2"></i>Access Tool
+                    </button>
+                </div>
+            </a>
+        </div>
+
+        <!-- Template Management -->
+        <div class="col-md-4 mb-4">
+            <a href="{% url 'wamtram2:template_manage' %}" class="text-decoration-none">
+                <div class="tool-card p-4 text-center">
+                    <div class="tool-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <h3 class="tool-title">Template Management</h3>
+                    <p class="tool-description">Manage data entry templates and forms.</p>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-arrow-right mr-2"></i>Access Tool
+                    </button>
+                </div>
+            </a>
+        </div>
+
+        <!-- Batch Management -->
+        <div class="col-md-4 mb-4">
+            <a href="{% url 'wamtram2:batches_curation' %}" class="text-decoration-none">
+                <div class="tool-card p-4 text-center">
+                    <div class="tool-icon">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                    <h3 class="tool-title">Batch Management</h3>
+                    <p class="tool-description">Manage and review data entry batches.</p>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-arrow-right mr-2"></i>Access Tool
+                    </button>
+                </div>
+            </a>
+        </div>
+
+        <!-- Dud Tags Management -->
+        <div class="col-md-4 mb-4">
+            <a href="{% url 'wamtram2:dud_tag_manage' %}" class="text-decoration-none">
+                <div class="tool-card p-4 text-center">
+                    <div class="tool-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <h3 class="tool-title">Dud Tags</h3>
+                    <p class="tool-description">Manage and track problematic tags.</p>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-arrow-right mr-2"></i>Access Tool
+                    </button>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

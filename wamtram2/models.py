@@ -72,6 +72,9 @@ class TrtCauseOfDeath(models.Model):
     class Meta:
         managed = False
         db_table = "TRT_CAUSE_OF_DEATH"
+        
+    def __str__(self):
+        return f"{self.description}"
 
     def __str__(self):
         return f"{self.description}"
