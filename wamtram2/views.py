@@ -28,7 +28,8 @@ from datetime import datetime, date, time
 from django.db import transaction
 from django.apps import apps 
 from docx import Document
-
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.shared import Inches, Pt, Cm
 
 from wastd.utils import Breadcrumb, PaginateMixin
 from .models import (
@@ -1118,6 +1119,14 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
         
         # Create new document
         doc = Document()
+        
+        section = doc.sections[0]
+        header = section.header
+        header_para = header.paragraphs[0]
+        header_para.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+        run = header_para.add_run()
+        run.add_picture('../wastd/static/android-chrome-192x192.png', width=Inches(1))
+    
         doc.add_heading('W.A. Marine Turtles Conservation Database - Turtle Information Sheet', 0)
         
         # Basic information
@@ -1158,8 +1167,8 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
             for obs in observations:
                 row_cells = table.add_row().cells
                 row_cells[0].text = obs.observation_date.strftime('%d/%m/%Y %H:%M:%S')
-                row_cells[1].text = str(obs.place_code.get_full_name())
-                row_cells[2].text = str(obs.activity or '')
+                row_cells[1].text = str(obs.place_code.get_full_name() if obs.place_code else '')
+                row_cells[2].text = str(obs.activity_code if obs.activity_code else '')
                 
                 # Add measurements
                 measurements = obs.trtmeasurements_set.all()
