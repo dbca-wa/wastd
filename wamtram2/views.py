@@ -1127,13 +1127,13 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
         run = header_para.add_run()
         run.add_picture('wastd/static/android-chrome-192x192.png', width=Inches(0.4))
     
+        # Title with formatting
         title_para = doc.add_paragraph()
         title_run = title_para.add_run('W.A. Marine Turtles Conservation Database - Turtle Information Sheet')
         title_run.font.size = Pt(18)
         title_run.font.color.rgb = RGBColor(31,73,125)
         title_run.font.bold = True
         title_para.space_after = Pt(12)
- 
         
         # Basic information
         doc.add_paragraph(f'Turtle ID: {turtle.pk}')
@@ -1151,6 +1151,36 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
             para.space_before = Pt(12)
             para.space_after = Pt(6)
             return para
+        
+        # Tags information
+        add_section_title('Tags Information:')
+        flipper_tags = TrtTags.objects.filter(turtle=turtle)
+        pit_tags = TrtPitTags.objects.filter(turtle=turtle)
+        
+        if flipper_tags.exists() or pit_tags.exists():
+            table = doc.add_table(rows=1, cols=4)
+            table.style = 'Table Grid'
+            header_cells = table.rows[0].cells
+            header_cells[0].text = 'Tag Type'
+            header_cells[1].text = 'Tag ID'
+            header_cells[2].text = 'Status'
+            header_cells[3].text = 'Comments'
+            
+            for tag in flipper_tags:
+                row_cells = table.add_row().cells
+                row_cells[0].text = 'Flipper'
+                row_cells[1].text = str(tag.tag_id)
+                row_cells[2].text = str(tag.tag_status) if tag.tag_status else ''
+                row_cells[3].text = str(tag.comments or '')
+                
+            for tag in pit_tags:
+                row_cells = table.add_row().cells
+                row_cells[0].text = 'PIT'
+                row_cells[1].text = str(tag.pittag_id)
+                row_cells[2].text = str(tag.pit_tag_status) if tag.pit_tag_status else ''
+                row_cells[3].text = str(tag.comments or '')
+        else:
+            doc.add_paragraph('No tags recorded')
         
         # Other identification history
         add_section_title('Other Identification History:')
@@ -1187,27 +1217,33 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
                 row_cells[0].text = obs.observation_date.strftime('%d/%m/%Y %H:%M:%S')
                 row_cells[1].text = str(obs.place_code.get_full_name() if obs.place_code else '')
                 row_cells[2].text = str(obs.activity_code if obs.activity_code else '')
-                
-                # Add measurements
-                measurements = obs.trtmeasurements_set.all()
-                if measurements:
-                    add_section_title('Measurements:')
-                    m_table = doc.add_table(rows=1, cols=4)
-                    m_table.style = 'Table Grid'
-                    m_header = m_table.rows[0].cells
-                    m_header[0].text = 'Date'
-                    m_header[1].text = 'Measurement'
-                    m_header[2].text = 'Value'
-                    m_header[3].text = 'Comments'
-                    
-                    for m in measurements:
-                        m_row = m_table.add_row().cells
-                        m_row[0].text = obs.observation_date.strftime('%d/%m/%Y %H:%M:%S')
-                        m_row[1].text = str(m.measurement_type)
-                        m_row[2].text = str(m.measurement_value)
-                        m_row[3].text = str(m.comments or '')
         else:
             doc.add_paragraph('No observations recorded')
+            
+        # All Measurements in one table
+        add_section_title('Measurements:')
+        all_measurements = []
+        for obs in observations:
+            measurements = obs.trtmeasurements_set.all()
+            all_measurements.extend(measurements)
+            
+        if all_measurements:
+            table = doc.add_table(rows=1, cols=4)
+            table.style = 'Table Grid'
+            header_cells = table.rows[0].cells
+            header_cells[0].text = 'Date'
+            header_cells[1].text = 'Measurement Type'
+            header_cells[2].text = 'Value'
+            header_cells[3].text = 'Comments'
+            
+            for m in all_measurements:
+                row_cells = table.add_row().cells
+                row_cells[0].text = m.observation.observation_date.strftime('%d/%m/%Y %H:%M:%S')
+                row_cells[1].text = str(m.measurement_type)
+                row_cells[2].text = str(m.measurement_value)
+                row_cells[3].text = str(m.comments or '')
+        else:
+            doc.add_paragraph('No measurements recorded')
         
         # Samples
         add_section_title('Samples:')
@@ -1230,7 +1266,7 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
         else:
             doc.add_paragraph('No samples recorded')
         # Add footer
-        doc.add_paragraph(f'WAMTP - unpubl record: {timezone.now().strftime("%d-%b-%Y")} copy. RITP.')
+        doc.add_paragraph(f'WAMTRAM - {timezone.now().strftime("%d-%b-%Y")} copy.')
         
         # Prepare response
         response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
