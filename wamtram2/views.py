@@ -27,6 +27,8 @@ import pandas as pd
 from datetime import datetime, date, time
 from django.db import transaction
 from django.apps import apps 
+from docx import Document
+
 
 from wastd.utils import Breadcrumb, PaginateMixin
 from .models import (
@@ -1093,6 +1095,175 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
                 
         return context
 
+class TurtleDetailView(LoginRequiredMixin, DetailView):
+    """
+    View class for displaying and exporting the details of a turtle.
+
+    Attributes:
+        model (Model): The model class representing the turtle.
+        template_name (str): The template used for displaying turtle details.
+    """
+
+    model = TrtTurtles
+    template_name = "wamtram2/trtturtles_detail.html"
+    
+    def dispatch(self, request, *args, **kwargs):
+        """
+        Check user permissions before processing the request.
+        Only allows access to authorized users.
+        """
+        if not (
+            request.user.groups.filter(name="WAMTRAM2_VOLUNTEER").exists()
+            or request.user.groups.filter(name="WAMTRAM2_TEAM_LEADER").exists()
+            or request.user.groups.filter(name="WAMTRAM2_STAFF").exists()
+            or request.user.is_superuser
+        ):
+            return HttpResponseForbidden("You do not have permission to view this record")
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        """
+        Retrieve and prepare the context data for the template.
+
+        Returns:
+            dict: Context data including turtle details, tags, observations, and samples.
+        """
+        context = super().get_context_data(**kwargs)
+        obj = self.get_object()
+        
+        # Get unique PIT tags
+        pittags = obj.recorded_pittags.all().order_by('pittag_id', '-observation_id')
+        seen = set()
+        unique_pittags = []
+        for tag in pittags:
+            if tag.pittag_id_id not in seen:
+                unique_pittags.append(tag)
+                seen.add(tag.pittag_id_id)
+        
+        # Get observations and measurements
+        observations = obj.trtobservations_set.all()
+        observations_data = []
+        for obs in observations:
+            obs_data = {
+                'observation': obs,
+                'measurements': obs.trtmeasurements_set.all()
+            }
+            observations_data.append(obs_data)
+            
+        identifications = TrtIdentification.objects.filter(turtle_id=obj.pk)
+        
+        context.update({
+            "page_title": f"{settings.SITE_CODE} | WAMTRAM2 | {obj.pk}",
+            "tags": obj.trttags_set.all(),
+            "pittags": unique_pittags,
+            "observations_data": observations_data,
+            "samples": obj.trtsamples_set.all(),
+            "identifications": identifications 
+        })
+                
+        return context
+
+    def export_word(self, request, *args, **kwargs):
+        """
+        Export turtle information to a Word document.
+        
+        Returns:
+            HttpResponse: Word document as a downloadable file.
+        """
+        turtle = self.get_object()
+        
+        # Create new document
+        doc = Document()
+        doc.add_heading(f'W.A. Marine Turtles Conservation Database - Turtle Information Sheet', 0)
+        
+        # Basic information
+        doc.add_paragraph(f'Turtle ID: {turtle.pk}')
+        doc.add_paragraph(f'Species: {turtle.species_code}')
+        doc.add_paragraph(f'Sex: {turtle.sex or "Unknown"}')
+        doc.add_paragraph(f'Status: {turtle.turtle_status}')
+        doc.add_paragraph(f'Cause of Death: {turtle.cause_of_death or ""}')
+        
+        # Other identification history
+        doc.add_heading('Other Identification History:', level=1)
+        identifications = TrtIdentification.objects.filter(turtle_id=turtle.pk)
+        if identifications.exists():
+            table = doc.add_table(rows=1, cols=3)
+            table.style = 'Table Grid'
+            header_cells = table.rows[0].cells
+            header_cells[0].text = 'Identification Type'
+            header_cells[1].text = 'Identifier'
+            header_cells[2].text = 'Comments'
+            
+            for ident in identifications:
+                row_cells = table.add_row().cells
+                row_cells[0].text = str(ident.identification_type)
+                row_cells[1].text = str(ident.identifier)
+                row_cells[2].text = str(ident.comments or '')
+        
+        # Observations
+        doc.add_heading('Observations:', level=1)
+        observations = turtle.trtobservations_set.all()
+        if observations:
+            table = doc.add_table(rows=1, cols=3)
+            table.style = 'Table Grid'
+            header_cells = table.rows[0].cells
+            header_cells[0].text = 'Date'
+            header_cells[1].text = 'Place'
+            header_cells[2].text = 'Activity'
+            
+            for obs in observations:
+                row_cells = table.add_row().cells
+                row_cells[0].text = obs.observation_date.strftime('%d/%m/%Y %H:%M:%S')
+                row_cells[1].text = str(obs.place_code.get_full_name())
+                row_cells[2].text = str(obs.activity or '')
+                
+                # Add measurements
+                measurements = obs.trtmeasurements_set.all()
+                if measurements:
+                    doc.add_heading('Measurements:', level=2)
+                    m_table = doc.add_table(rows=1, cols=3)
+                    m_table.style = 'Table Grid'
+                    m_header = m_table.rows[0].cells
+                    m_header[0].text = 'Measurement'
+                    m_header[1].text = 'Value'
+                    m_header[2].text = 'Comments'
+                    
+                    for m in measurements:
+                        m_row = m_table.add_row().cells
+                        m_row[0].text = str(m.measurement_type)
+                        m_row[1].text = str(m.measurement_value)
+                        m_row[2].text = str(m.comments or '')
+        
+        # Samples
+        doc.add_heading('Samples:', level=1)
+        samples = turtle.trtsamples_set.all()
+        if samples:
+            table = doc.add_table(rows=1, cols=4)
+            table.style = 'Table Grid'
+            header_cells = table.rows[0].cells
+            header_cells[0].text = 'Tissue'
+            header_cells[1].text = 'Date'
+            header_cells[2].text = 'Label'
+            header_cells[3].text = 'Comments'
+            
+            for sample in samples:
+                row_cells = table.add_row().cells
+                row_cells[0].text = str(sample.tissue_type)
+                row_cells[1].text = sample.sample_date.strftime('%d/%m/%Y') if sample.sample_date else ''
+                row_cells[2].text = str(sample.sample_label or '')
+                row_cells[3].text = str(sample.comments or '')
+        
+        # Add footer
+        doc.add_paragraph(f'WAMTP - unpubl record: {timezone.now().strftime("%d-%b-%Y")} copy. RITP.')
+        
+        # Prepare response
+        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+        response['Content-Disposition'] = f'attachment; filename=turtle_{turtle.pk}_report.docx'
+        
+        doc.save(response)
+        return response
+    
+    
 SEX_CHOICES = [
     ("F", "Female"),
     ("M", "Male"),
