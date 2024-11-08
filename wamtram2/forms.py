@@ -758,8 +758,8 @@ class TagRegisterForm(forms.Form):
     
     tag_type = forms.ChoiceField(choices=TAG_TYPE_CHOICES, label="Tag Type")
     tag_prefix = forms.CharField(max_length=5, label="Tag Prefix", required=False)
-    start_number = forms.CharField(max_length=10, label="Start Tag Number")
-    end_number = forms.CharField(max_length=10, label="End Tag Number")
+    start_number = forms.CharField(max_length=15, label="Start Tag Number")
+    end_number = forms.CharField(max_length=15, label="End Tag Number")
     tag_order_id = forms.IntegerField( label="Tag Order ID")
     issue_location = forms.CharField(max_length=50, required=True, label="Issue Location")
     comments = forms.CharField(widget=forms.Textarea, required=False)

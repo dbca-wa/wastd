@@ -128,14 +128,15 @@
                 </a>
                 {% endif %}
                 {% if perms.wamtram2.add_trtdataentry %}
-                <a class="dropdown-item" href="{% url 'wamtram2:create_new_entry' %}" title="Create New Entry">
+                <a class="dropdown-item" href="{% url 'wamtram2:create_new_entry' %}" title="Create new entry">
                     <i class="fa-solid fa-table" aria-hidden="true"></i>
                     <span class="align-left"> Create new entries </span>
                 </a>
                 {% endif %}
                 {% if user.is_superuser %}
-                <a class="nav-link" href="{% url 'wamtram2:admin_tools' %}">
-                    <i class="fas fa-tools mr-1"></i>Admin Tools
+                <a class="dropdown-item" href="{% url 'wamtram2:admin_tools' %}" title="Tagging curation tools">
+                    <i class="fa-solid fa-table" aria-hidden="true"></i>
+                    <span class="align-left"> Curation tools </span>
                 </a>
                 {% endif %}
             </div>
