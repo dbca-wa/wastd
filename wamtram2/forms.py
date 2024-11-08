@@ -627,7 +627,6 @@ class EnterUserModelForm(forms.ModelForm):
 
     #     return cleaned_data
     
-
 class TemplateForm(forms.ModelForm):
     class Meta:
         model = Template
@@ -661,7 +660,7 @@ class TemplateForm(forms.ModelForm):
 
         return cleaned_data
 
-    
+
 class TrtObservationsForm(forms.ModelForm):
     class Meta:
         model = TrtObservations
@@ -750,3 +749,21 @@ class TrtPersonsForm(forms.ModelForm):
         recorder = self.cleaned_data.get('recorder', False)
         return bool(recorder)
     
+
+class TagRegisterForm(forms.Form):
+    TAG_TYPE_CHOICES = [
+        ('flipper', 'Flipper Tags'),
+        ('pit', 'PIT Tags'),
+    ]
+    
+    tag_type = forms.ChoiceField(choices=TAG_TYPE_CHOICES, label="Tag Type")
+    tag_prefix = forms.CharField(max_length=5, label="Tag Prefix")
+    start_number = forms.CharField(max_length=10, label="Start Tag Number")
+    end_number = forms.CharField(max_length=10, label="End Tag Number")
+    tag_order_id = forms.IntegerField(required=True, label="Tag Order ID")
+    issue_location = forms.CharField(max_length=50, required=True, label="Issue Location")
+    comments = forms.CharField(widget=forms.Textarea, required=False)
+
+    custodian_person_id = forms.CharField(widget=forms.HiddenInput(), required=False)
+    field_person_id = forms.CharField(widget=forms.HiddenInput(), required=False)
+
