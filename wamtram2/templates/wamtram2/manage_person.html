@@ -45,8 +45,8 @@
                     <div class="col-md-5">
                         <label>Keep this person (Primary)</label>
                         <select name="primary_person" class="form-control">
-                            {% for person in persons %}
                             <option value="">-- Choose a person to keep --</option>
+                            {% for person in persons %}
                             <option value="{{ person.pk }}">
                                 {{ person.first_name }} {{ person.surname }} (ID: {{ person.pk }})
                             </option>
@@ -87,17 +87,17 @@
                     <thead>
                         <tr>
                             <th style="width: 5%;">ID</th>
-                            <th style="width: 10%;">Name</th>
-                            <th style="width: 25%;">Email</th>
-                            <th style="width: 30%;">Related Records</th>
-                            <th style="width: 30%;">Actions</th>
+                            <th style="width: 40%;">Name</th>
+                            <th style="width: 20%;">Email</th>
+                            <th style="width: 15%;">Related Records</th>
+                            <th style="width: 20%;">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for person in persons %}
                         <tr>
                             <td style="width: 5%;">{{ person.person_id }}</td>
-                            <td style="width: 10%;">
+                            <td style="width: 40%;">
                                 <span id="display-name-{{ person.pk }}">
                                     {{ person.first_name }} {{ person.surname }}
                                 </span>
@@ -107,7 +107,7 @@
                                     {% csrf_token %}
                                     <input type="hidden" name="action" value="update">
                                     <input type="hidden" name="person_id" value="{{ person.pk }}">
-                                    <div class="form-row">
+                                    <div class="form-row mb-2">
                                         <div class="col">
                                             <input type="text" 
                                                 name="first_name" 
@@ -120,14 +120,16 @@
                                                 class="form-control form-control-sm" 
                                                 value="{{ person.surname }}">
                                         </div>
-                                        <div class="col">
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="col-8">
                                             <input type="email" 
                                                 name="email" 
                                                 class="form-control form-control-sm" 
                                                 value="{{ person.email|default:'' }}"
                                                 placeholder="Email">
                                         </div>
-                                        <div class="col-auto">
+                                        <div class="col-4">
                                             <button type="submit" class="btn btn-sm btn-success">Save</button>
                                             <button type="button" class="btn btn-sm btn-secondary" 
                                                     onclick="toggleEdit({{ person.pk }})">Cancel</button>
@@ -135,17 +137,15 @@
                                     </div>
                                 </form>
                             </td>
-                            <td style="width: 25%;">{{ person.email|default:"-" }}</td>
-                            <td style="width: 30%;">
-                                <td style="width: 30%;">
-                                    <small>
-                                        Measured: {{ person.measurer_person.count }}<br>
-                                        Tagged: {{ person.tagger_person.count }}<br>
-                                        Entered: {{ person.entered_by_person.count }}
-                                    </small>
-                                </td>
+                            <td style="width: 20%;">{{ person.email|default:"-" }}</td>
+                            <td style="width: 15%;">
+                                <small>
+                                    Measured: {{ person.measurer_person.count }}<br>
+                                    Tagged: {{ person.tagger_person.count }}<br>
+                                    Entered: {{ person.entered_by_person.count }}
+                                </small>
                             </td>
-                            <td style="width: 30%;">
+                            <td style="width: 20%;">
                                 <button class="btn btn-sm btn-primary" 
                                         onclick="toggleEdit({{ person.pk }})">
                                     Edit
