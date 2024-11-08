@@ -284,7 +284,8 @@
                 showMessage('Tags registered successfully!', 'success');
                 setTimeout(() => window.location.reload(), 1500);
             } else {
-                showMessage(data.error || 'Error registering tags', 'danger');
+                const errorMessage = data.error || 'Error registering tags';
+                showMessage(errorMessage, 'danger');
             }
         } catch (error) {
             console.error('Error:', error);
@@ -314,10 +315,29 @@
                     tagPrefixContainer.style.display = 'block';
                     tagPrefixInput.required = true;
                     tagPrefixInput.value = '';
+                    startNumber.placeholder = 'Enter number';
+                    endNumber.placeholder = 'Enter number';
                 } else {
                     tagPrefixContainer.style.display = 'none';
                     tagPrefixInput.required = false;
-                    tagPrefixInput.value = ''; 
+                    tagPrefixInput.value = '';
+                    startNumber.placeholder = 'Enter 15-digit number';
+                    endNumber.placeholder = 'Enter 15-digit number';
+                    helpTextContainer.textContent = 'PIT tags must be exactly 15 digits';
+
+                    startNumber.pattern = '\\d{15}';
+                    endNumber.pattern = '\\d{15}';
+                }
+            });
+        });
+
+        [startNumber, endNumber].forEach(input => {
+            input.addEventListener('input', function() {
+                if (document.querySelector('input[name="tag_type"]:checked').value === 'pit') {
+                    this.value = this.value.replace(/\D/g, '');
+                    if (this.value.length > 15) {
+                        this.value = this.value.slice(0, 15);
+                    }
                 }
             });
         });

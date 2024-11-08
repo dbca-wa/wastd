@@ -2815,11 +2815,15 @@ class TagRegisterView(LoginRequiredMixin, FormView):
                 'success': False,
                 'error': str(e)
             })
-
+        
     def form_invalid(self, form):
+        errors = []
+        for field, error_list in form.errors.items():
+            errors.append(f"{field}: {', '.join(error_list)}")
+        
         return JsonResponse({
             'success': False,
-            'error': 'Invalid form data. Please check your inputs.'
+            'error': 'Invalid form data: ' + '; '.join(errors)
         })
 
 

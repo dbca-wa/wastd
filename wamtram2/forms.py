@@ -760,25 +760,11 @@ class TagRegisterForm(forms.Form):
     tag_prefix = forms.CharField(max_length=5, label="Tag Prefix", required=False)
     start_number = forms.CharField(max_length=10, label="Start Tag Number")
     end_number = forms.CharField(max_length=10, label="End Tag Number")
-    tag_order_id = forms.IntegerField(required=True, label="Tag Order ID")
+    tag_order_id = forms.IntegerField( label="Tag Order ID")
     issue_location = forms.CharField(max_length=50, required=True, label="Issue Location")
     comments = forms.CharField(widget=forms.Textarea, required=False)
 
     custodian_person_id = forms.CharField(widget=forms.HiddenInput(), required=False)
     field_person_id = forms.CharField(widget=forms.HiddenInput(), required=False)
 
-    def clean(self):
-        cleaned_data = super().clean()
-        tag_type = cleaned_data.get('tag_type')
-        tag_prefix = cleaned_data.get('tag_prefix')
-
-        if tag_type == 'flipper' and not tag_prefix:
-            raise forms.ValidationError({
-                'tag_prefix': 'Tag prefix is required for flipper tags'
-            })
-        
-        if tag_type == 'pit' and tag_prefix:
-            cleaned_data['tag_prefix'] = ''  # Clear prefix for PIT tags
-            
-        return cleaned_data
 
