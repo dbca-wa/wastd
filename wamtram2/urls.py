@@ -43,4 +43,5 @@ urlpatterns = [
     path('api/batch/<int:batch_id>/info/', views.BatchInfoView.as_view(), name='batch_info'),
     path('api/move-entry/', views.MoveEntryView.as_view(), name='move_entry'),
     path('persons/manage/', views.PersonManageView.as_view(), name='manage_person'),
+    path('turtle/<int:pk>/export/', views.TurtleDetailView.as_view(http_method_names=['get']), {'action': 'export_word'}, name='export_turtle_word'),
 ]
