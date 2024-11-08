@@ -2509,18 +2509,29 @@ class PersonManageView(LoginRequiredMixin, ListView):
         try:
             person = TrtPersons.objects.get(pk=person_id)
             old_name = f"{person.first_name} {person.surname}"
+            old_email = person.email or ''
             
             person.first_name = self.request.POST.get('first_name', person.first_name)
             person.surname = self.request.POST.get('surname', person.surname)
-            new_name = f"{person.first_name} {person.surname}"
+            person.email = self.request.POST.get('email', person.email)
             
+            new_name = f"{person.first_name} {person.surname}"
+            new_email = person.email or ''
+            
+            changes = []
             if old_name != new_name:
-                change_note = f"Name changed from {old_name} to {new_name} on {timezone.now().strftime('%Y-%m-%d')}"
+                changes.append(f"Name changed from {old_name} to {new_name}")
+            
+            if old_email != new_email:
+                changes.append(f"Email changed from {old_email} to {new_email}")
+            
+            if changes:
+                change_note = f"{' and '.join(changes)} on {timezone.now().strftime('%Y-%m-%d')}"
                 if person.comments:
                     person.comments += f"\n{change_note}"
                 else:
                     person.comments = change_note
-                    
+                        
             person.save()
             messages.success(self.request, "Successfully updated person information")
             

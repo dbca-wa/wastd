@@ -120,6 +120,13 @@
                                                 class="form-control form-control-sm" 
                                                 value="{{ person.surname }}">
                                         </div>
+                                        <div class="col">
+                                            <input type="email" 
+                                                name="email" 
+                                                class="form-control form-control-sm" 
+                                                value="{{ person.email|default:'' }}"
+                                                placeholder="Email">
+                                        </div>
                                         <div class="col-auto">
                                             <button type="submit" class="btn btn-sm btn-success">Save</button>
                                             <button type="button" class="btn btn-sm btn-secondary" 
