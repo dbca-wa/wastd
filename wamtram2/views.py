@@ -1031,70 +1031,6 @@ class TurtleListView(LoginRequiredMixin, PaginateMixin, ListView):
 
         return qs.order_by("pk")
 
-
-class TurtleDetailView(LoginRequiredMixin, DetailView):
-    """
-    View class for displaying the details of a turtle.
-
-    Attributes:
-        model (Model): The model class representing the turtle.
-    """
-
-    model = TrtTurtles
-    template_name = "wamtram2/trtturtles_detail.html"
-    
-    def dispatch(self, request, *args, **kwargs):
-        if not (
-            request.user.groups.filter(name="WAMTRAM2_VOLUNTEER").exists()
-            or request.user.groups.filter(name="WAMTRAM2_TEAM_LEADER").exists()
-            or request.user.groups.filter(name="WAMTRAM2_STAFF").exists()
-            or request.user.is_superuser
-        ):
-            return HttpResponseForbidden("You do not have permission to view this record")
-        return super().dispatch(request, *args, **kwargs)
-
-
-    def get_context_data(self, **kwargs):
-        """
-        Retrieves the context data for rendering the template.
-
-        Returns:
-            dict: The context data.
-        """
-        context = super().get_context_data(**kwargs)
-        obj = self.get_object()
-        
-        pittags = obj.recorded_pittags.all().order_by('pittag_id', '-observation_id')
-        seen = set()
-        unique_pittags = []
-        for tag in pittags:
-            if tag.pittag_id_id not in seen:
-                unique_pittags.append(tag)
-                seen.add(tag.pittag_id_id)
-                
-        observations = obj.trtobservations_set.all()
-        observations_data = []
-        for obs in observations:
-            obs_data = {
-                'observation': obs,
-                'measurements': obs.trtmeasurements_set.all()
-            }
-            observations_data.append(obs_data)
-            
-            identifications = TrtIdentification.objects.filter(turtle_id=obj.pk)
-            
-        
-        context.update({
-            "page_title": f"{settings.SITE_CODE} | WAMTRAM2 | {obj.pk}",
-            "tags": obj.trttags_set.all(),
-            "pittags": unique_pittags,
-            "observations_data": observations_data,
-            "samples": obj.trtsamples_set.all(),
-            "identifications": identifications 
-        })
-                
-        return context
-
 class TurtleDetailView(LoginRequiredMixin, DetailView):
     """
     View class for displaying and exporting the details of a turtle.
@@ -1120,6 +1056,14 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
         ):
             return HttpResponseForbidden("You do not have permission to view this record")
         return super().dispatch(request, *args, **kwargs)
+    
+    def get(self, request, *args, **kwargs):
+        """
+        Handle GET requests, either display detail view or export Word document
+        """
+        if 'export' in request.path:
+            return self.export_word(request, *args, **kwargs)
+        return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         """
@@ -1174,7 +1118,7 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
         
         # Create new document
         doc = Document()
-        doc.add_heading(f'W.A. Marine Turtles Conservation Database - Turtle Information Sheet', 0)
+        doc.add_heading('W.A. Marine Turtles Conservation Database - Turtle Information Sheet', 0)
         
         # Basic information
         doc.add_paragraph(f'Turtle ID: {turtle.pk}')
