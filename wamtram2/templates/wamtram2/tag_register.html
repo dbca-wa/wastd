@@ -79,10 +79,11 @@
 
                 <!-- Tag Information -->
                 <div class="row mb-3">
-                    <div class="col-md-3">
+                    <!-- Tag Prefix -->
+                    <div class="col-md-3" id="tagPrefixContainer" style="display: none;">
                         <div class="form-group">
                             <label for="tagPrefix">Tag Prefix</label>
-                            <input type="text" class="form-control" id="tagPrefix" name="tag_prefix" required>
+                            <input type="text" class="form-control" id="tagPrefix" name="tag_prefix">
                         </div>
                     </div>
                     <div class="col-md-3">
@@ -297,6 +298,29 @@
     document.addEventListener('DOMContentLoaded', function() {
         setupPersonSearch('custodianPerson', 'custodianPersonId', 'custodianSearchResults');
         setupPersonSearch('fieldPerson', 'fieldPersonId', 'fieldSearchResults');
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const tagTypeInputs = document.querySelectorAll('input[name="tag_type"]');
+        const tagPrefixContainer = document.getElementById('tagPrefixContainer');
+        const tagPrefixInput = document.getElementById('tagPrefix');
+
+        tagPrefixContainer.style.display = 'block';
+        tagPrefixInput.required = true;
+
+        tagTypeInputs.forEach(input => {
+            input.addEventListener('change', function() {
+                if (this.value === 'flipper') {
+                    tagPrefixContainer.style.display = 'block';
+                    tagPrefixInput.required = true;
+                    tagPrefixInput.value = '';
+                } else {
+                    tagPrefixContainer.style.display = 'none';
+                    tagPrefixInput.required = false;
+                    tagPrefixInput.value = ''; 
+                }
+            });
+        });
     });
 </script>
 {% endblock %}

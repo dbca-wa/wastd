@@ -42,7 +42,9 @@ from .models import (
     TrtObservations,
     Template,
     TrtTagStates,
-    TrtIdentification
+    TrtIdentification,
+    TrtPitTagStatus,
+    TrtTagStatus
 )
 from .forms import TrtDataEntryForm, SearchForm, TrtEntryBatchesForm, TemplateForm, BatchesCodeForm, TrtPersonsForm, TagRegisterForm
 
@@ -2758,7 +2760,11 @@ class TagRegisterView(LoginRequiredMixin, FormView):
 
             with transaction.atomic():  
                 for num in range(start, end + 1):
-                    tag_id = f"{prefix}{str(num).zfill(len(str(start)))}"
+                    
+                    if tag_type == 'flipper':
+                        tag_id = f"{prefix}{str(num).zfill(len(str(start)))}"
+                    else:  # pit tags
+                        tag_id = str(num)
                     
                     if tag_type == 'flipper':
                         
@@ -2768,13 +2774,16 @@ class TagRegisterView(LoginRequiredMixin, FormView):
                                 'error': f'Tag {tag_id} already exists'
                             })
                             
+                        tag_status = TrtTagStatus.objects.get(tag_status='U')
+                        
                         TrtTags.objects.create(
                             tag_id=tag_id,
                             tag_order_id=form.cleaned_data['tag_order_id'],
                             issue_location=form.cleaned_data['issue_location'],
                             custodian_person_id=form.cleaned_data['custodian_person_id'],
                             field_person_id=form.cleaned_data['field_person_id'],
-                            comments=form.cleaned_data['comments']
+                            comments=form.cleaned_data['comments'],
+                            tag_status=tag_status
                         )
                     else:  # pit tags
                         
@@ -2784,13 +2793,16 @@ class TagRegisterView(LoginRequiredMixin, FormView):
                                 'error': f'PIT tag {tag_id} already exists'
                             })
                             
+                        pit_tag_status = TrtPitTagStatus.objects.get(pit_tag_status='U')
+                            
                         TrtPitTags.objects.create(
                             pittag_id=tag_id,
                             tag_order_id=form.cleaned_data['tag_order_id'],
                             issue_location=form.cleaned_data['issue_location'],
                             custodian_person_id=form.cleaned_data['custodian_person_id'],
                             field_person_id=form.cleaned_data['field_person_id'],
-                            comments=form.cleaned_data['comments']
+                            comments=form.cleaned_data['comments'],
+                            pit_tag_status=pit_tag_status
                         )
 
             return JsonResponse({
@@ -2809,6 +2821,8 @@ class TagRegisterView(LoginRequiredMixin, FormView):
             'success': False,
             'error': 'Invalid form data. Please check your inputs.'
         })
+
+
 
 class AdminToolsView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     template_name = 'wamtram2/admin_tools.html'
