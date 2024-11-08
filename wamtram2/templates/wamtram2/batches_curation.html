@@ -302,7 +302,7 @@
                         </select>
                     </div> {% endcomment %}
                     <div class="form-group">
-                        <label for="quickAddTemplate">Template (optional))</label>
+                        <label for="quickAddTemplate">Template (optional)</label>
                         <div class="search-container">
                             <input type="text" id="quickAddTemplate" class="search-field" placeholder="Search Template" autocomplete="off">
                             <input type="hidden" id="quickAddTemplateId" name="template">
@@ -341,11 +341,10 @@
     $(document).ready(function() {
 
         window.addEventListener('pageshow', function(event) {
-            if (event.persisted) {
+            if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
                 hideLoadingSpinner();
             }
         });
-
 
         // Initialize tooltips
         $('[data-toggle="tooltip"]').tooltip();
@@ -427,6 +426,7 @@
             .then(data => {
                 if (data.success) {
                     $('#quickAddBatchModal').modal('hide'); // Close modal on success
+                    showLoadingSpinner();
                     location.reload(); // Reload the page to reflect changes
                 } else {
                     alert(data.error); // Show error message
@@ -490,7 +490,6 @@
             showLoadingSpinner();
         });
         
- 
 
         $(document).on('click', '.pagination a', function(e) {
             e.preventDefault();

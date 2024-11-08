@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.db import connections, DatabaseError
 from django.db.models import Q, Exists, OuterRef, Count, Subquery
 from django.http import HttpResponseForbidden, HttpResponseRedirect, HttpResponse
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin,UserPassesTestMixin
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.views import View
@@ -21,11 +21,12 @@ from django.template.loader import render_to_string
 from django.core.serializers.json import DjangoJSONEncoder
 import json
 import csv
-from django.core.exceptions import ValidationError
 from datetime import timedelta
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied,ValidationError
 import pandas as pd
-from datetime import datetime, date
+from datetime import datetime, date, time
+from django.db import transaction
+from django.apps import apps 
 
 from wastd.utils import Breadcrumb, PaginateMixin
 from .models import (
@@ -38,7 +39,7 @@ from .models import (
     TrtObservations,
     Template,
     TrtTagStates,
-    TrtTurtleStatus
+    TrtIdentification
 )
 from .forms import TrtDataEntryForm, SearchForm, TrtEntryBatchesForm, TemplateForm, BatchesCodeForm, TrtPersonsForm
 
@@ -148,17 +149,6 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
     
     def get_initial(self):
         initial = super().get_initial()
-        # batch_id = self.kwargs.get("batch_id")
-        # cookies_key_prefix = batch_id
-        # default_enterer = self.request.COOKIES.get(f'{cookies_key_prefix}_default_enterer')
-        # use_default_enterer = self.request.COOKIES.get(f'{cookies_key_prefix}_use_default_enterer', False)
-        
-        # if default_enterer == "None" or not default_enterer or default_enterer == "":
-        #     default_enterer = None
-
-        # if use_default_enterer and default_enterer:
-        #     initial['entered_person_id'] = default_enterer
-        
         return initial
 
     def dispatch(self, request, *args, **kwargs):
@@ -1000,6 +990,7 @@ class TurtleListView(LoginRequiredMixin, PaginateMixin, ListView):
 
     model = TrtTurtles
     paginate_by = 50
+    template_name = "wamtram2/trtturtles_list.html"
 
     def get_context_data(self, **kwargs):
         """
@@ -1048,6 +1039,7 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
     """
 
     model = TrtTurtles
+    template_name = "wamtram2/trtturtles_detail.html"
     
     def dispatch(self, request, *args, **kwargs):
         if not (
@@ -1077,15 +1069,29 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
             if tag.pittag_id_id not in seen:
                 unique_pittags.append(tag)
                 seen.add(tag.pittag_id_id)
+                
+        observations = obj.trtobservations_set.all()
+        observations_data = []
+        for obs in observations:
+            obs_data = {
+                'observation': obs,
+                'measurements': obs.trtmeasurements_set.all()
+            }
+            observations_data.append(obs_data)
+            
+            identifications = TrtIdentification.objects.filter(turtle_id=obj.pk)
+            
         
-        context["page_title"] = f"{settings.SITE_CODE} | WAMTRAM2 | {obj.pk}"
-        context["tags"] = obj.trttags_set.all()
-        context["pittags"] = unique_pittags
-        
-        context["observations"] = obj.trtobservations_set.all()
+        context.update({
+            "page_title": f"{settings.SITE_CODE} | WAMTRAM2 | {obj.pk}",
+            "tags": obj.trttags_set.all(),
+            "pittags": unique_pittags,
+            "observations_data": observations_data,
+            "samples": obj.trtsamples_set.all(),
+            "identifications": identifications 
+        })
                 
         return context
-
 
 SEX_CHOICES = [
     ("F", "Female"),
@@ -1464,16 +1470,41 @@ def search_places(request):
     
     return JsonResponse(list(places), safe=False)
 
-
 class ExportDataView(LoginRequiredMixin, View):
     template_name = 'wamtram2/export_form.html'
+
+    def _get_date_range(self, date_from, date_to):
+        """
+        Convert date strings to timezone-aware datetime objects
+        Args:
+            date_from: YYYY-MM-DD string
+            date_to: YYYY-MM-DD string
+        Returns:
+            tuple of (start_datetime, end_datetime)
+        """
+        if not date_from or not date_to:
+            return None, None
+            
+        start_date = timezone.make_aware(
+            datetime.combine(
+                datetime.strptime(date_from, '%Y-%m-%d').date(),
+                time.min
+            )
+        )
+        end_date = timezone.make_aware(
+            datetime.combine(
+                datetime.strptime(date_to, '%Y-%m-%d').date(),
+                time.max
+            )
+        )
+        return start_date, end_date
+
     def dispatch(self, request, *args, **kwargs):
         # Permission check: only allow users in the specific groups or superusers
         if not (
             request.user.groups.filter(name="WAMTRAM2_STAFF").exists()
             or request.user.groups.filter(name="WAMTRAM2_TEAM_LEADER").exists()
             or request.user.is_superuser
-            # request.user.is_superuser
         ):
             return HttpResponseForbidden(
                 "You do not have permission to view this record"
@@ -1481,46 +1512,141 @@ class ExportDataView(LoginRequiredMixin, View):
         return super().dispatch(request, *args, **kwargs)
 
     def get(self, request):
-        # Handle different actions based on the 'action' parameter
-        action = request.GET.get('action')
-        if not action:
-            return render(request, self.template_name)
         
-        if action == 'get_places':
-            return self.get_places(request)
-        elif action == 'get_species':
-            return self.get_species(request)
-        elif action == 'get_sexes':
-            return self.get_sexes(request)
-        
-        if any([
-            request.GET.get("observation_date_from"),
-            request.GET.get("observation_date_to"),
-            request.GET.get("place_code"),
-            request.GET.get("species"),
-            request.GET.get("sex"),
-            request.GET.get("format")
-        ]):
+        # If it's an export request (has format parameter)
+        if request.GET.get("format"):
             return self.export_data(request)
             
-        # Default to rendering the form
+        # Handle different actions based on the 'action' parameter
+        action = request.GET.get('action')
+        if action:
+            if action == 'get_places':
+                return self.get_places(request)
+            elif action == 'get_species':
+                return self.get_species(request)
+            elif action == 'get_sexes':
+                return self.get_sexes(request)
+        
+        # If no action or format, render the form
         return render(request, self.template_name)
+
+    def get_places(self, request):
+        """Retrieve places based on the specified date range."""
+        from_date, to_date = self._get_date_range(
+            request.GET.get("observation_date_from"),
+            request.GET.get("observation_date_to")
+        )
+
+        # First get data accessible to the user
+        queryset = TrtDataEntry.objects.all()
+        user = request.user
+        if not user.is_superuser:
+            user_organisations = user.organisations.all()
+            if user_organisations.exists():
+                related_batch_ids = TrtEntryBatchOrganisation.objects.filter(
+                    organisation__in=[org.code for org in user_organisations]
+                ).values_list('trtentrybatch_id', flat=True)
+                queryset = queryset.filter(entry_batch_id__in=related_batch_ids)
+            else:
+                return JsonResponse({"places": []})
+
+        if from_date and to_date:
+            queryset = queryset.filter(observation_date__range=[from_date, to_date])
+
+        places = TrtPlaces.objects.filter(
+            place_code__in=queryset.values_list('place_code', flat=True)
+        ).select_related('location_code').distinct()
+
+        place_list = [
+            {
+                "value": place.place_code,
+                "label": place.get_full_name(),
+                "location_name": place.location_code.location_name,
+            }
+            for place in places
+        ]
+        
+        return JsonResponse({"places": place_list})
+
+    def get_species(self, request):
+        """Retrieve species based on the specified date range."""
+        from_date, to_date = self._get_date_range(
+            request.GET.get("observation_date_from"),
+            request.GET.get("observation_date_to")
+        )
+
+        queryset = TrtDataEntry.objects.all()
+        user = request.user
+        if not user.is_superuser:
+            user_organisations = user.organisations.all()
+            if user_organisations.exists():
+                related_batch_ids = TrtEntryBatchOrganisation.objects.filter(
+                    organisation__in=[org.code for org in user_organisations]
+                ).values_list('trtentrybatch_id', flat=True)
+                queryset = queryset.filter(entry_batch_id__in=related_batch_ids)
+            else:
+                return JsonResponse({"species": []})
+
+        if from_date and to_date:
+            queryset = queryset.filter(observation_date__range=[from_date, to_date])
+
+        species = TrtSpecies.objects.filter(
+            species_code__in=queryset.values_list('species_code', flat=True)
+        ).distinct()
+
+        species_list = [
+            {"value": specie.species_code, "label": specie.common_name}
+            for specie in species
+        ]
+
+        return JsonResponse({"species": species_list})
+
+    def get_sexes(self, request):
+        """Retrieve available sex choices based on the defined SEX_CHOICES."""
+        from_date, to_date = self._get_date_range(
+            request.GET.get("observation_date_from"),
+            request.GET.get("observation_date_to")
+        )
+
+        queryset = TrtDataEntry.objects.all()
+        user = request.user
+        if not user.is_superuser:
+            user_organisations = user.organisations.all()
+            if user_organisations.exists():
+                related_batch_ids = TrtEntryBatchOrganisation.objects.filter(
+                    organisation__in=[org.code for org in user_organisations]
+                ).values_list('trtentrybatch_id', flat=True)
+                queryset = queryset.filter(entry_batch_id__in=related_batch_ids)
+            else:
+                return JsonResponse({"sexes": []})
+
+        if from_date and to_date:
+            queryset = queryset.filter(observation_date__range=[from_date, to_date])
+
+        used_sexes = queryset.values_list('sex', flat=True).distinct()
+        sex_list = [
+            {"value": choice[0], "label": choice[1]}
+            for choice in SEX_CHOICES
+            if choice[0] in used_sexes
+        ]
+
+        return JsonResponse({"sexes": sex_list})
 
     def export_data(self, request):
         try:
-            # Retrieve filter parameters from the request
-            observation_date_from = request.GET.get("observation_date_from")
-            observation_date_to = request.GET.get("observation_date_to")
+            from_date, to_date = self._get_date_range(
+                request.GET.get("observation_date_from"),
+                request.GET.get("observation_date_to")
+            )
+            
             place_code = request.GET.get("place_code")
             species = request.GET.get("species")
             sex = request.GET.get("sex")
             file_format = request.GET.get("format", "csv")
-            
-            print(f"Export parameters: dates={observation_date_from} to {observation_date_to}, format={file_format}")
 
-            #queryset = TrtDataEntry.objects.filter(observation_id__isnull=False)
             queryset = TrtDataEntry.objects.all()
             
+            # Apply organization filter
             user = request.user
             if not user.is_superuser:
                 user_organisations = user.organisations.all()
@@ -1531,46 +1657,29 @@ class ExportDataView(LoginRequiredMixin, View):
                     queryset = queryset.filter(entry_batch_id__in=related_batch_ids)
                 else:
                     return HttpResponse("No data available for your organisation")
-                
-            # Filter by date range
-            if observation_date_from and observation_date_to:
-                queryset = queryset.filter(observation_date__range=[observation_date_from, observation_date_to])
-            elif observation_date_from:
-                queryset = queryset.filter(observation_date__gte=observation_date_from)
-            elif observation_date_to:
-                queryset = queryset.filter(observation_date__lte=observation_date_to)
             
-            # Filter by place
+            # Apply filters
+            if from_date and to_date:
+                queryset = queryset.filter(observation_date__range=[from_date, to_date])
             if place_code:
                 queryset = queryset.filter(place_code=place_code)
-
-            # Filter by species
             if species:
                 queryset = queryset.filter(species_code=species)
-
-            # Filter by sex
             if sex:
                 queryset = queryset.filter(sex=sex)
                 
             queryset = queryset.select_related('entry_batch')
-            
-            print(f"Query count: {queryset.count()}")
 
-            # File generation logic
             if file_format == "csv":
-                response = HttpResponse(
-                    content_type='text/csv',
-                    headers={
-                        'Content-Disposition': 'attachment; filename="data_export.csv"',
-                        'Content-Type': 'text/csv; charset=utf-8'
-                    },
-                )
-                
+                response = HttpResponse(content_type="text/csv")
+                response["Content-Disposition"] = 'attachment; filename="data_export.csv"'
                 writer = csv.writer(response)
+
                 headers = [field.name for field in TrtDataEntry._meta.fields]
                 headers.append('organisations')
                 writer.writerow(headers)
-            
+        
+                
                 for entry in queryset:
                     organisations = TrtEntryBatchOrganisation.objects.filter(
                         trtentrybatch=entry.entry_batch
@@ -1581,14 +1690,9 @@ class ExportDataView(LoginRequiredMixin, View):
                     row.append(org_str)
                     writer.writerow(row)
                     
-            elif file_format == "xlsx":
-                response = HttpResponse(
-                    content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                    headers={
-                        'Content-Disposition': 'attachment; filename="data_export.xlsx"',
-                    },
-                )
-                
+            else:  # xlsx format
+                response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                response["Content-Disposition"] = 'attachment; filename="data_export.xlsx"'
                 wb = Workbook()
                 ws = wb.active
                 
@@ -1619,117 +1723,13 @@ class ExportDataView(LoginRequiredMixin, View):
                     ws.append(row)
                 
                 wb.save(response)
-                
-            print("Export completed successfully")
 
             return response
-        
+
         except Exception as e:
-            print(f"Export error: {str(e)}")
             import traceback
             traceback.print_exc()
             return HttpResponse(f"Error during export: {str(e)}", status=500)
-
-    def get_places(self, request):
-        """Retrieve places based on the specified date range."""
-        observation_date_from = request.GET.get("observation_date_from")
-        observation_date_to = request.GET.get("observation_date_to")
-
-        # First get data accessible to the user
-        queryset = TrtDataEntry.objects.all()
-        user = request.user
-        if not user.is_superuser:
-            user_organisations = user.organisations.all()
-            if user_organisations.exists():
-                related_batch_ids = TrtEntryBatchOrganisation.objects.filter(
-                    organisation__in=[org.code for org in user_organisations]
-                ).values_list('trtentrybatch_id', flat=True)
-                queryset = queryset.filter(entry_batch_id__in=related_batch_ids)
-            else:
-                return JsonResponse({"places": []})
-
-        # Get places from filtered data
-        places = TrtPlaces.objects.filter(
-            place_code__in=queryset.filter(
-                observation_date__range=[observation_date_from, observation_date_to]
-            ).values_list('place_code', flat=True)
-        ).select_related('location_code').distinct()
-
-        place_list = [
-            {
-                "value": place.place_code,
-                "label": place.get_full_name(),
-                "location_name": place.location_code.location_name,
-            }
-            for place in places
-        ]
-        
-        return JsonResponse({"places": place_list})
-
-    def get_species(self, request):
-        """Retrieve species based on the specified date range."""
-        observation_date_from = request.GET.get("observation_date_from")
-        observation_date_to = request.GET.get("observation_date_to")
-
-        # First get data accessible to the user
-        queryset = TrtDataEntry.objects.all()
-        user = request.user
-        if not user.is_superuser:
-            user_organisations = user.organisations.all()
-            if user_organisations.exists():
-                related_batch_ids = TrtEntryBatchOrganisation.objects.filter(
-                    organisation__in=[org.code for org in user_organisations]
-                ).values_list('trtentrybatch_id', flat=True)
-                queryset = queryset.filter(entry_batch_id__in=related_batch_ids)
-            else:
-                return JsonResponse({"species": []})
-
-        # Get species from filtered data
-        species = TrtSpecies.objects.filter(
-            species_code__in=queryset.filter(
-                observation_date__range=[observation_date_from, observation_date_to]
-            ).values_list('species_code', flat=True)
-        ).distinct()
-
-        species_list = [
-            {"value": specie.species_code, "label": specie.common_name}
-            for specie in species
-        ]
-
-        return JsonResponse({"species": species_list})
-
-    def get_sexes(self, request):
-        """Retrieve available sex choices based on the defined SEX_CHOICES."""
-        observation_date_from = request.GET.get("observation_date_from")
-        observation_date_to = request.GET.get("observation_date_to")
-
-        # First get data accessible to the user
-        queryset = TrtDataEntry.objects.all()
-        user = request.user
-        if not user.is_superuser:
-            user_organisations = user.organisations.all()
-            if user_organisations.exists():
-                related_batch_ids = TrtEntryBatchOrganisation.objects.filter(
-                    organisation__in=[org.code for org in user_organisations]
-                ).values_list('trtentrybatch_id', flat=True)
-                queryset = queryset.filter(entry_batch_id__in=related_batch_ids)
-            else:
-                return JsonResponse({"sexes": []})
-
-        # Get actually used sex values from filtered data
-        used_sexes = queryset.filter(
-            observation_date__range=[observation_date_from, observation_date_to]
-        ).values_list('sex', flat=True).distinct()
-
-        sex_list = [
-            {"value": choice[0], "label": choice[1]}
-            for choice in SEX_CHOICES
-            if choice[0] in used_sexes
-        ]
-
-        return JsonResponse({"sexes": sex_list})
-
-
 class DudTagManageView(LoginRequiredMixin, View):
     template_name = 'wamtram2/dud_tag_manage.html'
 
@@ -2353,3 +2353,199 @@ class AddPersonView(LoginRequiredMixin, FormView):
                 }, status=400)
 
         return redirect('wamtram2:add_person')
+
+class AvailableBatchesView(LoginRequiredMixin, View):
+    def get(self, request):
+        user_orgs = request.user.organisations.all()
+        current_batch_id = request.GET.get('current_batch_id')
+        
+        batches = TrtEntryBatches.objects.filter(
+            batch_organisations__organisation__in=[org.code for org in user_orgs]
+        ).exclude(
+            entry_batch_id=current_batch_id
+        ).distinct()
+        
+        return JsonResponse([{
+            'id': batch.entry_batch_id,
+            'code': batch.batches_code,
+            'comment': batch.comments
+        } for batch in batches], safe=False)
+
+class BatchInfoView(LoginRequiredMixin, View):
+    def get(self, request, batch_id):
+        try:
+            user_org_codes = [org.code for org in request.user.organisations.all()]
+            batch = TrtEntryBatches.objects.get(
+                entry_batch_id=batch_id,
+                batch_organisations__organisation__in=user_org_codes
+            )
+            return JsonResponse({
+                'code': batch.batches_code,
+                'comment': batch.comments
+            })
+        except TrtEntryBatches.DoesNotExist:
+            return JsonResponse({'error': 'Batch not found'}, status=404)
+
+class MoveEntryView(LoginRequiredMixin, View):
+    def post(self, request):
+        entry_id = request.POST.get('entry_id')
+        target_batch_id = request.POST.get('target_batch_id')
+        
+        if not entry_id or not target_batch_id:
+            return JsonResponse({'error': 'Missing required parameters'}, status=400)
+            
+        try:
+            user_org_codes = [org.code for org in request.user.organisations.all()]
+            
+            entry = TrtDataEntry.objects.select_related('entry_batch').get(
+                data_entry_id=entry_id
+            )
+            current_batch = entry.entry_batch
+            
+            if not current_batch.batch_organisations.filter(
+                organisation__in=user_org_codes
+            ).exists():
+                raise PermissionDenied('No permission to operate on this entry')
+            
+            target_batch = TrtEntryBatches.objects.get(
+                entry_batch_id=target_batch_id,
+                batch_organisations__organisation__in=user_org_codes
+            )
+            
+            entry.entry_batch = target_batch
+            entry.save()
+            
+            return JsonResponse({
+                'success': True,
+                'message': f'Successfully moved entry to batch {target_batch.batches_code}'
+            })
+            
+        except TrtDataEntry.DoesNotExist:
+            return JsonResponse({'error': 'Entry not found'}, status=404)
+        except TrtEntryBatches.DoesNotExist:
+            return JsonResponse({'error': 'Target batch not found'}, status=404)
+        except PermissionDenied as e:
+            return JsonResponse({'error': str(e)}, status=403)
+        except Exception as e:
+            return JsonResponse({'error': f'Operation failed: {str(e)}'}, status=500)
+        
+
+class PersonManageView(LoginRequiredMixin,  UserPassesTestMixin, ListView):
+    model = TrtPersons
+    template_name = 'wamtram2/manage_person.html'
+    context_object_name = 'persons'
+    paginate_by = 50
+    
+    def test_func(self):
+        return self.request.user.is_superuser
+    
+    def handle_no_permission(self):
+        if not self.request.user.is_authenticated:
+            return super().handle_no_permission()
+        raise PermissionDenied("You must be a superuser to access this page.")
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search_term = self.request.GET.get('search', '')
+        if search_term:
+            queryset = queryset.filter(
+                Q(first_name__icontains=search_term) |
+                Q(surname__icontains=search_term) |
+                Q(email__icontains=search_term)
+            )
+        return queryset.prefetch_related(
+            'measurer_person',
+            'tagger_person',
+            'entered_by_person'
+        )
+
+    @transaction.atomic
+    def post(self, request, *args, **kwargs):
+        action = request.POST.get('action')
+        
+        if action == 'merge':
+            return self.handle_merge()
+        elif action == 'update':
+            return self.handle_update()
+        
+        return self.get(request, *args, **kwargs)
+
+    def handle_merge(self):
+        primary_id = self.request.POST.get('primary_person')
+        secondary_id = self.request.POST.get('secondary_person')
+        
+        try:
+            primary = TrtPersons.objects.get(pk=primary_id)
+            secondary = TrtPersons.objects.get(pk=secondary_id)
+            
+            if primary == secondary:
+                messages.error(self.request, "Cannot merge a person with themselves")
+                return self.get(self.request)
+                
+            models_to_update = [
+                ('TrtDataEntry', ['measured_by_id', 'recorded_by_id', 'tagged_by_id', 
+                                'entered_by_id', 'measured_recorded_by_id']),
+                ('TrtObservations', ['reporter_person', 'entered_by_person','tagger_person',
+                                'measurer_reporter_person','measurer_person']),
+            ]
+            
+            for model_name, fields in models_to_update:
+                model = apps.get_model('wamtram2', model_name)
+                for field in fields:
+                    model.objects.filter(**{field: secondary}).update(**{field: primary})
+            
+            secondary_info = f"{secondary.first_name} {secondary.surname}"
+            merge_note = f"Merged with {secondary_info} on {timezone.now().strftime('%Y-%m-%d')}"
+            
+            if primary.comments:
+                primary.comments += f"\n{merge_note}"
+            else:
+                primary.comments = merge_note
+            primary.save()
+            
+            secondary.delete()
+            messages.success(self.request, 
+                        f"Successfully merged {secondary_info} into {primary.first_name} {primary.surname}")
+            
+        except Exception as e:
+            messages.error(self.request, f"Error during merge: {str(e)}")
+        
+        return self.get(self.request)
+
+    def handle_update(self):
+        person_id = self.request.POST.get('person_id')
+        try:
+            person = TrtPersons.objects.get(pk=person_id)
+            old_name = f"{person.first_name} {person.surname}"
+            old_email = person.email or ''
+            
+            person.first_name = self.request.POST.get('first_name', person.first_name)
+            person.surname = self.request.POST.get('surname', person.surname)
+            person.email = self.request.POST.get('email', person.email)
+            
+            new_name = f"{person.first_name} {person.surname}"
+            new_email = person.email or ''
+            
+            changes = []
+            if old_name != new_name:
+                changes.append(f"Name changed from {old_name} to {new_name}")
+            
+            if old_email != new_email:
+                changes.append(f"Email changed from {old_email} to {new_email}")
+            
+            if changes:
+                change_note = f"{' and '.join(changes)} on {timezone.now().strftime('%Y-%m-%d')}"
+                if person.comments:
+                    person.comments += f"\n{change_note}"
+                else:
+                    person.comments = change_note
+                        
+            person.save()
+            messages.success(self.request, "Successfully updated person information")
+            
+        except Exception as e:
+            messages.error(self.request, f"Error updating person: {str(e)}")
+        
+        return self.get(self.request)
+    
+    

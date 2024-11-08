@@ -749,3 +749,4 @@ class TrtPersonsForm(forms.ModelForm):
     def clean_recorder(self):
         recorder = self.cleaned_data.get('recorder', False)
         return bool(recorder)
+    

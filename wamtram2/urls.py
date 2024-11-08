@@ -39,4 +39,8 @@ urlpatterns = [
     path('check_template_name/', views.check_template_name, name='check_template_name'),
     path('search-templates/', views.search_templates, name='search_templates'),
     path('add_person/', views.AddPersonView.as_view(), name='add_person'),
+    path('api/available-batches/', views.AvailableBatchesView.as_view(), name='available_batches'),
+    path('api/batch/<int:batch_id>/info/', views.BatchInfoView.as_view(), name='batch_info'),
+    path('api/move-entry/', views.MoveEntryView.as_view(), name='move_entry'),
+    path('persons/manage/', views.PersonManageView.as_view(), name='manage_person'),
 ]
