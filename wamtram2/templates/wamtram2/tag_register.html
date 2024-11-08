@@ -1,217 +1,236 @@
 {% extends "base_wastd.html" %}
-{% load crispy_forms_tags %}
-{% load static %}
+{% load static bootstrap4 %}
 
 {% block extra_style %}
-<link rel="stylesheet" href="{% static 'css/search_styles.css' %}">
-<style>
-    .form-section {
-        background-color: #f8f9fa;
-        padding: 20px;
-        border-radius: 5px;
-        margin-bottom: 20px;
-    }
-
-    .form-section h4 {
-        color: #2c5282;
-        margin-bottom: 20px;
-    }
-
-    .loading-spinner {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        z-index: 9999;
-        background: rgba(255, 255, 255, 0.8);
-        padding: 20px;
-        border-radius: 10px;
-        display: none;
-    }
-</style>
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/search_styles.css' %}">
+    <style>
+        .step-container {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .step-header {
+            background-color: #f8f9fa;
+            padding: 10px;
+            margin: -15px -15px 15px -15px;
+            border-bottom: 1px solid #ddd;
+            font-weight: bold;
+        }
+        .alert {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            z-index: 1050;
+            display: none;
+        }
+    </style>
 {% endblock %}
 
+{% block breadcrumbs %}
+    <nav aria-label="breadcrumb" class="d-none d-md-block">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'wamtram2:batches_curation' %}">Manage Batches</a></li>
+            <li class="breadcrumb-item active">Register Tags</li>
+        </ol>
+    </nav>
+{% endblock %}
 
 {% block page_content_inner %}
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-10">
-            <h2 class="text-center mb-4">Tag Registration</h2>
-            
-            <div class="card">
-                <div class="card-body">
-                    <form method="post" id="tagRegisterForm">
-                        {% csrf_token %}
-                        
-                        <!-- Tag Type Selection -->
-                        <div class="form-section">
-                            <h4>Tag Type</h4>
-                            <div class="form-group">
-                                <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                                    <label class="btn btn-outline-primary active">
-                                        <input type="radio" name="tag_type" value="flipper" checked> Flipper Tags
-                                    </label>
-                                    <label class="btn btn-outline-primary">
-                                        <input type="radio" name="tag_type" value="pit"> PIT Tags
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
+    <div class="container">
+        <!-- Message Alert -->
+        <div id="message-alert" class="alert mt-5" role="alert" style="display: none;"></div>
 
-                        <!-- Tag Information -->
-                        <div class="form-section">
-                            <h4>Tag Information</h4>
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label for="tagPrefix">Tag Prefix</label>
-                                        <input type="text" class="form-control" id="tagPrefix" name="tag_prefix" required>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label for="startNumber">Start Number</label>
-                                        <input type="text" class="form-control" id="startNumber" name="start_number" required>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label for="endNumber">End Number</label>
-                                        <input type="text" class="form-control" id="endNumber" name="end_number" required>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label for="tagOrderId">Tag Order ID</label>
-                                        <input type="number" class="form-control" id="tagOrderId" name="tag_order_id" required>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Location and Personnel -->
-                        <div class="form-section">
-                            <h4>Location and Personnel</h4>
-                            <div class="form-group">
-                                <label for="issueLocation">Issue Location</label>
-                                <input type="text" class="form-control" id="issueLocation" name="issue_location" required>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="custodianPerson">Custodian Person</label>
-                                <div class="search-container">
-                                    <input type="text" id="custodianPerson" class="search-field form-control" 
-                                           placeholder="Search for custodian..." autocomplete="off">
-                                    <input type="hidden" id="custodianPersonId" name="custodian_person_id">
-                                    <div id="custodianSearchResults" class="search-results"></div>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="fieldPerson">Field Person</label>
-                                <div class="search-container">
-                                    <input type="text" id="fieldPerson" class="search-field form-control" 
-                                           placeholder="Search for field person..." autocomplete="off">
-                                    <input type="hidden" id="fieldPersonId" name="field_person_id">
-                                    <div id="fieldSearchResults" class="search-results"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Additional Information -->
-                        <div class="form-section">
-                            <h4>Additional Information</h4>
-                            <div class="form-group">
-                                <label for="comments">Comments</label>
-                                <textarea class="form-control" id="comments" name="comments" rows="3"></textarea>
-                            </div>
-                        </div>
-
-                        <!-- Submit Button -->
-                        <div class="text-center mt-4">
-                            <button type="submit" class="btn btn-primary btn-lg">Register Tags</button>
-                        </div>
-                    </form>
+        <!-- Django messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}" role="alert">
+                    {{ message }}
                 </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Tag Registration Form -->
+        <div class="step-container">
+            <div class="step-header">Register New Tags</div>
+            <form id="tagRegisterForm" method="post">
+                {% csrf_token %}
+                
+                <!-- Tag Type Selection -->
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <label>Tag Type</label>
+                        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                            <label class="btn btn-outline-primary active">
+                                <input type="radio" name="tag_type" value="flipper" checked> Flipper Tags
+                            </label>
+                            <label class="btn btn-outline-primary">
+                                <input type="radio" name="tag_type" value="pit"> PIT Tags
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tag Information -->
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="tagPrefix">Tag Prefix</label>
+                            <input type="text" class="form-control" id="tagPrefix" name="tag_prefix" required>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="startNumber">Start Number</label>
+                            <input type="text" class="form-control" id="startNumber" name="start_number" required>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="endNumber">End Number</label>
+                            <input type="text" class="form-control" id="endNumber" name="end_number" required>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="tagOrderId">Tag Order ID</label>
+                            <input type="number" class="form-control" id="tagOrderId" name="tag_order_id" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Location and Personnel -->
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="issueLocation">Issue Location</label>
+                            <input type="text" class="form-control" id="issueLocation" name="issue_location" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="custodianPerson">Custodian Person</label>
+                            <div class="search-container">
+                                <input type="text" id="custodianPerson" class="search-field" 
+                                       placeholder="Search for custodian..." autocomplete="off">
+                                <input type="hidden" id="custodianPersonId" name="custodian_person_id">
+                                <div id="custodianSearchResults" class="search-results"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="fieldPerson">Field Person</label>
+                            <div class="search-container">
+                                <input type="text" id="fieldPerson" class="search-field" 
+                                       placeholder="Search for field person..." autocomplete="off">
+                                <input type="hidden" id="fieldPersonId" name="field_person_id">
+                                <div id="fieldSearchResults" class="search-results"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Comments -->
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="comments">Comments</label>
+                            <textarea class="form-control" id="comments" name="comments" rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="row">
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary btn-block">Register Tags</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Loading spinner -->
+        <div class="loading-spinner">
+            <div class="spinner-border text-primary" role="status">
+                <span class="sr-only">Loading...</span>
             </div>
         </div>
-    </div>
-</div>
 
-<!-- Loading Spinner -->
-<div class="loading-spinner" style="display: none;">
-    <div class="spinner-border text-primary" role="status">
-        <span class="sr-only">Loading...</span>
+        <!-- Loading Overlay -->
+        <div class="loading-overlay"></div>
     </div>
-</div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    setupPersonSearch('custodianPerson', 'custodianPersonId', 'custodianSearchResults');
-    setupPersonSearch('fieldPerson', 'fieldPersonId', 'fieldSearchResults');
+    function showMessage(message, type) {
+        var alert = $('#message-alert');
+        alert.removeClass('alert-success alert-danger alert-warning alert-info');
+        alert.addClass('alert-' + type);
+        alert.text(message);
+        alert.slideDown();
     
-    // Form validation and submission
-    const form = document.getElementById('tagRegisterForm');
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        // Show loading spinner
-        document.querySelector('.loading-spinner').style.display = 'block';
-        
-        // Collect form data
-        const formData = new FormData(form);
-        
-        // Submit form
-        fetch("{% url 'wamtram2:tag_register' %}", {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRFToken': getCookie('csrftoken')
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Tags registered successfully!');
-                window.location.reload();
-            } else {
-                alert(data.error || 'An error occurred while registering tags.');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred while registering tags.');
-        })
-        .finally(() => {
-            document.querySelector('.loading-spinner').style.display = 'none';
-        });
-    });
-});
+        setTimeout(function() {
+            alert.slideUp();
+        }, 5000);
+    }
 
-function setupPersonSearch(inputId, hiddenInputId, resultsId) {
-    var input = document.getElementById(inputId);
-    var hiddenInput = document.getElementById(hiddenInputId);
-    var searchResults = document.getElementById(resultsId);
-    let isSelecting = false;
+    function showLoadingSpinner() {
+        const loadingSpinner = document.querySelector('.loading-spinner');
+        const loadingOverlay = document.querySelector('.loading-overlay');
+        if (loadingOverlay) loadingOverlay.style.display = 'block';
+        if (loadingSpinner) loadingSpinner.style.display = 'block';
+    }
 
-    input.addEventListener('input', function() {
-        if (isSelecting) return;
-    
-        var searchTerm = this.value;
-        if (searchTerm.length >= 2) {
-            fetch(`/wamtram2/search-persons/?q=${searchTerm}`)
-                .then(response => response.json())
-                .then(data => {
+    function hideLoadingSpinner() {
+        const loadingSpinner = document.querySelector('.loading-spinner');
+        const loadingOverlay = document.querySelector('.loading-overlay');
+        if (loadingOverlay) loadingOverlay.style.display = 'none';
+        if (loadingSpinner) loadingSpinner.style.display = 'none';
+    }
+
+    function setupPersonSearch(inputId, hiddenInputId, resultsId) {
+        const input = document.getElementById(inputId);
+        const hiddenInput = document.getElementById(hiddenInputId);
+        const searchResults = document.getElementById(resultsId);
+        let isSelecting = false;
+        let debounceTimer;
+
+        function debounce(func, wait) {
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(debounceTimer);
+                    func(...args);
+                };
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(later, wait);
+            };
+        }
+
+        const performSearch = debounce(async (searchTerm) => {
+            if (searchTerm.length >= 2) {
+                try {
+                    const response = await fetch(`/wamtram2/search-persons/?q=${searchTerm}`);
+                    const data = await response.json();
+                    
                     searchResults.innerHTML = '';
                     if (data.length > 0) {
                         searchResults.style.display = 'block';
                         data.forEach(person => {
-                            var div = document.createElement('div');
+                            const div = document.createElement('div');
                             div.className = 'search-result';
                             div.textContent = `${person.first_name} ${person.surname}`;
-                            div.addEventListener('click', function() {
+                            div.addEventListener('click', () => {
                                 isSelecting = true;
                                 input.value = `${person.first_name} ${person.surname}`;
                                 hiddenInput.value = person.person_id;
@@ -223,32 +242,61 @@ function setupPersonSearch(inputId, hiddenInputId, resultsId) {
                     } else {
                         searchResults.style.display = 'none';
                     }
-                });
-        } else {
-            searchResults.style.display = 'none';
-        }
-    });
-
-    document.addEventListener('click', function(e) {
-        if (e.target !== input && !searchResults.contains(e.target)) {
-            searchResults.style.display = 'none';
-        }
-    });
-}
-
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
+                } catch (error) {
+                    console.error('Search error:', error);
+                    showMessage('Error performing search', 'danger');
+                }
+            } else {
+                searchResults.style.display = 'none';
             }
-        }
+        }, 300); // 300ms delay
+
+        input.addEventListener('input', function() {
+            if (isSelecting) return;
+            performSearch(this.value);
+        });
+
+        document.addEventListener('click', function(e) {
+            if (e.target !== input && !searchResults.contains(e.target)) {
+                searchResults.style.display = 'none';
+            }
+        });
     }
-    return cookieValue;
-}
+
+    // Form submission handler
+    document.getElementById('tagRegisterForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        showLoadingSpinner();
+
+        try {
+            const formData = new FormData(this);
+            const response = await fetch("{% url 'wamtram2:tag_register' %}", {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                showMessage('Tags registered successfully!', 'success');
+                setTimeout(() => window.location.reload(), 1500);
+            } else {
+                showMessage(data.error || 'Error registering tags', 'danger');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showMessage('An error occurred while registering tags', 'danger');
+        } finally {
+            hideLoadingSpinner();
+        }
+    });
+
+    // Initialize person search
+    document.addEventListener('DOMContentLoaded', function() {
+        setupPersonSearch('custodianPerson', 'custodianPersonId', 'custodianSearchResults');
+        setupPersonSearch('fieldPerson', 'fieldPersonId', 'fieldSearchResults');
+    });
 </script>
 {% endblock %}
