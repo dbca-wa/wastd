@@ -9,7 +9,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.views.generic.edit import FormMixin
-from django.views.generic import TemplateView, ListView, DetailView, FormView, DeleteView, UpdateView
+from django.views.generic import TemplateView, ListView, DetailView, FormView, DeleteView
 from django.http import JsonResponse
 from .models import TrtPlaces, TrtSpecies, TrtLocations,TrtEntryBatchOrganisation
 from django.core.paginator import Paginator
@@ -41,7 +41,7 @@ from .models import (
     TrtTagStates,
     TrtIdentification
 )
-from .forms import TrtDataEntryForm, SearchForm, TrtEntryBatchesForm, TemplateForm, BatchesCodeForm, TrtPersonsForm, PersonMergeForm, PersonUpdateForm
+from .forms import TrtDataEntryForm, SearchForm, TrtEntryBatchesForm, TemplateForm, BatchesCodeForm, TrtPersonsForm
 
 
 class HomePageView(LoginRequiredMixin, TemplateView):
@@ -2474,7 +2474,7 @@ class PersonManageView(LoginRequiredMixin, ListView):
                 ('TrtDataEntry', ['measured_by_id', 'recorded_by_id', 'tagged_by_id', 
                                 'entered_by_id', 'measured_recorded_by_id']),
                 ('TrtObservations', ['reporter_person', 'entered_by_person','tagger_person',
-                                   'measurer_reporter_person','measurer_person']),
+                                'measurer_reporter_person','measurer_person']),
             ]
             
             for model_name, fields in models_to_update:
@@ -2493,7 +2493,7 @@ class PersonManageView(LoginRequiredMixin, ListView):
             
             secondary.delete()
             messages.success(self.request, 
-                           f"Successfully merged {secondary_info} into {primary.first_name} {primary.surname}")
+                        f"Successfully merged {secondary_info} into {primary.first_name} {primary.surname}")
             
         except Exception as e:
             messages.error(self.request, f"Error during merge: {str(e)}")
@@ -2524,3 +2524,5 @@ class PersonManageView(LoginRequiredMixin, ListView):
             messages.error(self.request, f"Error updating person: {str(e)}")
         
         return self.get(self.request)
+    
+    

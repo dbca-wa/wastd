@@ -1,16 +1,16 @@
 {% extends "base_wastd.html" %}
 
-
 {% block breadcrumbs %}
     <!-- Breadcrumb Navigation -->
     <nav aria-label="breadcrumb" class="d-none d-md-block">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
             <li class="breadcrumb-item"><a href="{% url 'wamtram2:batches_curation' %}">Manage Batches</a></li>
-            <li class="breadcrumb-item active">Manage Templates</li>
+            <li class="breadcrumb-item active">Manage Person</li>
         </ol>
     </nav>
 {% endblock %}
+
 
 {% block page_content_inner %}
 <div class="container">
@@ -22,8 +22,8 @@
             <form method="get" class="mb-0">
                 <div class="input-group">
                     <input type="text" name="search" class="form-control" 
-                           placeholder="Search by name or email" 
-                           value="{{ request.GET.search }}">
+                        placeholder="Search by name or email" 
+                        value="{{ request.GET.search }}">
                     <div class="input-group-append">
                         <button class="btn btn-outline-secondary" type="submit">Search</button>
                     </div>
@@ -176,7 +176,10 @@
         </div>
     </div>
 </div>
+{% endblock %}
 
+{% block extra_js %}
+{{ block.super }}
 <script>
 function toggleEdit(personId) {
     const displayElement = document.getElementById(`display-name-${personId}`);
@@ -191,4 +194,10 @@ function toggleEdit(personId) {
     }
 }
 
-function
+function selectForMerge(personId) {
+    const currentUrl = new URL(window.location.href);
+    currentUrl.searchParams.set('merge_id', personId);
+    window.location.href = currentUrl.toString();
+}
+</script>
+{% endblock %}
