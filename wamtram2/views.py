@@ -29,7 +29,7 @@ from django.db import transaction
 from django.apps import apps 
 from docx import Document
 from docx.enum.text import WD_ALIGN_PARAGRAPH
-from docx.shared import Inches, Pt, Cm
+from docx.shared import Inches, Pt, RGBColor
 
 from wastd.utils import Breadcrumb, PaginateMixin
 from .models import (
@@ -1125,19 +1125,35 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
         header_para = header.paragraphs[0]
         header_para.alignment = WD_ALIGN_PARAGRAPH.RIGHT
         run = header_para.add_run()
-        run.add_picture('wastd/static/android-chrome-192x192.png', width=Inches(0.3))
+        run.add_picture('wastd/static/android-chrome-192x192.png', width=Inches(0.4))
     
-        doc.add_heading('W.A. Marine Turtles Conservation Database - Turtle Information Sheet', 1)
+        title_para = doc.add_paragraph()
+        title_run = title_para.add_run('W.A. Marine Turtles Conservation Database - Turtle Information Sheet')
+        title_run.font.size = Pt(18)
+        title_run.font.color.rgb = RGBColor(31,73,125)
+        title_run.font.bold = True
+        title_para.space_after = Pt(12)
+ 
         
         # Basic information
         doc.add_paragraph(f'Turtle ID: {turtle.pk}')
-        doc.add_paragraph(f'Species: {turtle.species_code}')
+        doc.add_paragraph(f'Species: {turtle.species_code or ""}')
         doc.add_paragraph(f'Sex: {turtle.sex or "Unknown"}')
-        doc.add_paragraph(f'Status: {turtle.turtle_status}')
+        doc.add_paragraph(f'Status: {turtle.turtle_status or ""}')
         doc.add_paragraph(f'Cause of Death: {turtle.cause_of_death or ""}')
+
+        def add_section_title(text):
+            para = doc.add_paragraph()
+            run = para.add_run(text)
+            run.font.size = Pt(16)
+            run.font.bold = True
+            run.font.color.rgb = RGBColor(0,32,96)
+            para.space_before = Pt(12)
+            para.space_after = Pt(6)
+            return para
         
         # Other identification history
-        doc.add_heading('Other Identification History:', level=1)
+        add_section_title('Other Identification History:')
         identifications = TrtIdentification.objects.filter(turtle_id=turtle.pk)
         if identifications.exists():
             table = doc.add_table(rows=1, cols=3)
@@ -1156,7 +1172,7 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
             doc.add_paragraph('No identification history recorded')
         
         # Observations
-        doc.add_heading('Observations:', level=1)
+        add_section_title('Observations:')
         observations = turtle.trtobservations_set.all()
         if observations:
             table = doc.add_table(rows=1, cols=3)
@@ -1175,8 +1191,8 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
                 # Add measurements
                 measurements = obs.trtmeasurements_set.all()
                 if measurements:
-                    doc.add_heading('Measurements:', level=2)
-                    m_table = doc.add_table(rows=1, cols=3)
+                    add_section_title('Measurements:')
+                    m_table = doc.add_table(rows=1, cols=4)
                     m_table.style = 'Table Grid'
                     m_header = m_table.rows[0].cells
                     m_header[0].text = 'Date'
@@ -1194,7 +1210,7 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
             doc.add_paragraph('No observations recorded')
         
         # Samples
-        doc.add_heading('Samples:', level=1)
+        add_section_title('Samples:')
         samples = turtle.trtsamples_set.all()
         if samples:
             table = doc.add_table(rows=1, cols=4)

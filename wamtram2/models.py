@@ -73,6 +73,9 @@ class TrtCauseOfDeath(models.Model):
         managed = False
         db_table = "TRT_CAUSE_OF_DEATH"
 
+    def __str__(self):
+        return f"{self.description}"
+
 
 class TrtConditionCodes(models.Model):
     condition_code = models.CharField(
