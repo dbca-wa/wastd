@@ -1,5 +1,17 @@
 {% extends "base_wastd.html" %}
 
+
+{% block breadcrumbs %}
+    <!-- Breadcrumb Navigation -->
+    <nav aria-label="breadcrumb" class="d-none d-md-block">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'wamtram2:batches_curation' %}">Manage Batches</a></li>
+            <li class="breadcrumb-item active">Manage Templates</li>
+        </ol>
+    </nav>
+{% endblock %}
+
 {% block page_content_inner %}
 <div class="container">
     <h2>People Management</h2>
@@ -26,8 +38,9 @@
             <h5 class="mb-0">Merge People Records</h5>
         </div>
         <div class="card-body">
-            <form method="post" action="{% url 'wamtram2:person_merge' %}">
+            <form method="post">
                 {% csrf_token %}
+                <input type="hidden" name="action" value="merge">
                 <div class="row">
                     <div class="col-md-5">
                         <label>Keep this person (Primary)</label>
@@ -51,7 +64,10 @@
                     </div>
                     <div class="col-md-2">
                         <label>&nbsp;</label>
-                        <button type="submit" class="btn btn-warning btn-block">Merge</button>
+                        <button type="submit" class="btn btn-warning btn-block" 
+                                onclick="return confirm('Are you sure you want to merge these records? This action cannot be undone.')">
+                            Merge
+                        </button>
                     </div>
                 </div>
             </form>
@@ -85,9 +101,10 @@
                                 </span>
                                 <form id="edit-form-{{ person.pk }}" 
                                       style="display: none;" 
-                                      method="post" 
-                                      action="{% url 'wamtram2:person_update' pk=person.pk %}">
+                                      method="post">
                                     {% csrf_token %}
+                                    <input type="hidden" name="action" value="update">
+                                    <input type="hidden" name="person_id" value="{{ person.pk }}">
                                     <div class="form-row">
                                         <div class="col">
                                             <input type="text" 
@@ -100,6 +117,11 @@
                                                    name="surname" 
                                                    class="form-control form-control-sm" 
                                                    value="{{ person.surname }}">
+                                        </div>
+                                        <div class="col-auto">
+                                            <button type="submit" class="btn btn-sm btn-success">Save</button>
+                                            <button type="button" class="btn btn-sm btn-secondary" 
+                                                    onclick="toggleEdit({{ person.pk }})">Cancel</button>
                                         </div>
                                     </div>
                                 </form>
@@ -164,14 +186,9 @@ function toggleEdit(personId) {
         displayElement.style.display = 'none';
         formElement.style.display = 'block';
     } else {
-        formElement.submit();
+        displayElement.style.display = 'block';
+        formElement.style.display = 'none';
     }
 }
 
-function selectForMerge(personId) {
-    const currentUrl = new URL(window.location.href);
-    currentUrl.searchParams.set('merge_id', personId);
-    window.location.href = currentUrl.toString();
-}
-</script>
-{% endblock %}
+function
