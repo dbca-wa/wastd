@@ -1125,9 +1125,9 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
         header_para = header.paragraphs[0]
         header_para.alignment = WD_ALIGN_PARAGRAPH.RIGHT
         run = header_para.add_run()
-        run.add_picture('../wastd/static/android-chrome-192x192.png', width=Inches(1))
+        run.add_picture('wastd/static/android-chrome-192x192.png', width=Inches(0.3))
     
-        doc.add_heading('W.A. Marine Turtles Conservation Database - Turtle Information Sheet', 0)
+        doc.add_heading('W.A. Marine Turtles Conservation Database - Turtle Information Sheet', 1)
         
         # Basic information
         doc.add_paragraph(f'Turtle ID: {turtle.pk}')
@@ -1152,6 +1152,8 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
                 row_cells[0].text = str(ident.identification_type)
                 row_cells[1].text = str(ident.identifier)
                 row_cells[2].text = str(ident.comments or '')
+        else:
+            doc.add_paragraph('No identification history recorded')
         
         # Observations
         doc.add_heading('Observations:', level=1)
@@ -1177,15 +1179,19 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
                     m_table = doc.add_table(rows=1, cols=3)
                     m_table.style = 'Table Grid'
                     m_header = m_table.rows[0].cells
-                    m_header[0].text = 'Measurement'
-                    m_header[1].text = 'Value'
-                    m_header[2].text = 'Comments'
+                    m_header[0].text = 'Date'
+                    m_header[1].text = 'Measurement'
+                    m_header[2].text = 'Value'
+                    m_header[3].text = 'Comments'
                     
                     for m in measurements:
                         m_row = m_table.add_row().cells
-                        m_row[0].text = str(m.measurement_type)
-                        m_row[1].text = str(m.measurement_value)
-                        m_row[2].text = str(m.comments or '')
+                        m_row[0].text = obs.observation_date.strftime('%d/%m/%Y %H:%M:%S')
+                        m_row[1].text = str(m.measurement_type)
+                        m_row[2].text = str(m.measurement_value)
+                        m_row[3].text = str(m.comments or '')
+        else:
+            doc.add_paragraph('No observations recorded')
         
         # Samples
         doc.add_heading('Samples:', level=1)
@@ -1205,7 +1211,8 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
                 row_cells[1].text = sample.sample_date.strftime('%d/%m/%Y') if sample.sample_date else ''
                 row_cells[2].text = str(sample.sample_label or '')
                 row_cells[3].text = str(sample.comments or '')
-        
+        else:
+            doc.add_paragraph('No samples recorded')
         # Add footer
         doc.add_paragraph(f'WAMTP - unpubl record: {timezone.now().strftime("%d-%b-%Y")} copy. RITP.')
         
