@@ -162,7 +162,7 @@ class TrtDataEntryAdmin(admin.ModelAdmin):
 @admin.register(TrtTurtles)
 class TrtTurtlesAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
 
-    list_display = ("turtle_id", "species_code", "turtle_name")
+    list_display = ("turtle_id", "species_code", "sex", "turtle_status", "date_entered", "comments")
     date_hierarchy = "date_entered"
     ordering = ["date_entered"]
     list_filter = ["species_code", "location_code"]
@@ -208,9 +208,27 @@ class TrtTagsAdmin(ImportExportModelAdmin):
 
 @admin.register(TrtPitTags)
 class TrtPitTagsAdmin(ImportExportModelAdmin):
-    list_display = ("pittag_id", "turtle", "pit_tag_status")
+    list_display = ("pittag_id", "linked_turtle", "issue_location", "linked_custodian_person", "pit_tag_status", "comments")
     list_filter = ["pit_tag_status"]
     search_fields = ["pittag_id"]
+
+    def linked_turtle(self, obj):
+        if obj.turtle:
+            url = reverse('admin:wamtram2_trtturtles_change', args=[obj.turtle.pk])
+            return format_html('<a href="{}">{}</a>', url, obj.turtle)
+        return "-"
+    linked_turtle.short_description = 'Turtle'
+    
+    def linked_custodian_person(self, obj):
+        if obj.custodian_person_id:
+            try:
+                person = TrtPersons.objects.get(person_id=obj.custodian_person_id)
+                url = reverse('admin:wamtram2_trtpersons_change', args=[person.person_id])
+                return format_html('<a href="{}">{}</a>', url, person)
+            except TrtPersons.DoesNotExist:
+                return "-"
+        return "-"
+    linked_custodian_person.short_description = 'Custodian Person'
 
 
 @admin.register(TrtTagOrders)

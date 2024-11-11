@@ -1270,7 +1270,7 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
         else:
             doc.add_paragraph('No samples recorded')
         # Add footer
-        doc.add_paragraph(f'WAMTRAM - {timezone.now().strftime("%d-%b-%Y")} copy.')
+        doc.add_paragraph(f'WAMTRAM - {timezone.now().strftime("%d-%b-%Y")} copy. Department of Biodiversity, Conservation and Attractions')
         
         # Prepare response
         response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
