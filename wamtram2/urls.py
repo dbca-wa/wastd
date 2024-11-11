@@ -46,4 +46,5 @@ urlpatterns = [
     path('tags/register/', views.TagRegisterView.as_view(), name='tag_register'),
     path('turtle/<int:pk>/export/', views.TurtleDetailView.as_view(http_method_names=['get']), name='export_turtle_word'),
     path('admin-tools/', views.AdminToolsView.as_view(), name='admin_tools'),
+    path('pit-tags/', views.PitTagsListView.as_view(), name='pit_tags_list'),
 ]

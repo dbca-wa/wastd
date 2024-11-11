@@ -2835,4 +2835,46 @@ class AdminToolsView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     
     def test_func(self):
         return (self.request.user.is_superuser)
+    
 
+
+class PitTagsListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    model = TrtPitTags
+    template_name = 'wamtram2/pit_tags_list.html'
+    context_object_name = 'pit_tags'
+    paginate_by = 30
+    
+    def test_func(self):
+        return self.request.user.is_superuser
+    
+    def get_queryset(self):
+        queryset = super().get_queryset().select_related('turtle', 'custodian_person', 'pit_tag_status')
+        
+        search = self.request.GET.get('search')
+        if search:
+            queryset = queryset.filter(
+                Q(pittag_id__icontains=search) |
+                Q(turtle__turtle_id__icontains=search) |
+                Q(custodian_person__first_name__icontains=search) |
+                Q(custodian_person__surname__icontains=search)
+            )
+        
+        status = self.request.GET.get('status')
+        if status:
+            queryset = queryset.filter(pit_tag_status=status)
+            
+        return queryset
+        
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'admin_add_url': 'admin:wamtram2_trtpittags_add',
+            'admin_change_url': 'admin:wamtram2_trtpittags_change',
+            'search_term': self.request.GET.get('search', ''),
+            'current_status': self.request.GET.get('status', ''),
+            'status_choices': TrtPitTagStatus.objects.all(),
+        })
+        return context
+            
+    
+    
