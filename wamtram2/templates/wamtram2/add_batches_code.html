@@ -5,33 +5,10 @@
 
 {% block extra_style %}
     {{ block.super }}
-    <link rel="stylesheet" href="{% static 'css/search_styles.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/table_list.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/search_styles.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
-    <style>
-        .step-container {
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-        .step-header {
-            background-color: #f8f9fa;
-            padding: 10px;
-            margin: -15px -15px 15px -15px;
-            border-bottom: 1px solid #ddd;
-            font-weight: bold;
-        }
-        .alert {
-            position: fixed;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100%;
-            z-index: 1050;
-            display: none;
-        }
-    </style>
 {% endblock %}
 
 {% block breadcrumbs %}
@@ -46,9 +23,13 @@
 {% endblock %}
 
 {% block page_content_inner %}
-<div class="container-fluid mt-5 mb-5">
-    <!-- Message Alert -->
-    <div id="message-alert" class="alert" role="alert"></div>
+<div class="container">
+    <div class="page-header">
+        <h1 class="page-title">{% if batch_id %}Edit{% else %}Add{% endif %} Batch</h1>
+    </div>
+
+    {% include "includes/messages.html" %}
+    <div id="message-alert" class="alert mt-3" role="alert"></div>
 
     <!-- Batch Code Generator -->
     <div class="step-container">
@@ -57,7 +38,7 @@
             {% csrf_token %}
             <div class="col-md-3">
                 <label for="location_code">Location (required)</label>
-                <select class="form-control" id="location_code" name="location_code" required>
+                <select class="form-control form-control-sm" id="location_code" name="location_code" required>
                     <option value="">Select Location</option>
                     {% for location in locations %}
                         <option value="{{ location.location_code }}">{{ location.location_name }}</option>
@@ -66,14 +47,14 @@
             </div>
             <div class="col-md-3">
                 <label for="place_code">Place (optional)</label>
-                <select class="form-control" id="place_code" name="place_code">
+                <select class="form-control form-control-sm" id="place_code" name="place_code">
                     <option value="">Select Place</option>
                     <!-- Will be populated dynamically by JavaScript -->
                 </select>
             </div>
             <div class="col-md-2">
                 <label for="year">Year (required)</label>
-                <select class="form-control" id="year" name="year" required>
+                <select class="form-control form-control-sm" id="year" name="year" required>
                     <option value="">Select Year</option>
                     {% for year, short_year in years.items %}
                         <option value="{{ short_year }}" {% if year == current_year|stringformat:"s" %}selected{% endif %}>{{ year }}</option>
@@ -82,7 +63,7 @@
             </div>
             <div class="col-md-2">
                 <label for="night">Night Number (optional)</label>
-                <input type="number" class="form-control" id="night" name="night" min="1" value="">
+                <input type="number" class="form-control form-control-sm" id="night" name="night" min="1" value="">
             </div>
             <div class="col-md-2 mt-4">
                 <button type="button" class="btn btn-primary btn-block" onclick="generateCode()">Generate Code</button>
@@ -100,7 +81,7 @@
             {% csrf_token %}
             <div class="form-group">
                 <label for="batches_code">{{ form.batches_code.label }}</label>
-                <input type="text" class="form-control" id="batches_code" name="batches_code" value="{{ form.batches_code.value|default_if_none:'' }}" required>
+                <input type="text" class="form-control form-control-sm" id="batches_code" name="batches_code" value="{{ form.batches_code.value|default_if_none:'' }}" required>
                 <div class="invalid-feedback">
                     This Batch Code is aleady taken.
                 </div>
@@ -119,11 +100,11 @@
             </div>
             <div class="form-group">
                 <label for="comments">{{ form.comments.label }}</label>
-                <textarea name="comments" id="comments" class="form-control" rows="3">{{ form.comments.value|default_if_none:'' }}</textarea>
+                <textarea name="comments" id="comments" class="form-control form-control-sm" rows="3">{{ form.comments.value|default_if_none:'' }}</textarea>
             </div>
             {% comment %} <div class="form-group">
                 <label for="template">{{ form.template.label }}</label>
-                <select name="template" id="template" class="form-control">
+                <select name="template" id="template" class="form-control form-control-sm">
                     <option value="">Select Template</option>
                     {% for template in templates %}
                         <option value="{{ template.template_id }}" {% if template.template_id == form.initial.template  %}selected{% endif %}>{{ template.name }}</option>
@@ -133,7 +114,7 @@
             <div class="form-group">
                 <label for="template">{{ form.template.label }}</label>
                 <div class="search-container">
-                    <input type="text" id="templateSearch" class="search-field form-control" placeholder="Search Template" autocomplete="off" value="{{ template_name|default:'' }}">
+                    <input type="text" id="templateSearch" class="search-field form-control form-control-sm" placeholder="Search Template" autocomplete="off" value="{{ template_name|default:'' }}">
                     <input type="hidden" id="templateId" name="template" value="{{ template_id|default:'' }}">
                     
                     <div id="templateSearchResults" class="search-results"></div>

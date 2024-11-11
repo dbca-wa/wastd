@@ -4,7 +4,7 @@
 {% block extra_style %}
     {{ block.super }}
     {{ form.media.css }}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/table-list.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/table_list.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
 {% endblock %}
@@ -37,10 +37,7 @@
             {% endif %}
         </div>
         <div class="col-md-3">
-            {% include "includes/search_form.html" with 
-                placeholder="Search by name or email..."
-                clear_url="wamtram2:manage_person"
-            %}
+            {% include "includes/search_form.html" with placeholder="Search by name or email..." clear_url="wamtram2:manage_person" %}
         </div>
     </div>
 
