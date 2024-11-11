@@ -2618,7 +2618,7 @@ class MoveEntryView(LoginRequiredMixin, View):
             return JsonResponse({'error': f'Operation failed: {str(e)}'}, status=500)
         
 
-class PersonManageView(LoginRequiredMixin,  UserPassesTestMixin, ListView, PaginateMixin):
+class PersonManageView(LoginRequiredMixin, UserPassesTestMixin, PaginateMixin, ListView):
     model = TrtPersons
     template_name = 'wamtram2/manage_person.html'
     context_object_name = 'persons'
