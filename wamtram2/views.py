@@ -1036,6 +1036,7 @@ class TurtleListView(LoginRequiredMixin, PaginateMixin, ListView):
 
         return qs.order_by("pk")
 
+
 class TurtleDetailView(LoginRequiredMixin, DetailView):
     """
     View class for displaying and exporting the details of a turtle.
@@ -2837,8 +2838,7 @@ class AdminToolsView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         return (self.request.user.is_superuser)
     
 
-
-class PitTagsListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+class PitTagsListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMixin, ListView):
     model = TrtPitTags
     template_name = 'wamtram2/pit_tags_list.html'
     context_object_name = 'pit_tags'
@@ -2875,6 +2875,4 @@ class PitTagsListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
             'status_choices': TrtPitTagStatus.objects.all(),
         })
         return context
-            
-    
     
