@@ -2307,7 +2307,7 @@ def search_templates(request):
     return JsonResponse([], safe=False)
     
 class BatchCodeManageView(View):
-    template_name = 'wamtram2/add_batches_code.html'
+    template_name = 'wamtram2/batch_detail_manage.html'
 
     def dispatch(self, request, *args, **kwargs):
         
