@@ -707,6 +707,8 @@ class BatchesSearchForm(forms.Form):
     )
 
 class TrtPersonsForm(forms.ModelForm):
+    specialty = forms.CharField(widget=forms.Textarea(attrs={'rows': 3}), required=False)
+    comments = forms.CharField(widget=forms.Textarea(attrs={'rows': 3}), required=False)
     class Meta:
         model = TrtPersons
         fields = '__all__'

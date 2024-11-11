@@ -266,3 +266,10 @@ class TrtPersonsAdmin(ImportExportModelAdmin):
             'fields': ('middle_name', 'specialty', 'address_line_1', 'address_line_2', 'town', 'state', 'post_code', 'country', 'telephone', 'fax', 'mobile', 'comments', 'transfer'),
         }),
     )
+    
+    class Media:
+        css = {
+            'all': ('admin/css/custom_admin.css',)
+        }
+    
+    
