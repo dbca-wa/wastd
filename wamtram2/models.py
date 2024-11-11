@@ -2233,9 +2233,13 @@ class TrtTags(models.Model):
     issue_location = models.CharField(
         db_column="ISSUE_LOCATION", max_length=50, blank=True, null=True
     )  # Field name made lowercase.
-    custodian_person_id = models.IntegerField(
-        db_column="CUSTODIAN_PERSON_ID", blank=True, null=True
-    )  # Field name made lowercase.
+    custodian_person = models.ForeignKey(
+        'TrtPersons',
+        models.SET_NULL,
+        db_column='CUSTODIAN_PERSON_ID',
+        blank=True,
+        null=True
+    )  # Field name made lowercase.  # Field name made lowercase.
     turtle = models.ForeignKey(
         "TrtTurtles", models.SET_NULL, db_column="TURTLE_ID", blank=True, null=True
     )  # Field name made lowercase.

@@ -2888,7 +2888,11 @@ class FlipperTagsListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMixin
         return self.request.user.is_superuser
     
     def get_queryset(self):
-        queryset = super().get_queryset().select_related('turtle', 'tag_status')
+        queryset = super().get_queryset().select_related(
+            'turtle', 
+            'tag_status',
+            'custodian_person'
+        )
         
         search = self.request.GET.get('search')
         if search:
@@ -2901,7 +2905,7 @@ class FlipperTagsListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMixin
         
         status = self.request.GET.get('status')
         if status:
-            queryset = queryset.filter(tag_status=status)
+            queryset = queryset.filter(tag_status_id=status)
             
         return queryset
         
@@ -2915,3 +2919,4 @@ class FlipperTagsListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMixin
             'status_choices': TrtTagStatus.objects.all(),
         })
         return context
+    
