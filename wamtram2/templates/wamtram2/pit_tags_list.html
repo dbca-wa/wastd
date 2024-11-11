@@ -4,6 +4,17 @@
 {% block extra_style %}
     {{ block.super }}
     <style>
+        .container {
+            max-width: 90% !important;
+            padding: 0 15px;
+        }
+        .table-container {
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 0 -5px; 
+        }
+
         .pit-tags-header {
             display: flex;
             justify-content: space-between;
@@ -73,61 +84,7 @@
         {% endif %}
 
         {% if is_paginated %}
-        <div class="pagination-container">
-            <ul class="pagination mb-0">
-                {% if pit_tags.number == 1 %}
-                <li class="page-item disabled">
-                    <span class="page-link">⇤</span>
-                </li>
-                {% else %}
-                <li class="page-item">
-                    <a class="page-link" href="?page=1">⇤</a>
-                </li>
-                {% endif %}
-                
-                {% if pit_tags.has_previous %}
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ i }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}">{{ i }}</a>
-                </li>
-                {% else %}
-                <li class="page-item disabled">
-                    <span class="page-link">&laquo;</span>
-                </li>
-                {% endif %}
-                
-                {% for i in pit_tags.paginator.page_range %}
-                    {% if pit_tags.number == i %}
-                    <li class="page-item active">
-                        <span class="page-link">{{ i }}<span class="sr-only">(current page)</span></span>
-                    </li>
-                    {% else %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ i }}">{{ i }}</a>
-                    </li>
-                    {% endif %}
-                {% endfor %}
-                
-                {% if pit_tags.has_next %}
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ pit_tags.next_page_number }}">&raquo;</a>
-                </li>
-                {% else %}
-                <li class="page-item disabled">
-                    <span class="page-link">&raquo;</span>
-                </li>
-                {% endif %}
-                
-                {% if pit_tags.number == pit_tags.paginator.num_pages %}
-                <li class="page-item disabled">
-                    <span class="page-link">⇥</span>
-                </li>
-                {% else %}
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ pit_tags.paginator.num_pages }}">⇥</a>
-                </li>
-                {% endif %}
-            </ul>
-        </div>
+            {% include "pagination.html" %}
         {% endif %}
 
         <div class="step-container mt-5">
