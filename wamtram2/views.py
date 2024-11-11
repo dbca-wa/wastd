@@ -423,7 +423,8 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
                     self.place_full_name = ""
             
             if measured_by:
-                first_name, last_name = measured_by.split(" ")
+                parts = measured_by.split(" ", 1)
+                first_name, last_name = parts
                 person = TrtPersons.objects.filter(first_name=first_name, surname=last_name).first()
                 if person:
                     initial["measured_by_id"] = person.person_id
@@ -432,7 +433,8 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
                     self.measured_by_full_name = ""
 
             if recorded_by:
-                first_name, last_name = recorded_by.split(" ")
+                parts = recorded_by.split(" ", 1)
+                first_name, last_name = parts
                 person = TrtPersons.objects.filter(first_name=first_name, surname=last_name).first()
                 if person:
                     initial["recorded_by_id"] = person.person_id
@@ -441,7 +443,8 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
                     self.recorded_by_full_name = ""
 
             if tagged_by:
-                first_name, last_name = tagged_by.split(" ")
+                parts = tagged_by.split(" ", 1)
+                first_name, last_name = parts
                 person = TrtPersons.objects.filter(first_name=first_name, surname=last_name).first()
                 if person:
                     initial["tagged_by_id"] = person.person_id
@@ -450,15 +453,14 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
                     self.tagged_by_full_name = ""
 
             if entered_by:
-                first_name, last_name = entered_by.split(" ")
+                parts = entered_by.split(" ", 1)
+                first_name, last_name = parts
                 person = TrtPersons.objects.filter(first_name=first_name, surname=last_name).first()
                 if person:
                     initial["entered_by_id"] = person.person_id
                     self.entered_by_full_name = entered_by
                 else:
                     self.entered_by_full_name = ""
-
-
         return initial
 
     def form_valid(self, form):
