@@ -83,32 +83,40 @@
             </div>
         {% endif %}
 
-        {% if is_paginated %}
-            {% include "pagination.html" %}
-        {% endif %}
 
         <div class="step-container mt-5">
             <div class="pit-tags-header">
                 <h1 class="pit-tags-title">Pit Tags</h1>
-                <div class="button-group">
+                <a href="{% url admin_add_url %}" class="btn btn-success btn-create">
+                    <i class="fas fa-plus-circle"></i> Create Pit Tag
+                </a>
+            </div>
+            <div class="row mb-3 align-items-center">
+                <div class="col-md-9">
+                    {% if is_paginated %}
+                        {% include "pagination.html" %}
+                    {% endif %}
+                </div>
+                <div class="col-md-3">
                     <form method="get" class="search-form">
+                    <div class="input-group">
                         <input type="text" 
                             name="search" 
-                            class="form-control search-input" 
+                            class="form-control" 
                             placeholder="Search by ID, turtle or custodian..." 
                             value="{{ request.GET.search|default:'' }}">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-search"></i> Search
-                        </button>
+                        <div class="input-group-append">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-search"></i>
+                            </button>
+                            {% if request.GET.search %}
+                                <a href="{% url 'pit_tags_list' %}" class="btn btn-outline-secondary">
+                                    <i class="fas fa-times"></i>
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
                     </form>
-                    {% if request.GET.search or request.GET.status %}
-                        <a href="{% url 'pit_tags_list' %}" class="btn btn-outline-secondary">
-                            <i class="fas fa-times"></i> Clear
-                        </a>
-                    {% endif %}
-                    <a href="{% url admin_add_url %}" class="btn btn-success btn-create">
-                        <i class="fas fa-plus-circle"></i> Create Pit Tag
-                    </a>
                 </div>
             </div>
             <div class="table-container">
