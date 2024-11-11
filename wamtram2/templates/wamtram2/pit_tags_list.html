@@ -169,7 +169,11 @@
                     <tbody>
                     {% for tag in pit_tags %}
                         <tr>
-                            <td>{{ tag.pittag_id }}</td>
+                            <td>
+                                <a href="{% url 'admin:wamtram2_trtpittags_change' tag.pittag_id %}">
+                                    {{ tag.pittag_id }}
+                                </a>
+                            </td>
                             <td>
                                 {% if tag.turtle %}
                                     <a href="{% url 'admin:wamtram2_trtturtles_change' tag.turtle.pk %}">
