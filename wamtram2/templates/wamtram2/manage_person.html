@@ -4,6 +4,7 @@
 {% block extra_style %}
     {{ block.super }}
     {{ form.media.css }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/table-list.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
 {% endblock %}
@@ -22,30 +23,30 @@
 
 {% block page_content_inner %}
 <div class="container">
-    <h2>People Management</h2>
+    <div class="page-header">
+        <h1 class="page-title">People Management</h1>
+        <a href="{% url 'wamtram2:add_person' %}" class="btn btn-success btn-create">
+            <i class="fas fa-plus-circle"></i> Add Person
+        </a>
+    </div>
     
-    <!-- Search Form -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <form method="get" class="mb-0">
-                <div class="input-group">
-                    <input type="text" name="search" class="form-control" 
-                        placeholder="Search by name or email" 
-                        value="{{ request.GET.search }}">
-                    <div class="input-group-append">
-                        <button class="btn btn-outline-secondary" type="submit">Search</button>
-                    </div>
-                </div>
-            </form>
+    <div class="row mb-3 align-items-center">
+        <div class="col-md-9">
+            {% if is_paginated %}
+                {% include "pagination.html" %}
+            {% endif %}
+        </div>
+        <div class="col-md-3">
+            {% include "includes/search_form.html" with 
+                placeholder="Search by name or email..."
+                clear_url="wamtram2:manage_person"
+            %}
         </div>
     </div>
 
     <!-- Merge Section -->
-    <div class="card mb-4">
-        <div class="card-header">
-            <h5 class="mb-0">Merge People Records</h5>
-        </div>
-        <div class="card-body">
+    <div class="step-container">
+        <div class="step-header">Merge People Records</div>
             <form method="post">
                 {% csrf_token %}
                 <input type="hidden" name="action" value="merge">
@@ -75,125 +76,99 @@
                     <div class="col-md-2">
                         <label>&nbsp;</label>
                         <button type="submit" class="btn btn-warning btn-block" 
-                            onclick="return validateMerge()">
-                            Merge
+                                onclick="return validateMerge()">
+                            <i class="fas fa-code-merge"></i> Merge
                         </button>
                     </div>
                 </div>
             </form>
-        </div>
     </div>
 
     <!-- People List -->
-    <div class="card">
-        <div class="card-header">
-            <h5 class="mb-0">People List</h5>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th style="width: 5%;">ID</th>
-                            <th style="width: 40%;">Name</th>
-                            <th style="width: 20%;">Email</th>
-                            <th style="width: 15%;">Related Records</th>
-                            <th style="width: 20%;">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for person in persons %}
-                        <tr>
-                            <td style="width: 5%;">{{ person.person_id }}</td>
-                            <td style="width: 40%;">
-                                <span id="display-name-{{ person.pk }}">
-                                    {{ person.first_name }} {{ person.surname }}
-                                </span>
-                                <form id="edit-form-{{ person.pk }}" 
-                                    style="display: none;" 
-                                    method="post"
-                                    onsubmit="return handleEditSubmit(this)">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="action" value="update">
-                                    <input type="hidden" name="person_id" value="{{ person.pk }}">
-                                    <div class="form-row mb-2">
-                                        <div class="col">
-                                            <input type="text" 
-                                                name="first_name" 
-                                                class="form-control form-control-sm" 
-                                                value="{{ person.first_name }}">
-                                        </div>
-                                        <div class="col">
-                                            <input type="text" 
-                                                name="surname" 
-                                                class="form-control form-control-sm" 
-                                                value="{{ person.surname }}">
-                                        </div>
+    <div class="step-container">
+        <div class="step-header">People List</div>
+        <div class="table-container">
+            <table class="table table-stripe table-hover">
+                <thead>
+                    <tr>
+                        <th style="width: 5%;">ID</th>
+                        <th style="width: 40%;">Name</th>
+                        <th style="width: 20%;">Email</th>
+                        <th style="width: 15%;">Related Records</th>
+                        <th style="width: 20%;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for person in persons %}
+                    <tr>
+                        <td style="width: 5%;">{{ person.person_id }}</td>
+                        <td style="width: 40%;">
+                            <span id="display-name-{{ person.pk }}">
+                                {{ person.first_name }} {{ person.surname }}
+                            </span>
+                            <form id="edit-form-{{ person.pk }}" 
+                                style="display: none;" 
+                                method="post"
+                                onsubmit="return handleEditSubmit(this)">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="update">
+                                <input type="hidden" name="person_id" value="{{ person.pk }}">
+                                <div class="form-row mb-2">
+                                    <div class="col">
+                                        <input type="text" 
+                                            name="first_name" 
+                                            class="form-control form-control-sm" 
+                                            value="{{ person.first_name }}">
                                     </div>
-                                    <div class="form-row">
-                                        <div class="col-8">
-                                            <input type="email" 
-                                                name="email" 
-                                                class="form-control form-control-sm" 
-                                                value="{{ person.email|default:'' }}"
-                                                placeholder="Email">
-                                        </div>
-                                        <div class="col-4">
-                                            <button type="submit" class="btn btn-sm btn-success">Save</button>
-                                            <button type="button" class="btn btn-sm btn-secondary" 
-                                                    onclick="toggleEdit({{ person.pk }})">Cancel</button>
-                                        </div>
+                                    <div class="col">
+                                        <input type="text" 
+                                            name="surname" 
+                                            class="form-control form-control-sm" 
+                                            value="{{ person.surname }}">
                                     </div>
-                                </form>
-                            </td>
-                            <td style="width: 20%;">{{ person.email|default:"-" }}</td>
-                            <td style="width: 15%;">
-                                <small>
-                                    Measured: {{ person.measurer_person.count }}<br>
-                                    Tagged: {{ person.tagger_person.count }}<br>
-                                    Entered: {{ person.entered_by_person.count }}
-                                </small>
-                            </td>
-                            <td style="width: 20%;">
-                                <button class="btn btn-sm btn-primary" 
-                                        onclick="toggleEdit({{ person.pk }})">
-                                    Edit
-                                </button>
-                                <button class="btn btn-sm btn-warning" 
-                                        onclick="selectForMerge({{ person.pk }})">
-                                    Select for Merge
-                                </button>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Pagination -->
-            {% if is_paginated %}
-            <nav>
-                <ul class="pagination justify-content-center">
-                    {% if page_obj.has_previous %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">Previous</a>
-                    </li>
-                    {% endif %}
-                    
-                    <li class="page-item active">
-                        <span class="page-link">
-                            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
-                        </span>
-                    </li>
-
-                    {% if page_obj.has_next %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">Next</a>
-                    </li>
-                    {% endif %}
-                </ul>
-            </nav>
-            {% endif %}
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-8">
+                                        <input type="email" 
+                                            name="email" 
+                                            class="form-control form-control-sm" 
+                                            value="{{ person.email|default:'' }}"
+                                            placeholder="Email">
+                                    </div>
+                                    <div class="col-4">
+                                        <button type="submit" class="btn btn-sm btn-success">
+                                            <i class="fas fa-save"></i> Save
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-secondary" 
+                                                onclick="toggleEdit({{ person.pk }})">
+                                            <i class="fas fa-times"></i> Cancel
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </td>
+                        <td style="width: 20%;">{{ person.email|default:"-" }}</td>
+                        <td style="width: 15%;">
+                            <small>
+                                Measured: {{ person.measurer_person.count }}<br>
+                                Tagged: {{ person.tagger_person.count }}<br>
+                                Entered: {{ person.entered_by_person.count }}
+                            </small>
+                        </td>
+                        <td style="width: 20%;">
+                            <button class="btn btn-sm btn-primary" 
+                                    onclick="toggleEdit({{ person.pk }})">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button class="btn btn-sm btn-warning" 
+                                    onclick="selectForMerge({{ person.pk }})">
+                                <i class="fas fa-code-merge"></i> Select for Merge
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
 

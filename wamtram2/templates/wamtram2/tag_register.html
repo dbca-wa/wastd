@@ -3,33 +3,10 @@
 
 {% block extra_style %}
     {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/table-list.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/search_styles.css' %}">
-    <style>
-        .step-container {
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-        .step-header {
-            background-color: #f8f9fa;
-            padding: 10px;
-            margin: -15px -15px 15px -15px;
-            border-bottom: 1px solid #ddd;
-            font-weight: bold;
-        }
-        .alert {
-            position: fixed;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100%;
-            z-index: 1050;
-            display: none;
-        }
-    </style>
 {% endblock %}
 
 {% block breadcrumbs %}
@@ -44,76 +21,67 @@
 
 {% block page_content_inner %}
     <div class="container">
-        <!-- Message Alert -->
-        <div id="message-alert" class="alert mt-5" role="alert" style="display: none;"></div>
-
-        <!-- Django messages -->
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}" role="alert">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
-
+        <div class="page-header">
+            <h1 class="page-title">Register Tags</h1>
+        </div>
+    
+        {% include "includes/messages.html" %}
+        <div id="message-alert" class="alert mt-3" role="alert" style="display: none;"></div>
+    
         <!-- Tag Registration Form -->
         <div class="step-container">
             <div class="step-header">Register New Tags</div>
             <form id="tagRegisterForm" method="post">
                 {% csrf_token %}
                 
-                <!-- Tag Type Selection -->
-                <div class="row mb-3">
-                    <div class="col-12">
-                        <label>Tag Type</label>
-                        <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                            <label class="btn btn-outline-primary active">
-                                <input type="radio" name="tag_type" value="flipper" checked> Flipper Tags
-                            </label>
-                            <label class="btn btn-outline-primary">
-                                <input type="radio" name="tag_type" value="pit"> PIT Tags
-                            </label>
-                        </div>
-                    </div>
+            <!-- Tag Type Selection -->
+            <div class="form-group">
+                <label>Tag Type</label>
+                <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                    <label class="btn btn-outline-primary active">
+                        <input type="radio" name="tag_type" value="flipper" checked> 
+                        <i class="fas fa-tag"></i> Flipper Tags
+                    </label>
+                    <label class="btn btn-outline-primary">
+                        <input type="radio" name="tag_type" value="pit"> 
+                        <i class="fas fa-microchip"></i> PIT Tags
+                    </label>
                 </div>
+            </div>
 
                 <!-- Tag Information -->
-                <div class="row mb-3">
+                <div class="row ">
                     <!-- Tag Prefix -->
                     <div class="col-md-3" id="tagPrefixContainer" style="display: none;">
                         <div class="form-group">
                             <label for="tagPrefix">Tag Prefix</label>
-                            <input type="text" class="form-control" id="tagPrefix" name="tag_prefix">
+                            <input type="text" class="form-control form-control-sm" id="tagPrefix" name="tag_prefix">
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="startNumber">Start Number</label>
-                            <input type="text" class="form-control" id="startNumber" name="start_number" required>
+                            <input type="text" class="form-control form-control-sm" id="startNumber" name="start_number" required>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="endNumber">End Number</label>
-                            <input type="text" class="form-control" id="endNumber" name="end_number" required>
+                            <input type="text" class="form-control form-control-sm" id="endNumber" name="end_number" required>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="tagOrderId">Tag Order ID</label>
-                            <input type="number" class="form-control" id="tagOrderId" name="tag_order_id" required>
+                            <input type="number" class="form-control form-control-sm" id="tagOrderId" name="tag_order_id" required>
                         </div>
                     </div>
                 </div>
 
                 <!-- Location and Personnel -->
-                <div class="row mb-3">
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label for="issueLocation">Issue Location</label>
-                            <input type="text" class="form-control" id="issueLocation" name="issue_location" required>
-                        </div>
-                    </div>
+                <div class="form-group">
+                    <label for="issueLocation">Issue Location</label>
+                    <input type="text" class="form-control form-control-sm" id="issueLocation" name="issue_location" required>
                 </div>
 
                 <div class="row mb-3">
@@ -121,8 +89,11 @@
                         <div class="form-group">
                             <label for="custodianPerson">Custodian Person</label>
                             <div class="search-container">
-                                <input type="text" id="custodianPerson" class="search-field" 
-                                       placeholder="Search for custodian..." autocomplete="off">
+                                <input type="text" 
+                                    id="custodianPerson" 
+                                    class="search-field form-control-sm" 
+                                    placeholder="Search for custodian..." 
+                                    autocomplete="off">
                                 <input type="hidden" id="custodianPersonId" name="custodian_person_id">
                                 <div id="custodianSearchResults" class="search-results"></div>
                             </div>
@@ -132,8 +103,11 @@
                         <div class="form-group">
                             <label for="fieldPerson">Field Person</label>
                             <div class="search-container">
-                                <input type="text" id="fieldPerson" class="search-field" 
-                                       placeholder="Search for field person..." autocomplete="off">
+                                <input type="text" 
+                                    id="fieldPerson" 
+                                    class="search-field form-control-sm" 
+                                    placeholder="Search for field person..." 
+                                    autocomplete="off">
                                 <input type="hidden" id="fieldPersonId" name="field_person_id">
                                 <div id="fieldSearchResults" class="search-results"></div>
                             </div>
@@ -142,19 +116,18 @@
                 </div>
 
                 <!-- Comments -->
-                <div class="row mb-3">
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label for="comments">Comments</label>
-                            <textarea class="form-control" id="comments" name="comments" rows="3"></textarea>
-                        </div>
-                    </div>
+                <div class="form-group">
+                    <label for="comments">Comments</label>
+                    <textarea class="form-control form-control-sm" id="comments" name="comments" rows="3"></textarea>
                 </div>
+    
 
                 <!-- Submit Button -->
                 <div class="row">
-                    <div class="col-md-2">
-                        <button type="submit" class="btn btn-primary btn-block">Register Tags</button>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-primary btn-block">
+                            <i class="fas fa-save"></i> Register Tags
+                        </button>
                     </div>
                 </div>
             </form>

@@ -2,64 +2,9 @@
 {% load static bootstrap4 %}
 
 {% block extra_style %}
-    {{ block.super }}
-    <style>
-        .container {
-            max-width: 90% !important;
-            padding: 0 15px;
-        }
-        .table-container {
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            border-radius: 5px;
-            overflow: hidden;
-            margin: 0 -5px; 
-        }
-
-        .pit-tags-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .pit-tags-title {
-            font-size: 24px;
-            font-weight: bold;
-        }
-        .table th {
-            background-color: #f8f9fa;
-        }
-        .btn-create {
-            padding: 10px 20px;
-            font-size: 16px;
-        }
-        .table-container {
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            border-radius: 5px;
-            overflow: hidden;
-        }
-        .button-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .btn-create, .btn-export {
-            padding: 10px 20px;
-            font-size: 16px;
-        }
-        .search-form {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .search-input {
-            min-width: 300px;
-        }
-        
-        .button-group > * {
-            margin: 0;
-        }
-    </style>
+{{ block.super }}
+{{ form.media.css }}
+<link rel="stylesheet" type="text/css" href="{% static 'css/table-list.css' %}">
 {% endblock %}
 
 {% block breadcrumbs %}
@@ -73,20 +18,11 @@
 
 {% block page_content_inner %}
     <div class="container">
-        {% if messages %}
-            <div class="mt-3">
-                {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }}" role="alert">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
-
+        {% include "includes/messages.html" %}
 
         <div class="step-container mt-5">
-            <div class="pit-tags-header">
-                <h1 class="pit-tags-title">Pit Tags</h1>
+            <div class="page-header">
+                <h1 class="page-title">Pit Tags</h1>
                 <a href="{% url admin_add_url %}" class="btn btn-success btn-create">
                     <i class="fas fa-plus-circle"></i> Create Pit Tag
                 </a>
@@ -98,25 +34,7 @@
                     {% endif %}
                 </div>
                 <div class="col-md-3">
-                    <form method="get" class="search-form">
-                    <div class="input-group">
-                        <input type="text" 
-                            name="search" 
-                            class="form-control" 
-                            placeholder="Search by ID, turtle or custodian..." 
-                            value="{{ request.GET.search|default:'' }}">
-                        <div class="input-group-append">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-search"></i>
-                            </button>
-                            {% if request.GET.search %}
-                                <a href="{% url 'pit_tags_list' %}" class="btn btn-outline-secondary">
-                                    <i class="fas fa-times"></i>
-                                </a>
-                            {% endif %}
-                        </div>
-                    </div>
-                    </form>
+                    {% include "includes/search_form.html" with placeholder="Search by ID, turtle or custodian..." clear_url="wamtram2:pit_tags_list" %}
                 </div>
             </div>
             <div class="table-container">
