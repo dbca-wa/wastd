@@ -211,6 +211,9 @@ class TrtPitTagsAdmin(ImportExportModelAdmin):
     list_display = ("pittag_id", "linked_turtle", "issue_location", "linked_custodian_person", "pit_tag_status", "comments")
     list_filter = ["pit_tag_status"]
     search_fields = ["pittag_id"]
+    
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('turtle', 'custodian_person')
 
     def linked_turtle(self, obj):
         if obj.turtle:
@@ -220,13 +223,9 @@ class TrtPitTagsAdmin(ImportExportModelAdmin):
     linked_turtle.short_description = 'Turtle'
     
     def linked_custodian_person(self, obj):
-        if obj.custodian_person_id:
-            try:
-                person = TrtPersons.objects.get(person_id=obj.custodian_person_id)
-                url = reverse('admin:wamtram2_trtpersons_change', args=[person.person_id])
-                return format_html('<a href="{}">{}</a>', url, person)
-            except TrtPersons.DoesNotExist:
-                return "-"
+        if obj.custodian_person:
+            url = reverse('admin:wamtram2_trtpersons_change', args=[obj.custodian_person.pk])
+            return format_html('<a href="{}">{}</a>', url, obj.custodian_person)
         return "-"
     linked_custodian_person.short_description = 'Custodian Person'
 
