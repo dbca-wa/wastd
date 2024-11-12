@@ -1071,7 +1071,7 @@ class TrtDataEntryExceptions(models.Model):
         db_column="MEASUREMENT_VALUE_2", blank=True, null=True
     )  # Field name made lowercase.
     datum_code = models.CharField(
-        db_column="DATUM_CODE", max_length=5, blank=True, null=True
+        db_column="DATUM_CODE", max_length=5, blank=True, default="WGS84"
     )  # Field name made lowercase.
     latitude = models.FloatField(
         db_column="LATITUDE", blank=True, null=True
