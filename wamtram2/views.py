@@ -3057,106 +3057,89 @@ class TransferObservationsByTagView(LoginRequiredMixin, View):
 
             # Start transaction
             with transaction.atomic():
-                # Backup all related records
-                recorded_tags = list(TrtRecordedTags.objects.filter(
-                    observation_id__in=observations.values_list('observation_id', flat=True)
-                ).values())
+                try:
+                    # Step 1: Get all observations for this tag
+                    observation_ids = observations.values_list('observation_id', flat=True)
+                    
+                    # Step 2: Get all related tags
+                    related_tag_ids = TrtRecordedTags.objects.filter(
+                        observation_id__in=observation_ids
+                    ).values_list('tag_id', flat=True).distinct()
+                    
+                    # Step 3: Backup current records
+                    recorded_tags = list(TrtRecordedTags.objects.filter(
+                        observation_id__in=observation_ids
+                    ).values(
+                        'observation_id_id',
+                        'tag_id_id',
+                        'other_tag_id',
+                        'side',
+                        'tag_state',
+                        'comments',
+                        'tag_position',
+                        'barnacles'
+                    ))
 
-                recorded_pit_tags = list(TrtRecordedPitTags.objects.filter(
-                    observation_id__in=observations.values_list('observation_id', flat=True)
-                ).values())
+                    recorded_pit_tags = list(TrtRecordedPitTags.objects.filter(
+                        observation_id__in=observation_ids
+                    ).values(
+                        'observation_id_id',
+                        'pit_tag_id_id',
+                        'pit_tag_state',
+                        'pit_tag_position',
+                        'comments',
+                        'checked'
+                    ))
+                    
+                    if not recorded_tags:
+                        return JsonResponse({
+                            'success': False,
+                            'error': 'No recorded tags found'
+                        }, status=400)
+                    
+                    # Step 4: Delete recorded tags and pit tags
+                    TrtRecordedTags.objects.filter(
+                        observation_id__in=observation_ids
+                    ).delete()
 
-                recorded_identifications = list(TrtRecordedIdentification.objects.filter(
-                    observation_id__in=observations.values_list('observation_id', flat=True)
-                ).values())
+                    TrtRecordedPitTags.objects.filter(
+                        observation_id__in=observation_ids
+                    ).delete()
 
-                if not recorded_tags:
-                    return JsonResponse({
-                        'success': False,
-                        'error': 'No recorded tags found'
-                    }, status=400)
+                    # Step 5: Update tags with new turtle ID
+                    TrtTags.objects.filter(
+                        tag_id__in=related_tag_ids
+                    ).update(turtle_id=turtle_id)
 
-                # Step 1: Delete all related records first
-                TrtRecordedIdentification.objects.filter(
-                    observation_id__in=observations.values_list('observation_id', flat=True)
-                ).delete()
-
-                TrtRecordedPitTags.objects.filter(
-                    observation_id__in=observations.values_list('observation_id', flat=True)
-                ).delete()
-
-                TrtRecordedTags.objects.filter(
-                    observation_id__in=observations.values_list('observation_id', flat=True)
-                ).delete()
-                
-                # Step 2: Update observations turtle ID
-                observations.update(turtle_id=turtle_id)
-
-                # Step 3: Update tags turtle ID
-                tag_ids = set(filter(None, (tag.get('tag_id_id') for tag in recorded_tags)))
-                if tag_ids:
-                    TrtTags.objects.filter(tag_id__in=tag_ids).update(turtle_id=turtle_id)
-                else:
-                    return JsonResponse({
-                        'success': False,
-                        'error': 'No valid tag IDs found to update in TrtTags.'
-                    }, status=400)
-
-                # Step 4: Update PIT tags if any
-                if recorded_pit_tags:
-                    pit_tag_ids = set(filter(None, (pit_tag.get('pit_tag_id_id') for pit_tag in recorded_pit_tags)))
-                    if pit_tag_ids:
-                        TrtPitTags.objects.filter(pit_tag_id__in=pit_tag_ids).update(turtle_id=turtle_id)
-
-                # Step 5: Recreate records with new turtle ID
-                for tag in recorded_tags:
-                    try:
-                        # Remove primary key to allow auto-generation
-                        if 'recorded_tag_id' in tag:
-                            del tag['recorded_tag_id']
+                    # Step 6: Update observations with new turtle ID
+                    observations.update(turtle_id=turtle_id)
+                    
+                    # Step 7: Recreate recorded tags with new turtle ID
+                    new_recorded_tags = []
+                    for tag in recorded_tags:
                         tag['turtle_id'] = turtle_id
-                        # Verify observation exists
-                        if TrtObservations.objects.filter(observation_id=tag['observation_id_id']).exists():
-                            TrtRecordedTags.objects.create(**tag)
-                        else:
-                            raise Exception(f"Observation {tag['observation_id_id']} not found")
-                    except Exception as e:
-                        raise Exception(f"Recover tag record error: {str(e)}, tag data: {tag}")
+                        new_recorded_tags.append(TrtRecordedTags(**tag))
+                    TrtRecordedTags.objects.bulk_create(new_recorded_tags)
 
-                # Restore PIT tag records
-                for pit_tag in recorded_pit_tags:
-                    try:
-                        # Remove primary key to allow auto-generation
-                        if 'recorded_pittag_id' in pit_tag:
-                            del pit_tag['recorded_pittag_id']
-                        pit_tag['turtle_id'] = turtle_id
-                        # Verify observation exists
-                        if TrtObservations.objects.filter(observation_id=pit_tag['observation_id_id']).exists():
-                            TrtRecordedPitTags.objects.create(**pit_tag)
-                        else:
-                            raise Exception(f"Observation {pit_tag['observation_id_id']} not found")
-                    except Exception as e:
-                        raise Exception(f"Recover pit tag record error: {str(e)}, pit tag data: {pit_tag}")
+                    # Step 8: Recreate recorded pit tags with new turtle ID
+                    if recorded_pit_tags:
+                        new_recorded_pit_tags = []
+                        for pit_tag in recorded_pit_tags:
+                            pit_tag['turtle_id'] = turtle_id
+                            new_recorded_pit_tags.append(TrtRecordedPitTags(**pit_tag))
+                        TrtRecordedPitTags.objects.bulk_create(new_recorded_pit_tags)
 
-                # Restore identification records
-                for identification in recorded_identifications:
-                    try:
-                        # Remove primary key to allow auto-generation
-                        if 'recorded_identification_id' in identification:
-                            del identification['recorded_identification_id']
-                        identification['turtle_id'] = turtle_id
-                        # Verify observation exists
-                        if TrtObservations.objects.filter(observation_id=identification['observation_id']).exists():
-                            TrtRecordedIdentification.objects.create(**identification)
-                        else:
-                            raise Exception(f"Observation {identification['observation_id']} not found")
-                    except Exception as e:
-                        raise Exception(f"Recover identification record error: {str(e)}, identification data: {identification}")
-
-                return JsonResponse({
-                    'success': True,
-                    'message': f'Successfully transferred {len(observation_ids)} observations'
-                })
+                    return JsonResponse({
+                        'success': True,
+                        'message': f'Successfully transferred {len(observation_ids)} observations'
+                    })
+                    
+                except Exception as e:
+                    # Transaction will automatically rollback
+                    return JsonResponse({
+                'success': False,
+                    'error': str(e)
+                }, status=500)
 
         except Exception as e:
             return JsonResponse({
