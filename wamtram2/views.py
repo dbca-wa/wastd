@@ -2949,10 +2949,10 @@ class TransferObservationsByTagView(LoginRequiredMixin, View):
             return {
                 'success': True,
                 'data': {
-                    'species': turtle.species,
+                    'species': turtle.species_code.common_name,
                     'sex': turtle.sex,
-                    'turtle_status': turtle.turtle_status,
-                    'location_code': turtle.location_code,
+                    'turtle_status': turtle.turtle_status.description,
+                    'location_code': turtle.location_code.location_name,
                     'comments': turtle.comments
                 }
             }
@@ -3062,6 +3062,12 @@ class TransferObservationsByTagView(LoginRequiredMixin, View):
                 recorded_identifications = list(TrtRecordedIdentification.objects.filter(
                     observation_id__in=observations.values_list('observation_id', flat=True)
                 ).values())
+                
+                if not recorded_tags:
+                    return JsonResponse({
+                        'success': False,
+                        'error': 'No recorded tags found'
+                    }, status=400)
 
                 # Delete existing records
                 TrtRecordedTags.objects.filter(
@@ -3085,16 +3091,25 @@ class TransferObservationsByTagView(LoginRequiredMixin, View):
 
                 # Restore records with new turtle ID
                 for tag in recorded_tags:
-                    tag['turtle_id'] = turtle_id
-                    TrtRecordedTags.objects.create(**tag)
+                    try:
+                        tag['turtle_id'] = turtle_id
+                        TrtRecordedTags.objects.create(**tag)
+                    except Exception as e:
+                        raise Exception(f"Recover tag record error: {str(e)}, tag data: {tag}")
 
                 for pit_tag in recorded_pit_tags:
-                    pit_tag['turtle_id'] = turtle_id
-                    TrtRecordedPitTags.objects.create(**pit_tag)
+                    try:
+                        pit_tag['turtle_id'] = turtle_id
+                        TrtRecordedPitTags.objects.create(**pit_tag)
+                    except Exception as e:
+                        raise Exception(f"Recover pit tag record error: {str(e)}, pit tag data: {pit_tag}")
 
                 for identification in recorded_identifications:
-                    identification['turtle_id'] = turtle_id
-                    TrtRecordedIdentification.objects.create(**identification)
+                    try:
+                        identification['turtle_id'] = turtle_id
+                        TrtRecordedIdentification.objects.create(**identification)
+                    except Exception as e:
+                        raise Exception(f"Recover identification record error: {str(e)}, identification data: {identification}")
 
                 return JsonResponse({
                     'success': True,
