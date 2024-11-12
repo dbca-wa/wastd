@@ -2921,20 +2921,236 @@ class FlipperTagsListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMixin
         })
         return context
     
+# class TransferObservationsByTagView(LoginRequiredMixin, View):
+#     template_name = 'wamtram2/transfer_observation.html'
+
+#     """
+#     Transfer observations associated with a specific flipper tag to another turtle.
+
+#     Parameters:
+#     - tag_id: Flipper tag ID
+#     - turtle_id: Target turtle ID
+#     - observation_ids: List of observation IDs to transfer
+#     """
+
+#     def dispatch(self, request, *args, **kwargs):
+#         # Check user permissions
+#         if not (request.user.is_superuser or
+#                 request.user.groups.filter(name="WAMTRAM2_STAFF").exists()):
+#             raise PermissionDenied
+#         return super().dispatch(request, *args, **kwargs)
+
+#     def get(self, request):
+#         return render(request, self.template_name)
+
+#     def get_turtle_info(self, turtle_id):
+#         """Get turtle information"""
+#         try:
+#             turtle = TrtTurtles.objects.get(turtle_id=turtle_id)
+#             return {
+#                 'success': True,
+#                 'data': {
+#                     'species': turtle.species_code.common_name,
+#                     'sex': turtle.sex,
+#                     'turtle_status': turtle.turtle_status.description,
+#                     'location_code': turtle.location_code.location_name,
+#                     'comments': turtle.comments
+#                 }
+#             }
+#         except TrtTurtles.DoesNotExist:
+#             return {
+#                 'success': False,
+#                 'error': f'Turtle {turtle_id} not found'
+#             }
+
+#     def get_observations(self, tag_id):
+#         """Get observations data for a specific tag"""
+#         if not TrtTags.objects.filter(tag_id=tag_id).exists():
+#             return []
+        
+#         observations = TrtObservations.objects.filter(
+#             trtrecordedtags__tag_id=tag_id
+#         ).select_related('turtle').values(
+#             'observation_id',
+#             'observation_date',
+#             'turtle_id',
+#             'place_code',
+#             'comments'
+#         ).order_by('-observation_date')
+#         return list(observations)
+
+#     def post(self, request):
+#         # Handle AJAX request for turtle info
+#         if request.headers.get('X-Requested-With') == 'FetchTurtleInfo':
+#             turtle_id = request.POST.get('turtle_id')
+#             return JsonResponse(self.get_turtle_info(turtle_id))
+
+#         # Handle AJAX request for observations
+#         if request.headers.get('X-Requested-With') == 'FetchObservations':
+#             tag_id = request.POST.get('tag_id')
+#             if not tag_id:
+#                 return JsonResponse({
+#                     'success': False,
+#                     'error': 'Tag ID is required'
+#                 })
+
+#             observations = self.get_observations(tag_id)
+#             return JsonResponse({
+#                 'success': True,
+#                 'observations': observations
+#             })
+
+#         # Handle transfer request  
+#         try:
+#             # Get request parameters
+#             tag_id = request.POST.get('tag_id')
+#             turtle_id = request.POST.get('turtle_id')
+#             observation_ids = request.POST.getlist('observation_ids[]')
+
+#             # Validate input parameters
+#             if not observation_ids:
+#                 return JsonResponse({
+#                     'success': False,
+#                     'error': 'No observations selected for transfer'
+#                 }, status=400)
+
+#             if not all([tag_id, turtle_id]):
+#                 return JsonResponse({
+#                     'success': False,
+#                     'error': 'Missing required parameters'
+#                 }, status=400)
+
+#             # Validate tag existence
+#             try:
+#                 tag = TrtTags.objects.get(tag_id=tag_id)
+#             except TrtTags.DoesNotExist:
+#                 return JsonResponse({
+#                     'success': False,
+#                     'error': f'Tag {tag_id} does not exist'
+#                 }, status=404)
+
+#             # Check if trying to transfer to the same turtle
+#             if tag.turtle_id and str(tag.turtle_id) == str(turtle_id):
+#                 return JsonResponse({
+#                     'success': False,
+#                     'error': 'Cannot transfer observations to the same turtle'
+#                 }, status=400)
+
+#             # Validate target turtle existence
+#             if not TrtTurtles.objects.filter(turtle_id=turtle_id).exists():
+#                 return JsonResponse({
+#                     'success': False,
+#                     'error': f'Target turtle {turtle_id} does not exist'
+#                 }, status=404)
+
+#             # Get observations associated with the tag
+#             observations = TrtObservations.objects.filter(
+#                 observation_id__in=observation_ids,
+#                 trtrecordedtags__tag_id=tag_id
+#             )
+
+#             if not observations.exists():
+#                 return JsonResponse({
+#                     'success': False,
+#                     'error': 'No observations found for this tag'
+#                 }, status=404)
+
+#             # Start transaction
+#             with transaction.atomic():
+#                 try:
+#                     # Step 1: Get all observations for this tag
+#                     observation_ids = observations.values_list('observation_id', flat=True)
+                    
+#                     # Step 2: Get all related tags
+#                     related_tag_ids = TrtRecordedTags.objects.filter(
+#                         observation_id__in=observation_ids
+#                     ).values_list('tag_id', flat=True).distinct()
+                    
+#                     # Step 3: Backup current records
+#                     recorded_tags = list(TrtRecordedTags.objects.filter(
+#                         observation_id__in=observation_ids
+#                     ).values(
+#                         'observation_id_id',
+#                         'tag_id_id',
+#                         'other_tag_id',
+#                         'side',
+#                         'tag_state',
+#                         'comments',
+#                         'tag_position',
+#                         'barnacles'
+#                     ))
+
+#                     recorded_pit_tags = list(TrtRecordedPitTags.objects.filter(
+#                         observation_id__in=observation_ids
+#                     ).values(
+#                         'observation_id_id',
+#                         'pit_tag_id_id',
+#                         'pit_tag_state',
+#                         'pit_tag_position',
+#                         'comments',
+#                         'checked'
+#                     ))
+                    
+#                     if not recorded_tags:
+#                         return JsonResponse({
+#                             'success': False,
+#                             'error': 'No recorded tags found'
+#                         }, status=400)
+                    
+#                     # Step 4: Delete recorded tags and pit tags
+#                     TrtRecordedTags.objects.filter(
+#                         observation_id__in=observation_ids
+#                     ).delete()
+
+#                     TrtRecordedPitTags.objects.filter(
+#                         observation_id__in=observation_ids
+#                     ).delete()
+
+#                     # Step 5: Update tags with new turtle ID
+#                     TrtTags.objects.filter(
+#                         tag_id__in=related_tag_ids
+#                     ).update(turtle_id=turtle_id)
+
+#                     # Step 6: Update observations with new turtle ID
+#                     observations.update(turtle_id=turtle_id)
+                    
+#                     # Step 7: Recreate recorded tags with new turtle ID
+#                     new_recorded_tags = []
+#                     for tag in recorded_tags:
+#                         tag['turtle_id'] = turtle_id
+#                         new_recorded_tags.append(TrtRecordedTags(**tag))
+#                     TrtRecordedTags.objects.bulk_create(new_recorded_tags)
+
+#                     # Step 8: Recreate recorded pit tags with new turtle ID
+#                     if recorded_pit_tags:
+#                         new_recorded_pit_tags = []
+#                         for pit_tag in recorded_pit_tags:
+#                             pit_tag['turtle_id'] = turtle_id
+#                             new_recorded_pit_tags.append(TrtRecordedPitTags(**pit_tag))
+#                         TrtRecordedPitTags.objects.bulk_create(new_recorded_pit_tags)
+
+#                     return JsonResponse({
+#                         'success': True,
+#                         'message': f'Successfully transferred {len(observation_ids)} observations'
+#                     })
+                    
+#                 except Exception as e:
+#                     # Transaction will automatically rollback
+#                     return JsonResponse({
+#                 'success': False,
+#                     'error': str(e)
+#                 }, status=500)
+
+#         except Exception as e:
+#             return JsonResponse({
+#                 'success': False,
+#                 'error': str(e)
+#             }, status=500)
+            
 class TransferObservationsByTagView(LoginRequiredMixin, View):
     template_name = 'wamtram2/transfer_observation.html'
 
-    """
-    Transfer observations associated with a specific flipper tag to another turtle.
-
-    Parameters:
-    - tag_id: Flipper tag ID
-    - turtle_id: Target turtle ID
-    - observation_ids: List of observation IDs to transfer
-    """
-
     def dispatch(self, request, *args, **kwargs):
-        # Check user permissions
         if not (request.user.is_superuser or
                 request.user.groups.filter(name="WAMTRAM2_STAFF").exists()):
             raise PermissionDenied
@@ -3002,148 +3218,41 @@ class TransferObservationsByTagView(LoginRequiredMixin, View):
 
         # Handle transfer request  
         try:
-            # Get request parameters
             tag_id = request.POST.get('tag_id')
             turtle_id = request.POST.get('turtle_id')
-            observation_ids = request.POST.getlist('observation_ids[]')
 
-            # Validate input parameters
-            if not observation_ids:
-                return JsonResponse({
-                    'success': False,
-                    'error': 'No observations selected for transfer'
-                }, status=400)
-
+            # Basic validation
             if not all([tag_id, turtle_id]):
                 return JsonResponse({
                     'success': False,
                     'error': 'Missing required parameters'
                 }, status=400)
 
-            # Validate tag existence
-            try:
-                tag = TrtTags.objects.get(tag_id=tag_id)
-            except TrtTags.DoesNotExist:
-                return JsonResponse({
-                    'success': False,
-                    'error': f'Tag {tag_id} does not exist'
-                }, status=404)
+            # Execute stored procedure
+            with connections['wamtram2'].cursor() as cursor:
+                cursor.execute(
+                    "EXEC dbo.TransferObservationsByFlipperTag @TAG_ID = %s, @TURTLE_ID = %s;",
+                    [tag_id, turtle_id]
+                )
+                
+                # Get the results
+                row = cursor.fetchone()
+                return_value = row[0]
+                error_message = row[1]
 
-            # Check if trying to transfer to the same turtle
-            if tag.turtle_id and str(tag.turtle_id) == str(turtle_id):
-                return JsonResponse({
-                    'success': False,
-                    'error': 'Cannot transfer observations to the same turtle'
-                }, status=400)
-
-            # Validate target turtle existence
-            if not TrtTurtles.objects.filter(turtle_id=turtle_id).exists():
-                return JsonResponse({
-                    'success': False,
-                    'error': f'Target turtle {turtle_id} does not exist'
-                }, status=404)
-
-            # Get observations associated with the tag
-            observations = TrtObservations.objects.filter(
-                observation_id__in=observation_ids,
-                trtrecordedtags__tag_id=tag_id
-            )
-
-            if not observations.exists():
-                return JsonResponse({
-                    'success': False,
-                    'error': 'No observations found for this tag'
-                }, status=404)
-
-            # Start transaction
-            with transaction.atomic():
-                try:
-                    # Step 1: Get all observations for this tag
-                    observation_ids = observations.values_list('observation_id', flat=True)
-                    
-                    # Step 2: Get all related tags
-                    related_tag_ids = TrtRecordedTags.objects.filter(
-                        observation_id__in=observation_ids
-                    ).values_list('tag_id', flat=True).distinct()
-                    
-                    # Step 3: Backup current records
-                    recorded_tags = list(TrtRecordedTags.objects.filter(
-                        observation_id__in=observation_ids
-                    ).values(
-                        'observation_id_id',
-                        'tag_id_id',
-                        'other_tag_id',
-                        'side',
-                        'tag_state',
-                        'comments',
-                        'tag_position',
-                        'barnacles'
-                    ))
-
-                    recorded_pit_tags = list(TrtRecordedPitTags.objects.filter(
-                        observation_id__in=observation_ids
-                    ).values(
-                        'observation_id_id',
-                        'pit_tag_id_id',
-                        'pit_tag_state',
-                        'pit_tag_position',
-                        'comments',
-                        'checked'
-                    ))
-                    
-                    if not recorded_tags:
-                        return JsonResponse({
-                            'success': False,
-                            'error': 'No recorded tags found'
-                        }, status=400)
-                    
-                    # Step 4: Delete recorded tags and pit tags
-                    TrtRecordedTags.objects.filter(
-                        observation_id__in=observation_ids
-                    ).delete()
-
-                    TrtRecordedPitTags.objects.filter(
-                        observation_id__in=observation_ids
-                    ).delete()
-
-                    # Step 5: Update tags with new turtle ID
-                    TrtTags.objects.filter(
-                        tag_id__in=related_tag_ids
-                    ).update(turtle_id=turtle_id)
-
-                    # Step 6: Update observations with new turtle ID
-                    observations.update(turtle_id=turtle_id)
-                    
-                    # Step 7: Recreate recorded tags with new turtle ID
-                    new_recorded_tags = []
-                    for tag in recorded_tags:
-                        tag['turtle_id'] = turtle_id
-                        new_recorded_tags.append(TrtRecordedTags(**tag))
-                    TrtRecordedTags.objects.bulk_create(new_recorded_tags)
-
-                    # Step 8: Recreate recorded pit tags with new turtle ID
-                    if recorded_pit_tags:
-                        new_recorded_pit_tags = []
-                        for pit_tag in recorded_pit_tags:
-                            pit_tag['turtle_id'] = turtle_id
-                            new_recorded_pit_tags.append(TrtRecordedPitTags(**pit_tag))
-                        TrtRecordedPitTags.objects.bulk_create(new_recorded_pit_tags)
-
+                if return_value == 0:
                     return JsonResponse({
                         'success': True,
-                        'message': f'Successfully transferred {len(observation_ids)} observations'
+                        'message': error_message
                     })
-                    
-                except Exception as e:
-                    # Transaction will automatically rollback
+                else:
                     return JsonResponse({
-                'success': False,
-                    'error': str(e)
-                }, status=500)
+                        'success': False,
+                        'error': error_message
+                    }, status=500)
 
         except Exception as e:
             return JsonResponse({
                 'success': False,
                 'error': str(e)
             }, status=500)
-            
