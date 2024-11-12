@@ -46,7 +46,8 @@ from .models import (
     TrtPitTagStatus,
     TrtTagStatus,
     TrtRecordedTags,
-    TrtRecordedPitTags
+    TrtRecordedPitTags,
+    TrtRecordedIdentification
 )
 from .forms import TrtDataEntryForm, SearchForm, TrtEntryBatchesForm, TemplateForm, BatchesCodeForm, TrtPersonsForm, TagRegisterForm
 
@@ -2920,16 +2921,16 @@ class FlipperTagsListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMixin
         })
         return context
     
-    
-    
-    
 class TransferObservationsByTagView(LoginRequiredMixin, View):
+    template_name = 'wamtram2/transfer_observation.html'
+
     """
     Transfer observations associated with a specific flipper tag to another turtle.
     
     Parameters:
     - tag_id: Flipper tag ID
     - turtle_id: Target turtle ID
+    - observation_ids: List of observation IDs to transfer
     """
 
     def dispatch(self, request, *args, **kwargs):
@@ -2937,20 +2938,84 @@ class TransferObservationsByTagView(LoginRequiredMixin, View):
                 request.user.groups.filter(name="WAMTRAM2_STAFF").exists()):
             raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
+    
+    def get(self, request):
+        return render(request, self.template_name)
+    
+    def get_observations(self, tag_id):
+        """Get observations data for a specific tag"""
+        if not TrtTags.objects.filter(tag_id=tag_id).exists():
+            return []
+    
+        observations = TrtObservations.objects.filter(
+            trtrecordedtags__tag_id=tag_id
+        ).select_related('turtle').values(
+            'observation_id',
+            'observation_date',
+            'turtle_id',
+            'place_code',
+            'comments'
+        ).order_by('-observation_date')
+        return list(observations)
 
     def post(self, request):
+        
+        if request.headers.get('X-Requested-With') == 'FetchObservations':
+            # Handle AJAX request for fetching observations
+            tag_id = request.POST.get('tag_id')
+            if not tag_id:
+                return JsonResponse({
+                    'success': False,
+                    'error': 'Tag ID is required'
+                })
+            
+            observations = self.get_observations(tag_id)
+            return JsonResponse({
+                'success': True,
+                'observations': observations
+            })
+        
+        # Handle transfer request  
         try:
             tag_id = request.POST.get('tag_id')
             turtle_id = request.POST.get('turtle_id')
+            observation_ids = request.POST.getlist('observation_ids[]')
+            if not observation_ids:
+                return JsonResponse({
+                    'success': False,
+                    'error': 'No observations selected for transfer'
+                }, status=400)
 
             if not all([tag_id, turtle_id]):
                 return JsonResponse({
                     'success': False,
                     'error': 'Missing required parameters'
                 }, status=400)
+            
+            try:
+                tag = TrtTags.objects.get(tag_id=tag_id)
+            except TrtTags.DoesNotExist:
+                return JsonResponse({
+                    'success': False,
+                    'error': f'Tag {tag_id} does not exist'
+                }, status=404)
+                
+            if tag.turtle_id and str(tag.turtle_id) == str(turtle_id):
+                return JsonResponse({
+                    'success': False,
+                    'error': 'Cannot transfer observations to the same turtle'
+                }, status=400)
+
+            
+            if not TrtTurtles.objects.filter(turtle_id=turtle_id).exists():
+                return JsonResponse({
+                    'success': False,
+                    'error': f'Target turtle {turtle_id} does not exist'
+                }, status=404)
 
             # Get observations associated with the tag
             observations = TrtObservations.objects.filter(
+                observation_id__in=observation_ids,
                 trtrecordedtags__tag_id=tag_id
             )
 
@@ -2961,7 +3026,7 @@ class TransferObservationsByTagView(LoginRequiredMixin, View):
                 }, status=404)
 
             with transaction.atomic():
-                # Backup all related tags
+                # Backup all related records
                 recorded_tags = list(TrtRecordedTags.objects.filter(
                     observation_id__in=observations.values_list('observation_id', flat=True)
                 ).values())
@@ -2970,12 +3035,20 @@ class TransferObservationsByTagView(LoginRequiredMixin, View):
                     observation_id__in=observations.values_list('observation_id', flat=True)
                 ).values())
 
-                # Delete existing tag records
+                recorded_identifications = list(TrtRecordedIdentification.objects.filter(
+                    observation_id__in=observations.values_list('observation_id', flat=True)
+                ).values())
+
+                # Delete existing records
                 TrtRecordedTags.objects.filter(
                     observation_id__in=observations.values_list('observation_id', flat=True)
                 ).delete()
                 
                 TrtRecordedPitTags.objects.filter(
+                    observation_id__in=observations.values_list('observation_id', flat=True)
+                ).delete()
+
+                TrtRecordedIdentification.objects.filter(
                     observation_id__in=observations.values_list('observation_id', flat=True)
                 ).delete()
 
@@ -2986,7 +3059,7 @@ class TransferObservationsByTagView(LoginRequiredMixin, View):
                 # Update turtle ID for observations
                 observations.update(turtle_id=turtle_id)
 
-                # Restore tag records with new turtle ID
+                # Restore records with new turtle ID
                 for tag in recorded_tags:
                     tag['turtle_id'] = turtle_id
                     TrtRecordedTags.objects.create(**tag)
@@ -2995,9 +3068,13 @@ class TransferObservationsByTagView(LoginRequiredMixin, View):
                     pit_tag['turtle_id'] = turtle_id
                     TrtRecordedPitTags.objects.create(**pit_tag)
 
+                for identification in recorded_identifications:
+                    identification['turtle_id'] = turtle_id
+                    TrtRecordedIdentification.objects.create(**identification)
+
                 return JsonResponse({
                     'success': True,
-                    'message': f'Successfully transferred {observations.count()} observations'
+                    'message': f'Successfully transferred {len(observation_ids)} observations'
                 })
 
         except Exception as e:
@@ -3005,5 +3082,5 @@ class TransferObservationsByTagView(LoginRequiredMixin, View):
                 'success': False,
                 'error': str(e)
             }, status=500)
-            
+    
     

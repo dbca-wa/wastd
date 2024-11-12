@@ -1,0 +1,263 @@
+{% extends "base_wastd.html" %}
+{% load static bootstrap4 %}
+
+{% block extra_style %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/table_list.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
+{% endblock %}
+
+{% block breadcrumbs %}
+    <nav aria-label="breadcrumb" class="d-none d-md-block">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'wamtram2:admin_tools' %}">Curation Tools</a></li>
+            <li class="breadcrumb-item active">Transfer Observations</li>
+        </ol>
+    </nav>
+{% endblock %}
+
+{% block page_content_inner %}
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">Transfer Observations by Tag</h1>
+        </div>
+    
+        {% include "includes/messages.html" %}
+        <div id="message-alert" class="alert mt-3" role="alert" style="display: none;"></div>
+    
+        <!-- Transfer Form -->
+        <div class="step-container">
+            <div class="step-header">Transfer Observations</div>
+            <form id="transferForm" method="post">
+                {% csrf_token %}
+                
+                <!-- Tag Information -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="tagId">Flipper Tag ID</label>
+                            <input type="text" 
+                                class="form-control form-control-sm" 
+                                id="tagId" 
+                                name="tag_id" 
+                                required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="turtleId">Target Turtle ID</label>
+                            <input type="number" 
+                                class="form-control form-control-sm" 
+                                id="turtleId" 
+                                name="turtle_id" 
+                                required>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <button type="button" id="fetchObservations" class="btn btn-secondary btn-sm">
+                            <i class="fas fa-search"></i> Fetch Observations
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Add this before the submit button -->
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <div id="observationsTable" style="display: none;">
+                            <h4>Available Observations</h4>
+                            <div class="table-responsive">
+                                <table class="table table-striped table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                <input type="checkbox" id="selectAll">
+                                            </th>
+                                            <th>Observation ID</th>
+                                            <th>Date</th>
+                                            <th>Current Turtle</th>
+                                            <th>Location</th>
+                                            <th>Comments</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="observationsList">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="row">
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-primary btn-block">
+                            <i class="fas fa-exchange-alt"></i> Transfer Observations
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Loading spinner -->
+        <div class="loading-spinner">
+            <div class="spinner-border text-primary" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div class="loading-overlay"></div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function showMessage(message, type) {
+        var alert = $('#message-alert');
+        alert.removeClass('alert-success alert-danger alert-warning alert-info');
+        alert.addClass('alert-' + type);
+        alert.text(message);
+        alert.slideDown();
+    
+        setTimeout(function() {
+            alert.slideUp();
+        }, 5000);
+    }
+
+    function showLoadingSpinner() {
+        const loadingSpinner = document.querySelector('.loading-spinner');
+        const loadingOverlay = document.querySelector('.loading-overlay');
+        if (loadingOverlay) loadingOverlay.style.display = 'block';
+        if (loadingSpinner) loadingSpinner.style.display = 'block';
+    }
+
+    function hideLoadingSpinner() {
+        const loadingSpinner = document.querySelector('.loading-spinner');
+        const loadingOverlay = document.querySelector('.loading-overlay');
+        if (loadingOverlay) loadingOverlay.style.display = 'none';
+        if (loadingSpinner) loadingSpinner.style.display = 'none';
+    }
+
+
+    // Fetch observations when button is clicked
+    document.getElementById('fetchObservations').addEventListener('click', async function() {
+        const tagId = document.getElementById('tagId').value;
+        if (!tagId) {
+            showMessage('Please enter a tag ID', 'warning');
+            return;
+        }
+
+        showLoadingSpinner();
+
+        try {
+            const formData = new FormData();
+            formData.append('tag_id', tagId);
+
+            const response = await fetch("{% url 'wamtram2:transfer_observations_by_tag' %}", {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                    'X-Requested-With': 'FetchObservations'
+                }
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                displayObservations(data.observations);
+            } else {
+                showMessage(data.error, 'danger');
+            }
+        } catch (error) {
+            showMessage('Error fetching observations', 'danger');
+        } finally {
+            hideLoadingSpinner();
+        }
+    });
+
+    function displayObservations(observations) {
+        const tbody = document.getElementById('observationsList');
+        tbody.innerHTML = '';
+        
+        if (observations.length === 0) {
+            showMessage('No observations found for this tag', 'warning');
+            document.getElementById('observationsTable').style.display = 'none';
+            return;
+        }
+        
+        observations.forEach(obs => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>
+                    <input type="checkbox" name="observation_ids[]" value="${obs.observation_id}">
+                </td>
+                <td>${obs.observation_id}</td>
+                <td>${new Date(obs.observation_date).toLocaleDateString()}</td>
+                <td>${obs.turtle_id}</td>
+                <td>${obs.place_code || ''}</td>
+                <td>${obs.comments || ''}</td>
+            `;
+            tbody.appendChild(row);
+        });
+
+        document.getElementById('observationsTable').style.display = 'block';
+    }
+
+    // Handle select all checkbox
+    document.getElementById('selectAll').addEventListener('change', function() {
+        const checkboxes = document.querySelectorAll('input[name="observation_ids[]"]');
+        checkboxes.forEach(checkbox => checkbox.checked = this.checked);
+    });
+
+    // Update form submission to include selected observations
+    document.getElementById('transferForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const selectedObservations = document.querySelectorAll('input[name="observation_ids[]"]:checked');
+        if (selectedObservations.length === 0) {
+            showMessage('Please select at least one observation to transfer', 'warning');
+            return;
+        }
+
+        if (!confirm('Are you sure you want to transfer these observations? This action cannot be undone.')) {
+            return;
+        }
+
+        showLoadingSpinner();
+
+        try {
+            const formData = new FormData(this);
+            // Add selected observation IDs to form data
+            selectedObservations.forEach(checkbox => {
+                formData.append('observation_ids[]', checkbox.value);
+            });
+
+            const response = await fetch("{% url 'wamtram2:transfer_observations_by_tag' %}", {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                showMessage(data.message, 'success');
+                this.reset();
+                document.getElementById('observationsTable').style.display = 'none';
+            } else {
+                showMessage(data.error, 'danger');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showMessage('An error occurred while transferring observations', 'danger');
+        } finally {
+            hideLoadingSpinner();
+        }
+    });
+</script>
+{% endblock %}
