@@ -3076,20 +3076,23 @@ class TransferObservationsByTagView(LoginRequiredMixin, View):
                         'error': 'No recorded tags found'
                     }, status=400)
 
-                # Delete existing records
-                TrtRecordedTags.objects.filter(
-                    observation_id__in=observations.values_list('observation_id', flat=True)
-                ).delete()
-                
-                TrtRecordedPitTags.objects.filter(
-                    observation_id__in=observations.values_list('observation_id', flat=True)
-                ).delete()
-
+                # Step 1: Delete all related records first
                 TrtRecordedIdentification.objects.filter(
                     observation_id__in=observations.values_list('observation_id', flat=True)
                 ).delete()
 
-                # Update turtle ID for all related tags
+                TrtRecordedPitTags.objects.filter(
+                    observation_id__in=observations.values_list('observation_id', flat=True)
+                ).delete()
+
+                TrtRecordedTags.objects.filter(
+                    observation_id__in=observations.values_list('observation_id', flat=True)
+                ).delete()
+                
+                # Step 2: Update observations turtle ID
+                observations.update(turtle_id=turtle_id)
+
+                # Step 3: Update tags turtle ID
                 tag_ids = set(filter(None, (tag.get('tag_id_id') for tag in recorded_tags)))
                 if tag_ids:
                     TrtTags.objects.filter(tag_id__in=tag_ids).update(turtle_id=turtle_id)
@@ -3099,16 +3102,13 @@ class TransferObservationsByTagView(LoginRequiredMixin, View):
                         'error': 'No valid tag IDs found to update in TrtTags.'
                     }, status=400)
 
-                # Update PIT tags if any
+                # Step 4: Update PIT tags if any
                 if recorded_pit_tags:
                     pit_tag_ids = set(filter(None, (pit_tag.get('pit_tag_id_id') for pit_tag in recorded_pit_tags)))
                     if pit_tag_ids:
                         TrtPitTags.objects.filter(pit_tag_id__in=pit_tag_ids).update(turtle_id=turtle_id)
 
-                # Update observations turtle ID first
-                observations.update(turtle_id=turtle_id)
-
-                # Restore records with new turtle ID
+                # Step 5: Recreate records with new turtle ID
                 for tag in recorded_tags:
                     try:
                         # Remove primary key to allow auto-generation
