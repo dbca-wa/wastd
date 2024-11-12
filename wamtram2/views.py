@@ -3084,7 +3084,7 @@ class FlipperTagsListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMixin
 #                         observation_id__in=observation_ids
 #                     ).values(
 #                         'observation_id_id',
-#                         'pit_tag_id_id',
+#                         'pittag_id_id',
 #                         'pit_tag_state',
 #                         'pit_tag_position',
 #                         'comments',
@@ -3220,19 +3220,23 @@ class TransferObservationsByTagView(LoginRequiredMixin, View):
         try:
             tag_id = request.POST.get('tag_id')
             turtle_id = request.POST.get('turtle_id')
-
+            observation_ids = request.POST.getlist('observation_ids[]')
+            
             # Basic validation
             if not all([tag_id, turtle_id]):
                 return JsonResponse({
                     'success': False,
                     'error': 'Missing required parameters'
                 }, status=400)
+                
+            # Convert observation_ids list to comma-separated string
+            observation_ids_str = ','.join(observation_ids)
 
             # Execute stored procedure
             with connections['wamtram2'].cursor() as cursor:
                 cursor.execute(
-                    "EXEC dbo.TransferObservationsByFlipperTag @TAG_ID = %s, @TURTLE_ID = %s;",
-                    [tag_id, turtle_id]
+                    "EXEC dbo.TransferObservationsByFlipperTag @TAG_ID = %s, @TURTLE_ID = %s, @OBSERVATION_IDS = %s;",
+                    [tag_id, turtle_id, observation_ids_str]
                 )
                 
                 # Get the results
@@ -3256,3 +3260,5 @@ class TransferObservationsByTagView(LoginRequiredMixin, View):
                 'success': False,
                 'error': str(e)
             }, status=500)
+            
+            
