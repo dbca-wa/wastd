@@ -2942,6 +2942,26 @@ class TransferObservationsByTagView(LoginRequiredMixin, View):
     def get(self, request):
         return render(request, self.template_name)
     
+    def get_turtle_info(self, turtle_id):
+        """Get turtle information"""
+        try:
+            turtle = TrtTurtles.objects.get(turtle_id=turtle_id)
+            return {
+                'success': True,
+                'data': {
+                    'species': turtle.species,
+                    'sex': turtle.sex,
+                    'turtle_status': turtle.turtle_status,
+                    'location_code': turtle.location_code,
+                    'comments': turtle.comments
+                }
+            }
+        except TrtTurtles.DoesNotExist:
+            return {
+                'success': False,
+                'error': f'Turtle {turtle_id} not found'
+            }
+        
     def get_observations(self, tag_id):
         """Get observations data for a specific tag"""
         if not TrtTags.objects.filter(tag_id=tag_id).exists():
@@ -2959,6 +2979,10 @@ class TransferObservationsByTagView(LoginRequiredMixin, View):
         return list(observations)
 
     def post(self, request):
+        
+        if request.headers.get('X-Requested-With') == 'FetchTurtleInfo':
+            turtle_id = request.POST.get('turtle_id')
+            return JsonResponse(self.get_turtle_info(turtle_id))
         
         if request.headers.get('X-Requested-With') == 'FetchObservations':
             # Handle AJAX request for fetching observations
