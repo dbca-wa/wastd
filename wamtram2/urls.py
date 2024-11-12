@@ -48,4 +48,5 @@ urlpatterns = [
     path('admin-tools/', views.AdminToolsView.as_view(), name='admin_tools'),
     path('pit-tags/', views.PitTagsListView.as_view(), name='pit_tags_list'),
     path('flipper-tags/', views.FlipperTagsListView.as_view(), name='flipper_tags_list'),
+    path('transfer-observations-by-tag/', views.TransferObservationsByTagView.as_view(), name='transfer_observations_by_tag'),
 ]

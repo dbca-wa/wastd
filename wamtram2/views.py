@@ -44,7 +44,9 @@ from .models import (
     TrtTagStates,
     TrtIdentification,
     TrtPitTagStatus,
-    TrtTagStatus
+    TrtTagStatus,
+    TrtRecordedTags,
+    TrtRecordedPitTags
 )
 from .forms import TrtDataEntryForm, SearchForm, TrtEntryBatchesForm, TemplateForm, BatchesCodeForm, TrtPersonsForm, TagRegisterForm
 
@@ -2830,7 +2832,6 @@ class TagRegisterView(LoginRequiredMixin, FormView):
         })
 
 
-
 class AdminToolsView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     template_name = 'wamtram2/admin_tools.html'
     
@@ -2877,7 +2878,6 @@ class PitTagsListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMixin, Li
         return context
     
 
-
 class FlipperTagsListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMixin, ListView):
     model = TrtTags
     template_name = 'wamtram2/flipper_tags_list.html'
@@ -2919,4 +2919,91 @@ class FlipperTagsListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMixin
             'status_choices': TrtTagStatus.objects.all(),
         })
         return context
+    
+    
+    
+    
+class TransferObservationsByTagView(LoginRequiredMixin, View):
+    """
+    Transfer observations associated with a specific flipper tag to another turtle.
+    
+    Parameters:
+    - tag_id: Flipper tag ID
+    - turtle_id: Target turtle ID
+    """
+
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or 
+                request.user.groups.filter(name="WAMTRAM2_STAFF").exists()):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+
+    def post(self, request):
+        try:
+            tag_id = request.POST.get('tag_id')
+            turtle_id = request.POST.get('turtle_id')
+
+            if not all([tag_id, turtle_id]):
+                return JsonResponse({
+                    'success': False,
+                    'error': 'Missing required parameters'
+                }, status=400)
+
+            # Get observations associated with the tag
+            observations = TrtObservations.objects.filter(
+                trtrecordedtags__tag_id=tag_id
+            )
+
+            if not observations.exists():
+                return JsonResponse({
+                    'success': False,
+                    'error': 'No observations found for this tag'
+                }, status=404)
+
+            with transaction.atomic():
+                # Backup all related tags
+                recorded_tags = list(TrtRecordedTags.objects.filter(
+                    observation_id__in=observations.values_list('observation_id', flat=True)
+                ).values())
+                
+                recorded_pit_tags = list(TrtRecordedPitTags.objects.filter(
+                    observation_id__in=observations.values_list('observation_id', flat=True)
+                ).values())
+
+                # Delete existing tag records
+                TrtRecordedTags.objects.filter(
+                    observation_id__in=observations.values_list('observation_id', flat=True)
+                ).delete()
+                
+                TrtRecordedPitTags.objects.filter(
+                    observation_id__in=observations.values_list('observation_id', flat=True)
+                ).delete()
+
+                # Update turtle ID for all related tags
+                tag_ids = set(tag['tag_id'] for tag in recorded_tags)
+                TrtTags.objects.filter(tag_id__in=tag_ids).update(turtle_id=turtle_id)
+
+                # Update turtle ID for observations
+                observations.update(turtle_id=turtle_id)
+
+                # Restore tag records with new turtle ID
+                for tag in recorded_tags:
+                    tag['turtle_id'] = turtle_id
+                    TrtRecordedTags.objects.create(**tag)
+
+                for pit_tag in recorded_pit_tags:
+                    pit_tag['turtle_id'] = turtle_id
+                    TrtRecordedPitTags.objects.create(**pit_tag)
+
+                return JsonResponse({
+                    'success': True,
+                    'message': f'Successfully transferred {observations.count()} observations'
+                })
+
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'error': str(e)
+            }, status=500)
+            
     
