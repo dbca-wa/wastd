@@ -27,6 +27,9 @@ import pandas as pd
 from datetime import datetime, date, time
 from django.db import transaction
 from django.apps import apps 
+from docx import Document
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.shared import Inches, Pt, RGBColor
 
 from wastd.utils import Breadcrumb, PaginateMixin
 from .models import (
@@ -39,9 +42,14 @@ from .models import (
     TrtObservations,
     Template,
     TrtTagStates,
-    TrtIdentification
+    TrtIdentification,
+    TrtPitTagStatus,
+    TrtTagStatus,
+    TrtRecordedTags,
+    TrtRecordedPitTags,
+    TrtRecordedIdentification
 )
-from .forms import TrtDataEntryForm, SearchForm, TrtEntryBatchesForm, TemplateForm, BatchesCodeForm, TrtPersonsForm
+from .forms import TrtDataEntryForm, SearchForm, TrtEntryBatchesForm, TemplateForm, BatchesCodeForm, TrtPersonsForm, TagRegisterForm
 
 
 class HomePageView(LoginRequiredMixin, TemplateView):
@@ -418,7 +426,8 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
                     self.place_full_name = ""
             
             if measured_by:
-                first_name, last_name = measured_by.split(" ")
+                parts = measured_by.split(" ", 1)
+                first_name, last_name = parts
                 person = TrtPersons.objects.filter(first_name=first_name, surname=last_name).first()
                 if person:
                     initial["measured_by_id"] = person.person_id
@@ -427,7 +436,8 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
                     self.measured_by_full_name = ""
 
             if recorded_by:
-                first_name, last_name = recorded_by.split(" ")
+                parts = recorded_by.split(" ", 1)
+                first_name, last_name = parts
                 person = TrtPersons.objects.filter(first_name=first_name, surname=last_name).first()
                 if person:
                     initial["recorded_by_id"] = person.person_id
@@ -436,7 +446,8 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
                     self.recorded_by_full_name = ""
 
             if tagged_by:
-                first_name, last_name = tagged_by.split(" ")
+                parts = tagged_by.split(" ", 1)
+                first_name, last_name = parts
                 person = TrtPersons.objects.filter(first_name=first_name, surname=last_name).first()
                 if person:
                     initial["tagged_by_id"] = person.person_id
@@ -445,15 +456,14 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
                     self.tagged_by_full_name = ""
 
             if entered_by:
-                first_name, last_name = entered_by.split(" ")
+                parts = entered_by.split(" ", 1)
+                first_name, last_name = parts
                 person = TrtPersons.objects.filter(first_name=first_name, surname=last_name).first()
                 if person:
                     initial["entered_by_id"] = person.person_id
                     self.entered_by_full_name = entered_by
                 else:
                     self.entered_by_full_name = ""
-
-
         return initial
 
     def form_valid(self, form):
@@ -1032,16 +1042,21 @@ class TurtleListView(LoginRequiredMixin, PaginateMixin, ListView):
 
 class TurtleDetailView(LoginRequiredMixin, DetailView):
     """
-    View class for displaying the details of a turtle.
+    View class for displaying and exporting the details of a turtle.
 
     Attributes:
         model (Model): The model class representing the turtle.
+        template_name (str): The template used for displaying turtle details.
     """
 
     model = TrtTurtles
     template_name = "wamtram2/trtturtles_detail.html"
     
     def dispatch(self, request, *args, **kwargs):
+        """
+        Check user permissions before processing the request.
+        Only allows access to authorized users.
+        """
         if not (
             request.user.groups.filter(name="WAMTRAM2_VOLUNTEER").exists()
             or request.user.groups.filter(name="WAMTRAM2_TEAM_LEADER").exists()
@@ -1050,18 +1065,26 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
         ):
             return HttpResponseForbidden("You do not have permission to view this record")
         return super().dispatch(request, *args, **kwargs)
-
+    
+    def get(self, request, *args, **kwargs):
+        """
+        Handle GET requests, either display detail view or export Word document
+        """
+        if 'export' in request.path:
+            return self.export_word(request, *args, **kwargs)
+        return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         """
-        Retrieves the context data for rendering the template.
+        Retrieve and prepare the context data for the template.
 
         Returns:
-            dict: The context data.
+            dict: Context data including turtle details, tags, observations, and samples.
         """
         context = super().get_context_data(**kwargs)
         obj = self.get_object()
         
+        # Get unique PIT tags
         pittags = obj.recorded_pittags.all().order_by('pittag_id', '-observation_id')
         seen = set()
         unique_pittags = []
@@ -1069,7 +1092,8 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
             if tag.pittag_id_id not in seen:
                 unique_pittags.append(tag)
                 seen.add(tag.pittag_id_id)
-                
+        
+        # Get observations and measurements
         observations = obj.trtobservations_set.all()
         observations_data = []
         for obs in observations:
@@ -1079,8 +1103,7 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
             }
             observations_data.append(obs_data)
             
-            identifications = TrtIdentification.objects.filter(turtle_id=obj.pk)
-            
+        identifications = TrtIdentification.objects.filter(turtle_id=obj.pk)
         
         context.update({
             "page_title": f"{settings.SITE_CODE} | WAMTRAM2 | {obj.pk}",
@@ -1093,6 +1116,174 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
                 
         return context
 
+    def export_word(self, request, *args, **kwargs):
+        """
+        Export turtle information to a Word document.
+        
+        Returns:
+            HttpResponse: Word document as a downloadable file.
+        """
+        turtle = self.get_object()
+        
+        # Create new document
+        doc = Document()
+        
+        section = doc.sections[0]
+        header = section.header
+        header_para = header.paragraphs[0]
+        header_para.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+        run = header_para.add_run()
+        run.add_picture('wastd/static/android-chrome-192x192.png', width=Inches(0.4))
+    
+        # Title with formatting
+        title_para = doc.add_paragraph()
+        title_run = title_para.add_run('W.A. Marine Turtles Conservation Database - Turtle Information Sheet')
+        title_run.font.size = Pt(18)
+        title_run.font.color.rgb = RGBColor(31,73,125)
+        title_run.font.bold = True
+        title_para.space_after = Pt(12)
+        
+        # Basic information
+        doc.add_paragraph(f'Turtle ID: {turtle.pk}')
+        doc.add_paragraph(f'Species: {turtle.species_code or ""}')
+        doc.add_paragraph(f'Sex: {turtle.sex or "Unknown"}')
+        doc.add_paragraph(f'Status: {turtle.turtle_status or ""}')
+        doc.add_paragraph(f'Cause of Death: {turtle.cause_of_death or ""}')
+
+        def add_section_title(text):
+            para = doc.add_paragraph()
+            run = para.add_run(text)
+            run.font.size = Pt(16)
+            run.font.bold = True
+            run.font.color.rgb = RGBColor(0,32,96)
+            para.space_before = Pt(12)
+            para.space_after = Pt(6)
+            return para
+        
+        # Tags information
+        add_section_title('Tags Information:')
+        flipper_tags = TrtTags.objects.filter(turtle=turtle)
+        pit_tags = TrtPitTags.objects.filter(turtle=turtle)
+        
+        if flipper_tags.exists() or pit_tags.exists():
+            table = doc.add_table(rows=1, cols=4)
+            table.style = 'Table Grid'
+            header_cells = table.rows[0].cells
+            header_cells[0].text = 'Tag Type'
+            header_cells[1].text = 'Tag ID'
+            header_cells[2].text = 'Status'
+            header_cells[3].text = 'Comments'
+            
+            for tag in flipper_tags:
+                row_cells = table.add_row().cells
+                row_cells[0].text = 'Flipper'
+                row_cells[1].text = str(tag.tag_id)
+                row_cells[2].text = str(tag.tag_status) if tag.tag_status else ''
+                row_cells[3].text = str(tag.comments or '')
+                
+            for tag in pit_tags:
+                row_cells = table.add_row().cells
+                row_cells[0].text = 'PIT'
+                row_cells[1].text = str(tag.pittag_id)
+                row_cells[2].text = str(tag.pit_tag_status) if tag.pit_tag_status else ''
+                row_cells[3].text = str(tag.comments or '')
+        else:
+            doc.add_paragraph('No tags recorded')
+        
+        # Other identification history
+        add_section_title('Other Identification History:')
+        identifications = TrtIdentification.objects.filter(turtle_id=turtle.pk)
+        if identifications.exists():
+            table = doc.add_table(rows=1, cols=3)
+            table.style = 'Table Grid'
+            header_cells = table.rows[0].cells
+            header_cells[0].text = 'Identification Type'
+            header_cells[1].text = 'Identifier'
+            header_cells[2].text = 'Comments'
+            
+            for ident in identifications:
+                row_cells = table.add_row().cells
+                row_cells[0].text = str(ident.identification_type)
+                row_cells[1].text = str(ident.identifier)
+                row_cells[2].text = str(ident.comments or '')
+        else:
+            doc.add_paragraph('No identification history recorded')
+        
+        # Observations
+        add_section_title('Observations:')
+        observations = turtle.trtobservations_set.all()
+        if observations:
+            table = doc.add_table(rows=1, cols=3)
+            table.style = 'Table Grid'
+            header_cells = table.rows[0].cells
+            header_cells[0].text = 'Date'
+            header_cells[1].text = 'Place'
+            header_cells[2].text = 'Activity'
+            
+            for obs in observations:
+                row_cells = table.add_row().cells
+                row_cells[0].text = obs.observation_date.strftime('%d/%m/%Y %H:%M:%S')
+                row_cells[1].text = str(obs.place_code.get_full_name() if obs.place_code else '')
+                row_cells[2].text = str(obs.activity_code if obs.activity_code else '')
+        else:
+            doc.add_paragraph('No observations recorded')
+            
+        # All Measurements in one table
+        add_section_title('Measurements:')
+        all_measurements = []
+        for obs in observations:
+            measurements = obs.trtmeasurements_set.all()
+            all_measurements.extend(measurements)
+            
+        if all_measurements:
+            table = doc.add_table(rows=1, cols=4)
+            table.style = 'Table Grid'
+            header_cells = table.rows[0].cells
+            header_cells[0].text = 'Date'
+            header_cells[1].text = 'Measurement Type'
+            header_cells[2].text = 'Value'
+            header_cells[3].text = 'Comments'
+            
+            for m in all_measurements:
+                row_cells = table.add_row().cells
+                row_cells[0].text = m.observation.observation_date.strftime('%d/%m/%Y %H:%M:%S')
+                row_cells[1].text = str(m.measurement_type)
+                row_cells[2].text = str(m.measurement_value)
+                row_cells[3].text = str(m.comments or '')
+        else:
+            doc.add_paragraph('No measurements recorded')
+        
+        # Samples
+        add_section_title('Samples:')
+        samples = turtle.trtsamples_set.all()
+        if samples:
+            table = doc.add_table(rows=1, cols=4)
+            table.style = 'Table Grid'
+            header_cells = table.rows[0].cells
+            header_cells[0].text = 'Tissue'
+            header_cells[1].text = 'Date'
+            header_cells[2].text = 'Label'
+            header_cells[3].text = 'Comments'
+            
+            for sample in samples:
+                row_cells = table.add_row().cells
+                row_cells[0].text = str(sample.tissue_type)
+                row_cells[1].text = sample.sample_date.strftime('%d/%m/%Y') if sample.sample_date else ''
+                row_cells[2].text = str(sample.sample_label or '')
+                row_cells[3].text = str(sample.comments or '')
+        else:
+            doc.add_paragraph('No samples recorded')
+        # Add footer
+        doc.add_paragraph(f'WAMTRAM - {timezone.now().strftime("%d-%b-%Y")} copy. Department of Biodiversity, Conservation and Attractions')
+        
+        # Prepare response
+        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+        response['Content-Disposition'] = f'attachment; filename=turtle_{turtle.pk}_report.docx'
+        
+        doc.save(response)
+        return response
+    
+    
 SEX_CHOICES = [
     ("F", "Female"),
     ("M", "Male"),
@@ -2119,7 +2310,7 @@ def search_templates(request):
     return JsonResponse([], safe=False)
     
 class BatchCodeManageView(View):
-    template_name = 'wamtram2/add_batches_code.html'
+    template_name = 'wamtram2/batch_detail_manage.html'
 
     def dispatch(self, request, *args, **kwargs):
         
@@ -2430,7 +2621,7 @@ class MoveEntryView(LoginRequiredMixin, View):
             return JsonResponse({'error': f'Operation failed: {str(e)}'}, status=500)
         
 
-class PersonManageView(LoginRequiredMixin,  UserPassesTestMixin, ListView):
+class PersonManageView(LoginRequiredMixin, UserPassesTestMixin, PaginateMixin, ListView):
     model = TrtPersons
     template_name = 'wamtram2/manage_person.html'
     context_object_name = 'persons'
@@ -2548,4 +2739,526 @@ class PersonManageView(LoginRequiredMixin,  UserPassesTestMixin, ListView):
         
         return self.get(self.request)
     
+
+class TagRegisterView(LoginRequiredMixin, FormView):
+    template_name = 'wamtram2/tag_register.html'
+    form_class = TagRegisterForm
+    success_url = reverse_lazy('wamtram2:tag_register')
+
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or 
+                request.user.groups.filter(name="WAMTRAM2_STAFF").exists()):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        try:
+            tag_type = form.cleaned_data['tag_type']
+            prefix = form.cleaned_data['tag_prefix']
+            start = int(form.cleaned_data['start_number'])
+            end = int(form.cleaned_data['end_number'])
+            
+            if end - start > 1000: 
+                return JsonResponse({
+                    'success': False, 
+                    'error': 'Cannot create more than 1000 tags at once'
+                })
+
+            with transaction.atomic():  
+                for num in range(start, end + 1):
+                    
+                    if tag_type == 'flipper':
+                        tag_id = f"{prefix}{str(num).zfill(len(str(start)))}"
+                    else:  # pit tags
+                        tag_id = str(num)
+                    
+                    if tag_type == 'flipper':
+                        
+                        if TrtTags.objects.filter(tag_id=tag_id).exists():
+                            return JsonResponse({
+                                'success': False,
+                                'error': f'Tag {tag_id} already exists'
+                            })
+                            
+                        tag_status = TrtTagStatus.objects.get(tag_status='U')
+                        
+                        TrtTags.objects.create(
+                            tag_id=tag_id,
+                            tag_order_id=form.cleaned_data['tag_order_id'],
+                            issue_location=form.cleaned_data['issue_location'],
+                            custodian_person_id=form.cleaned_data['custodian_person_id'],
+                            field_person_id=form.cleaned_data['field_person_id'],
+                            comments=form.cleaned_data['comments'],
+                            tag_status=tag_status
+                        )
+                    else:  # pit tags
+                        
+                        if TrtPitTags.objects.filter(pittag_id=tag_id).exists():
+                            return JsonResponse({
+                                'success': False,
+                                'error': f'PIT tag {tag_id} already exists'
+                            })
+                            
+                        pit_tag_status = TrtPitTagStatus.objects.get(pit_tag_status='U')
+                            
+                        TrtPitTags.objects.create(
+                            pittag_id=tag_id,
+                            tag_order_id=form.cleaned_data['tag_order_id'],
+                            issue_location=form.cleaned_data['issue_location'],
+                            custodian_person_id=form.cleaned_data['custodian_person_id'],
+                            field_person_id=form.cleaned_data['field_person_id'],
+                            comments=form.cleaned_data['comments'],
+                            pit_tag_status=pit_tag_status
+                        )
+
+            return JsonResponse({
+                'success': True,
+                'message': f'Successfully registered {end - start + 1} tags'
+            })
+
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'error': str(e)
+            })
+        
+    def form_invalid(self, form):
+        errors = []
+        for field, error_list in form.errors.items():
+            errors.append(f"{field}: {', '.join(error_list)}")
+        
+        return JsonResponse({
+            'success': False,
+            'error': 'Invalid form data: ' + '; '.join(errors)
+        })
+
+
+class AdminToolsView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
+    template_name = 'wamtram2/admin_tools.html'
     
+    def test_func(self):
+        return (self.request.user.is_superuser)
+    
+
+class PitTagsListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMixin, ListView):
+    model = TrtPitTags
+    template_name = 'wamtram2/pit_tags_list.html'
+    context_object_name = 'pit_tags'
+    paginate_by = 30
+    
+    def test_func(self):
+        return self.request.user.is_superuser
+    
+    def get_queryset(self):
+        queryset = super().get_queryset().select_related('turtle', 'custodian_person', 'pit_tag_status')
+        
+        search = self.request.GET.get('search')
+        if search:
+            queryset = queryset.filter(
+                Q(pittag_id__icontains=search) |
+                Q(turtle__turtle_id__icontains=search) |
+                Q(custodian_person__first_name__icontains=search) |
+                Q(custodian_person__surname__icontains=search)
+            )
+        
+        status = self.request.GET.get('status')
+        if status:
+            queryset = queryset.filter(pit_tag_status=status)
+            
+        return queryset
+        
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'admin_add_url': 'admin:wamtram2_trtpittags_add',
+            'admin_change_url': 'admin:wamtram2_trtpittags_change',
+            'search_term': self.request.GET.get('search', ''),
+            'current_status': self.request.GET.get('status', ''),
+            'status_choices': TrtPitTagStatus.objects.all(),
+        })
+        return context
+    
+
+class FlipperTagsListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMixin, ListView):
+    model = TrtTags
+    template_name = 'wamtram2/flipper_tags_list.html'
+    context_object_name = 'flipper_tags'
+    paginate_by = 30
+    
+    def test_func(self):
+        return self.request.user.is_superuser
+    
+    def get_queryset(self):
+        queryset = super().get_queryset().select_related(
+            'turtle', 
+            'tag_status',
+            'custodian_person'
+        )
+        
+        search = self.request.GET.get('search')
+        if search:
+            queryset = queryset.filter(
+                Q(tag_id__icontains=search) |
+                Q(turtle__turtle_id__icontains=search) |
+                Q(custodian_person__first_name__icontains=search) |
+                Q(custodian_person__surname__icontains=search)
+            )
+        
+        status = self.request.GET.get('status')
+        if status:
+            queryset = queryset.filter(tag_status_id=status)
+            
+        return queryset
+        
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'admin_add_url': 'admin:wamtram2_trttags_add',
+            'admin_change_url': 'admin:wamtram2_trttags_change',
+            'search_term': self.request.GET.get('search', ''),
+            'current_status': self.request.GET.get('status', ''),
+            'status_choices': TrtTagStatus.objects.all(),
+        })
+        return context
+    
+# class TransferObservationsByTagView(LoginRequiredMixin, View):
+#     template_name = 'wamtram2/transfer_observation.html'
+
+#     """
+#     Transfer observations associated with a specific flipper tag to another turtle.
+
+#     Parameters:
+#     - tag_id: Flipper tag ID
+#     - turtle_id: Target turtle ID
+#     - observation_ids: List of observation IDs to transfer
+#     """
+
+#     def dispatch(self, request, *args, **kwargs):
+#         # Check user permissions
+#         if not (request.user.is_superuser or
+#                 request.user.groups.filter(name="WAMTRAM2_STAFF").exists()):
+#             raise PermissionDenied
+#         return super().dispatch(request, *args, **kwargs)
+
+#     def get(self, request):
+#         return render(request, self.template_name)
+
+#     def get_turtle_info(self, turtle_id):
+#         """Get turtle information"""
+#         try:
+#             turtle = TrtTurtles.objects.get(turtle_id=turtle_id)
+#             return {
+#                 'success': True,
+#                 'data': {
+#                     'species': turtle.species_code.common_name,
+#                     'sex': turtle.sex,
+#                     'turtle_status': turtle.turtle_status.description,
+#                     'location_code': turtle.location_code.location_name,
+#                     'comments': turtle.comments
+#                 }
+#             }
+#         except TrtTurtles.DoesNotExist:
+#             return {
+#                 'success': False,
+#                 'error': f'Turtle {turtle_id} not found'
+#             }
+
+#     def get_observations(self, tag_id):
+#         """Get observations data for a specific tag"""
+#         if not TrtTags.objects.filter(tag_id=tag_id).exists():
+#             return []
+        
+#         observations = TrtObservations.objects.filter(
+#             trtrecordedtags__tag_id=tag_id
+#         ).select_related('turtle').values(
+#             'observation_id',
+#             'observation_date',
+#             'turtle_id',
+#             'place_code',
+#             'comments'
+#         ).order_by('-observation_date')
+#         return list(observations)
+
+#     def post(self, request):
+#         # Handle AJAX request for turtle info
+#         if request.headers.get('X-Requested-With') == 'FetchTurtleInfo':
+#             turtle_id = request.POST.get('turtle_id')
+#             return JsonResponse(self.get_turtle_info(turtle_id))
+
+#         # Handle AJAX request for observations
+#         if request.headers.get('X-Requested-With') == 'FetchObservations':
+#             tag_id = request.POST.get('tag_id')
+#             if not tag_id:
+#                 return JsonResponse({
+#                     'success': False,
+#                     'error': 'Tag ID is required'
+#                 })
+
+#             observations = self.get_observations(tag_id)
+#             return JsonResponse({
+#                 'success': True,
+#                 'observations': observations
+#             })
+
+#         # Handle transfer request  
+#         try:
+#             # Get request parameters
+#             tag_id = request.POST.get('tag_id')
+#             turtle_id = request.POST.get('turtle_id')
+#             observation_ids = request.POST.getlist('observation_ids[]')
+
+#             # Validate input parameters
+#             if not observation_ids:
+#                 return JsonResponse({
+#                     'success': False,
+#                     'error': 'No observations selected for transfer'
+#                 }, status=400)
+
+#             if not all([tag_id, turtle_id]):
+#                 return JsonResponse({
+#                     'success': False,
+#                     'error': 'Missing required parameters'
+#                 }, status=400)
+
+#             # Validate tag existence
+#             try:
+#                 tag = TrtTags.objects.get(tag_id=tag_id)
+#             except TrtTags.DoesNotExist:
+#                 return JsonResponse({
+#                     'success': False,
+#                     'error': f'Tag {tag_id} does not exist'
+#                 }, status=404)
+
+#             # Check if trying to transfer to the same turtle
+#             if tag.turtle_id and str(tag.turtle_id) == str(turtle_id):
+#                 return JsonResponse({
+#                     'success': False,
+#                     'error': 'Cannot transfer observations to the same turtle'
+#                 }, status=400)
+
+#             # Validate target turtle existence
+#             if not TrtTurtles.objects.filter(turtle_id=turtle_id).exists():
+#                 return JsonResponse({
+#                     'success': False,
+#                     'error': f'Target turtle {turtle_id} does not exist'
+#                 }, status=404)
+
+#             # Get observations associated with the tag
+#             observations = TrtObservations.objects.filter(
+#                 observation_id__in=observation_ids,
+#                 trtrecordedtags__tag_id=tag_id
+#             )
+
+#             if not observations.exists():
+#                 return JsonResponse({
+#                     'success': False,
+#                     'error': 'No observations found for this tag'
+#                 }, status=404)
+
+#             # Start transaction
+#             with transaction.atomic():
+#                 try:
+#                     # Step 1: Get all observations for this tag
+#                     observation_ids = observations.values_list('observation_id', flat=True)
+                    
+#                     # Step 2: Get all related tags
+#                     related_tag_ids = TrtRecordedTags.objects.filter(
+#                         observation_id__in=observation_ids
+#                     ).values_list('tag_id', flat=True).distinct()
+                    
+#                     # Step 3: Backup current records
+#                     recorded_tags = list(TrtRecordedTags.objects.filter(
+#                         observation_id__in=observation_ids
+#                     ).values(
+#                         'observation_id_id',
+#                         'tag_id_id',
+#                         'other_tag_id',
+#                         'side',
+#                         'tag_state',
+#                         'comments',
+#                         'tag_position',
+#                         'barnacles'
+#                     ))
+
+#                     recorded_pit_tags = list(TrtRecordedPitTags.objects.filter(
+#                         observation_id__in=observation_ids
+#                     ).values(
+#                         'observation_id_id',
+#                         'pittag_id_id',
+#                         'pit_tag_state',
+#                         'pit_tag_position',
+#                         'comments',
+#                         'checked'
+#                     ))
+                    
+#                     if not recorded_tags:
+#                         return JsonResponse({
+#                             'success': False,
+#                             'error': 'No recorded tags found'
+#                         }, status=400)
+                    
+#                     # Step 4: Delete recorded tags and pit tags
+#                     TrtRecordedTags.objects.filter(
+#                         observation_id__in=observation_ids
+#                     ).delete()
+
+#                     TrtRecordedPitTags.objects.filter(
+#                         observation_id__in=observation_ids
+#                     ).delete()
+
+#                     # Step 5: Update tags with new turtle ID
+#                     TrtTags.objects.filter(
+#                         tag_id__in=related_tag_ids
+#                     ).update(turtle_id=turtle_id)
+
+#                     # Step 6: Update observations with new turtle ID
+#                     observations.update(turtle_id=turtle_id)
+                    
+#                     # Step 7: Recreate recorded tags with new turtle ID
+#                     new_recorded_tags = []
+#                     for tag in recorded_tags:
+#                         tag['turtle_id'] = turtle_id
+#                         new_recorded_tags.append(TrtRecordedTags(**tag))
+#                     TrtRecordedTags.objects.bulk_create(new_recorded_tags)
+
+#                     # Step 8: Recreate recorded pit tags with new turtle ID
+#                     if recorded_pit_tags:
+#                         new_recorded_pit_tags = []
+#                         for pit_tag in recorded_pit_tags:
+#                             pit_tag['turtle_id'] = turtle_id
+#                             new_recorded_pit_tags.append(TrtRecordedPitTags(**pit_tag))
+#                         TrtRecordedPitTags.objects.bulk_create(new_recorded_pit_tags)
+
+#                     return JsonResponse({
+#                         'success': True,
+#                         'message': f'Successfully transferred {len(observation_ids)} observations'
+#                     })
+                    
+#                 except Exception as e:
+#                     # Transaction will automatically rollback
+#                     return JsonResponse({
+#                 'success': False,
+#                     'error': str(e)
+#                 }, status=500)
+
+#         except Exception as e:
+#             return JsonResponse({
+#                 'success': False,
+#                 'error': str(e)
+#             }, status=500)
+            
+class TransferObservationsByTagView(LoginRequiredMixin, View):
+    template_name = 'wamtram2/transfer_observation.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or
+                request.user.groups.filter(name="WAMTRAM2_STAFF").exists()):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request):
+        return render(request, self.template_name)
+
+    def get_turtle_info(self, turtle_id):
+        """Get turtle information"""
+        try:
+            turtle = TrtTurtles.objects.get(turtle_id=turtle_id)
+            return {
+                'success': True,
+                'data': {
+                    'species': turtle.species_code.common_name,
+                    'sex': turtle.sex,
+                    'turtle_status': turtle.turtle_status.description,
+                    'location_code': turtle.location_code.location_name,
+                    'comments': turtle.comments
+                }
+            }
+        except TrtTurtles.DoesNotExist:
+            return {
+                'success': False,
+                'error': f'Turtle {turtle_id} not found'
+            }
+
+    def get_observations(self, tag_id):
+        """Get observations data for a specific tag"""
+        if not TrtTags.objects.filter(tag_id=tag_id).exists():
+            return []
+        
+        observations = TrtObservations.objects.filter(
+            trtrecordedtags__tag_id=tag_id
+        ).select_related('turtle').values(
+            'observation_id',
+            'observation_date',
+            'turtle_id',
+            'place_code',
+            'comments'
+        ).order_by('-observation_date')
+        return list(observations)
+
+    def post(self, request):
+        # Handle AJAX request for turtle info
+        if request.headers.get('X-Requested-With') == 'FetchTurtleInfo':
+            turtle_id = request.POST.get('turtle_id')
+            return JsonResponse(self.get_turtle_info(turtle_id))
+
+        # Handle AJAX request for observations
+        if request.headers.get('X-Requested-With') == 'FetchObservations':
+            tag_id = request.POST.get('tag_id')
+            if not tag_id:
+                return JsonResponse({
+                    'success': False,
+                    'error': 'Tag ID is required'
+                })
+
+            observations = self.get_observations(tag_id)
+            return JsonResponse({
+                'success': True,
+                'observations': observations
+            })
+
+        # Handle transfer request  
+        try:
+            tag_id = request.POST.get('tag_id')
+            turtle_id = request.POST.get('turtle_id')
+            observation_ids = request.POST.getlist('observation_ids[]')
+            
+            # Basic validation
+            if not all([tag_id, turtle_id]):
+                return JsonResponse({
+                    'success': False,
+                    'error': 'Missing required parameters'
+                }, status=400)
+                
+            # Convert observation_ids list to comma-separated string
+            observation_ids_str = ','.join(observation_ids)
+
+            # Execute stored procedure
+            with connections['wamtram2'].cursor() as cursor:
+                cursor.execute(
+                    "EXEC dbo.TransferObservationsByFlipperTagWEB @TAG_ID = %s, @TURTLE_ID = %s, @OBSERVATION_IDS = %s;",
+                    [tag_id, turtle_id, observation_ids_str]
+                )
+                
+                # Get the results
+                row = cursor.fetchone()
+                return_value = row[0]
+                error_message = row[1]
+
+                if return_value == 0:
+                    return JsonResponse({
+                        'success': True,
+                        'message': error_message
+                    })
+                else:
+                    return JsonResponse({
+                        'success': False,
+                        'error': error_message
+                    }, status=500)
+
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'error': str(e)
+            }, status=500)
+            
+            

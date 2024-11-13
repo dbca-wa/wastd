@@ -6,28 +6,7 @@
     {{ form.media.css }}
     <link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
-    <style>
-        .select2 {
-            width: 100% !important;
-        }
-        .step-container {
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-        .step-header {
-            background-color: #f8f9fa;
-            padding: 10px;
-            margin: -15px -15px 15px -15px;
-            border-bottom: 1px solid #ddd;
-            font-weight: bold;
-        }
-        .btn-block {
-            display: block;
-            width: 100%;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/table_list.css' %}">
 {% endblock %}
 
 {% block extra_head %}
@@ -51,85 +30,89 @@
 
 {% block page_content_inner %}
     <div class="container">
-        <!-- Message Alert -->
-        {% if messages %}
-            <div id="message-alert" class="alert alert-success" role="alert">
-                {% for message in messages %}
-                    {{ message }}
-                {% endfor %}
-            </div>
-        {% endif %}
+        <div class="page-header">
+            <h1 class="page-title">Export Data</h1>
+        </div>
 
-        {% if error_message %}
-            <div class="alert alert-danger" role="alert">
-                {{ error_message }}
-            </div>
-        {% endif %}
+        {% include "includes/messages.html" %}
+        <div id="message-alert" class="alert" role="alert" style="display: none;"></div>
 
         <!-- Export Data Form -->
         <form id="exportForm" method="get" action="{% url 'wamtram2:export_data' %}" target="_blank">
             <!-- Step 1: Select Date Range -->
-            <div class="row">
-                <div class="step-container col-12">
-                    <div class="step-header">Step 1: Select Date Range</div>
-                    {% csrf_token %}
-                    <div class="form-group">
-                        <label for="observation_date_from">Observation Date From</label>
-                        <input type="date" id="observation_date_from" name="observation_date_from" class="form-control" onchange="loadFilters()">
+            <div class="step-container">
+                <div class="step-header">Step 1: Select Date Range</div>
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="observation_date_from">Observation Date From</label>
+                            <input type="date" id="observation_date_from" name="observation_date_from" 
+                                class="form-control form-control-sm" onchange="loadFilters()">
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="observation_date_to">Observation Date To</label>
-                        <input type="date" id="observation_date_to" name="observation_date_to" class="form-control" onchange="loadFilters()">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="observation_date_to">Observation Date To</label>
+                            <input type="date" id="observation_date_to" name="observation_date_to" 
+                                class="form-control form-control-sm" onchange="loadFilters()">
+                        </div>
                     </div>
                 </div>
             </div>
-
             <!-- Step 2: Select Place, Species, and Sex -->
-            <div class="row">
-                <div class="step-container col-12">
-                    <div class="step-header">Step 2: Select Filters</div>
-                    <div class="form-group">
-                        <label for="place_code">Place Code</label>
-                        <select id="place_code" name="place_code" class="form-control select2">
-                            <option value="">All Places</option>
-                            <!-- Options will be dynamically loaded -->
-                        </select>
+            <div class="step-container">
+                <div class="step-header">Step 2: Select Filters</div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="place_code">Place Code</label>
+                            <select id="place_code" name="place_code" class="form-control form-control-sm select2">
+                                <option value="">All Places</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="species">Species</label>
-                        <select id="species" name="species" class="form-control select2">
-                            <option value="">All Species</option>
-                            <!-- Options will be dynamically loaded -->
-                        </select>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="species">Species</label>
+                            <select id="species" name="species" class="form-control form-control-sm select2">
+                                <option value="">All Species</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="sex">Sex</label>
-                        <select id="sex" name="sex" class="form-control select2">
-                            <option value="">All Sexes</option>
-                            <!-- Options will be dynamically loaded -->
-                        </select>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="sex">Sex</label>
+                            <select id="sex" name="sex" class="form-control form-control-sm select2">
+                                <option value="">All Sexes</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Step 3: Select File Format -->
-            <div class="row">
-                <div class="step-container col-12">
-                    <div class="step-header">Step 3: Select File Format</div>
-                    <div class="form-group">
-                        <label for="format">File Format</label>
-                        <select id="format" name="format" class="form-control">
-                            <option value="csv">CSV</option>
-                            <option value="xlsx">XLSX</option>
-                        </select>
+            <div class="step-container">
+                <div class="step-header">Step 3: Select File Format</div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="format">File Format</label>
+                            <select id="format" name="format" class="form-control form-control-sm">
+                                <option value="csv">CSV</option>
+                                <option value="xlsx">XLSX</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Download Button -->
-            <div class="row">
-                <div class="col-12">
-                    <button type="submit" class="btn btn-success btn-block">Download</button>
+            <div class="row mt-4">
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-success btn-block">
+                        <i class="fas fa-download"></i> Download
+                    </button>
                 </div>
             </div>
         </form>

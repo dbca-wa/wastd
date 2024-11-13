@@ -162,7 +162,7 @@ class TrtDataEntryAdmin(admin.ModelAdmin):
 @admin.register(TrtTurtles)
 class TrtTurtlesAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
 
-    list_display = ("turtle_id", "species_code", "turtle_name")
+    list_display = ("turtle_id", "species_code", "sex", "turtle_status", "date_entered", "comments")
     date_hierarchy = "date_entered"
     ordering = ["date_entered"]
     list_filter = ["species_code", "location_code"]
@@ -208,9 +208,26 @@ class TrtTagsAdmin(ImportExportModelAdmin):
 
 @admin.register(TrtPitTags)
 class TrtPitTagsAdmin(ImportExportModelAdmin):
-    list_display = ("pittag_id", "turtle", "pit_tag_status")
+    list_display = ("pittag_id", "linked_turtle", "issue_location", "linked_custodian_person", "pit_tag_status", "comments")
     list_filter = ["pit_tag_status"]
     search_fields = ["pittag_id"]
+    
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('turtle', 'custodian_person')
+
+    def linked_turtle(self, obj):
+        if obj.turtle:
+            url = reverse('admin:wamtram2_trtturtles_change', args=[obj.turtle.pk])
+            return format_html('<a href="{}">{}</a>', url, obj.turtle)
+        return "-"
+    linked_turtle.short_description = 'Turtle'
+    
+    def linked_custodian_person(self, obj):
+        if obj.custodian_person:
+            url = reverse('admin:wamtram2_trtpersons_change', args=[obj.custodian_person.pk])
+            return format_html('<a href="{}">{}</a>', url, obj.custodian_person)
+        return "-"
+    linked_custodian_person.short_description = 'Custodian Person'
 
 
 @admin.register(TrtTagOrders)
@@ -249,3 +266,10 @@ class TrtPersonsAdmin(ImportExportModelAdmin):
             'fields': ('middle_name', 'specialty', 'address_line_1', 'address_line_2', 'town', 'state', 'post_code', 'country', 'telephone', 'fax', 'mobile', 'comments', 'transfer'),
         }),
     )
+    
+    class Media:
+        css = {
+            'all': ('admin/css/custom_admin.css',)
+        }
+    
+    

@@ -5,60 +5,9 @@
 {% block extra_style %}
     {{ block.super }}
     {{ form.media.css }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/table_list.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
-    <style>
-        .select2 {
-            width: 100% !important;
-        }
-        .add-person-btn {
-            height: 28px;
-            width: 28px;
-            padding: 0;
-        }
-        .step-container {
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-        .step-header {
-            background-color: #f8f9fa;
-            padding: 10px;
-            margin: -15px -15px 15px -15px;
-            border-bottom: 1px solid #ddd;
-            font-weight: bold;
-        }
-        .alert {
-            position: fixed;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100%;
-            z-index: 1050;
-            display: none;
-        }
-        .template-name {
-            font-weight: bold;
-            font-size: 1.2em;
-            margin-bottom: 10px;
-        }
-        .template-form-row {
-            margin-bottom: 10px;
-        }
-        .btn-block {
-            display: block;
-            width: 100%;
-        }
-        .form-control-static {
-            padding-top: 7px;
-            margin-bottom: 0;
-            border: 1px solid #ced4da;
-            border-radius: .25rem;
-            padding: .375rem .75rem;
-            background-color: #f8f9fa;
-        }
-    </style>
 {% endblock %}
 
 {% block extra_head %}
@@ -79,25 +28,13 @@
 
 {% block page_content_inner %}
     <div class="container">
-        <!-- Message Alert for JavaScript messages -->
-        <div id="message-alert" class="alert mt-5" role="alert" style="display: none;"></div>
-
-        <!-- Django messages -->
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}" role="alert">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
-
-        <!-- Error message from context -->
-        {% if error_message %}
-            <div class="alert alert-danger" role="alert">
-                {{ error_message }}
-            </div>
-        {% endif %}
-
+        <div class="page-header">
+            <h1 class="page-title">Template Management</h1>
+        </div>
+    
+        {% include "includes/messages.html" %}
+        <div id="message-alert" class="alert mt-3" role="alert"></div>
+ 
         <!-- Create New Template Form -->
         <div class="step-container">
             <div class="step-header">Create New Template</div>
@@ -105,7 +42,7 @@
                 {% csrf_token %}
                 <div class="col-md-3">
                     <label for="location_code">Location (optional)</label>
-                    <select class="form-control" id="location_code" name="location_code">
+                    <select class="form-control form-control-sm" id="location_code" name="location_code">
                         <option value="">Select Location</option>
                         {% for location in locations %}
                             <option value="{{ location.location_code }}">{{ location.location_name }}</option>
@@ -114,7 +51,7 @@
                 </div>
                 <div class="col-md-3">
                     <label for="place_code">Place (optional)</label>
-                    <select class="form-control" id="place_code" name="place_code">
+                    <select class="form-control form-control-sm" id="place_code" name="place_code">
                         <option value="">Select Place</option>
                         {% for place in places %}
                             <option value="{{ place.place_code }}">{{ place.place_name }}</option>
@@ -124,7 +61,7 @@
                 </div>
                 <div class="col-md-3">
                     <label for="species_code">Species (optional)</label>
-                    <select class="form-control" id="species_code" name="species_code">
+                    <select class="form-control form-control-sm" id="species_code" name="species_code">
                         <option value="">Select Species</option>
                         {% for specie in species %}
                             <option value="{{ specie.species_code }}">{{ specie.common_name }}</option>
@@ -133,7 +70,7 @@
                 </div>
                 <div class="col-md-3">
                     <label for="sex">Sex (optional)</label>
-                    <select class="form-control" id="sex" name="sex">
+                    <select class="form-control form-control-sm" id="sex" name="sex">
                         <option value="">Select Sex</option>
                         {% for code, name in sex_choices %}
                             <option value="{{ code }}">{{ name }}</option>
@@ -143,7 +80,7 @@
                 <div class="col-md-12 mt-3">
                     <div class="form-group">
                         <label for="id_name">Template Name (Auto Generated)</label>
-                        <input type="text" class="form-control" id="id_name" name="name" required>
+                        <input type="text" class="form-control form-control-sm" id="id_name" name="name" required>
                         <div class="valid-feedback">
                             Name is available
                         </div>
@@ -153,7 +90,9 @@
                     </div>
                 </div>
                 <div class="col-md-2 mt-3">
-                    <button type="button" class="btn btn-primary btn-block" id="createButton" onclick="createTemplate()" disabled>Create</button>
+                    <button type="button" class="btn btn-primary btn-block" id="createButton" onclick="createTemplate()" disabled>
+                        <i class="fas fa-plus-circle"></i> Create
+                    </button>
                 </div>
             </form>
         </div>
@@ -163,7 +102,7 @@
             <div class="step-header">Existing Templates</div>
             {% for template in templates %}
                 <div class="template-form-row">
-                    <div class="row mb-2">
+                    <div class="row mb-4">
                         <form id="templateForm-{{ template.template_id }}" class="col-12">
                             {% csrf_token %}
                             <div class="form-row">
@@ -234,9 +173,11 @@
                         </form>
                     </div>
                     {% if request.user.is_superuser or request.user|has_group:"WAMTRAM2_STAFF" %}
-                    <div class="row mb-3">
+                    <div class="row mb-4">
                         <div class="col-md-2">
-                            <button type="button" class="btn btn-danger btn-block" onclick="deleteTemplate('{{ template.template_id }}')">Delete</button>
+                            <button type="button" class="btn btn-danger btn-block" onclick="deleteTemplate('{{ template.template_id }}')">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
                         </div>
                     </div>
                     {% endif %}

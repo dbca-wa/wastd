@@ -1,0 +1,319 @@
+{% extends "base_wastd.html" %}
+{% load static bootstrap4 %}
+
+{% block extra_style %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/table_list.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/search_styles.css' %}">
+{% endblock %}
+
+{% block breadcrumbs %}
+    <nav aria-label="breadcrumb" class="d-none d-md-block">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'wamtram2:batches_curation' %}">Manage Batches</a></li>
+            <li class="breadcrumb-item active">Register Tags</li>
+        </ol>
+    </nav>
+{% endblock %}
+
+{% block page_content_inner %}
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">Register Tags</h1>
+        </div>
+    
+        {% include "includes/messages.html" %}
+        <div id="message-alert" class="alert mt-3" role="alert" style="display: none;"></div>
+    
+        <!-- Tag Registration Form -->
+        <div class="step-container">
+            <div class="step-header">Register New Tags</div>
+            <form id="tagRegisterForm" method="post">
+                {% csrf_token %}
+                
+            <!-- Tag Type Selection -->
+            <div class="form-group">
+                <label>Tag Type</label>
+                <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                    <label class="btn btn-outline-primary active">
+                        <input type="radio" name="tag_type" value="flipper" checked> 
+                        <i class="fas fa-tag"></i> Flipper Tags
+                    </label>
+                    <label class="btn btn-outline-primary">
+                        <input type="radio" name="tag_type" value="pit"> 
+                        <i class="fas fa-microchip"></i> PIT Tags
+                    </label>
+                </div>
+            </div>
+
+                <!-- Tag Information -->
+                <div class="row ">
+                    <!-- Tag Prefix -->
+                    <div class="col-md-3" id="tagPrefixContainer" style="display: none;">
+                        <div class="form-group">
+                            <label for="tagPrefix">Tag Prefix</label>
+                            <input type="text" class="form-control form-control-sm" id="tagPrefix" name="tag_prefix">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="startNumber">Start Number</label>
+                            <input type="text" class="form-control form-control-sm" id="startNumber" name="start_number" required>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="endNumber">End Number</label>
+                            <input type="text" class="form-control form-control-sm" id="endNumber" name="end_number" required>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="tagOrderId">Tag Order ID</label>
+                            <input type="number" class="form-control form-control-sm" id="tagOrderId" name="tag_order_id" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Location and Personnel -->
+                <div class="form-group">
+                    <label for="issueLocation">Issue Location</label>
+                    <input type="text" class="form-control form-control-sm" id="issueLocation" name="issue_location" required>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="custodianPerson">Custodian Person</label>
+                            <div class="search-container">
+                                <input type="text" 
+                                    id="custodianPerson" 
+                                    class="search-field form-control-sm" 
+                                    placeholder="Search for custodian..." 
+                                    autocomplete="off">
+                                <input type="hidden" id="custodianPersonId" name="custodian_person_id">
+                                <div id="custodianSearchResults" class="search-results"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="fieldPerson">Field Person</label>
+                            <div class="search-container">
+                                <input type="text" 
+                                    id="fieldPerson" 
+                                    class="search-field form-control-sm" 
+                                    placeholder="Search for field person..." 
+                                    autocomplete="off">
+                                <input type="hidden" id="fieldPersonId" name="field_person_id">
+                                <div id="fieldSearchResults" class="search-results"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Comments -->
+                <div class="form-group">
+                    <label for="comments">Comments</label>
+                    <textarea class="form-control form-control-sm" id="comments" name="comments" rows="3"></textarea>
+                </div>
+    
+
+                <!-- Submit Button -->
+                <div class="row">
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-primary btn-block">
+                            <i class="fas fa-save"></i> Register Tags
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Loading spinner -->
+        <div class="loading-spinner">
+            <div class="spinner-border text-primary" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div class="loading-overlay"></div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function showMessage(message, type) {
+        var alert = $('#message-alert');
+        alert.removeClass('alert-success alert-danger alert-warning alert-info');
+        alert.addClass('alert-' + type);
+        alert.text(message);
+        alert.slideDown();
+    
+        setTimeout(function() {
+            alert.slideUp();
+        }, 5000);
+    }
+
+    function showLoadingSpinner() {
+        const loadingSpinner = document.querySelector('.loading-spinner');
+        const loadingOverlay = document.querySelector('.loading-overlay');
+        if (loadingOverlay) loadingOverlay.style.display = 'block';
+        if (loadingSpinner) loadingSpinner.style.display = 'block';
+    }
+
+    function hideLoadingSpinner() {
+        const loadingSpinner = document.querySelector('.loading-spinner');
+        const loadingOverlay = document.querySelector('.loading-overlay');
+        if (loadingOverlay) loadingOverlay.style.display = 'none';
+        if (loadingSpinner) loadingSpinner.style.display = 'none';
+    }
+
+    function setupPersonSearch(inputId, hiddenInputId, resultsId) {
+        const input = document.getElementById(inputId);
+        const hiddenInput = document.getElementById(hiddenInputId);
+        const searchResults = document.getElementById(resultsId);
+        let isSelecting = false;
+        let debounceTimer;
+
+        function debounce(func, wait) {
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(debounceTimer);
+                    func(...args);
+                };
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(later, wait);
+            };
+        }
+
+        const performSearch = debounce(async (searchTerm) => {
+            if (searchTerm.length >= 2) {
+                try {
+                    const response = await fetch(`/wamtram2/search-persons/?q=${searchTerm}`);
+                    const data = await response.json();
+                    
+                    searchResults.innerHTML = '';
+                    if (data.length > 0) {
+                        searchResults.style.display = 'block';
+                        data.forEach(person => {
+                            const div = document.createElement('div');
+                            div.className = 'search-result';
+                            div.textContent = `${person.first_name} ${person.surname}`;
+                            div.addEventListener('click', () => {
+                                isSelecting = true;
+                                input.value = `${person.first_name} ${person.surname}`;
+                                hiddenInput.value = person.person_id;
+                                searchResults.style.display = 'none';
+                                isSelecting = false;
+                            });
+                            searchResults.appendChild(div);
+                        });
+                    } else {
+                        searchResults.style.display = 'none';
+                    }
+                } catch (error) {
+                    console.error('Search error:', error);
+                    showMessage('Error performing search', 'danger');
+                }
+            } else {
+                searchResults.style.display = 'none';
+            }
+        }, 300); // 300ms delay
+
+        input.addEventListener('input', function() {
+            if (isSelecting) return;
+            performSearch(this.value);
+        });
+
+        document.addEventListener('click', function(e) {
+            if (e.target !== input && !searchResults.contains(e.target)) {
+                searchResults.style.display = 'none';
+            }
+        });
+    }
+
+    // Form submission handler
+    document.getElementById('tagRegisterForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        showLoadingSpinner();
+
+        try {
+            const formData = new FormData(this);
+            const response = await fetch("{% url 'wamtram2:tag_register' %}", {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                showMessage('Tags registered successfully!', 'success');
+                setTimeout(() => window.location.reload(), 1500);
+            } else {
+                const errorMessage = data.error || 'Error registering tags';
+                showMessage(errorMessage, 'danger');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showMessage('An error occurred while registering tags', 'danger');
+        } finally {
+            hideLoadingSpinner();
+        }
+    });
+
+    // Initialize person search
+    document.addEventListener('DOMContentLoaded', function() {
+        setupPersonSearch('custodianPerson', 'custodianPersonId', 'custodianSearchResults');
+        setupPersonSearch('fieldPerson', 'fieldPersonId', 'fieldSearchResults');
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const tagTypeInputs = document.querySelectorAll('input[name="tag_type"]');
+        const tagPrefixContainer = document.getElementById('tagPrefixContainer');
+        const tagPrefixInput = document.getElementById('tagPrefix');
+
+        tagPrefixContainer.style.display = 'block';
+        tagPrefixInput.required = true;
+
+        tagTypeInputs.forEach(input => {
+            input.addEventListener('change', function() {
+                if (this.value === 'flipper') {
+                    tagPrefixContainer.style.display = 'block';
+                    tagPrefixInput.required = true;
+                    tagPrefixInput.value = '';
+                    startNumber.placeholder = 'Enter number';
+                    endNumber.placeholder = 'Enter number';
+                } else {
+                    tagPrefixContainer.style.display = 'none';
+                    tagPrefixInput.required = false;
+                    tagPrefixInput.value = '';
+                    startNumber.placeholder = 'Enter 15-digit number';
+                    endNumber.placeholder = 'Enter 15-digit number';
+                    helpTextContainer.textContent = 'PIT tags must be exactly 15 digits';
+
+                    startNumber.pattern = '\\d{15}';
+                    endNumber.pattern = '\\d{15}';
+                }
+            });
+        });
+
+        [startNumber, endNumber].forEach(input => {
+            input.addEventListener('input', function() {
+                if (document.querySelector('input[name="tag_type"]:checked').value === 'pit') {
+                    this.value = this.value.replace(/\D/g, '');
+                    if (this.value.length > 15) {
+                        this.value = this.value.slice(0, 15);
+                    }
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

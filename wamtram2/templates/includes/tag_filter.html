@@ -1,0 +1,20 @@
+<form method="get" class="form-inline">
+    <div class="form-group mr-3">
+        <label for="status" class="mr-2">Status:</label>
+        <select name="status" id="status" class="form-control">
+            <option value="">All Statuses</option>
+            {% for status in status_choices %}
+                <option value="{{ status.pk }}" {% if status.pk|stringformat:"s" == current_status %}selected{% endif %}>
+                    {{ status }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group mr-3">
+        <input type="text" name="search" class="form-control" 
+            placeholder="{{ placeholder }}" 
+            value="{{ search_term }}">
+    </div>
+    <button type="submit" class="btn btn-primary mr-2">Apply Filters</button>
+    <a href="{% url clear_url %}" class="btn btn-secondary">Clear Filters</a>
+</form>

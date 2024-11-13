@@ -72,6 +72,12 @@ class TrtCauseOfDeath(models.Model):
     class Meta:
         managed = False
         db_table = "TRT_CAUSE_OF_DEATH"
+        
+    def __str__(self):
+        return f"{self.description}"
+
+    def __str__(self):
+        return f"{self.description}"
 
 
 class TrtConditionCodes(models.Model):
@@ -1065,7 +1071,7 @@ class TrtDataEntryExceptions(models.Model):
         db_column="MEASUREMENT_VALUE_2", blank=True, null=True
     )  # Field name made lowercase.
     datum_code = models.CharField(
-        db_column="DATUM_CODE", max_length=5, blank=True, null=True
+        db_column="DATUM_CODE", max_length=5, blank=True, default="WGS84"
     )  # Field name made lowercase.
     latitude = models.FloatField(
         db_column="LATITUDE", blank=True, null=True
@@ -1831,8 +1837,12 @@ class TrtPitTags(models.Model):
     issue_location = models.CharField(
         db_column="ISSUE_LOCATION", max_length=50, blank=True, null=True
     )  # Field name made lowercase.
-    custodian_person_id = models.IntegerField(
-        db_column="CUSTODIAN_PERSON_ID", blank=True, null=True
+    custodian_person = models.ForeignKey(
+        'TrtPersons',
+        models.SET_NULL,
+        db_column='CUSTODIAN_PERSON_ID',
+        blank=True,
+        null=True
     )  # Field name made lowercase.
     turtle = models.ForeignKey(
         "TrtTurtles", models.SET_NULL, db_column="TURTLE_ID", blank=True, null=True
@@ -2223,9 +2233,13 @@ class TrtTags(models.Model):
     issue_location = models.CharField(
         db_column="ISSUE_LOCATION", max_length=50, blank=True, null=True
     )  # Field name made lowercase.
-    custodian_person_id = models.IntegerField(
-        db_column="CUSTODIAN_PERSON_ID", blank=True, null=True
-    )  # Field name made lowercase.
+    custodian_person = models.ForeignKey(
+        'TrtPersons',
+        models.SET_NULL,
+        db_column='CUSTODIAN_PERSON_ID',
+        blank=True,
+        null=True
+    )  # Field name made lowercase.  # Field name made lowercase.
     turtle = models.ForeignKey(
         "TrtTurtles", models.SET_NULL, db_column="TURTLE_ID", blank=True, null=True
     )  # Field name made lowercase.
