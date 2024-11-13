@@ -73,10 +73,9 @@
 
     <div class="d-flex flex-wrap align-items-center mb-3">
         
-        {% comment %} {% if request.user.is_superuser or request.user|has_group:"WAMTRAM2_STAFF" %} {% endcomment %}
-        {% if request.user.is_superuser %}
+        {% if request.user.is_superuser or request.user|has_group:"WAMTRAM2_STAFF" or request.user|has_group:"WAMTRAM2_TEAM_LEADER" %}
         <!-- Export Data Button -->
-        <a href="{% url 'wamtram2:export_form' %}" class="btn btn-outline-secondary mr-2 mb-2">
+        <a href="{% url 'wamtram2:export_data' %}" class="btn btn-outline-secondary mr-2 mb-2">
             <i class="fas fa-download"></i> Export Data
         </a>
         {% endif %}
@@ -173,7 +172,7 @@
                 <td>{{ batch.comments|truncatechars:100 }}</td>
                 <td>
                     <a href="{% url 'wamtram2:entry_batch_detail' batch_id=batch.entry_batch_id %}" class="btn btn-sm btn-info show-loading mt-1">View</a>
-                    <a href="{% url 'wamtram2:add_batches_code' batch_id=batch.entry_batch_id %}" class="btn btn-sm btn-primary show-loading mt-1">Manage Details</a>
+                    <a href="{% url 'wamtram2:batch_detail_manage' batch_id=batch.entry_batch_id %}" class="btn btn-sm btn-primary show-loading mt-1">Manage Details</a>
                     <a href="{% url 'wamtram2:find_turtle' batch_id=batch.entry_batch_id %}" class="btn btn-sm btn-success mt-1">Create New Entry</a>
                 </td>
             </tr>
@@ -303,7 +302,7 @@
                         </select>
                     </div> {% endcomment %}
                     <div class="form-group">
-                        <label for="quickAddTemplate">Template (optional))</label>
+                        <label for="quickAddTemplate">Template (optional)</label>
                         <div class="search-container">
                             <input type="text" id="quickAddTemplate" class="search-field" placeholder="Search Template" autocomplete="off">
                             <input type="hidden" id="quickAddTemplateId" name="template">
@@ -326,7 +325,7 @@
         <span class="sr-only">Loading...</span>
     </div>
     {% if batch.entry_count > 10 %}
-    <span class="big-batch-indicator" style="display: none;">大批量数据,需要更多加载时间</span>
+    <span class="big-batch-indicator" style="display: none;">Large batch, please wait...</span>
     {% endif %} 
 </div>
 
@@ -342,11 +341,10 @@
     $(document).ready(function() {
 
         window.addEventListener('pageshow', function(event) {
-            if (event.persisted) {
+            if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
                 hideLoadingSpinner();
             }
         });
-
 
         // Initialize tooltips
         $('[data-toggle="tooltip"]').tooltip();
@@ -428,6 +426,7 @@
             .then(data => {
                 if (data.success) {
                     $('#quickAddBatchModal').modal('hide'); // Close modal on success
+                    showLoadingSpinner();
                     location.reload(); // Reload the page to reflect changes
                 } else {
                     alert(data.error); // Show error message
@@ -491,7 +490,6 @@
             showLoadingSpinner();
         });
         
- 
 
         $(document).on('click', '.pagination a', function(e) {
             e.preventDefault();

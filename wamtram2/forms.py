@@ -173,6 +173,7 @@ class TrtDataEntryForm(forms.ModelForm):
             "damage_code_3",
             "activity_code",
             "nesting",
+            "interrupted",
             "sample_label_1",
             "tissue_type_1",
             "sample_label_2",
@@ -233,8 +234,8 @@ class TrtDataEntryForm(forms.ModelForm):
             "new_pit_tag_3_sticker_present",
             "new_pit_tag_4_sticker_present",
 
-            "dud_filpper_tag",
-            "dud_filpper_tag_2",
+            "dud_flipper_tag",
+            "dud_flipper_tag_2",
             "dud_pit_tag",
             "dud_pit_tag_2",
             
@@ -292,8 +293,8 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields['clutch_completed'].initial = ''
         
                         
-        nesting_choices = TrtYesNo.objects.filter(code__in=['N', 'P', 'Y'])
-        self.fields['nesting'].queryset = nesting_choices
+        interrupted_choices = TrtYesNo.objects.filter(code__in=['N', 'P', 'Y'])
+        self.fields['interrupted'].queryset = interrupted_choices
 
         # Filter the queryset for measurement types
         filtered_measurement_types = TrtMeasurementTypes.objects.exclude(
@@ -354,7 +355,7 @@ class TrtDataEntryForm(forms.ModelForm):
         
         self.fields["latitude"].label = "Latitude - (xx.xxxxxx)"
         self.fields["longitude"].label = "Longitude (xxx.xxxxxx)"
-        self.fields["nesting"].label = "Was nesting interrupted by tagging team?"
+        self.fields["interrupted"].label = "Was nesting interrupted by tagging team?"
         self.fields["entered_by_id"].label = "Entered by"
         self.fields["place_code"].label = "Location/Beach"
         self.fields["species_code"].label = "Species"
@@ -431,6 +432,11 @@ class TrtDataEntryForm(forms.ModelForm):
         
         self.fields["do_not_process"].label = "Needs Review"
         
+        self.fields["dud_flipper_tag"].label = "Dud Flipper Tag 1"
+        self.fields["dud_flipper_tag_2"].label = "Dud Flipper Tag 2"
+        self.fields["dud_pit_tag"].label = "Dud PIT Tag 1"
+        self.fields["dud_pit_tag_2"].label = "Dud PIT Tag 2"
+        
         self.fields["recapture_left_tag_state"].required = False
         self.fields["recapture_left_tag_state_2"].required = False
         self.fields["recapture_right_tag_state"].required = False
@@ -486,8 +492,8 @@ class TrtDataEntryForm(forms.ModelForm):
             "recapture_pittag_id_4",
             "new_pittag_id_3",
             "new_pittag_id_4",
-            "dud_filpper_tag",
-            "dud_filpper_tag_2",
+            "dud_flipper_tag",
+            "dud_flipper_tag_2",
             "dud_pit_tag",
             "dud_pit_tag_2",
         ]
@@ -511,6 +517,21 @@ class TrtDataEntryForm(forms.ModelForm):
     def save(self, commit=True):
         # Call the parent class's save method to get the instance
         instance = super().save(commit=False)
+        
+        
+        if instance.scar_check == 'N':
+            instance.tagscarnotchecked = True
+        elif instance.scar_check in ['Y', 'P']:
+            instance.tagscarnotchecked = False
+
+        if instance.injury_check == 'N':
+            instance.didnotcheckforinjury = True
+        elif instance.injury_check in ['Y', 'P']:
+            instance.didnotcheckforinjury = False
+            
+        if instance.clutch_completed == 'Y':
+            instance.nesting = 'Y'
+            
         if instance.measured_by_id:
             person = TrtPersons.objects.get(person_id=instance.measured_by_id.person_id)
             instance.measured_by = "{} {}".format(person.first_name, person.surname)
@@ -547,13 +568,13 @@ class TrtDataEntryForm(forms.ModelForm):
         #     'recapture_left_tag_id', 'recapture_left_tag_id_2', 'recapture_left_tag_id_3',
         #     'recapture_right_tag_id', 'recapture_right_tag_id_2', 'recapture_right_tag_id_3',
         #     'new_left_tag_id', 'new_left_tag_id_2', 'new_right_tag_id', 'new_right_tag_id_2',
-        #     'dud_filpper_tag', 'dud_filpper_tag_2'
+        #     'dud_flipper_tag', 'dud_flipper_tag_2'
         # ]
         
         # for field in tag_fields:
         #     if cleaned_data.get(field):
         #         cleaned_data[field] = cleaned_data[field].upper()
-
+        
         if do_not_process:
             return cleaned_data
         
@@ -606,7 +627,6 @@ class EnterUserModelForm(forms.ModelForm):
 
     #     return cleaned_data
     
-
 class TemplateForm(forms.ModelForm):
     class Meta:
         model = Template
@@ -640,7 +660,7 @@ class TemplateForm(forms.ModelForm):
 
         return cleaned_data
 
-    
+
 class TrtObservationsForm(forms.ModelForm):
     class Meta:
         model = TrtObservations
@@ -687,6 +707,8 @@ class BatchesSearchForm(forms.Form):
     )
 
 class TrtPersonsForm(forms.ModelForm):
+    specialty = forms.CharField(widget=forms.Textarea(attrs={'rows': 3}), required=False)
+    comments = forms.CharField(widget=forms.Textarea(attrs={'rows': 3}), required=False)
     class Meta:
         model = TrtPersons
         fields = '__all__'
@@ -728,3 +750,23 @@ class TrtPersonsForm(forms.ModelForm):
     def clean_recorder(self):
         recorder = self.cleaned_data.get('recorder', False)
         return bool(recorder)
+    
+
+class TagRegisterForm(forms.Form):
+    TAG_TYPE_CHOICES = [
+        ('flipper', 'Flipper Tags'),
+        ('pit', 'PIT Tags'),
+    ]
+    
+    tag_type = forms.ChoiceField(choices=TAG_TYPE_CHOICES, label="Tag Type")
+    tag_prefix = forms.CharField(max_length=5, label="Tag Prefix", required=False)
+    start_number = forms.CharField(max_length=15, label="Start Tag Number")
+    end_number = forms.CharField(max_length=15, label="End Tag Number")
+    tag_order_id = forms.IntegerField( label="Tag Order ID")
+    issue_location = forms.CharField(max_length=50, required=True, label="Issue Location")
+    comments = forms.CharField(widget=forms.Textarea, required=False)
+
+    custodian_person_id = forms.CharField(widget=forms.HiddenInput(), required=False)
+    field_person_id = forms.CharField(widget=forms.HiddenInput(), required=False)
+
+

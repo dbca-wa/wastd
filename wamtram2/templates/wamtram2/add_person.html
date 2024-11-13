@@ -5,49 +5,32 @@
 {% block extra_style %}
     {{ block.super }}
     {{ form.media.css }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/table_list.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
     <style>
         .select2 {
             width: 100% !important;
         }
-        .add-person-btn {
-            height: 28px;
-            width: 28px;
-            padding: 0;
-        }
         .step-container {
-            border: 1px solid #ddd;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
             border-radius: 5px;
-            padding: 15px;
+            padding: 20px;
             margin-bottom: 20px;
+            background-color: white;
         }
         .step-header {
-            background-color: #f8f9fa;
-            padding: 10px;
-            margin: -15px -15px 15px -15px;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
             border-bottom: 1px solid #ddd;
-            font-weight: bold;
-        }
-        .alert {
-            position: relative;
-            width: 100%;
-            z-index: 1050;
-            display: none;
-            margin-top: 10px;
-        }
-        .template-name {
-            font-weight: bold;
-            font-size: 1.2em;
-            margin-bottom: 10px;
         }
         .form-control-static {
-            padding-top: 7px;
-            margin-bottom: 0;
-            border: 1px solid #ced4da;
-            border-radius: .25rem;
             padding: .375rem .75rem;
             background-color: #f8f9fa;
+            border: 1px solid #ced4da;
+            border-radius: .25rem;
         }
     </style>
 {% endblock %}
@@ -70,25 +53,20 @@
 
 {% block page_content_inner %}
     <div class="container">
-        <!-- Message Alert for JavaScript messages -->
-        <div id="message-alert" class="alert mt-3" role="alert" style="display: none;"></div>
+        <div class="page-header">
+            <h1 class="page-title">Add Person</h1>
+        </div>
 
-        <!-- Django messages -->
-        {% if messages %}
-            <div class="mt-3">
-                {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }}" role="alert">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
+        {% include "includes/messages.html" %}
+        <div id="message-alert" class="alert" role="alert" style="display: none;"></div>
 
         <!-- Add Single Person Form -->
         <div class="step-container">
             <div class="step-header">Add Single Person</div>
             <form id="singlePersonForm" method="post">
-                <p> <strong> Note: If your first name or surname consists of multiple words, please connect them with a hyphen (-). The system will automatically convert spaces to hyphens.</strong> </p>
+                <div class="alert alert-info mb-4">
+                    <strong>Note:</strong> If your first name or surname consists of multiple words, please connect them with a hyphen (-). The system will automatically convert spaces to hyphens.
+                </div>
                 {% csrf_token %}
                 <div class="row">
                     <!-- Required fields -->

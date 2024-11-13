@@ -1,0 +1,15 @@
+
+.form-row input[type=text],
+.form-row input[type=email],
+.form-row input[type=tel],
+.form-row textarea {
+    width: 95% !important;
+    max-width: 1200px !important;
+}
+
+.field-specialty textarea,
+.field-comments textarea {
+    width: 95% !important;
+    max-width: 1200px !important;
+    height: 80px !important;
+}

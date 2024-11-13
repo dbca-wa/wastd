@@ -72,6 +72,12 @@ class TrtCauseOfDeath(models.Model):
     class Meta:
         managed = False
         db_table = "TRT_CAUSE_OF_DEATH"
+        
+    def __str__(self):
+        return f"{self.description}"
+
+    def __str__(self):
+        return f"{self.description}"
 
 
 class TrtConditionCodes(models.Model):
@@ -330,8 +336,11 @@ class TrtDataEntry(models.Model):
         db_column="OBSERVATION_TIME", blank=True, null=True
     )  # Field name made lowercase.
     nesting = models.ForeignKey(
-        "TrtYesNo", models.SET_NULL, db_column="NESTING", blank=True, null=True, limit_choices_to={'code__in': ['D', 'N', 'Y', 'P']}
+        "TrtYesNo", models.SET_NULL, db_column="NESTING", blank=True, null=True, related_name="nesting_entries",limit_choices_to={'code__in': ['D', 'N', 'Y', 'P']}
     )  # fake foreign key #models.CharField(db_column='NESTING', max_length=1, blank=True, null=True)  # Field name made lowercase.
+    interrupted = models.ForeignKey(
+        "TrtYesNo", models.SET_NULL, db_column="INTERRUPTED", related_name="interrupted_entries", blank=True, null=True, limit_choices_to={'code__in': ['D', 'N', 'Y', 'P']}
+    )  # fake foreign key #models.CharField(db_column='INTERRUPTED', max_length=1, blank=True, null=True)  # Field name made lowercase.
     species_code = models.ForeignKey(
         "TrtSpecies", models.SET_NULL, db_column="SPECIES_CODE", blank=True, null=True
     )  # fake foreign key #models.CharField(db_column='SPECIES_CODE', max_length=2, blank=True, null=True)  # Field name made lowercase.
@@ -853,13 +862,13 @@ class TrtDataEntry(models.Model):
     new_pit_tag_3_sticker_present = models.BooleanField(default=False, db_column='NEW_PIT_TAG_3_STICKER_PRESENT')
     new_pit_tag_4_sticker_present = models.BooleanField(default=False, db_column='NEW_PIT_TAG_4_STICKER_PRESENT')
 
-    dud_filpper_tag = models.CharField(
+    dud_flipper_tag = models.CharField(
         max_length=10,
         db_column="DUD_FLIPPER_TAG",
         blank=True,
         null=True,
     )  
-    dud_filpper_tag_2 = models.CharField(
+    dud_flipper_tag_2 = models.CharField(
         max_length=10,
         db_column="DUD_FLIPPER_TAG_2",
         blank=True,
@@ -1062,7 +1071,7 @@ class TrtDataEntryExceptions(models.Model):
         db_column="MEASUREMENT_VALUE_2", blank=True, null=True
     )  # Field name made lowercase.
     datum_code = models.CharField(
-        db_column="DATUM_CODE", max_length=5, blank=True, null=True
+        db_column="DATUM_CODE", max_length=5, blank=True, default="WGS84"
     )  # Field name made lowercase.
     latitude = models.FloatField(
         db_column="LATITUDE", blank=True, null=True
@@ -1708,13 +1717,13 @@ class TrtObservations(models.Model):
     corrected_date = models.DateTimeField(
         db_column="CORRECTED_DATE", blank=True, null=True, editable=False
     )  # Field name made lowercase.
-    dud_filpper_tag = models.CharField(
+    dud_flipper_tag = models.CharField(
         max_length=10, 
         db_column="DUD_FLIPPER_TAG",
         blank=True,
         null=True,
     )  
-    dud_filpper_tag_2 = models.CharField(
+    dud_flipper_tag_2 = models.CharField(
         max_length=10,
         db_column="DUD_FLIPPER_TAG_2",
         blank=True,
@@ -1828,8 +1837,12 @@ class TrtPitTags(models.Model):
     issue_location = models.CharField(
         db_column="ISSUE_LOCATION", max_length=50, blank=True, null=True
     )  # Field name made lowercase.
-    custodian_person_id = models.IntegerField(
-        db_column="CUSTODIAN_PERSON_ID", blank=True, null=True
+    custodian_person = models.ForeignKey(
+        'TrtPersons',
+        models.SET_NULL,
+        db_column='CUSTODIAN_PERSON_ID',
+        blank=True,
+        null=True
     )  # Field name made lowercase.
     turtle = models.ForeignKey(
         "TrtTurtles", models.SET_NULL, db_column="TURTLE_ID", blank=True, null=True
@@ -2220,9 +2233,13 @@ class TrtTags(models.Model):
     issue_location = models.CharField(
         db_column="ISSUE_LOCATION", max_length=50, blank=True, null=True
     )  # Field name made lowercase.
-    custodian_person_id = models.IntegerField(
-        db_column="CUSTODIAN_PERSON_ID", blank=True, null=True
-    )  # Field name made lowercase.
+    custodian_person = models.ForeignKey(
+        'TrtPersons',
+        models.SET_NULL,
+        db_column='CUSTODIAN_PERSON_ID',
+        blank=True,
+        null=True
+    )  # Field name made lowercase.  # Field name made lowercase.
     turtle = models.ForeignKey(
         "TrtTurtles", models.SET_NULL, db_column="TURTLE_ID", blank=True, null=True
     )  # Field name made lowercase.

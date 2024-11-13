@@ -4,17 +4,9 @@
 {% block extra_style %}
     {{ block.super }}
     {{ form.media.css }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/table_list.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
-    <style>
-        .table th, .table td {
-            vertical-align: middle;
-        }
-        .btn-block {
-            display: block;
-            width: 100%;
-        }
-    </style>
 {% endblock extra_style %}
 
 {% block extra_head %}
@@ -32,209 +24,265 @@
 {% endblock %}
 
 {% block page_content_inner %}
-    <div class="container-fluid mt-5 mb-5">
-        <h1>Dud Tag Management</h1>
-
-        <!-- Display any success or error messages -->
-        <div id="message-alert" class="alert alert-success" role="alert" style="display:none;"></div>
-        {% if error_message %}
-            <div class="alert alert-danger" role="alert">
-                {{ error_message }}
+    <div class="container">
+        <div class="step-container mt-5">
+            <div class="page-header">
+                <h1 class="page-title">Dud Tag Management</h1>
             </div>
-        {% endif %}
-
-        <!-- Dud Tag Management Form -->
-        <form method="post" id="dudTagForm">
-            {% csrf_token %}
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Entry ID</th>
-                        <th>Observation ID</th>
-                        <th>Turtle ID</th>
-                        <th>DUD Tag Type</th>
-                        <th>DUD Tag ID</th>
-                        <th>DUD Tag Status</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for entry in entries %}
-                    <!-- Flipper Tag -->
-                    {% if entry.dud_filpper_tag %}
-                    <tr>
-                        <td>
-                            {% if entry.data_entry_id %}
-                                <a href="{% url 'wamtram2:trtdataentry' entry.data_entry_id %}">{{ entry.data_entry_id }}</a>
-                            {% else %}
-                                N/A
+            {% include "includes/messages.html" %}
+            {% if error_message %}
+                <div class="alert alert-danger mb-3" role="alert">
+                    {{ error_message }}
+                </div>
+            {% endif %}
+            
+            <div class="table-container">
+                <!-- Dud Tag Management Form -->
+                <form method="post" id="dudTagForm">
+                    {% csrf_token %}
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Entry ID</th>
+                                <th>Observation ID</th>
+                                <th>Turtle ID</th>
+                                <th>DUD Tag Type</th>
+                                <th>DUD Tag ID</th>
+                                <th>DUD Tag Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for entry in entries %}
+                            <!-- Flipper Tag -->
+                            {% if entry.dud_flipper_tag %}
+                            <tr>
+                                <td>
+                                    {% if entry.data_entry_id %}
+                                        <a href="{% url 'wamtram2:trtdataentry' entry.data_entry_id %}">{{ entry.data_entry_id }}</a>
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if entry.observation_id %}
+                                        <a href="{% url 'wamtram2:observationdetail' entry.observation_id.id %}">{{ entry.observation_id.id }}</a>
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if entry.turtle_id %}
+                                        {{ entry.turtle_id }}
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </td>
+                                <td>Flipper</td>
+                                <td>
+                                    <input type="text" 
+                                           name="tag_id" 
+                                           value="{{ entry.dud_flipper_tag }}" 
+                                           class="form-control form-control-sm" />
+                                </td>
+                                <td>
+                                    <select name="tag_status" class="form-control form-control-sm">
+                                        {% for state in tag_states %}
+                                            <option value="{{ state.tag_state }}" 
+                                                    {% if state.tag_state == entry.dud_flipper_tag_state %}selected{% endif %}>
+                                                {{ state.description }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td>
+                                    {% if entry.observation_id %}
+                                        <button type="submit" 
+                                                name="entry_id" 
+                                                value="{{ entry.data_entry_id }}" 
+                                                class="btn btn-primary btn-sm btn-block">Save</button>
+                                    {% else %}
+                                        <button type="button" 
+                                                class="btn btn-secondary btn-sm btn-block" 
+                                                disabled>No Observation</button>
+                                    {% endif %}
+                                </td>
+                            </tr>
                             {% endif %}
-                        </td>
-                        <td>
-                            {% if entry.observation_id %}
-                                <a href="{% url 'wamtram2:observationdetail' entry.observation_id.id %}">{{ entry.observation_id.id }}</a>
-                            {% else %}
-                                N/A
+                    
+                            <!-- Flipper Tag 2 -->
+                            {% if entry.dud_flipper_tag_2 %}
+                            <tr>
+                                <td>
+                                    {% if entry.data_entry_id %}
+                                        <a href="{% url 'wamtram2:trtdataentry' entry.data_entry_id %}">{{ entry.data_entry_id }}</a>
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if entry.observation_id %}
+                                        <a href="{% url 'wamtram2:observationdetail' entry.observation_id.id %}">{{ entry.observation_id.id }}</a>
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if entry.turtle_id %}
+                                        {{ entry.turtle_id.id }}
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </td>
+                                <td>Flipper 2</td>
+                                <td>
+                                    <input type="text" 
+                                           name="tag_id" 
+                                           value="{{ entry.dud_flipper_tag_2 }}" 
+                                           class="form-control form-control-sm" />
+                                </td>
+                                <td>
+                                    <select name="tag_status" class="form-control form-control-sm">
+                                        {% for state in tag_states %}
+                                            <option value="{{ state.tag_state }}" 
+                                                    {% if state.tag_state == entry.dud_flipper_tag_state_2 %}selected{% endif %}>
+                                                {{ state.description }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td>
+                                    {% if entry.observation_id %}
+                                        <button type="submit" 
+                                                name="entry_id" 
+                                                value="{{ entry.data_entry_id }}" 
+                                                class="btn btn-primary btn-sm btn-block">Save</button>
+                                    {% else %}
+                                        <button type="button" 
+                                                class="btn btn-secondary btn-sm btn-block" 
+                                                disabled>No Observation</button>
+                                    {% endif %}
+                                </td>
+                            </tr>
                             {% endif %}
-                        </td>
-                        <td>
-                            {% if entry.turtle_id %}
-                                {{ entry.turtle_id }}
-                            {% else %}
-                                N/A
+                    
+                            <!-- PIT Tag -->
+                            {% if entry.dud_pit_tag %}
+                            <tr>
+                                <td>
+                                    {% if entry.data_entry_id %}
+                                        <a href="{% url 'wamtram2:trtdataentry' entry.data_entry_id %}">{{ entry.data_entry_id }}</a>
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if entry.observation_id %}
+                                        <a href="{% url 'wamtram2:observationdetail' entry.observation_id.id %}">{{ entry.observation_id.id }}</a>
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if entry.turtle_id %}
+                                        {{ entry.turtle_id.id }}
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </td>
+                                <td>PIT</td>
+                                <td>
+                                    <input type="text" 
+                                           name="tag_id" 
+                                           value="{{ entry.dud_pit_tag }}" 
+                                           class="form-control form-control-sm" />
+                                </td>
+                                <td>
+                                    <select name="tag_status" class="form-control form-control-sm">
+                                        {% for state in tag_states %}
+                                            <option value="{{ state.tag_state }}" 
+                                                    {% if state.tag_state == entry.dud_pit_tag_state %}selected{% endif %}>
+                                                {{ state.description }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td>
+                                    {% if entry.observation_id %}
+                                        <button type="submit" 
+                                                name="entry_id" 
+                                                value="{{ entry.data_entry_id }}" 
+                                                class="btn btn-primary btn-sm btn-block">Save</button>
+                                    {% else %}
+                                        <button type="button" 
+                                                class="btn btn-secondary btn-sm btn-block" 
+                                                disabled>No Observation</button>
+                                    {% endif %}
+                                </td>
+                            </tr>
                             {% endif %}
-                        </td>
-                        <td>Flipper</td>
-                        <td><input type="text" name="tag_id" value="{{ entry.dud_filpper_tag }}" /></td>
-                        <td>
-                            <select name="tag_status">
-                                {% for state in tag_states %}
-                                    <option value="{{ state.tag_state }}" {% if state.tag_state == entry.dud_filpper_tag_state %}selected{% endif %}>{{ state.description }}</option>
-                                {% endfor %}
-                            </select>
-                        </td>
-                        <td>
-                            {% if entry.observation_id %}
-                                <button type="submit" name="entry_id" value="{{ entry.data_entry_id }}" class="btn btn-primary btn-block">Save</button>
-                            {% else %}
-                                <button type="button" class="btn btn-secondary btn-block" disabled>No Observation</button>
+                    
+                            <!-- PIT Tag 2 -->
+                            {% if entry.dud_pit_tag_2 %}
+                            <tr>
+                                <td>
+                                    {% if entry.data_entry_id %}
+                                        <a href="{% url 'wamtram2:trtdataentry' entry.data_entry_id %}">{{ entry.data_entry_id }}</a>
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if entry.observation_id %}
+                                        <a href="{% url 'wamtram2:observationdetail' entry.observation_id.id %}">{{ entry.observation_id.id }}</a>
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if entry.turtle_id %}
+                                        {{ entry.turtle_id.id }}
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </td>
+                                <td>PIT 2</td>
+                                <td>
+                                    <input type="text" 
+                                           name="tag_id" 
+                                           value="{{ entry.dud_pit_tag_2 }}" 
+                                           class="form-control form-control-sm" />
+                                </td>
+                                <td>
+                                    <select name="tag_status" class="form-control form-control-sm">
+                                        {% for state in tag_states %}
+                                            <option value="{{ state.tag_state }}" 
+                                                    {% if state.tag_state == entry.dud_pit_tag_state_2 %}selected{% endif %}>
+                                                {{ state.description }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td>
+                                    {% if entry.observation_id %}
+                                        <button type="submit" 
+                                                name="entry_id" 
+                                                value="{{ entry.data_entry_id }}" 
+                                                class="btn btn-primary btn-sm btn-block">Save</button>
+                                    {% else %}
+                                        <button type="button" 
+                                                class="btn btn-secondary btn-sm btn-block" 
+                                                disabled>No Observation</button>
+                                    {% endif %}
+                                </td>
+                            </tr>
                             {% endif %}
-                        </td>
-                    </tr>
-                    {% endif %}
-
-                    <!-- Flipper Tag 2 -->
-                    {% if entry.dud_filpper_tag_2 %}
-                    <tr>
-                        <td>
-                            {% if entry.data_entry_id %}
-                                <a href="{% url 'wamtram2:trtdataentry' entry.data_entry_id %}">{{ entry.data_entry_id }}</a>
-                            {% else %}
-                                N/A
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if entry.observation_id %}
-                                <a href="{% url 'wamtram2:observationdetail' entry.observation_id.id %}">{{ entry.observation_id.id }}</a>
-                            {% else %}
-                                N/A
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if entry.turtle_id %}
-                                {{ entry.turtle_id.id }}
-                            {% else %}
-                                N/A
-                            {% endif %}
-                        </td>
-                        <td>Flipper 2</td>
-                        <td><input type="text" name="tag_id" value="{{ entry.dud_filpper_tag_2 }}" /></td>
-                        <td>
-                            <select name="tag_status">
-                                {% for state in tag_states %}
-                                    <option value="{{ state.tag_state }}" {% if state.tag_state == entry.dud_filpper_tag_state_2 %}selected{% endif %}>{{ state.description }}</option>
-                                {% endfor %}
-                            </select>
-                        </td>
-                        <td>
-                            {% if entry.observation_id %}
-                                <button type="submit" name="entry_id" value="{{ entry.data_entry_id }}" class="btn btn-primary btn-block">Save</button>
-                            {% else %}
-                                <button type="button" class="btn btn-secondary btn-block" disabled>No Observation</button>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endif %}
-
-                    <!-- PIT Tag -->
-                    {% if entry.dud_pit_tag %}
-                    <tr>
-                        <td>
-                            {% if entry.data_entry_id %}
-                                <a href="{% url 'wamtram2:trtdataentry' entry.data_entry_id %}">{{ entry.data_entry_id }}</a>
-                            {% else %}
-                                N/A
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if entry.observation_id %}
-                                <a href="{% url 'wamtram2:observationdetail' entry.observation_id.id %}">{{ entry.observation_id.id }}</a>
-                            {% else %}
-                                N/A
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if entry.turtle_id %}
-                                {{ entry.turtle_id.id }}
-                            {% else %}
-                                N/A
-                            {% endif %}
-                        </td>
-                        <td>PIT</td>
-                        <td><input type="text" name="tag_id" value="{{ entry.dud_pit_tag }}" /></td>
-                        <td>
-                            <select name="tag_status">
-                                {% for state in tag_states %}
-                                    <option value="{{ state.tag_state }}" {% if state.tag_state == entry.dud_pit_tag_state %}selected{% endif %}>{{ state.description }}</option>
-                                {% endfor %}
-                            </select>
-                        </td>
-                        <td>
-                            {% if entry.observation_id %}
-                                <button type="submit" name="entry_id" value="{{ entry.data_entry_id }}" class="btn btn-primary btn-block">Save</button>
-                            {% else %}
-                                <button type="button" class="btn btn-secondary btn-block" disabled>No Observation</button>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endif %}
-
-                    <!-- PIT Tag 2 -->
-                    {% if entry.dud_pit_tag_2 %}
-                    <tr>
-                        <td>
-                            {% if entry.data_entry_id %}
-                                <a href="{% url 'wamtram2:trtdataentry' entry.data_entry_id %}">{{ entry.data_entry_id }}</a>
-                            {% else %}
-                                N/A
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if entry.observation_id %}
-                                <a href="{% url 'wamtram2:observationdetail' entry.observation_id.id %}">{{ entry.observation_id.id }}</a>
-                            {% else %}
-                                N/A
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if entry.turtle_id %}
-                                {{ entry.turtle_id.id }}
-                            {% else %}
-                                N/A
-                            {% endif %}
-                        </td>
-                        <td>PIT 2</td>
-                        <td><input type="text" name="tag_id" value="{{ entry.dud_pit_tag_2 }}" /></td>
-                        <td>
-                            <select name="tag_status">
-                                {% for state in tag_states %}
-                                    <option value="{{ state.tag_state }}" {% if state.tag_state == entry.dud_pit_tag_state_2 %}selected{% endif %}>{{ state.description }}</option>
-                                {% endfor %}
-                            </select>
-                        </td>
-                        <td>
-                            {% if entry.observation_id %}
-                                <button type="submit" name="entry_id" value="{{ entry.data_entry_id }}" class="btn btn-primary btn-block">Save</button>
-                            {% else %}
-                                <button type="button" class="btn btn-secondary btn-block" disabled>No Observation</button>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endif %}
-                    {% endfor %}
-                </tbody>
-            </table>
-        </form>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </form>
+            </div>
+        </div>
 
         <!-- Loading spinner -->
         <div class="loading-spinner">
