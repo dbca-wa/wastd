@@ -3235,7 +3235,7 @@ class TransferObservationsByTagView(LoginRequiredMixin, View):
             # Execute stored procedure
             with connections['wamtram2'].cursor() as cursor:
                 cursor.execute(
-                    "EXEC dbo.TransferObservationsByFlipperTag @TAG_ID = %s, @TURTLE_ID = %s, @OBSERVATION_IDS = %s;",
+                    "EXEC dbo.TransferObservationsByFlipperTagWEB @TAG_ID = %s, @TURTLE_ID = %s, @OBSERVATION_IDS = %s;",
                     [tag_id, turtle_id, observation_ids_str]
                 )
                 
