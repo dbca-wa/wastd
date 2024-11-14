@@ -3,14 +3,13 @@ from django.contrib import messages
 from django.utils import timezone
 from django.db import connections, DatabaseError
 from django.db.models import Q, Exists, OuterRef, Count, Subquery
-from django.http import HttpResponseForbidden, HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseForbidden, HttpResponseRedirect, HttpResponse,HttpResponseBadRequest, JsonResponse
 from django.contrib.auth.mixins import LoginRequiredMixin,UserPassesTestMixin
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.views.generic.edit import FormMixin
 from django.views.generic import TemplateView, ListView, DetailView, FormView, DeleteView
-from django.http import JsonResponse
 from .models import TrtPlaces, TrtSpecies, TrtLocations,TrtEntryBatchOrganisation
 from django.core.paginator import Paginator
 from openpyxl import Workbook
@@ -3319,3 +3318,90 @@ class NestingSeasonListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMix
             
             
             
+
+class BatchGridView(LoginRequiredMixin, PaginateMixin,ListView):
+    model = TrtEntryBatches
+    template_name = 'wamtram2/entry_batch_list.html'
+    context_object_name = 'batches'
+    paginate_by = 50
+
+    def dispatch(self, request, *args, **kwargs):
+        if not (
+            request.user.groups.filter(name="WAMTRAM2_TEAM_LEADER").exists()
+            or request.user.groups.filter(name="WAMTRAM2_STAFF").exists()
+            or request.user.is_superuser
+        ):
+            return HttpResponseForbidden("You do not have permission to view this record")
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        queryset = super().get_queryset().order_by('-entry_batch_id')
+        user = self.request.user
+        
+        queryset = queryset.select_related(
+            'entered_person_id',
+            'template'
+        )
+    
+        if not user.is_superuser:
+            user_organisations = user.organisations.all()
+            if not user_organisations.exists():
+                return queryset.none()
+            
+            related_batch_ids = TrtEntryBatchOrganisation.objects.filter(
+                organisation__in=[org.code for org in user_organisations]
+            ).values_list('trtentrybatch_id', flat=True)
+            
+            queryset = queryset.filter(entry_batch_id__in=related_batch_ids)
+
+        queryset = queryset.annotate(
+            entry_count=Count('trtdataentry'),
+            flagged_count=Count('trtdataentry', filter=Q(trtdataentry__do_not_process=True))
+        )
+        
+        search = self.request.GET.get('search')
+        if search:
+            queryset = queryset.filter(
+                Q(batches_code__icontains=search) |
+                Q(comments__icontains=search) |
+                Q(entered_person_id__first_name__icontains=search) |
+                Q(entered_person_id__surname__icontains=search)
+            )
+        
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Get all possible columns
+        all_columns = [
+            {'field': 'entry_batch_id', 'title': 'Batch ID', 'visible': True},
+            {'field': 'batches_code', 'title': 'Batch Code', 'visible': True},
+            {'field': 'entry_date', 'title': 'Entry Date', 'visible': True},
+            {'field': 'entered_person_id', 'title': 'Entered By', 'visible': True},
+            {'field': 'entry_count', 'title': 'Entry Count', 'visible': True},
+            {'field': 'flagged_count', 'title': 'Flagged Count', 'visible': True},
+            {'field': 'template', 'title': 'Template', 'visible': False},
+            {'field': 'comments', 'title': 'Comments', 'visible': False},
+            {'field': 'pr_date_convention', 'title': 'PR Date Convention', 'visible': False},
+        ]
+        
+        # Get column display settings from user settings or session
+        user_columns = self.request.session.get('batch_grid_columns', [col['field'] for col in all_columns if col['visible']])
+        
+        context.update({
+            'all_columns': all_columns,
+            'visible_columns': user_columns,
+            'search_term': self.request.GET.get('search', ''),
+            'clear_url': self.request.path,
+        })
+        return context
+
+    def post(self, request, *args, **kwargs):
+        # Handle column display settings update
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            visible_columns = request.POST.getlist('columns[]')
+            request.session['batch_grid_columns'] = visible_columns
+            return JsonResponse({'status': 'success'})
+        return HttpResponseBadRequest()
+
+
