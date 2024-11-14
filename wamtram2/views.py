@@ -47,9 +47,7 @@ from .models import (
     TrtIdentification,
     TrtPitTagStatus,
     TrtTagStatus,
-    TrtRecordedTags,
-    TrtRecordedPitTags,
-    TrtRecordedIdentification
+    TrtNestingSeason
 )
 from .forms import TrtDataEntryForm, SearchForm, TrtEntryBatchesForm, TemplateForm, BatchesCodeForm, TrtPersonsForm, TagRegisterForm
 
@@ -3288,5 +3286,36 @@ class TransferObservationsByTagView(LoginRequiredMixin, View):
                 'success': False,
                 'error': str(e)
             }, status=500)
+            
+            
+class NestingSeasonListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMixin, ListView):
+    model = TrtNestingSeason
+    template_name = 'wamtram2/nesting_season_list.html'
+    context_object_name = 'seasons'
+    paginate_by = 30
+    
+    def test_func(self):
+        return self.request.user.is_superuser
+    
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        
+        search = self.request.GET.get('search')
+        if search:
+            queryset = queryset.filter(
+                Q(nesting_season__icontains=search)
+            )
+            
+        return queryset
+        
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'admin_add_url': 'admin:wamtram2_trtnestingseason_add',
+            'admin_change_url': 'admin:wamtram2_trtnestingseason_change',
+            'search_term': self.request.GET.get('search', ''),
+        })
+        return context
+            
             
             
