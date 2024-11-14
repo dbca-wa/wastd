@@ -7,6 +7,7 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/table_list.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/search_styles.css' %}">
 {% endblock %}
 
 {% block breadcrumbs %}
@@ -49,26 +50,20 @@
                 <input type="hidden" name="action" value="merge">
                 <div class="row">
                     <div class="col-md-5">
-                        <label>Keep this person (Primary)</label>
-                        <select name="primary_person" class="form-control">
-                            <option value="">-- Choose a person to keep --</option>
-                            {% for person in persons %}
-                            <option value="{{ person.pk }}">
-                                {{ person.first_name }} {{ person.surname }} (ID: {{ person.pk }})
-                            </option>
-                            {% endfor %}
-                        </select>
+                        <div class="form-group">
+                            <label>Person to Keep (Primary)</label>
+                            <input type="text" id="primary_person_search" class="form-control" placeholder="Search by name...">
+                            <input type="hidden" name="primary_person" id="primary_person_id">
+                            <div id="primary_person_results" class="search-results"></div>
+                        </div>
                     </div>
                     <div class="col-md-5">
-                        <label>Merge this person (Will be removed)</label>
-                        <select name="secondary_person" class="form-control">
-                            <option value="">-- Choose a person to remove --</option>
-                            {% for person in persons %}
-                            <option value="{{ person.pk }}" {% if request.GET.merge_id == person.pk|stringformat:"s" %}selected{% endif %}>
-                                {{ person.first_name }} {{ person.surname }} (ID: {{ person.pk }})
-                            </option>
-                            {% endfor %}
-                        </select>
+                        <div class="form-group">
+                            <label>Person to Remove (Secondary)</label>
+                            <input type="text" id="secondary_person_search" class="form-control" placeholder="Search by name...">
+                            <input type="hidden" name="secondary_person" id="secondary_person_id">
+                            <div id="secondary_person_results" class="search-results s"></div>
+                        </div>
                     </div>
                     <div class="col-md-2">
                         <label>&nbsp;</label>
@@ -101,7 +96,9 @@
                         <td style="width: 5%;">{{ person.person_id }}</td>
                         <td style="width: 40%;">
                             <span id="display-name-{{ person.pk }}">
-                                {{ person.first_name }} {{ person.surname }}
+                                <a href="{% url 'admin:wamtram2_trtpersons_change' person.pk %}" target="_blank">
+                                    {{ person.first_name }} {{ person.surname }}
+                                </a>
                             </span>
                             <form id="edit-form-{{ person.pk }}" 
                                 style="display: none;" 
@@ -185,9 +182,56 @@
 {% block extra_js %}
 {{ block.super }}
 <script>
+    function setupPersonSearch(searchInputId, resultsId, hiddenInputId) {
+        const searchInput = document.getElementById(searchInputId);
+        const resultsDiv = document.getElementById(resultsId);
+        const hiddenInput = document.getElementById(hiddenInputId);
+        
+        let debounceTimeout;
+    
+        searchInput.addEventListener('input', function() {
+            clearTimeout(debounceTimeout);
+            debounceTimeout = setTimeout(() => {
+                const query = this.value.trim();
+                if (query.length >= 2) {
+                    fetch(`/wamtram2/search_persons/?q=${encodeURIComponent(query)}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            resultsDiv.innerHTML = '';
+                            data.forEach(person => {
+                                const div = document.createElement('div');
+                                div.className = 'search-result';
+                                div.textContent = `${person.first_name} ${person.surname} (ID: ${person.person_id})`;
+                                div.addEventListener('click', () => {
+                                    searchInput.value = `${person.first_name} ${person.surname}`;
+                                    hiddenInput.value = person.person_id;
+                                    resultsDiv.style.display = 'none';
+                                });
+                                resultsDiv.appendChild(div);
+                            });
+                            resultsDiv.style.display = data.length ? 'block' : 'none';
+                        });
+                } else {
+                    resultsDiv.style.display = 'none';
+                }
+            }, 300);
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!resultsDiv.contains(e.target) && e.target !== searchInput) {
+                resultsDiv.style.display = 'none';
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        setupPersonSearch('primary_person_search', 'primary_person_results', 'primary_person_id');
+        setupPersonSearch('secondary_person_search', 'secondary_person_results', 'secondary_person_id');
+    });
+
     function validateMerge() {
-        const primary = document.querySelector('select[name="primary_person"]').value;
-        const secondary = document.querySelector('select[name="secondary_person"]').value;
+        const primary = document.getElementById('primary_person_id').value;
+        const secondary = document.getElementById('secondary_person_id').value;    
         
         if (!primary || !secondary) {
             alert('Please select both persons for merging');

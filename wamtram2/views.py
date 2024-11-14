@@ -30,6 +30,8 @@ from django.apps import apps
 from docx import Document
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.shared import Inches, Pt, RGBColor
+from functools import reduce
+import operator
 
 from wastd.utils import Breadcrumb, PaginateMixin
 from .models import (
@@ -2637,13 +2639,39 @@ class PersonManageView(LoginRequiredMixin, UserPassesTestMixin, PaginateMixin, L
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        search_term = self.request.GET.get('search', '')
+        search_term = self.request.GET.get('search', '').strip()
+        
         if search_term:
-            queryset = queryset.filter(
-                Q(first_name__icontains=search_term) |
-                Q(surname__icontains=search_term) |
-                Q(email__icontains=search_term)
-            )
+            search_terms = search_term.split()
+            query = Q()
+            
+            if len(search_terms) == 1:
+                term = search_terms[0]
+                query = (
+                    Q(first_name__icontains=term) |
+                    Q(surname__icontains=term) |
+                    Q(email__icontains=term)
+                )
+
+            else:
+                query = (
+                    Q(first_name__icontains=search_term) |
+                    Q(surname__icontains=search_term) |
+                    Q(email__icontains=search_term) |
+                    
+                    Q(first_name__icontains=search_terms[0], 
+                    surname__icontains=' '.join(search_terms[1:])) |
+                    
+                    reduce(operator.or_, (
+                        Q(first_name__icontains=term) |
+                        Q(surname__icontains=term) |
+                        Q(email__icontains=term)
+                        for term in search_terms
+                    ))
+                )
+            
+            queryset = queryset.filter(query)
+    
         return queryset.prefetch_related(
             'measurer_person',
             'tagger_person',
