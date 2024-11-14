@@ -1,5 +1,6 @@
 {% extends "base_wastd.html" %}
 {% load static %}
+{% load batch_filters %} 
 
 {% block extra_style %}
 {{ block.super }}
@@ -8,11 +9,8 @@
 <link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
 {% endblock %}
 
-
-
 {% block content %}
 <div class="container-fluid mt-3">
-
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{% url 'wamtram2:admin_tools' %}">Curation Tools</a></li>
@@ -51,7 +49,7 @@
             </thead>
             <tbody>
                 {% for batch in batches %}
-                <tr class="grid-row" data-batch-id="{{ batch.entry_batch_id }}">
+                <tr class="grid-row" data-batch-id="{{ batch.entry_batch_id }}" oncontextmenu="showContextMenu(event, {{ batch.entry_batch_id }}); return false;">
                     {% for column in all_columns %}
                         {% if column.field in visible_columns %}
                         <td>
@@ -62,27 +60,7 @@
                             {% elif column.field == 'pr_date_convention' %}
                                 {{ batch.pr_date_convention|yesno:"Yes,No" }}
                             {% else %}
-                                <td>
-                                    {% if column.field == 'entered_person_id' %}
-                                        {{ batch.entered_person_id|default:"-" }}
-                                    {% elif column.field == 'entry_date' %}
-                                        {{ batch.entry_date|date:"Y-m-d H:i" }}
-                                    {% elif column.field == 'pr_date_convention' %}
-                                        {{ batch.pr_date_convention|yesno:"Yes,No" }}
-                                    {% elif column.field == 'template' %}
-                                        {{ batch.template|default:"-" }}
-                                    {% elif column.field == 'batches_code' %}
-                                        {{ batch.batches_code|default:"-" }}
-                                    {% elif column.field == 'entry_batch_id' %}
-                                        {{ batch.entry_batch_id }}
-                                    {% elif column.field == 'comments' %}
-                                        {{ batch.comments|default:"-" }}
-                                    {% elif column.field == 'entry_count' %}
-                                        {{ batch.entry_count }}
-                                    {% elif column.field == 'flagged_count' %}
-                                        {{ batch.flagged_count }}
-                                    {% endif %}
-                                </td>
+                                {{ batch|getattribute:column.field|default:"-" }}
                             {% endif %}
                         </td>
                         {% endif %}
@@ -135,11 +113,50 @@
         <span class="sr-only">Loading...</span>
     </div>
 </div>
+
+<div class="context-menu" id="contextMenu" style="display: none;">
+    <ul class="context-menu-list">
+        <li class="context-menu-item" onclick="viewBatch()">View Entries</li>
+        <li class="context-menu-item" onclick="viewBatchDetails()">View Batch Details</li>
+    </ul>
+</div>
 {% endblock %}
 
 {% block extra_js %}
 {{ block.super }}
 <script>
+
+    let selectedBatchId = null;
+
+    function showContextMenu(event, batchId) {
+        event.preventDefault();
+        selectedBatchId = batchId;
+        
+        const contextMenu = document.getElementById('contextMenu');
+        contextMenu.style.display = 'block';
+        contextMenu.style.left = event.pageX + 'px';
+        contextMenu.style.top = event.pageY + 'px';
+    }
+    
+    function viewBatch() {
+        if (selectedBatchId) {
+            window.location.href = "{% url 'wamtram2:batch_entries' 0 %}".replace('0', selectedBatchId);
+        }
+    }
+    
+    function viewBatchDetails() {
+        if (selectedBatchId) {
+            window.location.href = "{% url 'wamtram2:batch_detail_manage' batch_id=0 %}".replace('0', selectedBatchId);
+        }
+    }
+
+    document.addEventListener('click', function(event) {
+        const contextMenu = document.getElementById('contextMenu');
+        if (!contextMenu.contains(event.target)) {
+            contextMenu.style.display = 'none';
+        }
+    });
+    
 $(document).ready(function() {
 
     $('.grid-row').hover(
