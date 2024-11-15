@@ -21,7 +21,7 @@
 {% endblock %}
 
 
-{% block content %}
+{% block page_content_inner %}
     <div class="container-fluid mt-3">
 
         <div class="row mb-3">
@@ -382,7 +382,6 @@
     function viewEntry(entryId) {
         console.log('Clicked entry:', entryId);
         // TODO: Implement entry detail view
-        // window.location.href = "{% url 'wamtram2:entry_detail' 0 %}".replace('0', entryId);
     }
 
     $(document).ready(function() {

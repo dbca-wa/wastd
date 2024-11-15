@@ -3401,7 +3401,7 @@ class EntryCurationView(LoginRequiredMixin, PaginateMixin, ListView):
     model = TrtDataEntry
     template_name = 'wamtram2/entry_curation_list.html'
     context_object_name = 'entries'
-    paginate_by = 50
+    paginate_by = 10
 
     def get_queryset(self):
         batch_id = self.kwargs.get('batch_id')
