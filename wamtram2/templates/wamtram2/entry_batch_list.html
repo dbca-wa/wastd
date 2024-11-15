@@ -10,6 +10,13 @@
 {% endblock %}
 
 {% block content %}
+
+<div>
+    <p>调试信息:</p>
+    <p>批次数量: {{ batches|length }}</p>
+    <p>可见列: {{ visible_columns|join:", " }}</p>
+</div>
+
 <div class="container-fluid mt-3">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">

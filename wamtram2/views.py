@@ -3319,7 +3319,7 @@ class NestingSeasonListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMix
             
             
 
-class BatchGridView(LoginRequiredMixin, PaginateMixin,ListView):
+class BatchCurationView(LoginRequiredMixin, PaginateMixin,ListView):
     model = TrtEntryBatches
     template_name = 'wamtram2/entry_batch_list.html'
     context_object_name = 'batches'
@@ -3327,32 +3327,21 @@ class BatchGridView(LoginRequiredMixin, PaginateMixin,ListView):
 
     def dispatch(self, request, *args, **kwargs):
         if not (
-            request.user.groups.filter(name="WAMTRAM2_TEAM_LEADER").exists()
-            or request.user.groups.filter(name="WAMTRAM2_STAFF").exists()
-            or request.user.is_superuser
+            request.user.is_superuser
         ):
             return HttpResponseForbidden("You do not have permission to view this record")
         return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
         queryset = super().get_queryset().order_by('-entry_batch_id')
-        user = self.request.user
         
+        print(f"Total batches: {queryset.count()}")
+    
+    
         queryset = queryset.select_related(
             'entered_person_id',
             'template'
         )
-    
-        if not user.is_superuser:
-            user_organisations = user.organisations.all()
-            if not user_organisations.exists():
-                return queryset.none()
-            
-            related_batch_ids = TrtEntryBatchOrganisation.objects.filter(
-                organisation__in=[org.code for org in user_organisations]
-            ).values_list('trtentrybatch_id', flat=True)
-            
-            queryset = queryset.filter(entry_batch_id__in=related_batch_ids)
 
         queryset = queryset.annotate(
             entry_count=Count('trtdataentry'),
@@ -3361,13 +3350,14 @@ class BatchGridView(LoginRequiredMixin, PaginateMixin,ListView):
         
         search = self.request.GET.get('search')
         if search:
+            print(f"Searching for: {search}")
             queryset = queryset.filter(
                 Q(batches_code__icontains=search) |
                 Q(comments__icontains=search) |
                 Q(entered_person_id__first_name__icontains=search) |
                 Q(entered_person_id__surname__icontains=search)
             )
-        
+        print(f"Final query count: {queryset.count()}")
         return queryset
     
     def get_context_data(self, **kwargs):

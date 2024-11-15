@@ -50,6 +50,6 @@ urlpatterns = [
     path('curation/flipper-tags/', views.FlipperTagsListView.as_view(), name='flipper_tags_list'),
     path('curation/transfer-observations-by-tag/', views.TransferObservationsByTagView.as_view(), name='transfer_observations_by_tag'),
     path('curation/nesting-seasons/', views.NestingSeasonListView.as_view(), name='nesting_season_list'),
-    path('curation/batches/', views.BatchGridView.as_view(), name='batch_grid'),
-    path('curation/batch/<int:batch_id>/entries/', views.BatchGridView.as_view(), name='batch_entries'),  
+    path('curation/batches/', views.BatchCurationView.as_view(), name='batch_curation'),
+    path('curation/batch/<int:batch_id>/entries/', views.BatchCurationView.as_view(), name='batch_entries'),  
 ]
