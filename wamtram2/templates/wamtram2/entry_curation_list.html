@@ -45,6 +45,9 @@
                     <button type="button" class="btn btn-outline-primary" id="editMode">
                         <i class="fas fa-edit"></i> Edit Mode
                     </button>
+                    <button id="saveChanges" class="btn btn-success me-2" style="display: none;">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
                 </div>
             </div>
             <div class="col-auto">
@@ -81,8 +84,7 @@
                 <tbody>
                     {% for entry in entries %}
                     <tr class="grid-row {% if entry.do_not_process %}flagged-row{% endif %}" 
-                        data-entry-id="{{ entry.data_entry_id }}"
-                        onclick="viewEntry({{ entry.data_entry_id }})">
+                        data-entry-id="{{ entry.data_entry_id }}">
                         {% for column in all_columns %}
                             {% if column.field in visible_columns %}
                             <td data-editable="true" 
@@ -398,15 +400,6 @@
 
         <!-- Loading Overlay -->
         <div class="loading-overlay" style="display: none;"></div>
-
-        <!-- Save Changes Container -->
-        <div id="saveChangesContainer" class="row mb-3" style="display:none;">
-            <div class="col">
-                <button id="saveChanges" class="btn btn-success">
-                    <i class="fas fa-save"></i> Save Changes
-                </button>
-            </div>
-        </div>
         
     </div>
 {% endblock %}
@@ -419,27 +412,69 @@
     function viewEntry(entryId) {
         console.log('Clicked entry:', entryId);
         // TODO: Implement entry detail view
-    }
+    };
+
+    function saveChanges() {
+        if(Object.keys(editableFields).length === 0) {
+            alert('No changes to save');
+            return;
+        }
+
+        const changes = [];
+        for(const entryId in editableFields) {
+            for(const field in editableFields[entryId]) {
+                changes.push(`Entry ${entryId}: ${field} = ${editableFields[entryId][field]}`);
+            }
+        }
+
+        const confirmMessage = 'The following changes will be saved:\n\n' + 
+                            changes.join('\n') + 
+                            '\n\nDo you want to continue?';
+
+        if(confirm(confirmMessage)) {
+            $.ajax({
+                url: '{% url "wamtram2:save_entry_changes" %}',
+                method: 'POST',
+                data: {
+                    changes: JSON.stringify(editableFields),
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    if(response.success) {
+                        alert('Changes saved successfully');
+                        location.reload();
+                    } else {
+                        alert('Error saving changes: ' + response.error);
+                    }
+                },
+                error: function() {
+                    alert('Error saving changes');
+                }
+            });
+        }
+    };
 
     $(document).ready(function() {
 
         $('#viewMode, #editMode').click(function() {
             const isEdit = $(this).attr('id') === 'editMode';
             $(this).addClass('active').siblings().removeClass('active');
-            $('#saveChangesContainer').toggle(isEdit);
             
-            if(!isEdit) {
-                $('.modified').removeClass('modified');
-                editableFields = {};
+            $('#saveChanges').toggle(isEdit);
+
+            if(!isEdit && Object.keys(editableFields).length > 0) {
+                if(confirm('You have unsaved changes. Do you want to save them before switching to view mode?')) {
+                    saveChanges();
+                } else {
+                    $('.modified').removeClass('modified');
+                    editableFields = {};
+                }
             }
             
-            $('td[data-editable="true"]').each(function() {
-                const fieldType = $(this).data('field-type');
-                if(fieldType !== 'readonly') { 
-                    $(this).attr('contenteditable', isEdit);
-                }
-            });
+            $('td[data-editable="true"]').attr('contenteditable', isEdit);
         });
+
+        
 
         $('td[data-editable="true"]').on('input', function() {
             const fieldType = $(this).data('field-type');
@@ -464,46 +499,7 @@
             editableFields[entryId][fieldName] = newValue;
         });
 
-        $('#saveChanges').click(function() {
-            if(Object.keys(editableFields).length === 0) {
-                alert('No changes to save');
-                return;
-            }
-    
-            const changes = [];
-            for(const entryId in editableFields) {
-                for(const field in editableFields[entryId]) {
-                    changes.push(`Entry ${entryId}: ${field} = ${editableFields[entryId][field]}`);
-                }
-            }
-    
-            const confirmMessage = 'The following changes will be saved:\n\n' + 
-                                changes.join('\n') + 
-                                '\n\nDo you want to continue?';
-
-            if(confirm(confirmMessage)) {
-                $.ajax({
-                    url: '{% url "wamtram2:save_entry_changes" %}',
-                    method: 'POST',
-                    data: {
-                        changes: JSON.stringify(editableFields),
-                        csrfmiddlewaretoken: '{{ csrf_token }}'
-                    },
-                    success: function(response) {
-                        if(response.success) {
-                            alert('Changes saved successfully');
-                            location.reload();
-                        } else {
-                            alert('Error saving changes: ' + response.error);
-                        }
-                    },
-                    error: function() {
-                        alert('Error saving changes');
-                    }
-                });
-            }
-        });
-    
+        $('#saveChanges').click(saveChanges);
 
 
         $('.grid-row').hover(
