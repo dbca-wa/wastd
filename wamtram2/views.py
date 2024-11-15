@@ -3310,8 +3310,8 @@ class NestingSeasonListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMix
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update({
-            'admin_add_url': 'admin:wamtram2_trtnestingseason_add',
-            'admin_change_url': 'admin:wamtram2_trtnestingseason_change',
+            'admin_add_url': 'admin:wamtram2_nesting_season_add',
+            'admin_change_url': 'admin:wamtram2_nesting_season_change',
             'search_term': self.request.GET.get('search', ''),
         })
         return context
@@ -3323,7 +3323,7 @@ class BatchCurationView(LoginRequiredMixin, PaginateMixin,ListView):
     model = TrtEntryBatches
     template_name = 'wamtram2/batch_curation_list.html'
     context_object_name = 'batches'
-    paginate_by = 50
+    paginate_by = 30
 
     def dispatch(self, request, *args, **kwargs):
         if not (
