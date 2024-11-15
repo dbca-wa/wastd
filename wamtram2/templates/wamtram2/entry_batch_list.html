@@ -9,21 +9,19 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
 {% endblock %}
 
-{% block content %}
 
-<div>
-    <p>调试信息:</p>
-    <p>批次数量: {{ batches|length }}</p>
-    <p>可见列: {{ visible_columns|join:", " }}</p>
-</div>
-
-<div class="container-fluid mt-3">
-    <nav aria-label="breadcrumb">
+{% block breadcrumbs %}
+    <nav aria-label="breadcrumb" class="d-none d-md-block">
         <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
             <li class="breadcrumb-item"><a href="{% url 'wamtram2:admin_tools' %}">Curation Tools</a></li>
             <li class="breadcrumb-item active">Curation Batch List</li>
         </ol>
     </nav>
+{% endblock %}
+
+{% block page_content_inner %}
+<div class="container-fluid mt-3">
     <div class="row mb-3">
         <div class="col">
             <h2>Batch List</h2>
@@ -35,8 +33,17 @@
         </div>
     </div>
 
-    <div class="search-container">
-        {% include "includes/search_form.html" with placeholder="Search batch code, comments or entered by..." %}
+    <div class="row align-items-center mb-3">
+        <div class="col-md-8">
+            <div class="search-container">
+                {% include "includes/search_form.html" with placeholder="Search batch code, comments or entered by..." %}
+            </div>
+        </div>
+        <div class="col-md-4">
+            {% if is_paginated %}
+                {% include "pagination.html" %}
+            {% endif %}
+        </div>
     </div>
 
     <div class="grid-container">
@@ -83,9 +90,6 @@
             </tbody>
         </table>
     </div>
-    {% if is_paginated %}
-        {% include "pagination.html" %}
-    {% endif %}
 </div>
 
 <!-- Column Selector Modal -->
@@ -112,8 +116,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-                <button type="button" class="btn btn-primary" id="saveColumnSettings">保存</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveColumnSettings">Save</button>
             </div>
         </div>
     </div>
