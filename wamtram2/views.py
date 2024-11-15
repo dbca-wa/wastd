@@ -3396,3 +3396,123 @@ class BatchCurationView(LoginRequiredMixin, PaginateMixin,ListView):
         return HttpResponseBadRequest()
 
 
+
+class EntryCurationView(LoginRequiredMixin, PaginateMixin, ListView):
+    model = TrtDataEntry
+    template_name = 'wamtram2/entry_curation_list.html'
+    context_object_name = 'entries'
+    paginate_by = 50
+
+    def get_queryset(self):
+        batch_id = self.kwargs.get('batch_id')
+        queryset = super().get_queryset().filter(entry_batch_id=batch_id)
+        
+        # Add all necessary related fields
+        queryset = queryset.select_related(
+            'species_code',
+            'place_code',
+            'activity_code',
+            'nesting',
+            'entered_person_id',
+            'measured_by_id',
+            'recorded_by_id',
+            'tagged_by_id',
+            'entered_by_id',
+            'measured_recorded_by_id',
+            'egg_count_method',
+            'clutch_completed',
+            'alive',
+            'interrupted',
+            'flipper_tag_check',
+            'pit_tag_check',
+            'injury_check',
+            'scar_check'
+        )
+
+        search = self.request.GET.get('search')
+        if search:
+            queryset = queryset.filter(
+                Q(comments__icontains=search) |
+                Q(turtle_comments__icontains=search) |
+                Q(species_code__code__icontains=search)
+            )
+        
+        return queryset
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Define all possible columns
+        all_columns = [
+            # Basic Information
+            {'field': 'data_entry_id', 'title': 'Entry ID', 'visible': True},
+            {'field': 'species_code', 'title': 'Species', 'visible': True},
+            {'field': 'place_code', 'title': 'Location', 'visible': True},
+            {'field': 'observation_date', 'title': 'Observation Date', 'visible': True},
+            {'field': 'observation_time', 'title': 'Observation Time', 'visible': False},
+            {'field': 'do_not_process', 'title': 'Flagged', 'visible': True},
+
+            # Measurements
+            {'field': 'curved_carapace_length', 'title': 'CCL', 'visible': True},
+            {'field': 'curved_carapace_width', 'title': 'CCW', 'visible': True},
+            {'field': 'curved_carapace_length_notch', 'title': 'CCL Notch', 'visible': False},
+            
+            # Status and Activities
+            {'field': 'alive', 'title': 'Alive', 'visible': True},
+            {'field': 'activity_code', 'title': 'Activity', 'visible': True},
+            {'field': 'nesting', 'title': 'Nesting', 'visible': True},
+            {'field': 'interrupted', 'title': 'Interrupted', 'visible': False},
+            
+            # Tags
+            {'field': 'recapture_left_tag_id', 'title': 'Recap Left Tag', 'visible': False},
+            {'field': 'recapture_right_tag_id', 'title': 'Recap Right Tag', 'visible': False},
+            {'field': 'recapture_pittag_id', 'title': 'Recap PIT Tag', 'visible': False},
+            {'field': 'new_left_tag_id', 'title': 'New Left Tag', 'visible': False},
+            {'field': 'new_right_tag_id', 'title': 'New Right Tag', 'visible': False},
+            {'field': 'new_pittag_id', 'title': 'New PIT Tag', 'visible': False},
+            
+            # Checks
+            {'field': 'flipper_tag_check', 'title': 'Tag Check', 'visible': False},
+            {'field': 'pit_tag_check', 'title': 'PIT Check', 'visible': False},
+            {'field': 'injury_check', 'title': 'Injury Check', 'visible': False},
+            {'field': 'scar_check', 'title': 'Scar Check', 'visible': False},
+            
+            # Nesting Data
+            {'field': 'egg_count', 'title': 'Egg Count', 'visible': False},
+            {'field': 'egg_count_method', 'title': 'Count Method', 'visible': False},
+            {'field': 'clutch_completed', 'title': 'Clutch Complete', 'visible': False},
+            
+            # Personnel
+            {'field': 'measured_by_id', 'title': 'Measured By', 'visible': False},
+            {'field': 'recorded_by_id', 'title': 'Recorded By', 'visible': False},
+            {'field': 'tagged_by_id', 'title': 'Tagged By', 'visible': False},
+            {'field': 'entered_by_id', 'title': 'Entered By', 'visible': False},
+            
+            # Comments
+            {'field': 'comments', 'title': 'Comments', 'visible': False},
+            {'field': 'turtle_comments', 'title': 'Turtle Comments', 'visible': False},
+            {'field': 'error_message', 'title': 'Error Message', 'visible': False},
+        ]
+        
+        # Get column display settings from user session
+        user_columns = self.request.session.get('entry_grid_columns', [col['field'] for col in all_columns if col['visible']])
+        
+        batch_id = self.kwargs.get('batch_id')
+        
+        context.update({
+            'all_columns': all_columns,
+            'visible_columns': user_columns,
+            'search_term': self.request.GET.get('search', ''),
+            'clear_url': reverse('wamtram2:batch_entries', kwargs={'batch_id': batch_id}),
+            'batch_id': batch_id,
+        })
+        return context
+
+    def post(self, request, *args, **kwargs):
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            visible_columns = request.POST.getlist('columns[]')
+            request.session['entry_grid_columns'] = visible_columns
+            return JsonResponse({'status': 'success'})
+        return HttpResponseBadRequest()
+
+

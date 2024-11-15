@@ -4,10 +4,12 @@
     margin: 1rem 0;
     border: 1px solid #dee2e6;
     border-radius: 0.25rem;
+    width: 100%;
 }
 
 .grid-table {
-    width: 100%;
+    width: max-content;
+    min-width: 100%;
     margin-bottom: 0;
     color: #212529;
     border-collapse: collapse;
@@ -28,9 +30,8 @@
     padding: 0.75rem;
     vertical-align: top;
     border-top: 1px solid #dee2e6;
-    max-width: 300px;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 100px;
 }
 
 .grid-table tbody tr:hover {

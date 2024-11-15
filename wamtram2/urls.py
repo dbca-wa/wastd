@@ -51,5 +51,5 @@ urlpatterns = [
     path('curation/transfer-observations-by-tag/', views.TransferObservationsByTagView.as_view(), name='transfer_observations_by_tag'),
     path('curation/nesting-seasons/', views.NestingSeasonListView.as_view(), name='nesting_season_list'),
     path('curation/batches/', views.BatchCurationView.as_view(), name='batch_curation'),
-    path('curation/batch/<int:batch_id>/entries/', views.BatchCurationView.as_view(), name='batch_entries'),  
+    path('curation/batch/<int:batch_id>/entries/', views.EntryCurationView.as_view(), name='batch_entries'),
 ]
