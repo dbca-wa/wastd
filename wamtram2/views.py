@@ -3407,13 +3407,13 @@ class EntryCurationView(LoginRequiredMixin, PaginateMixin, ListView):
         batch_id = self.kwargs.get('batch_id')
         queryset = super().get_queryset().filter(entry_batch_id=batch_id)
         
-        # Add all necessary related fields
         queryset = queryset.select_related(
             'species_code',
             'place_code',
             'activity_code',
             'nesting',
-            'entered_person_id',
+            'interrupted',
+            'alive',
             'measured_by_id',
             'recorded_by_id',
             'tagged_by_id',
@@ -3421,12 +3421,50 @@ class EntryCurationView(LoginRequiredMixin, PaginateMixin, ListView):
             'measured_recorded_by_id',
             'egg_count_method',
             'clutch_completed',
-            'alive',
-            'interrupted',
             'flipper_tag_check',
             'pit_tag_check',
             'injury_check',
-            'scar_check'
+            'scar_check',
+            'recapture_left_tag_id',
+            'recapture_left_tag_id_2',
+            'recapture_left_tag_id_3',
+            'recapture_right_tag_id',
+            'recapture_right_tag_id_2',
+            'recapture_right_tag_id_3',
+            'recapture_pittag_id',
+            'recapture_pittag_id_2',
+            'recapture_pittag_id_3',
+            'recapture_pittag_id_4',
+            'new_left_tag_id',
+            'new_left_tag_id_2',
+            'new_right_tag_id',
+            'new_right_tag_id_2',
+            'new_pittag_id',
+            'new_pittag_id_2',
+            'new_pittag_id_3',
+            'new_pittag_id_4',
+            'body_part_1',
+            'body_part_2',
+            'body_part_3',
+            'damage_code_1',
+            'damage_code_2',
+            'damage_code_3',
+            'tissue_type_1',
+            'tissue_type_2',
+            'measurement_type_1',
+            'measurement_type_2',
+            'measurement_type_3',
+            'measurement_type_4',
+            'measurement_type_5',
+            'measurement_type_6',
+            'recapture_left_tag_state',
+            'recapture_left_tag_state_2',
+            'recapture_right_tag_state',
+            'recapture_right_tag_state_2',
+            'new_left_tag_state',
+            'new_left_tag_state_2',
+            'new_right_tag_state',
+            'new_right_tag_state_2'
         )
 
         search = self.request.GET.get('search')
@@ -3442,60 +3480,121 @@ class EntryCurationView(LoginRequiredMixin, PaginateMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         
-        # Define all possible columns
-        all_columns = [
-            # Basic Information
-            {'field': 'data_entry_id', 'title': 'Entry ID', 'visible': True},
-            {'field': 'species_code', 'title': 'Species', 'visible': True},
-            {'field': 'place_code', 'title': 'Location', 'visible': True},
-            {'field': 'observation_date', 'title': 'Observation Date', 'visible': True},
-            {'field': 'observation_time', 'title': 'Observation Time', 'visible': False},
-            {'field': 'do_not_process', 'title': 'Flagged', 'visible': True},
-
-            # Measurements
-            {'field': 'curved_carapace_length', 'title': 'CCL', 'visible': True},
-            {'field': 'curved_carapace_width', 'title': 'CCW', 'visible': True},
-            {'field': 'curved_carapace_length_notch', 'title': 'CCL Notch', 'visible': False},
-            
-            # Status and Activities
-            {'field': 'alive', 'title': 'Alive', 'visible': True},
-            {'field': 'activity_code', 'title': 'Activity', 'visible': True},
-            {'field': 'nesting', 'title': 'Nesting', 'visible': True},
-            {'field': 'interrupted', 'title': 'Interrupted', 'visible': False},
-            
-            # Tags
-            {'field': 'recapture_left_tag_id', 'title': 'Recap Left Tag', 'visible': False},
-            {'field': 'recapture_right_tag_id', 'title': 'Recap Right Tag', 'visible': False},
-            {'field': 'recapture_pittag_id', 'title': 'Recap PIT Tag', 'visible': False},
-            {'field': 'new_left_tag_id', 'title': 'New Left Tag', 'visible': False},
-            {'field': 'new_right_tag_id', 'title': 'New Right Tag', 'visible': False},
-            {'field': 'new_pittag_id', 'title': 'New PIT Tag', 'visible': False},
-            
-            # Checks
-            {'field': 'flipper_tag_check', 'title': 'Tag Check', 'visible': False},
-            {'field': 'pit_tag_check', 'title': 'PIT Check', 'visible': False},
-            {'field': 'injury_check', 'title': 'Injury Check', 'visible': False},
-            {'field': 'scar_check', 'title': 'Scar Check', 'visible': False},
-            
-            # Nesting Data
-            {'field': 'egg_count', 'title': 'Egg Count', 'visible': False},
-            {'field': 'egg_count_method', 'title': 'Count Method', 'visible': False},
-            {'field': 'clutch_completed', 'title': 'Clutch Complete', 'visible': False},
-            
-            # Personnel
-            {'field': 'measured_by_id', 'title': 'Measured By', 'visible': False},
-            {'field': 'recorded_by_id', 'title': 'Recorded By', 'visible': False},
-            {'field': 'tagged_by_id', 'title': 'Tagged By', 'visible': False},
-            {'field': 'entered_by_id', 'title': 'Entered By', 'visible': False},
-            
-            # Comments
-            {'field': 'comments', 'title': 'Comments', 'visible': False},
-            {'field': 'turtle_comments', 'title': 'Turtle Comments', 'visible': False},
-            {'field': 'error_message', 'title': 'Error Message', 'visible': False},
-        ]
+        model_fields = TrtDataEntry._meta.get_fields()
+    
+        all_columns = []
         
-        # Get column display settings from user session
-        user_columns = self.request.session.get('entry_grid_columns', [col['field'] for col in all_columns if col['visible']])
+        default_visible_fields = {
+            'data_entry_id', 'species_code', 'place_code', 
+            'observation_date', 'do_not_process', 'curved_carapace_length',
+            'curved_carapace_width', 'alive', 'activity_code', 'nesting'
+        }
+        
+        field_groups = {
+            'Basic Information': [
+                'data_entry_id', 'species_code', 'place_code', 
+                'observation_date', 'observation_time', 'do_not_process'
+            ],
+            'Measurements': [
+                'curved_carapace_length', 'curved_carapace_width', 
+                'curved_carapace_length_notch', 'cc_length_not_measured',
+                'cc_width_not_measured', 'cc_notch_length_not_measured',
+                'measurement_type_1', 'measurement_value_1',
+                'measurement_type_2', 'measurement_value_2',
+                'measurement_type_3', 'measurement_value_3',
+                'measurement_type_4', 'measurement_value_4',
+                'measurement_type_5', 'measurement_value_5',
+                'measurement_type_6', 'measurement_value_6'
+            ],
+            'Status and Activities': [
+                'alive', 'activity_code', 'nesting', 'interrupted',
+                'identification_confidence'
+            ],
+            'Tags': [
+                'recapture_left_tag_id', 'recapture_left_tag_id_2', 'recapture_left_tag_id_3',
+                'recapture_right_tag_id', 'recapture_right_tag_id_2', 'recapture_right_tag_id_3',
+                'recapture_pittag_id', 'recapture_pittag_id_2', 'recapture_pittag_id_3', 'recapture_pittag_id_4',
+                'new_left_tag_id', 'new_left_tag_id_2',
+                'new_right_tag_id', 'new_right_tag_id_2',
+                'new_pittag_id', 'new_pittag_id_2', 'new_pittag_id_3', 'new_pittag_id_4',
+                'other_left_tag', 'other_right_tag', 'other_tags',
+                'other_tags_identification_type',
+                'dud_flipper_tag', 'dud_flipper_tag_2',
+                'dud_pit_tag', 'dud_pit_tag_2'
+            ],
+            'Tag States': [
+                'recapture_left_tag_state', 'recapture_left_tag_state_2',
+                'recapture_right_tag_state', 'recapture_right_tag_state_2',
+                'new_left_tag_state', 'new_left_tag_state_2',
+                'new_right_tag_state', 'new_right_tag_state_2'
+            ],
+            'PIT Tag Stickers': [
+                'new_pit_tag_sticker_present', 'new_pit_tag_2_sticker_present',
+                'new_pit_tag_3_sticker_present', 'new_pit_tag_4_sticker_present'
+            ],
+            'Checks': [
+                'flipper_tag_check', 'pit_tag_check', 'injury_check', 'scar_check',
+                'tagscarnotchecked', 'didnotcheckforinjury'
+            ],
+            'Damage and Scars': [
+                'damage_carapace', 'damage_lff', 'damage_rff', 'damage_lhf', 'damage_rhf',
+                'body_part_1', 'damage_code_1',
+                'body_part_2', 'damage_code_2',
+                'body_part_3', 'damage_code_3',
+                'scars_left', 'scars_right',
+                'scars_left_scale_1', 'scars_left_scale_2', 'scars_left_scale_3',
+                'scars_right_scale_1', 'scars_right_scale_2', 'scars_right_scale_3'
+            ],
+            'Tissue Samples': [
+                'tissue_type_1', 'sample_label_1',
+                'tissue_type_2', 'sample_label_2'
+            ],
+            'Nesting Data': [
+                'egg_count', 'egg_count_method', 'clutch_completed'
+            ],
+            'Personnel': [
+                'measured_by_id', 'recorded_by_id', 'tagged_by_id',
+                'entered_by_id', 'measured_recorded_by_id'
+            ],
+            'Comments': [
+                'comments', 'turtle_comments', 'comment_fromrecordedtagstable',
+                'error_message', 'error_number'
+            ]
+        }
+        
+
+        processed_fields = set()
+        
+        for group_name, field_patterns in field_groups.items():
+            group_fields = []
+            for field in model_fields:
+                if hasattr(field, 'name'): 
+                    field_name = field.name
+                
+                    if any(pattern in field_name for pattern in field_patterns) or field_name in field_patterns:
+                        group_fields.append({
+                            'field': field_name,
+                            'title': field_name.replace('_', ' ').title(),
+                            'visible': field_name in default_visible_fields,
+                            'group': group_name
+                        })
+                        processed_fields.add(field_name)
+            
+
+            all_columns.extend(sorted(group_fields, key=lambda x: x['field']))
+        
+
+        for field in model_fields:
+            if hasattr(field, 'name') and field.name not in processed_fields:
+                all_columns.append({
+                    'field': field.name,
+                    'title': field.name.replace('_', ' ').title(),
+                    'visible': field.name in default_visible_fields,
+                    'group': 'Other'
+                })
+        
+        user_columns = self.request.session.get('entry_grid_columns', 
+                                            [col['field'] for col in all_columns if col['visible']])
         
         batch_id = self.kwargs.get('batch_id')
         

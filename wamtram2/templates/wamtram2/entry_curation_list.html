@@ -1,0 +1,429 @@
+{% extends "base_wastd.html" %}
+{% load static bootstrap4 %}
+
+{% block extra_style %}
+    {{ block.super }}
+    {{ form.media.css }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/grid.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
+{% endblock %}
+
+{% block breadcrumbs %}
+    <nav aria-label="breadcrumb" class="d-none d-md-block">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'wamtram2:admin_tools' %}">Curation Tools</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'wamtram2:batch_curation' %}">Batch List</a></li>
+            <li class="breadcrumb-item active">Entries for Batch {{ batch_id }}</li>
+        </ol>
+    </nav>
+{% endblock %}
+
+
+{% block content %}
+    <div class="container-fluid mt-3">
+
+        <div class="row mb-3">
+            <div class="col">
+                <h2>Entries for Batch {{ batch_id }}</h2>
+            </div>
+            <div class="col-auto">
+                <button class="btn btn-outline-primary" data-toggle="modal" data-target="#columnSelectorModal">
+                    <i class="fas fa-columns"></i> Select Columns to Display
+                </button>
+            </div>
+        </div>
+
+        <div class="row align-items-center mb-3">
+            <div class="col-md-8">
+                <div class="search-container">
+                    {% include "includes/search_form.html" with placeholder="Search comments or species..." %}
+                </div>
+            </div>
+            <div class="col-md-4">
+                {% if is_paginated %}
+                    {% include "pagination.html" %}
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="grid-container">
+            <table class="grid-table">
+                <thead>
+                    <tr>
+                        {% for column in all_columns %}
+                            {% if column.field in visible_columns %}
+                            <th data-field="{{ column.field }}">{{ column.title }}</th>
+                            {% endif %}
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in entries %}
+                    <tr class="grid-row {% if entry.do_not_process %}flagged-row{% endif %}" 
+                        data-entry-id="{{ entry.data_entry_id }}"
+                        onclick="viewEntry({{ entry.data_entry_id }})">
+                        {% for column in all_columns %}
+                            {% if column.field in visible_columns %}
+                            <td>
+                                {% if column.field == 'data_entry_id' %}
+                                    {{ entry.data_entry_id }}
+                                
+                                <!-- Basic Information -->
+                                {% elif column.field == 'species_code' %}
+                                    {{ entry.species_code|default:"-" }}
+                                {% elif column.field == 'place_code' %}
+                                    {{ entry.place_code|default:"-" }}
+                                {% elif column.field == 'observation_date' %}
+                                    {{ entry.observation_date|date:"Y-m-d"|default:"-" }}
+                                {% elif column.field == 'observation_time' %}
+                                    {{ entry.observation_time|date:"H:i"|default:"-" }}
+                                {% elif column.field == 'do_not_process' %}
+                                    {{ entry.do_not_process|yesno:"Yes,No" }}
+                                
+                                <!-- Measurements -->
+                                {% elif column.field == 'curved_carapace_length' %}
+                                    {{ entry.curved_carapace_length|default:"-" }}
+                                {% elif column.field == 'curved_carapace_width' %}
+                                    {{ entry.curved_carapace_width|default:"-" }}
+                                {% elif column.field == 'curved_carapace_length_notch' %}
+                                    {{ entry.curved_carapace_length_notch|default:"-" }}
+                                {% elif column.field == 'cc_length_not_measured' %}
+                                    {{ entry.cc_length_not_measured|yesno:"Yes,No" }}
+                                {% elif column.field == 'cc_width_not_measured' %}
+                                    {{ entry.cc_width_not_measured|yesno:"Yes,No" }}
+                                {% elif column.field == 'cc_notch_length_not_measured' %}
+                                    {{ entry.cc_notch_length_not_measured|yesno:"Yes,No" }}
+                                
+                                <!-- Measurements Types and Values -->
+                                {% elif column.field == 'measurement_type_1' %}
+                                    {{ entry.measurement_type_1|default:"-" }}
+                                {% elif column.field == 'measurement_value_1' %}
+                                    {{ entry.measurement_value_1|default:"-" }}
+                                {% elif column.field == 'measurement_type_2' %}
+                                    {{ entry.measurement_type_2|default:"-" }}
+                                {% elif column.field == 'measurement_value_2' %}
+                                    {{ entry.measurement_value_2|default:"-" }}
+                                {% elif column.field == 'measurement_type_3' %}
+                                    {{ entry.measurement_type_3|default:"-" }}
+                                {% elif column.field == 'measurement_value_3' %}
+                                    {{ entry.measurement_value_3|default:"-" }}
+                                {% elif column.field == 'measurement_type_4' %}
+                                    {{ entry.measurement_type_4|default:"-" }}
+                                {% elif column.field == 'measurement_value_4' %}
+                                    {{ entry.measurement_value_4|default:"-" }}
+                                {% elif column.field == 'measurement_type_5' %}
+                                    {{ entry.measurement_type_5|default:"-" }}
+                                {% elif column.field == 'measurement_value_5' %}
+                                    {{ entry.measurement_value_5|default:"-" }}
+                                {% elif column.field == 'measurement_type_6' %}
+                                    {{ entry.measurement_type_6|default:"-" }}
+                                {% elif column.field == 'measurement_value_6' %}
+                                    {{ entry.measurement_value_6|default:"-" }}
+                                
+                                <!-- Status and Activities -->
+                                {% elif column.field == 'alive' %}
+                                    {{ entry.alive|default:"-" }}
+                                {% elif column.field == 'activity_code' %}
+                                    {{ entry.activity_code|default:"-" }}
+                                {% elif column.field == 'nesting' %}
+                                    {{ entry.nesting|default:"-" }}
+                                {% elif column.field == 'interrupted' %}
+                                    {{ entry.interrupted|default:"-" }}
+                                {% elif column.field == 'identification_confidence' %}
+                                    {{ entry.identification_confidence|default:"-" }}
+                                
+                                <!-- Recapture Tags -->
+                                {% elif column.field == 'recapture_left_tag_id' %}
+                                    {{ entry.recapture_left_tag_id|default:"-" }}
+                                {% elif column.field == 'recapture_left_tag_id_2' %}
+                                    {{ entry.recapture_left_tag_id_2|default:"-" }}
+                                {% elif column.field == 'recapture_left_tag_id_3' %}
+                                    {{ entry.recapture_left_tag_id_3|default:"-" }}
+                                {% elif column.field == 'recapture_right_tag_id' %}
+                                    {{ entry.recapture_right_tag_id|default:"-" }}
+                                {% elif column.field == 'recapture_right_tag_id_2' %}
+                                    {{ entry.recapture_right_tag_id_2|default:"-" }}
+                                {% elif column.field == 'recapture_right_tag_id_3' %}
+                                    {{ entry.recapture_right_tag_id_3|default:"-" }}
+                                {% elif column.field == 'recapture_pittag_id' %}
+                                    {{ entry.recapture_pittag_id|default:"-" }}
+                                {% elif column.field == 'recapture_pittag_id_2' %}
+                                    {{ entry.recapture_pittag_id_2|default:"-" }}
+                                {% elif column.field == 'recapture_pittag_id_3' %}
+                                    {{ entry.recapture_pittag_id_3|default:"-" }}
+                                {% elif column.field == 'recapture_pittag_id_4' %}
+                                    {{ entry.recapture_pittag_id_4|default:"-" }}
+                                
+                                <!-- New Tags -->
+                                {% elif column.field == 'new_left_tag_id' %}
+                                    {{ entry.new_left_tag_id|default:"-" }}
+                                {% elif column.field == 'new_left_tag_id_2' %}
+                                    {{ entry.new_left_tag_id_2|default:"-" }}
+                                {% elif column.field == 'new_right_tag_id' %}
+                                    {{ entry.new_right_tag_id|default:"-" }}
+                                {% elif column.field == 'new_right_tag_id_2' %}
+                                    {{ entry.new_right_tag_id_2|default:"-" }}
+                                {% elif column.field == 'new_pittag_id' %}
+                                    {{ entry.new_pittag_id|default:"-" }}
+                                {% elif column.field == 'new_pittag_id_2' %}
+                                    {{ entry.new_pittag_id_2|default:"-" }}
+                                {% elif column.field == 'new_pittag_id_3' %}
+                                    {{ entry.new_pittag_id_3|default:"-" }}
+                                {% elif column.field == 'new_pittag_id_4' %}
+                                    {{ entry.new_pittag_id_4|default:"-" }}
+                                
+                                <!-- Other Tags -->
+                                {% elif column.field == 'other_left_tag' %}
+                                    {{ entry.other_left_tag|default:"-" }}
+                                {% elif column.field == 'other_right_tag' %}
+                                    {{ entry.other_right_tag|default:"-" }}
+                                {% elif column.field == 'other_tags' %}
+                                    {{ entry.other_tags|default:"-" }}
+                                
+                                <!-- Dud Tags -->
+                                {% elif column.field == 'dud_flipper_tag' %}
+                                    {{ entry.dud_flipper_tag|default:"-" }}
+                                {% elif column.field == 'dud_flipper_tag_2' %}
+                                    {{ entry.dud_flipper_tag_2|default:"-" }}
+                                {% elif column.field == 'dud_pit_tag' %}
+                                    {{ entry.dud_pit_tag|default:"-" }}
+                                {% elif column.field == 'dud_pit_tag_2' %}
+                                    {{ entry.dud_pit_tag_2|default:"-" }}
+                                
+                                <!-- Tag States -->
+                                {% elif column.field == 'recapture_left_tag_state' %}
+                                    {{ entry.recapture_left_tag_state|default:"-" }}
+                                {% elif column.field == 'recapture_left_tag_state_2' %}
+                                    {{ entry.recapture_left_tag_state_2|default:"-" }}
+                                {% elif column.field == 'recapture_right_tag_state' %}
+                                    {{ entry.recapture_right_tag_state|default:"-" }}
+                                {% elif column.field == 'recapture_right_tag_state_2' %}
+                                    {{ entry.recapture_right_tag_state_2|default:"-" }}
+                                {% elif column.field == 'new_left_tag_state' %}
+                                    {{ entry.new_left_tag_state|default:"-" }}
+                                {% elif column.field == 'new_left_tag_state_2' %}
+                                    {{ entry.new_left_tag_state_2|default:"-" }}
+                                {% elif column.field == 'new_right_tag_state' %}
+                                    {{ entry.new_right_tag_state|default:"-" }}
+                                {% elif column.field == 'new_right_tag_state_2' %}
+                                    {{ entry.new_right_tag_state_2|default:"-" }}
+                                
+                                <!-- PIT Tag Stickers -->
+                                {% elif column.field == 'new_pit_tag_sticker_present' %}
+                                    {{ entry.new_pit_tag_sticker_present|yesno:"Yes,No" }}
+                                {% elif column.field == 'new_pit_tag_2_sticker_present' %}
+                                    {{ entry.new_pit_tag_2_sticker_present|yesno:"Yes,No" }}
+                                {% elif column.field == 'new_pit_tag_3_sticker_present' %}
+                                    {{ entry.new_pit_tag_3_sticker_present|yesno:"Yes,No" }}
+                                {% elif column.field == 'new_pit_tag_4_sticker_present' %}
+                                    {{ entry.new_pit_tag_4_sticker_present|yesno:"Yes,No" }}
+                                
+                                <!-- Checks -->
+                                {% elif column.field == 'flipper_tag_check' %}
+                                    {{ entry.flipper_tag_check|default:"-" }}
+                                {% elif column.field == 'pit_tag_check' %}
+                                    {{ entry.pit_tag_check|default:"-" }}
+                                {% elif column.field == 'injury_check' %}
+                                    {{ entry.injury_check|default:"-" }}
+                                {% elif column.field == 'scar_check' %}
+                                    {{ entry.scar_check|default:"-" }}
+                                
+                                <!-- Damage -->
+                                {% elif column.field == 'damage_carapace' %}
+                                    {{ entry.damage_carapace|default:"-" }}
+                                {% elif column.field == 'damage_lff' %}
+                                    {{ entry.damage_lff|default:"-" }}
+                                {% elif column.field == 'damage_rff' %}
+                                    {{ entry.damage_rff|default:"-" }}
+                                {% elif column.field == 'damage_lhf' %}
+                                    {{ entry.damage_lhf|default:"-" }}
+                                {% elif column.field == 'damage_rhf' %}
+                                    {{ entry.damage_rhf|default:"-" }}
+                                
+                                <!-- Body Parts and Damage Codes -->
+                                {% elif column.field == 'body_part_1' %}
+                                    {{ entry.body_part_1|default:"-" }}
+                                {% elif column.field == 'damage_code_1' %}
+                                    {{ entry.damage_code_1|default:"-" }}
+                                {% elif column.field == 'body_part_2' %}
+                                    {{ entry.body_part_2|default:"-" }}
+                                {% elif column.field == 'damage_code_2' %}
+                                    {{ entry.damage_code_2|default:"-" }}
+                                {% elif column.field == 'body_part_3' %}
+                                    {{ entry.body_part_3|default:"-" }}
+                                {% elif column.field == 'damage_code_3' %}
+                                    {{ entry.damage_code_3|default:"-" }}
+                                {% elif column.field == 'body_part_4' %}
+                                    {{ entry.body_part_4|default:"-" }}
+                                {% elif column.field == 'damage_code_4' %}
+                                    {{ entry.damage_code_4|default:"-" }}
+                                {% elif column.field == 'body_part_5' %}
+                                    {{ entry.body_part_5|default:"-" }}
+                                {% elif column.field == 'damage_code_5' %}
+                                    {{ entry.damage_code_5|default:"-" }}
+                                {% elif column.field == 'body_part_6' %}
+                                    {{ entry.body_part_6|default:"-" }}
+                                {% elif column.field == 'damage_code_6' %}
+                                    {{ entry.damage_code_6|default:"-" }}
+                                
+                                <!-- Tissue Samples -->
+                                {% elif column.field == 'tissue_type_1' %}
+                                    {{ entry.tissue_type_1|default:"-" }}
+                                {% elif column.field == 'sample_label_1' %}
+                                    {{ entry.sample_label_1|default:"-" }}
+                                {% elif column.field == 'tissue_type_2' %}
+                                    {{ entry.tissue_type_2|default:"-" }}
+                                {% elif column.field == 'sample_label_2' %}
+                                    {{ entry.sample_label_2|default:"-" }}
+                                
+                                <!-- Personnel -->
+                                {% elif column.field == 'measured_by_id' %}
+                                    {{ entry.measured_by_id|default:"-" }}
+                                {% elif column.field == 'recorded_by_id' %}
+                                    {{ entry.recorded_by_id|default:"-" }}
+                                {% elif column.field == 'tagged_by_id' %}
+                                    {{ entry.tagged_by_id|default:"-" }}
+                                {% elif column.field == 'entered_by_id' %}
+                                    {{ entry.entered_by_id|default:"-" }}
+                                {% elif column.field == 'measured_recorded_by_id' %}
+                                    {{ entry.measured_recorded_by_id|default:"-" }}
+                                
+                                <!-- Comments and Errors -->
+                                {% elif column.field == 'comments' %}
+                                    {{ entry.comments|default:"-" }}
+                                {% elif column.field == 'turtle_comments' %}
+                                    {{ entry.turtle_comments|default:"-" }}
+                                {% elif column.field == 'comment_fromrecordedtagstable' %}
+                                    {{ entry.comment_fromrecordedtagstable|default:"-" }}
+                                {% elif column.field == 'error_message' %}
+                                    {{ entry.error_message|default:"-" }}
+                                {% elif column.field == 'error_number' %}
+                                    {{ entry.error_number|default:"-" }}
+                                
+                                {% else %}
+                                    {{ entry.field|default:"-" }}
+                                {% endif %}
+                            </td>
+                            {% endif %}
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Column Selector Modal -->
+        <div class="modal fade" id="columnSelectorModal" tabindex="-1">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Select Columns to Display</h5>
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span>&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="accordion" id="columnGroups">
+                            {% regroup all_columns by group as column_groups %}
+                            {% for group in column_groups %}
+                                <div class="card">
+                                    <div class="card-header" id="heading{{ forloop.counter }}">
+                                        <h2 class="mb-0">
+                                            <button class="btn btn-link" type="button" data-toggle="collapse" 
+                                                    data-target="#collapse{{ forloop.counter }}">
+                                                {{ group.grouper }}
+                                            </button>
+                                        </h2>
+                                    </div>
+                                    <div id="collapse{{ forloop.counter }}" class="collapse show" 
+                                    data-parent="#columnGroups">
+                                    <div class="card-body">
+                                        {% for column in group.list %}
+                                            <label class="d-block">
+                                                <input type="checkbox" 
+                                                        class="column-checkbox" 
+                                                        value="{{ column.field }}"
+                                                        {% if column.field in visible_columns %}checked{% endif %}> 
+                                                {{ column.title }}
+                                            </label>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" id="selectAll">Select All</button>
+                    <button type="button" class="btn btn-outline-secondary" id="deselectAll">Deselect All</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveColumnSettings">Save</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading spinner -->
+        <div class="loading-spinner" style="display: none;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div class="loading-overlay" style="display: none;"></div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+    function viewEntry(entryId) {
+        console.log('Clicked entry:', entryId);
+        // TODO: Implement entry detail view
+        // window.location.href = "{% url 'wamtram2:entry_detail' 0 %}".replace('0', entryId);
+    }
+
+    $(document).ready(function() {
+        $('.grid-row').hover(
+            function() { $(this).addClass('table-hover'); },
+            function() { $(this).removeClass('table-hover'); }
+        );
+
+        $('#saveColumnSettings').click(function() {
+            const selectedColumns = $('.column-checkbox:checked').map(function() {
+                return $(this).val();
+            }).get();
+
+            $.ajax({
+                url: window.location.pathname,
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                data: {
+                    columns: selectedColumns,
+                },
+                beforeSend: function() {
+                    $('.loading-overlay').css('display', 'flex');
+                },
+                success: function(response) {
+                    if (response.status === 'success') {
+                        location.reload();
+                    } else {
+                        alert('Save settings failed');
+                    }
+                },
+                error: function() {
+                    alert('Save settings failed');
+                },
+                complete: function() {
+                    $('.loading-overlay').hide();
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}
