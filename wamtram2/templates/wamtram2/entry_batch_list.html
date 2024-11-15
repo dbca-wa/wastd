@@ -1,12 +1,12 @@
 {% extends "base_wastd.html" %}
-{% load static %}
-{% load batch_filters %} 
+{% load static bootstrap4 %}
 
 {% block extra_style %}
-{{ block.super }}
-<link rel="stylesheet" type="text/css" href="{% static 'css/grid.css' %}">
-<link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
-<link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
+    {{ block.super }}
+    {{ form.media.css }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/grid.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -33,10 +33,6 @@
     </div>
 
     <div class="grid-container">
-        <div class="loading-overlay">
-            <div class="spinner-border text-primary"></div>
-        </div>
-        
         <table class="grid-table">
             <thead>
                 <tr>
@@ -59,8 +55,18 @@
                                 {{ batch.entry_date|date:"Y-m-d H:i" }}
                             {% elif column.field == 'pr_date_convention' %}
                                 {{ batch.pr_date_convention|yesno:"Yes,No" }}
-                            {% else %}
-                                {{ batch|getattribute:column.field|default:"-" }}
+                            {% elif column.field == 'template' %}
+                                {{ batch.template|default:"-" }}
+                            {% elif column.field == 'batches_code' %}
+                                {{ batch.batches_code|default:"-" }}
+                            {% elif column.field == 'entry_batch_id' %}
+                                {{ batch.entry_batch_id }}
+                            {% elif column.field == 'comments' %}
+                                {{ batch.comments|default:"-" }}
+                            {% elif column.field == 'entry_count' %}
+                                {{ batch.entry_count }}
+                            {% elif column.field == 'flagged_count' %}
+                                {{ batch.flagged_count }}
                             {% endif %}
                         </td>
                         {% endif %}
@@ -70,7 +76,6 @@
             </tbody>
         </table>
     </div>
-
     {% if is_paginated %}
         {% include "pagination.html" %}
     {% endif %}
