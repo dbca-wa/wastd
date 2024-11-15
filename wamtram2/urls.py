@@ -52,4 +52,5 @@ urlpatterns = [
     path('curation/nesting-seasons/', views.NestingSeasonListView.as_view(), name='nesting_season_list'),
     path('curation/batches/', views.BatchCurationView.as_view(), name='batch_curation'),
     path('curation/batch/<int:batch_id>/entries/', views.EntryCurationView.as_view(), name='batch_entries'),
+    path('save-entry-changes/', views.SaveEntryChangesView.as_view(), name='save_entry_changes'),
 ]

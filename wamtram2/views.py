@@ -3321,7 +3321,7 @@ class NestingSeasonListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMix
 
 class BatchCurationView(LoginRequiredMixin, PaginateMixin,ListView):
     model = TrtEntryBatches
-    template_name = 'wamtram2/entry_batch_list.html'
+    template_name = 'wamtram2/batch_curation_list.html'
     context_object_name = 'batches'
     paginate_by = 50
 
@@ -3614,4 +3614,46 @@ class EntryCurationView(LoginRequiredMixin, PaginateMixin, ListView):
             return JsonResponse({'status': 'success'})
         return HttpResponseBadRequest()
 
+@method_decorator(login_required, name='dispatch')
+class SaveEntryChangesView(View):
+    READONLY_FIELDS = {'data_entry_id', 'observation_id', 'created_at', 'updated_at'}
+    
+    def validate_field(self, field_name, value, entry):
+        if field_name in self.READONLY_FIELDS:
+            raise ValueError(f"Field {field_name} is readonly")
+            
+        field = TrtDataEntry._meta.get_field(field_name)
+        
+        if field.get_internal_type() in ['IntegerField', 'FloatField']:
+            try:
+                value = float(value)
+                if value < 0:
+                    raise ValueError(f"{field_name} cannot be negative")
+            except ValueError:
+                raise ValueError(f"Invalid number for {field_name}: {value}")
+                
+        return value
 
+    def post(self, request):
+        try:
+            changes = json.loads(request.POST.get('changes', '{}'))
+            
+            with transaction.atomic():
+                for entry_id, fields in changes.items():
+                    entry = TrtDataEntry.objects.get(data_entry_id=entry_id)
+                    
+                    for field, value in fields.items():
+                        validated_value = self.validate_field(field, value, entry)
+                        setattr(entry, field, validated_value)
+                    
+                    entry.save()
+                    
+            return JsonResponse({'success': True})
+            
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'error': str(e)
+            })
+            
+            

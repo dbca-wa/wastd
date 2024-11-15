@@ -7,6 +7,15 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/grid.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
+    <style>
+        .modified {
+            background-color: #fff3cd;
+        }
+        td[contenteditable="true"]:hover {
+            background-color: #f8f9fa;
+            cursor: pointer;
+        }
+    </style>
 {% endblock %}
 
 {% block breadcrumbs %}
@@ -28,6 +37,16 @@
             <div class="col">
                 <h2>Entries for Batch {{ batch_id }}</h2>
             </div>
+            <div class="col">
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-outline-primary active" id="viewMode">
+                        <i class="fas fa-eye"></i> View Mode
+                    </button>
+                    <button type="button" class="btn btn-outline-primary" id="editMode">
+                        <i class="fas fa-edit"></i> Edit Mode
+                    </button>
+                </div>
+            </div>
             <div class="col-auto">
                 <button class="btn btn-outline-primary" data-toggle="modal" data-target="#columnSelectorModal">
                     <i class="fas fa-columns"></i> Select Columns to Display
@@ -36,12 +55,12 @@
         </div>
 
         <div class="row align-items-center mb-3">
-            <div class="col-md-8">
+            <div class="col">
                 <div class="search-container">
                     {% include "includes/search_form.html" with placeholder="Search comments or species..." %}
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-auto">
                 {% if is_paginated %}
                     {% include "pagination.html" %}
                 {% endif %}
@@ -66,7 +85,13 @@
                         onclick="viewEntry({{ entry.data_entry_id }})">
                         {% for column in all_columns %}
                             {% if column.field in visible_columns %}
-                            <td>
+                            <td data-editable="true" 
+                                data-field="{{ column.field }}" 
+                                data-field-type="{% if column.field == 'data_entry_id' %}readonly
+                                                {% elif column.field == 'curved_carapace_length' %}number
+                                                {% elif column.field == 'curved_carapace_width' %}number
+                                                {% else %}text{% endif %}">
+
                                 {% if column.field == 'data_entry_id' %}
                                     {{ entry.data_entry_id }}
                                 
@@ -373,18 +398,114 @@
 
         <!-- Loading Overlay -->
         <div class="loading-overlay" style="display: none;"></div>
+
+        <!-- Save Changes Container -->
+        <div id="saveChangesContainer" class="row mb-3" style="display:none;">
+            <div class="col">
+                <button id="saveChanges" class="btn btn-success">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
+            </div>
+        </div>
+        
     </div>
 {% endblock %}
 
 {% block extra_js %}
 {{ block.super }}
 <script>
+    let editableFields = {}; 
+
     function viewEntry(entryId) {
         console.log('Clicked entry:', entryId);
         // TODO: Implement entry detail view
     }
 
     $(document).ready(function() {
+
+        $('#viewMode, #editMode').click(function() {
+            const isEdit = $(this).attr('id') === 'editMode';
+            $(this).addClass('active').siblings().removeClass('active');
+            $('#saveChangesContainer').toggle(isEdit);
+            
+            if(!isEdit) {
+                $('.modified').removeClass('modified');
+                editableFields = {};
+            }
+            
+            $('td[data-editable="true"]').each(function() {
+                const fieldType = $(this).data('field-type');
+                if(fieldType !== 'readonly') { 
+                    $(this).attr('contenteditable', isEdit);
+                }
+            });
+        });
+
+        $('td[data-editable="true"]').on('input', function() {
+            const fieldType = $(this).data('field-type');
+            if(fieldType === 'readonly') {
+                return;
+            }
+
+            const entryId = $(this).closest('tr').data('entry-id');
+            const fieldName = $(this).data('field');
+            const newValue = $(this).text().trim();
+
+            if(fieldType === 'number' && isNaN(newValue)) {
+                alert('Please enter a valid number');
+                return;
+            }
+            
+            $(this).addClass('modified');
+            
+            if(!editableFields[entryId]) {
+                editableFields[entryId] = {};
+            }
+            editableFields[entryId][fieldName] = newValue;
+        });
+
+        $('#saveChanges').click(function() {
+            if(Object.keys(editableFields).length === 0) {
+                alert('No changes to save');
+                return;
+            }
+    
+            const changes = [];
+            for(const entryId in editableFields) {
+                for(const field in editableFields[entryId]) {
+                    changes.push(`Entry ${entryId}: ${field} = ${editableFields[entryId][field]}`);
+                }
+            }
+    
+            const confirmMessage = 'The following changes will be saved:\n\n' + 
+                                changes.join('\n') + 
+                                '\n\nDo you want to continue?';
+
+            if(confirm(confirmMessage)) {
+                $.ajax({
+                    url: '{% url "wamtram2:save_entry_changes" %}',
+                    method: 'POST',
+                    data: {
+                        changes: JSON.stringify(editableFields),
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
+                    },
+                    success: function(response) {
+                        if(response.success) {
+                            alert('Changes saved successfully');
+                            location.reload();
+                        } else {
+                            alert('Error saving changes: ' + response.error);
+                        }
+                    },
+                    error: function() {
+                        alert('Error saving changes');
+                    }
+                });
+            }
+        });
+    
+
+
         $('.grid-row').hover(
             function() { $(this).addClass('table-hover'); },
             function() { $(this).removeClass('table-hover'); }

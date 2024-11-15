@@ -28,18 +28,18 @@
         </div>
         <div class="col-auto">
             <button class="btn btn-outline-primary" data-toggle="modal" data-target="#columnSelectorModal">
-                <i class="fas fa-columns"></i> Choose Columns
+                <i class="fas fa-columns"></i> Select Columns to Display
             </button>
         </div>
     </div>
 
     <div class="row align-items-center mb-3">
-        <div class="col-md-8">
+        <div class="col">
             <div class="search-container">
                 {% include "includes/search_form.html" with placeholder="Search batch code, comments or entered by..." %}
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-auto">
             {% if is_paginated %}
                 {% include "pagination.html" %}
             {% endif %}
