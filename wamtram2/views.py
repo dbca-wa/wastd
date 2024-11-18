@@ -3310,8 +3310,8 @@ class NestingSeasonListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMix
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update({
-            'admin_add_url': 'admin:wamtram2_nesting_season_add',
-            'admin_change_url': 'admin:wamtram2_nesting_season_change',
+            'admin_add_url': reverse('admin:wamtram2_trtnestingseason_add'), 
+            'admin_change_url': 'admin:wamtram2_trtnestingseason_change',
             'search_term': self.request.GET.get('search', ''),
         })
         return context

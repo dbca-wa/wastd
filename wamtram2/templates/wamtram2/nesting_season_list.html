@@ -24,7 +24,7 @@
         <div class="step-container mt-5">
             <div class="page-header">
                 <h1 class="page-title">Nesting Seasons</h1>
-                <a href="{% url admin_add_url %}" class="btn btn-success btn-create">
+                <a href="{% url 'admin:wamtram2_trtnestingseason_add' %}" class="btn btn-success btn-create">
                     <i class="fas fa-plus-circle"></i> Create Nesting Season
                 </a>
             </div>
@@ -34,9 +34,6 @@
                     {% if is_paginated %}
                         {% include "pagination.html" %}
                     {% endif %}
-                </div>
-                <div class="col-md-6">
-                    {% include "includes/tag_filter.html" with placeholder="Search by season name..." clear_url="wamtram2:nesting_season_list" %}
                 </div>
             </div>
 
