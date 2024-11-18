@@ -96,68 +96,146 @@
 
                                 {% if column.field == 'data_entry_id' %}
                                     {{ entry.data_entry_id }}
-                                
+
                                 <!-- Basic Information -->
                                 {% elif column.field == 'species_code' %}
-                                    {{ entry.species_code|default:"-" }}
+                                <select class="form-control" data-original-value="{{ entry.species_code.id|default:'' }}">
+                                    <option value="">---------</option>
+                                    {% for species in species_choices %}
+                                        <option value="{{ species.id }}" {% if entry.species_code == species %}selected{% endif %}>
+                                            {{ species.code }} - {{ species.common_name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
                                 {% elif column.field == 'place_code' %}
-                                    {{ entry.place_code|default:"-" }}
+                                <select class="form-control" data-original-value="{{ entry.place_code.id|default:'' }}">
+                                    <option value="">---------</option>
+                                    {% for place in places_choices %}
+                                        <option value="{{ place.id }}" {% if entry.place_code == place %}selected{% endif %}>
+                                            {{ place.code }} - {{ place.name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
                                 {% elif column.field == 'observation_date' %}
                                     {{ entry.observation_date|date:"Y-m-d"|default:"-" }}
                                 {% elif column.field == 'observation_time' %}
                                     {{ entry.observation_time|date:"H:i"|default:"-" }}
                                 {% elif column.field == 'do_not_process' %}
-                                    {{ entry.do_not_process|yesno:"Yes,No" }}
+                                    <select class="form-control" data-original-value="{{ entry|get_field_value:column.field|yesno:'true,false' }}">
+                                        <option value="true" {% if entry|get_field_value:column.field %}selected{% endif %}>Yes</option>
+                                        <option value="false" {% if not entry|get_field_value:column.field %}selected{% endif %}>No</option>
+                                    </select>
                                 
                                 <!-- Measurements -->
-                                {% elif column.field == 'curved_carapace_length' %}
-                                    {{ entry.curved_carapace_length|default:"-" }}
-                                {% elif column.field == 'curved_carapace_width' %}
-                                    {{ entry.curved_carapace_width|default:"-" }}
-                                {% elif column.field == 'curved_carapace_length_notch' %}
-                                    {{ entry.curved_carapace_length_notch|default:"-" }}
-                                {% elif column.field == 'cc_length_not_measured' %}
-                                    {{ entry.cc_length_not_measured|yesno:"Yes,No" }}
-                                {% elif column.field == 'cc_width_not_measured' %}
-                                    {{ entry.cc_width_not_measured|yesno:"Yes,No" }}
-                                {% elif column.field == 'cc_notch_length_not_measured' %}
-                                    {{ entry.cc_notch_length_not_measured|yesno:"Yes,No" }}
+                                {% elif column.field == 'curved_carapace_length' or column.field == 'curved_carapace_width' or column.field == 'curved_carapace_length_notch' %}
+                                <input type="number" class="form-control" value="{{ entry|get_field_value:column.field|default:'' }}" 
+                                    data-original-value="{{ entry|get_field_value:column.field|default:'' }}" step="1">
+                                {% elif column.field == 'cc_length_not_measured' or column.field == 'cc_width_not_measured' or column.field == 'cc_notch_length_not_measured' %}
+                                    <select class="form-control" data-original-value="{{ entry|get_field_value:column.field|yesno:'true,false' }}">
+                                        <option value="true" {% if entry|get_field_value:column.field %}selected{% endif %}>Yes</option>
+                                        <option value="false" {% if not entry|get_field_value:column.field %}selected{% endif %}>No</option>
+                                    </select>
                                 
                                 <!-- Measurements Types and Values -->
                                 {% elif column.field == 'measurement_type_1' %}
-                                    {{ entry.measurement_type_1|default:"-" }}
+                                <select class="form-control" data-original-value="{{ entry.measurement_type_1.id|default:'' }}">
+                                    <option value="">---------</option>
+                                    {% for type in measurement_types_choices %}
+                                        <option value="{{ type.id }}" {% if entry.measurement_type_1 == type %}selected{% endif %}>
+                                            {{ type.code }} - {{ type.description }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
                                 {% elif column.field == 'measurement_value_1' %}
-                                    {{ entry.measurement_value_1|default:"-" }}
+                                    <input type="number" class="form-control" value="{{ entry.measurement_value_1|default:'' }}" 
+                                        data-original-value="{{ entry.measurement_value_1|default:'' }}" step="0.1">
+                                
                                 {% elif column.field == 'measurement_type_2' %}
-                                    {{ entry.measurement_type_2|default:"-" }}
+                                    <select class="form-control" data-original-value="{{ entry.measurement_type_2.id|default:'' }}">
+                                        <option value="">---------</option>
+                                        {% for type in measurement_types_choices %}
+                                            <option value="{{ type.id }}" {% if entry.measurement_type_2 == type %}selected{% endif %}>
+                                                {{ type.code }} - {{ type.description }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
                                 {% elif column.field == 'measurement_value_2' %}
-                                    {{ entry.measurement_value_2|default:"-" }}
+                                    <input type="number" class="form-control" value="{{ entry.measurement_value_2|default:'' }}" 
+                                        data-original-value="{{ entry.measurement_value_2|default:'' }}" step="0.1">
+                                
                                 {% elif column.field == 'measurement_type_3' %}
-                                    {{ entry.measurement_type_3|default:"-" }}
+                                    <select class="form-control" data-original-value="{{ entry.measurement_type_3.id|default:'' }}">
+                                        <option value="">---------</option>
+                                        {% for type in measurement_types_choices %}
+                                            <option value="{{ type.id }}" {% if entry.measurement_type_3 == type %}selected{% endif %}>
+                                                {{ type.code }} - {{ type.description }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
                                 {% elif column.field == 'measurement_value_3' %}
-                                    {{ entry.measurement_value_3|default:"-" }}
+                                    <input type="number" class="form-control" value="{{ entry.measurement_value_3|default:'' }}" 
+                                        data-original-value="{{ entry.measurement_value_3|default:'' }}" step="0.1">
+                                
                                 {% elif column.field == 'measurement_type_4' %}
-                                    {{ entry.measurement_type_4|default:"-" }}
+                                    <select class="form-control" data-original-value="{{ entry.measurement_type_4.id|default:'' }}">
+                                        <option value="">---------</option>
+                                        {% for type in measurement_types_choices %}
+                                            <option value="{{ type.id }}" {% if entry.measurement_type_4 == type %}selected{% endif %}>
+                                                {{ type.code }} - {{ type.description }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
                                 {% elif column.field == 'measurement_value_4' %}
-                                    {{ entry.measurement_value_4|default:"-" }}
+                                    <input type="number" class="form-control" value="{{ entry.measurement_value_4|default:'' }}" 
+                                        data-original-value="{{ entry.measurement_value_4|default:'' }}" step="0.1">
+                                
                                 {% elif column.field == 'measurement_type_5' %}
-                                    {{ entry.measurement_type_5|default:"-" }}
+                                    <select class="form-control" data-original-value="{{ entry.measurement_type_5.id|default:'' }}">
+                                        <option value="">---------</option>
+                                        {% for type in measurement_types_choices %}
+                                            <option value="{{ type.id }}" {% if entry.measurement_type_5 == type %}selected{% endif %}>
+                                                {{ type.code }} - {{ type.description }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
                                 {% elif column.field == 'measurement_value_5' %}
-                                    {{ entry.measurement_value_5|default:"-" }}
+                                    <input type="number" class="form-control" value="{{ entry.measurement_value_5|default:'' }}" 
+                                        data-original-value="{{ entry.measurement_value_5|default:'' }}" step="0.1">
+                                
                                 {% elif column.field == 'measurement_type_6' %}
-                                    {{ entry.measurement_type_6|default:"-" }}
+                                    <select class="form-control" data-original-value="{{ entry.measurement_type_6.id|default:'' }}">
+                                        <option value="">---------</option>
+                                        {% for type in measurement_types_choices %}
+                                            <option value="{{ type.id }}" {% if entry.measurement_type_6 == type %}selected{% endif %}>
+                                                {{ type.code }} - {{ type.description }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
                                 {% elif column.field == 'measurement_value_6' %}
-                                    {{ entry.measurement_value_6|default:"-" }}
+                                    <input type="number" class="form-control" value="{{ entry.measurement_value_6|default:'' }}" 
+                                        data-original-value="{{ entry.measurement_value_6|default:'' }}" step="0.1">
                                 
                                 <!-- Status and Activities -->
                                 {% elif column.field == 'alive' %}
                                     {{ entry.alive|default:"-" }}
-                                {% elif column.field == 'activity_code' %}
-                                    {{ entry.activity_code|default:"-" }}
-                                {% elif column.field == 'nesting' %}
-                                    {{ entry.nesting|default:"-" }}
-                                {% elif column.field == 'interrupted' %}
-                                    {{ entry.interrupted|default:"-" }}
+                                    {% elif column.field == 'activity_code' %}
+                                    <select class="form-control" data-original-value="{{ entry.activity_code.id|default:'' }}">
+                                        <option value="">---------</option>
+                                        {% for activity in activities_choices %}
+                                            <option value="{{ activity.id }}" {% if entry.activity_code == activity %}selected{% endif %}>
+                                                {{ activity.code }} - {{ activity.description }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                {% elif column.field == 'nesting' or column.field == 'interrupted' %}
+                                    <select class="form-control" data-original-value="{{ entry|get_field_value:column.field.id|default:'' }}">
+                                        <option value="">---------</option>
+                                        {% for choice in yesno_choices %}
+                                            <option value="{{ choice.id }}" {% if entry|get_field_value:column.field == choice %}selected{% endif %}>
+                                                {{ choice.code }} - {{ choice.description }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
                                 {% elif column.field == 'identification_confidence' %}
                                     {{ entry.identification_confidence|default:"-" }}
                                 
@@ -220,7 +298,7 @@
                                     {{ entry.dud_pit_tag_2|default:"-" }}
                                 
                                 <!-- Tag States -->
-                                {% elif column.field == 'recapture_left_tag_state' %}
+                                {% comment %} {% elif column.field == 'recapture_left_tag_state' %}
                                     {{ entry.recapture_left_tag_state|default:"-" }}
                                 {% elif column.field == 'recapture_left_tag_state_2' %}
                                     {{ entry.recapture_left_tag_state_2|default:"-" }}
@@ -235,27 +313,51 @@
                                 {% elif column.field == 'new_right_tag_state' %}
                                     {{ entry.new_right_tag_state|default:"-" }}
                                 {% elif column.field == 'new_right_tag_state_2' %}
-                                    {{ entry.new_right_tag_state_2|default:"-" }}
+                                    {{ entry.new_right_tag_state_2|default:"-" }} {% endcomment %}
+                                {% elif 'tag_state' in column.field %}
+                                <select class="form-control" data-original-value="{{ entry|get_field_value:column.field.id|default:'' }}">
+                                    <option value="">---------</option>
+                                    {% for state in tag_states_choices %}
+                                        <option value="{{ state.id }}" {% if entry|get_field_value:column.field == state %}selected{% endif %}>
+                                            {{ state.code }} - {{ state.description }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
                                 
                                 <!-- PIT Tag Stickers -->
-                                {% elif column.field == 'new_pit_tag_sticker_present' %}
+                                {% comment %} {% elif column.field == 'new_pit_tag_sticker_present' %}
                                     {{ entry.new_pit_tag_sticker_present|yesno:"Yes,No" }}
                                 {% elif column.field == 'new_pit_tag_2_sticker_present' %}
                                     {{ entry.new_pit_tag_2_sticker_present|yesno:"Yes,No" }}
                                 {% elif column.field == 'new_pit_tag_3_sticker_present' %}
                                     {{ entry.new_pit_tag_3_sticker_present|yesno:"Yes,No" }}
                                 {% elif column.field == 'new_pit_tag_4_sticker_present' %}
-                                    {{ entry.new_pit_tag_4_sticker_present|yesno:"Yes,No" }}
+                                    {{ entry.new_pit_tag_4_sticker_present|yesno:"Yes,No" }} {% endcomment %}
+
+                                {% elif column.field == 'new_pit_tag_sticker_present' or column.field == 'new_pit_tag_2_sticker_present' or column.field == 'new_pit_tag_3_sticker_present' or column.field == 'new_pit_tag_4_sticker_present' %}
+                                <select class="form-control" data-original-value="{{ entry|get_field_value:column.field|yesno:'true,false' }}">
+                                    <option value="true" {% if entry|get_field_value:column.field %}selected{% endif %}>Yes</option>
+                                    <option value="false" {% if not entry|get_field_value:column.field %}selected{% endif %}>No</option>
+                                </select>
                                 
                                 <!-- Checks -->
-                                {% elif column.field == 'flipper_tag_check' %}
+                                {% comment %} {% elif column.field == 'flipper_tag_check' %}
                                     {{ entry.flipper_tag_check|default:"-" }}
                                 {% elif column.field == 'pit_tag_check' %}
                                     {{ entry.pit_tag_check|default:"-" }}
                                 {% elif column.field == 'injury_check' %}
                                     {{ entry.injury_check|default:"-" }}
                                 {% elif column.field == 'scar_check' %}
-                                    {{ entry.scar_check|default:"-" }}
+                                    {{ entry.scar_check|default:"-" }} {% endcomment %}
+                                {% elif column.field == 'flipper_tag_check' or column.field == 'pit_tag_check' or column.field == 'injury_check' or column.field == 'scar_check' or column.field == 'clutch_completed' %}
+                                <select class="form-control" data-original-value="{{ entry|get_field_value:column.field.id|default:'' }}">
+                                    <option value="">---------</option>
+                                    {% for choice in yesno_choices %}
+                                        <option value="{{ choice.id }}" {% if entry|get_field_value:column.field == choice %}selected{% endif %}>
+                                            {{ choice.code }} - {{ choice.description }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
                                 
                                 <!-- Damage -->
                                 {% elif column.field == 'damage_carapace' %}
@@ -270,7 +372,7 @@
                                     {{ entry.damage_rhf|default:"-" }}
                                 
                                 <!-- Body Parts and Damage Codes -->
-                                {% elif column.field == 'body_part_1' %}
+                                {% comment %} {% elif column.field == 'body_part_1' %}
                                     {{ entry.body_part_1|default:"-" }}
                                 {% elif column.field == 'damage_code_1' %}
                                     {{ entry.damage_code_1|default:"-" }}
@@ -293,20 +395,53 @@
                                 {% elif column.field == 'body_part_6' %}
                                     {{ entry.body_part_6|default:"-" }}
                                 {% elif column.field == 'damage_code_6' %}
-                                    {{ entry.damage_code_6|default:"-" }}
+                                    {{ entry.damage_code_6|default:"-" }} {% endcomment %}
+                                {% elif 'body_part' in column.field %}
+                                    <select class="form-control" data-original-value="{{ entry|get_field_value:column.field.id|default:'' }}">
+                                        <option value="">---------</option>
+                                        {% for part in body_parts_choices %}
+                                            <option value="{{ part.id }}" {% if entry|get_field_value:column.field == part %}selected{% endif %}>
+                                                {{ part.code }} - {{ part.description }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                        
+                                {% elif 'damage_code' in column.field %}
+                                    <select class="form-control" data-original-value="{{ entry|get_field_value:column.field.id|default:'' }}">
+                                        <option value="">---------</option>
+                                        {% for code in damage_codes_choices %}
+                                            <option value="{{ code.id }}" {% if entry|get_field_value:column.field == code %}selected{% endif %}>
+                                                {{ code.code }} - {{ code.description }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
                                 
                                 <!-- Tissue Samples -->
-                                {% elif column.field == 'tissue_type_1' %}
-                                    {{ entry.tissue_type_1|default:"-" }}
-                                {% elif column.field == 'sample_label_1' %}
-                                    {{ entry.sample_label_1|default:"-" }}
-                                {% elif column.field == 'tissue_type_2' %}
-                                    {{ entry.tissue_type_2|default:"-" }}
-                                {% elif column.field == 'sample_label_2' %}
-                                    {{ entry.sample_label_2|default:"-" }}
+                                {% elif column.field == 'tissue_type_1' or column.field == 'tissue_type_2' %}
+                                <select class="form-control" data-original-value="{{ entry|get_field_value:column.field.id|default:'' }}">
+                                    <option value="">---------</option>
+                                    {% for type in tissue_types_choices %}
+                                        <option value="{{ type.id }}" {% if entry|get_field_value:column.field == type %}selected{% endif %}>
+                                            {{ type.code }} - {{ type.description }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            
+                                {% elif column.field == 'sample_label_1' or column.field == 'sample_label_2' %}
+                                    {{ entry|get_field_value:column.field|default:"-" }}
+                                
+                                {% elif 'tissue_type' in column.field %}
+                                    <select class="form-control" data-original-value="{{ entry|get_field_value:column.field.id|default:'' }}">
+                                        <option value="">---------</option>
+                                        {% for type in tissue_types_choices %}
+                                            <option value="{{ type.id }}" {% if entry|get_field_value:column.field == type %}selected{% endif %}>
+                                                {{ type.code }} - {{ type.description }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
                                 
                                 <!-- Personnel -->
-                                {% elif column.field == 'measured_by_id' %}
+                                {% comment %} {% elif column.field == 'measured_by_id' %}
                                     {{ entry.measured_by_id|default:"-" }}
                                 {% elif column.field == 'recorded_by_id' %}
                                     {{ entry.recorded_by_id|default:"-" }}
@@ -315,7 +450,16 @@
                                 {% elif column.field == 'entered_by_id' %}
                                     {{ entry.entered_by_id|default:"-" }}
                                 {% elif column.field == 'measured_recorded_by_id' %}
-                                    {{ entry.measured_recorded_by_id|default:"-" }}
+                                    {{ entry.measured_recorded_by_id|default:"-" }} {% endcomment %}
+                                {% elif '_by_id' in column.field %}
+                                <select class="form-control" data-original-value="{{ entry|get_field_value:column.field.id|default:'' }}">
+                                    <option value="">---------</option>
+                                    {% for person in persons_choices %}
+                                        <option value="{{ person.id }}" {% if entry|get_field_value:column.field == person %}selected{% endif %}>
+                                            {{ person.first_name }} {{ person.last_name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
                                 
                                 <!-- Comments and Errors -->
                                 {% elif column.field == 'comments' %}
@@ -474,7 +618,13 @@
             $('td[data-editable="true"]').attr('contenteditable', isEdit);
         });
 
-        
+        $('#selectAll').click(function() {
+            $('.column-checkbox').prop('checked', true);
+        });
+    
+        $('#deselectAll').click(function() {
+            $('.column-checkbox').prop('checked', false);
+        });
 
         $('td[data-editable="true"]').on('input', function() {
             const fieldType = $(this).data('field-type');
@@ -492,6 +642,23 @@
             }
             
             $(this).addClass('modified');
+            
+            if(!editableFields[entryId]) {
+                editableFields[entryId] = {};
+            }
+            editableFields[entryId][fieldName] = newValue;
+        });
+
+        $('td[data-editable="true"] select').on('change', function() {
+            const entryId = $(this).closest('tr').data('entry-id');
+            const fieldName = $(this).closest('td').data('field');
+            let newValue = $(this).val();
+            
+            if($(this).find('option:selected').text() === 'Yes' || $(this).find('option:selected').text() === 'No') {
+                newValue = newValue === 'true';
+            }
+            
+            $(this).closest('td').addClass('modified');
             
             if(!editableFields[entryId]) {
                 editableFields[entryId] = {};

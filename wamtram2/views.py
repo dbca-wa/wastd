@@ -46,7 +46,15 @@ from .models import (
     TrtIdentification,
     TrtPitTagStatus,
     TrtTagStatus,
-    TrtNestingSeason
+    TrtNestingSeason,
+    TrtTissueTypes,
+    TrtActivities,
+    TrtIdentificationTypes,
+    TrtEggCountMethods,
+    TrtMeasurementTypes,
+    TrtBodyParts,
+    TrtDamageCodes,
+    TrtYesNo
 )
 from .forms import TrtDataEntryForm, SearchForm, TrtEntryBatchesForm, TemplateForm, BatchesCodeForm, TrtPersonsForm, TagRegisterForm
 
@@ -3317,8 +3325,6 @@ class NestingSeasonListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMix
         return context
             
             
-            
-
 class BatchCurationView(LoginRequiredMixin, PaginateMixin,ListView):
     model = TrtEntryBatches
     template_name = 'wamtram2/batch_curation_list.html'
@@ -3394,7 +3400,6 @@ class BatchCurationView(LoginRequiredMixin, PaginateMixin,ListView):
             request.session['batch_grid_columns'] = visible_columns
             return JsonResponse({'status': 'success'})
         return HttpResponseBadRequest()
-
 
 
 class EntryCurationView(LoginRequiredMixin, PaginateMixin, ListView):
@@ -3479,6 +3484,23 @@ class EntryCurationView(LoginRequiredMixin, PaginateMixin, ListView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        
+        context.update({
+            'species_choices': TrtSpecies.objects.all(),
+            'places_choices': TrtPlaces.objects.all(),
+            'activities_choices': TrtActivities.objects.all(),
+            'yesno_choices': TrtYesNo.objects.all(),
+            'persons_choices': TrtPersons.objects.all(),
+            'damage_codes_choices': TrtDamageCodes.objects.all(),
+            'body_parts_choices': TrtBodyParts.objects.all(),
+            'measurement_types_choices': TrtMeasurementTypes.objects.all(),
+            'tag_states_choices': TrtTagStates.objects.all(),
+            'tissue_types_choices': TrtTissueTypes.objects.all(),
+            'egg_count_methods_choices': TrtEggCountMethods.objects.all(),
+            'identification_types_choices': TrtIdentificationTypes.objects.all(),
+            'tags_choices': TrtTags.objects.all(),
+            'pit_tags_choices': TrtPitTags.objects.all(),
+        })
         
         model_fields = TrtDataEntry._meta.get_fields()
     
@@ -3613,6 +3635,7 @@ class EntryCurationView(LoginRequiredMixin, PaginateMixin, ListView):
             request.session['entry_grid_columns'] = visible_columns
             return JsonResponse({'status': 'success'})
         return HttpResponseBadRequest()
+
 
 @method_decorator(login_required, name='dispatch')
 class SaveEntryChangesView(View):
