@@ -7,6 +7,7 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/grid.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/search_styles.css' %}">
     <style>
         .modified {
             background-color: #fff3cd;
@@ -162,27 +163,31 @@
                                     {% endfor %}
                                 </select>
                                 {% elif column.field == 'place_code' %}
-                                <span class="view-mode">
-                                    {{ entry.place_code.get_full_name|default:'-' }}
-                                </span>
-                                <select class="form-control edit-mode" data-original-value="{{ entry.place_code.id|default:'' }}">
-                                    <option value="">---------</option>
-                                    {% for place in places_choices %}
-                                        <option value="{{ place.id }}" {% if entry.place_code == place %}selected{% endif %}>
-                                            {{ place.code }} - {{ place.name }}
-                                        </option>
-                                    {% endfor %}
-                                </select>
+                                    <span class="view-mode">
+                                        {{ entry.place_code.get_full_name|default:'-' }}
+                                    </span>
+                                    <div class="edit-mode">
+                                        <input type="text" 
+                                            class="search-field" 
+                                            placeholder="Search place" 
+                                            value="{{ entry.place_code.get_full_name|default:'' }}"
+                                            data-original-value="{{ entry.place_code.place_code|default:'' }}">
+                                        <input type="hidden" 
+                                            class="actual-value" 
+                                            name="place_code" 
+                                            value="{{ entry.place_code.place_code|default:'' }}">
+                                        <div class="search-results"></div>
+                                    </div>
                                 {% elif column.field == 'observation_date' %}
-                                <span class="view-mode">
-                                    {{ entry.observation_date|date:"Y-m-d"|default:"-" }}
-                                </span>
-                                <input type="date" class="form-control edit-mode datetime-input" 
-                                    data-type="date"
-                                    data-pair-field="observation_time"
-                                    value="{{ entry.observation_date|date:'Y-m-d'|default:'' }}" 
-                                    data-original-value="{{ entry.observation_date|date:'Y-m-d'|default:'' }}">
-                            
+                                    <span class="view-mode">
+                                        {{ entry.observation_date|date:"Y-m-d"|default:"-" }}
+                                    </span>
+                                    <input type="date" class="form-control edit-mode datetime-input" 
+                                        data-type="date"
+                                        data-pair-field="observation_time"
+                                        value="{{ entry.observation_date|date:'Y-m-d'|default:'' }}" 
+                                        data-original-value="{{ entry.observation_date|date:'Y-m-d'|default:'' }}">
+                                
                                 {% elif column.field == 'observation_time' %}
                                     <span class="view-mode">
                                         {{ entry.observation_time|date:"H:i"|default:"-" }}
@@ -544,19 +549,23 @@
                                 
                                 <!-- Personnel -->
                                 {% elif '_by_id' in column.field %}
-                                <span class="view-mode">
-                                    {% with person=entry|get_field_value:column.field %}
-                                        {{ person.first_name }} {{ person.last_name|default:'-' }}
-                                    {% endwith %}
-                                </span>
-                                <select class="form-control edit-mode" data-original-value="{{ entry|get_field_value:column.field|default:'' }}">
-                                    <option value="">---------</option>
-                                    {% for person in persons_choices %}
-                                        <option value="{{ person.id }}" {% if entry|get_field_value:column.field == person %}selected{% endif %}>
-                                            {{ person.first_name }} {{ person.last_name }}
-                                        </option>
-                                    {% endfor %}
-                                </select>
+                                    <span class="view-mode">
+                                        {% with person=entry|get_field_value:column.field %}
+                                            {{ person.first_name }} {{ person.surname|default:'-' }}
+                                        {% endwith %}
+                                    </span>
+                                    <div class="edit-mode">
+                                        <input type="text" 
+                                            class="search-field" 
+                                            placeholder="Search person" 
+                                            value="{% with person=entry|get_field_value:column.field %}{{ person.first_name }} {{ person.surname }}{% endwith %}"
+                                            data-original-value="{{ entry|get_field_value:column.field.person_id|default:'' }}">
+                                        <input type="hidden" 
+                                            class="actual-value" 
+                                            name="{{ column.field }}" 
+                                            value="{{ entry|get_field_value:column.field.person_id|default:'' }}">
+                                        <div class="search-results"></div>
+                                    </div>
                                 
                                 <!-- Comments and Errors -->
                                 {% elif column.field == 'comments' or column.field == 'turtle_comments' or column.field == 'comment_fromrecordedtagstable' %}
@@ -662,56 +671,60 @@
     };
 
     function saveChanges() {
-    if(Object.keys(editableFields).length === 0) {
-        alert('No changes to save');
-        return;
-    }
- 
-    var changes = [];
-    for(var entryId in editableFields) {
-        for(var field in editableFields[entryId]) {
-            changes.push('Entry ' + entryId + ': ' + field + ' = ' + editableFields[entryId][field]);
+        if(Object.keys(editableFields).length === 0) {
+            alert('No changes to save');
+            return;
+        }
+
+        var changes = [];
+        for(var entryId in editableFields) {
+            for(var field in editableFields[entryId]) {
+                changes.push('Entry ' + entryId + ': ' + field + ' = ' + editableFields[entryId][field]);
+            }
+        }
+
+        var confirmMessage = 'The following changes will be saved:\n\n' + 
+                            changes.join('\n') + 
+                            '\n\nDo you want to continue?';
+
+        if(confirm(confirmMessage)) {
+            $('#loading-overlay').show();
+            $('#loading-spinner').show();
+            $.ajax({
+                url: '{% url "wamtram2:save_entry_changes" %}',
+                method: 'POST',
+                data: {
+                    changes: JSON.stringify(editableFields),
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    if(response.success) {
+                        alert('Changes saved successfully');
+                        location.reload();
+                    } else {
+                        alert('Error saving changes: ' + response.error);
+                    }
+                },
+                error: function() {
+                    alert('Error saving changes');
+                },
+                complete: function() {
+                    $('#loading-overlay').hide();
+                    $('#loading-spinner').hide();
+                }
+            });
         }
     }
- 
-    var confirmMessage = 'The following changes will be saved:\n\n' + 
-                        changes.join('\n') + 
-                        '\n\nDo you want to continue?';
- 
-    if(confirm(confirmMessage)) {
-        $('#loading-overlay').show();
-        $('#loading-spinner').show();
-        $.ajax({
-            url: '{% url "wamtram2:save_entry_changes" %}',
-            method: 'POST',
-            data: {
-                changes: JSON.stringify(editableFields),
-                csrfmiddlewaretoken: '{{ csrf_token }}'
-            },
-            success: function(response) {
-                if(response.success) {
-                    alert('Changes saved successfully');
-                    location.reload();
-                } else {
-                    alert('Error saving changes: ' + response.error);
-                }
-            },
-            error: function() {
-                alert('Error saving changes');
-            },
-            complete: function() {
-                $('#loading-overlay').hide();
-                $('#loading-spinner').hide();
-            }
-        });
-    }
-}
-
 
     $(document).ready(function() {
-
         $('.edit-mode').hide();
         $('.view-mode').show();
+
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('.edit-mode').length) {
+                $('.search-results').hide();
+            }
+        });
 
         $('#viewMode, #editMode').click(function() {
             const isEdit = $(this).attr('id') === 'editMode';
@@ -741,6 +754,95 @@
             }
             
         });
+
+        $(document).on('input', '.search-field', function() {
+            const searchField = $(this);
+            const searchResults = searchField.siblings('.search-results');
+            const query = searchField.val();
+            const fieldName = searchField.closest('td').data('field');
+    
+            if (query.length < 2) {
+                searchResults.hide();
+                return;
+            }
+
+            let searchUrl = '';
+            if (fieldName.includes('_by_id')) {
+                searchUrl = '{% url "wamtram2:search_persons" %}';
+            } else if (fieldName === 'place_code') {
+                searchUrl = '{% url "wamtram2:search_places" %}';
+            } else {
+                return;
+            }
+
+            $.ajax({
+                url: searchUrl,
+                data: { q: query },
+                success: function(data) {
+                    searchResults.empty();
+                    if (fieldName.includes('_by_id')) {
+                        data.forEach(function(person) {
+                            searchResults.append(
+                                `<div class="search-result" 
+                                    data-id="${person.person_id}" 
+                                    data-name="${person.first_name} ${person.surname}">
+                                    ${person.first_name} ${person.surname}
+                                </div>`
+                            );
+                        });
+                    } else if (fieldName === 'place_code') {
+                        data.forEach(function(place) {
+                            searchResults.append(
+                                `<div class="search-result" 
+                                    data-code="${place.place_code}" 
+                                    data-name="${place.get_full_name}">
+                                    ${place.get_full_name}
+                                </div>`
+                            );
+                        });
+                    }
+                    searchResults.show();
+                }
+            });
+        });
+
+        $(document).on('click', '.search-result', function(e) {
+            e.preventDefault();
+            const item = $(this);
+            const searchField = item.closest('.edit-mode').find('.search-field');
+            const actualValue = item.closest('.edit-mode').find('.actual-value');
+            const fieldName = searchField.closest('td').data('field');
+
+            if (fieldName.includes('_by_id')) {
+                // 处理人员选择
+                const personId = item.data('id');
+                const personName = item.data('name');
+                searchField.val(personName);
+                actualValue.val(personId);
+
+                const entryId = searchField.closest('tr').data('entry-id');
+                if(!editableFields[entryId]) {
+                    editableFields[entryId] = {};
+                }
+                editableFields[entryId][fieldName] = personId;
+            } else if (fieldName === 'place_code') {
+                // 处理地点选择
+                const placeCode = item.data('code');
+                const placeName = item.data('name');
+                searchField.val(placeName);
+                actualValue.val(placeCode);
+
+                const entryId = searchField.closest('tr').data('entry-id');
+                if(!editableFields[entryId]) {
+                    editableFields[entryId] = {};
+                }
+                editableFields[entryId][fieldName] = placeCode;
+            }
+
+            searchField.closest('td').addClass('modified');
+            item.closest('.search-results').hide();
+        });
+
 
         $('.datetime-input').on('change', function() {
             const entryId = $(this).closest('tr').data('entry-id');
@@ -805,7 +907,7 @@
             if($(this).closest('tr').hasClass('has-observation')) {
                 return;
             }
-            
+
             const entryId = $(this).closest('tr').data('entry-id');
             const fieldName = $(this).closest('td').data('field');
             let newValue = $(this).val();
