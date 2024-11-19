@@ -11,6 +11,9 @@
         .modified {
             background-color: #fff3cd;
         }
+        .has-observation {
+            background-color: #e6ffe6 !important;
+        }
         td[contenteditable="true"]:hover {
             background-color: #f8f9fa;
             cursor: pointer;
@@ -22,6 +25,21 @@
         
         .edit-mode {
             display: none;
+        }
+
+        td[data-editable="false"] {
+            cursor: not-allowed;
+        }
+        
+        td[data-editable="false"]:hover::after {
+            content: "Entry cannot be edited (already has observation)";
+            position: absolute;
+            background: #333;
+            color: white;
+            padding: 5px;
+            border-radius: 3px;
+            font-size: 12px;
+            z-index: 1000;
         }
         
     </style>
@@ -79,6 +97,30 @@
             </div>
         </div>
 
+        <div class="row mb-3">
+            <div class="col-md-8">
+                {% if request.user.is_superuser or request.user|has_group:"WAMTRAM2_STAFF" or request.user|has_group:"WAMTRAM2_TEAM_LEADER"%}
+                <a id="validateBtn" href="{% url 'wamtram2:validate_data_entry_batch' batch_id=batch.entry_batch_id %}" class="btn btn-primary mr-2">Validate this Batch</a>
+                {% endif %}
+                {% if request.user.is_superuser %}
+                <a id="processBtn" href="{% url 'wamtram2:process_data_entry_batch' batch_id=batch.entry_batch_id %}" class="btn btn-primary">Add this batch to the database</a>
+                {% endif %}
+            </div>
+            <div class="col-md-4">
+                <form method="get" class="form-inline float-right">
+                    <div class="form-group">
+                        <label class="mr-2" for="filter">Filter</label>
+                        <select name="filter" class="form-control" onchange="this.form.submit()">
+                            <option value="">All</option>
+                            <option value="needs_review" {% if request.GET.filter == "needs_review" %}selected{% endif %}>Needs Review</option>
+                            <option value="not_saved" {% if request.GET.filter == "not_saved" %}selected{% endif %}>Haven't Processed</option>
+                            <option value="needs_review_no_message" {% if request.GET.filter == "needs_review_no_message" %}selected{% endif %}>Needs Review (No System Message)</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+        </div>
+
         <div class="grid-container">
             <table class="grid-table">
                 <thead>
@@ -92,11 +134,11 @@
                 </thead>
                 <tbody>
                     {% for entry in entries %}
-                    <tr class="grid-row {% if entry.do_not_process %}flagged-row{% endif %}" 
+                    <tr class="grid-row {% if entry.do_not_process %}flagged-row{% endif %} {% if entry.observation_id %}has-observation{% endif %}" 
                         data-entry-id="{{ entry.data_entry_id }}">
                         {% for column in all_columns %}
                             {% if column.field in visible_columns %}
-                            <td data-editable="true" 
+                            <td data-editable="{% if not entry.observation_id %}true{% else %}false{% endif %}"  
                                 data-field="{{ column.field }}" 
                                 data-field-type="{% if column.field == 'data_entry_id' %}readonly
                                                 {% elif column.field == 'curved_carapace_length' %}number
@@ -671,6 +713,35 @@
         $('.edit-mode').hide();
         $('.view-mode').show();
 
+        $('#viewMode, #editMode').click(function() {
+            const isEdit = $(this).attr('id') === 'editMode';
+            $(this).addClass('active').siblings().removeClass('active');
+            
+            $('#saveChanges').toggle(isEdit);
+
+            if(!isEdit && Object.keys(editableFields).length > 0) {
+                if(confirm('You have unsaved changes. Do you want to save them before switching to view mode?')) {
+                    saveChanges();
+                } else {
+                    $('.modified').removeClass('modified');
+                    editableFields = {};
+                }
+            }
+
+            if(isEdit) {
+                $('.view-mode').hide();
+                $('td[data-editable="true"]').each(function() {
+                    if(!$(this).closest('tr').hasClass('has-observation')) {
+                        $(this).find('.edit-mode').show();
+                    }
+                });
+            } else {
+                $('.view-mode').show();
+                $('.edit-mode').hide();
+            }
+            
+        });
+
         $('.datetime-input').on('change', function() {
             const entryId = $(this).closest('tr').data('entry-id');
             const currentField = $(this).closest('td').data('field');
@@ -694,31 +765,6 @@
             $(this).closest('td').addClass('modified');
         });
 
-        $('#viewMode, #editMode').click(function() {
-            const isEdit = $(this).attr('id') === 'editMode';
-            $(this).addClass('active').siblings().removeClass('active');
-            
-            $('#saveChanges').toggle(isEdit);
-
-            if(!isEdit && Object.keys(editableFields).length > 0) {
-                if(confirm('You have unsaved changes. Do you want to save them before switching to view mode?')) {
-                    saveChanges();
-                } else {
-                    $('.modified').removeClass('modified');
-                    editableFields = {};
-                }
-            }
-
-            if(isEdit) {
-                $('.view-mode').hide();
-                $('.edit-mode').show();
-            } else {
-                $('.view-mode').show();
-                $('.edit-mode').hide();
-            }
-            
-        });
-
         $('#selectAll').click(function() {
             $('.column-checkbox').prop('checked', true);
         });
@@ -728,6 +774,10 @@
         });
 
         $('td[data-editable="true"]').on('input', function() {
+            if($(this).closest('tr').hasClass('has-observation')) {
+                return;
+            }
+
             const fieldType = $(this).data('field-type');
             if(fieldType === 'readonly') {
                 return;
@@ -751,24 +801,28 @@
         });
 
 
-    $('td[data-editable="true"] select, td[data-editable="true"] input, td[data-editable="true"] textarea').on('change', function() {
-        const entryId = $(this).closest('tr').data('entry-id');
-        const fieldName = $(this).closest('td').data('field');
-        let newValue = $(this).val();
-        
-        if($(this).is('select')) {
-            if($(this).find('option:selected').text() === 'Yes' || $(this).find('option:selected').text() === 'No') {
-                newValue = newValue === 'true';
+        $('td[data-editable="true"] select, td[data-editable="true"] input, td[data-editable="true"] textarea').on('change', function() {
+            if($(this).closest('tr').hasClass('has-observation')) {
+                return;
             }
-        }
-        
-        $(this).closest('td').addClass('modified');
-        
-        if(!editableFields[entryId]) {
-            editableFields[entryId] = {};
-        }
-        editableFields[entryId][fieldName] = newValue;
-    });
+            
+            const entryId = $(this).closest('tr').data('entry-id');
+            const fieldName = $(this).closest('td').data('field');
+            let newValue = $(this).val();
+            
+            if($(this).is('select')) {
+                if($(this).find('option:selected').text() === 'Yes' || $(this).find('option:selected').text() === 'No') {
+                    newValue = newValue === 'true';
+                }
+            }
+            
+            $(this).closest('td').addClass('modified');
+            
+            if(!editableFields[entryId]) {
+                editableFields[entryId] = {};
+            }
+            editableFields[entryId][fieldName] = newValue;
+        });
 
         $('#saveChanges').click(saveChanges);
 

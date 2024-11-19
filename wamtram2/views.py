@@ -3471,6 +3471,14 @@ class EntryCurationView(LoginRequiredMixin, PaginateMixin, ListView):
             'new_right_tag_state',
             'new_right_tag_state_2'
         )
+        
+        filter_value = self.request.GET.get("filter")
+        if filter_value == "needs_review":
+            queryset = queryset.filter(do_not_process=True)
+        elif filter_value == "not_saved":
+            queryset = queryset.filter(observation_id__isnull=True)
+        elif filter_value == "needs_review_no_message":
+            queryset = queryset.filter(do_not_process=True, error_message__isnull=True)
 
         search = self.request.GET.get('search')
         if search:
@@ -3480,8 +3488,8 @@ class EntryCurationView(LoginRequiredMixin, PaginateMixin, ListView):
                 Q(species_code__code__icontains=search)
             )
         
-        return queryset
-    
+            return queryset.select_related('observation_id').order_by("-data_entry_id")
+        
     def get_context_data(self, **kwargs):
             context = super().get_context_data(**kwargs)
             
