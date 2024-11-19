@@ -108,11 +108,11 @@
                                     {% endfor %}
                                 </select>
                                 {% elif column.field == 'place_code' %}
-                                <select class="form-control" data-original-value="{{ entry.place_code.id|default:'' }}">
+                                <select class="form-control" data-original-value="{{ entry.place_code.place_code|default:'' }}">
                                     <option value="">---------</option>
                                     {% for place in places_choices %}
-                                        <option value="{{ place.id }}" {% if entry.place_code == place %}selected{% endif %}>
-                                            {{ place.code }} - {{ place.name }}
+                                        <option value="{{ place.place_code }}" {% if entry.place_code == place %}selected{% endif %}>
+                                            {{ place.get_full_name }}
                                         </option>
                                     {% endfor %}
                                 </select>
@@ -228,7 +228,7 @@
                                         {% endfor %}
                                     </select>
                                 {% elif column.field == 'nesting' or column.field == 'interrupted' %}
-                                    <select class="form-control" data-original-value="{{ entry|get_field_value:column.field.id|default:'' }}">
+                                    <select class="form-control" data-original-value="{{ entry|get_field_value:column.field|default:'' }}">
                                         <option value="">---------</option>
                                         {% for choice in yesno_choices %}
                                             <option value="{{ choice.id }}" {% if entry|get_field_value:column.field == choice %}selected{% endif %}>
@@ -315,7 +315,7 @@
                                 {% elif column.field == 'new_right_tag_state_2' %}
                                     {{ entry.new_right_tag_state_2|default:"-" }} {% endcomment %}
                                 {% elif 'tag_state' in column.field %}
-                                <select class="form-control" data-original-value="{{ entry|get_field_value:column.field.id|default:'' }}">
+                                <select class="form-control" data-original-value="{{ entry|get_field_value:column.field|default:'' }}">
                                     <option value="">---------</option>
                                     {% for state in tag_states_choices %}
                                         <option value="{{ state.id }}" {% if entry|get_field_value:column.field == state %}selected{% endif %}>
@@ -350,7 +350,7 @@
                                 {% elif column.field == 'scar_check' %}
                                     {{ entry.scar_check|default:"-" }} {% endcomment %}
                                 {% elif column.field == 'flipper_tag_check' or column.field == 'pit_tag_check' or column.field == 'injury_check' or column.field == 'scar_check' or column.field == 'clutch_completed' %}
-                                <select class="form-control" data-original-value="{{ entry|get_field_value:column.field.id|default:'' }}">
+                                <select class="form-control" data-original-value="{{ entry|get_field_value:column.field|default:'' }}">
                                     <option value="">---------</option>
                                     {% for choice in yesno_choices %}
                                         <option value="{{ choice.id }}" {% if entry|get_field_value:column.field == choice %}selected{% endif %}>
@@ -397,7 +397,7 @@
                                 {% elif column.field == 'damage_code_6' %}
                                     {{ entry.damage_code_6|default:"-" }} {% endcomment %}
                                 {% elif 'body_part' in column.field %}
-                                    <select class="form-control" data-original-value="{{ entry|get_field_value:column.field.id|default:'' }}">
+                                    <select class="form-control" data-original-value="{{ entry|get_field_value:column.field|default:'' }}">
                                         <option value="">---------</option>
                                         {% for part in body_parts_choices %}
                                             <option value="{{ part.id }}" {% if entry|get_field_value:column.field == part %}selected{% endif %}>
@@ -407,7 +407,7 @@
                                     </select>
                         
                                 {% elif 'damage_code' in column.field %}
-                                    <select class="form-control" data-original-value="{{ entry|get_field_value:column.field.id|default:'' }}">
+                                    <select class="form-control" data-original-value="{{ entry|get_field_value:column.field|default:'' }}">
                                         <option value="">---------</option>
                                         {% for code in damage_codes_choices %}
                                             <option value="{{ code.id }}" {% if entry|get_field_value:column.field == code %}selected{% endif %}>
@@ -418,7 +418,7 @@
                                 
                                 <!-- Tissue Samples -->
                                 {% elif column.field == 'tissue_type_1' or column.field == 'tissue_type_2' %}
-                                <select class="form-control" data-original-value="{{ entry|get_field_value:column.field.id|default:'' }}">
+                                <select class="form-control" data-original-value="{{ entry|get_field_value:column.field|default:'' }}">
                                     <option value="">---------</option>
                                     {% for type in tissue_types_choices %}
                                         <option value="{{ type.id }}" {% if entry|get_field_value:column.field == type %}selected{% endif %}>
@@ -431,7 +431,7 @@
                                     {{ entry|get_field_value:column.field|default:"-" }}
                                 
                                 {% elif 'tissue_type' in column.field %}
-                                    <select class="form-control" data-original-value="{{ entry|get_field_value:column.field.id|default:'' }}">
+                                    <select class="form-control" data-original-value="{{ entry|get_field_value:column.field|default:'' }}">
                                         <option value="">---------</option>
                                         {% for type in tissue_types_choices %}
                                             <option value="{{ type.id }}" {% if entry|get_field_value:column.field == type %}selected{% endif %}>
@@ -452,7 +452,7 @@
                                 {% elif column.field == 'measured_recorded_by_id' %}
                                     {{ entry.measured_recorded_by_id|default:"-" }} {% endcomment %}
                                 {% elif '_by_id' in column.field %}
-                                <select class="form-control" data-original-value="{{ entry|get_field_value:column.field.id|default:'' }}">
+                                <select class="form-control" data-original-value="{{ entry|get_field_value:column.field|default:'' }}">
                                     <option value="">---------</option>
                                     {% for person in persons_choices %}
                                         <option value="{{ person.id }}" {% if entry|get_field_value:column.field == person %}selected{% endif %}>
