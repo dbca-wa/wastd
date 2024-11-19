@@ -212,14 +212,14 @@
                                     <span class="view-mode">
                                         {{ entry.measurement_value_2|default:'-' }}
                                     </span>
-                                    <input type="number" class="form-control" value="{{ entry.measurement_value_2|default:'' }}" 
+                                    <input type="number" class="form-control edit-mode" value="{{ entry.measurement_value_2|default:'' }}" 
                                         data-original-value="{{ entry.measurement_value_2|default:'' }}" step="0.1">
                                 
                                 {% elif column.field == 'measurement_type_3' %}
                                     <span class="view-mode">
                                         {{ entry.measurement_type_3.code }} - {{ entry.measurement_type_3.description|default:'-' }}
                                     </span>
-                                    <select class="form-control" data-original-value="{{ entry.measurement_type_3.id|default:'' }}">
+                                    <select class="form-control edit-mode" data-original-value="{{ entry.measurement_type_3.id|default:'' }}">
                                         <option value="">---------</option>
                                         {% for type in measurement_types_choices %}
                                             <option value="{{ type.id }}" {% if entry.measurement_type_3 == type %}selected{% endif %}>
@@ -231,14 +231,14 @@
                                     <span class="view-mode">
                                         {{ entry.measurement_value_3|default:'-' }}
                                     </span>
-                                    <input type="number" class="form-control" value="{{ entry.measurement_value_3|default:'' }}" 
+                                    <input type="number" class="form-control edit-mode" value="{{ entry.measurement_value_3|default:'' }}" 
                                         data-original-value="{{ entry.measurement_value_3|default:'' }}" step="0.1">
                                 
                                 {% elif column.field == 'measurement_type_4' %}
                                     <span class="view-mode">
                                         {{ entry.measurement_type_4.code }} - {{ entry.measurement_type_4.description|default:'-' }}
                                     </span>
-                                    <select class="form-control" data-original-value="{{ entry.measurement_type_4.id|default:'' }}">
+                                    <select class="form-control edit-mode" data-original-value="{{ entry.measurement_type_4.id|default:'' }}">
                                         <option value="">---------</option>
                                         {% for type in measurement_types_choices %}
                                             <option value="{{ type.id }}" {% if entry.measurement_type_4 == type %}selected{% endif %}>
@@ -250,14 +250,14 @@
                                     <span class="view-mode">
                                         {{ entry.measurement_value_4|default:'-' }}
                                     </span>
-                                    <input type="number edit-mode" class="form-control" value="{{ entry.measurement_value_4|default:'' }}" 
+                                    <input type="number" class="form-control edit-mode" value="{{ entry.measurement_value_4|default:'' }}" 
                                         data-original-value="{{ entry.measurement_value_4|default:'' }}" step="0.1">
                                 
                                 {% elif column.field == 'measurement_type_5' %}
                                     <span class="view-mode">
                                         {{ entry.measurement_type_5.code }} - {{ entry.measurement_type_5.description|default:'-' }}
                                     </span>
-                                    <select class="form-control" data-original-value="{{ entry.measurement_type_5.id|default:'' }}">
+                                    <select class="form-control edit-mode" data-original-value="{{ entry.measurement_type_5.id|default:'' }}">
                                         <option value="">---------</option>
                                         {% for type in measurement_types_choices %}
                                             <option value="{{ type.id }}" {% if entry.measurement_type_5 == type %}selected{% endif %}>
@@ -269,14 +269,14 @@
                                     <span class="view-mode">
                                         {{ entry.measurement_value_5|default:'-' }}
                                     </span>
-                                    <input type="number edit-mode" class="form-control" value="{{ entry.measurement_value_5|default:'' }}" 
+                                    <input type="number" class="form-control edit-mode" value="{{ entry.measurement_value_5|default:'' }}" 
                                         data-original-value="{{ entry.measurement_value_5|default:'' }}" step="0.1">
                                 
                                 {% elif column.field == 'measurement_type_6' %}
                                     <span class="view-mode">
                                         {{ entry.measurement_type_6.code }} - {{ entry.measurement_type_6.description|default:'-' }}
                                     </span>
-                                    <select class="form-control" data-original-value="{{ entry.measurement_type_6.id|default:'' }}">
+                                    <select class="form-control edit-mode" data-original-value="{{ entry.measurement_type_6.id|default:'' }}">
                                         <option value="">---------</option>
                                         {% for type in measurement_types_choices %}
                                             <option value="{{ type.id }}" {% if entry.measurement_type_6 == type %}selected{% endif %}>
@@ -288,7 +288,7 @@
                                     <span class="view-mode">
                                         {{ entry.measurement_value_6|default:'-' }}
                                     </span>
-                                    <input type="number edit-mode" class="form-control" value="{{ entry.measurement_value_6|default:'' }}" 
+                                    <input type="number" class="form-control edit-mode" value="{{ entry.measurement_value_6|default:'' }}" 
                                         data-original-value="{{ entry.measurement_value_6|default:'' }}" step="0.1">
                                 
                                 <!-- Status and Activities -->
@@ -314,9 +314,15 @@
                                     </select>
                                 {% elif column.field == 'nesting' or column.field == 'interrupted' %}
                                     <span class="view-mode">
-                                        {{ entry|get_field_value:column.field.code }} - {{ entry|get_field_value:column.field.description|default:'-' }}
+                                        {% with choice=entry|get_field_value:column.field %}
+                                            {% if choice %}
+                                                {{ choice.code }} - {{ choice.description|default:'-' }}
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        {% endwith %}
                                     </span>
-                                    <select class="form-control edit-mode" data-original-value="{{ entry|get_field_value:column.field.id|default:'' }}">
+                                    <select class="form-control edit-mode" data-original-value="{{ entry|get_field_value:column.field|default:'' }}">
                                         <option value="">---------</option>
                                         {% for choice in yesno_choices %}
                                             <option value="{{ choice.id }}" {% if entry|get_field_value:column.field == choice %}selected{% endif %}>
@@ -328,6 +334,8 @@
                                     <span class="view-mode">
                                         {{ entry.identification_confidence|default:'-' }}
                                     </span>
+                                    <input type="text" class="form-control edit-mode"
+                                        value="{{ entry.identification_confidence|default:'' }}"
                                         data-original-value="{{ entry.identification_confidence|default:'' }}">
                                 
                                 <!-- Recapture Tags -->
@@ -391,9 +399,9 @@
                                 <!-- Tag States -->
                                 {% elif 'tag_state' in column.field %}
                                     <span class="view-mode">
-                                        {{ entry|get_field_value:column.field.code }} - {{ entry|get_field_value:column.field.description|default:'-' }}
+                                        {{ entry|get_field_value:column.field }} - {{ entry|get_field_value:column.field|default:'-' }}
                                     </span>
-                                    <select class="form-control edit-mode" data-original-value="{{ entry|get_field_value:column.field.id|default:'' }}">
+                                    <select class="form-control edit-mode" data-original-value="{{ entry|get_field_value:column.field|default:'' }}">
                                         <option value="">---------</option>
                                         {% for state in tag_states_choices %}
                                             <option value="{{ state.id }}" {% if entry|get_field_value:column.field == state %}selected{% endif %}>
@@ -415,9 +423,9 @@
                                 <!-- Checks -->
                                 {% elif column.field == 'flipper_tag_check' or column.field == 'pit_tag_check' or column.field == 'injury_check' or column.field == 'scar_check' or column.field == 'clutch_completed' %}
                                     <span class="view-mode">
-                                        {{ entry|get_field_value:column.field.code }} - {{ entry|get_field_value:column.field.description|default:'-' }}
+                                        {{ entry|get_field_value:column.field }} - {{ entry|get_field_value:column.field|default:'-' }}
                                     </span>
-                                    <select class="form-control edit-mode" data-original-value="{{ entry|get_field_value:column.field.id|default:'' }}">
+                                    <select class="form-control edit-mode" data-original-value="{{ entry|get_field_value:column.field|default:'' }}">
                                         <option value="">---------</option>
                                         {% for choice in yesno_choices %}
                                             <option value="{{ choice.id }}" {% if entry|get_field_value:column.field == choice %}selected{% endif %}>
@@ -437,9 +445,9 @@
                                 <!-- Body Parts and Damage Codes -->
                                 {% elif 'body_part' in column.field %}
                                     <span class="view-mode">
-                                        {{ entry|get_field_value:column.field.code }} - {{ entry|get_field_value:column.field.description|default:'-' }}
+                                        {{ entry|get_field_value:column.field }} - {{ entry|get_field_value:column.field|default:'-' }}
                                     </span>
-                                    <select class="form-control edit-mode" data-original-value="{{ entry|get_field_value:column.field.id|default:'' }}">
+                                    <select class="form-control edit-mode" data-original-value="{{ entry|get_field_value:column.field|default:'' }}">
                                         <option value="">---------</option>
                                         {% for part in body_parts_choices %}
                                             <option value="{{ part.id }}" {% if entry|get_field_value:column.field == part %}selected{% endif %}>
@@ -450,9 +458,9 @@
                         
                                 {% elif 'damage_code' in column.field %}
                                     <span class="view-mode">
-                                        {{ entry|get_field_value:column.field.code }} - {{ entry|get_field_value:column.field.description|default:'-' }}
+                                        {{ entry|get_field_value:column.field }} - {{ entry|get_field_value:column.field|default:'-' }}
                                     </span>
-                                    <select class="form-control edit-mode" data-original-value="{{ entry|get_field_value:column.field.id|default:'' }}">
+                                    <select class="form-control edit-mode" data-original-value="{{ entry|get_field_value:column.field|default:'' }}">
                                         <option value="">---------</option>
                                         {% for code in damage_codes_choices %}
                                             <option value="{{ code.id }}" {% if entry|get_field_value:column.field == code %}selected{% endif %}>
@@ -464,9 +472,9 @@
                                 <!-- Tissue Samples -->
                                 {% elif column.field == 'tissue_type_1' or column.field == 'tissue_type_2' %}
                                 <span class="view-mode">
-                                    {{ entry|get_field_value:column.field.code }} - {{ entry|get_field_value:column.field.description|default:'-' }}
+                                    {{ entry|get_field_value:column.field }} - {{ entry|get_field_value:column.field|default:'-' }}
                                 </span>
-                                <select class="form-control edit-mode" data-original-value="{{ entry|get_field_value:column.field.id|default:'' }}">
+                                <select class="form-control edit-mode" data-original-value="{{ entry|get_field_value:column.field|default:'' }}">
                                     <option value="">---------</option>
                                     {% for type in tissue_types_choices %}
                                         <option value="{{ type.id }}" {% if entry|get_field_value:column.field == type %}selected{% endif %}>
@@ -483,7 +491,7 @@
                                         data-original-value="{{ entry|get_field_value:column.field|default:'' }}">
                                 
                                 {% elif 'tissue_type' in column.field %}
-                                    <select class="form-control" data-original-value="{{ entry|get_field_value:column.field.id|default:'' }}">
+                                    <select class="form-control" data-original-value="{{ entry|get_field_value:column.field|default:'' }}">
                                         <option value="">---------</option>
                                         {% for type in tissue_types_choices %}
                                             <option value="{{ type.id }}" {% if entry|get_field_value:column.field == type %}selected{% endif %}>
@@ -499,7 +507,7 @@
                                         {{ person.first_name }} {{ person.last_name|default:'-' }}
                                     {% endwith %}
                                 </span>
-                                <select class="form-control edit-mode" data-original-value="{{ entry|get_field_value:column.field.id|default:'' }}">
+                                <select class="form-control edit-mode" data-original-value="{{ entry|get_field_value:column.field|default:'' }}">
                                     <option value="">---------</option>
                                     {% for person in persons_choices %}
                                         <option value="{{ person.id }}" {% if entry|get_field_value:column.field == person %}selected{% endif %}>
@@ -612,52 +620,57 @@
     };
 
     function saveChanges() {
-        if(Object.keys(editableFields).length === 0) {
-            alert('No changes to save');
-            return;
+    if(Object.keys(editableFields).length === 0) {
+        alert('No changes to save');
+        return;
+    }
+ 
+    var changes = [];
+    for(var entryId in editableFields) {
+        for(var field in editableFields[entryId]) {
+            changes.push('Entry ' + entryId + ': ' + field + ' = ' + editableFields[entryId][field]);
         }
-
-        const changes = [];
-        for(const entryId in editableFields) {
-            for(const field in editableFields[entryId]) {
-                changes.push(`Entry ${entryId}: ${field} = ${editableFields[entryId][field]}`);
-            }
-        }
-
-        const confirmMessage = 'The following changes will be saved:\n\n' + 
-                            changes.join('\n') + 
-                            '\n\nDo you want to continue?';
-
-        if(confirm(confirmMessage)) {
-            $('#loading-overlay').show();
-            $('#loading-spinner').show();
-                url: '{% url "wamtram2:save_entry_changes" %}',
-                method: 'POST',
-                data: {
-                    changes: JSON.stringify(editableFields),
-                    csrfmiddlewaretoken: '{{ csrf_token }}'
-                },
-                success: function(response) {
-                    if(response.success) {
-                        alert('Changes saved successfully');
-                        location.reload();
-                    } else {
-                        alert('Error saving changes: ' + response.error);
-                    }
-                },
-                error: function() {
-                    alert('Error saving changes');
-                },
-                complete: function() {
-                    $('#loading-overlay').hide();
-                    $('#loading-spinner').hide();
+    }
+ 
+    var confirmMessage = 'The following changes will be saved:\n\n' + 
+                        changes.join('\n') + 
+                        '\n\nDo you want to continue?';
+ 
+    if(confirm(confirmMessage)) {
+        $('#loading-overlay').show();
+        $('#loading-spinner').show();
+        $.ajax({
+            url: '{% url "wamtram2:save_entry_changes" %}',
+            method: 'POST',
+            data: {
+                changes: JSON.stringify(editableFields),
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            },
+            success: function(response) {
+                if(response.success) {
+                    alert('Changes saved successfully');
+                    location.reload();
+                } else {
+                    alert('Error saving changes: ' + response.error);
                 }
-            });
-        }
-    };
+            },
+            error: function() {
+                alert('Error saving changes');
+            },
+            complete: function() {
+                $('#loading-overlay').hide();
+                $('#loading-spinner').hide();
+            }
+        });
+    }
+}
 
 
     $(document).ready(function() {
+
+        $('.edit-mode').hide();
+        $('.view-mode').show();
+
         $('.datetime-input').on('change', function() {
             const entryId = $(this).closest('tr').data('entry-id');
             const currentField = $(this).closest('td').data('field');
@@ -669,7 +682,7 @@
             const dateValue = dateInput.val();
             const timeValue = timeInput.val() || '00:00';
             
-            const combinedDateTime = `${dateValue} ${timeValue}`;
+            var combinedDateTime = dateValue + ' ' + timeValue;
             
             if(!editableFields[entryId]) {
                 editableFields[entryId] = {};
@@ -699,11 +712,9 @@
             if(isEdit) {
                 $('.view-mode').hide();
                 $('.edit-mode').show();
-                $('td[data-editable="true"][data-field-type!="readonly"]').attr('contenteditable', true);
             } else {
                 $('.view-mode').show();
                 $('.edit-mode').hide();
-                $('td[data-editable="true"]').attr('contenteditable', false);
             }
             
         });
