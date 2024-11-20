@@ -36,3 +36,19 @@ def get_field_value(obj, field_name):
         return value
     except (AttributeError, ValueError):
         return None
+    
+
+@register.filter
+def is_tag_field(field_name, tag_type):
+    tag_fields = {
+        'new': ['new_left_tag_id', 'new_left_tag_id_2', 'new_right_tag_id', 'new_right_tag_id_2',
+                'new_pittag_id', 'new_pittag_id_2', 'new_pittag_id_3', 'new_pittag_id_4'],
+        'recapture': ['recapture_left_tag_id', 'recapture_left_tag_id_2', 'recapture_left_tag_id_3',
+                    'recapture_right_tag_id', 'recapture_right_tag_id_2', 'recapture_right_tag_id_3',
+                    'recapture_pittag_id', 'recapture_pittag_id_2', 'recapture_pittag_id_3',
+                    'recapture_pittag_id_4'],
+        'other': ['other_left_tag', 'other_right_tag', 'other_tags'],
+        'dud': ['dud_flipper_tag', 'dud_flipper_tag_2', 'dud_pit_tag', 'dud_pit_tag_2']
+    }
+    return field_name in tag_fields.get(tag_type, [])
+ 

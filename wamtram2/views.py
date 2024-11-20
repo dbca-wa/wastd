@@ -54,7 +54,8 @@ from .models import (
     TrtMeasurementTypes,
     TrtBodyParts,
     TrtDamageCodes,
-    TrtYesNo
+    TrtYesNo,
+    
 )
 from .forms import TrtDataEntryForm, SearchForm, TrtEntryBatchesForm, TemplateForm, BatchesCodeForm, TrtPersonsForm, TagRegisterForm
 
@@ -3487,11 +3488,16 @@ class EntryCurationView(LoginRequiredMixin, PaginateMixin, ListView):
                 Q(turtle_comments__icontains=search) |
                 Q(species_code__code__icontains=search)
             )
+        if not queryset.exists():
+            return TrtDataEntry.objects.none()
         
-            return queryset.select_related('observation_id').order_by("-data_entry_id")
+        return queryset.order_by("-data_entry_id")
         
     def get_context_data(self, **kwargs):
             context = super().get_context_data(**kwargs)
+
+            if not context.get('object_list'):
+                context['object_list'] = []
             
             context.update({
                 'species_choices': TrtSpecies.objects.all(),
@@ -3513,15 +3519,14 @@ class EntryCurationView(LoginRequiredMixin, PaginateMixin, ListView):
             model_fields = TrtDataEntry._meta.get_fields()
     
             default_visible_fields = {
-                'data_entry_id', 'species_code', 'place_code',
-                'observation_date', 'do_not_process', 'curved_carapace_length',
-                'curved_carapace_width', 'alive', 'activity_code', 'nesting'
+                'data_entry_id','observation_id', 'turtle_id', 'entered_by', 'species_code', 'place_code',
+                'observation_date', 'do_not_process','error_message', 'comments'
             }
             
             field_groups = {
                 'Basic Information': [
-                    'data_entry_id', 'species_code', 'place_code',
-                    'observation_date', 'observation_time', 'do_not_process'
+                    'data_entry_id', 'species_code', 'sex', 'place_code', 'observation_id', 'turtle_id',
+                    'observation_date', 'observation_time', 'do_not_process', 'latitude', 'longitude',
                 ],
                 'Measurements': [
                     'curved_carapace_length', 'curved_carapace_width',
@@ -3538,40 +3543,53 @@ class EntryCurationView(LoginRequiredMixin, PaginateMixin, ListView):
                     'alive', 'activity_code', 'nesting', 'interrupted',
                     'identification_confidence'
                 ],
-                'Tags': [
-                    'recapture_left_tag_id', 'recapture_left_tag_id_2', 'recapture_left_tag_id_3',
-                    'recapture_right_tag_id', 'recapture_right_tag_id_2', 'recapture_right_tag_id_3',
-                    'recapture_pittag_id', 'recapture_pittag_id_2', 'recapture_pittag_id_3', 'recapture_pittag_id_4',
-                    'new_left_tag_id', 'new_left_tag_id_2',
-                    'new_right_tag_id', 'new_right_tag_id_2',
-                    'new_pittag_id', 'new_pittag_id_2', 'new_pittag_id_3', 'new_pittag_id_4',
-                    'other_left_tag', 'other_right_tag', 'other_tags',
-                    'other_tags_identification_type',
-                    'dud_flipper_tag', 'dud_flipper_tag_2',
-                    'dud_pit_tag', 'dud_pit_tag_2'
+                'Flipper Tags': [
+                    'flipper_tag_check',
+                    'recapture_left_tag_id', 'recapture_left_tag_state', 'recapture_left_tag_position', 'recapture_left_tag_state', 'recapture_left_tag_barnacles'
+                    'recapture_left_tag_id_2', 'recapture_left_tag_state_2', 'recapture_left_tag_position_2', 'recapture_left_tag_state_2', 'recapture_left_tag_barnacles_2',
+                    'recapture_right_tag_id', 'recapture_right_tag_state', 'recapture_right_tag_position', 'recapture_right_tag_state', 'recapture_right_tag_barnacles',
+                    'recapture_right_tag_id_2', 'recapture_right_tag_state_2', 'recapture_right_tag_position_2', 'recapture_right_tag_state_2', 'recapture_right_tag_barnacles_2',
+
+                    'new_left_tag_id', 'new_left_tag_state', 'new_left_tag_position',
+                    'new_left_tag_id_2', 'new_left_tag_state_2', 'new_left_tag_position_2',
+                    'new_right_tag_id', 'new_right_tag_state', 'new_right_tag_position',
+                    'new_right_tag_id_2', 'new_right_tag_state_2', 'new_right_tag_position_2',
+
+                    'other_left_tag', 
+                    'other_right_tag', 
                 ],
-                'Tag States': [
-                    'recapture_left_tag_state', 'recapture_left_tag_state_2',
-                    'recapture_right_tag_state', 'recapture_right_tag_state_2',
-                    'new_left_tag_state', 'new_left_tag_state_2',
-                    'new_right_tag_state', 'new_right_tag_state_2'
+                'PIT Tags': [
+                    'pit_tag_check',
+                    'recapture_pittag_id', 
+                    'recapture_pittag_id_2', 
+                    'recapture_pittag_id_3', 
+                    'recapture_pittag_id_4',
+                    'new_pittag_id', 'new_pit_tag_sticker_present',
+                    'new_pittag_id_2', 'new_pit_tag_2_sticker_present',
+                    'new_pittag_id_3', 'new_pit_tag_3_sticker_present', 
+                    'new_pittag_id_4','new_pit_tag_4_sticker_present',
                 ],
-                'PIT Tag Stickers': [
-                    'new_pit_tag_sticker_present', 'new_pit_tag_2_sticker_present',
-                    'new_pit_tag_3_sticker_present', 'new_pit_tag_4_sticker_present'
+                'Dud Tags': [
+                    'dud_flipper_tag', 'dud_flipper_tag_2', 'dud_pit_tag', 'dud_pit_tag_2'
                 ],
-                'Checks': [
-                    'flipper_tag_check', 'pit_tag_check', 'injury_check', 'scar_check',
-                    'tagscarnotchecked', 'didnotcheckforinjury'
+                'Other Tags': [
+                    'other_tags', 'other_tags_identification_type'
+                    'identifer', 'identification_type'
                 ],
-                'Damage and Scars': [
-                    'damage_carapace', 'damage_lff', 'damage_rff', 'damage_lhf', 'damage_rhf',
-                    'body_part_1', 'damage_code_1',
-                    'body_part_2', 'damage_code_2',
-                    'body_part_3', 'damage_code_3',
+                'Tag Scars': [
+                    'scar_check',
                     'scars_left', 'scars_right',
                     'scars_left_scale_1', 'scars_left_scale_2', 'scars_left_scale_3',
                     'scars_right_scale_1', 'scars_right_scale_2', 'scars_right_scale_3'
+                ],
+                'Damage and Scars': [
+                    'injury_check',
+                    'body_part_1', 'damage_code_1',
+                    'body_part_2', 'damage_code_2',
+                    'body_part_3', 'damage_code_3',
+                    'body_part_4', 'damage_code_4',
+                    'body_part_5', 'damage_code_5',
+                    'body_part_6', 'damage_code_6',
                 ],
                 'Tissue Samples': [
                     'tissue_type_1', 'sample_label_1',
@@ -3581,8 +3599,10 @@ class EntryCurationView(LoginRequiredMixin, PaginateMixin, ListView):
                     'egg_count', 'egg_count_method', 'clutch_completed'
                 ],
                 'Personnel': [
-                    'measured_by_id', 'recorded_by_id', 'tagged_by_id',
-                    'entered_by_id', 'measured_recorded_by_id'
+                    'entered_by','entered_by_id',
+                    'measured_by', 'measured_by_id',
+                    'recorded_by', 'recorded_by_id',
+                    'tagged_by', 'tagged_by_id',
                 ],
                 'Comments': [
                     'comments', 'turtle_comments', 'comment_fromrecordedtagstable',
