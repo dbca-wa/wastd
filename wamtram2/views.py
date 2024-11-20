@@ -3,14 +3,13 @@ from django.contrib import messages
 from django.utils import timezone
 from django.db import connections, DatabaseError
 from django.db.models import Q, Exists, OuterRef, Count, Subquery
-from django.http import HttpResponseForbidden, HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseForbidden, HttpResponseRedirect, HttpResponse,HttpResponseBadRequest, JsonResponse
 from django.contrib.auth.mixins import LoginRequiredMixin,UserPassesTestMixin
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.views.generic.edit import FormMixin
 from django.views.generic import TemplateView, ListView, DetailView, FormView, DeleteView
-from django.http import JsonResponse
 from .models import TrtPlaces, TrtSpecies, TrtLocations,TrtEntryBatchOrganisation
 from django.core.paginator import Paginator
 from openpyxl import Workbook
@@ -30,6 +29,8 @@ from django.apps import apps
 from docx import Document
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.shared import Inches, Pt, RGBColor
+from functools import reduce
+import operator
 
 from wastd.utils import Breadcrumb, PaginateMixin
 from .models import (
@@ -45,9 +46,16 @@ from .models import (
     TrtIdentification,
     TrtPitTagStatus,
     TrtTagStatus,
-    TrtRecordedTags,
-    TrtRecordedPitTags,
-    TrtRecordedIdentification
+    TrtNestingSeason,
+    TrtTissueTypes,
+    TrtActivities,
+    TrtIdentificationTypes,
+    TrtEggCountMethods,
+    TrtMeasurementTypes,
+    TrtBodyParts,
+    TrtDamageCodes,
+    TrtYesNo,
+    
 )
 from .forms import TrtDataEntryForm, SearchForm, TrtEntryBatchesForm, TemplateForm, BatchesCodeForm, TrtPersonsForm, TagRegisterForm
 
@@ -2637,13 +2645,39 @@ class PersonManageView(LoginRequiredMixin, UserPassesTestMixin, PaginateMixin, L
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        search_term = self.request.GET.get('search', '')
+        search_term = self.request.GET.get('search', '').strip()
+        
         if search_term:
-            queryset = queryset.filter(
-                Q(first_name__icontains=search_term) |
-                Q(surname__icontains=search_term) |
-                Q(email__icontains=search_term)
-            )
+            search_terms = search_term.split()
+            query = Q()
+            
+            if len(search_terms) == 1:
+                term = search_terms[0]
+                query = (
+                    Q(first_name__icontains=term) |
+                    Q(surname__icontains=term) |
+                    Q(email__icontains=term)
+                )
+
+            else:
+                query = (
+                    Q(first_name__icontains=search_term) |
+                    Q(surname__icontains=search_term) |
+                    Q(email__icontains=search_term) |
+                    
+                    Q(first_name__icontains=search_terms[0], 
+                    surname__icontains=' '.join(search_terms[1:])) |
+                    
+                    reduce(operator.or_, (
+                        Q(first_name__icontains=term) |
+                        Q(surname__icontains=term) |
+                        Q(email__icontains=term)
+                        for term in search_terms
+                    ))
+                )
+            
+            queryset = queryset.filter(query)
+    
         return queryset.prefetch_related(
             'measurer_person',
             'tagger_person',
@@ -3260,5 +3294,430 @@ class TransferObservationsByTagView(LoginRequiredMixin, View):
                 'success': False,
                 'error': str(e)
             }, status=500)
+            
+            
+class NestingSeasonListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMixin, ListView):
+    model = TrtNestingSeason
+    template_name = 'wamtram2/nesting_season_list.html'
+    context_object_name = 'seasons'
+    paginate_by = 30
+    
+    def test_func(self):
+        return self.request.user.is_superuser
+    
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        
+        search = self.request.GET.get('search')
+        if search:
+            queryset = queryset.filter(
+                Q(nesting_season__icontains=search)
+            )
+            
+        return queryset
+        
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'admin_add_url': reverse('admin:wamtram2_trtnestingseason_add'), 
+            'admin_change_url': 'admin:wamtram2_trtnestingseason_change',
+            'search_term': self.request.GET.get('search', ''),
+        })
+        return context
+            
+            
+class BatchCurationView(LoginRequiredMixin, PaginateMixin,ListView):
+    model = TrtEntryBatches
+    template_name = 'wamtram2/batch_curation_list.html'
+    context_object_name = 'batches'
+    paginate_by = 30
+
+    def dispatch(self, request, *args, **kwargs):
+        if not (
+            request.user.is_superuser
+        ):
+            return HttpResponseForbidden("You do not have permission to view this record")
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        queryset = super().get_queryset().order_by('-entry_batch_id')
+        
+        print(f"Total batches: {queryset.count()}")
+    
+    
+        queryset = queryset.select_related(
+            'entered_person_id',
+            'template'
+        )
+
+        queryset = queryset.annotate(
+            entry_count=Count('trtdataentry'),
+            flagged_count=Count('trtdataentry', filter=Q(trtdataentry__do_not_process=True))
+        )
+        
+        search = self.request.GET.get('search')
+        if search:
+            print(f"Searching for: {search}")
+            queryset = queryset.filter(
+                Q(batches_code__icontains=search) |
+                Q(comments__icontains=search) |
+                Q(entered_person_id__first_name__icontains=search) |
+                Q(entered_person_id__surname__icontains=search)
+            )
+        print(f"Final query count: {queryset.count()}")
+        return queryset
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Get all possible columns
+        all_columns = [
+            {'field': 'entry_batch_id', 'title': 'Batch ID', 'visible': True},
+            {'field': 'batches_code', 'title': 'Batch Code', 'visible': True},
+            {'field': 'entry_date', 'title': 'Entry Date', 'visible': True},
+            {'field': 'entered_person_id', 'title': 'Entered By', 'visible': True},
+            {'field': 'entry_count', 'title': 'Entry Count', 'visible': True},
+            {'field': 'flagged_count', 'title': 'Flagged Count', 'visible': True},
+            {'field': 'template', 'title': 'Template', 'visible': False},
+            {'field': 'comments', 'title': 'Comments', 'visible': False},
+            {'field': 'pr_date_convention', 'title': 'PR Date Convention', 'visible': False},
+        ]
+        
+        # Get column display settings from user settings or session
+        user_columns = self.request.session.get('batch_grid_columns', [col['field'] for col in all_columns if col['visible']])
+        
+        context.update({
+            'all_columns': all_columns,
+            'visible_columns': user_columns,
+            'search_term': self.request.GET.get('search', ''),
+            'clear_url': self.request.path,
+        })
+        return context
+
+    def post(self, request, *args, **kwargs):
+        # Handle column display settings update
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            visible_columns = request.POST.getlist('columns[]')
+            request.session['batch_grid_columns'] = visible_columns
+            return JsonResponse({'status': 'success'})
+        return HttpResponseBadRequest()
+
+
+class EntryCurationView(LoginRequiredMixin, PaginateMixin, ListView):
+    model = TrtDataEntry
+    template_name = 'wamtram2/entry_curation_list.html'
+    context_object_name = 'entries'
+    paginate_by = 10
+
+    def get_queryset(self):
+        batch_id = self.kwargs.get('batch_id')
+        queryset = super().get_queryset().filter(entry_batch_id=batch_id)
+        
+        queryset = queryset.select_related(
+            'species_code',
+            'place_code',
+            'activity_code',
+            'nesting',
+            'interrupted',
+            'alive',
+            'measured_by_id',
+            'recorded_by_id',
+            'tagged_by_id',
+            'entered_by_id',
+            'measured_recorded_by_id',
+            'egg_count_method',
+            'clutch_completed',
+            'flipper_tag_check',
+            'pit_tag_check',
+            'injury_check',
+            'scar_check',
+            'recapture_left_tag_id',
+            'recapture_left_tag_id_2',
+            'recapture_left_tag_id_3',
+            'recapture_right_tag_id',
+            'recapture_right_tag_id_2',
+            'recapture_right_tag_id_3',
+            'recapture_pittag_id',
+            'recapture_pittag_id_2',
+            'recapture_pittag_id_3',
+            'recapture_pittag_id_4',
+            'new_left_tag_id',
+            'new_left_tag_id_2',
+            'new_right_tag_id',
+            'new_right_tag_id_2',
+            'new_pittag_id',
+            'new_pittag_id_2',
+            'new_pittag_id_3',
+            'new_pittag_id_4',
+            'body_part_1',
+            'body_part_2',
+            'body_part_3',
+            'damage_code_1',
+            'damage_code_2',
+            'damage_code_3',
+            'tissue_type_1',
+            'tissue_type_2',
+            'measurement_type_1',
+            'measurement_type_2',
+            'measurement_type_3',
+            'measurement_type_4',
+            'measurement_type_5',
+            'measurement_type_6',
+            'recapture_left_tag_state',
+            'recapture_left_tag_state_2',
+            'recapture_right_tag_state',
+            'recapture_right_tag_state_2',
+            'new_left_tag_state',
+            'new_left_tag_state_2',
+            'new_right_tag_state',
+            'new_right_tag_state_2'
+        )
+        
+        filter_value = self.request.GET.get("filter")
+        if filter_value == "needs_review":
+            queryset = queryset.filter(do_not_process=True)
+        elif filter_value == "not_saved":
+            queryset = queryset.filter(observation_id__isnull=True)
+        elif filter_value == "needs_review_no_message":
+            queryset = queryset.filter(do_not_process=True, error_message__isnull=True)
+
+        search = self.request.GET.get('search')
+        if search:
+            queryset = queryset.filter(
+                Q(comments__icontains=search) |
+                Q(turtle_comments__icontains=search) |
+                Q(species_code__code__icontains=search)
+            )
+        if not queryset.exists():
+            return TrtDataEntry.objects.none()
+        
+        return queryset.order_by("-data_entry_id")
+        
+    def get_context_data(self, **kwargs):
+            context = super().get_context_data(**kwargs)
+
+            if not context.get('object_list'):
+                context['object_list'] = []
+            
+            context.update({
+                'species_choices': TrtSpecies.objects.all(),
+                'places_choices': TrtPlaces.objects.select_related('location_code').all(),
+                'activities_choices': TrtActivities.objects.all(),
+                'yesno_choices': TrtYesNo.objects.all(),
+                'persons_choices': TrtPersons.objects.all(),
+                'damage_codes_choices': TrtDamageCodes.objects.all(),
+                'body_parts_choices': TrtBodyParts.objects.all(),
+                'measurement_types_choices': TrtMeasurementTypes.objects.all(),
+                'tag_states_choices': TrtTagStates.objects.all(),
+                'tissue_types_choices': TrtTissueTypes.objects.all(),
+                'egg_count_methods_choices': TrtEggCountMethods.objects.all(),
+                'identification_types_choices': TrtIdentificationTypes.objects.all(),
+                'tags_choices': TrtTags.objects.all(),
+                'pit_tags_choices': TrtPitTags.objects.all(),
+            })
+            
+            model_fields = TrtDataEntry._meta.get_fields()
+    
+            default_visible_fields = {
+                'data_entry_id','observation_id', 'turtle_id', 'entered_by', 'species_code', 'place_code',
+                'observation_date', 'do_not_process','error_message', 'comments'
+            }
+            
+            field_groups = {
+                'Basic Information': [
+                    'data_entry_id', 'species_code', 'sex', 'place_code', 'observation_id', 'turtle_id',
+                    'observation_date', 'observation_time', 'do_not_process', 'latitude', 'longitude',
+                ],
+                'Measurements': [
+                    'curved_carapace_length', 'curved_carapace_width',
+                    'curved_carapace_length_notch', 'cc_length_not_measured',
+                    'cc_width_not_measured', 'cc_notch_length_not_measured',
+                    'measurement_type_1', 'measurement_value_1',
+                    'measurement_type_2', 'measurement_value_2',
+                    'measurement_type_3', 'measurement_value_3',
+                    'measurement_type_4', 'measurement_value_4',
+                    'measurement_type_5', 'measurement_value_5',
+                    'measurement_type_6', 'measurement_value_6'
+                ],
+                'Status and Activities': [
+                    'alive', 'activity_code', 'nesting', 'interrupted',
+                    'identification_confidence'
+                ],
+                'Flipper Tags': [
+                    'flipper_tag_check',
+                    'recapture_left_tag_id', 'recapture_left_tag_state', 'recapture_left_tag_position', 'recapture_left_tag_state', 'recapture_left_tag_barnacles'
+                    'recapture_left_tag_id_2', 'recapture_left_tag_state_2', 'recapture_left_tag_position_2', 'recapture_left_tag_state_2', 'recapture_left_tag_barnacles_2',
+                    'recapture_right_tag_id', 'recapture_right_tag_state', 'recapture_right_tag_position', 'recapture_right_tag_state', 'recapture_right_tag_barnacles',
+                    'recapture_right_tag_id_2', 'recapture_right_tag_state_2', 'recapture_right_tag_position_2', 'recapture_right_tag_state_2', 'recapture_right_tag_barnacles_2',
+
+                    'new_left_tag_id', 'new_left_tag_state', 'new_left_tag_position',
+                    'new_left_tag_id_2', 'new_left_tag_state_2', 'new_left_tag_position_2',
+                    'new_right_tag_id', 'new_right_tag_state', 'new_right_tag_position',
+                    'new_right_tag_id_2', 'new_right_tag_state_2', 'new_right_tag_position_2',
+
+                    'other_left_tag', 
+                    'other_right_tag', 
+                ],
+                'PIT Tags': [
+                    'pit_tag_check',
+                    'recapture_pittag_id', 
+                    'recapture_pittag_id_2', 
+                    'recapture_pittag_id_3', 
+                    'recapture_pittag_id_4',
+                    'new_pittag_id', 'new_pit_tag_sticker_present',
+                    'new_pittag_id_2', 'new_pit_tag_2_sticker_present',
+                    'new_pittag_id_3', 'new_pit_tag_3_sticker_present', 
+                    'new_pittag_id_4','new_pit_tag_4_sticker_present',
+                ],
+                'Dud Tags': [
+                    'dud_flipper_tag', 'dud_flipper_tag_2', 'dud_pit_tag', 'dud_pit_tag_2'
+                ],
+                'Other Tags': [
+                    'other_tags', 'other_tags_identification_type'
+                    'identifer', 'identification_type'
+                ],
+                'Tag Scars': [
+                    'scar_check',
+                    'scars_left', 'scars_right',
+                    'scars_left_scale_1', 'scars_left_scale_2', 'scars_left_scale_3',
+                    'scars_right_scale_1', 'scars_right_scale_2', 'scars_right_scale_3'
+                ],
+                'Damage and Scars': [
+                    'injury_check',
+                    'body_part_1', 'damage_code_1',
+                    'body_part_2', 'damage_code_2',
+                    'body_part_3', 'damage_code_3',
+                    'body_part_4', 'damage_code_4',
+                    'body_part_5', 'damage_code_5',
+                    'body_part_6', 'damage_code_6',
+                ],
+                'Tissue Samples': [
+                    'tissue_type_1', 'sample_label_1',
+                    'tissue_type_2', 'sample_label_2'
+                ],
+                'Nesting Data': [
+                    'egg_count', 'egg_count_method', 'clutch_completed'
+                ],
+                'Personnel': [
+                    'entered_by','entered_by_id',
+                    'measured_by', 'measured_by_id',
+                    'recorded_by', 'recorded_by_id',
+                    'tagged_by', 'tagged_by_id',
+                ],
+                'Comments': [
+                    'comments', 'turtle_comments', 'comment_fromrecordedtagstable',
+                    'error_message', 'error_number'
+                ]
+            }
+    
+    
+            field_order = {}
+            order_index = 0
+            for group_fields in field_groups.values():
+                for field in group_fields:
+                    field_order[field] = order_index
+                    order_index += 1
+    
+            all_columns = []
+            processed_fields = set()
+    
+    
+            for group_name, field_patterns in field_groups.items():
+                group_fields = []
+                for field in model_fields:
+                    if hasattr(field, 'name'):
+                        field_name = field.name
+                        if field_name in field_patterns:
+                            group_fields.append({
+                                'field': field_name,
+                                'title': field_name.replace('_', ' ').title(),
+                                'visible': field_name in default_visible_fields,
+                                'group': group_name
+                            })
+                            processed_fields.add(field_name)
+                
+            
+                sorted_fields = sorted(group_fields, key=lambda x: field_order.get(x['field'], float('inf')))
+                all_columns.extend(sorted_fields)
+    
+    
+            other_fields = []
+            for field in model_fields:
+                if hasattr(field, 'name') and field.name not in processed_fields:
+                    other_fields.append({
+                        'field': field.name,
+                        'title': field.name.replace('_', ' ').title(),
+                        'visible': field.name in default_visible_fields,
+                        'group': 'Other'
+                    })
+            
+    
+            all_columns.extend(sorted(other_fields, key=lambda x: x['field']))
+    
+    
+            user_columns = self.request.session.get('entry_grid_columns',
+                                                [col['field'] for col in all_columns if col['visible']])
+            
+            batch_id = self.kwargs.get('batch_id')
+            
+    
+            context.update({
+                'all_columns': all_columns,
+                'visible_columns': user_columns,
+                'search_term': self.request.GET.get('search', ''),
+                'clear_url': reverse('wamtram2:batch_entries', kwargs={'batch_id': batch_id}),
+                'batch_id': batch_id,
+            })
+            
+            return context
+    def post(self, request, *args, **kwargs):
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            visible_columns = request.POST.getlist('columns[]')
+            request.session['entry_grid_columns'] = visible_columns
+            return JsonResponse({'status': 'success'})
+        return HttpResponseBadRequest()
+
+
+@method_decorator(login_required, name='dispatch')
+class SaveEntryChangesView(View):
+    READONLY_FIELDS = {'data_entry_id', 'observation_id', 'created_at', 'updated_at'}
+    
+    def validate_field(self, field_name, value, entry):
+        if field_name in self.READONLY_FIELDS:
+            raise ValueError(f"Field {field_name} is readonly")
+            
+        field = TrtDataEntry._meta.get_field(field_name)
+        
+        if field.get_internal_type() in ['IntegerField', 'FloatField']:
+            try:
+                value = float(value)
+                if value < 0:
+                    raise ValueError(f"{field_name} cannot be negative")
+            except ValueError:
+                raise ValueError(f"Invalid number for {field_name}: {value}")
+                
+        return value
+
+    def post(self, request):
+        try:
+            changes = json.loads(request.POST.get('changes', '{}'))
+            
+            with transaction.atomic():
+                for entry_id, fields in changes.items():
+                    entry = TrtDataEntry.objects.get(data_entry_id=entry_id)
+                    
+                    for field, value in fields.items():
+                        validated_value = self.validate_field(field, value, entry)
+                        setattr(entry, field, validated_value)
+                    
+                    entry.save()
+                    
+            return JsonResponse({'success': True})
+            
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'error': str(e)
+            })
             
             

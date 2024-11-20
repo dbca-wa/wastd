@@ -79,13 +79,6 @@
             <i class="fas fa-download"></i> Export Data
         </a>
         {% endif %}
-
-        {% if request.user.is_superuser %}
-        <!-- Dud Tags Button -->
-        <a href="{% url 'wamtram2:dud_tag_manage' %}" class="btn btn-outline-secondary mr-2 mb-2">
-            <i class="fas fa-wrench"></i> Dud Tags
-        </a>
-        {% endif %}
         
         {% if request.user.is_superuser or request.user|has_group:"WAMTRAM2_STAFF" or request.user|has_group:"WAMTRAM2_TEAM_LEADER" %}
         <!-- Manage Templates Button -->
@@ -186,48 +179,6 @@
     {% endif %}
 </div>
 
-{% comment %} <div class="pagination-container">
-    {% if is_paginated %}
-    <ul class="pagination mb-0">
-        {% if page_obj.number != 1 %}
-        <li class="page-item">
-            <a class="page-link" href="?{% url_replace request 'page' 1 %}">⇤</a>
-        </li>
-        {% endif %}
-        
-        {% if page_obj.has_previous %}
-        <li class="page-item">
-            <a class="page-link" href="?{% url_replace request 'page' page_obj.previous_page_number %}">&laquo;</a>
-        </li>
-        {% endif %}
-        
-        {% for i in paginator|proper_paginate:page_obj.number %}
-            {% if page_obj.number == i %}
-            <li class="page-item active">
-                <span class="page-link">{{ i }}<span class="sr-only">(current)</span></span>
-            </li>
-            {% else %}
-            <li class="page-item">
-                <a class="page-link" href="?{% url_replace request 'page' i %}">{{ i }}</a>
-            </li>
-            {% endif %}
-        {% endfor %}
-        
-        {% if page_obj.has_next %}
-        <li class="page-item">
-            <a class="page-link" href="?{% url_replace request 'page' page_obj.next_page_number %}">&raquo;</a>
-        </li>
-        {% endif %}
-        
-        {% if page_obj.number != paginator.num_pages %}
-        <li class="page-item">
-            <a class="page-link" href="?{% url_replace request 'page' paginator.num_pages %}">⇥</a>
-        </li>
-        {% endif %}
-    </ul>
-    {% endif %}
-</div> {% endcomment %}
-
 <!-- Quick Add Batch Modal -->
 <div class="modal fade" id="quickAddBatchModal" tabindex="-1" role="dialog" aria-labelledby="quickAddBatchModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -292,15 +243,6 @@
                             <div id="searchResults" class="search-results"></div>
                         </div>
                     </div>
-                    {% comment %} <div class="form-group">
-                        <label for="quickAddTemplate">Template (optional)</label>
-                        <select class="form-control" id="quickAddTemplate" name="template">
-                            <option value="">Select Template</option>
-                            {% for template in templates %}
-                                <option value="{{ template.template_id }}">{{ template.name }}</option>
-                            {% endfor %}
-                        </select>
-                    </div> {% endcomment %}
                     <div class="form-group">
                         <label for="quickAddTemplate">Template (optional)</label>
                         <div class="search-container">
@@ -607,7 +549,7 @@
                     comments += ' - Night ' + night;
                 }
                 if (entryDate) {
-                    comments += ' - ' + entryDate;
+                    comments += ' - Start on the night of:' + entryDate;
                 }
                 $('#quickAddComments').val(comments);
             }

@@ -13,9 +13,10 @@ from .models import (
     TrtDataEntry,
     TrtEntryBatches,
     TrtTagOrders,
+    TrtNestingSeason
 )
 from import_export.admin import ImportExportModelAdmin
-from .forms import EnterUserModelForm, TrtObservationsForm, TrtPersonsForm
+from .forms import EnterUserModelForm, TrtObservationsForm, TrtPersonsForm, TrtNestingSeasonForm
 from django.urls import reverse
 from django.utils.html import format_html
 from django.db.models import Prefetch
@@ -272,4 +273,17 @@ class TrtPersonsAdmin(ImportExportModelAdmin):
             'all': ('admin/css/custom_admin.css',)
         }
     
-    
+@admin.register(TrtNestingSeason)
+class TrtNestingSeasonAdmin(admin.ModelAdmin):
+    form = TrtNestingSeasonForm
+    list_display = ['nesting_season', 'startdate', 'enddate']
+    search_fields = ['nesting_season']
+    list_filter = ['startdate', 'enddate']
+    class Media:
+        css = {
+            'all': ('https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css',)
+        }
+        js = (
+            'https://cdn.jsdelivr.net/npm/flatpickr',
+            'js/admin/custom_flatpickr.js',
+        )

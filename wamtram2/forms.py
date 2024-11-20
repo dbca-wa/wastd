@@ -1,12 +1,20 @@
 from django import forms
 from easy_select2 import apply_select2
-from .models import TrtPersons, TrtDataEntry, TrtTags, TrtEntryBatches, TrtPlaces, TrtPitTags, Template, TrtObservations,TrtTagStates, TrtMeasurementTypes,TrtYesNo,SEX_CHOICES
+from .models import (
+    TrtPersons, TrtDataEntry, TrtTags, 
+    TrtEntryBatches, TrtPlaces, TrtPitTags, 
+    Template, TrtObservations,TrtTagStates, 
+    TrtMeasurementTypes,TrtYesNo,SEX_CHOICES,
+    TrtNestingSeason
+    )
 from django_select2.forms import ModelSelect2Widget
 from django.core.validators import RegexValidator
 from django.db.models import Case, When, IntegerField
 from datetime import timedelta
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.contrib.admin import widgets
+ 
 
 
 
@@ -770,3 +778,26 @@ class TagRegisterForm(forms.Form):
     field_person_id = forms.CharField(widget=forms.HiddenInput(), required=False)
 
 
+class TrtNestingSeasonForm(forms.ModelForm):
+    class Meta:
+        model = TrtNestingSeason
+        fields = '__all__'
+        widgets = {
+            'startdate': forms.DateTimeInput(
+                attrs={
+                    'class': 'form-control flatpickr-datetime',
+                }
+            ),
+            'enddate': forms.DateTimeInput(
+                attrs={
+                    'class': 'form-control flatpickr-datetime',
+                }
+            ),
+            'nesting_season': forms.TextInput(
+                attrs={
+                    'class': 'form-control'
+                }
+            ),
+        }
+ 
+ 
