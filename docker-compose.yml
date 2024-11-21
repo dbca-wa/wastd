@@ -12,21 +12,6 @@ services:
     volumes:
       - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
 
-  sqlserver:
-    build:
-      context: .
-      dockerfile: sqlserver.Dockerfile
-    environment:
-      - ACCEPT_EULA=Y
-      - MSSQL_SA_PASSWORD=YourStrong@Passw0rd
-      - DB_NAME=turtle_tagging_uat
-    ports:
-      - "1433:1433"
-    volumes:
-      - sqlserver_data:/var/opt/mssql
-      - ./turtle_tagging_uat-2024-10-4-10-27.bacpac:/var/opt/mssql/backup/turtle_tagging_uat.bacpac
-    command: /bin/bash -c "/opt/mssql/bin/sqlservr & /docker-entrypoint-initdb.d/init-sqlserver.sh"
-
   web:
     build: .
     env_file:
@@ -38,6 +23,3 @@ services:
     volumes:
       - .:/app
     restart: always
-
-volumes:
-  sqlserver_data:
