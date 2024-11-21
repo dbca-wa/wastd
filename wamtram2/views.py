@@ -663,7 +663,13 @@ class ValidateDataEntryBatchView(LoginRequiredMixin, View):
             messages.add_message(
                 request, messages.ERROR, "Database error: {}".format(e)
             )
-        return redirect("wamtram2:entry_batch_detail", batch_id=self.kwargs["batch_id"])
+            
+        return_to = request.GET.get('return_to')
+        
+        if return_to == 'curation':
+            return redirect("wamtram2:entries_curation", batch_id=self.kwargs["batch_id"])
+        else:
+            return redirect("wamtram2:entry_batch_detail", batch_id=self.kwargs["batch_id"])
 
 
 class DeleteEntryView(LoginRequiredMixin,DeleteView):
@@ -731,7 +737,13 @@ class ProcessDataEntryBatchView(LoginRequiredMixin, View):
             messages.add_message(
                 request, messages.ERROR, "Database error: {}".format(e)
             )
-        return redirect("wamtram2:entry_batch_detail", batch_id=self.kwargs["batch_id"])
+            
+        return_to = request.GET.get('return_to')
+        
+        if return_to == 'curation':
+            return redirect("wamtram2:entries_curation", batch_id=self.kwargs["batch_id"])
+        else:
+            return redirect("wamtram2:entry_batch_detail", batch_id=self.kwargs["batch_id"])
 
 class FindTurtleView(LoginRequiredMixin, View):
     """
@@ -3495,7 +3507,7 @@ class EntryCurationView(LoginRequiredMixin, PaginateMixin, ListView):
         
     def get_context_data(self, **kwargs):
             context = super().get_context_data(**kwargs)
-
+            context['sex_choices'] = TrtDataEntry.SEX_CHOICES
             if not context.get('object_list'):
                 context['object_list'] = []
             
