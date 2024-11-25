@@ -37,7 +37,7 @@ whitenoise = {version = "6.6.0", extras = ["brotli"]}
 phonenumbers = "8.13.32"
 django-phonenumber-field = "7.3.0"
 mssql-django = "1.4.1"
-webtemplate-dbca = "1.5.1"
+webtemplate-dbca = "1.7.2"
 django-storages = {version = "1.14.2", extras = ["azure"]}
 django-map-widgets = "0.4.2"
 django-nested-admin = "^4.0.2"
