@@ -1,0 +1,352 @@
+{% extends "base_wastd.html" %}
+{% load static bootstrap4 %}
+
+{% block extra_style %}
+    {{ block.super }}
+    {{ form.media.css }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/grid.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/observation_management.css' %}">
+{% endblock %}
+
+{% block page_content_inner %}
+<div class="container-fluid mt-3">
+    <!-- Top Filter and Search Area -->
+    <div class="row mb-3">
+        <div class="col">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2>Observation Management</h2>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-primary" id="saveChanges">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary" id="addNew">
+                        <i class="fas fa-plus"></i> New Record
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Area -->
+    <div class="row mb-3">
+        <div class="col-md-3">
+            <div class="input-group">
+                <input type="text" class="form-control" id="tagSearch" placeholder="Search by Tag ID...">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="button" id="searchBtn">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <select class="form-control" id="placeFilter">
+                <option value="">Select Place...</option>
+                {% for place in places %}
+                    <option value="{{ place.place_code }}">{{ place.description }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <input type="date" class="form-control" id="dateFilter">
+        </div>
+        <div class="col-md-3">
+            <select class="form-control" id="statusFilter">
+                <option value="">Select Status...</option>
+                <option value="Initial Nesting">Initial Nesting</option>
+                <option value="Subsequent Nesting">Subsequent Nesting</option>
+                <option value="Non-nesting">Non-nesting</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="row">
+        <div class="col-md-12">
+            <!-- Tabs Navigation -->
+            <ul class="nav nav-tabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" data-toggle="tab" href="#basicInfo">Basic Information</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#tagInfo">Tag Information</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#measurements">Measurements</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#damage">Damage Records</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#location">Location</a>
+                </li>
+            </ul>
+
+            <!-- Tab Content -->
+            <div class="tab-content">
+                <!-- Basic Information Tab -->
+                <div id="basicInfo" class="tab-pane active">
+                    <div class="section-card">
+                        <div class="form-row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Observation ID</label>
+                                    <input type="text" class="form-control readonly-field" name="observation_id" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Turtle ID</label>
+                                    <input type="text" class="form-control readonly-field" name="turtle_id" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Date</label>
+                                    <input type="date" class="form-control" name="observation_date" required>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Time</label>
+                                    <input type="time" class="form-control" name="observation_time">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Alive</label>
+                                    <select class="form-control" name="alive" required>
+                                        <option value="Y">Yes</option>
+                                        <option value="N">No</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Nesting</label>
+                                    <select class="form-control" name="nesting">
+                                        <option value="Y">Yes</option>
+                                        <option value="N">No</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Activity</label>
+                                    <select class="form-control" name="activity_code">
+                                        {% for activity in activities %}
+                                            <option value="{{ activity.activity_code }}">{{ activity.description }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Beach Position</label>
+                                    <select class="form-control" name="beach_position_code">
+                                        {% for position in beach_positions %}
+                                            <option value="{{ position.position_code }}">{{ position.description }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tag Information Tab -->
+                <div id="tagInfo" class="tab-pane fade">
+                    <div class="section-card">
+                        <h4>Flipper Tags</h4>
+                        <div class="form-row">
+                            <div class="col-md-6">
+                                <h5>Left Flipper</h5>
+                                <div class="form-group">
+                                    <label>Recapture Tag ID</label>
+                                    <input type="text" class="form-control" name="recapture_left_tag_id">
+                                </div>
+                                <div class="form-group">
+                                    <label>New Tag ID</label>
+                                    <input type="text" class="form-control" name="new_left_tag_id">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Right Flipper</h5>
+                                <div class="form-group">
+                                    <label>Recapture Tag ID</label>
+                                    <input type="text" class="form-control" name="recapture_right_tag_id">
+                                </div>
+                                <div class="form-group">
+                                    <label>New Tag ID</label>
+                                    <input type="text" class="form-control" name="new_right_tag_id">
+                                </div>
+                            </div>
+                        </div>
+
+                        <h4 class="mt-4">PIT Tags</h4>
+                        <div class="form-row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Recapture PIT Tag ID</label>
+                                    <input type="text" class="form-control" name="recapture_pit_tag_id">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>New PIT Tag ID</label>
+                                    <input type="text" class="form-control" name="new_pit_tag_id">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Measurements Tab -->
+                <div id="measurements" class="tab-pane fade">
+                    <div class="section-card">
+                        <div class="form-row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Curved Carapace Length (cm)</label>
+                                    <input type="number" step="0.1" class="form-control" name="curved_carapace_length">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Curved Carapace Width (cm)</label>
+                                    <input type="number" step="0.1" class="form-control" name="curved_carapace_width">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Curved Carapace Length Notch (cm)</label>
+                                    <input type="number" step="0.1" class="form-control" name="curved_carapace_length_notch">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="additionalMeasurements">
+                            <!-- Additional measurements will be added here dynamically -->
+                        </div>
+
+                        <button type="button" class="btn btn-outline-secondary mt-3" id="addMeasurement">
+                            <i class="fas fa-plus"></i> Add Measurement
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Damage Records Tab -->
+                <div id="damage" class="tab-pane fade">
+                    <div class="section-card">
+                        <h4>Standard Damage Records</h4>
+                        <div class="form-row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Carapace</label>
+                                    <select class="form-control" name="damage_carapace">
+                                        <option value="">Select...</option>
+                                        {% for damage in damage_codes %}
+                                            <option value="{{ damage.code }}">{{ damage.description }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Left Front Flipper</label>
+                                    <select class="form-control" name="damage_lff">
+                                        <option value="">Select...</option>
+                                        {% for damage in damage_codes %}
+                                            <option value="{{ damage.code }}">{{ damage.description }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Right Front Flipper</label>
+                                    <select class="form-control" name="damage_rff">
+                                        <option value="">Select...</option>
+                                        {% for damage in damage_codes %}
+                                            <option value="{{ damage.code }}">{{ damage.description }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="additionalDamage">
+                            <!-- Additional damage records will be added here dynamically -->
+                        </div>
+
+                        <button type="button" class="btn btn-outline-secondary mt-3" id="addDamage">
+                            <i class="fas fa-plus"></i> Add Damage Record
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Location Tab -->
+                <div id="location" class="tab-pane fade">
+                    <div class="section-card">
+                        <div class="form-row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Place</label>
+                                    <select class="form-control" name="place_code" required>
+                                        {% for place in places %}
+                                            <option value="{{ place.place_code }}">{{ place.description }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Datum</label>
+                                    <select class="form-control" name="datum_code">
+                                        <option value="WGS84">WGS84</option>
+                                        <option value="GDA94">GDA94</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="col-md-6">
+                                <h5>Latitude</h5>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" name="latitude_degrees" placeholder="Degrees">
+                                    <input type="number" step="0.001" class="form-control" name="latitude_minutes" placeholder="Minutes">
+                                    <input type="number" step="0.001" class="form-control" name="latitude_seconds" placeholder="Seconds">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Longitude</h5>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" name="longitude_degrees" placeholder="Degrees">
+                                    <input type="number" step="0.001" class="form-control" name="longitude_minutes" placeholder="Minutes">
+                                    <input type="number" step="0.001" class="form-control" name="longitude_seconds" placeholder="Seconds">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" style="display: none;">
+    <div class="spinner-border text-primary" role="status">
+        <span class="sr-only">Loading...</span>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_script %}
+<script src="{% static 'js/observation_management.js' %}"></script>
+{% endblock %} 
