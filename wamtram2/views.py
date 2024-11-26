@@ -3677,7 +3677,7 @@ class EntryCurationView(LoginRequiredMixin, PaginateMixin, ListView):
                 'all_columns': all_columns,
                 'visible_columns': user_columns,
                 'search_term': self.request.GET.get('search', ''),
-                'clear_url': reverse('wamtram2:batch_entries', kwargs={'batch_id': batch_id}),
+                'clear_url': reverse('wamtram2:entries_curation', kwargs={'batch_id': batch_id}),
                 'batch_id': batch_id,
             })
             
