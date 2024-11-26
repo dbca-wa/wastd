@@ -40,6 +40,7 @@ from .models import (
     TrtEntryBatches,
     TrtDataEntry,
     TrtPersons,
+    TrtBeachPositions,
     TrtObservations,
     Template,
     TrtTagStates,
@@ -55,6 +56,10 @@ from .models import (
     TrtBodyParts,
     TrtDamageCodes,
     TrtYesNo,
+    TrtRecordedTags,
+    TrtRecordedPitTags,
+    TrtMeasurements,
+    TrtDamage
     
 )
 from .forms import TrtDataEntryForm, SearchForm, TrtEntryBatchesForm, TemplateForm, BatchesCodeForm, TrtPersonsForm, TagRegisterForm
@@ -3733,3 +3738,191 @@ class SaveEntryChangesView(View):
             })
             
             
+
+class ObservationManagementView(LoginRequiredMixin, TemplateView):
+    template_name = 'wamtram2/observation_management.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'places': TrtPlaces.objects.all(),
+            'damage_codes': TrtDamageCodes.objects.all(),
+            'measurement_types': TrtMeasurementTypes.objects.all(),
+            'activities': TrtActivities.objects.all(),
+            'beach_positions': TrtBeachPositions.objects.all(),
+            'tag_states': TrtTagStates.objects.all(),
+        })
+        return context
+
+class ObservationDataView(LoginRequiredMixin, View):
+    @transaction.atomic
+    def post(self, request):
+        try:
+            data = json.loads(request.body)
+            observation_id = data.get('observation_id')
+            
+            if observation_id:
+                observation = TrtObservations.objects.get(pk=observation_id)
+            else:
+                observation = TrtObservations()
+            
+            # Update basic info
+            basic_info = data.get('basic_info', {})
+            for field, value in basic_info.items():
+                if hasattr(observation, field):
+                    setattr(observation, field, value)
+            
+            # Handle special fields
+            if 'observation_date' in basic_info:
+                observation.observation_date = datetime.strptime(
+                    basic_info['observation_date'], 
+                    '%Y-%m-%d'
+                )
+            
+            observation.save()
+            
+            # Update related records
+            self._update_tags(observation, data.get('tag_info', {}))
+            self._update_measurements(observation, data.get('measurements', []))
+            self._update_damage_records(observation, data.get('damage_records', []))
+            self._update_location(observation, data.get('location', {}))
+            
+            return JsonResponse({
+                'status': 'success',
+                'observation_id': observation.observation_id
+            })
+            
+        except ValidationError as e:
+            return JsonResponse({
+                'status': 'error',
+                'message': str(e)
+            }, status=400)
+        except Exception as e:
+            return JsonResponse({
+                'status': 'error',
+                'message': str(e)
+            }, status=500)
+
+    def get(self, request, observation_id=None):
+        try:
+            if observation_id:
+                observation = TrtObservations.objects.get(pk=observation_id)
+                data = self._get_observation_data(observation)
+                return JsonResponse({'status': 'success', 'data': data})
+            else:
+                # Handle list view with filters
+                observations = self._filter_observations(request)
+                data = [self._get_observation_summary(obs) for obs in observations]
+                return JsonResponse({'status': 'success', 'data': data})
+        except TrtObservations.DoesNotExist:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Observation not found'
+            }, status=404)
+        except Exception as e:
+            return JsonResponse({
+                'status': 'error',
+                'message': str(e)
+            }, status=500)
+
+    def _get_observation_data(self, observation):
+        """Get full observation data"""
+        return {
+            'basic_info': {
+                'observation_id': observation.observation_id,
+                'turtle_id': observation.turtle_id,
+                'observation_date': observation.observation_date.strftime('%Y-%m-%d'),
+                'alive': observation.alive,
+                'nesting': observation.nesting,
+                # Add other basic fields
+            },
+            'tag_info': {
+                'recorded_tags': list(observation.trtrecordedtags_set.values()),
+                'recorded_pit_tags': list(observation.trtrecordedpittags_set.values()),
+            },
+            'measurements': list(observation.trtmeasurements_set.values()),
+            'damage_records': list(observation.trtdamage_set.values()),
+            'location': {
+                'place_code': observation.place_code,
+                'latitude': observation.latitude,
+                'longitude': observation.longitude,
+                # Add other location fields
+            }
+        }
+
+    def _filter_observations(self, request):
+        """Filter observations based on request parameters"""
+        observations = TrtObservations.objects.all()
+        
+        tag_id = request.GET.get('tag_id')
+        if tag_id:
+            observations = observations.filter(
+                trtrecordedtags__tag_id=tag_id
+            ).distinct()
+        
+        place_code = request.GET.get('place_code')
+        if place_code:
+            observations = observations.filter(place_code=place_code)
+        
+        date = request.GET.get('date')
+        if date:
+            observations = observations.filter(
+                observation_date__date=datetime.strptime(date, '%Y-%m-%d')
+            )
+        
+        return observations
+
+    def _get_observation_summary(self, observation):
+        """Get summary data for observation list"""
+        return {
+            'observation_id': observation.observation_id,
+            'turtle_id': observation.turtle_id,
+            'observation_date': observation.observation_date.strftime('%Y-%m-%d'),
+            'place_code': observation.place_code,
+            'status': observation.status
+        }
+
+    # Helper methods for updating related records
+    def _update_tags(self, observation, tag_data):
+        """Update tag records"""
+        observation.trtrecordedtags_set.all().delete()
+        observation.trtrecordedpittags_set.all().delete()
+        
+        for tag in tag_data.get('recorded_tags', []):
+            TrtRecordedTags.objects.create(
+                observation=observation,
+                **tag
+            )
+        
+        for pit_tag in tag_data.get('recorded_pit_tags', []):
+            TrtRecordedPitTags.objects.create(
+                observation=observation,
+                **pit_tag
+            )
+
+    def _update_measurements(self, observation, measurements):
+        """Update measurement records"""
+        observation.trtmeasurements_set.all().delete()
+        for measurement in measurements:
+            TrtMeasurements.objects.create(
+                observation=observation,
+                **measurement
+            )
+
+    def _update_damage_records(self, observation, damage_records):
+        """Update damage records"""
+        observation.trtdamage_set.all().delete()
+        for damage in damage_records:
+            TrtDamage.objects.create(
+                observation=observation,
+                **damage
+            )
+
+    def _update_location(self, observation, location_data):
+        """Update location information"""
+        for field, value in location_data.items():
+            if hasattr(observation, field):
+                setattr(observation, field, value)
+        observation.save()
+        
+        
