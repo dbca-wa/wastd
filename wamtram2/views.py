@@ -3738,7 +3738,6 @@ class SaveEntryChangesView(View):
                 'error': str(e)
             })
             
-            
 
 class ObservationManagementView(LoginRequiredMixin, TemplateView):
     template_name = 'wamtram2/observation_management.html'
@@ -3752,6 +3751,7 @@ class ObservationManagementView(LoginRequiredMixin, TemplateView):
             'activities': TrtActivities.objects.all(),
             'beach_positions': TrtBeachPositions.objects.all(),
             'tag_states': TrtTagStates.objects.all(),
+            'body_parts': TrtBodyParts.objects.all(),
         })
         return context
 
@@ -3926,7 +3926,8 @@ class ObservationDataView(LoginRequiredMixin, View):
                     'tag_id': str(tag.tag_id),
                     'tag_side': str(tag.side),
                     'tag_position': str(tag.tag_position),
-                    'tag_state': str(tag.tag_state)
+                    'tag_state': str(tag.tag_state),
+                    'barnacles': str(tag.barnacles)
                 } for tag in observation.trtrecordedtags_set.all()],
                 'recorded_pit_tags': [{
                     'tag_id': str(tag.pittag_id),
@@ -3935,9 +3936,9 @@ class ObservationDataView(LoginRequiredMixin, View):
                 } for tag in observation.trtrecordedpittags_set.all()]
             },
             'measurements': [{
-                'measurement_type': str(m.measurement_type),
-                'measurement_value': str(m.measurement_value)
-            } for m in observation.trtmeasurements_set.all()],
+                'measurement_type': str(measurement.measurement_type.code),
+                'measurement_value': str(measurement.measurement_value)
+            } for measurement in observation.trtmeasurements_set.all()],
 
             'damage_records': [damage_data] if damage_data else [],
 

@@ -99,6 +99,26 @@ $(document).ready(function() {
         // Add measurement button
         $('#addMeasurement').click(addMeasurementRow);
 
+        $('#addTag').click(function() {
+            const newRow = $('.tag-row-template .tag-row').clone();
+            newRow.show();
+            $('.tag-container').append(newRow);
+            newRow.find('select').select2({
+                theme: 'bootstrap4',
+                width: '100%'
+            });
+        });
+
+        $('#addPitTag').click(function() {
+            const newRow = $('.pit-tag-row-template .pit-tag-row').clone();
+            newRow.show();
+            $('.pit-tag-container').append(newRow);
+            newRow.find('select').select2({
+                theme: 'bootstrap4',
+                width: '100%'
+            });
+        });
+
         // // Coordinate conversion
         // $('.coordinate-input').on('change', convertCoordinates);
 
@@ -176,74 +196,55 @@ $(document).ready(function() {
     }
 
     function addTagRow(tagData = {}) {
-        const tagRow = $(`
-            <div class="tag-row form-row mb-2">
-                <div class="col">
-                    <input type="text" class="form-control" name="tag_id" 
-                           value="${tagData.tag_id || ''}" placeholder="Tag ID">
-                </div>
-                <div class="col">
-                    <select class="form-control" name="tag_type">
-                        <option value="">Select Type...</option>
-                        <!-- Add tag type options -->
-                    </select>
-                </div>
-                <div class="col">
-                    <button type="button" class="btn btn-danger btn-sm remove-tag">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            </div>
-        `);
-        $('#tagInfo .tag-container').append(tagRow);
+
+        const newRow = $('#tagRowTemplate .tag-row').clone();
+        
+        if (tagData) {
+            newRow.find('[name="tag_id"]').val(tagData.tag_id || '');
+            newRow.find('[name="side"]').val(tagData.side || '');
+            newRow.find('[name="tag_position"]').val(tagData.tag_position || '');
+            newRow.find('[name="tag_state"]').val(tagData.tag_state || '');
+            newRow.find('[name="barnacles"]').prop('checked', tagData.barnacles === 'True');
+        }
+        
+        $('.tag-container').append(newRow);
+        
+        newRow.find('select').select2({
+            theme: 'bootstrap4',
+            width: '100%'
+        });
     }
     
     function addMeasurementRow(measurementData = {}) {
-        const measurementRow = $(`
-            <div class="measurement-row form-row mb-2">
-                <div class="col">
-                    <select class="form-control" name="measurement_type">
-                        <option value="">Select Type...</option>
-                        <!-- Add measurement type options -->   
-                    </select>
-                </div>
-                <div class="col">
-                    <input type="number" class="form-control" name="measurement_value" 
-                           value="${measurementData.measurement_value || ''}" step="0.1">
-                </div>
-                <div class="col">
-                    <button type="button" class="btn btn-danger btn-sm remove-measurement">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            </div>
-        `);
-        $('#measurements .measurement-container').append(measurementRow);
+        const newRow = $('#measurementRowTemplate .measurement-row').clone();
+        
+        if (measurementData) {
+            newRow.find('[name="measurement_type"]').val(measurementData.measurement_type || '');
+            newRow.find('[name="measurement_value"]').val(measurementData.measurement_value || '');
+        }
+        
+        $('.measurement-container').append(newRow);
+        
+        newRow.find('select').select2({
+            theme: 'bootstrap4',
+            width: '100%'
+        });
     }
     
     function addDamageRecord(damageData = {}) {
-        const damageRecord = $(`
-            <div class="damage-record form-row mb-2">
-                <div class="col">
-                    <select class="form-control" name="body_part">
-                        <option value="">Select Body Part...</option>
-                        <!-- Add body part options -->
-                    </select>
-                </div>
-                <div class="col">
-                    <select class="form-control" name="damage_code">
-                        <option value="">Select Damage...</option>
-                        <!-- Add damage code options -->
-                    </select>
-                </div>
-                <div class="col">
-                    <button type="button" class="btn btn-danger btn-sm remove-damage">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            </div>
-        `);
-        $('#damage .damage-container').append(damageRecord);
+        const newRow = $('#damageRowTemplate .damage-record').clone();
+        
+        if (damageData) {
+            newRow.find('[name="body_part"]').val(damageData.body_part || '');
+            newRow.find('[name="damage_code"]').val(damageData.damage_code || '');
+        }
+        
+        $('.damage-container').append(newRow);
+        
+        newRow.find('select').select2({
+            theme: 'bootstrap4',
+            width: '100%'
+        });
     }
 
     async function handleSearch() {
@@ -450,28 +451,80 @@ $(document).ready(function() {
 
         // Populate basic information
         for (const [key, value] of Object.entries(data.basic_info)) {
-            $(`[name="${key}"]`).val(value);
+            const field = $(`[name="${key}"]`);
+            if (field.length) {
+                field.val(value).trigger('change');
+            }
         }
 
         // Populate tags
-        data.tag_info.recorded_tags.forEach(tag => {
-            addTagRow(tag);
-        });
+        if (data.tag_info) {
+            // Clear existing tag rows
+            $('.tag-container .tag-row:not(.tag-row-template)').remove();
+            $('.pit-tag-container .pit-tag-row:not(.pit-tag-row-template)').remove();
+            
+            // Add recorded tags
+            data.tag_info.recorded_tags.forEach(tag => {
+                const newRow = $('.tag-row-template .tag-row').clone();
+                newRow.show();
+                newRow.find('[name="tag_id"]').val(tag.tag_id);
+                newRow.find('[name="side"]').val(tag.side); ;
+                newRow.find('[name="tag_position"]').val(tag.tag_position);
+                newRow.find('[name="tag_state"]').val(tag.tag_state);
+                newRow.find('[name="barnacles"]').prop('checked', tag.barnacles === 'True');
+                $('.tag-container').append(newRow);
+                newRow.find('select').select2({
+                    theme: 'bootstrap4',
+                    width: '100%'
+                });
+            });
+
+            // Add recorded PIT tags
+            data.tag_info.recorded_pit_tags.forEach(tag => {
+                const newRow = $('.pit-tag-row-template .pit-tag-row').clone();
+                newRow.show();
+                newRow.find('[name="pittag_id"]').val(tag.tag_id);
+                newRow.find('[name="pit_tag_position"]').val(tag.tag_position);
+                newRow.find('[name="tag_state"]').val(tag.tag_state);
+                $('.pit-tag-container').append(newRow);
+                newRow.find('select').select2({
+                    theme: 'bootstrap4',
+                    width: '100%'
+                });
+            });
+        }
 
         // Populate measurements
-        data.measurements.forEach(measurement => {
-            addMeasurementRow(measurement);
-        });
+        if (data.measurements) {
+            $('#measurements .measurement-row').remove();
+            data.measurements.forEach(measurement => {
+                addMeasurementRow(measurement);
+            });
+        }
 
         // Populate damage records
-        data.damage_records.forEach(damage => {
-            addDamageRecord(damage);
-        });
-
-        // Populate location
-        for (const [key, value] of Object.entries(data.location)) {
-            $(`[name="${key}"]`).val(value);
+        if (data.damage_records) {
+            $('#damage .damage-record').remove();
+            data.damage_records.forEach(damage => {
+                addDamageRecord(damage);
+            });
         }
+
+        // Populate location information
+        if (data.location) {
+            for (const [key, value] of Object.entries(data.location)) {
+                const field = $(`[name="${key}"]`);
+                if (field.length) {
+                    field.val(value).trigger('change');
+                }
+            }
+        }
+
+        // 重新初始化所有 select2 下拉框
+        $('select').trigger('change').select2({
+            theme: 'bootstrap4',
+            width: '100%'
+        });
     }
 
     // Utility functions

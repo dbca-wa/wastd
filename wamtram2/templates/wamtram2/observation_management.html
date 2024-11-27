@@ -209,127 +209,162 @@
                 <div id="tagInfo" class="tab-pane fade">
                     <div class="section-card">
                         <h4>Flipper Tags</h4>
-                        <div class="form-row">
-                            <div class="col-md-6">
-                                <h5>Left Flipper</h5>
-                                <div class="form-group">
-                                    <label>Recapture Tag ID</label>
-                                    <input type="text" class="form-control" name="recapture_left_tag_id">
-                                </div>
-                                <div class="form-group">
-                                    <label>New Tag ID</label>
-                                    <input type="text" class="form-control" name="new_left_tag_id">
+                        <!-- Tag Container -->
+                        <div class="tag-container">
+                            <!-- Template for tag row (hidden) -->
+                            <div class="tag-row-template" style="display: none;" id="tagRowTemplate">
+                                <div class="tag-row form-row mb-2">
+                                    <div class="col">
+                                        <input type="text" class="form-control" name="tag_id" placeholder="Tag ID">
+                                    </div>
+                                    <div class="col">
+                                        <select class="form-control" name="side">
+                                            <option value="">Select Side...</option>
+                                            <option value="L">Left</option>
+                                            <option value="R">Right</option>
+                                        </select>
+                                    </div>
+                                    <div class="col">
+                                        <select class="form-control" name="tag_position">
+                                            <option value="">Select Position...</option>
+                                            <option value="1">Position 1</option>
+                                            <option value="2">Position 2</option>
+                                            <option value="3">Position 3</option>
+                                        </select>
+                                    </div>
+                                    <div class="col">
+                                        <select class="form-control" name="tag_state">
+                                            <option value="">Select State...</option>
+                                            {% for state in tag_states %}
+                                                <option value="{{ state.state_code }}">{{ state.description }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-auto">
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input" name="barnacles">
+                                            <label class="form-check-label">Barnacles</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <button type="button" class="btn btn-danger btn-sm remove-tag">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <h5>Right Flipper</h5>
-                                <div class="form-group">
-                                    <label>Recapture Tag ID</label>
-                                    <input type="text" class="form-control" name="recapture_right_tag_id">
-                                </div>
-                                <div class="form-group">
-                                    <label>New Tag ID</label>
-                                    <input type="text" class="form-control" name="new_right_tag_id">
-                                </div>
-                            </div>
+                            <!-- Active tag rows will be added here -->
                         </div>
 
+                        <button type="button" class="btn btn-outline-secondary mt-3" id="addTag">
+                            <i class="fas fa-plus"></i> Add Tag
+                        </button>
+
                         <h4 class="mt-4">PIT Tags</h4>
-                        <div class="form-row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>Recapture PIT Tag ID</label>
-                                    <input type="text" class="form-control" name="recapture_pit_tag_id">
+                        <!-- PIT Tag Container -->
+                        <div class="pit-tag-container">
+                            <!-- Template for PIT tag row (hidden) -->
+                            <div class="pit-tag-row-template" style="display: none;">
+                                <div class="pit-tag-row form-row mb-2">
+                                    <div class="col">
+                                        <input type="text" class="form-control" name="pittag_id" placeholder="PIT Tag ID">
+                                    </div>
+                                    <div class="col">
+                                        <select class="form-control" name="pit_tag_position">
+                                            <option value="">Select Position...</option>
+                                            <option value="LFF">Left Front Flipper</option>
+                                            <option value="RFF">Right Front Flipper</option>
+                                        </select>
+                                    </div>
+                                    <div class="col">
+                                        <select class="form-control" name="tag_state">
+                                            <option value="">Select State...</option>
+                                            {% for state in tag_states %}
+                                                <option value="{{ state.state_code }}">{{ state.description }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-auto">
+                                        <button type="button" class="btn btn-danger btn-sm remove-tag">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>New PIT Tag ID</label>
-                                    <input type="text" class="form-control" name="new_pit_tag_id">
-                                </div>
-                            </div>
+                            <!-- Active PIT tag rows will be added here -->
                         </div>
+
+                        <button type="button" class="btn btn-outline-secondary mt-3" id="addPitTag">
+                            <i class="fas fa-plus"></i> Add PIT Tag
+                        </button>
                     </div>
                 </div>
 
                 <!-- Measurements Tab -->
                 <div id="measurements" class="tab-pane fade">
                     <div class="section-card">
-                        <div class="form-row">
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label>Curved Carapace Length (cm)</label>
-                                    <input type="number" step="0.1" class="form-control" name="curved_carapace_length">
+                        <!-- Template for measurement row (hidden) -->
+                        <div class="measurement-row-template" style="display: none;" id="measurementRowTemplate">
+                            <div class="measurement-row form-row mb-2">
+                                <div class="col">
+                                    <select class="form-control" name="measurement_type">
+                                        <option value="">Select Type...</option>
+                                        {% for type in measurement_types %}
+                                            <option value="{{ type.code }}">{{ type.description }}</option>
+                                        {% endfor %}
+                                    </select>
                                 </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label>Curved Carapace Width (cm)</label>
-                                    <input type="number" step="0.1" class="form-control" name="curved_carapace_width">
+                                <div class="col">
+                                    <input type="number" class="form-control" name="measurement_value" step="0.1">
                                 </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label>Curved Carapace Length Notch (cm)</label>
-                                    <input type="number" step="0.1" class="form-control" name="curved_carapace_length_notch">
+                                <div class="col-auto">
+                                    <button type="button" class="btn btn-danger btn-sm remove-measurement">
+                                        <i class="fas fa-times"></i>
+                                    </button>
                                 </div>
                             </div>
                         </div>
-
-                        <div id="additionalMeasurements">
-                            <!-- Additional measurements will be added here dynamically -->
+                        <div class="measurement-container">
+                            <!-- Active measurement rows will be added here -->
                         </div>
-
                         <button type="button" class="btn btn-outline-secondary mt-3" id="addMeasurement">
                             <i class="fas fa-plus"></i> Add Measurement
                         </button>
                     </div>
-                </div>
+                </ditag-row-templatev>
 
                 <!-- Damage Records Tab -->
                 <div id="damage" class="tab-pane fade">
                     <div class="section-card">
-                        <h4>Standard Damage Records</h4>
-                        <div class="form-row">
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label>Carapace</label>
-                                    <select class="form-control" name="damage_carapace">
-                                        <option value="">Select...</option>
-                                        {% for damage in damage_codes %}
-                                            <option value="{{ damage.code }}">{{ damage.description }}</option>
+                        <!-- Template for damage record row (hidden) -->
+                        <div class="damage-row-template" style="display: none;" id="damageRowTemplate">
+                            <div class="damage-record form-row mb-2">
+                                <div class="col">
+                                    <select class="form-control" name="body_part">
+                                        <option value="">Select Body Part...</option>
+                                        {% for part in body_parts %}
+                                            <option value="{{ part.body_part }}">{{ part.description }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label>Left Front Flipper</label>
-                                    <select class="form-control" name="damage_lff">
-                                        <option value="">Select...</option>
-                                        {% for damage in damage_codes %}
-                                            <option value="{{ damage.code }}">{{ damage.description }}</option>
+                                <div class="col">
+                                    <select class="form-control" name="damage_code">
+                                        <option value="">Select Damage...</option>
+                                        {% for code in damage_codes %}
+                                            <option value="{{ code.damage_code }}">{{ code.description }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label>Right Front Flipper</label>
-                                    <select class="form-control" name="damage_rff">
-                                        <option value="">Select...</option>
-                                        {% for damage in damage_codes %}
-                                            <option value="{{ damage.code }}">{{ damage.description }}</option>
-                                        {% endfor %}
-                                    </select>
+                                <div class="col-auto">
+                                    <button type="button" class="btn btn-danger btn-sm remove-damage">
+                                        <i class="fas fa-times"></i>
+                                    </button>
                                 </div>
                             </div>
                         </div>
-
-                        <div id="additionalDamage">
-                            <!-- Additional damage records will be added here dynamically -->
+                        <div class="damage-container">
+                            <!-- Active damage records will be added here -->
                         </div>
-
                         <button type="button" class="btn btn-outline-secondary mt-3" id="addDamage">
                             <i class="fas fa-plus"></i> Add Damage Record
                         </button>
