@@ -9,6 +9,22 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/observation_management.css' %}">
 {% endblock %}
 
+{% block extra_head %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    {{ form.media }}
+{% endblock extra_head %}
+
+{% block breadcrumbs %}
+    <!-- Breadcrumb Navigation -->
+    <nav aria-label="breadcrumb" class="d-none d-md-block">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'wamtram2:admin_tools' %}">Curation Tools</a></li>
+            <li class="breadcrumb-item active">Manage Observation</li>
+        </ol>
+    </nav>
+{% endblock %}
+
 {% block page_content_inner %}
 <div class="container-fluid mt-3">
     <!-- Top Filter and Search Area -->
@@ -344,6 +360,7 @@
 </div>
 {% endblock %}
 
-{% block extra_script %}
+{% block extra_js %}
+{{ block.super }}
 <script src="{% static 'js/observation_management.js' %}"></script>
 {% endblock %} 
