@@ -3854,15 +3854,43 @@ class ObservationDataView(LoginRequiredMixin, View):
                 print(f"Date: {request.GET.get('date')}")
                 print(f"Status: {request.GET.get('status')}")
                 # Handle list view with filters
-                observations = self._filter_observations(request)
-                data = [self._get_observation_summary(obs) for obs in observations]
-                return JsonResponse({'status': 'success', 'data': data})
+                try:
+                    observations = self._filter_observations(request)
+                    print(f"Query executed successfully, got {observations.count()} results")
+                    
+                    data = []
+                    for obs in observations:
+                        try:
+                            summary = self._get_observation_summary(obs)
+                            data.append(summary)
+                        except Exception as e:
+                            print(f"Error processing observation {obs.pk}: {str(e)}")
+                            continue
+                    
+                    print(f"Processed {len(data)} observations")
+                    return JsonResponse({'status': 'success', 'data': data})
+                    
+                except Exception as e:
+                    print(f"Error in _filter_observations: {str(e)}")
+                    print(f"Error type: {type(e)}")
+                    import traceback
+                    print(f"Traceback: {traceback.format_exc()}")
+                    raise
+                
+                # observations = self._filter_observations(request)
+                # data = [self._get_observation_summary(obs) for obs in observations]
+                # return JsonResponse({'status': 'success', 'data': data})
         except TrtObservations.DoesNotExist:
+            print("Observation not found!")
             return JsonResponse({
                 'status': 'error',
                 'message': 'Observation not found'
             }, status=404)
         except Exception as e:
+            print(f"Unexpected error: {str(e)}")
+            print(f"Error type: {type(e)}")
+            import traceback
+            print(f"Traceback: {traceback.format_exc()}")
             return JsonResponse({
                 'status': 'error',
                 'message': str(e)
@@ -3917,17 +3945,17 @@ class ObservationDataView(LoginRequiredMixin, View):
     
     def _filter_observations(self, request):
         """Filter observations based on request parameters"""
+        print("\nStarting observation filtering")
         observations = TrtObservations.objects.all()
-        
+        print(f"Initial queryset count: {observations.count()}")
         search_term = request.GET.get('search')
         if search_term:
             tag_parts = search_term.split()
             q_objects = Q()
             for part in tag_parts:
                 q_objects |= (
-                    Q(trtrecordedtags__tag_id__icontains=part) |
-                    Q(trtrecordedpittags__tag_id__icontains=part) |
-                    Q(turtle_id__icontains=part)
+                    Q(trtrecordedtags__tag_id__tag_id__exact=part) | 
+                    Q(trtrecordedpittags__pittag_id__pittag_id__exact=part) 
                 )
             observations = observations.filter(q_objects)
         
@@ -3952,26 +3980,33 @@ class ObservationDataView(LoginRequiredMixin, View):
             elif status == 'Non-nesting':
                 observations = observations.filter(nesting='N')
                 
-        observations = observations.select_related('place').prefetch_related('trtrecordedtags_set', 'trtrecordedpittags_set').distinct().order_by('-observation_date', '-observation_time')
-    
+        observations = observations.select_related('place_code').prefetch_related(
+            'trtrecordedtags_set', 
+            'trtrecordedpittags_set'
+            ).distinct().order_by('-observation_date', '-observation_time')
+        print(f"Final query count: {observations.count()}")
+        print("Query SQL:", observations.query)
         
         return observations.order_by('-observation_date')
     
     def _get_observation_summary(self, observation):
         """Get summary data for observation list"""
-        tags = list(observation.trtrecordedtags_set.values_list('tag_id', flat=True))
-        pit_tags = list(observation.trtrecordedpittags_set.values_list('tag_id', flat=True))
+        tags = list(observation.trtrecordedtags_set.values_list('tag_id', flat=True)) 
+        pit_tags = list(observation.trtrecordedpittags_set.values_list('pittag_id', flat=True))
+        place = observation.place_code
+        place_description = place.get_full_name() if place else ''
         return {
             'observation_id': observation.observation_id,
             'turtle_id': observation.turtle_id,
             'observation_date': observation.observation_date.strftime('%Y-%m-%d'),
             'observation_time': observation.observation_time.strftime('%H:%M') if observation.observation_time else '',
-            'place_code': observation.place_code,
-            'place_description': observation.place.description if observation.place else '',
-            'status': observation.status,
-            'nesting': observation.nesting,
-            'tags': tags,
-            'pit_tags': pit_tags,
+            'place_code': place.place_code if place else '',
+            'place_description': place_description,
+            'status': observation.observation_status,
+            'comments': observation.comments,
+            'nesting': str(observation.nesting),
+            'tags': [str(tag) for tag in tags],
+            'pit_tags': [str(tag) for tag in pit_tags],
             'total_tags': len(tags),
             'total_pit_tags': len(pit_tags)
         }

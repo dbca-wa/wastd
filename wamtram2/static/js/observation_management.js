@@ -35,7 +35,7 @@ $(document).ready(function() {
             allowClear: true,
             minimumInputLength: 2,
             ajax: {
-                url: 'api/get-places/',
+                url: '/wamtram2/api/get-places/',
                 dataType: 'json',
                 delay: 250,
                 data: function(params) {
@@ -268,7 +268,7 @@ $(document).ready(function() {
                 status: $('#statusFilter').val()
             });
     
-            const response = await $.get(`/api/observations/?${searchParams.toString()}`);
+            const response = await $.get(`/wamtram2/api/observations/?${searchParams.toString()}`);
             if (response.status === 'success') {
                 displaySearchResults(response.data);
             } else {
@@ -366,7 +366,7 @@ $(document).ready(function() {
         try {
             const formData = collectFormData();
             const response = await $.ajax({
-                url: '/api/observations/',
+                url: '/wamtram2/api/observations/',
                 method: currentObservationId ? 'PUT' : 'POST',
                 data: JSON.stringify(formData),
                 contentType: 'application/json'
@@ -447,7 +447,7 @@ $(document).ready(function() {
     async function loadObservation(observationId) {
         showLoadingOverlay();
         try {
-            const response = await $.get(`/api/observations/${observationId}/`);
+            const response = await $.get(`/wamtram2/api/observations/${observationId}/`);
             if (response.status === 'success') {
                 populateForm(response.data);
                 currentObservationId = observationId;
