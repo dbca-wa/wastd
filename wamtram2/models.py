@@ -2222,7 +2222,6 @@ class TrtSpecies(models.Model):
         return f"{self.common_name}"
     
 
-
 class TrtTags(models.Model):
     tag_id = models.CharField(
         db_column="TAG_ID", primary_key=True, max_length=10
@@ -2489,6 +2488,7 @@ class TrtYesNo(models.Model):
 
     def __str__(self):
         return f"{self.description}"
+
 
 SEX_CHOICES = [
     ("F", "Female"),

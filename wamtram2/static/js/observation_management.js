@@ -123,6 +123,11 @@ $(document).ready(function() {
         $(document).on('click', '.remove-damage', function() {
             $(this).closest('.damage-record').remove();
         });
+
+        $(document).on('click', '.edit-observation', function() {
+            const observationId = $(this).data('observation-id');
+            loadObservation(observationId);
+        });
     }
 
     function clearForm() {
@@ -289,32 +294,8 @@ $(document).ready(function() {
     }
 
     function displaySearchResults(results) {
-        console.log("\n=== Displaying Results ===");
-        console.log("Results count:", results.length);
-        
-        const resultsTable = $('#searchResults');
-        if (resultsTable.length === 0) {
-            
-            $('.container-fluid').append(`
-                <div class="row mt-3">
-                    <div class="col-12">
-                        <table id="searchResults" class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Observation ID</th>
-                                    <th>Turtle ID</th>
-                                    <th>Date</th>
-                                    <th>Place</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
-            `);
-        }
+    
+
     
         const tbody = $('#searchResults tbody');
         tbody.empty();
@@ -330,7 +311,7 @@ $(document).ready(function() {
     
         results.forEach(result => {
             const tagInfo = result.tags.length > 0 ? 
-            `Tags: ${result.tags.join(', ')}` : '';
+                `Tags: ${result.tags.join(', ')}` : '';
             const pitTagInfo = result.pit_tags.length > 0 ? 
                 `PIT Tags: ${result.pit_tags.join(', ')}` : '';
             const tagDisplay = [tagInfo, pitTagInfo].filter(x => x).join(' | ');
@@ -444,7 +425,7 @@ $(document).ready(function() {
     }
 
     // Load observation data
-    async function loadObservation(observationId) {
+    window.loadObservation = async function(observationId) {
         showLoadingOverlay();
         try {
             const response = await $.get(`/wamtram2/api/observations/${observationId}/`);
@@ -452,6 +433,7 @@ $(document).ready(function() {
                 populateForm(response.data);
                 currentObservationId = observationId;
                 updateOriginalData(response.data);
+                $('.nav-tabs a[href="#basicInfo"]').tab('show');
             } else {
                 throw new Error(response.message);
             }
