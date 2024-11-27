@@ -27,6 +27,57 @@ $(document).ready(function() {
             theme: 'bootstrap4',
             width: '100%'
         });
+
+        $('.select2-places').select2({
+            theme: 'bootstrap4',
+            width: '100%',
+            placeholder: 'Search Place...',
+            allowClear: true,
+            minimumInputLength: 2,
+            ajax: {
+                url: '/search-places/',
+                dataType: 'json',
+                delay: 250,
+                data: function(params) {
+                    return {
+                        q: params.term || ''
+                    };
+                },
+                processResults: function(data) {
+                    return {
+                        results: data.map(function(item) {
+                            return {
+                                id: item.place_code,
+                                text: item.full_name,
+                                place_name: item.place_name,
+                                location_name: item.location_code__location_name
+                            };
+                        })
+                    };
+                },
+                cache: true
+            },
+            templateResult: formatPlace,
+            templateSelection: formatPlaceSelection
+        });
+
+        $('.select2-places').on('change', function() {
+            handleSearch();
+        });
+    }
+
+    function formatPlace(place) {
+        if (!place.id) return place.text;
+        return $(`<span>
+            <strong>${place.place_name}</strong><br>
+            <small class="text-muted">${place.location_name}</small>
+        </span>`);
+    }
+    
+
+    function formatPlaceSelection(place) {
+        if (!place.id) return place.text;
+        return place.text;
     }
 
     // Bind event handlers
@@ -54,6 +105,121 @@ $(document).ready(function() {
 
         // Coordinate conversion
         $('.coordinate-input').on('change', convertCoordinates);
+
+        $('#searchBtn').click(handleSearch);
+    
+        $('#tagSearch').keypress(function(e) {
+            if(e.which == 13) {
+                handleSearch();
+            }
+        });
+
+        $('#placeFilter, #dateFilter, #statusFilter').change(handleSearch);
+    }
+
+    async function handleSearch() {
+        showLoadingOverlay();
+        $('#searchResults tbody').html(`
+            <tr>
+                <td colspan="6" class="text-center">
+                    <div class="spinner-border spinner-border-sm" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                    Searching...
+                </td>
+            </tr>
+        `);    
+        try {
+            const searchParams = new URLSearchParams({
+                search: $('#tagSearch').val(),
+                place: $('.select2-places').val(),
+                date: $('#dateFilter').val(),
+                status: $('#statusFilter').val()
+            });
+    
+            const response = await $.get(`/api/observations/?${searchParams.toString()}`);
+            if (response.status === 'success') {
+                displaySearchResults(response.data);
+            } else {
+                throw new Error(response.message);
+            }
+        } catch (error) {
+            $('#searchResults tbody').html(`
+                <tr>
+                    <td colspan="6" class="text-center text-danger">
+                        <i class="fas fa-exclamation-circle"></i>
+                        Error performing search: ${error.message}
+                    </td>
+                </tr>
+            `);
+        } finally {
+            hideLoadingOverlay();
+        }
+    }
+
+    function displaySearchResults(results) {
+    
+        const resultsTable = $('#searchResults');
+        if (resultsTable.length === 0) {
+            
+            $('.container-fluid').append(`
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <table id="searchResults" class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Observation ID</th>
+                                    <th>Turtle ID</th>
+                                    <th>Date</th>
+                                    <th>Place</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            `);
+        }
+    
+        const tbody = $('#searchResults tbody');
+        tbody.empty();
+
+        if (results.length === 0) {
+            tbody.append(`
+                <tr>
+                    <td colspan="6" class="text-center">No results found</td>
+                </tr>
+            `);
+            return;
+        }
+    
+        results.forEach(result => {
+            const tagInfo = result.tags.length > 0 ? 
+            `Tags: ${result.tags.join(', ')}` : '';
+            const pitTagInfo = result.pit_tags.length > 0 ? 
+                `PIT Tags: ${result.pit_tags.join(', ')}` : '';
+            const tagDisplay = [tagInfo, pitTagInfo].filter(x => x).join(' | ');
+            tbody.append(`
+            <tr>
+                <td>${result.observation_id}</td>
+                <td>${result.turtle_id || ''}</td>
+                <td>${result.observation_date}
+                    ${result.observation_time ? ' ' + result.observation_time : ''}
+                </td>
+                <td>${result.place_code} - ${result.place_description}</td>
+                <td>${result.status || ''}</td>
+                <td>
+                    <small class="text-muted d-block">${tagDisplay}</small>
+                    <button class="btn btn-sm btn-primary mt-1" 
+                            onclick="loadObservation(${result.observation_id})">
+                        Edit
+                    </button>
+                </td>
+            </tr>
+            `);
+        });
     }
 
     // Handle save operation

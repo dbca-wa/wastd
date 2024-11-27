@@ -1686,6 +1686,7 @@ def search_places(request):
     
     return JsonResponse(list(places), safe=False)
 
+
 class ExportDataView(LoginRequiredMixin, View):
     template_name = 'wamtram2/export_form.html'
 
@@ -3832,54 +3833,103 @@ class ObservationDataView(LoginRequiredMixin, View):
                 'observation_id': observation.observation_id,
                 'turtle_id': observation.turtle_id,
                 'observation_date': observation.observation_date.strftime('%Y-%m-%d'),
+                'observation_time': observation.observation_time.strftime('%H:%M') if observation.observation_time else '',
                 'alive': observation.alive,
                 'nesting': observation.nesting,
-                # Add other basic fields
+                'activity_code': observation.activity_code,
+                'beach_position_code': observation.beach_position_code,
+                'status': observation.status
             },
             'tag_info': {
-                'recorded_tags': list(observation.trtrecordedtags_set.values()),
-                'recorded_pit_tags': list(observation.trtrecordedpittags_set.values()),
+                'recorded_tags': [{
+                    'tag_id': tag.tag_id,
+                    'tag_type': tag.tag_type,
+                    'tag_position': tag.tag_position,
+                    'tag_state': tag.tag_state
+                } for tag in observation.trtrecordedtags_set.all()],
+                'recorded_pit_tags': [{
+                    'tag_id': tag.tag_id,
+                    'tag_position': tag.tag_position,
+                    'tag_state': tag.tag_state
+                } for tag in observation.trtrecordedpittags_set.all()]
             },
-            'measurements': list(observation.trtmeasurements_set.values()),
-            'damage_records': list(observation.trtdamage_set.values()),
+            'measurements': [{
+                'measurement_type': m.measurement_type,
+                'measurement_value': m.measurement_value
+            } for m in observation.trtmeasurements_set.all()],
+            'damage_records': [{
+                'body_part': d.body_part,
+                'damage_code': d.damage_code
+            } for d in observation.trtdamage_set.all()],
             'location': {
                 'place_code': observation.place_code,
-                'latitude': observation.latitude,
-                'longitude': observation.longitude,
-                # Add other location fields
+                'datum_code': observation.datum_code,
+                'latitude_degrees': observation.latitude_degrees,
+                'latitude_minutes': observation.latitude_minutes,
+                'latitude_seconds': observation.latitude_seconds,
+                'longitude_degrees': observation.longitude_degrees,
+                'longitude_minutes': observation.longitude_minutes,
+                'longitude_seconds': observation.longitude_seconds
             }
         }
-
     def _filter_observations(self, request):
         """Filter observations based on request parameters"""
         observations = TrtObservations.objects.all()
         
-        tag_id = request.GET.get('tag_id')
-        if tag_id:
-            observations = observations.filter(
-                trtrecordedtags__tag_id=tag_id
-            ).distinct()
+        search_term = request.GET.get('search')
+        if search_term:
+            tag_parts = search_term.split()
+            q_objects = Q()
+            for part in tag_parts:
+                q_objects |= (
+                    Q(trtrecordedtags__tag_id__icontains=part) |
+                    Q(trtrecordedpittags__tag_id__icontains=part) |
+                    Q(turtle_id__icontains=part)
+                )
+            observations = observations.filter(q_objects)
         
-        place_code = request.GET.get('place_code')
+        place_code = request.GET.get('place')
         if place_code:
             observations = observations.filter(place_code=place_code)
         
         date = request.GET.get('date')
         if date:
-            observations = observations.filter(
-                observation_date__date=datetime.strptime(date, '%Y-%m-%d')
-            )
+            try:
+                date_obj = datetime.strptime(date, '%Y-%m-%d')
+                observations = observations.filter(observation_date__date=date_obj)
+            except ValueError:
+                pass
         
-        return observations
-
+        status = request.GET.get('status')
+        if status:
+            if status == 'Initial Nesting':
+                observations = observations.filter(nesting='Y', status='I')
+            elif status == 'Subsequent Nesting':
+                observations = observations.filter(nesting='Y', status='S')
+            elif status == 'Non-nesting':
+                observations = observations.filter(nesting='N')
+                
+        observations = observations.select_related('place').prefetch_related('trtrecordedtags_set', 'trtrecordedpittags_set').distinct().order_by('-observation_date', '-observation_time')
+    
+        
+        return observations.order_by('-observation_date')
     def _get_observation_summary(self, observation):
         """Get summary data for observation list"""
+        tags = list(observation.trtrecordedtags_set.values_list('tag_id', flat=True))
+        pit_tags = list(observation.trtrecordedpittags_set.values_list('tag_id', flat=True))
         return {
             'observation_id': observation.observation_id,
             'turtle_id': observation.turtle_id,
             'observation_date': observation.observation_date.strftime('%Y-%m-%d'),
+            'observation_time': observation.observation_time.strftime('%H:%M') if observation.observation_time else '',
             'place_code': observation.place_code,
-            'status': observation.status
+            'place_description': observation.place.description if observation.place else '',
+            'status': observation.status,
+            'nesting': observation.nesting,
+            'tags': tags,
+            'pit_tags': pit_tags,
+            'total_tags': len(tags),
+            'total_pit_tags': len(pit_tags)
         }
 
     # Helper methods for updating related records

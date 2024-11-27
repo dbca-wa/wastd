@@ -41,11 +41,8 @@
             </div>
         </div>
         <div class="col-md-3">
-            <select class="form-control" id="placeFilter">
-                <option value="">Select Place...</option>
-                {% for place in places %}
-                    <option value="{{ place.place_code }}">{{ place.description }}</option>
-                {% endfor %}
+            <select class="form-control select2-places" id="placeSearch" name="place_code">
+                <option value="">Search Place...</option>
             </select>
         </div>
         <div class="col-md-3">
