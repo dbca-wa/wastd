@@ -3804,13 +3804,55 @@ class ObservationDataView(LoginRequiredMixin, View):
                 'message': str(e)
             }, status=500)
 
+    def get_places(self, request):
+        """
+        Search places by query string
+        """
+        query = request.GET.get('q', '')
+        if len(query) < 2:
+            return JsonResponse([], safe=False)
+            
+        places = TrtPlaces.objects.filter(
+            Q(place_name__icontains=query) | 
+            Q(location_code__location_name__icontains=query)
+        ).select_related('location_code').values(
+            'place_code',
+            'place_name',
+            'location_code__location_name'
+        )[:10]
+        
+        result = []
+        for place in places:
+            result.append({
+                'place_code': place['place_code'],
+                'place_name': place['place_name'],
+                'location_code__location_name': place['location_code__location_name'],
+                'full_name': f"{place['place_name']} ({place['location_code__location_name']})"
+            })
+            
+        return JsonResponse(result, safe=False)
+        
     def get(self, request, observation_id=None):
+        print("\n" + "="*50) 
+        print("GET request received!")
+        print(f"URL Parameters: {request.GET}")
+        print(f"Observation ID: {observation_id}")
         try:
-            if observation_id:
+            if 'q' in request.GET:
+                print("Processing places search request")
+                return self.get_places(request)
+        
+            if observation_id:                
+                print(f"Loading specific observation: {observation_id}")
                 observation = TrtObservations.objects.get(pk=observation_id)
                 data = self._get_observation_data(observation)
                 return JsonResponse({'status': 'success', 'data': data})
             else:
+                print("\nProcessing observation search request")
+                print(f"Search term: {request.GET.get('search')}")
+                print(f"Place: {request.GET.get('place')}")
+                print(f"Date: {request.GET.get('date')}")
+                print(f"Status: {request.GET.get('status')}")
                 # Handle list view with filters
                 observations = self._filter_observations(request)
                 data = [self._get_observation_summary(obs) for obs in observations]
@@ -3872,6 +3914,7 @@ class ObservationDataView(LoginRequiredMixin, View):
                 'longitude_seconds': observation.longitude_seconds
             }
         }
+    
     def _filter_observations(self, request):
         """Filter observations based on request parameters"""
         observations = TrtObservations.objects.all()
@@ -3913,6 +3956,7 @@ class ObservationDataView(LoginRequiredMixin, View):
     
         
         return observations.order_by('-observation_date')
+    
     def _get_observation_summary(self, observation):
         """Get summary data for observation list"""
         tags = list(observation.trtrecordedtags_set.values_list('tag_id', flat=True))

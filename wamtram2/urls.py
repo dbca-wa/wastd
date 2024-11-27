@@ -56,4 +56,5 @@ urlpatterns = [
     path('curation/observations/', views.ObservationManagementView.as_view(), name='observation_management'),
     path('api/observations/', views.ObservationDataView.as_view(), name='observation_data'),
     path('api/observations/<int:observation_id>/', views.ObservationDataView.as_view(), name='observation_detail'),
+    path('api/get-places/', views.ObservationDataView.as_view(), name='api_get_places'),
 ]

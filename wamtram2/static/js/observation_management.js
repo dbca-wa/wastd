@@ -35,7 +35,7 @@ $(document).ready(function() {
             allowClear: true,
             minimumInputLength: 2,
             ajax: {
-                url: '/search-places/',
+                url: 'api/get-places/',
                 dataType: 'json',
                 delay: 250,
                 data: function(params) {
@@ -85,7 +85,7 @@ $(document).ready(function() {
         // Save button click
         $('#saveChanges').click(handleSave);
         // Filter changes
-        $('#tagSearch, #placeFilter, #dateFilter, #statusFilter').on('change', handleFilter);
+        $('#tagSearch, #placeFilter, #dateFilter, #statusFilter').on('change', handleSearch);
 
         // Form field changes
         $('form input, form select').on('change', function() {
@@ -99,8 +99,8 @@ $(document).ready(function() {
         // Add measurement button
         $('#addMeasurement').click(addMeasurementRow);
 
-        // Coordinate conversion
-        $('.coordinate-input').on('change', convertCoordinates);
+        // // Coordinate conversion
+        // $('.coordinate-input').on('change', convertCoordinates);
 
         $('#searchBtn').click(handleSearch);
     
@@ -242,6 +242,13 @@ $(document).ready(function() {
     }
 
     async function handleSearch() {
+        console.log("\n=== Starting Search ===");
+        console.log("Search input values:");
+        console.log("Tag Search:", $('#tagSearch').val());
+        console.log("Place:", $('.select2-places').val());
+        console.log("Date:", $('#dateFilter').val());
+        console.log("Status:", $('#statusFilter').val());
+
         showLoadingOverlay();
         $('#searchResults tbody').html(`
             <tr>
@@ -282,7 +289,9 @@ $(document).ready(function() {
     }
 
     function displaySearchResults(results) {
-    
+        console.log("\n=== Displaying Results ===");
+        console.log("Results count:", results.length);
+        
         const resultsTable = $('#searchResults');
         if (resultsTable.length === 0) {
             
