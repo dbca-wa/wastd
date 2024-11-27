@@ -46,6 +46,34 @@
     cursor: not-allowed;
 }
 
+.table-responsive {
+    overflow-x: auto;
+}
+
+#searchResults {
+    margin-bottom: 0;
+}
+
+#searchResults th {
+    background-color: #f8f9fa;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+#searchResults td {
+    vertical-align: middle;
+}
+
+.tag-info {
+    font-size: 0.85em;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.action-buttons {
+    white-space: nowrap;
+}
 
 @media (max-width: 768px) {
     .container-fluid {
