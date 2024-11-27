@@ -9,7 +9,7 @@ $(document).ready(function() {
         initializeFormValidation();
         initializeDropdowns();
         bindEventHandlers();
-        setupAutoSave();
+        // setupAutoSave();
     }
 
     // Form validation
@@ -23,7 +23,7 @@ $(document).ready(function() {
 
     // Initialize select2 dropdowns
     function initializeDropdowns() {
-        $('.select2-dropdown').select2({
+        $('select').select2({
             theme: 'bootstrap4',
             width: '100%'
         });
@@ -84,10 +84,6 @@ $(document).ready(function() {
     function bindEventHandlers() {
         // Save button click
         $('#saveChanges').click(handleSave);
-
-        // New record button click
-        $('#addNew').click(handleNewRecord);
-
         // Filter changes
         $('#tagSearch, #placeFilter, #dateFilter, #statusFilter').on('change', handleFilter);
 
@@ -115,6 +111,134 @@ $(document).ready(function() {
         });
 
         $('#placeFilter, #dateFilter, #statusFilter').change(handleSearch);
+
+        $(document).on('click', '.remove-tag', function() {
+            $(this).closest('.tag-row').remove();
+        });
+        
+        $(document).on('click', '.remove-measurement', function() {
+            $(this).closest('.measurement-row').remove();
+        });
+        
+        $(document).on('click', '.remove-damage', function() {
+            $(this).closest('.damage-record').remove();
+        });
+    }
+
+    function clearForm() {
+        $('#basicInfo input, #basicInfo select').val('');
+        
+        $('#tagInfo .tag-row').remove();
+        
+        $('#measurements .measurement-row').remove();
+        
+        $('#damage .damage-record').remove();
+        
+        $('#location input, #location select').val('');
+        
+        $('.modified').removeClass('modified');
+        currentObservationId = null;
+    }
+
+    function updateOriginalData(data) {
+        originalData = JSON.parse(JSON.stringify(data));
+    }
+    
+    function validateForm() {
+        let isValid = true;
+        let firstInvalidField = null;
+
+        formFields.forEach(fieldName => {
+            const field = $(`[name="${fieldName}"]`);
+            if (!field.val()) {
+                field.addClass('is-invalid');
+                if (!firstInvalidField) {
+                    firstInvalidField = field;
+                }
+                isValid = false;
+            } else {
+                field.removeClass('is-invalid');
+            }
+        });
+        if (firstInvalidField) {
+            firstInvalidField.focus();
+            $('html, body').animate({
+                scrollTop: firstInvalidField.offset().top - 100
+            }, 500);
+        }
+
+        return isValid;
+    }
+
+    function addTagRow(tagData = {}) {
+        const tagRow = $(`
+            <div class="tag-row form-row mb-2">
+                <div class="col">
+                    <input type="text" class="form-control" name="tag_id" 
+                           value="${tagData.tag_id || ''}" placeholder="Tag ID">
+                </div>
+                <div class="col">
+                    <select class="form-control" name="tag_type">
+                        <option value="">Select Type...</option>
+                        <!-- Add tag type options -->
+                    </select>
+                </div>
+                <div class="col">
+                    <button type="button" class="btn btn-danger btn-sm remove-tag">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+        `);
+        $('#tagInfo .tag-container').append(tagRow);
+    }
+    
+    function addMeasurementRow(measurementData = {}) {
+        const measurementRow = $(`
+            <div class="measurement-row form-row mb-2">
+                <div class="col">
+                    <select class="form-control" name="measurement_type">
+                        <option value="">Select Type...</option>
+                        <!-- Add measurement type options -->   
+                    </select>
+                </div>
+                <div class="col">
+                    <input type="number" class="form-control" name="measurement_value" 
+                           value="${measurementData.measurement_value || ''}" step="0.1">
+                </div>
+                <div class="col">
+                    <button type="button" class="btn btn-danger btn-sm remove-measurement">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+        `);
+        $('#measurements .measurement-container').append(measurementRow);
+    }
+    
+    function addDamageRecord(damageData = {}) {
+        const damageRecord = $(`
+            <div class="damage-record form-row mb-2">
+                <div class="col">
+                    <select class="form-control" name="body_part">
+                        <option value="">Select Body Part...</option>
+                        <!-- Add body part options -->
+                    </select>
+                </div>
+                <div class="col">
+                    <select class="form-control" name="damage_code">
+                        <option value="">Select Damage...</option>
+                        <!-- Add damage code options -->
+                    </select>
+                </div>
+                <div class="col">
+                    <button type="button" class="btn btn-danger btn-sm remove-damage">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+        `);
+        $('#damage .damage-container').append(damageRecord);
     }
 
     async function handleSearch() {
@@ -369,13 +493,60 @@ $(document).ready(function() {
     }
 
     function showSuccessMessage(message) {
-        // Implement your preferred notification method
-        alert(message);
+        const alertHtml = `
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                ${message}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        `;
+        $('.container-fluid').prepend(alertHtml);
     }
 
     function showErrorMessage(message) {
-        // Implement your preferred notification method
-        alert(message);
+        const alertHtml = `
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                ${message}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        `;
+        $('.container-fluid').prepend(alertHtml);
+    }
+
+    // function setupAutoSave() {
+    //     let autoSaveTimer;
+    //     let autoSaveNotification;
+    
+    //     $('form').on('change', 'input, select', function() {
+    //         clearTimeout(autoSaveTimer);
+            
+    //         if (!autoSaveNotification) {
+    //             autoSaveNotification = $('<div class="alert alert-info position-fixed" style="bottom: 20px; right: 20px;">Changes will be auto-saved...</div>');
+    //             $('body').append(autoSaveNotification);
+    //         }
+            
+    //         autoSaveTimer = setTimeout(() => {
+    //             handleSave().then(() => {
+    //                 if (autoSaveNotification) {
+    //                     autoSaveNotification.remove();
+    //                     autoSaveNotification = null;
+    //                 }
+    //             });
+    //         }, 30000);
+    //     });
+    // }
+
+    $(window).on('beforeunload', function() {
+        if (hasUnsavedChanges()) {
+            return "You have unsaved changes. Are you sure you want to leave?";
+        }
+    });
+    
+    function hasUnsavedChanges() {
+        return $('.modified').length > 0;
     }
 
     // Initialize the page

@@ -4,15 +4,13 @@
 {% block extra_style %}
     {{ block.super }}
     {{ form.media.css }}
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@ttskch/select2-bootstrap4-theme/dist/select2-bootstrap4.min.css" rel="stylesheet" />
     <link rel="stylesheet" type="text/css" href="{% static 'css/grid.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/observation_management.css' %}">
 {% endblock %}
-
-{% block extra_head %}
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    {{ form.media }}
-{% endblock extra_head %}
 
 {% block breadcrumbs %}
     <!-- Breadcrumb Navigation -->
@@ -36,9 +34,9 @@
                     <button type="button" class="btn btn-primary" id="saveChanges">
                         <i class="fas fa-save"></i> Save Changes
                     </button>
-                    <button type="button" class="btn btn-outline-secondary" id="addNew">
+                    {% comment %} <button type="button" class="btn btn-outline-secondary" id="addNew">
                         <i class="fas fa-plus"></i> New Record
-                    </button>
+                    </button> {% endcomment %}
                 </div>
             </div>
         </div>
@@ -352,15 +350,20 @@
     </div>
 </div>
 
-<!-- Loading Overlay -->
-<div class="loading-overlay" style="display: none;">
+<!-- Loading spinner -->
+<div class="loading-spinner">
     <div class="spinner-border text-primary" role="status">
         <span class="sr-only">Loading...</span>
     </div>
 </div>
+
+<!-- Loading overlay -->
+<div class="loading-overlay"></div>
 {% endblock %}
 
 {% block extra_js %}
 {{ block.super }}
-<script src="{% static 'js/observation_management.js' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <script src="{% static 'js/observation_management.js' %}"></script>
 {% endblock %} 
