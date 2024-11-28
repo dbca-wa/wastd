@@ -100,13 +100,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (data.status === 'success' && data.data.length > 0) {
                 const turtle = data.data[0];
+                console.log('Received turtle data:', turtle);
+                
                 searchResultForm.style.display = 'block';
                 
-
                 Object.keys(turtle).forEach(key => {
-                    const element = searchResultForm.querySelector(`input[name="${key}"], select[name="${key}"]`);
+                    const element = searchResultForm.querySelector(`[name="${key}"]`);
+                    console.log(`Setting ${key} = ${turtle[key]}, Found element:`, element);
                     if (element) {
-                        element.value = turtle[key];
+                        element.value = turtle[key] || '';
+                        console.log(`After setting ${key}, value is:`, element.value);
                     }
                 });
                 saveOriginalFormData();

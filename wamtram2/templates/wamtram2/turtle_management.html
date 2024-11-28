@@ -38,6 +38,7 @@
     <div class="row mb-3">
         <div class="col-md-3">
             <div class="input-group">
+                <label for="turtleIDSearch">Search by Turtle ID</label>
                 <input type="text" class="form-control" id="turtleIDSearch" placeholder="Search by Turtle ID...">
                 <div class="input-group-append">
                     <button class="btn btn-outline-secondary" type="button" id="turtleIDSearchBtn">
@@ -48,6 +49,7 @@
         </div>
         <div class="col-md-3">
             <div class="input-group">
+                <label for="flipperTagSearch">Search by Flipper Tag ID</label>
                 <input type="text" class="form-control" id="flipperTagSearch" placeholder="Search by Flipper Tag ID...">
                 <div class="input-group-append">
                     <button class="btn btn-outline-secondary" type="button" id="flipperTagSearchBtn">
@@ -58,7 +60,8 @@
         </div>
         <div class="col-md-3">
             <div class="input-group">
-                <input type="text" class="form-control" id="PitTagSearch" placeholder="Search by PTI Tag ID...">
+                <label for="pitTagSearch">Search by PIT Tag ID</label>
+                <input type="text" class="form-control" id="pitTagSearch" placeholder="Search by PIT Tag ID...">
                 <div class="input-group-append">
                     <button class="btn btn-outline-secondary" type="button" id="pitTagSearchBtn">
                         <i class="fas fa-search"></i>
@@ -68,6 +71,7 @@
         </div>
         <div class="col-md-3">
             <div class="input-group">
+                <label for="otherIdentificationSearch">Search by Other Identification</label>
                 <input type="text" class="form-control" id="otherIdentificationSearch" placeholder="Search by Other Identification...">
                 <div class="input-group-append">
                     <button class="btn btn-outline-secondary" type="button" id="otherIdentificationSearchBtn">
@@ -104,7 +108,6 @@
                                 <div class="form-group">
                                     <label>Species</label>
                                     <select class="form-control" name="species">
-                                        <option value="">Select Species</option>
                                         {% for species in species_choices %}
                                             <option value="{{ species.species_code }}">{{ species.description }}</option>
                                         {% endfor %}
@@ -119,11 +122,10 @@
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    <label>Sex</label>
-                                    <select class="form-control" name="sex">
-                                        <option value="">Select Sex</option>
-                                        {% for value, label in sex_choices %}
-                                            <option value="{{ value }}">{{ label }}</option>
+                                    <label>Location</label>
+                                    <select class="form-control" name="location">
+                                        {% for location in location_choices %}
+                                            <option value="{{ location.location_code }}">{{ location.description }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>
@@ -131,11 +133,20 @@
                         </div>
                         
                         <div class="form-row">
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label>Sex</label>
+                                    <select class="form-control" name="sex">
+                                        {% for value, label in sex_choices %}
+                                            <option value="{{ value }}">{{ label }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label>Cause of Death</label>
                                     <select class="form-control" name="cause_of_death">
-                                        <option value="">Select Cause of Death</option>
                                         {% for cause in cause_of_death_choices %}
                                             <option value="{{ cause.cause_of_death }}">{{ cause.description }}</option>
                                         {% endfor %}
@@ -146,14 +157,13 @@
                                 <div class="form-group">
                                     <label>Turtle Status</label>
                                     <select class="form-control" name="turtle_status">
-                                        <option value="">Select Status</option>
                                         {% for status in turtle_status_choices %}
                                             <option value="{{ status.turtle_status }}">{{ status.description }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-2">
                                 <div class="form-group">
                                     <label>Date Entered</label>
                                     <input type="text" class="form-control" name="date_entered" readonly>

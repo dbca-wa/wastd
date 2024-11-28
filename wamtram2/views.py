@@ -4077,6 +4077,7 @@ class TurtleManagementView(TemplateView):
         context['cause_of_death_choices'] = TrtCauseOfDeath.objects.all()
         context['turtle_status_choices'] = TrtTurtleStatus.objects.all()
         context['species_choices'] = TrtSpecies.objects.all()
+        context['location_choices'] = TrtPlaces.objects.all()
         
         return context
 
@@ -4094,6 +4095,7 @@ class TurtleManagementView(TemplateView):
                 turtle.turtle_name = data['turtle_name']
                 turtle.species_code = data['species']
                 turtle.sex = data['sex']
+                turtle.location_code = data['location']
                 turtle.cause_of_death = data['cause_of_death']
                 turtle.comments = data['comments']
                 turtle.turtle_status = data['turtle_status']
@@ -4154,12 +4156,15 @@ class TurtleManagementView(TemplateView):
                 'turtle_id': turtle.turtle_id,
                 'species': str(turtle.species_code),
                 'turtle_name': turtle.turtle_name or '',
-                'sex': dict(SEX_CHOICES).get(turtle.sex, ''),
+                'sex': turtle.sex if turtle.sex else '',
                 'cause_of_death': str(turtle.cause_of_death) if turtle.cause_of_death else '',
                 'turtle_status': str(turtle.turtle_status) if turtle.turtle_status else '',
                 'date_entered': turtle.date_entered.strftime('%Y-%m-%d') if turtle.date_entered else '',
-                'comments': turtle.comments or ''
+                'comments': turtle.comments or '',
+                'location': str(turtle.location_code) if turtle.location_code else ''
             })
+            
+            print(f"Sending data: {turtle_data[-1]}")
 
         return JsonResponse({
             'status': 'success',
