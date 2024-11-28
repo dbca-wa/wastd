@@ -17,8 +17,14 @@ document.addEventListener('DOMContentLoaded', function() {
         'otheridentification': 'other_id'
     };
 
-    const saveConfirmationModal = new bootstrap.Modal(document.getElementById('saveConfirmationModal'));
-    const unsavedChangesModal = new bootstrap.Modal(document.getElementById('unsavedChangesModal'));
+    const saveConfirmationModalElement = document.getElementById('saveConfirmationModal');
+    const unsavedChangesModalElement = document.getElementById('unsavedChangesModal');
+    
+    const saveConfirmationModal = saveConfirmationModalElement ? 
+        new bootstrap.Modal(saveConfirmationModalElement) : null;
+    const unsavedChangesModal = unsavedChangesModalElement ? 
+        new bootstrap.Modal(unsavedChangesModalElement) : null;
+
     let originalFormData = {};
     let hasUnsavedChanges = false;
     let pendingSearchData = null;
@@ -51,7 +57,17 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function showSaveConfirmation(changes) {
+        if (!saveConfirmationModal) {
+            console.error('Save confirmation modal not found');
+            return false;
+        }
+
         const changesContent = document.getElementById('changesContent');
+        if (!changesContent) {
+            console.error('Changes content element not found');
+            return false;
+        }
+
         if (Object.keys(changes).length === 0) {
             changesContent.innerHTML = '<p>No changes detected.</p>';
             return false;
@@ -70,7 +86,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     async function handleSearch(searchType, searchValue) {
-        if (hasUnsavedChanges) {
+        if (hasUnsavedChanges && unsavedChangesModal) {
             pendingSearchData = { searchType, searchValue };
             unsavedChangesModal.show();
             return;
@@ -139,6 +155,10 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
             const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            if (!csrfToken) {
+                throw new Error('CSRF token not found');
+            }
+    
 
             const response = await fetch('/wamtram2/api/turtle-update/', {
                 method: 'POST',
@@ -195,12 +215,29 @@ document.addEventListener('DOMContentLoaded', function() {
         saveButton.addEventListener('click', function() {
             const changes = getFormChanges();
             if (showSaveConfirmation(changes)) {
-                handleSave();
+                document.getElementById('confirmSaveBtn')?.addEventListener('click', function() {
+                    saveConfirmationModal?.hide();
+                    handleSave();
+                });
             }
         });
     }
 
-    searchResultForm.addEventListener('change', function() {
-        hasUnsavedChanges = true;
+    if (searchResultForm) {
+        searchResultForm.addEventListener('change', function() {
+            hasUnsavedChanges = true;
+        });
+    }
+
+    document.getElementById('discardChangesBtn')?.addEventListener('click', function() {
+        unsavedChangesModal?.hide();
+        hasUnsavedChanges = false;
+        if (pendingSearchData) {
+            const { searchType, searchValue } = pendingSearchData;
+            pendingSearchData = null;
+            handleSearch(searchType, searchValue);
+        }
     });
+
+    clearForm();
 }); 

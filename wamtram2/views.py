@@ -4090,6 +4090,9 @@ class TurtleManagementView(TemplateView):
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
             try:
                 data = json.loads(request.body)
+                
+                print("Received data:", data)
+                
                 turtle = TrtTurtles.objects.get(turtle_id=data['turtle_id'])
                 
                 turtle.turtle_name = data['turtle_name']
@@ -4106,11 +4109,18 @@ class TurtleManagementView(TemplateView):
                     'status': 'success',
                     'message': 'Turtle information updated successfully'
                 })
+            except json.JSONDecodeError as e:
+                print("JSON decode error:", str(e))
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Invalid JSON data'
+                }, status=400)
             except Exception as e:
+                print("Error:", str(e))
                 return JsonResponse({
                     'status': 'error',
                     'message': str(e)
-                })
+                }, status=500)
         return super().post(request, *args, **kwargs)
 
 
