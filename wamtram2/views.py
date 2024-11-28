@@ -4080,10 +4080,13 @@ class TurtleManagementView(TemplateView):
         return super().get(request, *args, **kwargs)
 
     def handle_ajax_request(self, request):
+        print("Received AJAX request with parameters:", request.GET)
         turtle_id = request.GET.get('turtle_id')
         tag_id = request.GET.get('tag_id')
         pit_tag_id = request.GET.get('pit_tag_id')
         other_id = request.GET.get('other_id')
+
+        print(f"Searching for turtle_id: {turtle_id}, tag_id: {tag_id}, pit_tag_id: {pit_tag_id}, other_id: {other_id}")
 
         queryset = None
 

@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const params = new URLSearchParams();
             params.append(searchType, searchValue);
 
-            const response = await fetch(`/api/turtle-search/?${params.toString()}`, {
+            const response = await fetch(`/wamtram2/api/turtle-search/?${params.toString()}`, {
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
                 }
@@ -57,6 +57,12 @@ document.addEventListener('DOMContentLoaded', function() {
             loadingOverlay.style.display = 'none';
         }
     }
+    const searchTypeMapping = {
+        'turtleid': 'turtle_id',
+        'flippertag': 'tag_id',
+        'pittag': 'pit_tag_id',
+        'otheridentification': 'other_id'
+    };
 
     searchButtons.forEach(button => {
         console.log('Adding click listener to button:', button.id);
@@ -64,7 +70,8 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('Button clicked:', this.id);
             const searchInput = this.parentElement.previousElementSibling;
             console.log('Search input:', searchInput.id, 'value:', searchInput.value);
-            const searchType = searchInput.id.replace('Search', '').toLowerCase();
+            let searchType = searchInput.id.replace('Search', '').toLowerCase();
+            searchType = searchTypeMapping[searchType] || searchType;
             const searchValue = searchInput.value.trim();
             
             if (searchValue) {
