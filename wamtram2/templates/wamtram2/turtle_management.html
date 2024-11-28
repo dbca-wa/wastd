@@ -24,6 +24,8 @@
 {% endblock %}
 
 {% block page_content_inner %}
+{% csrf_token %}
+
 <div class="container-fluid mt-3">
     <!-- Top Filter and Search Area -->
     <div class="row mb-3">
@@ -88,7 +90,6 @@
             <div class="card">
                 <div class="card-body">
                     <div class="section-card" id="searchResultForm">
-                        {% csrf_token %}
                         <!-- Save Button -->
                         <div class="form-row mt-3">
                             <div class="col-12">
@@ -485,11 +486,11 @@
 <div class="loading-overlay"></div>
 
 <!-- Save Confirmation Modal -->
-<div class="modal fade" id="saveConfirmationModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+<div class="modal fade" id="saveConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="saveConfirmationModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Confirm Changes</h5>
+                <h5 class="modal-title" id="saveConfirmationModalLabel">Confirm Changes</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -506,11 +507,11 @@
 </div>
 
 <!-- Unsaved Changes Modal -->
-<div class="modal fade" id="unsavedChangesModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
+<div class="modal fade" id="unsavedChangesModal" tabindex="-1" role="dialog" aria-labelledby="unsavedChangesModalLabel">
+    <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Unsaved Changes</h5>
+                <h5 class="modal-title" id="unsavedChangesModalLabel">Unsaved Changes</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
