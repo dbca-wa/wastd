@@ -4095,13 +4095,25 @@ class TurtleManagementView(TemplateView):
                 
                 turtle = TrtTurtles.objects.get(turtle_id=data['turtle_id'])
                 
-                turtle.turtle_name = data['turtle_name']
-                turtle.species_code = data['species']
-                turtle.sex = data['sex']
-                turtle.location_code = data['location']
-                turtle.cause_of_death = data['cause_of_death']
-                turtle.comments = data['comments']
-                turtle.turtle_status = data['turtle_status']
+                if data.get('species'):
+                    species = TrtSpecies.objects.get(species_code=data['species'])
+                    turtle.species_code = species
+                
+                if data.get('location'):
+                    location = TrtLocations.objects.get(location_code=data['location'])
+                    turtle.location = location
+                    
+                if data.get('turtle_status'):
+                    status = TrtTurtleStatus.objects.get(turtle_status=data['turtle_status'])
+                    turtle.turtle_status = status
+                    
+                if data.get('cause_of_death'):
+                    cod = TrtCauseOfDeath.objects.get(cause_of_death=data['cause_of_death'])
+                    turtle.cause_of_death = cod
+                    
+                turtle.turtle_name = data.get('turtle_name', '')
+                turtle.sex = data.get('sex', '')
+                turtle.comments = data.get('comments', '')
                 
                 turtle.save()
                 
