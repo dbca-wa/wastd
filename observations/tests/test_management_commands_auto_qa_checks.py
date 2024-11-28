@@ -258,24 +258,25 @@ class AutomatedQAChecksCommandTests(TestCase):
         call_command('automated_qa_checks')
         mock_logger.info.assert_any_call('Flagging 1 turtle nest encounters for curation: Dermochelys coriacea (Leatherback turtle) at Ningaloo')
         
-    # @patch('logging.getLogger')
-    # def test_flag_imported_nests_with_unknown_reporter(self, mock_get_logger):
-    #     mock_logger = MagicMock()
-    #     mock_get_logger.return_value = mock_logger
+    @patch('logging.getLogger')
+    def test_flag_imported_nests_with_unknown_reporter(self, mock_get_logger):
+        mock_logger = MagicMock()
+        mock_get_logger.return_value = mock_logger
 
-    #     TurtleNestEncounter.objects.create(
-    #         site=self.area,
-    #         status=Encounter.STATUS_IMPORTED,
-    #         species=TURTLE_SPECIES,
-    #         nest_age=NEST_AGE,
-    #         nest_type=NEST_TYPE,
-    #         reporter=self.unknown_user,
-    #         when=datetime.now(pytz.utc),
-    #         where=Point(0.0, 0.0)
-    #     )
+        TurtleNestEncounter.objects.create(
+            site=self.area,
+            status=Encounter.STATUS_IMPORTED,
+            species=TURTLE_SPECIES,
+            nest_age=NEST_AGE,
+            nest_type=NEST_TYPE,
+            reporter=self.unknown_user,
+            when=datetime.now(pytz.utc),
+            where=Point(0.0, 0.0)
+        )
 
-    #     call_command('automated_qa_checks')
-    #     mock_logger.info.assert_any_call('Flagging 1 turtle nest encounters for curation due to unknown reporter')
+        call_command('automated_qa_checks')
+        print(mock_logger.info.call_args_list)
+        mock_logger.info.assert_any_call('Flagging 1 turtle nest encounters for curation due to unknown reporter')
 
     @patch('logging.getLogger')
     def test_mark_imported_nests_as_curated(self, mock_get_logger):
