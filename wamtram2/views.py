@@ -3738,7 +3738,6 @@ class SaveEntryChangesView(View):
                 'error': str(e)
             })
             
-            
 
 class ObservationManagementView(LoginRequiredMixin, TemplateView):
     template_name = 'wamtram2/observation_management.html'
@@ -3752,6 +3751,7 @@ class ObservationManagementView(LoginRequiredMixin, TemplateView):
             'activities': TrtActivities.objects.all(),
             'beach_positions': TrtBeachPositions.objects.all(),
             'tag_states': TrtTagStates.objects.all(),
+            'body_parts': TrtBodyParts.objects.all(),
         })
         return context
 
@@ -3898,48 +3898,59 @@ class ObservationDataView(LoginRequiredMixin, View):
 
     def _get_observation_data(self, observation):
         """Get full observation data"""
+        try:
+            damage = observation.trtdamage
+            damage_data = {
+                'body_part': damage.body_part.body_part if damage.body_part else None,
+                'damage_code': damage.damage_code.damage_code if damage.damage_code else None,
+                'damage_cause_code': damage.damage_cause_code.damage_cause_code if damage.damage_cause_code else None,
+                'comments': damage.comments
+            }
+        except TrtDamage.DoesNotExist:
+            damage_data = None
+    
         return {
             'basic_info': {
                 'observation_id': observation.observation_id,
                 'turtle_id': observation.turtle_id,
                 'observation_date': observation.observation_date.strftime('%Y-%m-%d'),
                 'observation_time': observation.observation_time.strftime('%H:%M') if observation.observation_time else '',
-                'alive': observation.alive,
-                'nesting': observation.nesting,
-                'activity_code': observation.activity_code,
-                'beach_position_code': observation.beach_position_code,
-                'status': observation.status
+                'alive': str(observation.alive),
+                'nesting': str(observation.nesting),
+                'activity_code': str(observation.activity_code),
+                'beach_position_code': str(observation.beach_position_code),
+                'status': str(observation.observation_status)
             },
             'tag_info': {
                 'recorded_tags': [{
-                    'tag_id': tag.tag_id,
-                    'tag_type': tag.tag_type,
-                    'tag_position': tag.tag_position,
-                    'tag_state': tag.tag_state
+                    'tag_id': str(tag.tag_id),
+                    'tag_side': str(tag.side),
+                    'tag_position': str(tag.tag_position),
+                    'tag_state': str(tag.tag_state),
+                    'barnacles': str(tag.barnacles)
                 } for tag in observation.trtrecordedtags_set.all()],
                 'recorded_pit_tags': [{
-                    'tag_id': tag.tag_id,
-                    'tag_position': tag.tag_position,
-                    'tag_state': tag.tag_state
+                    'tag_id': str(tag.pittag_id),
+                    'tag_position': str(tag.pit_tag_position),
+                    'tag_state': str(tag.pit_tag_state)
                 } for tag in observation.trtrecordedpittags_set.all()]
             },
             'measurements': [{
-                'measurement_type': m.measurement_type,
-                'measurement_value': m.measurement_value
-            } for m in observation.trtmeasurements_set.all()],
-            'damage_records': [{
-                'body_part': d.body_part,
-                'damage_code': d.damage_code
-            } for d in observation.trtdamage_set.all()],
+                'measurement_type': str(measurement.measurement_type.description),
+                'measurement_value': str(measurement.measurement_value)
+            } for measurement in observation.trtmeasurements_set.all()],
+
+            'damage_records': [damage_data] if damage_data else [],
+
             'location': {
-                'place_code': observation.place_code,
-                'datum_code': observation.datum_code,
-                'latitude_degrees': observation.latitude_degrees,
-                'latitude_minutes': observation.latitude_minutes,
-                'latitude_seconds': observation.latitude_seconds,
-                'longitude_degrees': observation.longitude_degrees,
-                'longitude_minutes': observation.longitude_minutes,
-                'longitude_seconds': observation.longitude_seconds
+                'place_code': str(observation.place_code),
+                'datum_code': str(observation.datum_code),
+                'latitude_degrees': str(observation.latitude_degrees),
+                'latitude_minutes': str(observation.latitude_minutes),
+                'latitude_seconds': str(observation.latitude_seconds),
+                'longitude_degrees': str(observation.longitude_degrees),
+                'longitude_minutes': str(observation.longitude_minutes),
+                'longitude_seconds': str(observation.longitude_seconds)
             }
         }
     
