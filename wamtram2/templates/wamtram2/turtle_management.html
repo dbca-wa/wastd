@@ -38,7 +38,7 @@
     <div class="row mb-3">
         <div class="col-md-3">
             <div class="input-group">
-                <label for="turtleIDSearch">Search by Turtle ID</label>
+                <label class="form-label fw-bold mb-2 ml-2" for="turtleIDSearch">Search by Turtle ID</label>
                 <input type="text" class="form-control" id="turtleIDSearch" placeholder="Search by Turtle ID...">
                 <div class="input-group-append">
                     <button class="btn btn-outline-secondary" type="button" id="turtleIDSearchBtn">
@@ -49,7 +49,7 @@
         </div>
         <div class="col-md-3">
             <div class="input-group">
-                <label for="flipperTagSearch">Search by Flipper Tag ID</label>
+                <label class="form-label fw-bold mb-2 ml-2" for="flipperTagSearch">Search by Flipper Tag ID</label>
                 <input type="text" class="form-control" id="flipperTagSearch" placeholder="Search by Flipper Tag ID...">
                 <div class="input-group-append">
                     <button class="btn btn-outline-secondary" type="button" id="flipperTagSearchBtn">
@@ -60,7 +60,7 @@
         </div>
         <div class="col-md-3">
             <div class="input-group">
-                <label for="pitTagSearch">Search by PIT Tag ID</label>
+                <label class="form-label fw-bold mb-2 ml-2" for="pitTagSearch">Search by PIT Tag ID</label>
                 <input type="text" class="form-control" id="pitTagSearch" placeholder="Search by PIT Tag ID...">
                 <div class="input-group-append">
                     <button class="btn btn-outline-secondary" type="button" id="pitTagSearchBtn">
@@ -71,7 +71,7 @@
         </div>
         <div class="col-md-3">
             <div class="input-group">
-                <label for="otherIdentificationSearch">Search by Other Identification</label>
+                <label class="form-label fw-bold mb-2 ml-2" for="otherIdentificationSearch">Search by Other Identification</label>
                 <input type="text" class="form-control" id="otherIdentificationSearch" placeholder="Search by Other Identification...">
                 <div class="input-group-append">
                     <button class="btn btn-outline-secondary" type="button" id="otherIdentificationSearchBtn">
@@ -109,7 +109,7 @@
                                     <label>Species</label>
                                     <select class="form-control" name="species">
                                         {% for species in species_choices %}
-                                            <option value="{{ species.species_code }}">{{ species.description }}</option>
+                                            <option value="{{ species.species_code }}">{{ species.common_name }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>
@@ -125,7 +125,7 @@
                                     <label>Location</label>
                                     <select class="form-control" name="location">
                                         {% for location in location_choices %}
-                                            <option value="{{ location.location_code }}">{{ location.description }}</option>
+                                            <option value="{{ location.location_code }}">{{ location.location_name }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>

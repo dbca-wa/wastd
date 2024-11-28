@@ -4077,7 +4077,7 @@ class TurtleManagementView(TemplateView):
         context['cause_of_death_choices'] = TrtCauseOfDeath.objects.all()
         context['turtle_status_choices'] = TrtTurtleStatus.objects.all()
         context['species_choices'] = TrtSpecies.objects.all()
-        context['location_choices'] = TrtPlaces.objects.all()
+        context['location_choices'] = TrtLocations.objects.all()
         
         return context
 
@@ -4154,14 +4154,14 @@ class TurtleManagementView(TemplateView):
         for turtle in queryset:
             turtle_data.append({
                 'turtle_id': turtle.turtle_id,
-                'species': str(turtle.species_code),
+                'species': turtle.species_code.species_code,
                 'turtle_name': turtle.turtle_name or '',
                 'sex': turtle.sex if turtle.sex else '',
-                'cause_of_death': str(turtle.cause_of_death) if turtle.cause_of_death else '',
-                'turtle_status': str(turtle.turtle_status) if turtle.turtle_status else '',
+                'cause_of_death': turtle.cause_of_death.cause_of_death if turtle.cause_of_death else '',
+                'turtle_status': turtle.turtle_status.turtle_status if turtle.turtle_status else '',
                 'date_entered': turtle.date_entered.strftime('%Y-%m-%d') if turtle.date_entered else '',
                 'comments': turtle.comments or '',
-                'location': str(turtle.location_code) if turtle.location_code else ''
+                'location': turtle.location_code.location_code if turtle.location_code else ''
             })
             
             print(f"Sending data: {turtle_data[-1]}")

@@ -1,4 +1,11 @@
 
+.form-label {
+    color: #495057;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
 .table-container {
     overflow-y: auto;
     position: relative;
