@@ -2205,7 +2205,7 @@ class TrtSpecies(models.Model):
     common_name = models.CharField(
         db_column="COMMON_NAME", max_length=50, blank=True, null=True
     )  # Field name made lowercase.
-    old_species_code = models.observation_status(
+    old_species_code = models.CharField(
         db_column="OLD_SPECIES_CODE", max_length=2, blank=True, null=True
     )  # Field name made lowercase.
     hide_dataentry = models.BooleanField(

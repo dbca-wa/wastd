@@ -40,7 +40,7 @@
             <div class="input-group">
                 <input type="text" class="form-control" id="turtleIDSearch" placeholder="Search by Turtle ID...">
                 <div class="input-group-append">
-                    <button class="btn btn-outline-secondary" type="button" id="searchBtn">
+                    <button class="btn btn-outline-secondary" type="button" id="turtleIDSearchBtn">
                         <i class="fas fa-search"></i>
                     </button>
                 </div>
@@ -50,7 +50,7 @@
             <div class="input-group">
                 <input type="text" class="form-control" id="flipperTagSearch" placeholder="Search by Flipper Tag ID...">
                 <div class="input-group-append">
-                    <button class="btn btn-outline-secondary" type="button" id="searchBtn">
+                    <button class="btn btn-outline-secondary" type="button" id="flipperTagSearchBtn">
                         <i class="fas fa-search"></i>
                     </button>
                 </div>
@@ -60,7 +60,7 @@
             <div class="input-group">
                 <input type="text" class="form-control" id="PitTagSearch" placeholder="Search by PTI Tag ID...">
                 <div class="input-group-append">
-                    <button class="btn btn-outline-secondary" type="button" id="searchBtn">
+                    <button class="btn btn-outline-secondary" type="button" id="pitTagSearchBtn">
                         <i class="fas fa-search"></i>
                     </button>
                 </div>
@@ -70,7 +70,7 @@
             <div class="input-group">
                 <input type="text" class="form-control" id="otherIdentificationSearch" placeholder="Search by Other Identification...">
                 <div class="input-group-append">
-                    <button class="btn btn-outline-secondary" type="button" id="searchBtn">
+                    <button class="btn btn-outline-secondary" type="button" id="otherIdentificationSearchBtn">
                         <i class="fas fa-search"></i>
                     </button>
                 </div>
@@ -78,37 +78,68 @@
         </div>
     </div>
 
-    <!-- Search Results Table -->
+    <!-- Search Results Section -->
     <div class="row mb-3">
         <div class="col-md-12">
             <div class="card">
                 <div class="card-body">
-                    <div class="table-responsive table-container">
-                        <table class="table table-hover" id="turtleInfoTable">
-                            <thead>
-                                <tr>
-                                    <th>Turtle ID</th readonly>
-                                    <th>Species</th>
-                                    <th>Turtle Name</th>
-                                    <th>Sex</th>
-                                    <th>Cause of Death</th>
-                                    <th>Turtle Status</th>
-                                    <th>Date Entered</th readonly>
-                                    <th>Comments</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <div class="section-card" id="searchResultForm">
+                        <div class="form-row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Turtle ID</label>
+                                    <input type="text" class="form-control" name="turtle_id" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Species</label>
+                                    <input type="text" class="form-control" name="species">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Turtle Name</label>
+                                    <input type="text" class="form-control" name="turtle_name">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Sex</label>
+                                    <input type="text" class="form-control" name="sex">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Cause of Death</label>
+                                    <input type="text" class="form-control" name="cause_of_death">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Turtle Status</label>
+                                    <input type="text" class="form-control" name="turtle_status">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Date Entered</label>
+                                    <input type="text" class="form-control" name="date_entered" readonly>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Comments</label>
+                                    <input type="text" class="form-control" name="comments">
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -124,7 +155,7 @@
         </div>
     </div>
 
-    <!-- Tag Information Area -->
+    <!-- Tag Information Section -->
     <div class="row tag-info-area">
         <div class="col-md-12">
             <!-- Tabs Navigation -->
@@ -262,7 +293,7 @@
         </div>
     </div>
 
-    <!-- Observation Area -->
+    <!-- Observation Section -->
     <div class="row observation-area">
         <div class="col-md-12">
             <!-- Tabs Navigation -->
