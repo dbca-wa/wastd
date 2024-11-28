@@ -59,7 +59,9 @@ from .models import (
     TrtRecordedTags,
     TrtRecordedPitTags,
     TrtMeasurements,
-    TrtDamage
+    TrtDamage,
+    TrtCauseOfDeath,
+    TrtTurtleStatus
     
 )
 from .forms import TrtDataEntryForm, SearchForm, TrtEntryBatchesForm, TemplateForm, BatchesCodeForm, TrtPersonsForm, TagRegisterForm
@@ -4072,12 +4074,44 @@ class TurtleManagementView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['sex_choices'] = SEX_CHOICES
+        context['cause_of_death_choices'] = TrtCauseOfDeath.objects.all()
+        context['turtle_status_choices'] = TrtTurtleStatus.objects.all()
+        context['species_choices'] = TrtSpecies.objects.all()
+        
         return context
 
     def get(self, request, *args, **kwargs):
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
             return self.handle_ajax_request(request)
         return super().get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            try:
+                data = json.loads(request.body)
+                turtle = TrtTurtles.objects.get(turtle_id=data['turtle_id'])
+                
+                turtle.turtle_name = data['turtle_name']
+                turtle.species_code = data['species']
+                turtle.sex = data['sex']
+                turtle.cause_of_death = data['cause_of_death']
+                turtle.comments = data['comments']
+                turtle.turtle_status = data['turtle_status']
+                
+                turtle.save()
+                
+                return JsonResponse({
+                    'status': 'success',
+                    'message': 'Turtle information updated successfully'
+                })
+            except Exception as e:
+                return JsonResponse({
+                    'status': 'error',
+                    'message': str(e)
+                })
+        return super().post(request, *args, **kwargs)
+
+
 
     def handle_ajax_request(self, request):
         print("Received AJAX request with parameters:", request.GET)
