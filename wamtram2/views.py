@@ -3936,7 +3936,7 @@ class ObservationDataView(LoginRequiredMixin, View):
                 } for tag in observation.trtrecordedpittags_set.all()]
             },
             'measurements': [{
-                'measurement_type': str(measurement.measurement_type.code),
+                'measurement_type': str(measurement.measurement_type.description),
                 'measurement_value': str(measurement.measurement_value)
             } for measurement in observation.trtmeasurements_set.all()],
 
