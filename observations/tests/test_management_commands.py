@@ -181,7 +181,7 @@ class AutomatedQAChecksCommandTests(TestCase):
         TurtleNestEncounter.objects.create(
             site=self.area,
             status=Encounter.STATUS_IMPORTED,
-            nest_age=NEST_AGE_DEFAULT,
+            nest_age="unknown",
             species=TURTLE_SPECIES,
             when=datetime.now(pytz.utc),
             where=Point(0.0, 0.0)
