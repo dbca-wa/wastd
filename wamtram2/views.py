@@ -4066,3 +4066,67 @@ class ObservationDataView(LoginRequiredMixin, View):
         observation.save()
         
         
+class TurtleManagementView(TemplateView):
+    template_name = 'wamtram2/turtle_management.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['sex_choices'] = SEX_CHOICES
+        return context
+
+    def get(self, request, *args, **kwargs):
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return self.handle_ajax_request(request)
+        return super().get(request, *args, **kwargs)
+
+    def handle_ajax_request(self, request):
+        turtle_id = request.GET.get('turtle_id')
+        tag_id = request.GET.get('tag_id')
+        pit_tag_id = request.GET.get('pit_tag_id')
+        other_id = request.GET.get('other_id')
+
+        queryset = None
+
+        if turtle_id:
+            queryset = TrtTurtles.objects.filter(turtle_id=turtle_id)
+        elif tag_id:
+            turtle_ids = TrtTags.objects.filter(
+                tag_id__icontains=tag_id
+            ).values_list('turtle_id', flat=True)
+            queryset = TrtTurtles.objects.filter(turtle_id__in=turtle_ids)
+        elif pit_tag_id:
+            turtle_ids = TrtPitTags.objects.filter(
+                pittag_id__icontains=pit_tag_id
+            ).values_list('turtle_id', flat=True)
+            queryset = TrtTurtles.objects.filter(turtle_id__in=turtle_ids)
+        elif other_id:
+            turtle_ids = TrtIdentification.objects.filter(
+                identifier__icontains=other_id
+            ).values_list('turtle_id', flat=True)
+            queryset = TrtTurtles.objects.filter(turtle_id__in=turtle_ids)
+
+        if queryset is None:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'No search criteria provided'
+            })
+
+        turtle_data = []
+        for turtle in queryset:
+            turtle_data.append({
+                'turtle_id': turtle.turtle_id,
+                'species': str(turtle.species_code),
+                'turtle_name': turtle.turtle_name or '',
+                'sex': dict(SEX_CHOICES).get(turtle.sex, ''),
+                'cause_of_death': str(turtle.cause_of_death) if turtle.cause_of_death else '',
+                'turtle_status': str(turtle.turtle_status) if turtle.turtle_status else '',
+                'date_entered': turtle.date_entered.strftime('%Y-%m-%d') if turtle.date_entered else '',
+                'comments': turtle.comments or ''
+            })
+
+        return JsonResponse({
+            'status': 'success',
+            'data': turtle_data
+        })
+        
+        
