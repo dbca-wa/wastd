@@ -1,0 +1,988 @@
+{% extends "base_wastd.html" %}
+{% load static bootstrap4 data_entry_curation_tags%}
+{% load group_filters %}
+
+{% block extra_style %}
+    {{ block.super }}
+    {{ form.media.css }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/grid.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/search_styles.css' %}">
+    <style>
+        .modified {
+            background-color: #fff3cd;
+        }
+        .has-observation {
+            background-color: #e6ffe6 !important;
+        }
+        td[contenteditable="true"]:hover {
+            background-color: #f8f9fa;
+            cursor: pointer;
+        }
+        .view-mode {
+            padding: 6px;
+            display: inline-block;
+        }
+        
+        .edit-mode {
+            display: none;
+        }
+
+        td[data-editable="false"] {
+            cursor: not-allowed;
+        }
+        
+        td[data-editable="false"]:hover::after {
+            content: "Entry cannot be edited (already has observation)";
+            position: absolute;
+            background: #333;
+            color: white;
+            padding: 5px;
+            border-radius: 3px;
+            font-size: 12px;
+            z-index: 1000;
+        }
+        
+    </style>
+{% endblock %}
+
+{% block breadcrumbs %}
+    <nav aria-label="breadcrumb" class="d-none d-md-block">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'wamtram2:admin_tools' %}">Curation Tools</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'wamtram2:batch_curation' %}">Batch List</a></li>
+            <li class="breadcrumb-item active">Entries for Batch {{ batch_id }}</li>
+        </ol>
+    </nav>
+{% endblock %}
+
+
+{% block page_content_inner %}
+    <div class="container-fluid mt-3">
+
+        <div class="row mb-3">
+            <div class="col">
+                <h2>Entries for Batch {{ batch_id }}</h2>
+            </div>
+            <div class="col">
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-outline-primary active" id="viewMode">
+                        <i class="fas fa-eye"></i> View Mode
+                    </button>
+                    <button type="button" class="btn btn-outline-primary" id="editMode">
+                        <i class="fas fa-edit"></i> Edit Mode
+                    </button>
+                    <button id="saveChanges" class="btn btn-success me-2" style="display: none;">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                </div>
+            </div>
+            <div class="col-auto">
+                <button class="btn btn-outline-primary" data-toggle="modal" data-target="#columnSelectorModal">
+                    <i class="fas fa-columns"></i> Select Columns to Display
+                </button>
+            </div>
+        </div>
+
+        <div class="row align-items-center mb-3">
+            <div class="col">
+                <div class="search-container">
+                    {% include "includes/search_form.html" with placeholder="Search comments or species..." %}
+                </div>
+            </div>
+            <div class="col-auto">
+                {% if is_paginated %}
+                    {% include "pagination.html" %}
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-8">
+                {% if request.user.is_superuser or request.user|has_group:"WAMTRAM2_STAFF" or request.user|has_group:"WAMTRAM2_TEAM_LEADER"%}
+                <a id="validateBtn" href="{% url 'wamtram2:validate_data_entry_batch' batch_id=batch_id %}" class="btn btn-primary mr-2">
+                    Validate this Batch</a>
+                {% endif %}
+                {% if request.user.is_superuser %}
+                <a id="processBtn" href="{% url 'wamtram2:process_data_entry_batch' batch_id=batch_id %}" class="btn btn-primary">
+                    Add this batch to the database</a>
+                {% endif %}
+            </div>
+            <div class="col-md-4">
+                <form method="get" class="form-inline float-right">
+                    <div class="form-group">
+                        <label class="mr-2" for="filter">Filter</label>
+                        <select name="filter" class="form-control" onchange="this.form.submit()">
+                            <option value="">All</option>
+                            <option value="needs_review" {% if request.GET.filter == "needs_review" %}selected{% endif %}>Needs Review</option>
+                            <option value="not_saved" {% if request.GET.filter == "not_saved" %}selected{% endif %}>Haven't Processed</option>
+                            <option value="needs_review_no_message" {% if request.GET.filter == "needs_review_no_message" %}selected{% endif %}>Needs Review (No System Message)</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="grid-container">
+            <table class="grid-table">
+                <thead>
+                    <tr>
+                        {% for column in all_columns %}
+                            {% if column.field in visible_columns %}
+                            <th data-field="{{ column.field }}">{{ column.title }}</th>
+                            {% endif %}
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in entries %}
+                    <tr class="grid-row {% if entry.do_not_process %}flagged-row{% endif %} {% if entry.observation_id %}has-observation{% endif %}" 
+                        data-entry-id="{{ entry.data_entry_id }}">
+                        {% for column in all_columns %}
+                            {% if column.field in visible_columns %}
+                            <td data-editable="{% if not entry.observation_id %}true{% else %}false{% endif %}"  
+                                data-field="{{ column.field }}" 
+                                data-field-type="{% if column.field == 'data_entry_id' %}readonly
+                                                {% elif column.field == 'curved_carapace_length' %}number
+                                                {% elif column.field == 'curved_carapace_width' %}number
+                                                {% else %}text{% endif %}">
+
+                                {% if column.field == 'data_entry_id' %}
+                                    {{ entry.data_entry_id }}
+
+                                <!-- Basic Information -->
+                                {% elif column.field == 'observation_id' %}
+                                    <span class="view-mode">
+                                        {{ entry.observation_id|default:'-' }}
+                                    </span>
+                                    <input type="text"
+                                        class="form-control edit-mode"
+                                        value="{{ entry.observation_id|default:'' }}"
+                                        data-original-value="{{ entry.observation_id|default:'' }}"
+                                        readonly>
+                                
+                                {% elif column.field == 'turtle_id' %}
+                                    <span class="view-mode">
+                                        {{ entry.turtle_id|default:'-' }}
+                                    </span>
+                                    <input type="text"
+                                        class="form-control edit-mode"
+                                        value="{{ entry.turtle_id|default:'' }}"
+                                        data-original-value="{{ entry.turtle_id|default:'' }}"
+                                        readonly>
+                                {% elif column.field == 'species_code' %}
+                                    <span class="view-mode">
+                                        {{ entry.species_code.common_name|default:'-' }}
+                                    </span>
+                                    <select class="form-control edit-mode" data-original-value="{{ entry.species_code.id|default:'' }}">
+                                        <option value="">---------</option>
+                                        {% for species in species_choices %}
+                                            <option value="{{ species.id }}" {% if entry.species_code == species %}selected{% endif %}>
+                                                {{ species.common_name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+
+                                {% elif column.field == 'sex' %}
+                                    <span class="view-mode">
+                                        {{ entry.get_sex_display|default:'-' }}
+                                    </span>
+                                    <div class="edit-mode">
+                                        <select class="form-control"
+                                                name="{{ column.field }}"
+                                                data-original-value="{{ entry.sex|default:'' }}">
+                                            <option value="">---------</option>
+                                            <option value="F" {% if entry.sex == 'F' %}selected{% endif %}>Female</option>
+                                            <option value="M" {% if entry.sex == 'M' %}selected{% endif %}>Male</option>
+                                            <option value="I" {% if entry.sex == 'I' %}selected{% endif %}>Indeterminate</option>
+                                        </select>
+                                    </div>
+                                {% elif column.field == 'place_code' %}
+                                    <span class="view-mode">
+                                        {{ entry.place_code.get_full_name|default:'-' }}
+                                    </span>
+                                    <div class="edit-mode">
+                                        <input type="text" 
+                                            class="search-field" 
+                                            placeholder="Search place" 
+                                            value="{{ entry.place_code.get_full_name|default:'' }}"
+                                            data-original-value="{{ entry.place_code.place_code|default:'' }}">
+                                        <input type="hidden" 
+                                            class="actual-value" 
+                                            name="place_code" 
+                                            value="{{ entry.place_code.place_code|default:'' }}">
+                                        <div class="search-results"></div>
+                                    </div>
+                                {% elif column.field == 'observation_date' %}
+                                    <span class="view-mode">
+                                        {{ entry.observation_date|date:"Y-m-d"|default:"-" }}
+                                    </span>
+                                    <input type="date" class="form-control edit-mode datetime-input" 
+                                        data-type="date"
+                                        data-pair-field="observation_time"
+                                        value="{{ entry.observation_date|date:'Y-m-d'|default:'' }}" 
+                                        data-original-value="{{ entry.observation_date|date:'Y-m-d'|default:'' }}">
+                                
+                                {% elif column.field == 'observation_time' %}
+                                    <span class="view-mode">
+                                        {{ entry.observation_time|date:"H:i"|default:"-" }}
+                                    </span>
+                                    <input type="time" class="form-control edit-mode datetime-input" 
+                                        data-type="time"
+                                        data-pair-field="observation_date"
+                                        value="{{ entry.observation_time|date:'H:i'|default:'' }}" 
+                                        data-original-value="{{ entry.observation_time|date:'H:i'|default:'' }}">
+                                        
+                                {% elif column.field == 'do_not_process' %}
+                                    <span class="view-mode">
+                                        {{ entry.do_not_process|yesno:"Yes,No"|default:'-' }}
+                                    </span>
+                                    <select class="form-control edit-mode" style="display: none;" data-original-value="{{ entry|get_field_value:column.field|yesno:'true,false' }}">
+                                        <option value="true" {% if entry|get_field_value:column.field %}selected{% endif %}>Yes</option>
+                                        <option value="false" {% if not entry|get_field_value:column.field %}selected{% endif %}>No</option>
+                                    </select>
+                                
+                                <!-- Measurements -->
+                                {% elif column.field == 'curved_carapace_length' or column.field == 'curved_carapace_width' or column.field == 'curved_carapace_length_notch' %}
+                                    <span class="view-mode">
+                                        {{ entry|get_field_value:column.field|default:'-' }}
+                                    </span>
+                                    <input type="number" class="form-control edit-mode" value="{{ entry|get_field_value:column.field|default:'' }}" 
+                                        data-original-value="{{ entry|get_field_value:column.field|default:'' }}" step="1">
+                                {% elif column.field == 'cc_length_not_measured' or column.field == 'cc_width_not_measured' or column.field == 'cc_notch_length_not_measured' %}
+                                    <span class="view-mode">
+                                        {{ entry|get_field_value:column.field|yesno:"Yes,No"|default:'-' }}
+                                    </span>
+                                    <select class="form-control edit-mode" data-original-value="{{ entry|get_field_value:column.field|yesno:'true,false' }}">
+                                        <option value="true" {% if entry|get_field_value:column.field %}selected{% endif %}>Yes</option>
+                                        <option value="false" {% if not entry|get_field_value:column.field %}selected{% endif %}>No</option>
+                                    </select>
+                                
+                                <!-- Measurements Types and Values -->
+                                {% elif column.field == 'measurement_type_1' %}
+                                    <span class="view-mode">
+                                        {{ entry.measurement_type_1.description|default:'-' }}
+                                    </span>
+                                    <select class="form-control edit-mode" data-original-value="{{ entry.measurement_type_1.id|default:'' }}">
+                                        <option value="">---------</option>
+                                        {% for type in measurement_types_choices %}
+                                            <option value="{{ type.id }}" {% if entry.measurement_type_1 == type %}selected{% endif %}>
+                                                {{ type.description }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                {% elif column.field == 'measurement_value_1' %}
+                                    <span class="view-mode">
+                                        {{ entry.measurement_value_1|default:'-' }}
+                                    </span>
+                                    <input type="number" class="form-control edit-mode" value="{{ entry.measurement_value_1|default:'' }}" 
+                                        data-original-value="{{ entry.measurement_value_1|default:'' }}" step="0.1">
+                                
+                                {% elif column.field == 'measurement_type_2' %}
+                                    <span class="view-mode">
+                                       {{ entry.measurement_type_2.description|default:'-' }}
+                                    </span>
+                                    <select class="form-control edit-mode" data-original-value="{{ entry.measurement_type_2.id|default:'' }}">
+                                        <option value="">---------</option>
+                                        {% for type in measurement_types_choices %}
+                                            <option value="{{ type.id }}" {% if entry.measurement_type_2 == type %}selected{% endif %}>
+                                                {{ type.description }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                {% elif column.field == 'measurement_value_2' %}
+                                    <span class="view-mode">
+                                        {{ entry.measurement_value_2|default:'-' }}
+                                    </span>
+                                    <input type="number" class="form-control edit-mode" value="{{ entry.measurement_value_2|default:'' }}" 
+                                        data-original-value="{{ entry.measurement_value_2|default:'' }}" step="0.1">
+                                
+                                {% elif column.field == 'measurement_type_3' %}
+                                    <span class="view-mode">
+                                        {{ entry.measurement_type_3.description|default:'-' }}
+                                    </span>
+                                    <select class="form-control edit-mode" data-original-value="{{ entry.measurement_type_3.id|default:'' }}">
+                                        <option value="">---------</option>
+                                        {% for type in measurement_types_choices %}
+                                            <option value="{{ type.id }}" {% if entry.measurement_type_3 == type %}selected{% endif %}>
+                                                {{ type.description }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                {% elif column.field == 'measurement_value_3' %}
+                                    <span class="view-mode">
+                                        {{ entry.measurement_value_3|default:'-' }}
+                                    </span>
+                                    <input type="number" class="form-control edit-mode" value="{{ entry.measurement_value_3|default:'' }}" 
+                                        data-original-value="{{ entry.measurement_value_3|default:'' }}" step="0.1">
+                                
+                                {% elif column.field == 'measurement_type_4' %}
+                                    <span class="view-mode">
+                                        {{ entry.measurement_type_4.description|default:'-' }}
+                                    </span>
+                                    <select class="form-control edit-mode" data-original-value="{{ entry.measurement_type_4.id|default:'' }}">
+                                        <option value="">---------</option>
+                                        {% for type in measurement_types_choices %}
+                                            <option value="{{ type.id }}" {% if entry.measurement_type_4 == type %}selected{% endif %}>
+                                                {{ type.description }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                {% elif column.field == 'measurement_value_4' %}
+                                    <span class="view-mode">
+                                        {{ entry.measurement_value_4|default:'-' }}
+                                    </span>
+                                    <input type="number" class="form-control edit-mode" value="{{ entry.measurement_value_4|default:'' }}" 
+                                        data-original-value="{{ entry.measurement_value_4|default:'' }}" step="0.1">
+                                
+                                {% elif column.field == 'measurement_type_5' %}
+                                    <span class="view-mode">
+                                        {{ entry.measurement_type_5.description|default:'-' }}
+                                    </span>
+                                    <select class="form-control edit-mode" data-original-value="{{ entry.measurement_type_5.id|default:'' }}">
+                                        <option value="">---------</option>
+                                        {% for type in measurement_types_choices %}
+                                            <option value="{{ type.id }}" {% if entry.measurement_type_5 == type %}selected{% endif %}>
+                                                {{ type.description }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                {% elif column.field == 'measurement_value_5' %}
+                                    <span class="view-mode">
+                                        {{ entry.measurement_value_5|default:'-' }}
+                                    </span>
+                                    <input type="number" class="form-control edit-mode" value="{{ entry.measurement_value_5|default:'' }}" 
+                                        data-original-value="{{ entry.measurement_value_5|default:'' }}" step="0.1">
+                                
+                                {% elif column.field == 'measurement_type_6' %}
+                                    <span class="view-mode">
+                                        {{ entry.measurement_type_6.description|default:'-' }}
+                                    </span>
+                                    <select class="form-control edit-mode" data-original-value="{{ entry.measurement_type_6.id|default:'' }}">
+                                        <option value="">---------</option>
+                                        {% for type in measurement_types_choices %}
+                                            <option value="{{ type.id }}" {% if entry.measurement_type_6 == type %}selected{% endif %}>
+                                                {{ type.code }} - {{ type.description }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                {% elif column.field == 'measurement_value_6' %}
+                                    <span class="view-mode">
+                                        {{ entry.measurement_value_6|default:'-' }}
+                                    </span>
+                                    <input type="number" class="form-control edit-mode" value="{{ entry.measurement_value_6|default:'' }}" 
+                                        data-original-value="{{ entry.measurement_value_6|default:'' }}" step="0.1">
+                                
+                                <!-- Status and Activities -->
+                                {% elif column.field == 'alive' %}
+                                    <span class="view-mode">
+                                        {{ entry.alive|yesno:"Yes,No"|default:'-' }}
+                                    </span>
+                                    <select class="form-control edit-mode" data-original-value="{{ entry|get_field_value:column.field|yesno:'true,false' }}">
+                                        <option value="true" {% if entry|get_field_value:column.field %}selected{% endif %}>Yes</option>
+                                        <option value="false" {% if not entry|get_field_value:column.field %}selected{% endif %}>No</option>
+                                    </select>
+                                {% elif column.field == 'activity_code' %}
+                                    <span class="view-mode">
+                                        {{ entry.activity_code.description|default:'-' }}
+                                    </span>
+                                    <select class="form-control edit-mode" data-original-value="{{ entry.activity_code.id|default:'' }}">
+                                        <option value="">---------</option>
+                                        {% for activity in activities_choices %}
+                                            <option value="{{ activity.id }}" {% if entry.activity_code == activity %}selected{% endif %}>
+                                                {{ activity.description }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                {% elif column.field == 'nesting' or column.field == 'interrupted' %}
+                                    <span class="view-mode">
+                                        {% with choice=entry|get_field_value:column.field %}
+                                            {% if choice %}
+                                                {{ choice.description|default:'-' }}
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        {% endwith %}
+                                    </span>
+                                    <select class="form-control edit-mode" data-original-value="{{ entry|get_field_value:column.field|default:'' }}">
+                                        <option value="">---------</option>
+                                        {% for choice in yesno_choices %}
+                                            <option value="{{ choice.id }}" {% if entry|get_field_value:column.field == choice %}selected{% endif %}>
+                                                {{ choice.description }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                {% elif column.field == 'identification_confidence' %}
+                                    <span class="view-mode">
+                                            {{ entry.identification_confidence|default:'-' }}
+                                    </span>
+                                    <input type="text" 
+                                               class="form-control edit-mode"
+                                               value="{{ entry.identification_confidence|default:'' }}"
+                                               data-original-value="{{ entry.identification_confidence|default:'' }}">
+                                     
+                                <!-- Recapture Tags -->
+                                {% elif column.field|is_tag_field:'recapture' %}
+                                <span class="view-mode">
+                                        {{ entry|get_field_value:column.field|default:"-" }}
+                                </span>
+                                <input type="text" 
+                                            class="form-control edit-mode" 
+                                            value="{{ entry|get_field_value:column.field|default:'' }}" 
+                                            data-original-value="{{ entry|get_field_value:column.field|default:'' }}"> 
+
+                                
+                                <!-- New Tags -->
+                                {% elif column.field|is_tag_field:'new' %}
+                                    <span class="view-mode">
+                                        {{ entry|get_field_value:column.field|default:"-" }}
+                                    </span>
+                                    <input type="text" class="form-control edit-mode" value="{{ entry|get_field_value:column.field|default:'' }}" 
+                                        data-original-value="{{ entry|get_field_value:column.field|default:'' }}">
+                                
+                                <!-- Other Tags -->
+                                {% elif column.field|is_tag_field:'other' %}
+                                    <span class="view-mode">
+                                        {{ entry|get_field_value:column.field|default:"-" }}
+                                    </span>
+                                    <input type="text" class="form-control edit-mode" value="{{ entry|get_field_value:column.field|default:'' }}" 
+                                        data-original-value="{{ entry|get_field_value:column.field|default:'' }}">
+
+                                <!-- Dud Tags -->
+                                {% elif column.field|is_tag_field:'dud' %}
+                                    <span class="view-mode">
+                                        {{ entry|get_field_value:column.field|default:"-" }}
+                                    </span>
+                                    <input type="text" class="form-control edit-mode" value="{{ entry|get_field_value:column.field|default:'' }}" 
+                                        data-original-value="{{ entry|get_field_value:column.field|default:'' }}">
+                                
+                                <!-- Tag States -->
+                                {% elif 'tag_state' in column.field %}
+                                    <span class="view-mode">
+                                        {{ entry|get_field_value:column.field}}
+                                    </span>
+                                    <select class="form-control edit-mode" data-original-value="{{ entry|get_field_value:column.field|default:'' }}">
+                                        <option value="">---------</option>
+                                        {% for state in tag_states_choices %}
+                                            <option value="{{ state.id }}" {% if entry|get_field_value:column.field == state %}selected{% endif %}>
+                                                {{ state.description }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                    
+                                <!-- PIT Tag Stickers -->
+                                {% elif column.field == 'new_pit_tag_sticker_present' or column.field == 'new_pit_tag_2_sticker_present' or column.field == 'new_pit_tag_3_sticker_present' or column.field == 'new_pit_tag_4_sticker_present' %}
+                                    <span class="view-mode">
+                                        {{ entry|get_field_value:column.field|yesno:"Yes,No"|default:'-' }}
+                                    </span>
+                                    <select class="form-control edit-mode" data-original-value="{{ entry|get_field_value:column.field|yesno:'true,false' }}">
+                                        <option value="true" {% if entry|get_field_value:column.field %}selected{% endif %}>Yes</option>
+                                        <option value="false" {% if not entry|get_field_value:column.field %}selected{% endif %}>No</option>
+                                    </select>
+                                
+                                <!-- Checks -->
+                                {% elif column.field == 'flipper_tag_check' or column.field == 'pit_tag_check' or column.field == 'injury_check' or column.field == 'scar_check' or column.field == 'clutch_completed' %}
+                                    <span class="view-mode">
+                                        {{ entry|get_field_value:column.field|default:'-' }}
+                                    </span>
+                                    <select class="form-control edit-mode" data-original-value="{{ entry|get_field_value:column.field|default:'' }}">
+                                        <option value="">---------</option>
+                                        {% for choice in yesno_choices %}
+                                            <option value="{{ choice.id }}" {% if entry|get_field_value:column.field == choice %}selected{% endif %}>
+                                                {{ choice.description }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                
+                                <!-- Damage -->
+                                {% elif column.field == 'damage_carapace' or column.field == 'damage_lff' or column.field == 'damage_rff' or column.field == 'damage_lhf' or column.field == 'damage_rhf' %}
+                                    <span class="view-mode">
+                                        {{ entry|get_field_value:column.field|default:'-' }}
+                                    </span>
+                                    <input type="text" class="form-control edit-mode" value="{{ entry|get_field_value:column.field|default:'' }}" 
+                                        data-original-value="{{ entry|get_field_value:column.field|default:'' }}">
+
+                                <!-- Body Parts and Damage Codes -->
+                                {% elif 'body_part' in column.field %}
+                                    <span class="view-mode">
+                                        {{ entry|get_field_value:column.field }}
+                                    </span>
+                                    <select class="form-control edit-mode" data-original-value="{{ entry|get_field_value:column.field|default:'' }}">
+                                        <option value="">---------</option>
+                                        {% for part in body_parts_choices %}
+                                            <option value="{{ part.id }}" {% if entry|get_field_value:column.field == part %}selected{% endif %}>
+                                                {{ part.description }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                        
+                                {% elif 'damage_code' in column.field %}
+                                    <span class="view-mode">
+                                        {{ entry|get_field_value:column.field|default:'-' }}
+                                    </span>
+                                    <select class="form-control edit-mode" data-original-value="{{ entry|get_field_value:column.field|default:'' }}">
+                                        <option value="">---------</option>
+                                        {% for code in damage_codes_choices %}
+                                            <option value="{{ code.id }}" {% if entry|get_field_value:column.field == code %}selected{% endif %}>
+                                                {{ code.description }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                    
+                                <!-- Tissue Samples -->
+                                {% elif column.field == 'tissue_type_1' or column.field == 'tissue_type_2' %}
+                                <span class="view-mode">
+                                    {{ entry|get_field_value:column.field|default:'-' }}
+                                </span>
+                                <select class="form-control edit-mode" data-original-value="{{ entry|get_field_value:column.field|default:'' }}">
+                                    <option value="">---------</option>
+                                    {% for type in tissue_types_choices %}
+                                        <option value="{{ type.id }}" {% if entry|get_field_value:column.field == type %}selected{% endif %}>
+                                            {{ type.code }} - {{ type.description }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            
+                                {% elif column.field == 'sample_label_1' or column.field == 'sample_label_2' %}
+                                    <span class="view-mode">
+                                        {{ entry|get_field_value:column.field|default:'-' }}
+                                    </span>
+                                    <input type="text" class="form-control edit-mode" value="{{ entry|get_field_value:column.field|default:'' }}" 
+                                        data-original-value="{{ entry|get_field_value:column.field|default:'' }}">
+                                
+                                {% elif 'tissue_type' in column.field %}
+                                    <select class="form-control" data-original-value="{{ entry|get_field_value:column.field|default:'' }}">
+                                        <option value="">---------</option>
+                                        {% for type in tissue_types_choices %}
+                                            <option value="{{ type.id }}" {% if entry|get_field_value:column.field == type %}selected{% endif %}>
+                                                {{ type.description }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                
+                                <!-- Personnel -->
+                                {% elif '_by_id' in column.field %}
+                                    <span class="view-mode">
+                                        {% with person=entry|get_field_value:column.field %}
+                                            {{ person.first_name }} {{ person.surname|default:'-' }}
+                                        {% endwith %}
+                                    </span>
+                                    <div class="edit-mode">
+                                        <input type="text" 
+                                            class="search-field" 
+                                            placeholder="Search person" 
+                                            value="{% with person=entry|get_field_value:column.field %}{{ person.first_name }} {{ person.surname }}{% endwith %}"
+                                            data-original-value="{{ entry|get_field_value:column.field|default:'' }}">
+                                        <input type="hidden" 
+                                            class="actual-value" 
+                                            name="{{ column.field }}" 
+                                            value="{{ entry|get_field_value:column.field|default:'' }}">
+                                        <div class="search-results"></div>
+                                    </div>
+                                
+                                <!-- Comments and Errors -->
+                                {% elif column.field == 'comments' or column.field == 'turtle_comments' or column.field == 'comment_fromrecordedtagstable' %}
+                                <span class="view-mode">
+                                    {{ entry|get_field_value:column.field|default:'-' }}
+                                </span>
+                                <textarea class="form-control edit-mode" data-original-value="{{ entry|get_field_value:column.field|default:'' }}">{{ entry|get_field_value:column.field|default:'' }}</textarea>
+
+                                {% elif column.field == 'error_message' or column.field == 'error_number' %}
+                                <span class="view-mode">
+                                    {{ entry|get_field_value:column.field|default:'-' }}
+                                </span>
+                                <input type="text" class="form-control edit-mode" value="{{ entry|get_field_value:column.field|default:'' }}" 
+                                    data-original-value="{{ entry|get_field_value:column.field|default:'' }}"
+                                    readonly>
+
+                                {% else %}
+                                    <span class="view-mode">
+                                        {{ entry|get_field_value:column.field|default:'-' }}
+                                    </span>
+                                    <input type="text" class="form-control edit-mode" value="{{ entry|get_field_value:column.field|default:'' }}" 
+                                        data-original-value="{{ entry|get_field_value:column.field|default:'' }}">
+                                {% endif %}
+                            </td>
+                            {% endif %}
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Column Selector Modal -->
+        <div class="modal fade" id="columnSelectorModal" tabindex="-1">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Select Columns to Display</h5>
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span>&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="accordion" id="columnGroups">
+                            {% regroup all_columns by group as column_groups %}
+                            {% for group in column_groups %}
+                                <div class="card">
+                                    <div class="card-header" id="heading{{ forloop.counter }}">
+                                        <h2 class="mb-0">
+                                            <button class="btn btn-link" type="button" data-toggle="collapse" 
+                                                    data-target="#collapse{{ forloop.counter }}">
+                                                {{ group.grouper }}
+                                            </button>
+                                        </h2>
+                                    </div>
+                                    <div id="collapse{{ forloop.counter }}" class="collapse show" 
+                                    data-parent="#columnGroups">
+                                    <div class="card-body">
+                                        {% for column in group.list %}
+                                            <label class="d-block">
+                                                <input type="checkbox" 
+                                                        class="column-checkbox" 
+                                                        value="{{ column.field }}"
+                                                        {% if column.field in visible_columns %}checked{% endif %}> 
+                                                {{ column.title }}
+                                            </label>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" id="selectAll">Select All</button>
+                    <button type="button" class="btn btn-outline-secondary" id="deselectAll">Deselect All</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveColumnSettings">Save</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading spinner -->
+        <div class="loading-spinner" style="display: none;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div class="loading-overlay" style="display: none;"></div>
+        
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+    let editableFields = {}; 
+
+    function viewEntry(entryId) {
+        console.log('Clicked entry:', entryId);
+        // TODO: Implement entry detail view
+    };
+
+    function saveChanges() {
+        if(Object.keys(editableFields).length === 0) {
+            alert('No changes to save');
+            return;
+        }
+
+        var changes = [];
+        for(var entryId in editableFields) {
+            for(var field in editableFields[entryId]) {
+                changes.push('Entry ' + entryId + ': ' + field + ' = ' + editableFields[entryId][field]);
+            }
+        }
+
+        var confirmMessage = 'The following changes will be saved:\n\n' + 
+                            changes.join('\n') + 
+                            '\n\nDo you want to continue?';
+
+        if(confirm(confirmMessage)) {
+            $('#loading-overlay').show();
+            $('#loading-spinner').show();
+            $.ajax({
+                url: '{% url "wamtram2:save_entry_changes" %}',
+                method: 'POST',
+                data: {
+                    changes: JSON.stringify(editableFields),
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    if(response.success) {
+                        alert('Changes saved successfully');
+                        location.reload();
+                    } else {
+                        alert('Error saving changes: ' + response.error);
+                    }
+                },
+                error: function() {
+                    alert('Error saving changes');
+                },
+                complete: function() {
+                    $('#loading-overlay').hide();
+                    $('#loading-spinner').hide();
+                }
+            });
+        }
+    }
+
+    $(document).ready(function() {
+        $('.edit-mode').hide();
+        $('.view-mode').show();
+
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('.edit-mode').length) {
+                $('.search-results').hide();
+            }
+        });
+
+        $('#viewMode, #editMode').click(function() {
+            const isEdit = $(this).attr('id') === 'editMode';
+            $(this).addClass('active').siblings().removeClass('active');
+            
+            $('#saveChanges').toggle(isEdit);
+
+            if(!isEdit && Object.keys(editableFields).length > 0) {
+                if(confirm('You have unsaved changes. Do you want to save them before switching to view mode?')) {
+                    saveChanges();
+                } else {
+                    $('.modified').removeClass('modified');
+                    editableFields = {};
+                }
+            }
+
+            if(isEdit) {
+                $('.view-mode').hide();
+                $('td[data-editable="true"]').each(function() {
+                    if(!$(this).closest('tr').hasClass('has-observation')) {
+                        $(this).find('.edit-mode').show();
+                    }
+                });
+            } else {
+                $('.view-mode').show();
+                $('.edit-mode').hide();
+            }
+            
+        });
+
+        $(document).on('input', '.search-field', function() {
+            const searchField = $(this);
+            const searchResults = searchField.siblings('.search-results');
+            const query = searchField.val();
+            const fieldName = searchField.closest('td').data('field');
+    
+            if (query.length < 2) {
+                searchResults.hide();
+                return;
+            }
+
+            let searchUrl = '';
+            if (fieldName.includes('_by_id')) {
+                searchUrl = '{% url "wamtram2:search-persons" %}';
+            } else if (fieldName === 'place_code') {
+                searchUrl = '{% url "wamtram2:search-places" %}';
+            } else {
+                return;
+            }
+
+            $.ajax({
+                url: searchUrl,
+                data: { q: query },
+                success: function(data) {
+                    searchResults.empty();
+                    if (fieldName.includes('_by_id')) {
+                        data.forEach(function(person) {
+                            searchResults.append(
+                                `<div class="search-result" 
+                                    data-id="${person.person_id}" 
+                                    data-name="${person.first_name} ${person.surname}">
+                                    ${person.first_name} ${person.surname}
+                                </div>`
+                            );
+                        });
+                    } else if (fieldName === 'place_code') {
+                        data.forEach(function(place) {
+                            searchResults.append(
+                                `<div class="search-result" 
+                                    data-code="${place.place_code}" 
+                                    data-name="${place.get_full_name}">
+                                    ${place.get_full_name}
+                                </div>`
+                            );
+                        });
+                    }
+                    searchResults.show();
+                }
+            });
+        });
+
+        $(document).on('click', '.search-result', function(e) {
+            e.preventDefault();
+            const item = $(this);
+            const searchField = item.closest('.edit-mode').find('.search-field');
+            const actualValue = item.closest('.edit-mode').find('.actual-value');
+            const fieldName = searchField.closest('td').data('field');
+
+            if (fieldName.includes('_by_id')) {
+                // 处理人员选择
+                const personId = item.data('id');
+                const personName = item.data('name');
+                searchField.val(personName);
+                actualValue.val(personId);
+
+                const entryId = searchField.closest('tr').data('entry-id');
+                if(!editableFields[entryId]) {
+                    editableFields[entryId] = {};
+                }
+                editableFields[entryId][fieldName] = personId;
+            } else if (fieldName === 'place_code') {
+                // 处理地点选择
+                const placeCode = item.data('code');
+                const placeName = item.data('name');
+                searchField.val(placeName);
+                actualValue.val(placeCode);
+
+                const entryId = searchField.closest('tr').data('entry-id');
+                if(!editableFields[entryId]) {
+                    editableFields[entryId] = {};
+                }
+                editableFields[entryId][fieldName] = placeCode;
+            }
+
+            searchField.closest('td').addClass('modified');
+            item.closest('.search-results').hide();
+        });
+
+
+        $('.datetime-input').on('change', function() {
+            const entryId = $(this).closest('tr').data('entry-id');
+            const currentField = $(this).closest('td').data('field');
+            const pairField = $(this).data('pair-field');
+            
+            const dateInput = $(this).closest('tr').find(`td[data-field="observation_date"] input`);
+            const timeInput = $(this).closest('tr').find(`td[data-field="observation_time"] input`);
+            
+            const dateValue = dateInput.val();
+            const timeValue = timeInput.val() || '00:00';
+            
+            var combinedDateTime = dateValue + ' ' + timeValue;
+            
+            if(!editableFields[entryId]) {
+                editableFields[entryId] = {};
+            }
+            
+            editableFields[entryId]['observation_date'] = combinedDateTime;
+            editableFields[entryId]['observation_time'] = combinedDateTime;
+            
+            $(this).closest('td').addClass('modified');
+        });
+
+        $('#selectAll').click(function() {
+            $('.column-checkbox').prop('checked', true);
+        });
+    
+        $('#deselectAll').click(function() {
+            $('.column-checkbox').prop('checked', false);
+        });
+
+        $('td[data-editable="true"]').on('input', function() {
+            if($(this).closest('tr').hasClass('has-observation')) {
+                return;
+            }
+
+            const fieldType = $(this).data('field-type');
+            if(fieldType === 'readonly') {
+                return;
+            }
+
+            const entryId = $(this).closest('tr').data('entry-id');
+            const fieldName = $(this).data('field');
+            const newValue = $(this).text().trim();
+
+            if(fieldType === 'number' && isNaN(newValue)) {
+                alert('Please enter a valid number');
+                return;
+            }
+            
+            $(this).addClass('modified');
+            
+            if(!editableFields[entryId]) {
+                editableFields[entryId] = {};
+            }
+            editableFields[entryId][fieldName] = newValue;
+        });
+
+
+        $('td[data-editable="true"] select, td[data-editable="true"] input, td[data-editable="true"] textarea').on('change', function() {
+            if($(this).closest('tr').hasClass('has-observation')) {
+                return;
+            }
+
+            const entryId = $(this).closest('tr').data('entry-id');
+            const fieldName = $(this).closest('td').data('field');
+            let newValue = $(this).val();
+            
+            if($(this).is('select')) {
+                if($(this).find('option:selected').text() === 'Yes' || $(this).find('option:selected').text() === 'No') {
+                    newValue = newValue === 'true';
+                }
+            }
+            
+            $(this).closest('td').addClass('modified');
+            
+            if(!editableFields[entryId]) {
+                editableFields[entryId] = {};
+            }
+            editableFields[entryId][fieldName] = newValue;
+        });
+
+        $('#saveChanges').click(saveChanges);
+
+
+        $('.grid-row').hover(
+            function() { $(this).addClass('table-hover'); },
+            function() { $(this).removeClass('table-hover'); }
+        );
+
+        $('#saveColumnSettings').click(function() {
+            const selectedColumns = $('.column-checkbox:checked').map(function() {
+                return $(this).val();
+            }).get();
+
+            $.ajax({
+                url: window.location.pathname,
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                data: {
+                    columns: selectedColumns,
+                },
+                beforeSend: function() {
+                    $('.loading-overlay').css('display', 'flex');
+                },
+                success: function(response) {
+                    if (response.status === 'success') {
+                        location.reload();
+                    } else {
+                        alert('Save settings failed');
+                    }
+                },
+                error: function() {
+                    alert('Save settings failed');
+                },
+                complete: function() {
+                    $('.loading-overlay').hide();
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

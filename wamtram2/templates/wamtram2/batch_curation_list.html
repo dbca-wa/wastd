@@ -1,0 +1,230 @@
+{% extends "base_wastd.html" %}
+{% load static bootstrap4 %}
+
+{% block extra_style %}
+    {{ block.super }}
+    {{ form.media.css }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/grid.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
+{% endblock %}
+
+
+{% block breadcrumbs %}
+    <nav aria-label="breadcrumb" class="d-none d-md-block">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'wamtram2:admin_tools' %}">Curation Tools</a></li>
+            <li class="breadcrumb-item active">Curation Batch List</li>
+        </ol>
+    </nav>
+{% endblock %}
+
+{% block page_content_inner %}
+<div class="container-fluid mt-3">
+    <div class="row mb-3">
+        <div class="col">
+            <h2>Batch List</h2>
+        </div>
+        <div class="col-auto">
+            <button class="btn btn-outline-primary" data-toggle="modal" data-target="#columnSelectorModal">
+                <i class="fas fa-columns"></i> Select Columns to Display
+            </button>
+        </div>
+    </div>
+
+    <div class="row align-items-center mb-3">
+        <div class="col">
+            <div class="search-container">
+                {% include "includes/search_form.html" with placeholder="Search batch code, comments or entered by..." %}
+            </div>
+        </div>
+        <div class="col-auto">
+            {% if is_paginated %}
+                {% include "pagination.html" %}
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="grid-container">
+        <table class="grid-table">
+            <thead>
+                <tr>
+                    {% for column in all_columns %}
+                        {% if column.field in visible_columns %}
+                        <th data-field="{{ column.field }}">{{ column.title }}</th>
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for batch in batches %}
+                <tr class="grid-row" data-batch-id="{{ batch.entry_batch_id }}" oncontextmenu="showContextMenu(event, {{ batch.entry_batch_id }}); return false;">
+                    {% for column in all_columns %}
+                        {% if column.field in visible_columns %}
+                        <td>
+                            {% if column.field == 'entered_person_id' %}
+                                {{ batch.entered_person_id|default:"-" }}
+                            {% elif column.field == 'entry_date' %}
+                                {{ batch.entry_date|date:"Y-m-d H:i" }}
+                            {% elif column.field == 'pr_date_convention' %}
+                                {{ batch.pr_date_convention|yesno:"Yes,No" }}
+                            {% elif column.field == 'template' %}
+                                {{ batch.template|default:"-" }}
+                            {% elif column.field == 'batches_code' %}
+                                {{ batch.batches_code|default:"-" }}
+                            {% elif column.field == 'entry_batch_id' %}
+                                {{ batch.entry_batch_id }}
+                            {% elif column.field == 'comments' %}
+                                {{ batch.comments|default:"-" }}
+                            {% elif column.field == 'entry_count' %}
+                                {{ batch.entry_count }}
+                            {% elif column.field == 'flagged_count' %}
+                                {{ batch.flagged_count }}
+                            {% endif %}
+                        </td>
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Column Selector Modal -->
+<div class="modal fade" id="columnSelectorModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Choose Columns to Display</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="list-group">
+                    {% for column in all_columns %}
+                    <label class="list-group-item">
+                        <input type="checkbox" 
+                            class="column-checkbox" 
+                            value="{{ column.field }}"
+                            {% if column.field in visible_columns %}checked{% endif %}> 
+                        {{ column.title }}
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveColumnSettings">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="loading-overlay" id="loading-overlay"></div>
+<div class="loading-spinner" id="loading-spinner">
+    <div class="spinner-border text-primary" role="status">
+        <span class="sr-only">Loading...</span>
+    </div>
+</div>
+
+<div class="context-menu" id="contextMenu" style="display: none;">
+    <ul class="context-menu-list">
+        <li class="context-menu-item" onclick="viewBatch()">View Entries</li>
+        <li class="context-menu-item" onclick="viewBatchDetails()">View Batch Details</li>
+    </ul>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+
+    let selectedBatchId = null;
+
+    function showContextMenu(event, batchId) {
+        event.preventDefault();
+        selectedBatchId = batchId;
+        
+        const contextMenu = document.getElementById('contextMenu');
+        contextMenu.style.display = 'block';
+        contextMenu.style.left = event.pageX + 'px';
+        contextMenu.style.top = event.pageY + 'px';
+    }
+    
+    function viewBatch() {
+        if (selectedBatchId) {
+            window.location.href = "{% url 'wamtram2:batch_entries' 0 %}".replace('0', selectedBatchId);
+        }
+    }
+    
+    function viewBatchDetails() {
+        if (selectedBatchId) {
+            window.location.href = "{% url 'wamtram2:batch_detail_manage' batch_id=0 %}".replace('0', selectedBatchId);
+        }
+    }
+
+    document.addEventListener('click', function(event) {
+        const contextMenu = document.getElementById('contextMenu');
+        if (!contextMenu.contains(event.target)) {
+            contextMenu.style.display = 'none';
+        }
+    });
+    
+$(document).ready(function() {
+
+    $('.grid-row').hover(
+        function() { $(this).addClass('table-hover'); },
+        function() { $(this).removeClass('table-hover'); }
+    );
+
+    $('.grid-row').each(function() {
+        if (parseInt($(this).find('td[data-field="flagged_count"]').text()) > 0) {
+            $(this).addClass('flagged-row');
+        }
+    });
+
+
+    $('.grid-row').click(function() {
+        const batchId = $(this).data('batch-id');
+        window.location.href = "{% url 'wamtram2:batch_entries' 0 %}".replace('0', batchId);
+    });
+
+    $('#saveColumnSettings').click(function() {
+        const selectedColumns = $('.column-checkbox:checked').map(function() {
+            return $(this).val();
+        }).get();
+
+        $.ajax({
+            url: window.location.pathname,
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            data: {
+                columns: selectedColumns,
+            },
+            beforeSend: function() {
+                $('.loading-overlay').css('display', 'flex');
+            },
+            success: function(response) {
+                if (response.status === 'success') {
+                    location.reload();
+                } else {
+                    alert('Save setting failed');
+                }
+            },
+            error: function() {
+                alert('Save setting failed');
+            },
+            complete: function() {
+                $('.loading-overlay').hide();
+            }
+        });
+    });
+});
+</script>
+{% endblock %}
