@@ -1889,9 +1889,34 @@ class ExportDataView(LoginRequiredMixin, View):
                 
             queryset = queryset.select_related('entry_batch')
 
+            filename_parts = []
+            
+            # Add place name if filtered
+            if place_code:
+                place_obj = TrtPlaces.objects.get(place_code=place_code)
+                filename_parts.append(place_obj.place_name)
+                
+            # Add species name if filtered
+            if species:
+                species_obj = TrtSpecies.objects.get(species_code=species)
+                filename_parts.append(species_obj.common_name)
+                
+            # Add sex if filtered
+            if sex:
+                sex_label = dict(SEX_CHOICES).get(sex, '')
+                filename_parts.append(sex_label)
+                
+            # Add date range if provided
+            if from_date and to_date:
+                date_range = f"{from_date.strftime('%b %d %Y')} - {to_date.strftime('%b %d %Y')}"
+                filename_parts.append(date_range)
+                
+            # Create filename
+            filename = '-'.join(filename_parts) if filename_parts else 'data_export'
+
             if file_format == "csv":
                 response = HttpResponse(content_type="text/csv")
-                response["Content-Disposition"] = 'attachment; filename="data_export.csv"'
+                response["Content-Disposition"] = f'attachment; filename="{filename}.csv"'
                 writer = csv.writer(response)
 
                 headers = [field.name for field in TrtDataEntry._meta.fields]
@@ -1911,7 +1936,7 @@ class ExportDataView(LoginRequiredMixin, View):
                     
             else:  # xlsx format
                 response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-                response["Content-Disposition"] = 'attachment; filename="data_export.xlsx"'
+                response["Content-Disposition"] = f'attachment; filename="{filename}.xlsx"'
                 wb = Workbook()
                 ws = wb.active
                 
@@ -1949,6 +1974,7 @@ class ExportDataView(LoginRequiredMixin, View):
             import traceback
             traceback.print_exc()
             return HttpResponse(f"Error during export: {str(e)}", status=500)
+
 class DudTagManageView(LoginRequiredMixin, View):
     template_name = 'wamtram2/dud_tag_manage.html'
 
