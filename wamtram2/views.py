@@ -4179,35 +4179,41 @@ class TurtleManagementView(TemplateView):
         for turtle in queryset:
             print(f"Processing turtle: {turtle.turtle_id}")
             
-            recorded_tags = TrtRecordedTags.objects.filter(turtle_id=turtle.turtle_id)
+            tags = TrtTags.objects.filter(turtle=turtle.turtle_id)
             tag_data = [{
-                'tag_id': tag.tag_id.tag_id if tag.tag_id else tag.other_tag_id,
+                'tag_id': tag.tag_id,
                 'side': tag.side,
-                'tag_state': tag.tag_state,
-                'tag_position': tag.tag_position,
-                'barnacles': tag.barnacles,
-                'observation_id': tag.observation_id.pk if tag.observation_id else None,
-                'comments': tag.comments
-            } for tag in recorded_tags]
+                'tag_status': tag.tag_status.description if tag.tag_status else None,
+                'issue_location': tag.issue_location,
+                'custodian_person': tag.custodian_person.get_full_name() if tag.custodian_person else None,
+                'return_date': tag.return_date.strftime('%Y-%m-%d') if tag.return_date else None,
+                'return_condition': tag.return_condition,
+                'comments': tag.comments,
+                'field_person_id': tag.field_person_id
+            } for tag in tags]
         
             
-            recorded_pit_tags = turtle.recorded_pittags.all()
+            pit_tags = TrtPitTags.objects.filter(turtle=turtle.turtle_id)
             pit_tag_data = [{
-                'pit_tag_id': tag.pittag_id.pittag_id if tag.pittag_id else None,
-                'pit_tag_state': tag.pit_tag_state.pit_tag_state,
-                'pit_tag_position': tag.pit_tag_position,
-                'observation_id': tag.observation_id.pk if tag.observation_id else None,
-                'checked': tag.checked,
-                'comments': tag.comments
-            } for tag in recorded_pit_tags]
+                'pit_tag_id': tag.pittag_id,
+                'issue_location': tag.issue_location,
+                'custodian_person': tag.custodian_person.get_full_name() if tag.custodian_person else None,
+                'pit_tag_status': tag.pit_tag_status.pit_tag_status if tag.pit_tag_status else None,
+                'return_date': tag.return_date.strftime('%Y-%m-%d') if tag.return_date else None,
+                'return_condition': tag.return_condition,
+                'comments': tag.comments,
+                'field_person_id': tag.field_person_id,
+                'tag_order_id': tag.tag_order_id,
+                'batch_number': tag.batch_number,
+                'box_number': tag.box_number
+            } for tag in pit_tags]
         
-            recorded_identifications = TrtRecordedIdentification.objects.filter(turtle=turtle.turtle_id)
+            identifications = TrtIdentification.objects.filter(turtle=turtle.turtle_id)
             identification_data = [{
-                'identification_type': ident.identification_type,
+                'identification_type': ident.identification_type.identification_type,
                 'identifier': ident.identifier,
-                'observation_id': ident.observation_id,
                 'comments': ident.comments
-            } for ident in recorded_identifications]
+            } for ident in identifications]
             
             observations = turtle.trtobservations_set.all()
             observation_data = [{

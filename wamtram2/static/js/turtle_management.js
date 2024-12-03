@@ -29,6 +29,36 @@ document.addEventListener('DOMContentLoaded', function() {
     let hasUnsavedChanges = false;
     let pendingSearchData = null;
 
+    function clearForm() {
+        if (searchResultForm) {
+            const formElements = searchResultForm.querySelectorAll('input, select');
+            formElements.forEach(element => {
+                element.value = '';
+            });
+            
+            const containers = [
+                'tagContainer',
+                'pitTagContainer',
+                'identificationContainer',
+                'observationContainer',
+                'sampleContainer',
+                'documentContainer'
+            ];
+            
+            containers.forEach(containerId => {
+                const container = document.getElementById(containerId);
+                if (container) {
+                    container.innerHTML = '';
+                }
+            });
+
+            searchResultForm.style.display = 'none';
+            if (noResultsDiv) {
+                noResultsDiv.style.display = 'none';
+            }
+        }
+    }
+
     function saveOriginalFormData() {
         originalFormData = {};
         const formElements = searchResultForm.querySelectorAll('input, select');
@@ -198,34 +228,20 @@ document.addEventListener('DOMContentLoaded', function() {
                             </div>
                             <div class="col-md-2">
                                 <div class="form-group">
-                                    <label>State</label>
-                                    <input type="text" class="form-control" name="tag_state" value="${tag.tag_state || ''}" readonly>
+                                    <label>Status</label>
+                                    <input type="text" class="form-control" name="tag_status" value="${tag.tag_status || ''}" readonly>
                                 </div>
                             </div>
                             <div class="col-md-2">
                                 <div class="form-group">
-                                    <label>Position</label>
-                                    <input type="text" class="form-control" name="tag_position" value="${tag.tag_position || ''}" readonly>
+                                    <label>Issue Location</label>
+                                    <input type="text" class="form-control" name="issue_location" value="${tag.issue_location || ''}" readonly>
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label>Comments</label>
                                     <input type="text" class="form-control" name="comments" value="${tag.comments || ''}" readonly>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-row mt-2">
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label>Observation ID</label>
-                                    <input type="text" class="form-control" name="observation_id" value="${tag.observation_id || ''}" readonly>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label>Barnacles</label>
-                                    <input type="text" class="form-control" value="${tag.barnacles ? 'Yes' : 'No'}" readonly>
                                 </div>
                             </div>
                         </div>
@@ -258,34 +274,20 @@ document.addEventListener('DOMContentLoaded', function() {
                             </div>
                             <div class="col-md-2">
                                 <div class="form-group">
-                                    <label>State</label>
-                                    <input type="text" class="form-control" name="pit_tag_state" value="${tag.pit_tag_state || ''}" readonly>
+                                    <label>Status</label>
+                                    <input type="text" class="form-control" name="pit_tag_status" value="${tag.pit_tag_status || ''}" readonly>
                                 </div>
                             </div>
                             <div class="col-md-2">
                                 <div class="form-group">
-                                    <label>Position</label>
-                                    <input type="text" class="form-control" name="pit_tag_position" value="${tag.pit_tag_position || ''}" readonly>
+                                    <label>Issue Location</label>
+                                    <input type="text" class="form-control" name="issue_location" value="${tag.issue_location || ''}" readonly>
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label>Comments</label>
                                     <input type="text" class="form-control" name="comments" value="${tag.comments || ''}" readonly>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-row mt-2">
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label>Observation ID</label>
-                                    <input type="text" class="form-control" name="observation_id" value="${tag.observation_id || ''}" readonly>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label>Checked</label>
-                                    <input type="text" class="form-control" value="${tag.checked ? 'Yes' : 'No'}" readonly>
                                 </div>
                             </div>
                         </div>
@@ -319,13 +321,13 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label>Identifier</label>
-                                    <input type="text" class="form-control" name="identifier" value="${ident.identifier || ''}">
+                                    <input type="text" class="form-control" name="identifier" value="${ident.identifier || ''}" readonly>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label>Comments</label>
-                                    <input type="text" class="form-control" name="identification_comments" value="${ident.comments || ''}">
+                                    <input type="text" class="form-control" name="identification_comments" value="${ident.comments || ''}" readonly>
                                 </div>
                             </div>
                         </div>
@@ -578,33 +580,3 @@ document.addEventListener('DOMContentLoaded', function() {
 
     clearForm();
 });
-
-function clearForm() {
-    if (searchResultForm) {
-        const formElements = searchResultForm.querySelectorAll('input, select');
-        formElements.forEach(element => {
-            element.value = '';
-        });
-        
-        const containers = [
-            'tagContainer',
-            'pitTagContainer',
-            'identificationContainer',
-            'observationContainer',
-            'sampleContainer',
-            'documentContainer'
-        ];
-        
-        containers.forEach(containerId => {
-            const container = document.getElementById(containerId);
-            if (container) {
-                container.innerHTML = '';
-            }
-        });
-
-        searchResultForm.style.display = 'none';
-        if (noResultsDiv) {
-            noResultsDiv.style.display = 'none';
-        }
-    }
-} 
