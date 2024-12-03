@@ -4177,7 +4177,9 @@ class TurtleManagementView(TemplateView):
 
         turtle_data = []
         for turtle in queryset:
-            recorded_tags = TrtRecordedTags.objects.filter(turtle_id=turtle.pk)
+            print(f"Processing turtle: {turtle.turtle_id}")
+            
+            recorded_tags = TrtRecordedTags.objects.filter(turtle_id=turtle.turtle_id)
             tag_data = [{
                 'tag_id': tag.tag_id.tag_id if tag.tag_id else tag.other_tag_id,
                 'side': tag.side,
@@ -4199,10 +4201,10 @@ class TurtleManagementView(TemplateView):
                 'comments': tag.comments
             } for tag in recorded_pit_tags]
         
-            recorded_identifications = TrtRecordedIdentification.objects.filter(turtle=turtle.pk)
+            recorded_identifications = TrtRecordedIdentification.objects.filter(turtle=turtle.turtle_id)
             identification_data = [{
-                'identification_type': ident.identification_type.identification_type,
-                'identifier': ident.identifier.identifier,
+                'identification_type': ident.identification_type,
+                'identifier': ident.identifier,
                 'observation_id': ident.observation_id,
                 'comments': ident.comments
             } for ident in recorded_identifications]
@@ -4227,7 +4229,7 @@ class TurtleManagementView(TemplateView):
                 'comments': sample.comments
             } for sample in samples]
             
-            documents = TrtDocuments.objects.filter(turtle_id=turtle.pk)
+            documents = TrtDocuments.objects.filter(turtle_id=turtle.turtle_id)
             document_data = [{
                 'document_id': doc.pk,
                 'document_type': doc.document_type,

@@ -577,4 +577,34 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     clearForm();
-}); 
+});
+
+function clearForm() {
+    if (searchResultForm) {
+        const formElements = searchResultForm.querySelectorAll('input, select');
+        formElements.forEach(element => {
+            element.value = '';
+        });
+        
+        const containers = [
+            'tagContainer',
+            'pitTagContainer',
+            'identificationContainer',
+            'observationContainer',
+            'sampleContainer',
+            'documentContainer'
+        ];
+        
+        containers.forEach(containerId => {
+            const container = document.getElementById(containerId);
+            if (container) {
+                container.innerHTML = '';
+            }
+        });
+
+        searchResultForm.style.display = 'none';
+        if (noResultsDiv) {
+            noResultsDiv.style.display = 'none';
+        }
+    }
+} 
