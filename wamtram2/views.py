@@ -61,7 +61,10 @@ from .models import (
     TrtMeasurements,
     TrtDamage,
     TrtCauseOfDeath,
-    TrtTurtleStatus
+    TrtTurtleStatus,
+    TrtDocuments,
+    TrtRecordedIdentification
+    
     
 )
 from .forms import TrtDataEntryForm, SearchForm, TrtEntryBatchesForm, TemplateForm, BatchesCodeForm, TrtPersonsForm, TagRegisterForm
@@ -1889,34 +1892,9 @@ class ExportDataView(LoginRequiredMixin, View):
                 
             queryset = queryset.select_related('entry_batch')
 
-            filename_parts = []
-            
-            # Add place name if filtered
-            if place_code:
-                place_obj = TrtPlaces.objects.get(place_code=place_code)
-                filename_parts.append(place_obj.place_name)
-                
-            # Add species name if filtered
-            if species:
-                species_obj = TrtSpecies.objects.get(species_code=species)
-                filename_parts.append(species_obj.common_name)
-                
-            # Add sex if filtered
-            if sex:
-                sex_label = dict(SEX_CHOICES).get(sex, '')
-                filename_parts.append(sex_label)
-                
-            # Add date range if provided
-            if from_date and to_date:
-                date_range = f"{from_date.strftime('%b %d %Y')} - {to_date.strftime('%b %d %Y')}"
-                filename_parts.append(date_range)
-                
-            # Create filename
-            filename = '-'.join(filename_parts) if filename_parts else 'data_export'
-
             if file_format == "csv":
                 response = HttpResponse(content_type="text/csv")
-                response["Content-Disposition"] = f'attachment; filename="{filename}.csv"'
+                response["Content-Disposition"] = 'attachment; filename="data_export.csv"'
                 writer = csv.writer(response)
 
                 headers = [field.name for field in TrtDataEntry._meta.fields]
@@ -1936,7 +1914,7 @@ class ExportDataView(LoginRequiredMixin, View):
                     
             else:  # xlsx format
                 response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-                response["Content-Disposition"] = f'attachment; filename="{filename}.xlsx"'
+                response["Content-Disposition"] = 'attachment; filename="data_export.xlsx"'
                 wb = Workbook()
                 ws = wb.active
                 
@@ -1974,7 +1952,6 @@ class ExportDataView(LoginRequiredMixin, View):
             import traceback
             traceback.print_exc()
             return HttpResponse(f"Error during export: {str(e)}", status=500)
-
 class DudTagManageView(LoginRequiredMixin, View):
     template_name = 'wamtram2/dud_tag_manage.html'
 
@@ -4200,31 +4177,35 @@ class TurtleManagementView(TemplateView):
 
         turtle_data = []
         for turtle in queryset:
-            tags = turtle.trttags_set.all()
+            recorded_tags = TrtRecordedTags.objects.filter(turtle_id=turtle.pk)
             tag_data = [{
-                'tag_id': tag.tag_id,
-                'tag_side': tag.tag_side,
-                'tag_status': tag.tag_status,
-                'return_date': tag.return_date.strftime('%Y-%m-%d') if tag.return_date else '',
-                'tag_return_condition': tag.tag_return_condition,
+                'tag_id': tag.tag_id.tag_id if tag.tag_id else tag.other_tag_id,
+                'side': tag.side,
+                'tag_state': tag.tag_state,
+                'tag_position': tag.tag_position,
+                'barnacles': tag.barnacles,
+                'observation_id': tag.observation_id.pk if tag.observation_id else None,
                 'comments': tag.comments
-            } for tag in tags]
-            
-            pit_tags = turtle.recorded_pittags.all()
-            pit_tag_data = [{
-                'pit_tag_id': tag.pittag_id,
-                'pit_tag_status': tag.pit_tag_status,
-                'return_date': tag.return_date.strftime('%Y-%m-%d') if tag.return_date else '',
-                'return_condition': tag.return_condition,
-                'comments': tag.comments
-            } for tag in pit_tags]
+            } for tag in recorded_tags]
         
-            identifications = TrtIdentification.objects.filter(turtle_id=turtle.pk)
+            
+            recorded_pit_tags = turtle.recorded_pittags.all()
+            pit_tag_data = [{
+                'pit_tag_id': tag.pittag_id.pittag_id if tag.pittag_id else None,
+                'pit_tag_state': tag.pit_tag_state.pit_tag_state,
+                'pit_tag_position': tag.pit_tag_position,
+                'observation_id': tag.observation_id.pk if tag.observation_id else None,
+                'checked': tag.checked,
+                'comments': tag.comments
+            } for tag in recorded_pit_tags]
+        
+            recorded_identifications = TrtRecordedIdentification.objects.filter(turtle=turtle.pk)
             identification_data = [{
-                'identification_type': ident.identification_type,
-                'identifier': ident.identifier,
+                'identification_type': ident.identification_type.identification_type,
+                'identifier': ident.identifier.identifier,
+                'observation_id': ident.observation_id,
                 'comments': ident.comments
-            } for ident in identifications]
+            } for ident in recorded_identifications]
             
             observations = turtle.trtobservations_set.all()
             observation_data = [{
@@ -4239,19 +4220,19 @@ class TurtleManagementView(TemplateView):
             
             samples = turtle.trtsamples_set.all()
             sample_data = [{
-                'tissue_type': sample.tissue_type,
+                'tissue_type': sample.tissue_type.tissue_type,
                 'observation_id': sample.observation_id,
+                'sample_date': sample.sample_date.strftime('%Y-%m-%d') if sample.sample_date else '',
                 'label': sample.sample_label,
                 'comments': sample.comments
             } for sample in samples]
             
-            documents = turtle.trtdocuments_set.all()
+            documents = TrtDocuments.objects.filter(turtle_id=turtle.pk)
             document_data = [{
                 'document_id': doc.pk,
                 'document_type': doc.document_type,
-                'file_name': doc.file_name,
-                'person_id': doc.person_id.get_full_name() if doc.person_id else '',
-                'comments': doc.comments,
+                'file_name': doc.filename,
+                'person_id': doc.person_id
             } for doc in documents]
                 
             turtle_data.append({

@@ -193,22 +193,39 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div class="col-md-2">
                                 <div class="form-group">
                                     <label>Side</label>
-                                    <select class="form-control" name="tag_side">
-                                        <option value="L" ${tag.tag_side === 'L' ? 'selected' : ''}>Left</option>
-                                        <option value="R" ${tag.tag_side === 'R' ? 'selected' : ''}>Right</option>
-                                    </select>
+                                    <input type="text" class="form-control" name="side" value="${tag.side || ''}" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label>State</label>
+                                    <input type="text" class="form-control" name="tag_state" value="${tag.tag_state || ''}" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label>Position</label>
+                                    <input type="text" class="form-control" name="tag_position" value="${tag.tag_position || ''}" readonly>
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    <label>Status</label>
-                                    <input type="text" class="form-control" name="tag_status" value="${tag.tag_status || ''}">
+                                    <label>Comments</label>
+                                    <input type="text" class="form-control" name="comments" value="${tag.comments || ''}" readonly>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                        </div>
+                        <div class="form-row mt-2">
+                            <div class="col-md-3">
                                 <div class="form-group">
-                                    <label>Comments</label>
-                                    <input type="text" class="form-control" name="tag_comments" value="${tag.comments || ''}">
+                                    <label>Observation ID</label>
+                                    <input type="text" class="form-control" name="observation_id" value="${tag.observation_id || ''}" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Barnacles</label>
+                                    <input type="text" class="form-control" value="${tag.barnacles ? 'Yes' : 'No'}" readonly>
                                 </div>
                             </div>
                         </div>
@@ -239,22 +256,36 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <input type="text" class="form-control" name="pit_tag_id" value="${tag.pit_tag_id}" readonly>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <div class="form-group">
-                                    <label>Status</label>
-                                    <input type="text" class="form-control" name="pit_tag_status" value="${tag.pit_tag_status || ''}">
+                                    <label>State</label>
+                                    <input type="text" class="form-control" name="pit_tag_state" value="${tag.pit_tag_state || ''}" readonly>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <div class="form-group">
-                                    <label>Return Date</label>
-                                    <input type="date" class="form-control" name="pit_tag_return_date" value="${tag.return_date || ''}">
+                                    <label>Position</label>
+                                    <input type="text" class="form-control" name="pit_tag_position" value="${tag.pit_tag_position || ''}" readonly>
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label>Comments</label>
-                                    <input type="text" class="form-control" name="pit_tag_comments" value="${tag.comments || ''}">
+                                    <input type="text" class="form-control" name="comments" value="${tag.comments || ''}" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row mt-2">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Observation ID</label>
+                                    <input type="text" class="form-control" name="observation_id" value="${tag.observation_id || ''}" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Checked</label>
+                                    <input type="text" class="form-control" value="${tag.checked ? 'Yes' : 'No'}" readonly>
                                 </div>
                             </div>
                         </div>
