@@ -312,22 +312,28 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="card mb-3 identification-card">
                     <div class="card-body">
                         <div class="form-row">
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <div class="form-group">
                                     <label>Type</label>
-                                    <input type="text" class="form-control" name="identification_type" value="${ident.identification_type}">
+                                    <input type="text" class="form-control" name="identification_type" value="${ident.identification_type}" readonly>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <div class="form-group">
                                     <label>Identifier</label>
-                                    <input type="text" class="form-control" name="identifier" value="${ident.identifier || ''}">
+                                    <input type="text" class="form-control" name="identifier" value="${ident.identifier || ''}" readonly>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <div class="form-group">
                                     <label>Comments</label>
-                                    <input type="text" class="form-control" name="identification_comments" value="${ident.comments || ''}">
+                                    <input type="text" class="form-control" name="identification_comments" value="${ident.comments || ''}" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Observation ID</label>
+                                    <a href="/api/observations/${ident.observation_id}/" class="form-control" target="_blank">${ident.observation_id}</a>
                                 </div>
                             </div>
                         </div>

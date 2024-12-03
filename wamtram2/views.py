@@ -63,7 +63,9 @@ from .models import (
     TrtCauseOfDeath,
     TrtTurtleStatus,
     TrtDocuments,
-    TrtRecordedIdentification
+    TrtRecordedIdentification,
+    TrtDatumCodes,
+    TrtConditionCodes
     
     
 )
@@ -3753,10 +3755,16 @@ class ObservationManagementView(LoginRequiredMixin, TemplateView):
             'places': TrtPlaces.objects.all(),
             'damage_codes': TrtDamageCodes.objects.all(),
             'measurement_types': TrtMeasurementTypes.objects.all(),
-            'activities': TrtActivities.objects.all(),
-            'beach_positions': TrtBeachPositions.objects.all(),
+            'activity_code_options': TrtActivities.objects.all(),
+            'beach_position_code_options': TrtBeachPositions.objects.all(),
             'tag_states': TrtTagStates.objects.all(),
             'body_parts': TrtBodyParts.objects.all(),
+            'yes_no_options': TrtYesNo.objects.all(),
+            'datum_code_options': TrtDatumCodes.objects.all(),
+            'condition_code_options': TrtConditionCodes.objects.all(),
+            'egg_count_method_options': TrtEggCountMethods.objects.all(),
+            'search_persons_url': reverse('wamtram2:search-persons'),
+            'search_places_url': reverse('wamtram2:search-places'),
         })
         return context
 
@@ -3766,6 +3774,7 @@ class ObservationDataView(LoginRequiredMixin, View):
         try:
             data = json.loads(request.body)
             observation_id = data.get('observation_id')
+            observation = TrtObservations.objects.get(pk=observation_id) if observation_id else TrtObservations()
             
             if observation_id:
                 observation = TrtObservations.objects.get(pk=observation_id)
@@ -3778,12 +3787,16 @@ class ObservationDataView(LoginRequiredMixin, View):
                 if hasattr(observation, field):
                     setattr(observation, field, value)
             
-            # Handle special fields
             if 'observation_date' in basic_info:
-                observation.observation_date = datetime.strptime(
-                    basic_info['observation_date'], 
-                    '%Y-%m-%d'
-                )
+                try:
+                    datetime_obj = datetime.strptime(
+                        basic_info['observation_date'], 
+                        '%Y-%m-%dT%H:%M'
+                    )
+                    observation.observation_date = datetime_obj
+                    observation.observation_time = datetime_obj
+                except ValueError as e:
+                    raise ValidationError(f"Invalid date format: {str(e)}")
             
             observation.save()
             
@@ -3793,114 +3806,30 @@ class ObservationDataView(LoginRequiredMixin, View):
             self._update_damage_records(observation, data.get('damage_records', []))
             self._update_location(observation, data.get('location', {}))
             
-            return JsonResponse({
-                'status': 'success',
-                'observation_id': observation.observation_id
-            })
+            return JsonResponse({'status': 'success', 'observation_id': observation.observation_id})
             
-        except ValidationError as e:
-            return JsonResponse({
-                'status': 'error',
-                'message': str(e)
-            }, status=400)
         except Exception as e:
-            return JsonResponse({
-                'status': 'error',
-                'message': str(e)
-            }, status=500)
+            return JsonResponse({'status': 'error', 'message': str(e)}, 
+                            status=400 if isinstance(e, ValidationError) else 500)
 
-    def get_places(self, request):
-        """
-        Search places by query string
-        """
-        query = request.GET.get('q', '')
-        if len(query) < 2:
-            return JsonResponse([], safe=False)
-            
-        places = TrtPlaces.objects.filter(
-            Q(place_name__icontains=query) | 
-            Q(location_code__location_name__icontains=query)
-        ).select_related('location_code').values(
-            'place_code',
-            'place_name',
-            'location_code__location_name'
-        )[:10]
-        
-        result = []
-        for place in places:
-            result.append({
-                'place_code': place['place_code'],
-                'place_name': place['place_name'],
-                'location_code__location_name': place['location_code__location_name'],
-                'full_name': f"{place['place_name']} ({place['location_code__location_name']})"
-            })
-            
-        return JsonResponse(result, safe=False)
-        
     def get(self, request, observation_id=None):
-        print("\n" + "="*50) 
-        print("GET request received!")
-        print(f"URL Parameters: {request.GET}")
-        print(f"Observation ID: {observation_id}")
         try:
-            if 'q' in request.GET:
-                print("Processing places search request")
-                return self.get_places(request)
-        
-            if observation_id:                
-                print(f"Loading specific observation: {observation_id}")
+            if observation_id:
                 observation = TrtObservations.objects.get(pk=observation_id)
-                data = self._get_observation_data(observation)
-                return JsonResponse({'status': 'success', 'data': data})
+                return JsonResponse({
+                    'status': 'success', 
+                    'data': self._get_observation_data(observation)
+                })
             else:
-                print("\nProcessing observation search request")
-                print(f"Search term: {request.GET.get('search')}")
-                print(f"Place: {request.GET.get('place')}")
-                print(f"Date: {request.GET.get('date')}")
-                print(f"Status: {request.GET.get('status')}")
-                # Handle list view with filters
-                try:
-                    observations = self._filter_observations(request)
-                    print(f"Query executed successfully, got {observations.count()} results")
-                    
-                    data = []
-                    for obs in observations:
-                        try:
-                            summary = self._get_observation_summary(obs)
-                            data.append(summary)
-                        except Exception as e:
-                            print(f"Error processing observation {obs.pk}: {str(e)}")
-                            continue
-                    
-                    print(f"Processed {len(data)} observations")
-                    return JsonResponse({'status': 'success', 'data': data})
-                    
-                except Exception as e:
-                    print(f"Error in _filter_observations: {str(e)}")
-                    print(f"Error type: {type(e)}")
-                    import traceback
-                    print(f"Traceback: {traceback.format_exc()}")
-                    raise
+                observations = self._filter_observations(request)
+                data = [self._get_observation_summary(obs) for obs in observations]
+                return JsonResponse({'status': 'success', 'data': data})
                 
-                # observations = self._filter_observations(request)
-                # data = [self._get_observation_summary(obs) for obs in observations]
-                # return JsonResponse({'status': 'success', 'data': data})
         except TrtObservations.DoesNotExist:
-            print("Observation not found!")
-            return JsonResponse({
-                'status': 'error',
-                'message': 'Observation not found'
-            }, status=404)
+            return JsonResponse({'status': 'error', 'message': 'Observation not found'}, status=404)
         except Exception as e:
-            print(f"Unexpected error: {str(e)}")
-            print(f"Error type: {type(e)}")
-            import traceback
-            print(f"Traceback: {traceback.format_exc()}")
-            return JsonResponse({
-                'status': 'error',
-                'message': str(e)
-            }, status=500)
-
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+        
     def _get_observation_data(self, observation):
         """Get full observation data"""
         try:
@@ -3918,12 +3847,13 @@ class ObservationDataView(LoginRequiredMixin, View):
             'basic_info': {
                 'observation_id': observation.observation_id,
                 'turtle_id': observation.turtle_id,
-                'observation_date': observation.observation_date.strftime('%Y-%m-%d'),
-                'observation_time': observation.observation_time.strftime('%H:%M') if observation.observation_time else '',
-                'alive': str(observation.alive),
-                'nesting': str(observation.nesting),
-                'activity_code': str(observation.activity_code),
-                'beach_position_code': str(observation.beach_position_code),
+                'observation_date': observation.observation_date.strftime('%Y-%m-%dT%H:%M') if observation.observation_date else '',
+                'alive': str(observation.alive.code) if observation.alive else '',
+                'nesting': str(observation.nesting.code) if observation.nesting else '',
+                'activity_code': str(observation.activity_code.activity_code) if observation.activity_code else '',
+                'beach_position_code': str(observation.beach_position_code.beach_position_code) if observation.beach_position_code else '',
+                'condition_code': str(observation.condition_code.condition_code) if observation.condition_code else '',
+                'egg_count_method': str(observation.egg_count_method.egg_count_method) if observation.egg_count_method else '',
                 'status': str(observation.observation_status)
             },
             'tag_info': {
@@ -3950,12 +3880,8 @@ class ObservationDataView(LoginRequiredMixin, View):
             'location': {
                 'place_code': str(observation.place_code),
                 'datum_code': str(observation.datum_code),
-                'latitude_degrees': str(observation.latitude_degrees),
-                'latitude_minutes': str(observation.latitude_minutes),
-                'latitude_seconds': str(observation.latitude_seconds),
-                'longitude_degrees': str(observation.longitude_degrees),
-                'longitude_minutes': str(observation.longitude_minutes),
-                'longitude_seconds': str(observation.longitude_seconds)
+                'latitude': str(observation.latitude),
+                'longitude': str(observation.longitude)
             }
         }
     

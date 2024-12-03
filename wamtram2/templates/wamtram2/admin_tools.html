@@ -56,6 +56,22 @@
     <h2 class="section-title">Administration Tools</h2>
     
     <div class="row">
+        <!-- Turtle Management -->
+        <div class="col-md-4 mb-4">
+            <a href="{% url 'wamtram2:turtle_management' %}" class="text-decoration-none">
+                <div class="tool-card p-4 text-center">
+                    <div class="tool-icon">
+                        <i class="fas fa-turtle"></i>
+                    </div>
+                    <h3 class="tool-title">Turtle Management</h3>
+                    <p class="tool-description">Manage turtle records, tags, and related observation data.</p>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-arrow-right mr-2"></i>Access Tool
+                    </button>
+                </div>
+            </a>
+        </div>
+            
         <!-- Tag Registration -->
         <div class="col-md-4 mb-4">
             <a href="{% url 'wamtram2:tag_register' %}" class="text-decoration-none">

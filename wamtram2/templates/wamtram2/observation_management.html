@@ -4,12 +4,13 @@
 {% block extra_style %}
     {{ block.super }}
     {{ form.media.css }}
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/@ttskch/select2-bootstrap4-theme/dist/select2-bootstrap4.min.css" rel="stylesheet" />
     <link rel="stylesheet" type="text/css" href="{% static 'css/grid.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/observation_management.css' %}">
+    <link href="{% static 'css/search_styles.css' %}" rel="stylesheet">
 {% endblock %}
 
 {% block breadcrumbs %}
@@ -24,379 +25,304 @@
 {% endblock %}
 
 {% block page_content_inner %}
+{% csrf_token %}
 <div class="container-fluid mt-3">
-    <!-- Top Filter and Search Area -->
-    <div class="row mb-3">
-        <div class="col">
-            <div class="d-flex justify-content-between align-items-center">
-                <h2>Observation Management</h2>
-                <div class="btn-group">
-                    <button type="button" class="btn btn-primary" id="saveChanges">
-                        <i class="fas fa-save"></i> Save Changes
-                    </button>
+    <div class="form-row mt-3">
+        <div class="col-12">
+            <button type="button" class="btn btn-primary" onclick="handleFormSubmit()">Save Observation</button>
+        </div>
+    </div>
+    <!-- Basic Information Section -->
+    <div class="section-card mb-3">
+        <h4>Basic Information</h4>
+        <div class="form-row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Observation ID</label>
+                    <input type="text" class="form-control readonly-field" name="observation_id" readonly>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Alive?</label>
+                    <select class="form-control" name="alive">
+                        {% for option in yes_no_options %}
+                            <option value="{{ option.code }}">{{ option.description }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Status</label>
+                    <input type="text" class="form-control readonly-field" name="observation_status" readonly>
                 </div>
             </div>
         </div>
-    </div>
-
-    <!-- Filter Area -->
-    <div class="row mb-3">
-        <div class="col-md-3">
-            <div class="input-group">
-                <input type="text" class="form-control" id="tagSearch" placeholder="Search by Tag ID...">
-                <div class="input-group-append">
-                    <button class="btn btn-outline-secondary" type="button" id="searchBtn">
-                        <i class="fas fa-search"></i>
-                    </button>
+        <div class="form-row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Turtle ID</label>
+                    <input type="text" class="form-control readonly-field" name="turtle_id" readonly>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label>Nesting?</label>
+                    <select class="form-control" name="nesting">
+                        {% for option in yes_no_options %}
+                            <option value="{{ option.code }}">{{ option.description }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label>Clutch Completed?</label>
+                    <select class="form-control" name="clutch_completed">
+                        {% for option in yes_no_options %}
+                            <option value="{{ option.code }}">{{ option.description }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Entered By</label>
+                    <input type="text" class="form-control readonly-field" name="entered_by" readonly>
                 </div>
             </div>
         </div>
-    </div>
-
-    <!-- Search Results Table -->
-    <div class="row mb-3">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover" id="searchResults">
-                            <thead>
-                                <tr>
-                                    <th>Observation ID</th>
-                                    <th>Turtle ID</th>
-                                    <th>Observation Date/Time</th>
-                                    <th>Place</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Results will be dynamically populated by JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
+        <div class="form-row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Observation Date & Time</label>
+                    <input type="datetime-local" class="form-control" name="observation_date" step="60">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Date Entered</label>
+                    <input type="datetime-local" class="form-control" name="date_entered" >
                 </div>
             </div>
         </div>
-    </div>
-
-    <!-- No Results Message -->
-    <div id="noResults" class="row mb-3" style="display: none;">
-        <div class="col-md-12">
-            <div class="alert alert-info">
-                No results found
+        <div class="form-row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Date Convention</label>
+                    <input type="datetime-local" class="form-control" name="date_convention" >
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Egg Count Method</label>
+                    <select class="form-control" name="egg_count_method">
+                        {% for option in egg_count_method_options %}
+                            <option value="{{ option.egg_count_method }}">{{ option.description }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Datum</label>
+                    <select class="form-control" name="datum_code">
+                        {% for option in datum_code_options %}
+                            <option value="{{ option.datum_code }}">{{ option.datum_description }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
             </div>
         </div>
+        <div class="form-row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Tagger</label>
+                    <select class="form-control person-search" name="tagger_person">
+                        <option></option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Place</label>
+                    <select class="form-control place-search" name="place_code">
+                        <option></option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Latitude</label>
+                    <input type="text" class="form-control" name="latitude" >
+                </div>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Reporter</label>
+                    <select class="form-control person-search" name="reporter_person">
+                        <option></option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Activity</label>
+                    <select class="form-control" name="activity_code">
+                        {% for option in activity_code_options %}
+                            <option value="{{ option.activity_code }}">{{ option.description }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Longitude</label>
+                    <input type="text" class="form-control" name="longitude" >
+                </div>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Measurer</label>
+                    <select class="form-control person-search" name="measurer_person">
+                        <option></option>
+                    </select>
+                </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Beach Position</label>
+                    <select class="form-control" name="beach_position_code">
+                        {% for option in beach_position_code_options %}
+                            <option value="{{ option.beach_position_code }}">{{ option.description }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Measurer Reporter</label>
+                    <select class="form-control person-search" name="measurer_reporter_person">
+                        <option></option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Condition</label>
+                    <select class="form-control" name="condition_code">
+                        {% for option in condition_code_options %}
+                            <option value="{{ option.condition_code }}">{{ option.description }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="col-md-8">
+                <div class="form-group">
+                    <label>Place Description</label>
+                    <input type="text" class="form-control" name="place_description" >
+                </div>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label>Action Taken</label>
+                    <input type="text" class="form-control" name="action_taken" >
+                </div>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="col-md-8">
+                <div class="form-group">
+                    <label>Comments</label>
+                    <input type="text" class="form-control" name="comments" >
+                </div>
+            </div>
+        </div>
+
+
+
+
     </div>
 
-    <!-- Main Content Area -->
-    <div class="row">
-        <div class="col-md-12">
-            <!-- Tabs Navigation -->
-            <ul class="nav nav-tabs" role="tablist">
-                <li class="nav-item">
-                    <a class="nav-link active" data-toggle="tab" href="#basicInfo">Basic Information</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#tagInfo">Tag Information</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#measurements">Measurements</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#damage">Damage Records</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#location">Location</a>
-                </li>
-            </ul>
+    <!-- Tabs for Additional Information -->
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" data-toggle="tab" href="#flipperTags">Recorded Flipper Tags</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#pitTags">Recorded PIT Tags</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#otherIdentification">Recorded Other Identification</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#measurements">Measurements</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#damage">Damage</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#scars">Scars</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#otherInfo">Other Information</a>
+        </li>
+    </ul>
 
-            <!-- Tab Content -->
-            <div class="tab-content">
-                <!-- Basic Information Tab -->
-                <div id="basicInfo" class="tab-pane active">
-                    <div class="section-card">
-                        <div class="form-row">
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label>Observation ID</label>
-                                    <input type="text" class="form-control readonly-field" name="observation_id" readonly>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label>Turtle ID</label>
-                                    <input type="text" class="form-control readonly-field" name="turtle_id" readonly>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label>Date</label>
-                                    <input type="date" class="form-control" name="observation_date" required>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label>Time</label>
-                                    <input type="time" class="form-control" name="observation_time">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label>Alive</label>
-                                    <select class="form-control" name="alive" required>
-                                        <option value="Y">Yes</option>
-                                        <option value="N">No</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label>Nesting</label>
-                                    <select class="form-control" name="nesting">
-                                        <option value="Y">Yes</option>
-                                        <option value="N">No</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label>Activity</label>
-                                    <select class="form-control" name="activity_code">
-                                        {% for activity in activities %}
-                                            <option value="{{ activity.activity_code }}">{{ activity.description }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label>Beach Position</label>
-                                    <select class="form-control" name="beach_position_code">
-                                        {% for position in beach_positions %}
-                                            <option value="{{ position.position_code }}">{{ position.description }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Tag Information Tab -->
-                <div id="tagInfo" class="tab-pane fade">
-                    <div class="section-card">
-                        <h4>Flipper Tags</h4>
-                        <!-- Tag Container -->
-                        <div class="tag-container">
-                            <!-- Template for tag row (hidden) -->
-                            <div class="tag-row-template" style="display: none;" id="tagRowTemplate">
-                                <div class="tag-row form-row mb-2">
-                                    <div class="col">
-                                        <input type="text" class="form-control" name="tag_id" placeholder="Tag ID">
-                                    </div>
-                                    <div class="col">
-                                        <select class="form-control" name="side">
-                                            <option value="">Select Side...</option>
-                                            <option value="L">Left</option>
-                                            <option value="R">Right</option>
-                                        </select>
-                                    </div>
-                                    <div class="col">
-                                        <select class="form-control" name="tag_position">
-                                            <option value="">Select Position...</option>
-                                            <option value="1">Position 1</option>
-                                            <option value="2">Position 2</option>
-                                            <option value="3">Position 3</option>
-                                        </select>
-                                    </div>
-                                    <div class="col">
-                                        <select class="form-control" name="tag_state">
-                                            <option value="">Select State...</option>
-                                            {% for state in tag_states %}
-                                                <option value="{{ state.state_code }}">{{ state.description }}</option>
-                                            {% endfor %}
-                                        </select>
-                                    </div>
-                                    <div class="col-auto">
-                                        <div class="form-check">
-                                            <input type="checkbox" class="form-check-input" name="barnacles">
-                                            <label class="form-check-label">Barnacles</label>
-                                        </div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <button type="button" class="btn btn-danger btn-sm remove-tag">
-                                            <i class="fas fa-times"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Active tag rows will be added here -->
-                        </div>
-
-                        <button type="button" class="btn btn-outline-secondary mt-3" id="addTag">
-                            <i class="fas fa-plus"></i> Add Tag
-                        </button>
-
-                        <h4 class="mt-4">PIT Tags</h4>
-                        <!-- PIT Tag Container -->
-                        <div class="pit-tag-container">
-                            <!-- Template for PIT tag row (hidden) -->
-                            <div class="pit-tag-row-template" style="display: none;">
-                                <div class="pit-tag-row form-row mb-2">
-                                    <div class="col">
-                                        <input type="text" class="form-control" name="pittag_id" placeholder="PIT Tag ID">
-                                    </div>
-                                    <div class="col">
-                                        <select class="form-control" name="pit_tag_position">
-                                            <option value="">Select Position...</option>
-                                            <option value="LFF">Left Front Flipper</option>
-                                            <option value="RFF">Right Front Flipper</option>
-                                        </select>
-                                    </div>
-                                    <div class="col">
-                                        <select class="form-control" name="tag_state">
-                                            <option value="">Select State...</option>
-                                            {% for state in tag_states %}
-                                                <option value="{{ state.state_code }}">{{ state.description }}</option>
-                                            {% endfor %}
-                                        </select>
-                                    </div>
-                                    <div class="col-auto">
-                                        <button type="button" class="btn btn-danger btn-sm remove-tag">
-                                            <i class="fas fa-times"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Active PIT tag rows will be added here -->
-                        </div>
-
-                        <button type="button" class="btn btn-outline-secondary mt-3" id="addPitTag">
-                            <i class="fas fa-plus"></i> Add PIT Tag
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Measurements Tab -->
-                <div id="measurements" class="tab-pane fade">
-                    <div class="section-card">
-                        <!-- Template for measurement row (hidden) -->
-                        <div class="measurement-row-template" style="display: none;" id="measurementRowTemplate">
-                            <div class="measurement-row form-row mb-2">
-                                <div class="col">
-                                    <select class="form-control" name="measurement_type">
-                                        <option value="">Select Type...</option>
-                                        {% for type in measurement_types %}
-                                            <option value="{{ type.code }}">{{ type.description }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                                <div class="col">
-                                    <input type="number" class="form-control" name="measurement_value" step="0.1">
-                                </div>
-                                <div class="col-auto">
-                                    <button type="button" class="btn btn-danger btn-sm remove-measurement">
-                                        <i class="fas fa-times"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="measurement-container">
-                            <!-- Active measurement rows will be added here -->
-                        </div>
-                        <button type="button" class="btn btn-outline-secondary mt-3" id="addMeasurement">
-                            <i class="fas fa-plus"></i> Add Measurement
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Damage Records Tab -->
-                <div id="damage" class="tab-pane fade">
-                    <div class="section-card">
-                        <!-- Template for damage record row (hidden) -->
-                        <div class="damage-row-template" style="display: none;" id="damageRowTemplate">
-                            <div class="damage-record form-row mb-2">
-                                <div class="col">
-                                    <select class="form-control" name="body_part">
-                                        <option value="">Select Body Part...</option>
-                                        {% for part in body_parts %}
-                                            <option value="{{ part.body_part }}">{{ part.description }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                                <div class="col">
-                                    <select class="form-control" name="damage_code">
-                                        <option value="">Select Damage...</option>
-                                        {% for code in damage_codes %}
-                                            <option value="{{ code.damage_code }}">{{ code.description }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                                <div class="col-auto">
-                                    <button type="button" class="btn btn-danger btn-sm remove-damage">
-                                        <i class="fas fa-times"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="damage-container">
-                            <!-- Active damage records will be added here -->
-                        </div>
-                        <button type="button" class="btn btn-outline-secondary mt-3" id="addDamage">
-                            <i class="fas fa-plus"></i> Add Damage Record
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Location Tab -->
-                <div id="location" class="tab-pane fade">
-                    <div class="section-card">
-                        <div class="form-row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>Place</label>
-                                    <select class="form-control" name="place_code" required>
-                                        {% for place in places %}
-                                            <option value="{{ place.place_code }}">{{ place.description }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>Datum</label>
-                                    <select class="form-control" name="datum_code">
-                                        <option value="WGS84">WGS84</option>
-                                        <option value="GDA94">GDA94</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="col-md-6">
-                                <h5>Latitude</h5>
-                                <div class="input-group">
-                                    <input type="number" class="form-control" name="latitude_degrees" placeholder="Degrees">
-                                    <input type="number" step="0.001" class="form-control" name="latitude_minutes" placeholder="Minutes">
-                                    <input type="number" step="0.001" class="form-control" name="latitude_seconds" placeholder="Seconds">
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <h5>Longitude</h5>
-                                <div class="input-group">
-                                    <input type="number" class="form-control" name="longitude_degrees" placeholder="Degrees">
-                                    <input type="number" step="0.001" class="form-control" name="longitude_minutes" placeholder="Minutes">
-                                    <input type="number" step="0.001" class="form-control" name="longitude_seconds" placeholder="Seconds">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    <!-- Tab Content -->
+    <div class="tab-content">
+        <div id="flipperTags" class="tab-pane active">
+            <div class="section-card">
+                <h4>Flipper Tags</h4>
+                <!-- Flipper Tags Content -->
+            </div>
+        </div>
+        <div id="pitTags" class="tab-pane fade">
+            <div class="section-card">
+                <h4>PIT Tags</h4>
+                <!-- PIT Tags Content -->
+            </div>
+        </div>
+        <div id="otherIdentification" class="tab-pane fade">
+            <div class="section-card">
+                <h4>Other Identification</h4>
+                <!-- Other Identification Content -->
+            </div>
+        </div>
+        <div id="measurements" class="tab-pane fade">
+            <div class="section-card">
+                <h4>Measurements</h4>
+                <!-- Measurements Content -->
+            </div>
+        </div>
+        <div id="damage" class="tab-pane fade">
+            <div class="section-card">
+                <h4>Damage</h4>
+                <!-- Damage Content -->
+            </div>
+        </div>
+        <div id="scars" class="tab-pane fade">
+            <div class="section-card">
+                <h4>Scars</h4>
+                <!-- Scars Content -->
+            </div>
+        </div>
+        <div id="otherInfo" class="tab-pane fade">
+            <div class="section-card">
+                <h4>Other Information</h4>
+                <!-- Other Information Content -->
             </div>
         </div>
     </div>
@@ -411,6 +337,7 @@
 
 <!-- Loading overlay -->
 <div class="loading-overlay"></div>
+
 {% endblock %}
 
 {% block extra_js %}
@@ -418,5 +345,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <script>
+        const searchPersonsUrl = '{{ search_persons_url }}';
+        const searchPlacesUrl = '{{ search_places_url }}';
+        const submitUrl = '{{ submit_url }}';
+        {% if initial_data %}
+        const initialData = {{ initial_data|safe }};
+        {% endif %}
+    </script>
     <script src="{% static 'js/observation_management.js' %}"></script>
 {% endblock %} 

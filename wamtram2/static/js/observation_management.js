@@ -1,598 +1,250 @@
 $(document).ready(function() {
-    // Global variables
-    let currentObservationId = null;
-    const formFields = new Set();
-    let originalData = {};
-
-    // Initialize form validation and other components
-    function initialize() {
-        initializeFormValidation();
-        initializeDropdowns();
-        bindEventHandlers();
-        // setupAutoSave();
+    initializeBasicSelects();
+    initializeSearchSelects();
+    // If initialData is defined, set initial form values
+    if (typeof initialData !== 'undefined') {
+        setInitialFormValues();
     }
+});
 
-    // Form validation
-    function initializeFormValidation() {
-        $('form input, form select').each(function() {
-            if ($(this).prop('required')) {
-                formFields.add($(this).attr('name'));
-            }
+// Initialize basic selects
+function initializeBasicSelects() {
+    const basicSelects = [
+        'alive',
+        'nesting',
+        'activity_code',
+        'beach_position_code',
+        'condition_code',
+        'egg_count_method',
+        'datum_code'
+    ];
+
+    basicSelects.forEach(selectName => {
+        $(`select[name="${selectName}"]`).select2({
+            placeholder: 'Select...',
+            allowClear: true
         });
-    }
+    });
+}
 
-    // Initialize select2 dropdowns
-    function initializeDropdowns() {
-        $('select').select2({
-            theme: 'bootstrap4',
-            width: '100%'
-        });
+// Initialize search selects
+function initializeSearchSelects() {
+    // Initialize person search
+    initializePersonSearch('measurer_person', 'Search measurer...');
+    initializePersonSearch('measurer_reporter_person', 'Search measurer reporter...');
+    initializePersonSearch('tagger_person', 'Search tagger...');
+    initializePersonSearch('reporter_person', 'Search reporter...');
 
-        $('.select2-places').select2({
-            theme: 'bootstrap4',
-            width: '100%',
-            placeholder: 'Search Place...',
-            allowClear: true,
-            minimumInputLength: 2,
-            ajax: {
-                url: '/wamtram2/api/get-places/',
-                dataType: 'json',
-                delay: 250,
-                data: function(params) {
-                    return {
-                        q: params.term || ''
-                    };
-                },
-                processResults: function(data) {
-                    return {
-                        results: data.map(function(item) {
-                            return {
-                                id: item.place_code,
-                                text: item.full_name,
-                                place_name: item.place_name,
-                                location_name: item.location_code__location_name
-                            };
-                        })
-                    };
-                },
-                cache: true
+    // Initialize place search
+    initializePlaceSearch();
+}
+
+// Initialize person search
+function initializePersonSearch(fieldName, placeholder) {
+    $(`select[name="${fieldName}"]`).select2({
+        ajax: {
+            url: searchPersonsUrl,
+            dataType: 'json',
+            delay: 250,
+            data: function(params) {
+                return {
+                    q: params.term || ''
+                };
             },
-            templateResult: formatPlace,
-            templateSelection: formatPlaceSelection
-        });
-
-        $('.select2-places').on('change', function() {
-            handleSearch();
-        });
-    }
-
-    function formatPlace(place) {
-        if (!place.id) return place.text;
-        return $(`<span>
-            <strong>${place.place_name}</strong><br>
-            <small class="text-muted">${place.location_name}</small>
-        </span>`);
-    }
-    
-
-    function formatPlaceSelection(place) {
-        if (!place.id) return place.text;
-        return place.text;
-    }
-
-    // Bind event handlers
-    function bindEventHandlers() {
-        // Save button click
-        $('#saveChanges').click(handleSave);
-        // Filter changes
-        $('#tagSearch, #placeFilter, #dateFilter, #statusFilter').on('change', handleSearch);
-
-        // Form field changes
-        $('form input, form select').on('change', function() {
-            $(this).addClass('modified');
-            checkFormValidity();
-        });
-
-        // Add damage record button
-        $('#addDamage').click(addDamageRecord);
-
-        // Add measurement button
-        $('#addMeasurement').click(addMeasurementRow);
-
-        $('#addTag').click(function() {
-            const newRow = $('.tag-row-template .tag-row').clone();
-            newRow.show();
-            $('.tag-container').append(newRow);
-            newRow.find('select').select2({
-                theme: 'bootstrap4',
-                width: '100%'
-            });
-        });
-
-        $('#addPitTag').click(function() {
-            const newRow = $('.pit-tag-row-template .pit-tag-row').clone();
-            newRow.show();
-            $('.pit-tag-container').append(newRow);
-            newRow.find('select').select2({
-                theme: 'bootstrap4',
-                width: '100%'
-            });
-        });
-
-        // // Coordinate conversion
-        // $('.coordinate-input').on('change', convertCoordinates);
-
-        $('#searchBtn').click(handleSearch);
-    
-        $('#tagSearch').keypress(function(e) {
-            if(e.which == 13) {
-                handleSearch();
-            }
-        });
-
-        $('#placeFilter, #dateFilter, #statusFilter').change(handleSearch);
-
-        $(document).on('click', '.remove-tag', function() {
-            $(this).closest('.tag-row').remove();
-        });
-        
-        $(document).on('click', '.remove-measurement', function() {
-            $(this).closest('.measurement-row').remove();
-        });
-        
-        $(document).on('click', '.remove-damage', function() {
-            $(this).closest('.damage-record').remove();
-        });
-
-        $(document).on('click', '.edit-observation', function() {
-            const observationId = $(this).data('observation-id');
-            loadObservation(observationId);
-        });
-    }
-
-    function clearForm() {
-        $('#basicInfo input, #basicInfo select').val('');
-        
-        $('#tagInfo .tag-row').remove();
-        
-        $('#measurements .measurement-row').remove();
-        
-        $('#damage .damage-record').remove();
-        
-        $('#location input, #location select').val('');
-        
-        $('.modified').removeClass('modified');
-        currentObservationId = null;
-    }
-
-    function updateOriginalData(data) {
-        originalData = JSON.parse(JSON.stringify(data));
-    }
-    
-    function validateForm() {
-        let isValid = true;
-        let firstInvalidField = null;
-
-        formFields.forEach(fieldName => {
-            const field = $(`[name="${fieldName}"]`);
-            if (!field.val()) {
-                field.addClass('is-invalid');
-                if (!firstInvalidField) {
-                    firstInvalidField = field;
-                }
-                isValid = false;
-            } else {
-                field.removeClass('is-invalid');
-            }
-        });
-        if (firstInvalidField) {
-            firstInvalidField.focus();
-            $('html, body').animate({
-                scrollTop: firstInvalidField.offset().top - 100
-            }, 500);
-        }
-
-        return isValid;
-    }
-
-    function addTagRow(tagData = {}) {
-
-        const newRow = $('#tagRowTemplate .tag-row').clone();
-        
-        if (tagData) {
-            newRow.find('[name="tag_id"]').val(tagData.tag_id || '');
-            newRow.find('[name="side"]').val(tagData.side || '');
-            newRow.find('[name="tag_position"]').val(tagData.tag_position || '');
-            newRow.find('[name="tag_state"]').val(tagData.tag_state || '');
-            newRow.find('[name="barnacles"]').prop('checked', tagData.barnacles === 'True');
-        }
-        
-        $('.tag-container').append(newRow);
-        
-        newRow.find('select').select2({
-            theme: 'bootstrap4',
-            width: '100%'
-        });
-    }
-    
-    function addMeasurementRow(measurementData = {}) {
-        const newRow = $('#measurementRowTemplate .measurement-row').clone();
-        
-        if (measurementData) {
-            newRow.find('[name="measurement_type"]').val(measurementData.measurement_type || '');
-            newRow.find('[name="measurement_value"]').val(measurementData.measurement_value || '');
-        }
-        
-        $('.measurement-container').append(newRow);
-        
-        newRow.find('select').select2({
-            theme: 'bootstrap4',
-            width: '100%'
-        });
-    }
-    
-    function addDamageRecord(damageData = {}) {
-        const newRow = $('#damageRowTemplate .damage-record').clone();
-        
-        if (damageData) {
-            newRow.find('[name="body_part"]').val(damageData.body_part || '');
-            newRow.find('[name="damage_code"]').val(damageData.damage_code || '');
-        }
-        
-        $('.damage-container').append(newRow);
-        
-        newRow.find('select').select2({
-            theme: 'bootstrap4',
-            width: '100%'
-        });
-    }
-
-    async function handleSearch() {
-        console.log("\n=== Starting Search ===");
-        console.log("Search input values:");
-        console.log("Tag Search:", $('#tagSearch').val());
-        console.log("Place:", $('.select2-places').val());
-        console.log("Date:", $('#dateFilter').val());
-        console.log("Status:", $('#statusFilter').val());
-
-        showLoadingOverlay();
-        $('#searchResults tbody').html(`
-            <tr>
-                <td colspan="6" class="text-center">
-                    <div class="spinner-border spinner-border-sm" role="status">
-                        <span class="sr-only">Loading...</span>
-                    </div>
-                    Searching...
-                </td>
-            </tr>
-        `);    
-        try {
-            const searchParams = new URLSearchParams({
-                search: $('#tagSearch').val(),
-                place: $('.select2-places').val(),
-                date: $('#dateFilter').val(),
-                status: $('#statusFilter').val()
-            });
-    
-            const response = await $.get(`/wamtram2/api/observations/?${searchParams.toString()}`);
-            if (response.status === 'success') {
-                displaySearchResults(response.data);
-            } else {
-                throw new Error(response.message);
-            }
-        } catch (error) {
-            $('#searchResults tbody').html(`
-                <tr>
-                    <td colspan="6" class="text-center text-danger">
-                        <i class="fas fa-exclamation-circle"></i>
-                        Error performing search: ${error.message}
-                    </td>
-                </tr>
-            `);
-        } finally {
-            hideLoadingOverlay();
-        }
-    }
-
-    function displaySearchResults(results) {
-    
-
-    
-        const tbody = $('#searchResults tbody');
-        tbody.empty();
-
-        if (results.length === 0) {
-            tbody.append(`
-                <tr>
-                    <td colspan="6" class="text-center">No results found</td>
-                </tr>
-            `);
-            return;
-        }
-    
-        results.forEach(result => {
-            const tagInfo = result.tags.length > 0 ? 
-                `Tags: ${result.tags.join(', ')}` : '';
-            const pitTagInfo = result.pit_tags.length > 0 ? 
-                `PIT Tags: ${result.pit_tags.join(', ')}` : '';
-            const tagDisplay = [tagInfo, pitTagInfo].filter(x => x).join(' | ');
-            tbody.append(`
-            <tr>
-                <td>${result.observation_id}</td>
-                <td>${result.turtle_id || ''}</td>
-                <td>${result.observation_date}
-                    ${result.observation_time ? ' ' + result.observation_time : ''}
-                </td>
-                <td>${result.place_code} - ${result.place_description}</td>
-                <td>${result.status || ''}</td>
-                <td>
-                    <small class="text-muted d-block">${tagDisplay}</small>
-                    <button class="btn btn-sm btn-primary mt-1" 
-                            onclick="loadObservation(${result.observation_id})">
-                        Edit
-                    </button>
-                </td>
-            </tr>
-            `);
-        });
-    }
-
-    // Handle save operation
-    async function handleSave() {
-        if (!validateForm()) {
-            showErrorMessage('Please fill in all required fields');
-            return;
-        }
-
-        showLoadingOverlay();
-        try {
-            const formData = collectFormData();
-            const response = await $.ajax({
-                url: '/wamtram2/api/observations/',
-                method: currentObservationId ? 'PUT' : 'POST',
-                data: JSON.stringify(formData),
-                contentType: 'application/json'
-            });
-
-            if (response.status === 'success') {
-                showSuccessMessage('Changes saved successfully');
-                updateOriginalData(formData);
-                if (!currentObservationId) {
-                    currentObservationId = response.observation_id;
-                }
-            } else {
-                throw new Error(response.message);
-            }
-        } catch (error) {
-            showErrorMessage('Error saving changes: ' + error.message);
-        } finally {
-            hideLoadingOverlay();
-        }
-    }
-
-    // Collect form data
-    function collectFormData() {
-        const data = {
-            basic_info: {},
-            tag_info: {
-                recorded_tags: [],
-                recorded_pit_tags: []
+            processResults: function(data) {
+                return {
+                    results: data.map(function(item) {
+                        return {
+                            id: item.person_id,
+                            text: `${item.first_name} ${item.surname}`
+                        };
+                    })
+                };
             },
-            measurements: [],
-            damage_records: [],
-            location: {}
-        };
+            cache: true
+        },
+        minimumInputLength: 2,
+        placeholder: placeholder,
+        allowClear: true
+    });
+}
 
-        // Collect basic information
-        $('#basicInfo input, #basicInfo select').each(function() {
-            data.basic_info[$(this).attr('name')] = $(this).val();
-        });
+// Initialize place search
+function initializePlaceSearch() {
+    $('select[name="place_code"]').select2({
+        ajax: {
+            url: searchPlacesUrl,
+            dataType: 'json',
+            delay: 250,
+            data: function(params) {
+                return {
+                    q: params.term || ''
+                };
+            },
+            processResults: function(data) {
+                return {
+                    results: data.map(function(item) {
+                        return {
+                            id: item.place_code,
+                            text: item.full_name
+                        };
+                    })
+                };
+            },
+            cache: true
+        },
+        minimumInputLength: 2,
+        placeholder: 'Search place...',
+        allowClear: true
+    });
+}
 
-        // Collect tag information
-        $('#tagInfo .tag-row').each(function() {
-            const tagData = {
-                tag_id: $(this).find('[name="tag_id"]').val(),
-                tag_type: $(this).find('[name="tag_type"]').val(),
-                tag_position: $(this).find('[name="tag_position"]').val(),
-                tag_state: $(this).find('[name="tag_state"]').val()
-            };
-            data.tag_info.recorded_tags.push(tagData);
-        });
+// Set initial form values
+function setInitialFormValues() {
+    // Set basic fields
+    setBasicFields();
+    // Set search fields
+    setSearchFields();
+}
 
-        // Collect measurements
-        $('#measurements .measurement-row').each(function() {
-            const measurementData = {
-                measurement_type: $(this).find('[name="measurement_type"]').val(),
-                measurement_value: $(this).find('[name="measurement_value"]').val()
-            };
-            data.measurements.push(measurementData);
-        });
-
-        // Collect damage records
-        $('#damage .damage-record').each(function() {
-            const damageData = {
-                body_part: $(this).find('[name="body_part"]').val(),
-                damage_code: $(this).find('[name="damage_code"]').val()
-            };
-            data.damage_records.push(damageData);
-        });
-
-        // Collect location information
-        $('#location input, #location select').each(function() {
-            data.location[$(this).attr('name')] = $(this).val();
-        });
-
-        return data;
+// Set basic fields
+function setBasicFields() {
+    if (initialData.observation_date) {
+        const dateTime = initialData.observation_date.replace(' ', 'T');
+        $('[name="observation_date"]').val(dateTime);
     }
+    const basicFields = {
+        'observation_id': '',
+        'observation_date': '',
+        'observation_time': '',
+        'alive': '',
+        'nesting': '',
+        'activity_code': '',
+        'beach_position_code': '',
+        'condition_code': '',
+        'egg_count_method': '',
+        'datum_code': '',
+        'clutch_completed': '',
+        'place_description': '',
+        'action_taken': '',
+        'comments': '',
+        'latitude': '',
+        'longitude': '',
+        'observation_status': '',
+        'turtle_id': '',
+        'entered_by': ''
+    };
 
-    // Load observation data
-    window.loadObservation = async function(observationId) {
-        showLoadingOverlay();
-        try {
-            const response = await $.get(`/wamtram2/api/observations/${observationId}/`);
-            if (response.status === 'success') {
-                populateForm(response.data);
-                currentObservationId = observationId;
-                updateOriginalData(response.data);
-                $('.nav-tabs a[href="#basicInfo"]').tab('show');
+    Object.keys(basicFields).forEach(fieldName => {
+        if (initialData[fieldName]) {
+            const $field = $(`[name="${fieldName}"]`);
+            if ($field.is('select')) {
+                $field.val(initialData[fieldName]).trigger('change');
             } else {
-                throw new Error(response.message);
+                $field.val(initialData[fieldName]);
             }
-        } catch (error) {
-            showErrorMessage('Error loading observation: ' + error.message);
-        } finally {
-            hideLoadingOverlay();
-        }
-    }
-
-    // Populate form with data
-    function populateForm(data) {
-        clearForm();
-
-        // Populate basic information
-        for (const [key, value] of Object.entries(data.basic_info)) {
-            const field = $(`[name="${key}"]`);
-            if (field.length) {
-                field.val(value).trigger('change');
-            }
-        }
-
-        // Populate tags
-        if (data.tag_info) {
-            // Clear existing tag rows
-            $('.tag-container .tag-row:not(.tag-row-template)').remove();
-            $('.pit-tag-container .pit-tag-row:not(.pit-tag-row-template)').remove();
-            
-            // Add recorded tags
-            data.tag_info.recorded_tags.forEach(tag => {
-                const newRow = $('.tag-row-template .tag-row').clone();
-                newRow.show();
-                newRow.find('[name="tag_id"]').val(tag.tag_id);
-                newRow.find('[name="side"]').val(tag.side); ;
-                newRow.find('[name="tag_position"]').val(tag.tag_position);
-                newRow.find('[name="tag_state"]').val(tag.tag_state);
-                newRow.find('[name="barnacles"]').prop('checked', tag.barnacles === 'True');
-                $('.tag-container').append(newRow);
-                newRow.find('select').select2({
-                    theme: 'bootstrap4',
-                    width: '100%'
-                });
-            });
-
-            // Add recorded PIT tags
-            data.tag_info.recorded_pit_tags.forEach(tag => {
-                const newRow = $('.pit-tag-row-template .pit-tag-row').clone();
-                newRow.show();
-                newRow.find('[name="pittag_id"]').val(tag.tag_id);
-                newRow.find('[name="pit_tag_position"]').val(tag.tag_position);
-                newRow.find('[name="tag_state"]').val(tag.tag_state);
-                $('.pit-tag-container').append(newRow);
-                newRow.find('select').select2({
-                    theme: 'bootstrap4',
-                    width: '100%'
-                });
-            });
-        }
-
-        // Populate measurements
-        if (data.measurements) {
-            $('#measurements .measurement-row').remove();
-            data.measurements.forEach(measurement => {
-                addMeasurementRow(measurement);
-            });
-        }
-
-        // Populate damage records
-        if (data.damage_records) {
-            $('#damage .damage-record').remove();
-            data.damage_records.forEach(damage => {
-                addDamageRecord(damage);
-            });
-        }
-
-        // Populate location information
-        if (data.location) {
-            for (const [key, value] of Object.entries(data.location)) {
-                const field = $(`[name="${key}"]`);
-                if (field.length) {
-                    field.val(value).trigger('change');
-                }
-            }
-        }
-
-        // 重新初始化所有 select2 下拉框
-        $('select').trigger('change').select2({
-            theme: 'bootstrap4',
-            width: '100%'
-        });
-    }
-
-    // Utility functions
-    function showLoadingOverlay() {
-        $('.loading-overlay').show();
-    }
-
-    function hideLoadingOverlay() {
-        $('.loading-overlay').hide();
-    }
-
-    function showSuccessMessage(message) {
-        const alertHtml = `
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                ${message}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        `;
-        $('.container-fluid').prepend(alertHtml);
-    }
-
-    function showErrorMessage(message) {
-        const alertHtml = `
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                ${message}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        `;
-        $('.container-fluid').prepend(alertHtml);
-    }
-
-    // function setupAutoSave() {
-    //     let autoSaveTimer;
-    //     let autoSaveNotification;
-    
-    //     $('form').on('change', 'input, select', function() {
-    //         clearTimeout(autoSaveTimer);
-            
-    //         if (!autoSaveNotification) {
-    //             autoSaveNotification = $('<div class="alert alert-info position-fixed" style="bottom: 20px; right: 20px;">Changes will be auto-saved...</div>');
-    //             $('body').append(autoSaveNotification);
-    //         }
-            
-    //         autoSaveTimer = setTimeout(() => {
-    //             handleSave().then(() => {
-    //                 if (autoSaveNotification) {
-    //                     autoSaveNotification.remove();
-    //                     autoSaveNotification = null;
-    //                 }
-    //             });
-    //         }, 30000);
-    //     });
-    // }
-
-    $(window).on('beforeunload', function() {
-        if (hasUnsavedChanges()) {
-            return "You have unsaved changes. Are you sure you want to leave?";
         }
     });
-    
-    function hasUnsavedChanges() {
-        return $('.modified').length > 0;
-    }
+}
 
-    // Initialize the page
-    initialize();
-}); 
+// Set search fields
+function setSearchFields() {
+    // Set person fields
+    setPersonField('measurer_person');
+    setPersonField('measurer_reporter_person');
+    setPersonField('tagger_person');
+    setPersonField('reporter_person');
+
+    // Set place field
+    setPlaceField();
+}
+
+// Set person field
+function setPersonField(fieldName) {
+    if (initialData[fieldName]) {
+        const $field = $(`select[name="${fieldName}"]`);
+        const personName = initialData[`${fieldName}_name`];
+        const option = new Option(personName, initialData[fieldName], true, true);
+        $field.append(option).trigger('change');
+    }
+}
+
+// Set place field
+function setPlaceField() {
+    if (initialData.place_code) {
+        const $place = $('select[name="place_code"]');
+        const option = new Option(initialData.place_description, initialData.place_code, true, true);
+        $place.append(option).trigger('change');
+    }
+}
+
+// Handle form submission
+function handleFormSubmit() {
+    const formData = {
+        basic_info: getBasicInfo(),
+        // Other data parts can be added as needed
+    };
+
+    $.ajax({
+        url: submitUrl,
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(formData),
+        headers: {
+            'X-CSRFToken': $('[name=csrfmiddlewaretoken]').val()
+        },
+        success: function(response) {
+            if (response.status === 'success') {
+                // Handle success response
+                showSuccessMessage('Observation saved successfully');
+            } else {
+                // Handle error response
+                showErrorMessage(response.message || 'Error saving observation');
+            }
+        },
+        error: function(xhr) {
+            // Handle error response
+            showErrorMessage('Error saving observation');
+        }
+    });
+}
+
+// Get basic info
+function getBasicInfo() {
+    const observationDateTime = $('[name="observation_date"]').val();
+    return {
+        observation_id: $('[name="observation_id"]').val(),
+        observation_date: observationDateTime,
+        observation_time: observationDateTime,  
+        alive: $('[name="alive"]').val(),
+        nesting: $('[name="nesting"]').val(),
+        activity_code: $('[name="activity_code"]').val(),
+        beach_position_code: $('[name="beach_position_code"]').val(),
+        condition_code: $('[name="condition_code"]').val(),
+        egg_count_method: $('[name="egg_count_method"]').val(),
+        datum_code: $('[name="datum_code"]').val(),
+        measurer_person: $('[name="measurer_person"]').val(),
+        measurer_reporter_person: $('[name="measurer_reporter_person"]').val(),
+        tagger_person: $('[name="tagger_person"]').val(),
+        reporter_person: $('[name="reporter_person"]').val(),
+        place_code: $('[name="place_code"]').val(),
+        clutch_completed: $('[name="clutch_completed"]').val(),
+        place_description: $('[name="place_description"]').val(),
+        action_taken: $('[name="action_taken"]').val(),
+        comments: $('[name="comments"]').val(),
+        latitude: $('[name="latitude"]').val(),
+        longitude: $('[name="longitude"]').val()
+    };
+}
+
+// Show success message
+function showSuccessMessage(message) {
+    // Implement message display logic
+    console.log('Success:', message);
+}
+
+// Show error message
+function showErrorMessage(message) {
+    // Implement error message display logic
+    console.error('Error:', message);
+}

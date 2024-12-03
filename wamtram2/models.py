@@ -42,6 +42,9 @@ class TrtBeachPositions(models.Model):
     class Meta:
         managed = False
         db_table = "TRT_BEACH_POSITIONS"
+        
+    def __str__(self):
+        return f"{self.description}"
 
 
 class TrtBodyParts(models.Model):
