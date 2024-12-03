@@ -4174,6 +4174,60 @@ class TurtleManagementView(TemplateView):
 
         turtle_data = []
         for turtle in queryset:
+            tags = turtle.trttags_set.all()
+            tag_data = [{
+                'tag_id': tag.tag_id,
+                'tag_side': tag.tag_side,
+                'tag_status': tag.tag_status,
+                'return_date': tag.return_date.strftime('%Y-%m-%d') if tag.return_date else '',
+                'tag_return_condition': tag.tag_return_condition,
+                'comments': tag.comments
+            } for tag in tags]
+            
+            pit_tags = turtle.recorded_pittags.all()
+            pit_tag_data = [{
+                'pit_tag_id': tag.pittag_id,
+                'pit_tag_status': tag.pit_tag_status,
+                'return_date': tag.return_date.strftime('%Y-%m-%d') if tag.return_date else '',
+                'return_condition': tag.return_condition,
+                'comments': tag.comments
+            } for tag in pit_tags]
+        
+            identifications = TrtIdentification.objects.filter(turtle_id=turtle.pk)
+            identification_data = [{
+                'identification_type': ident.identification_type,
+                'identifier': ident.identifier,
+                'comments': ident.comments
+            } for ident in identifications]
+            
+            observations = turtle.trtobservations_set.all()
+            observation_data = [{
+                'observation_id': obs.pk,
+                'date_time': obs.observation_date.strftime('%Y-%m-%dT%H:%M'),
+                'observation_status': obs.observation_status,
+                'alive': obs.alive,
+                'place': obs.place_code.get_full_name() if obs.place_code else '',
+                'nesting': obs.nesting,
+                'activity': obs.activity_code
+            } for obs in observations]
+            
+            samples = turtle.trtsamples_set.all()
+            sample_data = [{
+                'tissue_type': sample.tissue_type,
+                'observation_id': sample.observation_id,
+                'label': sample.sample_label,
+                'comments': sample.comments
+            } for sample in samples]
+            
+            documents = turtle.trtdocuments_set.all()
+            document_data = [{
+                'document_id': doc.pk,
+                'document_type': doc.document_type,
+                'file_name': doc.file_name,
+                'person_id': doc.person_id.get_full_name() if doc.person_id else '',
+                'comments': doc.comments,
+            } for doc in documents]
+                
             turtle_data.append({
                 'turtle_id': turtle.turtle_id,
                 'species': turtle.species_code.species_code,
@@ -4183,10 +4237,15 @@ class TurtleManagementView(TemplateView):
                 'turtle_status': turtle.turtle_status.turtle_status if turtle.turtle_status else '',
                 'date_entered': turtle.date_entered.strftime('%Y-%m-%d') if turtle.date_entered else '',
                 'comments': turtle.comments or '',
-                'location': turtle.location_code.location_code if turtle.location_code else ''
+                'location': turtle.location_code.location_code if turtle.location_code else '',
+                'tags': tag_data,
+                'pit_tags': pit_tag_data,
+                'identifications': identification_data,
+                'observations': observation_data,
+                'samples': sample_data,
+                'documents': document_data
             })
             
-            print(f"Sending data: {turtle_data[-1]}")
 
         return JsonResponse({
             'status': 'success',

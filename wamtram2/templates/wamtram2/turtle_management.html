@@ -39,46 +39,54 @@
     <!-- Search Area -->
     <div class="row mb-3">
         <div class="col-md-3">
-            <div class="input-group">
-                <label class="form-label fw-bold mb-2 ml-2" for="turtleIDSearch">Search by Turtle ID</label>
-                <input type="text" class="form-control" id="turtleIDSearch" placeholder="Search by Turtle ID...">
-                <div class="input-group-append">
-                    <button class="btn btn-outline-secondary" type="button" id="turtleIDSearchBtn">
-                        <i class="fas fa-search"></i>
-                    </button>
+            <div class="form-group">
+                <label class="form-label fw-bold" for="turtleIDSearch">Turtle ID</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="turtleIDSearch" placeholder="Search by Turtle ID...">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button" id="turtleIDSearchBtn">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="input-group">
-                <label class="form-label fw-bold mb-2 ml-2" for="flipperTagSearch">Search by Flipper Tag ID</label>
-                <input type="text" class="form-control" id="flipperTagSearch" placeholder="Search by Flipper Tag ID...">
-                <div class="input-group-append">
-                    <button class="btn btn-outline-secondary" type="button" id="flipperTagSearchBtn">
-                        <i class="fas fa-search"></i>
-                    </button>
+            <div class="form-group">
+                <label class="form-label fw-bold" for="flipperTagSearch">Flipper Tag ID</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="flipperTagSearch" placeholder="Search by Flipper Tag ID...">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button" id="flipperTagSearchBtn">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="input-group">
-                <label class="form-label fw-bold mb-2 ml-2" for="pitTagSearch">Search by PIT Tag ID</label>
-                <input type="text" class="form-control" id="pitTagSearch" placeholder="Search by PIT Tag ID...">
-                <div class="input-group-append">
-                    <button class="btn btn-outline-secondary" type="button" id="pitTagSearchBtn">
-                        <i class="fas fa-search"></i>
-                    </button>
+            <div class="form-group">
+                <label class="form-label fw-bold" for="pitTagSearch">PIT Tag ID</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="pitTagSearch" placeholder="Search by PIT Tag ID...">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button" id="pitTagSearchBtn">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="input-group">
-                <label class="form-label fw-bold mb-2 ml-2" for="otherIdentificationSearch">Search by Other Identification</label>
-                <input type="text" class="form-control" id="otherIdentificationSearch" placeholder="Search by Other Identification...">
-                <div class="input-group-append">
-                    <button class="btn btn-outline-secondary" type="button" id="otherIdentificationSearchBtn">
-                        <i class="fas fa-search"></i>
-                    </button>
+            <div class="form-group">
+                <label class="form-label fw-bold" for="otherIdentificationSearch">Other Identification</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="otherIdentificationSearch" placeholder="Search by Other Identification...">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button" id="otherIdentificationSearchBtn">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -210,54 +218,23 @@
                     <a class="nav-link" data-toggle="tab" href="#otherIdentificationInfo">Applied Other Identifications</a>
                 </li>
             </ul>
-            <!--  Tabs Content -->
+            
+            <!-- Tabs Content -->
             <div class="tab-content">
                 <!-- Flipper Tag Information Tab -->
                 <div id="flipperTagInfo" class="tab-pane active">
                     <div class="section-card">
-                        <div class="form-row">
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label>Tag ID</label>
-                                    <input type="text" class="form-control" name="tag_id">
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="tag_side">side</label>
-                                    <select class="form-control" id="tag_side" name="tag_side">
-                                        <option value="L">L</option>
-                                        <option value="R">R</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label>Status</label>
-                                    <input type="text" class="form-control" name="tag_status">
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label>Return Date</label>
-                                    <input type="date" class="form-control" name="return_date">
-                                </div>
+                        <!-- Add New Tag Button -->
+                        <div class="form-row mb-3">
+                            <div class="col-12">
+                                <button type="button" class="btn btn-success" id="addFlipperTagBtn">
+                                    <i class="fas fa-plus"></i> Add New Flipper Tag
+                                </button>
                             </div>
                         </div>
-                        
-                        <div class="form-row">
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label>Return Condition</label>
-                                    <input type="text" class="form-control" name="tag_return_condition">
-                                </div>
-                            </div>
-                            <div class="col-md-8">
-                                <div class="form-group">
-                                    <label>Comments</label>
-                                    <input type="text" class="form-control" name="tag_comments">
-                                </div>
-                            </div>
+                        <!-- Container for Flipper Tags -->
+                        <div id="tagContainer">
+                            <!-- Tags will be dynamically inserted here -->
                         </div>
                     </div>
                 </div>
@@ -265,40 +242,17 @@
                 <!-- PIT Tag Information Tab -->
                 <div id="pitTagInfo" class="tab-pane fade">
                     <div class="section-card">
-                        <div class="form-row">
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label>PIT Tag ID</label>
-                                    <input type="text" class="form-control" name="pit_tag_id">
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label>Status</label>
-                                    <input type="text" class="form-control" name="pit_tag_status">
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label>Return Date</label>
-                                    <input type="date" class="form-control" name="pit_tag_return_date">
-                                </div>
+                        <!-- Add New PIT Tag Button -->
+                        <div class="form-row mb-3">
+                            <div class="col-12">
+                                <button type="button" class="btn btn-success" id="addPitTagBtn">
+                                    <i class="fas fa-plus"></i> Add New PIT Tag
+                                </button>
                             </div>
                         </div>
-                        
-                        <div class="form-row">
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label>Return Condition</label>
-                                    <input type="text" class="form-control" name="pit_tag_return_condition">
-                                </div>
-                            </div>
-                            <div class="col-md-8">
-                                <div class="form-group">
-                                    <label>Comments</label>
-                                    <input type="text" class="form-control" name="pit_tag_comments">
-                                </div>
-                            </div>
+                        <!-- Container for PIT Tags -->
+                        <div id="pitTagContainer">
+                            <!-- PIT Tags will be dynamically inserted here -->
                         </div>
                     </div>
                 </div>
@@ -306,35 +260,26 @@
                 <!-- Other Identification Information Tab -->
                 <div id="otherIdentificationInfo" class="tab-pane fade">
                     <div class="section-card">
-                        <div class="form-row">
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label>Identification Type</label>
-                                    <input type="text" class="form-control" name="other_identification_type">
-                                </div>
+                        <!-- Add New Identification Button -->
+                        <div class="form-row mb-3">
+                            <div class="col-12">
+                                <button type="button" class="btn btn-success" id="addIdentificationBtn">
+                                    <i class="fas fa-plus"></i> Add New Identification
+                                </button>
                             </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label>Identifier</label>
-                                    <input type="text" class="form-control" name="other_identification_identifier">
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>Comments</label>
-                                    <input type="text" class="form-control" name="other_identification_comments">
-                                </div>
-                            </div>
+                        </div>
+                        <!-- Container for Other Identifications -->
+                        <div id="identificationContainer">
+                            <!-- Other Identifications will be dynamically inserted here -->
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
 
     <!-- Observation Section -->
-    <div class="row observation-area">
+    <div class="row observation-area mt-4">
         <div class="col-md-12">
             <!-- Tabs Navigation -->
             <ul class="nav nav-tabs" role="tablist">
@@ -348,57 +293,23 @@
                     <a class="nav-link" data-toggle="tab" href="#relatedDocumentInfo">Related Documents</a>
                 </li>
             </ul>
-            <!--  Tabs Content -->
+            
+            <!-- Tabs Content -->
             <div class="tab-content">
                 <!-- Observation Information Tab -->
                 <div id="observationInfo" class="tab-pane active">
                     <div class="section-card">
-                        <div class="form-row">
-                            <div class="col-md-2">
-                                <div class="form-group">
-                                    <label>Observation ID</label>
-                                    <input type="text" class="form-control readonly-field" name="observation_id" readonly>
-                                </div>
-                            </div>
-                            <div class="col-md-5">
-                                <div class="form-group">
-                                    <label>Date & Time</label>
-                                    <input type="datetime-local" class="form-control" name="date_time">
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label>Observation Status</label>
-                                    <input type="text" class="form-control" name="observation_status">
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="form-group">
-                                    <label>Alive?</label>
-                                    <input type="checkbox" class="form-control" name="alive">
-                                </div>
+                        <!-- Add New Observation Button -->
+                        <div class="form-row mb-3">
+                            <div class="col-12">
+                                <button type="button" class="btn btn-success" id="addObservationBtn">
+                                    <i class="fas fa-plus"></i> Add New Observation
+                                </button>
                             </div>
                         </div>
-                        
-                        <div class="form-row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>Place</label>
-                                    <input type="text" class="form-control" name="place">
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label>Nesting?</label>
-                                    <input type="text" class="form-control" name="nesting">
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label>Activity</label>
-                                    <input type="text" class="form-control" name="activity">
-                                </div>
-                            </div>
+                        <!-- Container for Observations -->
+                        <div id="observationContainer">
+                            <!-- Observations will be dynamically inserted here -->
                         </div>
                     </div>
                 </div>
@@ -406,40 +317,17 @@
                 <!-- Sample Information Tab -->
                 <div id="sampleInfo" class="tab-pane fade">
                     <div class="section-card">
-                        <div class="form-row">
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label>Tissue Type</label>
-                                    <input type="text" class="form-control" name="tissue_type">
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label>Observation ID</label>
-                                    <input type="text" class="form-control" name="sample_observation_id">
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label>Sample Date</label>
-                                    <input type="date" class="form-control" name="sample_date">
-                                </div>
+                        <!-- Add New Sample Button -->
+                        <div class="form-row mb-3">
+                            <div class="col-12">
+                                <button type="button" class="btn btn-success" id="addSampleBtn">
+                                    <i class="fas fa-plus"></i> Add New Sample
+                                </button>
                             </div>
                         </div>
-                        
-                        <div class="form-row">
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label>Label</label>
-                                    <input type="text" class="form-control" name="sample_label">
-                                </div>
-                            </div>
-                            <div class="col-md-8">
-                                <div class="form-group">
-                                    <label>Comments</label>
-                                    <input type="text" class="form-control" name="sample_comments">
-                                </div>
-                            </div>
+                        <!-- Container for Samples -->
+                        <div id="sampleContainer">
+                            <!-- Samples will be dynamically inserted here -->
                         </div>
                     </div>
                 </div>
@@ -447,29 +335,20 @@
                 <!-- Related Document Information Tab -->
                 <div id="relatedDocumentInfo" class="tab-pane fade">
                     <div class="section-card">
-                        <div class="form-row">
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label>Document Type</label>
-                                    <input type="text" class="form-control" name="document_type">
-                                </div>
+                        <!-- Add New Document Button -->
+                        <div class="form-row mb-3">
+                            <div class="col-12">
+                                <button type="button" class="btn btn-success" id="addDocumentBtn">
+                                    <i class="fas fa-plus"></i> Add New Document
+                                </button>
                             </div>
-                            <div class="col-md-5">
-                                <div class="form-group">
-                                    <label>File Name</label>
-                                    <input type="text" class="form-control" name="document_file_name">
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label>Comments</label>
-                                    <input type="text" class="form-control" name="document_comments">
-                                </div>
-                            </div>
+                        </div>
+                        <!-- Container for Documents -->
+                        <div id="documentContainer">
+                            <!-- Documents will be dynamically inserted here -->
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>

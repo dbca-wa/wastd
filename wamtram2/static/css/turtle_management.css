@@ -117,3 +117,27 @@
 .observation-area {
     margin-top: 1.5rem;
 } 
+
+.section-card {
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+    margin-bottom: 20px;
+}
+
+.card {
+    margin-bottom: 15px;
+}
+
+.card-body {
+    padding: 15px;
+}
+
+.btn-success {
+    margin-bottom: 15px;
+}
+
+.tab-content {
+    padding-top: 20px;
+}

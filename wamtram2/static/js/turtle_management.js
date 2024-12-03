@@ -120,14 +120,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 searchResultForm.style.display = 'block';
                 
-                Object.keys(turtle).forEach(key => {
-                    const element = searchResultForm.querySelector(`[name="${key}"]`);
-                    console.log(`Setting ${key} = ${turtle[key]}, Found element:`, element);
-                    if (element) {
-                        element.value = turtle[key] || '';
-                        console.log(`After setting ${key}, value is:`, element.value);
-                    }
-                });
+                populateBasicInfo(turtle);
+                
+                populateTagInfo(turtle);
+                
+                populatePitTagInfo(turtle);
+                
+                populateIdentificationInfo(turtle);
+                
+                populateObservationInfo(turtle);
+                
+                populateSampleInfo(turtle);
+                
+                populateDocumentInfo(turtle);
+                
                 saveOriginalFormData();
                 hasUnsavedChanges = false;
             } else {
@@ -141,6 +147,306 @@ document.addEventListener('DOMContentLoaded', function() {
             loadingSpinner.style.display = 'none';
             loadingOverlay.style.display = 'none';
         }
+    }
+
+    function populateBasicInfo(turtle) {
+        const basicInfoFields = {
+            'turtle_id': turtle.turtle_id,
+            'species': turtle.species,
+            'turtle_name': turtle.turtle_name,
+            'sex': turtle.sex,
+            'cause_of_death': turtle.cause_of_death,
+            'turtle_status': turtle.turtle_status,
+            'date_entered': turtle.date_entered,
+            'comments': turtle.comments,
+            'location': turtle.location
+        };
+
+        Object.entries(basicInfoFields).forEach(([field, value]) => {
+            const element = searchResultForm.querySelector(`[name="${field}"]`);
+            if (element) {
+                element.value = value || '';
+            }
+        });
+    }
+
+    function populateTagInfo(turtle) {
+        const tagContainer = document.getElementById('tagContainer');
+        tagContainer.innerHTML = '';
+
+        if (!turtle.tags || turtle.tags.length === 0) {
+            tagContainer.innerHTML = '<p class="text-muted">No tags found</p>';
+            return;
+        }
+
+        turtle.tags.forEach(tag => {
+            const tagHtml = `
+                <div class="card mb-3 tag-card">
+                    <div class="card-body">
+                        <div class="form-row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Tag ID</label>
+                                    <input type="text" class="form-control" name="tag_id" value="${tag.tag_id}" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label>Side</label>
+                                    <select class="form-control" name="tag_side">
+                                        <option value="L" ${tag.tag_side === 'L' ? 'selected' : ''}>Left</option>
+                                        <option value="R" ${tag.tag_side === 'R' ? 'selected' : ''}>Right</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Status</label>
+                                    <input type="text" class="form-control" name="tag_status" value="${tag.tag_status || ''}">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Comments</label>
+                                    <input type="text" class="form-control" name="tag_comments" value="${tag.comments || ''}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            tagContainer.insertAdjacentHTML('beforeend', tagHtml);
+        });
+    }
+
+    function populatePitTagInfo(turtle) {
+        const pitTagContainer = document.getElementById('pitTagContainer');
+        pitTagContainer.innerHTML = '';
+
+        if (!turtle.pit_tags || turtle.pit_tags.length === 0) {
+            pitTagContainer.innerHTML = '<p class="text-muted">No PIT tags found</p>';
+            return;
+        }
+
+        turtle.pit_tags.forEach(tag => {
+            const pitTagHtml = `
+                <div class="card mb-3 pit-tag-card">
+                    <div class="card-body">
+                        <div class="form-row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>PIT Tag ID</label>
+                                    <input type="text" class="form-control" name="pit_tag_id" value="${tag.pit_tag_id}" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Status</label>
+                                    <input type="text" class="form-control" name="pit_tag_status" value="${tag.pit_tag_status || ''}">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Return Date</label>
+                                    <input type="date" class="form-control" name="pit_tag_return_date" value="${tag.return_date || ''}">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Comments</label>
+                                    <input type="text" class="form-control" name="pit_tag_comments" value="${tag.comments || ''}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            pitTagContainer.insertAdjacentHTML('beforeend', pitTagHtml);
+        });
+    }
+
+    function populateIdentificationInfo(turtle) {
+        const identificationContainer = document.getElementById('identificationContainer');
+        identificationContainer.innerHTML = '';
+
+        if (!turtle.identifications || turtle.identifications.length === 0) {
+            identificationContainer.innerHTML = '<p class="text-muted">No other identifications found</p>';
+            return;
+        }
+
+        turtle.identifications.forEach(ident => {
+            const identHtml = `
+                <div class="card mb-3 identification-card">
+                    <div class="card-body">
+                        <div class="form-row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Type</label>
+                                    <input type="text" class="form-control" name="identification_type" value="${ident.identification_type}" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Identifier</label>
+                                    <input type="text" class="form-control" name="identifier" value="${ident.identifier || ''}">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Comments</label>
+                                    <input type="text" class="form-control" name="identification_comments" value="${ident.comments || ''}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            identificationContainer.insertAdjacentHTML('beforeend', identHtml);
+        });
+    }
+
+    function populateObservationInfo(turtle) {
+        const observationContainer = document.getElementById('observationContainer');
+        observationContainer.innerHTML = '';
+
+        if (!turtle.observations || turtle.observations.length === 0) {
+            observationContainer.innerHTML = '<p class="text-muted">No observations found</p>';
+            return;
+        }
+
+        turtle.observations.forEach(obs => {
+            const obsHtml = `
+                <div class="card mb-3 observation-card">
+                    <div class="card-body">
+                        <div class="form-row">
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label>Date/Time</label>
+                                    <input type="datetime-local" class="form-control" name="observation_datetime" value="${obs.date_time}" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label>Status</label>
+                                    <input type="text" class="form-control" name="observation_status" value="${obs.observation_status || ''}" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label>Alive</label>
+                                    <input type="text" class="form-control" name="alive" value="${obs.alive || ''}" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Place</label>
+                                    <input type="text" class="form-control" name="place" value="${obs.place || ''}" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Activity</label>
+                                    <input type="text" class="form-control" name="activity" value="${obs.activity || ''}" readonly>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            observationContainer.insertAdjacentHTML('beforeend', obsHtml);
+        });
+    }
+
+    function populateSampleInfo(turtle) {
+        const sampleContainer = document.getElementById('sampleContainer');
+        sampleContainer.innerHTML = '';
+
+        if (!turtle.samples || turtle.samples.length === 0) {
+            sampleContainer.innerHTML = '<p class="text-muted">No samples found</p>';
+            return;
+        }
+
+        turtle.samples.forEach(sample => {
+            const sampleHtml = `
+                <div class="card mb-3 sample-card">
+                    <div class="card-body">
+                        <div class="form-row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Tissue Type</label>
+                                    <input type="text" class="form-control" name="tissue_type" value="${sample.tissue_type}" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Observation ID</label>
+                                    <input type="text" class="form-control" name="observation_id" value="${sample.observation_id || ''}" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Sample Label</label>
+                                    <input type="text" class="form-control" name="sample_label" value="${sample.label || ''}" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Comments</label>
+                                    <input type="text" class="form-control" name="sample_comments" value="${sample.comments || ''}" readonly>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            sampleContainer.insertAdjacentHTML('beforeend', sampleHtml);
+        });
+    }
+
+    function populateDocumentInfo(turtle) {
+        const documentContainer = document.getElementById('documentContainer');
+        documentContainer.innerHTML = '';
+
+        if (!turtle.documents || turtle.documents.length === 0) {
+            documentContainer.innerHTML = '<p class="text-muted">No documents found</p>';
+            return;
+        }
+
+        turtle.documents.forEach(doc => {
+            const docHtml = `
+                <div class="card mb-3 document-card">
+                    <div class="card-body">
+                        <div class="form-row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Document Type</label>
+                                    <input type="text" class="form-control" name="document_type" value="${doc.document_type}" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>File Name</label>
+                                    <input type="text" class="form-control" name="file_name" value="${doc.file_name || ''}" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Person</label>
+                                    <input type="text" class="form-control" name="person_id" value="${doc.person_id || ''}" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Comments</label>
+                                    <input type="text" class="form-control" name="document_comments" value="${doc.comments || ''}" readonly>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            documentContainer.insertAdjacentHTML('beforeend', docHtml);
+        });
     }
 
     async function handleSave() {
