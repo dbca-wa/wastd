@@ -217,31 +217,31 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label>Tag ID</label>
-                                    <input type="text" class="form-control" name="tag_id" value="${tag.tag_id}" readonly>
+                                    <input type="text" class="form-control" name="tag_id" value="${tag.tag_id}">
                                 </div>
                             </div>
                             <div class="col-md-2">
                                 <div class="form-group">
                                     <label>Side</label>
-                                    <input type="text" class="form-control" name="side" value="${tag.side || ''}" readonly>
+                                    <input type="text" class="form-control" name="side" value="${tag.side || ''}">
                                 </div>
                             </div>
                             <div class="col-md-2">
                                 <div class="form-group">
                                     <label>Status</label>
-                                    <input type="text" class="form-control" name="tag_status" value="${tag.tag_status || ''}" readonly>
+                                    <input type="text" class="form-control" name="tag_status" value="${tag.tag_status || ''}">
                                 </div>
                             </div>
                             <div class="col-md-2">
                                 <div class="form-group">
                                     <label>Issue Location</label>
-                                    <input type="text" class="form-control" name="issue_location" value="${tag.issue_location || ''}" readonly>
+                                    <input type="text" class="form-control" name="issue_location" value="${tag.issue_location || ''}">
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label>Comments</label>
-                                    <input type="text" class="form-control" name="comments" value="${tag.comments || ''}" readonly>
+                                    <input type="text" class="form-control" name="comments" value="${tag.comments || ''}">
                                 </div>
                             </div>
                         </div>
@@ -269,25 +269,25 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label>PIT Tag ID</label>
-                                    <input type="text" class="form-control" name="pit_tag_id" value="${tag.pit_tag_id}" readonly>
+                                    <input type="text" class="form-control" name="pit_tag_id" value="${tag.pit_tag_id}">
                                 </div>
                             </div>
                             <div class="col-md-2">
                                 <div class="form-group">
                                     <label>Status</label>
-                                    <input type="text" class="form-control" name="pit_tag_status" value="${tag.pit_tag_status || ''}" readonly>
+                                    <input type="text" class="form-control" name="pit_tag_status" value="${tag.pit_tag_status || ''}">
                                 </div>
                             </div>
                             <div class="col-md-2">
                                 <div class="form-group">
                                     <label>Issue Location</label>
-                                    <input type="text" class="form-control" name="issue_location" value="${tag.issue_location || ''}" readonly>
+                                    <input type="text" class="form-control" name="issue_location" value="${tag.issue_location || ''}">
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label>Comments</label>
-                                    <input type="text" class="form-control" name="comments" value="${tag.comments || ''}" readonly>
+                                    <input type="text" class="form-control" name="comments" value="${tag.comments || ''}">
                                 </div>
                             </div>
                         </div>
@@ -315,19 +315,19 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label>Type</label>
-                                    <input type="text" class="form-control" name="identification_type" value="${ident.identification_type}" readonly>
+                                    <input type="text" class="form-control" name="identification_type" value="${ident.identification_type}">
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label>Identifier</label>
-                                    <input type="text" class="form-control" name="identifier" value="${ident.identifier || ''}" readonly>
+                                    <input type="text" class="form-control" name="identifier" value="${ident.identifier || ''}">
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label>Comments</label>
-                                    <input type="text" class="form-control" name="identification_comments" value="${ident.comments || ''}" readonly>
+                                    <input type="text" class="form-control" name="identification_comments" value="${ident.comments || ''}">
                                 </div>
                             </div>
                         </div>
@@ -355,31 +355,31 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div class="col-md-2">
                                 <div class="form-group">
                                     <label>Date/Time</label>
-                                    <input type="datetime-local" class="form-control" name="observation_datetime" value="${obs.date_time}" readonly>
+                                    <input type="datetime-local" class="form-control" name="observation_datetime" value="${obs.date_time}" >
                                 </div>
                             </div>
                             <div class="col-md-2">
                                 <div class="form-group">
                                     <label>Status</label>
-                                    <input type="text" class="form-control" name="observation_status" value="${obs.observation_status || ''}" readonly>
+                                    <input type="text" class="form-control" name="observation_status" value="${obs.observation_status || ''}" >
                                 </div>
                             </div>
                             <div class="col-md-2">
                                 <div class="form-group">
                                     <label>Alive</label>
-                                    <input type="text" class="form-control" name="alive" value="${obs.alive || ''}" readonly>
+                                    <input type="text" class="form-control" name="alive" value="${obs.alive || ''}" >
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label>Place</label>
-                                    <input type="text" class="form-control" name="place" value="${obs.place || ''}" readonly>
+                                    <input type="text" class="form-control" name="place" value="${obs.place || ''}" >
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label>Activity</label>
-                                    <input type="text" class="form-control" name="activity" value="${obs.activity || ''}" readonly>
+                                    <input type="text" class="form-control" name="activity" value="${obs.activity || ''}" >
                                 </div>
                             </div>
                         </div>
@@ -407,25 +407,25 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label>Tissue Type</label>
-                                    <input type="text" class="form-control" name="tissue_type" value="${sample.tissue_type}" readonly>
+                                    <input type="text" class="form-control" name="tissue_type" value="${sample.tissue_type}" >
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label>Observation ID</label>
-                                    <input type="text" class="form-control" name="observation_id" value="${sample.observation_id || ''}" readonly>
+                                    <input type="text" class="form-control" name="observation_id" value="${sample.observation_id || ''}" >
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label>Sample Label</label>
-                                    <input type="text" class="form-control" name="sample_label" value="${sample.label || ''}" readonly>
+                                    <input type="text" class="form-control" name="sample_label" value="${sample.label || ''}" >
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label>Comments</label>
-                                    <input type="text" class="form-control" name="sample_comments" value="${sample.comments || ''}" readonly>
+                                    <input type="text" class="form-control" name="sample_comments" value="${sample.comments || ''}" >
                                 </div>
                             </div>
                         </div>
@@ -453,25 +453,25 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label>Document Type</label>
-                                    <input type="text" class="form-control" name="document_type" value="${doc.document_type}" readonly>
+                                    <input type="text" class="form-control" name="document_type" value="${doc.document_type}" >
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label>File Name</label>
-                                    <input type="text" class="form-control" name="file_name" value="${doc.file_name || ''}" readonly>
+                                    <input type="text" class="form-control" name="file_name" value="${doc.file_name || ''}" >
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label>Person</label>
-                                    <input type="text" class="form-control" name="person_id" value="${doc.person_id || ''}" readonly>
+                                    <input type="text" class="form-control" name="person_id" value="${doc.person_id || ''}" >
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label>Comments</label>
-                                    <input type="text" class="form-control" name="document_comments" value="${doc.comments || ''}" readonly>
+                                    <input type="text" class="form-control" name="document_comments" value="${doc.comments || ''}" >
                                 </div>
                             </div>
                         </div>

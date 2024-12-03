@@ -4185,7 +4185,7 @@ class TurtleManagementView(TemplateView):
                 'side': tag.side,
                 'tag_status': tag.tag_status.description if tag.tag_status else None,
                 'issue_location': tag.issue_location,
-                'custodian_person': tag.custodian_person.get_full_name() if tag.custodian_person else None,
+                'custodian_person': str(tag.custodian_person) if tag.custodian_person else None,
                 'return_date': tag.return_date.strftime('%Y-%m-%d') if tag.return_date else None,
                 'return_condition': tag.return_condition,
                 'comments': tag.comments,
@@ -4197,7 +4197,7 @@ class TurtleManagementView(TemplateView):
             pit_tag_data = [{
                 'pit_tag_id': tag.pittag_id,
                 'issue_location': tag.issue_location,
-                'custodian_person': tag.custodian_person.get_full_name() if tag.custodian_person else None,
+                'custodian_person': str(tag.custodian_person) if tag.custodian_person else None,
                 'pit_tag_status': tag.pit_tag_status.pit_tag_status if tag.pit_tag_status else None,
                 'return_date': tag.return_date.strftime('%Y-%m-%d') if tag.return_date else None,
                 'return_condition': tag.return_condition,
@@ -4220,10 +4220,10 @@ class TurtleManagementView(TemplateView):
                 'observation_id': obs.pk,
                 'date_time': obs.observation_date.strftime('%Y-%m-%dT%H:%M'),
                 'observation_status': obs.observation_status,
-                'alive': obs.alive,
+                'alive': str(obs.alive),
                 'place': obs.place_code.get_full_name() if obs.place_code else '',
-                'nesting': obs.nesting,
-                'activity': obs.activity_code
+                'nesting': str(obs.nesting),
+                'activity': str(obs.activity_code)
             } for obs in observations]
             
             samples = turtle.trtsamples_set.all()
@@ -4238,9 +4238,9 @@ class TurtleManagementView(TemplateView):
             documents = TrtDocuments.objects.filter(turtle_id=turtle.turtle_id)
             document_data = [{
                 'document_id': doc.pk,
-                'document_type': doc.document_type,
+                'document_type': str(doc.document_type),
                 'file_name': doc.filename,
-                'person_id': doc.person_id
+                'person_id': str(doc.person_id)
             } for doc in documents]
                 
             turtle_data.append({
