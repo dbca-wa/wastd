@@ -106,8 +106,8 @@ document.addEventListener('DOMContentLoaded', function() {
         let html = '<h6>The following changes will be saved:</h6><ul>';
         for (const [field, values] of Object.entries(changes)) {
             html += `<li>${field}: <br>
-                     <span class="text-muted">From: ${values.old}</span><br>
-                     <span class="text-success">To: ${values.new}</span></li>`;
+                    <span class="text-muted">From: ${values.old}</span><br>
+                    <span class="text-success">To: ${values.new}</span></li>`;
         }
         html += '</ul>';
         changesContent.innerHTML = html;

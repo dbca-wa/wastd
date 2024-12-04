@@ -159,7 +159,13 @@ function setMeasurements() {
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Measurement Type</label>
-                                <input type="text" class="form-control" name="measurement_type" value="${measurement.measurement_type}" readonly>
+                                <select class="form-control" name="measurement_type">
+                                    {% for measurement_type in measurement_type_choices %}
+                                        <option value="{{ measurement_type.measurement_type }}" ${measurement.measurement_type === '{{ measurement_type.measurement_type }}' ? 'selected' : ''}>
+                                            {{ measurement_type.description }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -196,19 +202,37 @@ function setDamageRecords() {
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label>Body Part</label>
-                                <input type="text" class="form-control" name="body_part" value="${damage.body_part || ''}">
+                                <select class="form-control" name="body_part">
+                                    {% for body_part in body_parts_choices %}
+                                        <option value="{{ body_part.body_part }}" ${damage.body_part === '{{ body_part.body_part }}' ? 'selected' : ''}>
+                                            {{ body_part.description }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label>Damage Code</label>
-                                <input type="text" class="form-control" name="damage_code" value="${damage.damage_code || ''}">
+                                <select class="form-control" name="damage_code">
+                                    {% for damage_code in damage_codes_choices %}
+                                        <option value="{{ damage_code.damage_code }}" ${damage.damage_code === '{{ damage_code.damage_code }}' ? 'selected' : ''}>
+                                            {{ damage_code.description }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label>Damage Cause</label>
-                                <input type="text" class="form-control" name="damage_cause_code" value="${damage.damage_cause_code || ''}">
+                                <select class="form-control" name="damage_cause_code">
+                                    {% for damage_cause in damage_cause_choices %}
+                                        <option value="{{ damage_cause.damage_cause_code }}" ${damage.damage_cause_code === '{{ damage_cause.damage_cause_code }}' ? 'selected' : ''}>
+                                            {{ damage_cause.description }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
                             </div>
                         </div>
                         <div class="col-md-3">
@@ -238,7 +262,7 @@ function setLocationInfo() {
                 if ($field.is('select')) {
                     if (fieldName === 'place_code') {
                         const option = new Option(location.place_description || location.place_code, 
-                                               location.place_code, true, true);
+                            location.place_code, true, true);
                         $field.append(option).trigger('change');
                     } else {
                         $field.val(location[fieldName]).trigger('change');
@@ -271,19 +295,32 @@ function setTagInfo() {
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label>Side</label>
-                                    <input type="text" class="form-control" name="tag_side" value="${tag.tag_side || ''}" >
+                                    <select class="form-control" name="tag_side">
+                                        <option value="L" ${tag.tag_side === 'L' ? 'selected' : ''}>L</option>
+                                        <option value="R" ${tag.tag_side === 'R' ? 'selected' : ''}>R</option>
+                                    </select>
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label>Position</label>
-                                    <input type="text" class="form-control" name="tag_position" value="${tag.tag_position || ''}" >
+                                    <select class="form-control" name="tag_position">
+                                        <option value="1" ${tag.tag_position === '1' ? 'selected' : ''}>1</option>
+                                        <option value="2" ${tag.tag_position === '2' ? 'selected' : ''}>2</option>
+                                        <option value="3" ${tag.tag_position === '3' ? 'selected' : ''}>3</option>
+                                    </select>
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label>State</label>
-                                    <input type="text" class="form-control" name="tag_state" value="${tag.tag_state || ''}" >
+                                    <select class="form-control" name="tag_state">
+                                        {% for tag_state in tag_states_choices %}
+                                            <option value="{{ tag_state.tag_state }}" ${tag.tag_state === '{{ tag_state.tag_state }}' ? 'selected' : ''}>
+                                                {{ tag_state.description }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -311,14 +348,23 @@ function setTagInfo() {
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label>Position</label>
-                                    <input type="text" class="form-control" name="pit_tag_position" value="${pitTag.tag_position || ''}" >
+                                    <label>Side</label>
+                                    <select class="form-control" name="pit_tag_position">
+                                        <option value="LF" ${pitTag.tag_position === 'LF' ? 'selected' : ''}>L</option>
+                                        <option value="RF" ${pitTag.tag_position === 'RF' ? 'selected' : ''}>R</option>
+                                    </select>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label>State</label>
-                                    <input type="text" class="form-control" name="pit_tag_state" value="${pitTag.tag_state || ''}" >
+                                    <select class="form-control" name="pit_tag_state">
+                                        {% for pit_tag_state in pit_tag_state_choices %}
+                                            <option value="{{ pit_tag_state.pit_tag_state }}" ${pitTag.tag_state === '{{ pit_tag_state.pit_tag_state }}' ? 'selected' : ''}>
+                                                {{ pit_tag_state.description }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
                                 </div>
                             </div>
                         </div>

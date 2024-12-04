@@ -2061,8 +2061,9 @@ class TrtRecordedTags(models.Model):
     side = models.CharField(
         db_column="SIDE", max_length=1, blank=True, null=True
     )  # Field name made lowercase.
-    tag_state = models.CharField(
-        db_column="TAG_STATE", max_length=10, blank=True, null=True
+    tag_state = models.ForeignKey(
+        'TrtTagStates', models.CASCADE, db_column="TAG_STATE", max_length=10,
+        blank=True, null=True
     )  # Field name made lowercase.
     comments = models.CharField(
         db_column="COMMENTS", max_length=255, blank=True, null=True

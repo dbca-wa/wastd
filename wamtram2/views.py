@@ -64,8 +64,10 @@ from .models import (
     TrtTurtleStatus,
     TrtDocuments,
     TrtRecordedIdentification,
+    TrtPitTagStates,
     TrtDatumCodes,
-    TrtConditionCodes
+    TrtConditionCodes,
+    TrtDamageCauseCodes
     
     
 )
@@ -3743,8 +3745,7 @@ class SaveEntryChangesView(View):
             return JsonResponse({
                 'success': False,
                 'error': str(e)
-            })
-            
+            })           
 
 class ObservationManagementView(LoginRequiredMixin, TemplateView):
     template_name = 'wamtram2/observation_management.html'
@@ -3762,21 +3763,25 @@ class ObservationManagementView(LoginRequiredMixin, TemplateView):
         
         context.update({
             'places': TrtPlaces.objects.all(),
-            'damage_codes': TrtDamageCodes.objects.all(),
-            'measurement_types': TrtMeasurementTypes.objects.all(),
-            'activity_code_options': TrtActivities.objects.all(),
-            'beach_position_code_options': TrtBeachPositions.objects.all(),
-            'tag_states': TrtTagStates.objects.all(),
-            'body_parts': TrtBodyParts.objects.all(),
-            'yes_no_options': TrtYesNo.objects.all(),
-            'datum_code_options': TrtDatumCodes.objects.all(),
-            'condition_code_options': TrtConditionCodes.objects.all(),
-            'egg_count_method_options': TrtEggCountMethods.objects.all(),
+            'damage_codes_choices': TrtDamageCodes.objects.all(),
+            'damage_cause_choices': TrtDamageCauseCodes.objects.all(),
+            'activity_code_choices': TrtActivities.objects.all(),
+            'beach_position_code_choices': TrtBeachPositions.objects.all(),
+            'tag_states_choices': TrtTagStates.objects.all(),
+            'body_parts_choices': TrtBodyParts.objects.all(),
+            'yes_no_choices': TrtYesNo.objects.all(),
+            'datum_code_choices': TrtDatumCodes.objects.all(),
+            'condition_code_choices': TrtConditionCodes.objects.all(),
+            'egg_count_method_choices': TrtEggCountMethods.objects.all(),
             'search_persons_url': reverse('wamtram2:search-persons'),
             'search_places_url': reverse('wamtram2:search-places'),
             'submit_url': reverse('wamtram2:observation_detail', kwargs={'observation_id': observation_id}) if observation_id else reverse('wamtram2:observation_detail'),
+            'tag_state_choices': TrtTagStates.objects.all(),
+            'pit_tag_state_choices': TrtPitTagStates.objects.all(),
+            'measurement_type_choices': TrtMeasurementTypes.objects.all(),
         })
         return context
+
 
 class ObservationDataView(LoginRequiredMixin, View):
     @transaction.atomic
