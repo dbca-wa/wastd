@@ -355,7 +355,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div class="col-md-1">
                                 <div class="form-group">
                                     <label>Observation ID</label>
-                                      <a href="/wamtram2/curation/observations-management/${obs.observation_id}/"class="form-control"target="_blank">${obs.observation_id}</a>
+                                    <a href="/wamtram2/curation/observations-management/${obs.observation_id}/"class="form-control"target="_blank">${obs.observation_id}</a>
                                 </div>
                             </div>
                             <div class="col-md-2">

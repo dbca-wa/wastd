@@ -193,7 +193,6 @@
                         <option></option>
                     </select>
                 </div>
-                </div>
             </div>
             <div class="col-md-4">
                 <div class="form-group">
@@ -250,10 +249,6 @@
                 </div>
             </div>
         </div>
-
-
-
-
     </div>
 
     <!-- Tabs for Additional Information -->
@@ -286,46 +281,49 @@
         <div id="flipperTags" class="tab-pane active">
             <div class="section-card">
                 <h4>Flipper Tags</h4>
-                <!-- Flipper Tags Content -->
+                <div id="tagContainer"></div>
             </div>
         </div>
         <div id="pitTags" class="tab-pane fade">
             <div class="section-card">
                 <h4>PIT Tags</h4>
-                <!-- PIT Tags Content -->
+                <div id="pitTagContainer"></div>
             </div>
         </div>
         <div id="otherIdentification" class="tab-pane fade">
             <div class="section-card">
                 <h4>Other Identification</h4>
-                <!-- Other Identification Content -->
+                <div id="otherIdContainer"></div>
             </div>
         </div>
         <div id="measurements" class="tab-pane fade">
             <div class="section-card">
                 <h4>Measurements</h4>
-                <!-- Measurements Content -->
+                <div id="measurementContainer"></div>
             </div>
         </div>
         <div id="damage" class="tab-pane fade">
             <div class="section-card">
                 <h4>Damage</h4>
-                <!-- Damage Content -->
+                <div id="damageContainer"></div>
             </div>
         </div>
         <div id="scars" class="tab-pane fade">
             <div class="section-card">
                 <h4>Scars</h4>
-                <!-- Scars Content -->
+                <div id="scarsContainer"></div>
             </div>
         </div>
         <div id="otherInfo" class="tab-pane fade">
             <div class="section-card">
                 <h4>Other Information</h4>
-                <!-- Other Information Content -->
+                <div id="otherInfoContainer"></div>
             </div>
         </div>
     </div>
+
+    <!-- Message container should be outside tabs -->
+    <div id="messageContainer"></div>
 </div>
 
 <!-- Loading spinner -->
@@ -342,8 +340,6 @@
 
 {% block extra_js %}
 {{ block.super }}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <script>
         const searchPersonsUrl = '{{ search_persons_url }}';
@@ -351,6 +347,8 @@
         const submitUrl = '{{ submit_url }}';
         {% if initial_data %}
         const initialData = {{ initial_data|safe }};
+        {% else %}
+        const initialData = null;
         {% endif %}
     </script>
     <script src="{% static 'js/observation_management.js' %}"></script>

@@ -3751,6 +3751,15 @@ class ObservationManagementView(LoginRequiredMixin, TemplateView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        observation_id = self.kwargs.get('observation_id')
+        if observation_id:
+            observation_data_view = ObservationDataView()
+            response = observation_data_view.get(self.request, observation_id)
+            if response.status_code == 200:
+                data = json.loads(response.content)
+                if data['status'] == 'success':
+                    context['initial_data'] = json.dumps(data['data'])
+        
         context.update({
             'places': TrtPlaces.objects.all(),
             'damage_codes': TrtDamageCodes.objects.all(),
@@ -3765,6 +3774,7 @@ class ObservationManagementView(LoginRequiredMixin, TemplateView):
             'egg_count_method_options': TrtEggCountMethods.objects.all(),
             'search_persons_url': reverse('wamtram2:search-persons'),
             'search_places_url': reverse('wamtram2:search-places'),
+            'submit_url': reverse('wamtram2:observation_detail', kwargs={'observation_id': observation_id}) if observation_id else reverse('wamtram2:observation_detail'),
         })
         return context
 
@@ -3847,7 +3857,7 @@ class ObservationDataView(LoginRequiredMixin, View):
             'basic_info': {
                 'observation_id': observation.observation_id,
                 'turtle_id': observation.turtle_id,
-                'observation_date': observation.observation_date.strftime('%Y-%m-%dT%H:%M') if observation.observation_date else '',
+                'observation_date': observation.observation_date.strftime('%Y-%m-%dT%H:%M') if observation.observation_date else '', 
                 'alive': str(observation.alive.code) if observation.alive else '',
                 'nesting': str(observation.nesting.code) if observation.nesting else '',
                 'activity_code': str(observation.activity_code.activity_code) if observation.activity_code else '',

@@ -2,12 +2,12 @@ $(document).ready(function() {
     initializeBasicSelects();
     initializeSearchSelects();
     // If initialData is defined, set initial form values
-    if (typeof initialData !== 'undefined') {
+    if (typeof initialData !== 'undefined' && initialData) {
         setInitialFormValues();
     }
 });
 
-// Initialize basic selects
+// Initialize basic select elements
 function initializeBasicSelects() {
     const basicSelects = [
         'alive',
@@ -27,9 +27,9 @@ function initializeBasicSelects() {
     });
 }
 
-// Initialize search selects
+// Initialize search select elements
 function initializeSearchSelects() {
-    // Initialize person search
+    // Initialize person searches
     initializePersonSearch('measurer_person', 'Search measurer...');
     initializePersonSearch('measurer_reporter_person', 'Search measurer reporter...');
     initializePersonSearch('tagger_person', 'Search tagger...');
@@ -39,7 +39,7 @@ function initializeSearchSelects() {
     initializePlaceSearch();
 }
 
-// Initialize person search
+// Initialize person search select with AJAX
 function initializePersonSearch(fieldName, placeholder) {
     $(`select[name="${fieldName}"]`).select2({
         ajax: {
@@ -69,7 +69,7 @@ function initializePersonSearch(fieldName, placeholder) {
     });
 }
 
-// Initialize place search
+// Initialize place search select with AJAX
 function initializePlaceSearch() {
     $('select[name="place_code"]').select2({
         ajax: {
@@ -99,82 +99,234 @@ function initializePlaceSearch() {
     });
 }
 
-// Set initial form values
+// Set all initial form values
 function setInitialFormValues() {
-    // Set basic fields
     setBasicFields();
-    // Set search fields
-    setSearchFields();
+    setTagInfo();
+    setMeasurements();
+    setDamageRecords();
+    setLocationInfo();
 }
 
-// Set basic fields
+// Set basic form fields
 function setBasicFields() {
-    if (initialData.observation_date) {
-        const dateTime = initialData.observation_date.replace(' ', 'T');
-        $('[name="observation_date"]').val(dateTime);
-    }
-    const basicFields = {
-        'observation_id': '',
-        'observation_date': '',
-        'observation_time': '',
-        'alive': '',
-        'nesting': '',
-        'activity_code': '',
-        'beach_position_code': '',
-        'condition_code': '',
-        'egg_count_method': '',
-        'datum_code': '',
-        'clutch_completed': '',
-        'place_description': '',
-        'action_taken': '',
-        'comments': '',
-        'latitude': '',
-        'longitude': '',
-        'observation_status': '',
-        'turtle_id': '',
-        'entered_by': ''
-    };
+    const basicInfo = initialData.basic_info;
+    if (!basicInfo) return;
 
-    Object.keys(basicFields).forEach(fieldName => {
-        if (initialData[fieldName]) {
+    // Set date/time
+    if (basicInfo.observation_date) {
+        $('[name="observation_date"]').val(basicInfo.observation_date);
+    }
+
+    // Set other basic fields
+    const basicFields = [
+        'observation_id', 'turtle_id', 'alive', 'nesting',
+        'activity_code', 'beach_position_code', 'condition_code',
+        'egg_count_method', 'status', 'comments'
+    ];
+
+    basicFields.forEach(fieldName => {
+        if (basicInfo[fieldName] !== undefined) {
             const $field = $(`[name="${fieldName}"]`);
-            if ($field.is('select')) {
-                $field.val(initialData[fieldName]).trigger('change');
-            } else {
-                $field.val(initialData[fieldName]);
+            if ($field.length) {
+                if ($field.is('select')) {
+                    $field.val(basicInfo[fieldName]).trigger('change');
+                } else {
+                    $field.val(basicInfo[fieldName]);
+                }
             }
         }
     });
 }
 
-// Set search fields
-function setSearchFields() {
-    // Set person fields
-    setPersonField('measurer_person');
-    setPersonField('measurer_reporter_person');
-    setPersonField('tagger_person');
-    setPersonField('reporter_person');
+// Set measurements data and render measurement cards
+function setMeasurements() {
+    const measurementContainer = document.getElementById('measurementContainer');
+    if (!measurementContainer || !initialData.measurements) return;
+    
+    measurementContainer.innerHTML = '';
 
-    // Set place field
-    setPlaceField();
-}
-
-// Set person field
-function setPersonField(fieldName) {
-    if (initialData[fieldName]) {
-        const $field = $(`select[name="${fieldName}"]`);
-        const personName = initialData[`${fieldName}_name`];
-        const option = new Option(personName, initialData[fieldName], true, true);
-        $field.append(option).trigger('change');
+    if (initialData.measurements.length === 0) {
+        measurementContainer.innerHTML = '<p class="text-muted">No measurements found</p>';
+        return;
     }
+
+    initialData.measurements.forEach(measurement => {
+        const measurementHtml = `
+            <div class="card mb-3 measurement-card">
+                <div class="card-body">
+                    <div class="form-row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Measurement Type</label>
+                                <input type="text" class="form-control" name="measurement_type" value="${measurement.measurement_type}" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Value</label>
+                                <input type="number" step="0.1" class="form-control" name="measurement_value" value="${measurement.measurement_value}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        measurementContainer.insertAdjacentHTML('beforeend', measurementHtml);
+    });
 }
 
-// Set place field
-function setPlaceField() {
-    if (initialData.place_code) {
-        const $place = $('select[name="place_code"]');
-        const option = new Option(initialData.place_description, initialData.place_code, true, true);
-        $place.append(option).trigger('change');
+// Set damage records data and render damage cards
+function setDamageRecords() {
+    const damageContainer = document.getElementById('damageContainer');
+    if (!damageContainer || !initialData.damage_records) return;
+
+    damageContainer.innerHTML = '';
+
+    if (initialData.damage_records.length === 0) {
+        damageContainer.innerHTML = '<p class="text-muted">No damage records found</p>';
+        return;
+    }
+
+    initialData.damage_records.forEach(damage => {
+        const damageHtml = `
+            <div class="card mb-3 damage-card">
+                <div class="card-body">
+                    <div class="form-row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Body Part</label>
+                                <input type="text" class="form-control" name="body_part" value="${damage.body_part || ''}">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Damage Code</label>
+                                <input type="text" class="form-control" name="damage_code" value="${damage.damage_code || ''}">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Damage Cause</label>
+                                <input type="text" class="form-control" name="damage_cause_code" value="${damage.damage_cause_code || ''}">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Comments</label>
+                                <input type="text" class="form-control" name="damage_comments" value="${damage.comments || ''}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        damageContainer.insertAdjacentHTML('beforeend', damageHtml);
+    });
+}
+
+// Set location information
+function setLocationInfo() {
+    const location = initialData.location;
+    if (!location) return;
+
+    const locationFields = ['place_code', 'datum_code', 'latitude', 'longitude'];
+    locationFields.forEach(fieldName => {
+        if (location[fieldName] && location[fieldName] !== 'None') {
+            const $field = $(`[name="${fieldName}"]`);
+            if ($field.length) {
+                if ($field.is('select')) {
+                    if (fieldName === 'place_code') {
+                        const option = new Option(location.place_description || location.place_code, 
+                                               location.place_code, true, true);
+                        $field.append(option).trigger('change');
+                    } else {
+                        $field.val(location[fieldName]).trigger('change');
+                    }
+                } else {
+                    $field.val(location[fieldName]);
+                }
+            }
+        }
+    });
+}
+
+// Set tag info
+function setTagInfo() {
+    // Regular tags
+    const tagContainer = document.getElementById('tagContainer');
+    if (tagContainer && initialData.tag_info?.recorded_tags) {
+        tagContainer.innerHTML = '';
+        initialData.tag_info.recorded_tags.forEach(tag => {
+            const tagHtml = `
+                <div class="card mb-3 tag-card">
+                    <div class="card-body">
+                        <div class="form-row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Tag ID</label>
+                                    <input type="text" class="form-control" name="tag_id" value="${tag.tag_id || ''}" >
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Side</label>
+                                    <input type="text" class="form-control" name="tag_side" value="${tag.tag_side || ''}" >
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Position</label>
+                                    <input type="text" class="form-control" name="tag_position" value="${tag.tag_position || ''}" >
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>State</label>
+                                    <input type="text" class="form-control" name="tag_state" value="${tag.tag_state || ''}" >
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            tagContainer.insertAdjacentHTML('beforeend', tagHtml);
+        });
+    }
+
+    // PIT tags
+    const pitTagContainer = document.getElementById('pitTagContainer');
+    if (pitTagContainer && initialData.tag_info?.recorded_pit_tags) {
+        pitTagContainer.innerHTML = '';
+        initialData.tag_info.recorded_pit_tags.forEach(pitTag => {
+            const pitTagHtml = `
+                <div class="card mb-3 pit-tag-card">
+                    <div class="card-body">
+                        <div class="form-row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>PIT Tag ID</label>
+                                    <input type="text" class="form-control" name="pittag_id" value="${pitTag.tag_id || ''}" >
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Position</label>
+                                    <input type="text" class="form-control" name="pit_tag_position" value="${pitTag.tag_position || ''}" >
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>State</label>
+                                    <input type="text" class="form-control" name="pit_tag_state" value="${pitTag.tag_state || ''}" >
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            pitTagContainer.insertAdjacentHTML('beforeend', pitTagHtml);
+        });
     }
 }
 
@@ -182,7 +334,10 @@ function setPlaceField() {
 function handleFormSubmit() {
     const formData = {
         basic_info: getBasicInfo(),
-        // Other data parts can be added as needed
+        tag_info: getTagInfo(),
+        measurements: getMeasurements(),
+        damage_records: getDamageRecords(),
+        location: getLocationInfo()
     };
 
     $.ajax({
@@ -195,56 +350,127 @@ function handleFormSubmit() {
         },
         success: function(response) {
             if (response.status === 'success') {
-                // Handle success response
                 showSuccessMessage('Observation saved successfully');
             } else {
-                // Handle error response
                 showErrorMessage(response.message || 'Error saving observation');
             }
         },
         error: function(xhr) {
-            // Handle error response
             showErrorMessage('Error saving observation');
         }
     });
 }
 
-// Get basic info
+// Get basic information from form
 function getBasicInfo() {
     const observationDateTime = $('[name="observation_date"]').val();
     return {
         observation_id: $('[name="observation_id"]').val(),
         observation_date: observationDateTime,
-        observation_time: observationDateTime,  
         alive: $('[name="alive"]').val(),
         nesting: $('[name="nesting"]').val(),
         activity_code: $('[name="activity_code"]').val(),
         beach_position_code: $('[name="beach_position_code"]').val(),
         condition_code: $('[name="condition_code"]').val(),
         egg_count_method: $('[name="egg_count_method"]').val(),
-        datum_code: $('[name="datum_code"]').val(),
-        measurer_person: $('[name="measurer_person"]').val(),
-        measurer_reporter_person: $('[name="measurer_reporter_person"]').val(),
-        tagger_person: $('[name="tagger_person"]').val(),
-        reporter_person: $('[name="reporter_person"]').val(),
+        status: $('[name="status"]').val(),
+        comments: $('[name="comments"]').val()
+    };
+}
+
+// Get measurements from form
+function getMeasurements() {
+    const measurements = [];
+    $('.measurement-card').each(function() {
+        measurements.push({
+            measurement_type: $(this).find('[name="measurement_type"]').val(),
+            measurement_value: $(this).find('[name="measurement_value"]').val()
+        });
+    });
+    return measurements;
+}
+
+// Get damage records from form
+function getDamageRecords() {
+    const damageRecords = [];
+    $('.damage-card').each(function() {
+        damageRecords.push({
+            body_part: $(this).find('[name="body_part"]').val(),
+            damage_code: $(this).find('[name="damage_code"]').val(),
+            damage_cause_code: $(this).find('[name="damage_cause_code"]').val(),
+            comments: $(this).find('[name="damage_comments"]').val()
+        });
+    });
+    return damageRecords;
+}
+
+// Get location information from form
+function getLocationInfo() {
+    return {
         place_code: $('[name="place_code"]').val(),
-        clutch_completed: $('[name="clutch_completed"]').val(),
-        place_description: $('[name="place_description"]').val(),
-        action_taken: $('[name="action_taken"]').val(),
-        comments: $('[name="comments"]').val(),
+        datum_code: $('[name="datum_code"]').val(),
         latitude: $('[name="latitude"]').val(),
         longitude: $('[name="longitude"]').val()
     };
 }
 
+// Add getTagInfo function
+function getTagInfo() {
+    const tagInfo = {
+        recorded_tags: [],
+        recorded_pit_tags: []
+    };
+    
+    // Get regular tags
+    $('.tag-card').each(function() {
+        tagInfo.recorded_tags.push({
+            tag_id: $(this).find('[name="tag_id"]').val(),
+            tag_side: $(this).find('[name="tag_side"]').val(),
+            tag_position: $(this).find('[name="tag_position"]').val(),
+            tag_state: $(this).find('[name="tag_state"]').val()
+        });
+    });
+    
+    // Get PIT tags
+    $('.pit-tag-card').each(function() {
+        tagInfo.recorded_pit_tags.push({
+            tag_id: $(this).find('[name="pittag_id"]').val(),
+            tag_position: $(this).find('[name="pit_tag_position"]').val(),
+            tag_state: $(this).find('[name="pit_tag_state"]').val()
+        });
+    });
+    
+    return tagInfo;
+}
+
 // Show success message
 function showSuccessMessage(message) {
-    // Implement message display logic
-    console.log('Success:', message);
+    const alertHtml = `
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    `;
+    $('#messageContainer').html(alertHtml);
+    setTimeout(() => {
+        $('.alert').alert('close');
+    }, 3000);
 }
 
 // Show error message
 function showErrorMessage(message) {
-    // Implement error message display logic
-    console.error('Error:', message);
+    const alertHtml = `
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    `;
+    $('#messageContainer').html(alertHtml);
+    setTimeout(() => {
+        $('.alert').alert('close');
+    }, 3000);
 }
