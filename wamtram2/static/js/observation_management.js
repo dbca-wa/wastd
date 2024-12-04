@@ -160,11 +160,12 @@ function setMeasurements() {
                             <div class="form-group">
                                 <label>Measurement Type</label>
                                 <select class="form-control" name="measurement_type">
-                                    {% for measurement_type in measurement_type_choices %}
-                                        <option value="{{ measurement_type.measurement_type }}" ${measurement.measurement_type === '{{ measurement_type.measurement_type }}' ? 'selected' : ''}>
-                                            {{ measurement_type.description }}
+                                    <option value="">Select...</option>
+                                    ${measurementTypeChoices.map(type => `
+                                        <option value="${type.measurement_type}" ${measurement.measurement_type === type.measurement_type ? 'selected' : ''}>
+                                            ${type.description}
                                         </option>
-                                    {% endfor %}
+                                    `).join('')}
                                 </select>
                             </div>
                         </div>
@@ -186,7 +187,7 @@ function setMeasurements() {
 function setDamageRecords() {
     const damageContainer = document.getElementById('damageContainer');
     if (!damageContainer || !initialData.damage_records) return;
-
+    
     damageContainer.innerHTML = '';
 
     if (initialData.damage_records.length === 0) {
@@ -203,11 +204,12 @@ function setDamageRecords() {
                             <div class="form-group">
                                 <label>Body Part</label>
                                 <select class="form-control" name="body_part">
-                                    {% for body_part in body_parts_choices %}
-                                        <option value="{{ body_part.body_part }}" ${damage.body_part === '{{ body_part.body_part }}' ? 'selected' : ''}>
-                                            {{ body_part.description }}
+                                    <option value="">Select...</option>
+                                    ${bodyPartsChoices.map(part => `
+                                        <option value="${part.body_part}" ${damage.body_part === part.body_part ? 'selected' : ''}>
+                                            ${part.description}
                                         </option>
-                                    {% endfor %}
+                                    `).join('')}
                                 </select>
                             </div>
                         </div>
@@ -215,11 +217,12 @@ function setDamageRecords() {
                             <div class="form-group">
                                 <label>Damage Code</label>
                                 <select class="form-control" name="damage_code">
-                                    {% for damage_code in damage_codes_choices %}
-                                        <option value="{{ damage_code.damage_code }}" ${damage.damage_code === '{{ damage_code.damage_code }}' ? 'selected' : ''}>
-                                            {{ damage_code.description }}
+                                    <option value="">Select...</option>
+                                    ${damageCodesChoices.map(code => `
+                                        <option value="${code.damage_code}" ${damage.damage_code === code.damage_code ? 'selected' : ''}>
+                                            ${code.description}
                                         </option>
-                                    {% endfor %}
+                                    `).join('')}
                                 </select>
                             </div>
                         </div>
@@ -227,11 +230,12 @@ function setDamageRecords() {
                             <div class="form-group">
                                 <label>Damage Cause</label>
                                 <select class="form-control" name="damage_cause_code">
-                                    {% for damage_cause in damage_cause_choices %}
-                                        <option value="{{ damage_cause.damage_cause_code }}" ${damage.damage_cause_code === '{{ damage_cause.damage_cause_code }}' ? 'selected' : ''}>
-                                            {{ damage_cause.description }}
+                                    <option value="">Select...</option>
+                                    ${damageCauseChoices.map(cause => `
+                                        <option value="${cause.damage_cause_code}" ${damage.damage_cause_code === cause.damage_cause_code ? 'selected' : ''}>
+                                            ${cause.description}
                                         </option>
-                                    {% endfor %}
+                                    `).join('')}
                                 </select>
                             </div>
                         </div>
@@ -315,11 +319,12 @@ function setTagInfo() {
                                 <div class="form-group">
                                     <label>State</label>
                                     <select class="form-control" name="tag_state">
-                                        {% for tag_state in tag_states_choices %}
-                                            <option value="{{ tag_state.tag_state }}" ${tag.tag_state === '{{ tag_state.tag_state }}' ? 'selected' : ''}>
-                                                {{ tag_state.description }}
+                                        <option value="">Select...</option>
+                                        ${tagStateChoices.map(state => `
+                                            <option value="${state.tag_state}" ${tag.tag_state === state.tag_state ? 'selected' : ''}>
+                                                ${state.description}
                                             </option>
-                                        {% endfor %}
+                                        `).join('')}
                                     </select>
                                 </div>
                             </div>
@@ -359,11 +364,12 @@ function setTagInfo() {
                                 <div class="form-group">
                                     <label>State</label>
                                     <select class="form-control" name="pit_tag_state">
-                                        {% for pit_tag_state in pit_tag_state_choices %}
-                                            <option value="{{ pit_tag_state.pit_tag_state }}" ${pitTag.tag_state === '{{ pit_tag_state.pit_tag_state }}' ? 'selected' : ''}>
-                                                {{ pit_tag_state.description }}
+                                        <option value="">Select...</option>
+                                        ${pitTagStateChoices.map(state => `
+                                            <option value="${state.pit_tag_state}" ${pitTag.tag_state === state.pit_tag_state ? 'selected' : ''}>
+                                                ${state.description}
                                             </option>
-                                        {% endfor %}
+                                        `).join('')}
                                     </select>
                                 </div>
                             </div>
