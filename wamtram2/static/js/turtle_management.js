@@ -330,12 +330,6 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <input type="text" class="form-control" name="identification_comments" value="${ident.comments || ''}" readonly>
                                 </div>
                             </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label>Observation ID</label>
-                                    <a href="/api/observations/${ident.observation_id}/" class="form-control" target="_blank">${ident.observation_id}</a>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -358,6 +352,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="card mb-3 observation-card">
                     <div class="card-body">
                         <div class="form-row">
+                            <div class="col-md-1">
+                                <div class="form-group">
+                                    <label>Observation ID</label>
+                                      <a href="/wamtram2/curation/observations-management/${obs.observation_id}/"class="form-control"target="_blank">${obs.observation_id}</a>
+                                </div>
+                            </div>
                             <div class="col-md-2">
                                 <div class="form-group">
                                     <label>Date/Time</label>
@@ -382,7 +382,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <input type="text" class="form-control" name="place" value="${obs.place || ''}" >
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <div class="form-group">
                                     <label>Activity</label>
                                     <input type="text" class="form-control" name="activity" value="${obs.activity || ''}" >
