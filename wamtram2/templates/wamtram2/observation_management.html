@@ -94,7 +94,7 @@
             </div>
         </div>
         <div class="form-row">
-            <div class="col-md-3">
+            <div class="col-md-6">
                 <div class="form-group">
                     <label>Observation Date & Time</label>
                     <input type="datetime-local" class="form-control" name="observation_date" step="60">
@@ -234,7 +234,7 @@
             </div>
         </div>
         <div class="form-row">
-            <div class="col-md-12">
+            <div class="col-md-8">
                 <div class="form-group">
                     <label>Action Taken</label>
                     <input type="text" class="form-control" name="action_taken" >
@@ -245,7 +245,7 @@
             <div class="col-md-8">
                 <div class="form-group">
                     <label>Comments</label>
-                    <input type="text" class="form-control" name="comments" >
+                    <textarea type="text" class="form-control" name="comments" >
                 </div>
             </div>
         </div>
@@ -335,7 +335,6 @@
 
 <!-- Loading overlay -->
 <div class="loading-overlay"></div>
-
 {% endblock %}
 
 {% block extra_js %}
