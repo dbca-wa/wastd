@@ -3879,6 +3879,20 @@ class ObservationDataView(LoginRequiredMixin, View):
                 'text': observation.place_code.get_full_name() if observation.place_code else None
             }
     
+        tag_info = {
+            'recorded_tags': [{
+                'tag_id': tag.tag_id,
+                'tag_side': tag.tag_side,
+                'tag_position': tag.tag_position,
+                'tag_state': tag.tag_state.tag_state if tag.tag_state else None,
+            } for tag in observation.trtrecordedtags_set.all()],
+            'recorded_pit_tags': [{
+                'tag_id': tag.pittag_id,
+                'tag_position': tag.pit_tag_position,
+                'tag_state': tag.pit_tag_state.pit_tag_state if tag.pit_tag_state else None,
+            } for tag in observation.trtrecordedpittags_set.all()]
+        }
+
         return {
             'basic_info': {
                 'observation_id': observation.observation_id,
@@ -3900,20 +3914,7 @@ class ObservationDataView(LoginRequiredMixin, View):
                 'latitude': str(observation.latitude),
                 'longitude': str(observation.longitude)
             },
-            'tag_info': {
-                'recorded_tags': [{
-                    'tag_id': str(tag.tag_id),
-                    'tag_side': str(tag.side),
-                    'tag_position': str(tag.tag_position),
-                    'tag_state': str(tag.tag_state),
-                    'barnacles': str(tag.barnacles)
-                } for tag in observation.trtrecordedtags_set.all()],
-                'recorded_pit_tags': [{
-                    'tag_id': str(tag.pittag_id),
-                    'tag_position': str(tag.pit_tag_position),
-                    'tag_state': str(tag.pit_tag_state)
-                } for tag in observation.trtrecordedpittags_set.all()]
-            },
+            'tag_info': tag_info,
             'measurements': [{
                 'measurement_type': str(measurement.measurement_type.description),
                 'measurement_value': str(measurement.measurement_value)
