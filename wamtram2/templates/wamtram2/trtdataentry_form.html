@@ -980,7 +980,7 @@
     </div>
   </div>
   <!-- Summary Modal -->
-  <div class="modal fade" id="summaryModal" tabindex="-1" aria-labelledby="summaryModalLabel" aria-hidden="true">
+  <div class="modal fade" id="summaryModal" tabindex="-1" aria-labelledby="summaryModalLabel">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
@@ -1481,6 +1481,48 @@
     function removeNegativeSign() {
       this.value = this.value.replace(/^-/, '');
     }
+  });
+  document.addEventListener('DOMContentLoaded', function() {
+    const reviewButton = document.getElementById('reviewBtn');
+    const summaryModal = document.getElementById('summaryModal');
+    
+    // Save last focused element
+    let lastFocusedElement;
+    
+    // Save last focused element when modal is shown
+    $(summaryModal).on('show.bs.modal', function () {
+      lastFocusedElement = document.activeElement;
+    });
+    
+    // Restore focus to last focused element when modal is hidden
+    $(summaryModal).on('hidden.bs.modal', function () {
+      if (lastFocusedElement) {
+        lastFocusedElement.focus();
+      }
+    });
+    
+    // Handle focus cycling within the modal
+    summaryModal.addEventListener('keydown', function(e) {
+      if (e.key === 'Tab') {
+        const focusableElements = summaryModal.querySelectorAll(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        const firstFocusable = focusableElements[0];
+        const lastFocusable = focusableElements[focusableElements.length - 1];
+        
+        if (e.shiftKey) {
+          if (document.activeElement === firstFocusable) {
+            lastFocusable.focus();
+            e.preventDefault();
+          }
+        } else {
+          if (document.activeElement === lastFocusable) {
+            firstFocusable.focus();
+            e.preventDefault();
+          }
+        }
+      }
+    });
   });
 </script>
 
