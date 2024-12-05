@@ -3368,9 +3368,6 @@ class BatchCurationView(LoginRequiredMixin, PaginateMixin,ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset().order_by('-entry_batch_id')
-        
-        print(f"Total batches: {queryset.count()}")
-    
     
         queryset = queryset.select_related(
             'entered_person_id',
@@ -3384,14 +3381,12 @@ class BatchCurationView(LoginRequiredMixin, PaginateMixin,ListView):
         
         search = self.request.GET.get('search')
         if search:
-            print(f"Searching for: {search}")
             queryset = queryset.filter(
                 Q(batches_code__icontains=search) |
                 Q(comments__icontains=search) |
                 Q(entered_person_id__first_name__icontains=search) |
                 Q(entered_person_id__surname__icontains=search)
             )
-        print(f"Final query count: {queryset.count()}")
         return queryset
     
     def get_context_data(self, **kwargs):
@@ -3857,6 +3852,32 @@ class ObservationDataView(LoginRequiredMixin, View):
             }
         except TrtDamage.DoesNotExist:
             damage_data = None
+            
+        persons_data = {
+            'measurer_person': {
+                'id': observation.measurer_person.person_id if observation.measurer_person else None,
+                'text': str(observation.measurer_person) if observation.measurer_person else None
+            },
+            'measurer_reporter_person': {
+                'id': observation.measurer_reporter_person.person_id if observation.measurer_reporter_person else None,
+                'text': str(observation.measurer_reporter_person) if observation.measurer_reporter_person else None
+            },
+            'tagger_person': {
+                'id': observation.tagger_person.person_id if observation.tagger_person else None,
+                'text': str(observation.tagger_person) if observation.tagger_person else None
+            },
+            'reporter_person': {
+                'id': observation.reporter_person.person_id if observation.reporter_person else None,
+                'text': str(observation.reporter_person) if observation.reporter_person else None
+            }
+        }
+        
+        place_data = None
+        if observation.place_code:
+            place_data = {
+                'id': observation.place_code.place_code if observation.place_code else None,
+                'text': observation.place_code.get_full_name() if observation.place_code else None
+            }
     
         return {
             'basic_info': {
@@ -3869,7 +3890,15 @@ class ObservationDataView(LoginRequiredMixin, View):
                 'beach_position_code': str(observation.beach_position_code.beach_position_code) if observation.beach_position_code else '',
                 'condition_code': str(observation.condition_code.condition_code) if observation.condition_code else '',
                 'egg_count_method': str(observation.egg_count_method.egg_count_method) if observation.egg_count_method else '',
-                'status': str(observation.observation_status)
+                'status': str(observation.observation_status),
+                'measurer_person': persons_data['measurer_person'],
+                'measurer_reporter_person': persons_data['measurer_reporter_person'],
+                'tagger_person': persons_data['tagger_person'],
+                'reporter_person': persons_data['reporter_person'],
+                'place_code': place_data,
+                'datum_code': str(observation.datum_code),
+                'latitude': str(observation.latitude),
+                'longitude': str(observation.longitude)
             },
             'tag_info': {
                 'recorded_tags': [{
@@ -3891,20 +3920,11 @@ class ObservationDataView(LoginRequiredMixin, View):
             } for measurement in observation.trtmeasurements_set.all()],
 
             'damage_records': [damage_data] if damage_data else [],
-
-            'location': {
-                'place_code': str(observation.place_code),
-                'datum_code': str(observation.datum_code),
-                'latitude': str(observation.latitude),
-                'longitude': str(observation.longitude)
-            }
         }
     
     def _filter_observations(self, request):
         """Filter observations based on request parameters"""
-        print("\nStarting observation filtering")
         observations = TrtObservations.objects.all()
-        print(f"Initial queryset count: {observations.count()}")
         search_term = request.GET.get('search')
         if search_term:
             tag_parts = search_term.split()
@@ -3941,8 +3961,6 @@ class ObservationDataView(LoginRequiredMixin, View):
             'trtrecordedtags_set', 
             'trtrecordedpittags_set'
             ).distinct().order_by('-observation_date', '-observation_time')
-        print(f"Final query count: {observations.count()}")
-        print("Query SQL:", observations.query)
         
         return observations.order_by('-observation_date')
     
@@ -4035,8 +4053,6 @@ class TurtleManagementView(TemplateView):
             try:
                 data = json.loads(request.body)
                 
-                print("Received data:", data)
-                
                 turtle = TrtTurtles.objects.get(turtle_id=data['turtle_id'])
                 
                 if data.get('species'):
@@ -4066,13 +4082,11 @@ class TurtleManagementView(TemplateView):
                     'message': 'Turtle information updated successfully'
                 })
             except json.JSONDecodeError as e:
-                print("JSON decode error:", str(e))
                 return JsonResponse({
                     'status': 'error',
                     'message': 'Invalid JSON data'
                 }, status=400)
             except Exception as e:
-                print("Error:", str(e))
                 return JsonResponse({
                     'status': 'error',
                     'message': str(e)
@@ -4082,13 +4096,10 @@ class TurtleManagementView(TemplateView):
 
 
     def handle_ajax_request(self, request):
-        print("Received AJAX request with parameters:", request.GET)
         turtle_id = request.GET.get('turtle_id')
         tag_id = request.GET.get('tag_id')
         pit_tag_id = request.GET.get('pit_tag_id')
         other_id = request.GET.get('other_id')
-
-        print(f"Searching for turtle_id: {turtle_id}, tag_id: {tag_id}, pit_tag_id: {pit_tag_id}, other_id: {other_id}")
 
         queryset = None
 
@@ -4118,8 +4129,6 @@ class TurtleManagementView(TemplateView):
 
         turtle_data = []
         for turtle in queryset:
-            print(f"Processing turtle: {turtle.turtle_id}")
-            
             tags = TrtTags.objects.filter(turtle=turtle.turtle_id)
             tag_data = [{
                 'tag_id': tag.tag_id,
