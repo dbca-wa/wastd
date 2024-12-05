@@ -3368,9 +3368,6 @@ class BatchCurationView(LoginRequiredMixin, PaginateMixin,ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset().order_by('-entry_batch_id')
-        
-        print(f"Total batches: {queryset.count()}")
-    
     
         queryset = queryset.select_related(
             'entered_person_id',
@@ -3384,14 +3381,12 @@ class BatchCurationView(LoginRequiredMixin, PaginateMixin,ListView):
         
         search = self.request.GET.get('search')
         if search:
-            print(f"Searching for: {search}")
             queryset = queryset.filter(
                 Q(batches_code__icontains=search) |
                 Q(comments__icontains=search) |
                 Q(entered_person_id__first_name__icontains=search) |
                 Q(entered_person_id__surname__icontains=search)
             )
-        print(f"Final query count: {queryset.count()}")
         return queryset
     
     def get_context_data(self, **kwargs):
@@ -3932,9 +3927,7 @@ class ObservationDataView(LoginRequiredMixin, View):
     
     def _filter_observations(self, request):
         """Filter observations based on request parameters"""
-        print("\nStarting observation filtering")
         observations = TrtObservations.objects.all()
-        print(f"Initial queryset count: {observations.count()}")
         search_term = request.GET.get('search')
         if search_term:
             tag_parts = search_term.split()
@@ -3971,8 +3964,6 @@ class ObservationDataView(LoginRequiredMixin, View):
             'trtrecordedtags_set', 
             'trtrecordedpittags_set'
             ).distinct().order_by('-observation_date', '-observation_time')
-        print(f"Final query count: {observations.count()}")
-        print("Query SQL:", observations.query)
         
         return observations.order_by('-observation_date')
     
@@ -4065,8 +4056,6 @@ class TurtleManagementView(TemplateView):
             try:
                 data = json.loads(request.body)
                 
-                print("Received data:", data)
-                
                 turtle = TrtTurtles.objects.get(turtle_id=data['turtle_id'])
                 
                 if data.get('species'):
@@ -4096,13 +4085,11 @@ class TurtleManagementView(TemplateView):
                     'message': 'Turtle information updated successfully'
                 })
             except json.JSONDecodeError as e:
-                print("JSON decode error:", str(e))
                 return JsonResponse({
                     'status': 'error',
                     'message': 'Invalid JSON data'
                 }, status=400)
             except Exception as e:
-                print("Error:", str(e))
                 return JsonResponse({
                     'status': 'error',
                     'message': str(e)
@@ -4112,13 +4099,10 @@ class TurtleManagementView(TemplateView):
 
 
     def handle_ajax_request(self, request):
-        print("Received AJAX request with parameters:", request.GET)
         turtle_id = request.GET.get('turtle_id')
         tag_id = request.GET.get('tag_id')
         pit_tag_id = request.GET.get('pit_tag_id')
         other_id = request.GET.get('other_id')
-
-        print(f"Searching for turtle_id: {turtle_id}, tag_id: {tag_id}, pit_tag_id: {pit_tag_id}, other_id: {other_id}")
 
         queryset = None
 
@@ -4148,8 +4132,6 @@ class TurtleManagementView(TemplateView):
 
         turtle_data = []
         for turtle in queryset:
-            print(f"Processing turtle: {turtle.turtle_id}")
-            
             tags = TrtTags.objects.filter(turtle=turtle.turtle_id)
             tag_data = [{
                 'tag_id': tag.tag_id,

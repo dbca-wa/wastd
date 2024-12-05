@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM Content Loaded');
 
     const searchButtons = document.querySelectorAll('[id$="SearchBtn"]');
     const searchResultForm = document.getElementById('searchResultForm');
@@ -7,8 +6,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const loadingSpinner = document.querySelector('.loading-spinner');
     const loadingOverlay = document.querySelector('.loading-overlay');
     const saveButton = document.getElementById('saveTurtleBtn');
-
-    console.log('Found search buttons:', searchButtons.length);
 
     const searchTypeMapping = {
         'turtleid': 'turtle_id',
@@ -133,8 +130,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const params = new URLSearchParams();
             params.append(searchType, searchValue);
 
-            console.log('Fetching from:', `/wamtram2/api/turtle-search/?${params.toString()}`);
-
             const response = await fetch(`/wamtram2/api/turtle-search/?${params.toString()}`, {
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
@@ -142,11 +137,9 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
             const data = await response.json();
-            console.log('Search response:', data);
 
             if (data.status === 'success' && data.data.length > 0) {
                 const turtle = data.data[0];
-                console.log('Received turtle data:', turtle);
                 
                 searchResultForm.style.display = 'block';
                 
@@ -516,7 +509,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
             const data = await response.json();
-            console.log('Save response:', data);
 
             if (data.status === 'success') {
                 showAlert('Changes saved successfully!', 'success');
@@ -541,11 +533,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     searchButtons.forEach(button => {
-        console.log('Adding click listener to button:', button.id);
         button.addEventListener('click', function() {
-            console.log('Button clicked:', this.id);
             const searchInput = this.parentElement.previousElementSibling;
-            console.log('Search input:', searchInput.id, 'value:', searchInput.value);
             let searchType = searchInput.id.replace('Search', '').toLowerCase();
             searchType = searchTypeMapping[searchType] || searchType;
             const searchValue = searchInput.value.trim();
