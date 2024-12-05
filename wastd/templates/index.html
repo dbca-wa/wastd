@@ -137,12 +137,19 @@
       Browse marine wildlife incidents »
     </a>
   </p>
+  <p>
+    <a class="btn btn-primary btn-block"
+      href="{% url 'marine_mammal_incidents:incident_list' %}"
+      title="Curate and QA marine wildlife incidents">
+      Browse marine mammal incidents»
+    </a>
+  </p>
   {% if request.user.is_staff %}
   <p>
     <a class="btn btn-success btn-block"
-       href="{% url 'admin:observations_animalencounter_changelist' %}"
-       title="Curate and QA marine wildlife incidents">
-      Curate »
+      href="{% url 'admin:observations_animalencounter_changelist' %}"
+      title="Curate and QA marine wildlife incidents">
+      Curate marine wildlife incidents»
     </a>
   </p>
   {% endif %}

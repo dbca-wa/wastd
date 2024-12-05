@@ -9,8 +9,6 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View, TemplateView, ListView, DetailView, FormView, UpdateView
 from django.views.generic.detail import SingleObjectMixin
 from django_fsm_log.models import StateLog
-from django.core.exceptions import PermissionDenied
-
 
 from wastd.utils import (
     ListViewBreadcrumbMixin,
@@ -387,24 +385,12 @@ class TurtleNestEncounterList(ListViewBreadcrumbMixin, ResourceDownloadMixin, Pa
     def get_queryset(self):
         # FIXME: filtering via permissions model.
         qs = super().get_queryset()
-        if not self.request.user.is_superuser:
-            user_orgs = self.request.user.organisations.all()
-            qs = qs.filter(campaign__owner__in=user_orgs)
         return TurtleNestEncounterFilter(self.request.GET, queryset=qs).qs
-
 
 
 class TurtleNestEncounterDetail(DetailViewBreadcrumbMixin, DetailView):
     # FIXME: filtering via permissions model.
     model = TurtleNestEncounter
-    
-    def get_object(self, queryset=None):
-        obj = super().get_object(queryset)
-        if not self.request.user.is_superuser:
-            user_orgs = self.request.user.organisations.all()
-            if not obj.campaign or obj.campaign.owner not in user_orgs:
-                raise PermissionDenied("You do not have permission to view this record")
-        return obj
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

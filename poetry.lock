@@ -2558,6 +2558,7 @@ test = ["covdefaults (>=2.3)", "coverage (>=7.2.7)", "coverage-enable-subprocess
 [[package]]
 name = "vulture"
 version = "2.13"
+
 description = "Find dead code"
 optional = false
 python-versions = ">=3.8"

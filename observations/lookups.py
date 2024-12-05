@@ -405,12 +405,12 @@ NESTING_SUCCESS_CHOICES = (
 )
 NESTING_PRESENT = ("nest-with-eggs", "nest-unsure-of-eggs")
 
-NEST_AGE_DEFAULT = "unknown"
+NEST_AGE_DEFAULT = "fresh"
 NEST_AGE_CHOICES = (
-    ("fresh", "Fresh, made last night"),
+    (NEST_AGE_DEFAULT, "Fresh, made last night"),
     ("missed", "Missed turtle, made within past hours"),
     ("old", "Old, made before last night"),
-    (NEST_AGE_DEFAULT, "Unknown age"),
+    ("unknown", "Unknown age"),
 )
 
 NEST_TYPE_DEFAULT = "track-not-assessed"
