@@ -42,6 +42,9 @@ class TrtBeachPositions(models.Model):
     class Meta:
         managed = False
         db_table = "TRT_BEACH_POSITIONS"
+        
+    def __str__(self):
+        return f"{self.description}"
 
 
 class TrtBodyParts(models.Model):
@@ -2058,8 +2061,9 @@ class TrtRecordedTags(models.Model):
     side = models.CharField(
         db_column="SIDE", max_length=1, blank=True, null=True
     )  # Field name made lowercase.
-    tag_state = models.CharField(
-        db_column="TAG_STATE", max_length=10, blank=True, null=True
+    tag_state = models.ForeignKey(
+        'TrtTagStates', models.CASCADE, db_column="TAG_STATE", max_length=10,
+        blank=True, null=True
     )  # Field name made lowercase.
     comments = models.CharField(
         db_column="COMMENTS", max_length=255, blank=True, null=True
@@ -2221,7 +2225,6 @@ class TrtSpecies(models.Model):
     def __str__(self):
         return f"{self.common_name}"
     
-
 
 class TrtTags(models.Model):
     tag_id = models.CharField(
@@ -2489,6 +2492,7 @@ class TrtYesNo(models.Model):
 
     def __str__(self):
         return f"{self.description}"
+
 
 SEX_CHOICES = [
     ("F", "Female"),

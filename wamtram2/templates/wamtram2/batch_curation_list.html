@@ -156,7 +156,7 @@
     
     function viewBatch() {
         if (selectedBatchId) {
-            window.location.href = "{% url 'wamtram2:batch_entries' 0 %}".replace('0', selectedBatchId);
+            window.location.href = "{% url 'wamtram2:entries_curation' 0 %}".replace('0', selectedBatchId);
         }
     }
     
@@ -189,7 +189,7 @@ $(document).ready(function() {
 
     $('.grid-row').click(function() {
         const batchId = $(this).data('batch-id');
-        window.location.href = "{% url 'wamtram2:batch_entries' 0 %}".replace('0', batchId);
+        window.location.href = "{% url 'wamtram2:entries_curation' 0 %}".replace('0', batchId);
     });
 
     $('#saveColumnSettings').click(function() {

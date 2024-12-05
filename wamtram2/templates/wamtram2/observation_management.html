@@ -1,0 +1,354 @@
+{% extends "base_wastd.html" %}
+{% load static bootstrap4 %}
+
+{% block extra_style %}
+    {{ block.super }}
+    {{ form.media.css }}
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@ttskch/select2-bootstrap4-theme/dist/select2-bootstrap4.min.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/grid.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/observation_management.css' %}">
+    <link href="{% static 'css/search_styles.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block breadcrumbs %}
+    <!-- Breadcrumb Navigation -->
+    <nav aria-label="breadcrumb" class="d-none d-md-block">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'wamtram2:admin_tools' %}">Curation Tools</a></li>
+            <li class="breadcrumb-item active">Manage Observation</li>
+        </ol>
+    </nav>
+{% endblock %}
+
+{% block page_content_inner %}
+{% csrf_token %}
+<div class="container-fluid mt-3">
+    <div class="form-row mt-3">
+        <div class="col-12">
+            <button type="button" class="btn btn-primary" onclick="handleFormSubmit()">Save Observation</button>
+        </div>
+    </div>
+    <!-- Basic Information Section -->
+    <div class="section-card mb-3">
+        <h4>Basic Information</h4>
+        <div class="form-row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Observation ID</label>
+                    <input type="text" class="form-control readonly-field" name="observation_id" readonly>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Alive?</label>
+                    <select class="form-control" name="alive">
+                        {% for option in yes_no_choices %}
+                            <option value="{{ option.code }}">{{ option.description }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Status</label>
+                    <input type="text" class="form-control readonly-field" name="observation_status" readonly>
+                </div>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Turtle ID</label>
+                    <input type="text" class="form-control readonly-field" name="turtle_id" readonly>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label>Nesting?</label>
+                    <select class="form-control" name="nesting">
+                        {% for option in yes_no_choices %}
+                            <option value="{{ option.code }}">{{ option.description }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label>Clutch Completed?</label>
+                    <select class="form-control" name="clutch_completed">
+                        {% for option in yes_no_choices %}
+                            <option value="{{ option.code }}">{{ option.description }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Entered By</label>
+                    <input type="text" class="form-control readonly-field" name="entered_by" readonly>
+                </div>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Observation Date & Time</label>
+                    <input type="datetime-local" class="form-control" name="observation_date" step="60">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Date Entered</label>
+                    <input type="datetime-local" class="form-control" name="date_entered" >
+                </div>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Date Convention</label>
+                    <input type="datetime-local" class="form-control" name="date_convention" >
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Egg Count Method</label>
+                    <select class="form-control" name="egg_count_method">
+                        {% for option in egg_count_method_choices %}
+                            <option value="{{ option.egg_count_method }}">{{ option.description }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Datum</label>
+                    <select class="form-control" name="datum_code">
+                        {% for option in datum_code_choices %}
+                            <option value="{{ option.datum_code }}">{{ option.datum_description }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Tagger</label>
+                    <select class="form-control person-search" name="tagger_person">
+                        <option></option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Place</label>
+                    <select class="form-control place-search" name="place_code">
+                        <option></option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Latitude</label>
+                    <input type="text" class="form-control" name="latitude" >
+                </div>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Reporter</label>
+                    <select class="form-control person-search" name="reporter_person">
+                        <option></option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Activity</label>
+                    <select class="form-control" name="activity_code">
+                        {% for option in activity_code_choices %}
+                            <option value="{{ option.activity_code }}">{{ option.description }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Longitude</label>
+                    <input type="text" class="form-control" name="longitude" >
+                </div>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Measurer</label>
+                    <select class="form-control person-search" name="measurer_person">
+                        <option></option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Beach Position</label>
+                    <select class="form-control" name="beach_position_code">
+                        {% for option in beach_position_code_choices %}
+                            <option value="{{ option.beach_position_code }}">{{ option.description }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Measurer Reporter</label>
+                    <select class="form-control person-search" name="measurer_reporter_person">
+                        <option></option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Condition</label>
+                    <select class="form-control" name="condition_code">
+                        {% for option in condition_code_choices %}
+                            <option value="{{ option.condition_code }}">{{ option.description }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="col-md-8">
+                <div class="form-group">
+                    <label>Place Description</label>
+                    <input type="text" class="form-control" name="place_description" >
+                </div>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="col-md-8">
+                <div class="form-group">
+                    <label>Action Taken</label>
+                    <input type="text" class="form-control" name="action_taken" >
+                </div>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="col-md-8">
+                <div class="form-group">
+                    <label>Comments</label>
+                    <textarea type="text" class="form-control" name="comments"></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabs for Additional Information -->
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" data-toggle="tab" href="#flipperTags">Recorded Flipper Tags</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#pitTags">Recorded PIT Tags</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#otherIdentification">Recorded Other Identification</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#measurements">Measurements</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#damage">Damage</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#scars">Scars</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#otherInfo">Other Information</a>
+        </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content">
+        <div id="flipperTags" class="tab-pane active">
+            <div class="section-card">
+                <h4>Flipper Tags</h4>
+                <div id="tagContainer"></div>
+            </div>
+        </div>
+        <div id="pitTags" class="tab-pane fade">
+            <div class="section-card">
+                <h4>PIT Tags</h4>
+                <div id="pitTagContainer"></div>
+            </div>
+        </div>
+        <div id="otherIdentification" class="tab-pane fade">
+            <div class="section-card">
+                <h4>Other Identification</h4>
+                <div id="otherIdContainer"></div>
+            </div>
+        </div>
+        <div id="measurements" class="tab-pane fade">
+            <div class="section-card">
+                <h4>Measurements</h4>
+                <div id="measurementContainer"></div>
+            </div>
+        </div>
+        <div id="damage" class="tab-pane fade">
+            <div class="section-card">
+                <h4>Damage</h4>
+                <div id="damageContainer"></div>
+            </div>
+        </div>
+        <div id="scars" class="tab-pane fade">
+            <div class="section-card">
+                <h4>Scars</h4>
+                <div id="scarsContainer"></div>
+            </div>
+        </div>
+        <div id="otherInfo" class="tab-pane fade">
+            <div class="section-card">
+                <h4>Other Information</h4>
+                <div id="otherInfoContainer"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Message container should be outside tabs -->
+    <div id="messageContainer"></div>
+</div>
+
+<!-- Loading spinner -->
+<div class="loading-spinner">
+    <div class="spinner-border text-primary" role="status">
+        <span class="sr-only">Loading...</span>
+    </div>
+</div>
+
+<!-- Loading overlay -->
+<div class="loading-overlay"></div>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <script>
+        const searchPersonsUrl = '{{ search_persons_url }}';
+        const searchPlacesUrl = '{{ search_places_url }}';
+        const submitUrl = '{{ submit_url }}';
+        {% if initial_data %}
+        const initialData = {{ initial_data|safe }};
+        {% else %}
+        const initialData = null;
+        {% endif %}
+    </script>
+    <script src="{% static 'js/observation_management.js' %}"></script>
+{% endblock %} 

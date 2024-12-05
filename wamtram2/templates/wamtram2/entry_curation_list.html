@@ -102,11 +102,11 @@
         <div class="row mb-3">
             <div class="col-md-8">
                 {% if request.user.is_superuser or request.user|has_group:"WAMTRAM2_STAFF" or request.user|has_group:"WAMTRAM2_TEAM_LEADER"%}
-                <a id="validateBtn" href="{% url 'wamtram2:validate_data_entry_batch' batch_id=batch_id %}" class="btn btn-primary mr-2">
+                <a id="validateBtn" href="{% url 'wamtram2:validate_data_entry_batch' batch_id=batch_id %}?return_to=curation" class="btn btn-primary mr-2">
                     Validate this Batch</a>
                 {% endif %}
                 {% if request.user.is_superuser %}
-                <a id="processBtn" href="{% url 'wamtram2:process_data_entry_batch' batch_id=batch_id %}" class="btn btn-primary">
+                <a id="processBtn" href="{% url 'wamtram2:process_data_entry_batch' batch_id=batch_id %}?return_to=curation" class="btn btn-primary">
                     Add this batch to the database</a>
                 {% endif %}
             </div>
@@ -190,13 +190,15 @@
                                         {{ entry.get_sex_display|default:'-' }}
                                     </span>
                                     <div class="edit-mode">
-                                        <select class="form-control"
-                                                name="{{ column.field }}"
+                                        <select class="form-control" 
+                                                name="{{ column.field }}" 
                                                 data-original-value="{{ entry.sex|default:'' }}">
                                             <option value="">---------</option>
-                                            <option value="F" {% if entry.sex == 'F' %}selected{% endif %}>Female</option>
-                                            <option value="M" {% if entry.sex == 'M' %}selected{% endif %}>Male</option>
-                                            <option value="I" {% if entry.sex == 'I' %}selected{% endif %}>Indeterminate</option>
+                                            {% for value, label in sex_choices %}
+                                                <option value="{{ value }}" {% if entry.sex == value %}selected{% endif %}>
+                                                    {{ label }}
+                                                </option>
+                                            {% endfor %}
                                         </select>
                                     </div>
                                 {% elif column.field == 'place_code' %}

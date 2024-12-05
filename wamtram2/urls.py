@@ -51,6 +51,11 @@ urlpatterns = [
     path('curation/transfer-observations-by-tag/', views.TransferObservationsByTagView.as_view(), name='transfer_observations_by_tag'),
     path('curation/nesting-seasons/', views.NestingSeasonListView.as_view(), name='nesting_season_list'),
     path('curation/batches/', views.BatchCurationView.as_view(), name='batch_curation'),
-    path('curation/batch/<int:batch_id>/entries/', views.EntryCurationView.as_view(), name='batch_entries'),
+    path('curation/batch/<int:batch_id>/entries/', views.EntryCurationView.as_view(), name='entries_curation'),
     path('save-entry-changes/', views.SaveEntryChangesView.as_view(), name='save_entry_changes'),
+    path('api/observations/<int:observation_id>/', views.ObservationDataView.as_view(), name='observation_detail'),
+    path('curation/turtle-management/', views.TurtleManagementView.as_view(), name='turtle_management'),
+    path('curation/observations-management/<int:observation_id>/',views.ObservationManagementView.as_view(), name='observation_management'),
+    path('api/turtle-search/', views.TurtleManagementView.as_view(), name='turtle_search'),
+    path('api/turtle-update/', views.TurtleManagementView.as_view(), name='turtle_update'),
 ]

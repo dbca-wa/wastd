@@ -40,6 +40,7 @@ from .models import (
     TrtEntryBatches,
     TrtDataEntry,
     TrtPersons,
+    TrtBeachPositions,
     TrtObservations,
     Template,
     TrtTagStates,
@@ -55,6 +56,19 @@ from .models import (
     TrtBodyParts,
     TrtDamageCodes,
     TrtYesNo,
+    TrtRecordedTags,
+    TrtRecordedPitTags,
+    TrtMeasurements,
+    TrtDamage,
+    TrtCauseOfDeath,
+    TrtTurtleStatus,
+    TrtDocuments,
+    TrtRecordedIdentification,
+    TrtPitTagStates,
+    TrtDatumCodes,
+    TrtConditionCodes,
+    TrtDamageCauseCodes
+    
     
 )
 from .forms import TrtDataEntryForm, SearchForm, TrtEntryBatchesForm, TemplateForm, BatchesCodeForm, TrtPersonsForm, TagRegisterForm
@@ -663,7 +677,13 @@ class ValidateDataEntryBatchView(LoginRequiredMixin, View):
             messages.add_message(
                 request, messages.ERROR, "Database error: {}".format(e)
             )
-        return redirect("wamtram2:entry_batch_detail", batch_id=self.kwargs["batch_id"])
+            
+        return_to = request.GET.get('return_to')
+        
+        if return_to == 'curation':
+            return redirect("wamtram2:entries_curation", batch_id=self.kwargs["batch_id"])
+        else:
+            return redirect("wamtram2:entry_batch_detail", batch_id=self.kwargs["batch_id"])
 
 
 class DeleteEntryView(LoginRequiredMixin,DeleteView):
@@ -731,7 +751,13 @@ class ProcessDataEntryBatchView(LoginRequiredMixin, View):
             messages.add_message(
                 request, messages.ERROR, "Database error: {}".format(e)
             )
-        return redirect("wamtram2:entry_batch_detail", batch_id=self.kwargs["batch_id"])
+            
+        return_to = request.GET.get('return_to')
+        
+        if return_to == 'curation':
+            return redirect("wamtram2:entries_curation", batch_id=self.kwargs["batch_id"])
+        else:
+            return redirect("wamtram2:entry_batch_detail", batch_id=self.kwargs["batch_id"])
 
 class FindTurtleView(LoginRequiredMixin, View):
     """
@@ -1668,6 +1694,7 @@ def search_places(request):
         place['full_name'] = f"{place['place_name']} ({place['location_code__location_name']})"
     
     return JsonResponse(list(places), safe=False)
+
 
 class ExportDataView(LoginRequiredMixin, View):
     template_name = 'wamtram2/export_form.html'
@@ -3341,9 +3368,6 @@ class BatchCurationView(LoginRequiredMixin, PaginateMixin,ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset().order_by('-entry_batch_id')
-        
-        print(f"Total batches: {queryset.count()}")
-    
     
         queryset = queryset.select_related(
             'entered_person_id',
@@ -3357,14 +3381,12 @@ class BatchCurationView(LoginRequiredMixin, PaginateMixin,ListView):
         
         search = self.request.GET.get('search')
         if search:
-            print(f"Searching for: {search}")
             queryset = queryset.filter(
                 Q(batches_code__icontains=search) |
                 Q(comments__icontains=search) |
                 Q(entered_person_id__first_name__icontains=search) |
                 Q(entered_person_id__surname__icontains=search)
             )
-        print(f"Final query count: {queryset.count()}")
         return queryset
     
     def get_context_data(self, **kwargs):
@@ -3495,7 +3517,7 @@ class EntryCurationView(LoginRequiredMixin, PaginateMixin, ListView):
         
     def get_context_data(self, **kwargs):
             context = super().get_context_data(**kwargs)
-
+            context['sex_choices'] = TrtDataEntry.SEX_CHOICES
             if not context.get('object_list'):
                 context['object_list'] = []
             
@@ -3665,7 +3687,7 @@ class EntryCurationView(LoginRequiredMixin, PaginateMixin, ListView):
                 'all_columns': all_columns,
                 'visible_columns': user_columns,
                 'search_term': self.request.GET.get('search', ''),
-                'clear_url': reverse('wamtram2:batch_entries', kwargs={'batch_id': batch_id}),
+                'clear_url': reverse('wamtram2:entries_curation', kwargs={'batch_id': batch_id}),
                 'batch_id': batch_id,
             })
             
@@ -3718,6 +3740,481 @@ class SaveEntryChangesView(View):
             return JsonResponse({
                 'success': False,
                 'error': str(e)
+            })           
+
+class ObservationManagementView(LoginRequiredMixin, TemplateView):
+    template_name = 'wamtram2/observation_management.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        observation_id = self.kwargs.get('observation_id')
+        if observation_id:
+            observation_data_view = ObservationDataView()
+            response = observation_data_view.get(self.request, observation_id)
+            if response.status_code == 200:
+                data = json.loads(response.content)
+                if data['status'] == 'success':
+                    context['initial_data'] = json.dumps(data['data'])
+        
+        context.update({
+            'places': TrtPlaces.objects.all(),
+            'damage_codes_choices': TrtDamageCodes.objects.all(),
+            'damage_cause_choices': TrtDamageCauseCodes.objects.all(),
+            'activity_code_choices': TrtActivities.objects.all(),
+            'beach_position_code_choices': TrtBeachPositions.objects.all(),
+            'tag_states_choices': TrtTagStates.objects.all(),
+            'body_parts_choices': TrtBodyParts.objects.all(),
+            'yes_no_choices': TrtYesNo.objects.all(),
+            'datum_code_choices': TrtDatumCodes.objects.all(),
+            'condition_code_choices': TrtConditionCodes.objects.all(),
+            'egg_count_method_choices': TrtEggCountMethods.objects.all(),
+            'search_persons_url': reverse('wamtram2:search-persons'),
+            'search_places_url': reverse('wamtram2:search-places'),
+            'submit_url': reverse('wamtram2:observation_detail', kwargs={'observation_id': observation_id}) if observation_id else reverse('wamtram2:observation_detail'),
+            'tag_state_choices': TrtTagStates.objects.all(),
+            'pit_tag_state_choices': TrtPitTagStates.objects.all(),
+            'measurement_type_choices': TrtMeasurementTypes.objects.all(),
+        })
+        return context
+
+
+class ObservationDataView(LoginRequiredMixin, View):
+    @transaction.atomic
+    def post(self, request):
+        try:
+            data = json.loads(request.body)
+            observation_id = data.get('observation_id')
+            observation = TrtObservations.objects.get(pk=observation_id) if observation_id else TrtObservations()
+            
+            if observation_id:
+                observation = TrtObservations.objects.get(pk=observation_id)
+            else:
+                observation = TrtObservations()
+            
+            # Update basic info
+            basic_info = data.get('basic_info', {})
+            for field, value in basic_info.items():
+                if hasattr(observation, field):
+                    setattr(observation, field, value)
+            
+            if 'observation_date' in basic_info:
+                try:
+                    datetime_obj = datetime.strptime(
+                        basic_info['observation_date'], 
+                        '%Y-%m-%dT%H:%M'
+                    )
+                    observation.observation_date = datetime_obj
+                    observation.observation_time = datetime_obj
+                except ValueError as e:
+                    raise ValidationError(f"Invalid date format: {str(e)}")
+            
+            observation.save()
+            
+            # Update related records
+            self._update_tags(observation, data.get('tag_info', {}))
+            self._update_measurements(observation, data.get('measurements', []))
+            self._update_damage_records(observation, data.get('damage_records', []))
+            self._update_location(observation, data.get('location', {}))
+            
+            return JsonResponse({'status': 'success', 'observation_id': observation.observation_id})
+            
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, 
+                            status=400 if isinstance(e, ValidationError) else 500)
+
+    def get(self, request, observation_id=None):
+        try:
+            if observation_id:
+                observation = TrtObservations.objects.get(pk=observation_id)
+                return JsonResponse({
+                    'status': 'success', 
+                    'data': self._get_observation_data(observation)
+                })
+            else:
+                observations = self._filter_observations(request)
+                data = [self._get_observation_summary(obs) for obs in observations]
+                return JsonResponse({'status': 'success', 'data': data})
+                
+        except TrtObservations.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Observation not found'}, status=404)
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+        
+    def _get_observation_data(self, observation):
+        """Get full observation data"""
+        try:
+            damage = observation.trtdamage
+            damage_data = {
+                'body_part': damage.body_part.body_part if damage.body_part else None,
+                'damage_code': damage.damage_code.damage_code if damage.damage_code else None,
+                'damage_cause_code': damage.damage_cause_code.damage_cause_code if damage.damage_cause_code else None,
+                'comments': damage.comments
+            }
+        except TrtDamage.DoesNotExist:
+            damage_data = None
+            
+        persons_data = {
+            'measurer_person': {
+                'id': observation.measurer_person.person_id if observation.measurer_person else None,
+                'text': str(observation.measurer_person) if observation.measurer_person else None
+            },
+            'measurer_reporter_person': {
+                'id': observation.measurer_reporter_person.person_id if observation.measurer_reporter_person else None,
+                'text': str(observation.measurer_reporter_person) if observation.measurer_reporter_person else None
+            },
+            'tagger_person': {
+                'id': observation.tagger_person.person_id if observation.tagger_person else None,
+                'text': str(observation.tagger_person) if observation.tagger_person else None
+            },
+            'reporter_person': {
+                'id': observation.reporter_person.person_id if observation.reporter_person else None,
+                'text': str(observation.reporter_person) if observation.reporter_person else None
+            }
+        }
+        
+        place_data = None
+        if observation.place_code:
+            place_data = {
+                'id': observation.place_code.place_code if observation.place_code else None,
+                'text': observation.place_code.get_full_name() if observation.place_code else None
+            }
+    
+        return {
+            'basic_info': {
+                'observation_id': observation.observation_id,
+                'turtle_id': observation.turtle_id,
+                'observation_date': observation.observation_date.strftime('%Y-%m-%dT%H:%M') if observation.observation_date else '', 
+                'alive': str(observation.alive.code) if observation.alive else '',
+                'nesting': str(observation.nesting.code) if observation.nesting else '',
+                'activity_code': str(observation.activity_code.activity_code) if observation.activity_code else '',
+                'beach_position_code': str(observation.beach_position_code.beach_position_code) if observation.beach_position_code else '',
+                'condition_code': str(observation.condition_code.condition_code) if observation.condition_code else '',
+                'egg_count_method': str(observation.egg_count_method.egg_count_method) if observation.egg_count_method else '',
+                'status': str(observation.observation_status),
+                'measurer_person': persons_data['measurer_person'],
+                'measurer_reporter_person': persons_data['measurer_reporter_person'],
+                'tagger_person': persons_data['tagger_person'],
+                'reporter_person': persons_data['reporter_person'],
+                'place_code': place_data,
+                'datum_code': str(observation.datum_code),
+                'latitude': str(observation.latitude),
+                'longitude': str(observation.longitude)
+            },
+            'tag_info': {
+                'recorded_tags': [{
+                    'tag_id': str(tag.tag_id),
+                    'tag_side': str(tag.side),
+                    'tag_position': str(tag.tag_position),
+                    'tag_state': str(tag.tag_state),
+                    'barnacles': str(tag.barnacles)
+                } for tag in observation.trtrecordedtags_set.all()],
+                'recorded_pit_tags': [{
+                    'tag_id': str(tag.pittag_id),
+                    'tag_position': str(tag.pit_tag_position),
+                    'tag_state': str(tag.pit_tag_state)
+                } for tag in observation.trtrecordedpittags_set.all()]
+            },
+            'measurements': [{
+                'measurement_type': str(measurement.measurement_type.description),
+                'measurement_value': str(measurement.measurement_value)
+            } for measurement in observation.trtmeasurements_set.all()],
+
+            'damage_records': [damage_data] if damage_data else [],
+        }
+    
+    def _filter_observations(self, request):
+        """Filter observations based on request parameters"""
+        observations = TrtObservations.objects.all()
+        search_term = request.GET.get('search')
+        if search_term:
+            tag_parts = search_term.split()
+            q_objects = Q()
+            for part in tag_parts:
+                q_objects |= (
+                    Q(trtrecordedtags__tag_id__tag_id__exact=part) | 
+                    Q(trtrecordedpittags__pittag_id__pittag_id__exact=part) 
+                )
+            observations = observations.filter(q_objects)
+        
+        place_code = request.GET.get('place')
+        if place_code:
+            observations = observations.filter(place_code=place_code)
+        
+        date = request.GET.get('date')
+        if date:
+            try:
+                date_obj = datetime.strptime(date, '%Y-%m-%d')
+                observations = observations.filter(observation_date__date=date_obj)
+            except ValueError:
+                pass
+        
+        status = request.GET.get('status')
+        if status:
+            if status == 'Initial Nesting':
+                observations = observations.filter(nesting='Y', status='I')
+            elif status == 'Subsequent Nesting':
+                observations = observations.filter(nesting='Y', status='S')
+            elif status == 'Non-nesting':
+                observations = observations.filter(nesting='N')
+                
+        observations = observations.select_related('place_code').prefetch_related(
+            'trtrecordedtags_set', 
+            'trtrecordedpittags_set'
+            ).distinct().order_by('-observation_date', '-observation_time')
+        
+        return observations.order_by('-observation_date')
+    
+    def _get_observation_summary(self, observation):
+        """Get summary data for observation list"""
+        tags = list(observation.trtrecordedtags_set.values_list('tag_id', flat=True)) 
+        pit_tags = list(observation.trtrecordedpittags_set.values_list('pittag_id', flat=True))
+        place = observation.place_code
+        place_description = place.get_full_name() if place else ''
+        return {
+            'observation_id': observation.observation_id,
+            'turtle_id': observation.turtle_id,
+            'observation_date': observation.observation_date.strftime('%Y-%m-%d'),
+            'observation_time': observation.observation_time.strftime('%H:%M') if observation.observation_time else '',
+            'place_code': place.place_code if place else '',
+            'place_description': place_description,
+            'status': observation.observation_status,
+            'comments': observation.comments,
+            'nesting': str(observation.nesting),
+            'tags': [str(tag) for tag in tags],
+            'pit_tags': [str(tag) for tag in pit_tags],
+            'total_tags': len(tags),
+            'total_pit_tags': len(pit_tags)
+        }
+
+    # Helper methods for updating related records
+    def _update_tags(self, observation, tag_data):
+        """Update tag records"""
+        observation.trtrecordedtags_set.all().delete()
+        observation.trtrecordedpittags_set.all().delete()
+        
+        for tag in tag_data.get('recorded_tags', []):
+            TrtRecordedTags.objects.create(
+                observation=observation,
+                **tag
+            )
+        
+        for pit_tag in tag_data.get('recorded_pit_tags', []):
+            TrtRecordedPitTags.objects.create(
+                observation=observation,
+                **pit_tag
+            )
+
+    def _update_measurements(self, observation, measurements):
+        """Update measurement records"""
+        observation.trtmeasurements_set.all().delete()
+        for measurement in measurements:
+            TrtMeasurements.objects.create(
+                observation=observation,
+                **measurement
+            )
+
+    def _update_damage_records(self, observation, damage_records):
+        """Update damage records"""
+        observation.trtdamage_set.all().delete()
+        for damage in damage_records:
+            TrtDamage.objects.create(
+                observation=observation,
+                **damage
+            )
+
+    def _update_location(self, observation, location_data):
+        """Update location information"""
+        for field, value in location_data.items():
+            if hasattr(observation, field):
+                setattr(observation, field, value)
+        observation.save()
+        
+        
+class TurtleManagementView(TemplateView):
+    template_name = 'wamtram2/turtle_management.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['sex_choices'] = SEX_CHOICES
+        context['cause_of_death_choices'] = TrtCauseOfDeath.objects.all()
+        context['turtle_status_choices'] = TrtTurtleStatus.objects.all()
+        context['species_choices'] = TrtSpecies.objects.all()
+        context['location_choices'] = TrtLocations.objects.all()
+        
+        return context
+
+    def get(self, request, *args, **kwargs):
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return self.handle_ajax_request(request)
+        return super().get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            try:
+                data = json.loads(request.body)
+                
+                turtle = TrtTurtles.objects.get(turtle_id=data['turtle_id'])
+                
+                if data.get('species'):
+                    species = TrtSpecies.objects.get(species_code=data['species'])
+                    turtle.species_code = species
+                
+                if data.get('location'):
+                    location = TrtLocations.objects.get(location_code=data['location'])
+                    turtle.location = location
+                    
+                if data.get('turtle_status'):
+                    status = TrtTurtleStatus.objects.get(turtle_status=data['turtle_status'])
+                    turtle.turtle_status = status
+                    
+                if data.get('cause_of_death'):
+                    cod = TrtCauseOfDeath.objects.get(cause_of_death=data['cause_of_death'])
+                    turtle.cause_of_death = cod
+                    
+                turtle.turtle_name = data.get('turtle_name', '')
+                turtle.sex = data.get('sex', '')
+                turtle.comments = data.get('comments', '')
+                
+                turtle.save()
+                
+                return JsonResponse({
+                    'status': 'success',
+                    'message': 'Turtle information updated successfully'
+                })
+            except json.JSONDecodeError as e:
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Invalid JSON data'
+                }, status=400)
+            except Exception as e:
+                return JsonResponse({
+                    'status': 'error',
+                    'message': str(e)
+                }, status=500)
+        return super().post(request, *args, **kwargs)
+
+
+
+    def handle_ajax_request(self, request):
+        turtle_id = request.GET.get('turtle_id')
+        tag_id = request.GET.get('tag_id')
+        pit_tag_id = request.GET.get('pit_tag_id')
+        other_id = request.GET.get('other_id')
+
+        queryset = None
+
+        if turtle_id:
+            queryset = TrtTurtles.objects.filter(turtle_id=turtle_id)
+        elif tag_id:
+            turtle_ids = TrtTags.objects.filter(
+                tag_id__icontains=tag_id
+            ).values_list('turtle_id', flat=True)
+            queryset = TrtTurtles.objects.filter(turtle_id__in=turtle_ids)
+        elif pit_tag_id:
+            turtle_ids = TrtPitTags.objects.filter(
+                pittag_id__icontains=pit_tag_id
+            ).values_list('turtle_id', flat=True)
+            queryset = TrtTurtles.objects.filter(turtle_id__in=turtle_ids)
+        elif other_id:
+            turtle_ids = TrtIdentification.objects.filter(
+                identifier__icontains=other_id
+            ).values_list('turtle_id', flat=True)
+            queryset = TrtTurtles.objects.filter(turtle_id__in=turtle_ids)
+
+        if queryset is None:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'No search criteria provided'
+            })
+
+        turtle_data = []
+        for turtle in queryset:
+            tags = TrtTags.objects.filter(turtle=turtle.turtle_id)
+            tag_data = [{
+                'tag_id': tag.tag_id,
+                'side': tag.side,
+                'tag_status': tag.tag_status.description if tag.tag_status else None,
+                'issue_location': tag.issue_location,
+                'custodian_person': str(tag.custodian_person) if tag.custodian_person else None,
+                'return_date': tag.return_date.strftime('%Y-%m-%d') if tag.return_date else None,
+                'return_condition': tag.return_condition,
+                'comments': tag.comments,
+                'field_person_id': tag.field_person_id
+            } for tag in tags]
+        
+            
+            pit_tags = TrtPitTags.objects.filter(turtle=turtle.turtle_id)
+            pit_tag_data = [{
+                'pit_tag_id': tag.pittag_id,
+                'issue_location': tag.issue_location,
+                'custodian_person': str(tag.custodian_person) if tag.custodian_person else None,
+                'pit_tag_status': tag.pit_tag_status.pit_tag_status if tag.pit_tag_status else None,
+                'return_date': tag.return_date.strftime('%Y-%m-%d') if tag.return_date else None,
+                'return_condition': tag.return_condition,
+                'comments': tag.comments,
+                'field_person_id': tag.field_person_id,
+                'tag_order_id': tag.tag_order_id,
+                'batch_number': tag.batch_number,
+                'box_number': tag.box_number
+            } for tag in pit_tags]
+        
+            identifications = TrtIdentification.objects.filter(turtle=turtle.turtle_id)
+            identification_data = [{
+                'identification_type': ident.identification_type.identification_type,
+                'identifier': ident.identifier,
+                'comments': ident.comments
+            } for ident in identifications]
+            
+            observations = turtle.trtobservations_set.all()
+            observation_data = [{
+                'observation_id': obs.pk,
+                'date_time': obs.observation_date.strftime('%Y-%m-%dT%H:%M'),
+                'observation_status': obs.observation_status,
+                'alive': str(obs.alive),
+                'place': obs.place_code.get_full_name() if obs.place_code else '',
+                'nesting': str(obs.nesting),
+                'activity': str(obs.activity_code)
+            } for obs in observations]
+            
+            samples = turtle.trtsamples_set.all()
+            sample_data = [{
+                'tissue_type': sample.tissue_type.tissue_type,
+                'observation_id': sample.observation_id,
+                'sample_date': sample.sample_date.strftime('%Y-%m-%d') if sample.sample_date else '',
+                'label': sample.sample_label,
+                'comments': sample.comments
+            } for sample in samples]
+            
+            documents = TrtDocuments.objects.filter(turtle_id=turtle.turtle_id)
+            document_data = [{
+                'document_id': doc.pk,
+                'document_type': str(doc.document_type),
+                'file_name': doc.filename,
+                'person_id': str(doc.person_id)
+            } for doc in documents]
+                
+            turtle_data.append({
+                'turtle_id': turtle.turtle_id,
+                'species': turtle.species_code.species_code,
+                'turtle_name': turtle.turtle_name or '',
+                'sex': turtle.sex if turtle.sex else '',
+                'cause_of_death': turtle.cause_of_death.cause_of_death if turtle.cause_of_death else '',
+                'turtle_status': turtle.turtle_status.turtle_status if turtle.turtle_status else '',
+                'date_entered': turtle.date_entered.strftime('%Y-%m-%d') if turtle.date_entered else '',
+                'comments': turtle.comments or '',
+                'location': turtle.location_code.location_code if turtle.location_code else '',
+                'tags': tag_data,
+                'pit_tags': pit_tag_data,
+                'identifications': identification_data,
+                'observations': observation_data,
+                'samples': sample_data,
+                'documents': document_data
             })
             
-            
+
+        return JsonResponse({
+            'status': 'success',
+            'data': turtle_data
+        })
+        
+        
