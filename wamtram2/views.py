@@ -3895,6 +3895,10 @@ class ObservationDataView(LoginRequiredMixin, View):
                 'measurer_reporter_person': persons_data['measurer_reporter_person'],
                 'tagger_person': persons_data['tagger_person'],
                 'reporter_person': persons_data['reporter_person'],
+                'place_code': place_data,
+                'datum_code': str(observation.datum_code),
+                'latitude': str(observation.latitude),
+                'longitude': str(observation.longitude)
             },
             'tag_info': {
                 'recorded_tags': [{
@@ -3916,13 +3920,6 @@ class ObservationDataView(LoginRequiredMixin, View):
             } for measurement in observation.trtmeasurements_set.all()],
 
             'damage_records': [damage_data] if damage_data else [],
-
-            'location': {
-                'place_code': place_data,
-                'datum_code': str(observation.datum_code),
-                'latitude': str(observation.latitude),
-                'longitude': str(observation.longitude)
-            }
         }
     
     def _filter_observations(self, request):

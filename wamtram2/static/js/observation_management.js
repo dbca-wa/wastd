@@ -105,7 +105,6 @@ function setInitialFormValues() {
     setTagInfo();
     setMeasurements();
     setDamageRecords();
-    setLocationInfo();
 }
 
 // Set basic form fields
@@ -128,11 +127,19 @@ function setBasicFields() {
         }
     });
 
+    // Set place select
+    if (basicInfo.place_code) {
+        const $placeSelect = $('select[name="place_code"]');
+        const option = new Option(basicInfo.place_code.text, basicInfo.place_code.id, true, true);
+        $placeSelect.append(option).trigger('change');
+    }
+
     // Set other basic fields
     const basicFields = [
         'observation_id', 'turtle_id', 'alive', 'nesting',
         'activity_code', 'beach_position_code', 'condition_code',
-        'egg_count_method', 'status', 'comments'
+        'egg_count_method', 'status', 'comments',
+        'datum_code', 'latitude', 'longitude' 
     ];
 
     basicFields.forEach(fieldName => {
@@ -260,34 +267,6 @@ function setDamageRecords() {
             </div>
         `;
         damageContainer.insertAdjacentHTML('beforeend', damageHtml);
-    });
-}
-
-// Set location information
-function setLocationInfo() {
-    const location = initialData.location;
-    if (!location) return;
-
-    // Set place select
-    if (location.place_code) {
-        const $placeSelect = $('select[name="place_code"]');
-        const option = new Option(location.place_code.text, location.place_code.id, true, true);
-        $placeSelect.append(option).trigger('change');
-    }
-
-    // Set other location fields
-    const locationFields = ['datum_code', 'latitude', 'longitude'];
-    locationFields.forEach(fieldName => {
-        if (location[fieldName] && location[fieldName] !== 'None') {
-            const $field = $(`[name="${fieldName}"]`);
-            if ($field.length) {
-                if ($field.is('select')) {
-                    $field.val(location[fieldName]).trigger('change');
-                } else {
-                    $field.val(location[fieldName]);
-                }
-            }
-        }
     });
 }
 
