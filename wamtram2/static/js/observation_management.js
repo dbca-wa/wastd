@@ -118,6 +118,16 @@ function setBasicFields() {
         $('[name="observation_date"]').val(basicInfo.observation_date);
     }
 
+    // Set person fields
+    const personFields = ['measurer_person', 'measurer_reporter_person', 'tagger_person', 'reporter_person'];
+    personFields.forEach(field => {
+        if (basicInfo[field] && basicInfo[field].id) {
+            const $select = $(`select[name="${field}"]`);
+            const option = new Option(basicInfo[field].text, basicInfo[field].id, true, true);
+            $select.append(option).trigger('change');
+        }
+    });
+
     // Set other basic fields
     const basicFields = [
         'observation_id', 'turtle_id', 'alive', 'nesting',
@@ -258,19 +268,21 @@ function setLocationInfo() {
     const location = initialData.location;
     if (!location) return;
 
-    const locationFields = ['place_code', 'datum_code', 'latitude', 'longitude'];
+    // Set place select
+    if (location.place_code) {
+        const $placeSelect = $('select[name="place_code"]');
+        const option = new Option(location.place_code.text, location.place_code.id, true, true);
+        $placeSelect.append(option).trigger('change');
+    }
+
+    // Set other location fields
+    const locationFields = ['datum_code', 'latitude', 'longitude'];
     locationFields.forEach(fieldName => {
         if (location[fieldName] && location[fieldName] !== 'None') {
             const $field = $(`[name="${fieldName}"]`);
             if ($field.length) {
                 if ($field.is('select')) {
-                    if (fieldName === 'place_code') {
-                        const option = new Option(location.place_description || location.place_code, 
-                            location.place_code, true, true);
-                        $field.append(option).trigger('change');
-                    } else {
-                        $field.val(location[fieldName]).trigger('change');
-                    }
+                    $field.val(location[fieldName]).trigger('change');
                 } else {
                     $field.val(location[fieldName]);
                 }

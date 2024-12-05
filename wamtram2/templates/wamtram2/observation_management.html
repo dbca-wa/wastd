@@ -245,7 +245,7 @@
             <div class="col-md-8">
                 <div class="form-group">
                     <label>Comments</label>
-                    <textarea type="text" class="form-control" name="comments" >
+                    <textarea type="text" class="form-control" name="comments"></textarea>
                 </div>
             </div>
         </div>
@@ -349,13 +349,6 @@
         {% else %}
         const initialData = null;
         {% endif %}
-
-        const measurementTypeChoices = {{ measurement_type_choices|safe }};
-        const tagStateChoices = {{ tag_state_choices|safe }};
-        const pitTagStateChoices = {{ pit_tag_state_choices|safe }};
-        const bodyPartsChoices = {{ body_parts_choices|safe }};
-        const damageCodesChoices = {{ damage_codes_choices|safe }};
-        const damageCauseChoices = {{ damage_cause_choices|safe }};
     </script>
     <script src="{% static 'js/observation_management.js' %}"></script>
 {% endblock %} 

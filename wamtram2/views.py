@@ -3857,6 +3857,32 @@ class ObservationDataView(LoginRequiredMixin, View):
             }
         except TrtDamage.DoesNotExist:
             damage_data = None
+            
+        persons_data = {
+            'measurer_person': {
+                'id': observation.measurer_person.person_id if observation.measurer_person else None,
+                'text': str(observation.measurer_person) if observation.measurer_person else None
+            },
+            'measurer_reporter_person': {
+                'id': observation.measurer_reporter_person.person_id if observation.measurer_reporter_person else None,
+                'text': str(observation.measurer_reporter_person) if observation.measurer_reporter_person else None
+            },
+            'tagger_person': {
+                'id': observation.tagger_person.person_id if observation.tagger_person else None,
+                'text': str(observation.tagger_person) if observation.tagger_person else None
+            },
+            'reporter_person': {
+                'id': observation.reporter_person.person_id if observation.reporter_person else None,
+                'text': str(observation.reporter_person) if observation.reporter_person else None
+            }
+        }
+        
+        place_data = None
+        if observation.place_code:
+            place_data = {
+                'id': observation.place_code.place_code if observation.place_code else None,
+                'text': observation.place_code.get_full_name() if observation.place_code else None
+            }
     
         return {
             'basic_info': {
@@ -3869,7 +3895,11 @@ class ObservationDataView(LoginRequiredMixin, View):
                 'beach_position_code': str(observation.beach_position_code.beach_position_code) if observation.beach_position_code else '',
                 'condition_code': str(observation.condition_code.condition_code) if observation.condition_code else '',
                 'egg_count_method': str(observation.egg_count_method.egg_count_method) if observation.egg_count_method else '',
-                'status': str(observation.observation_status)
+                'status': str(observation.observation_status),
+                'measurer_person': persons_data['measurer_person'],
+                'measurer_reporter_person': persons_data['measurer_reporter_person'],
+                'tagger_person': persons_data['tagger_person'],
+                'reporter_person': persons_data['reporter_person'],
             },
             'tag_info': {
                 'recorded_tags': [{
@@ -3893,7 +3923,7 @@ class ObservationDataView(LoginRequiredMixin, View):
             'damage_records': [damage_data] if damage_data else [],
 
             'location': {
-                'place_code': str(observation.place_code),
+                'place_code': place_data,
                 'datum_code': str(observation.datum_code),
                 'latitude': str(observation.latitude),
                 'longitude': str(observation.longitude)
