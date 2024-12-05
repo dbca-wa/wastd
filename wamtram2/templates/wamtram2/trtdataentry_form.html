@@ -980,12 +980,13 @@
     </div>
   </div>
   <!-- Summary Modal -->
-  <div class="modal fade" 
-      id="summaryModal" 
-      tabindex="-1" 
-      role="dialog"
-      aria-labelledby="summaryModalLabel"
-      aria-modal="true">
+  <div class="modal" 
+       id="summaryModal" 
+       tabindex="-1" 
+       role="dialog"
+       aria-labelledby="summaryModalLabel"
+       aria-modal="true"
+       inert>
     <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
         <div class="modal-header">
@@ -1527,6 +1528,17 @@
         form.submit();
       });
     }
+  });
+  document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('summaryModal');
+    
+    $(modal).on('show.bs.modal', function() {
+      modal.removeAttribute('inert');
+    });
+
+    $(modal).on('hide.bs.modal', function() {
+      modal.setAttribute('inert', '');
+    });
   });
 </script>
 
