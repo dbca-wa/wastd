@@ -705,6 +705,7 @@ class DeleteEntryView(LoginRequiredMixin,DeleteView):
         batch_id = self.kwargs['batch_id']
         return reverse_lazy('wamtram2:entry_batch_detail', kwargs={'batch_id': batch_id})
 
+
 class ProcessDataEntryBatchView(LoginRequiredMixin, View):
     """
     View class for processing a data entry batch.
@@ -759,6 +760,7 @@ class ProcessDataEntryBatchView(LoginRequiredMixin, View):
         else:
             return redirect("wamtram2:entry_batch_detail", batch_id=self.kwargs["batch_id"])
 
+
 class FindTurtleView(LoginRequiredMixin, View):
     """
     View class for finding a turtle based on tag and pit tag ID.
@@ -812,7 +814,6 @@ class FindTurtleView(LoginRequiredMixin, View):
                 Q(new_pittag_id_3__pittag_id=tag_id) |
                 Q(new_pittag_id_4__pittag_id=tag_id),
                 observation_id__isnull=True,
-                turtle_id__isnull=True
             ).select_related('entry_batch', 'place_code', 'species_code').order_by('-entry_batch__entry_date').first()
 
         if batch_id:
@@ -915,7 +916,7 @@ class FindTurtleView(LoginRequiredMixin, View):
                         tag_type = "unknown_tag"
                         
                 if not turtle:
-                    new_tag_entry = TrtDataEntry.objects.filter(
+                    existing_turtle_entry = TrtDataEntry.objects.filter(
                         Q(new_left_tag_id__tag_id=tag_id) |
                         Q(new_left_tag_id_2__tag_id=tag_id) |
                         Q(new_right_tag_id__tag_id=tag_id) |
@@ -924,32 +925,86 @@ class FindTurtleView(LoginRequiredMixin, View):
                         Q(new_pittag_id_2__pittag_id=tag_id) |
                         Q(new_pittag_id_3__pittag_id=tag_id) |
                         Q(new_pittag_id_4__pittag_id=tag_id),
-                        observation_id__isnull=True,
+                        turtle_id__isnull=False,  
+                        observation_id__isnull=True
+                    ).select_related(
+                        'turtle_id', 
+                        'entry_batch', 
+                        'place_code', 
+                        'species_code'
                     ).order_by('-entry_batch__entry_date').first()
-
-                    if new_tag_entry:
-                        if any([str(new_tag_entry.new_left_tag_id).upper() == str(tag_id).upper(), 
-                                str(new_tag_entry.new_left_tag_id_2).upper() == str(tag_id).upper()]):
+                    
+                    if existing_turtle_entry:
+                        turtle = existing_turtle_entry.turtle_id
+                        if any([
+                            str(existing_turtle_entry.new_left_tag_id).upper() == str(tag_id).upper(),
+                            str(existing_turtle_entry.new_left_tag_id_2).upper() == str(tag_id).upper()
+                        ]):
                             tag_type = "recapture_tag"
                             tag_side = "L"
-                        elif any([str(new_tag_entry.new_right_tag_id).upper() == str(tag_id).upper(), 
-                                str(new_tag_entry.new_right_tag_id_2).upper() == str(tag_id).upper()]):
+                        elif any([
+                            str(existing_turtle_entry.new_right_tag_id).upper() == str(tag_id).upper(),
+                            str(existing_turtle_entry.new_right_tag_id_2).upper() == str(tag_id).upper()
+                        ]):
                             tag_type = "recapture_tag"
                             tag_side = "R"
                         else:
                             tag_type = "recapture_pit_tag"
                             tag_side = None
                     else:
-                        no_turtle_found = True
+                        new_tag_entry = TrtDataEntry.objects.filter(
+                            Q(new_left_tag_id__tag_id=tag_id) |
+                            Q(new_left_tag_id_2__tag_id=tag_id) |
+                            Q(new_right_tag_id__tag_id=tag_id) |
+                            Q(new_right_tag_id_2__tag_id=tag_id) |
+                            Q(new_pittag_id__pittag_id=tag_id) |
+                            Q(new_pittag_id_2__pittag_id=tag_id) |
+                            Q(new_pittag_id_3__pittag_id=tag_id) |
+                            Q(new_pittag_id_4__pittag_id=tag_id),
+                            observation_id__isnull=True,
+                            turtle_id__isnull=True
+                        ).select_related(
+                            'entry_batch', 
+                            'place_code', 
+                            'species_code'
+                        ).order_by('-entry_batch__entry_date').first()
+
+                        if new_tag_entry:
+                            if any([
+                                str(new_tag_entry.new_left_tag_id).upper() == str(tag_id).upper(),
+                                str(new_tag_entry.new_left_tag_id_2).upper() == str(tag_id).upper()
+                            ]):
+                                tag_type = "recapture_tag"
+                                tag_side = "L"
+                            elif any([
+                                str(new_tag_entry.new_right_tag_id).upper() == str(tag_id).upper(),
+                                str(new_tag_entry.new_right_tag_id_2).upper() == str(tag_id).upper()
+                            ]):
+                                tag_type = "recapture_tag"
+                                tag_side = "R"
+                            else:
+                                tag_type = "recapture_pit_tag"
+                                tag_side = None
+                        else:
+                            no_turtle_found = True
 
                 if turtle:
-                    # if request.POST.get('create_and_review_later'):
-                    #     response = redirect(reverse('wamtram2:existingtrtdataentry', kwargs={'batch_id': batch_id, 'turtle_id': turtle.turtle_id}))
-                    #     response = self.set_cookie(response, batch_id, tag_id, tag_type, tag_side, do_not_process=True)
-                    #     return response
-                    # else:
-                    response = redirect(reverse('wamtram2:find_turtle', kwargs={'batch_id': batch_id}))
+                    if existing_turtle_entry:
+                        response = render(request, "wamtram2/find_turtle.html", {
+                            "form": form,
+                            "turtle": turtle,
+                            "existing_turtle_entry": existing_turtle_entry,
+                            "tag_id": tag_id,
+                            "tag_type": tag_type,
+                            "tag_side": tag_side,
+                            "batch_id": batch_id,
+                            "batch": batch,
+                            "template_name": template_name,
+                        })
+                    else:
+                        response = redirect(reverse('wamtram2:find_turtle', kwargs={'batch_id': batch_id}))
                     return self.set_cookie(response, batch_id, tag_id, tag_type, tag_side)
+                                
                 elif new_tag_entry:
                     response = render(request, "wamtram2/find_turtle.html", {
                         "form": form,
@@ -3692,6 +3747,7 @@ class EntryCurationView(LoginRequiredMixin, PaginateMixin, ListView):
             })
             
             return context
+    
     def post(self, request, *args, **kwargs):
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
             visible_columns = request.POST.getlist('columns[]')
