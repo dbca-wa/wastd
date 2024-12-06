@@ -1147,7 +1147,7 @@
 
     // Prompt the user if they try to leave the page with unsaved changes
     window.addEventListener('beforeunload', function(event) {
-        if (isFormDirty) {
+        if (isFormDirty && !form.submitted) {
             event.preventDefault(); 
             event.returnValue = ''; 
             return ''; 
@@ -1157,6 +1157,7 @@
     // Handle form submission
     form.addEventListener('submit', function(event) { 
         if (form.checkValidity()) {
+            form.submitted = true;
             showLoadingOverlay();
             isFormDirty = false;
         } else {

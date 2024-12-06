@@ -2648,9 +2648,7 @@ class AvailableBatchesView(LoginRequiredMixin, View):
             
         current_batch_id = request.GET.get('current_batch_id')
         
-        batches = TrtEntryBatches.objects.filter(
-            batch_organisations__organisation__in=[org.code for org in user_orgs]
-        ).exclude(
+        batches = batches.exclude(
             entry_batch_id=current_batch_id
         ).distinct()
         
