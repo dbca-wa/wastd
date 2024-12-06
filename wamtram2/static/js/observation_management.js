@@ -276,6 +276,12 @@ function setTagInfo() {
     const tagContainer = document.getElementById('tagContainer');
     if (tagContainer && initialData.tag_info?.recorded_tags) {
         tagContainer.innerHTML = '';
+        
+        if (initialData.tag_info.recorded_tags.length === 0) {
+            tagContainer.innerHTML = '<p class="text-muted">No flipper tags found</p>';
+            return;
+        }
+
         initialData.tag_info.recorded_tags.forEach(tag => {
             const tagHtml = `
                 <div class="card mb-3 tag-card">
@@ -331,6 +337,12 @@ function setTagInfo() {
     const pitTagContainer = document.getElementById('pitTagContainer');
     if (pitTagContainer && initialData.tag_info?.recorded_pit_tags) {
         pitTagContainer.innerHTML = '';
+        
+        if (initialData.tag_info.recorded_pit_tags.length === 0) {
+            pitTagContainer.innerHTML = '<p class="text-muted">No PIT tags found</p>';
+            return;
+        }
+
         initialData.tag_info.recorded_pit_tags.forEach(pitTag => {
             const pitTagHtml = `
                 <div class="card mb-3 pit-tag-card">
@@ -344,7 +356,7 @@ function setTagInfo() {
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label>Side</label>
+                                    <label>Position</label>
                                     <select class="form-control" name="pit_tag_position">
                                         <option value="LF" ${pitTag.tag_position === 'LF' ? 'selected' : ''}>L</option>
                                         <option value="RF" ${pitTag.tag_position === 'RF' ? 'selected' : ''}>R</option>
