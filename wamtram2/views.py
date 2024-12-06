@@ -2637,7 +2637,14 @@ class AddPersonView(LoginRequiredMixin, FormView):
 
 class AvailableBatchesView(LoginRequiredMixin, View):
     def get(self, request):
-        user_orgs = request.user.organisations.all()
+        if request.user.is_superuser:
+            batches = TrtEntryBatches.objects.all()
+        else:
+            user_orgs = request.user.organisations.all()
+            batches = TrtEntryBatches.objects.filter(
+                batch_organisations__organisation__in=[org.code for org in user_orgs]
+            )
+            
         current_batch_id = request.GET.get('current_batch_id')
         
         batches = TrtEntryBatches.objects.filter(
