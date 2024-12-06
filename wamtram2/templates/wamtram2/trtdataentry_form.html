@@ -1142,12 +1142,14 @@
 
     // Handle form changes to track dirty state
     form.addEventListener('input', function() {
-        isFormDirty = true;
+      if (!isSubmitting) {
+          isFormDirty = true;
+      }
     });
 
     // Prompt the user if they try to leave the page with unsaved changes
     window.addEventListener('beforeunload', function(event) {
-        if (isFormDirty && !form.submitted) {
+        if (isFormDirty && !isSubmitting) {
             event.preventDefault(); 
             event.returnValue = ''; 
             return ''; 
@@ -1157,15 +1159,27 @@
     // Handle form submission
     form.addEventListener('submit', function(event) { 
         if (form.checkValidity()) {
-            form.submitted = true;
-            showLoadingOverlay();
-            isFormDirty = false;
+          isSubmitting = true;
+          isFormDirty = false;
+          showLoadingOverlay();
+
         } else {
-            event.preventDefault();
-            showLoadingOverlay();
-            scrollToErrors();
+          event.preventDefault();
+          showLoadingOverlay();
+          scrollToErrors();
         }
     });
+
+
+    // Handle page reload on back navigation
+    window.addEventListener('pageshow', function(event) {
+      if (event.persisted) {
+        window.location.reload();
+        isFormDirty = false;
+        isSubmitting = false;
+      }
+    });
+
 
     function scrollToErrors() {
       const errorDiv = document.querySelector('.is-invalid');
@@ -1182,13 +1196,6 @@
         if (overlay) overlay.style.display = 'block';
         if (spinner) spinner.style.display = 'block';
     }
-
-    // Handle page reload on back navigation
-    window.addEventListener('pageshow', function(event) {
-        if (event.persisted) {
-            window.location.reload();
-        }
-    });
   });
   document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('dataEntryForm');
@@ -1220,6 +1227,8 @@
     const confirmSaveButton = document.getElementById('confirmSaveButton');
     const observationDateInput = document.querySelector('input[name="observation_date"]');
     const dateErrorMessage = document.getElementById('date-error-message');
+    let isFormDirty = false;
+    let isSubmitting = false; 
 
     const labelMapping = {
         "search_entered_by": "Enterer",
@@ -1382,9 +1391,12 @@
   
     if (confirmSaveButton) {
         confirmSaveButton.addEventListener('click', function() {
-            $(summaryModal).modal('hide');
+            isSubmitting = true;  
             isFormDirty = false;
-            form.submit();
+            $(summaryModal).modal('hide');
+            setTimeout(() => { 
+                form.submit();
+            }, 100);
         });
     }
   });
