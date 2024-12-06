@@ -892,6 +892,7 @@ class FindTurtleView(LoginRequiredMixin, View):
         new_tag_entry = None
         batch = None
         template_name = "No template associated"
+        existing_turtle_entry = None
         
         if batch_id:
             batch = TrtEntryBatches.objects.filter(entry_batch_id=batch_id).first()
