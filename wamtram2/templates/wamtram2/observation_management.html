@@ -349,6 +349,10 @@
         {% else %}
         const initialData = null;
         {% endif %}
+
+        const tagStateChoices = {{ tag_states_choices|safe }};
+        const pitTagStateChoices = {{ pit_tag_state_choices|safe }};
+        const measurementTypeChoices = {{ measurement_type_choices|safe }};
     </script>
     <script src="{% static 'js/observation_management.js' %}"></script>
 {% endblock %} 
