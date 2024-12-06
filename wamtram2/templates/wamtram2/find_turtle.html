@@ -145,7 +145,7 @@
                 </a>
               </form>
             </div>
-          {% if turtle and existing_turtle_entry %}
+          {% elif existing_turtle_entry %}
             <div class="alert alert-info mt-3">
               <p>You are searching for a new tag given to an existing turtle this season. Here is the turtle information:</p>
             </div>
@@ -169,7 +169,6 @@
               <a href="{% url 'wamtram2:newtrtdataentry' batch_id=form.batch_id.value %}" 
                 class="btn btn-secondary mt-2 ml-2">No, create new record</a>
             </div>
-          {% endif %}
           {% elif new_tag_entry %}
             <div class="alert alert-info mt-3">
               <p>No existing turtle found with this tag in the database, but an entry with this tag was found within this season:</p>
