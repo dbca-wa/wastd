@@ -185,40 +185,40 @@
                                                 {% elif column.field == 'curved_carapace_width' %}number
                                                 {% else %}text{% endif %}">
 
-                            {% if column.field == 'data_entry_id' %}
-                            <span class="view-mode">
-                            <a href="{% url 'wamtram2:trtdataentry' entry_id=entry.data_entry_id %}" 
-                                        class="data-entry-link" 
-                                        target="_blank" 
-                                        rel="noopener noreferrer">
-                                        {{ entry.data_entry_id }}
-                            </a>
-                            </span>
-                            <input type="text"
-                                    class="form-control edit-mode"
-                                    value="{{ entry.data_entry_id }}"
-                                    data-original-value="{{ entry.data_entry_id }}"
-                                    readonly>
+                                {% if column.field == 'data_entry_id' %}
+                                <span class="view-mode">
+                                <a href="{% url 'wamtram2:trtdataentry' entry_id=entry.data_entry_id %}" 
+                                            class="data-entry-link" 
+                                            target="_blank" 
+                                            rel="noopener noreferrer">
+                                            {{ entry.data_entry_id }}
+                                </a>
+                                </span>
+                                <input type="text"
+                                        class="form-control edit-mode"
+                                        value="{{ entry.data_entry_id }}"
+                                        data-original-value="{{ entry.data_entry_id }}"
+                                        readonly>
 
                                 <!-- Basic Information -->
                                 {% elif column.field == 'observation_id' %}
                                 <span class="view-mode">
                                         {% if entry.observation_id %}
                                 <a href="{% url 'wamtram2:observationdetail' pk=entry.observation_id.observation_id %}" 
-                                               class="observation-link" 
-                                               target="_blank" 
-                                               rel="noopener noreferrer">
-                                                {{ entry.observation_id.observation_id }}
+                                    class="observation-link" 
+                                    target="_blank" 
+                                    rel="noopener noreferrer">
+                                        {{ entry.observation_id.observation_id }}
                                 </a>
-                                        {% else %}
-                                            -
-                                        {% endif %}
+                                    {% else %}
+                                        -
+                                    {% endif %}
                                 </span>
                                 <input type="text"
-                                        class="form-control edit-mode"
-                                        value="{{ entry.observation_id.observation_id|default:'' }}"
-                                        data-original-value="{{ entry.observation_id.observation_id|default:'' }}"
-                                        readonly>
+                                    class="form-control edit-mode"
+                                    value="{{ entry.observation_id.observation_id|default:'' }}"
+                                    data-original-value="{{ entry.observation_id.observation_id|default:'' }}"
+                                    readonly>
                                 
                                 {% elif column.field == 'turtle_id' %}
                                     <span class="view-mode">
@@ -270,16 +270,18 @@
                                     </span>
                                     <div class="edit-mode">
                                         <input type="text" 
-                                            class="search-field" 
-                                            placeholder="Search place" 
-                                            value="{{ entry.place_code.get_full_name|default:'' }}"
-                                            data-original-value="{{ entry.place_code.place_code|default:'' }}">
+                                            id="search_place_code" 
+                                            class="search-field form-control" 
+                                            placeholder="Search place"
+                                            value="{{ entry.place_code.get_full_name|default:'' }}">
                                         <input type="hidden" 
-                                            class="actual-value" 
+                                            class="actual-value"
                                             name="place_code" 
-                                            value="{{ entry.place_code.place_code|default:'' }}">
-                                        <div class="search-results"></div>
+                                            value="{{ entry.place_code.place_code|default:'' }}"
+                                            data-original-value="{{ entry.place_code.place_code|default:'' }}">
+                                        <div class="search-results" style="display:none;"></div>
                                     </div>
+                                
                                 {% elif column.field == 'observation_date' %}
                                     <span class="view-mode">
                                         {{ entry.observation_date|date:"Y-m-d"|default:"-" }}
@@ -347,7 +349,7 @@
                                 
                                 {% elif column.field == 'measurement_type_2' %}
                                     <span class="view-mode">
-                                       {{ entry.measurement_type_2.description|default:'-' }}
+                                        {{ entry.measurement_type_2.description|default:'-' }}
                                     </span>
                                     <select class="form-control edit-mode" data-original-value="{{ entry.measurement_type_2.id|default:'' }}">
                                         <option value="">---------</option>
@@ -484,10 +486,10 @@
                                             {{ entry.identification_confidence|default:'-' }}
                                     </span>
                                     <input type="text" 
-                                               class="form-control edit-mode"
-                                               value="{{ entry.identification_confidence|default:'' }}"
-                                               data-original-value="{{ entry.identification_confidence|default:'' }}">
-                                     
+                                        class="form-control edit-mode"
+                                        value="{{ entry.identification_confidence|default:'' }}"
+                                        data-original-value="{{ entry.identification_confidence|default:'' }}">
+                                    
                                 <!-- Recapture Tags -->
                                 {% elif column.field|is_tag_field:'recapture' %}
                                 <span class="view-mode">
@@ -848,19 +850,16 @@
             }
 
             let searchUrl = '';
-            if (fieldName.includes('_by_id')) {
-                searchUrl = '{% url "wamtram2:search-persons" %}';
-            } else if (fieldName === 'place_code') {
-                searchUrl = '{% url "wamtram2:search-places" %}';
-            } else {
-                return;
+            if (fieldName === 'place_code') {
+                searchUrl = '{% url "wamtram2:search_places" %}';
+            } else if (fieldName.includes('_by_id')) {
+                searchUrl = '{% url "wamtram2:search_persons" %}';
             }
 
-            $.ajax({
-                url: searchUrl,
-                data: { q: query },
-                success: function(data) {
-                    searchResults.empty();
+            $.get(searchUrl, { q: query }, function(data) {
+                searchResults.empty();
+                
+                if (data.length > 0) {
                     if (fieldName.includes('_by_id')) {
                         data.forEach(function(person) {
                             searchResults.append(
@@ -895,7 +894,7 @@
             const fieldName = searchField.closest('td').data('field');
 
             if (fieldName.includes('_by_id')) {
-                // 处理人员选择
+
                 const personId = item.data('id');
                 const personName = item.data('name');
                 searchField.val(personName);
@@ -907,7 +906,6 @@
                 }
                 editableFields[entryId][fieldName] = personId;
             } else if (fieldName === 'place_code') {
-                // 处理地点选择
                 const placeCode = item.data('code');
                 const placeName = item.data('name');
                 searchField.val(placeName);

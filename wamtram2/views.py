@@ -3805,6 +3805,7 @@ class SaveEntryChangesView(View):
                 'error': str(e)
             })           
 
+
 class ObservationManagementView(LoginRequiredMixin, TemplateView):
     template_name = 'wamtram2/observation_management.html'
     
