@@ -3495,8 +3495,9 @@ class EntryCurationView(LoginRequiredMixin, PaginateMixin, ListView):
     def get_queryset(self):
         batch_id = self.kwargs.get('batch_id')
         queryset = super().get_queryset().filter(entry_batch_id=batch_id)
-        
+            
         queryset = queryset.select_related(
+            'observation_id',
             'species_code',
             'place_code',
             'activity_code',
@@ -3608,7 +3609,7 @@ class EntryCurationView(LoginRequiredMixin, PaginateMixin, ListView):
             
             field_groups = {
                 'Basic Information': [
-                    'data_entry_id', 'comments','error_message','species_code', 'sex', 'place_code', 'observation_id', 'turtle_id',
+                    'data_entry_id', 'observation_id', 'turtle_id', 'comments','error_message','species_code', 'sex', 'place_code', 
                     'observation_date', 'observation_time', 'do_not_process', 'latitude', 'longitude',
                 ],
                 'Measurements': [

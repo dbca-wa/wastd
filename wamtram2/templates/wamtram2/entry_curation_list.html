@@ -72,6 +72,16 @@
         .turtle-link:hover {
             text-decoration: underline;
         }
+        .data-entry-link,
+        .observation-link {
+            color: #007bff;
+            text-decoration: none;
+        }
+        
+        .data-entry-link:hover,
+        .observation-link:hover {
+            text-decoration: underline;
+        }
     </style>
 {% endblock %}
 
@@ -175,25 +185,50 @@
                                                 {% elif column.field == 'curved_carapace_width' %}number
                                                 {% else %}text{% endif %}">
 
-                                {% if column.field == 'data_entry_id' %}
-                                    {{ entry.data_entry_id }}
+                            {% if column.field == 'data_entry_id' %}
+                            <span class="view-mode">
+                            <a href="{% url 'wamtram2:trtdataentry' entry_id=entry.data_entry_id %}" 
+                                        class="data-entry-link" 
+                                        target="_blank" 
+                                        rel="noopener noreferrer">
+                                        {{ entry.data_entry_id }}
+                            </a>
+                            </span>
+                            <input type="text"
+                                    class="form-control edit-mode"
+                                    value="{{ entry.data_entry_id }}"
+                                    data-original-value="{{ entry.data_entry_id }}"
+                                    readonly>
 
                                 <!-- Basic Information -->
                                 {% elif column.field == 'observation_id' %}
-                                    <span class="view-mode">
-                                        {{ entry.observation_id|default:'-' }}
-                                    </span>
-                                    <input type="text"
+                                <span class="view-mode">
+                                        {% if entry.observation_id %}
+                                <a href="{% url 'wamtram2:observationdetail' pk=entry.observation_id.observation_id %}" 
+                                               class="observation-link" 
+                                               target="_blank" 
+                                               rel="noopener noreferrer">
+                                                {{ entry.observation_id.observation_id }}
+                                </a>
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                </span>
+                                <input type="text"
                                         class="form-control edit-mode"
-                                        value="{{ entry.observation_id|default:'' }}"
-                                        data-original-value="{{ entry.observation_id|default:'' }}"
+                                        value="{{ entry.observation_id.observation_id|default:'' }}"
+                                        data-original-value="{{ entry.observation_id.observation_id|default:'' }}"
                                         readonly>
                                 
                                 {% elif column.field == 'turtle_id' %}
                                     <span class="view-mode">
-                                        <a href="{% url 'turtle_detail' entry.turtle_id %}" class="turtle-link">
-                                            {{ entry.turtle_id|default:'-' }}
-                                        </a>
+                                        {% if entry.turtle_id %}
+                                            <a href="{% url 'wamtram2:turtle_detail' entry.turtle_id %}" class="turtle-link" target="_blank" rel="noopener noreferrer">
+                                                {{ entry.turtle_id }}
+                                            </a>
+                                        {% else %}
+                                            -
+                                        {% endif %}
                                     </span>
                                     {% if column.field in editable_columns %}
                                         <span class="edit-mode" style="display: none;">
