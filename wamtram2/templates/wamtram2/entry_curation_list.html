@@ -44,6 +44,34 @@
             z-index: 1000;
         }
         
+        .sort-icon {
+            cursor: pointer;
+            margin-left: 5px;
+            color: #999;
+        }
+        
+        .sort-icon.active {
+            color: #333;
+        }
+        
+        .sort-icon.asc:after {
+            content: "↑";
+        }
+        
+        .sort-icon.desc:after {
+            content: "↓";
+        }
+        
+        .sort-icon.none:after {
+            content: "↕";
+        }
+        .turtle-link {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .turtle-link:hover {
+            text-decoration: underline;
+        }
     </style>
 {% endblock %}
 
@@ -87,11 +115,6 @@
         </div>
 
         <div class="row align-items-center mb-3">
-            <div class="col">
-                <div class="search-container">
-                    {% include "includes/search_form.html" with placeholder="Search comments or species..." %}
-                </div>
-            </div>
             <div class="col-auto">
                 {% if is_paginated %}
                     {% include "pagination.html" %}
@@ -131,7 +154,10 @@
                     <tr>
                         {% for column in all_columns %}
                             {% if column.field in visible_columns %}
-                            <th data-field="{{ column.field }}">{{ column.title }}</th>
+                            <th data-field="{{ column.field }}">
+                                {{ column.title }}
+                                <span class="sort-icon none" data-field="{{ column.field }}"></span>
+                            </th>
                             {% endif %}
                         {% endfor %}
                     </tr>
@@ -165,13 +191,15 @@
                                 
                                 {% elif column.field == 'turtle_id' %}
                                     <span class="view-mode">
-                                        {{ entry.turtle_id|default:'-' }}
+                                        <a href="{% url 'turtle_detail' entry.turtle_id %}" class="turtle-link">
+                                            {{ entry.turtle_id|default:'-' }}
+                                        </a>
                                     </span>
-                                    <input type="text"
-                                        class="form-control edit-mode"
-                                        value="{{ entry.turtle_id|default:'' }}"
-                                        data-original-value="{{ entry.turtle_id|default:'' }}"
-                                        readonly>
+                                    {% if column.field in editable_columns %}
+                                        <span class="edit-mode" style="display: none;">
+                                            <input type="text" value="{{ entry.turtle_id|default:'' }}">
+                                        </span>
+                                    {% endif %}
                                 {% elif column.field == 'species_code' %}
                                     <span class="view-mode">
                                         {{ entry.species_code.common_name|default:'-' }}
@@ -984,6 +1012,68 @@
                     $('.loading-overlay').hide();
                 }
             });
+        });
+
+        // Order by column
+        $('.sort-icon').click(function() {
+            const field = $(this).data('field');
+            const currentState = $(this).attr('class').includes('none') ? 'none' : 
+                $(this).attr('class').includes('asc') ? 'asc' : 'desc';
+            
+            // Reset all sort icons
+            $('.sort-icon').removeClass('active asc desc').addClass('none');
+            
+            // Update current sort icon state
+            let newState;
+            if (currentState === 'none') {
+                newState = 'asc';
+            } else if (currentState === 'asc') {
+                newState = 'desc';
+            } else {
+                newState = 'none';
+            }
+            
+            if (newState !== 'none') {
+                $(this).removeClass('none').addClass(`active ${newState}`);
+            }
+            
+            // Execute sorting
+            const tbody = $('table tbody');
+            const rows = tbody.find('tr').get();
+            
+            if (newState === 'none') {
+                // Restore original order
+                rows.sort((a, b) => {
+                    return $(a).data('entry-id') - $(b).data('entry-id');
+                });
+            } else {
+                rows.sort((a, b) => {
+                    let aValue = $(a).find(`td[data-field="${field}"] .view-mode`).text().trim();
+                    let bValue = $(b).find(`td[data-field="${field}"] .view-mode`).text().trim();
+                    
+                    // Sort numeric values
+                    if (!isNaN(aValue) && !isNaN(bValue)) {
+                        aValue = parseFloat(aValue) || 0;
+                        bValue = parseFloat(bValue) || 0;
+                    }
+                    
+                    // Sort date values
+                    if (field === 'observation_date') {
+                        aValue = new Date(aValue || 0);
+                        bValue = new Date(bValue || 0);
+                    }
+                    
+                    if (newState === 'asc') {
+                        return aValue > bValue ? 1 : -1;
+                    } else {
+                        return aValue < bValue ? 1 : -1;
+                    }
+                });
+            }
+            
+            // Reinsert sorted rows
+            tbody.empty();
+            rows.forEach(row => tbody.append(row));
         });
     });
 </script>

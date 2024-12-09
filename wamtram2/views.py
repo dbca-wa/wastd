@@ -3608,7 +3608,7 @@ class EntryCurationView(LoginRequiredMixin, PaginateMixin, ListView):
             
             field_groups = {
                 'Basic Information': [
-                    'data_entry_id', 'species_code', 'sex', 'place_code', 'observation_id', 'turtle_id',
+                    'data_entry_id', 'comments','error_message','species_code', 'sex', 'place_code', 'observation_id', 'turtle_id',
                     'observation_date', 'observation_time', 'do_not_process', 'latitude', 'longitude',
                 ],
                 'Measurements': [
@@ -3688,8 +3688,8 @@ class EntryCurationView(LoginRequiredMixin, PaginateMixin, ListView):
                     'tagged_by', 'tagged_by_id',
                 ],
                 'Comments': [
-                    'comments', 'turtle_comments', 'comment_fromrecordedtagstable',
-                    'error_message', 'error_number'
+                    'turtle_comments', 'comment_fromrecordedtagstable',
+                    'error_number'
                 ]
             }
     
