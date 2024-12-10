@@ -851,9 +851,9 @@
 
             let searchUrl = '';
             if (fieldName === 'place_code') {
-                searchUrl = '{% url "wamtram2:search_places" %}';
+                searchUrl = '{% url "wamtram2:search-places" %}';
             } else if (fieldName.includes('_by_id')) {
-                searchUrl = '{% url "wamtram2:search_persons" %}';
+                searchUrl = '{% url "wamtram2:search-persons" %}';
             }
 
             $.get(searchUrl, { q: query }, function(data) {
@@ -875,8 +875,8 @@
                             searchResults.append(
                                 `<div class="search-result" 
                                     data-code="${place.place_code}" 
-                                    data-name="${place.get_full_name}">
-                                    ${place.get_full_name}
+                                    data-name="${place.full_name}">
+                                    ${place.full_name} 
                                 </div>`
                             );
                         });
