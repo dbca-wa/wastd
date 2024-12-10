@@ -3763,9 +3763,8 @@ class EntryCurationView(LoginRequiredMixin, PaginateMixin, ListView):
         return HttpResponseBadRequest()
 
 
-@method_decorator(login_required, name='dispatch')
-class SaveEntryChangesView(View):
-    READONLY_FIELDS = {'data_entry_id', 'observation_id', 'created_at', 'updated_at'}
+class SaveEntryChangesView(LoginRequiredMixin, View):
+    READONLY_FIELDS = {'data_entry_id', 'observation_id'}
     
     def validate_field(self, field_name, value, entry):
         if field_name in self.READONLY_FIELDS:
@@ -3780,7 +3779,11 @@ class SaveEntryChangesView(View):
                     raise ValueError(f"{field_name} cannot be negative")
             except ValueError:
                 raise ValueError(f"Invalid number for {field_name}: {value}")
-                
+        
+        if field.get_internal_type() == 'CharField':
+            if not isinstance(value, str):
+                raise ValueError(f"Invalid string for {field_name}: {value}")
+        
         return value
 
     def post(self, request):
@@ -3803,9 +3806,7 @@ class SaveEntryChangesView(View):
             return JsonResponse({
                 'success': False,
                 'error': str(e)
-            })           
-
-
+            })
 class ObservationManagementView(LoginRequiredMixin, TemplateView):
     template_name = 'wamtram2/observation_management.html'
     

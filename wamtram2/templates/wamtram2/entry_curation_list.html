@@ -990,6 +990,8 @@
             const entryId = $(this).closest('tr').data('entry-id');
             const fieldName = $(this).closest('td').data('field');
             let newValue = $(this).val();
+
+            console.log('Field changed:', fieldName, 'New value:', newValue);
             
             if($(this).is('select')) {
                 if($(this).find('option:selected').text() === 'Yes' || $(this).find('option:selected').text() === 'No') {
