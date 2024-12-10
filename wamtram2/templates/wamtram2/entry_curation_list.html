@@ -239,10 +239,10 @@
                                     <span class="view-mode">
                                         {{ entry.species_code.common_name|default:'-' }}
                                     </span>
-                                    <select class="form-control edit-mode" data-original-value="{{ entry.species_code.id|default:'' }}">
+                                    <select class="form-control edit-mode" data-original-value="{{ entry.species_code.species_code|default:'' }}">
                                         <option value="">---------</option>
                                         {% for species in species_choices %}
-                                            <option value="{{ species.id }}" {% if entry.species_code == species %}selected{% endif %}>
+                                            <option value="{{ species.species_code }}" {% if entry.species_code == species %}selected{% endif %}>
                                                 {{ species.common_name }}
                                             </option>
                                         {% endfor %}
@@ -332,10 +332,10 @@
                                     <span class="view-mode">
                                         {{ entry.measurement_type_1.description|default:'-' }}
                                     </span>
-                                    <select class="form-control edit-mode" data-original-value="{{ entry.measurement_type_1.id|default:'' }}">
+                                    <select class="form-control edit-mode" data-original-value="{{ entry.measurement_type_1.measurement_type|default:'' }}">
                                         <option value="">---------</option>
                                         {% for type in measurement_types_choices %}
-                                            <option value="{{ type.id }}" {% if entry.measurement_type_1 == type %}selected{% endif %}>
+                                            <option value="{{ type.measurement_type }}" {% if entry.measurement_type_1 == type %}selected{% endif %}>
                                                 {{ type.description }}
                                             </option>
                                         {% endfor %}
@@ -351,10 +351,10 @@
                                     <span class="view-mode">
                                         {{ entry.measurement_type_2.description|default:'-' }}
                                     </span>
-                                    <select class="form-control edit-mode" data-original-value="{{ entry.measurement_type_2.id|default:'' }}">
+                                    <select class="form-control edit-mode" data-original-value="{{ entry.measurement_type_2.measurement_type|default:'' }}">
                                         <option value="">---------</option>
                                         {% for type in measurement_types_choices %}
-                                            <option value="{{ type.id }}" {% if entry.measurement_type_2 == type %}selected{% endif %}>
+                                            <option value="{{ type.measurement_type }}" {% if entry.measurement_type_2 == type %}selected{% endif %}>
                                                 {{ type.description }}
                                             </option>
                                         {% endfor %}
@@ -370,10 +370,10 @@
                                     <span class="view-mode">
                                         {{ entry.measurement_type_3.description|default:'-' }}
                                     </span>
-                                    <select class="form-control edit-mode" data-original-value="{{ entry.measurement_type_3.id|default:'' }}">
+                                    <select class="form-control edit-mode" data-original-value="{{ entry.measurement_type_3.measurement_type|default:'' }}">
                                         <option value="">---------</option>
                                         {% for type in measurement_types_choices %}
-                                            <option value="{{ type.id }}" {% if entry.measurement_type_3 == type %}selected{% endif %}>
+                                            <option value="{{ type.measurement_type }}" {% if entry.measurement_type_3 == type %}selected{% endif %}>
                                                 {{ type.description }}
                                             </option>
                                         {% endfor %}
@@ -389,10 +389,10 @@
                                     <span class="view-mode">
                                         {{ entry.measurement_type_4.description|default:'-' }}
                                     </span>
-                                    <select class="form-control edit-mode" data-original-value="{{ entry.measurement_type_4.id|default:'' }}">
+                                    <select class="form-control edit-mode" data-original-value="{{ entry.measurement_type_4.measurement_type|default:'' }}">
                                         <option value="">---------</option>
                                         {% for type in measurement_types_choices %}
-                                            <option value="{{ type.id }}" {% if entry.measurement_type_4 == type %}selected{% endif %}>
+                                            <option value="{{ type.measurement_type }}" {% if entry.measurement_type_4 == type %}selected{% endif %}>
                                                 {{ type.description }}
                                             </option>
                                         {% endfor %}
@@ -408,10 +408,10 @@
                                     <span class="view-mode">
                                         {{ entry.measurement_type_5.description|default:'-' }}
                                     </span>
-                                    <select class="form-control edit-mode" data-original-value="{{ entry.measurement_type_5.id|default:'' }}">
+                                    <select class="form-control edit-mode" data-original-value="{{ entry.measurement_type_5.measurement_type|default:'' }}">
                                         <option value="">---------</option>
                                         {% for type in measurement_types_choices %}
-                                            <option value="{{ type.id }}" {% if entry.measurement_type_5 == type %}selected{% endif %}>
+                                            <option value="{{ type.measurement_type }}" {% if entry.measurement_type_5 == type %}selected{% endif %}>
                                                 {{ type.description }}
                                             </option>
                                         {% endfor %}
@@ -427,11 +427,11 @@
                                     <span class="view-mode">
                                         {{ entry.measurement_type_6.description|default:'-' }}
                                     </span>
-                                    <select class="form-control edit-mode" data-original-value="{{ entry.measurement_type_6.id|default:'' }}">
+                                    <select class="form-control edit-mode" data-original-value="{{ entry.measurement_type_6.measurement_type|default:'' }}">
                                         <option value="">---------</option>
                                         {% for type in measurement_types_choices %}
-                                            <option value="{{ type.id }}" {% if entry.measurement_type_6 == type %}selected{% endif %}>
-                                                {{ type.code }} - {{ type.description }}
+                                            <option value="{{ type.measurement_type }}" {% if entry.measurement_type_6 == type %}selected{% endif %}>
+                                                {{ type.description }}
                                             </option>
                                         {% endfor %}
                                     </select>
@@ -455,10 +455,10 @@
                                     <span class="view-mode">
                                         {{ entry.activity_code.description|default:'-' }}
                                     </span>
-                                    <select class="form-control edit-mode" data-original-value="{{ entry.activity_code.id|default:'' }}">
+                                    <select class="form-control edit-mode" data-original-value="{{ entry.activity_code.activity_code|default:'' }}">
                                         <option value="">---------</option>
                                         {% for activity in activities_choices %}
-                                            <option value="{{ activity.id }}" {% if entry.activity_code == activity %}selected{% endif %}>
+                                            <option value="{{ activity.activity_code }}" {% if entry.activity_code == activity %}selected{% endif %}>
                                                 {{ activity.description }}
                                             </option>
                                         {% endfor %}
@@ -530,10 +530,10 @@
                                     <span class="view-mode">
                                         {{ entry|get_field_value:column.field}}
                                     </span>
-                                    <select class="form-control edit-mode" data-original-value="{{ entry|get_field_value:column.field|default:'' }}">
+                                    <select class="form-control edit-mode" data-original-value="{{ entry|get_field_value:column.field.tag_state|default:'' }}">
                                         <option value="">---------</option>
                                         {% for state in tag_states_choices %}
-                                            <option value="{{ state.id }}" {% if entry|get_field_value:column.field == state %}selected{% endif %}>
+                                            <option value="{{ state.tag_state }}" {% if entry|get_field_value:column.field == state %}selected{% endif %}>
                                                 {{ state.description }}
                                             </option>
                                         {% endfor %}
@@ -576,10 +576,10 @@
                                     <span class="view-mode">
                                         {{ entry|get_field_value:column.field }}
                                     </span>
-                                    <select class="form-control edit-mode" data-original-value="{{ entry|get_field_value:column.field|default:'' }}">
+                                    <select class="form-control edit-mode" data-original-value="{{ entry|get_field_value:column.field.body_part|default:'' }}">
                                         <option value="">---------</option>
                                         {% for part in body_parts_choices %}
-                                            <option value="{{ part.id }}" {% if entry|get_field_value:column.field == part %}selected{% endif %}>
+                                            <option value="{{ part.body_part }}" {% if entry|get_field_value:column.field == part %}selected{% endif %}>
                                                 {{ part.description }}
                                             </option>
                                         {% endfor %}
@@ -589,25 +589,25 @@
                                     <span class="view-mode">
                                         {{ entry|get_field_value:column.field|default:'-' }}
                                     </span>
-                                    <select class="form-control edit-mode" data-original-value="{{ entry|get_field_value:column.field|default:'' }}">
+                                    <select class="form-control edit-mode" data-original-value="{{ entry|get_field_value:column.field.damage_code|default:'' }}">
                                         <option value="">---------</option>
                                         {% for code in damage_codes_choices %}
-                                            <option value="{{ code.id }}" {% if entry|get_field_value:column.field == code %}selected{% endif %}>
+                                            <option value="{{ code.damage_code }}" {% if entry|get_field_value:column.field == code %}selected{% endif %}>
                                                 {{ code.description }}
                                             </option>
                                         {% endfor %}
                                     </select>
                                     
-                                <!-- Tissue Samples -->
-                                {% elif column.field == 'tissue_type_1' or column.field == 'tissue_type_2' %}
+                            <!-- Tissue Samples -->
+                            {% elif column.field == 'tissue_type_1' or column.field == 'tissue_type_2' %}
                                 <span class="view-mode">
                                     {{ entry|get_field_value:column.field|default:'-' }}
                                 </span>
-                                <select class="form-control edit-mode" data-original-value="{{ entry|get_field_value:column.field|default:'' }}">
+                                <select class="form-control edit-mode" data-original-value="{{ entry|get_field_value:column.field.tissue_type|default:'' }}">
                                     <option value="">---------</option>
                                     {% for type in tissue_types_choices %}
-                                        <option value="{{ type.id }}" {% if entry|get_field_value:column.field == type %}selected{% endif %}>
-                                            {{ type.code }} - {{ type.description }}
+                                        <option value="{{ type.tissue_type }}" {% if entry|get_field_value:column.field == type %}selected{% endif %}>
+                                            {{ type.description }}
                                         </option>
                                     {% endfor %}
                                 </select>
@@ -618,16 +618,6 @@
                                     </span>
                                     <input type="text" class="form-control edit-mode" value="{{ entry|get_field_value:column.field|default:'' }}" 
                                         data-original-value="{{ entry|get_field_value:column.field|default:'' }}">
-                                
-                                {% elif 'tissue_type' in column.field %}
-                                    <select class="form-control" data-original-value="{{ entry|get_field_value:column.field|default:'' }}">
-                                        <option value="">---------</option>
-                                        {% for type in tissue_types_choices %}
-                                            <option value="{{ type.id }}" {% if entry|get_field_value:column.field == type %}selected{% endif %}>
-                                                {{ type.description }}
-                                            </option>
-                                        {% endfor %}
-                                    </select>
                                 
                                 <!-- Personnel -->
                                 {% elif '_by_id' in column.field %}
