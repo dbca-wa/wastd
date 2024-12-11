@@ -542,7 +542,7 @@ class TrtDataEntry(models.Model):
         db_column="MEASUREMENT_VALUE_2", blank=True, null=True
     )  # Field name made lowercase.
     datum_code = models.CharField(
-        db_column="DATUM_CODE", max_length=5, blank=True, null=True
+        db_column="DATUM_CODE", max_length=5, blank=True, null=True, default='WGS84'
     )  # Field name made lowercase.
     zone = models.IntegerField(
         db_column="ZONE", blank=True, null=True
@@ -993,7 +993,7 @@ class TrtDataEntryExceptions(models.Model):
         db_column="NEW_RIGHT_TAG_ID", max_length=10, blank=True, null=True
     )  # Field name made lowercase.
     alive = models.CharField(
-        db_column="ALIVE", max_length=1, blank=True, null=True
+        db_column="ALIVE", max_length=1, blank=True, null=True, default='Y'
     )  # Field name made lowercase.
     place_code = models.CharField(
         db_column="PLACE_CODE", max_length=4, blank=True, null=True

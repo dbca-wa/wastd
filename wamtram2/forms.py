@@ -361,8 +361,8 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["injury_check"].label = "Injury present?"
         self.fields["scar_check"].label = "Tag scar present?"
         
-        self.fields["latitude"].label = "Latitude - (xx.xxxxxx)"
-        self.fields["longitude"].label = "Longitude (xxx.xxxxxx)"
+        self.fields["latitude"].label = "Latitude(WGS84) - (xx.xxxxxx)"
+        self.fields["longitude"].label = "Longitude(WGS84) - (xxx.xxxxxx)"
         self.fields["interrupted"].label = "Was nesting interrupted by tagging team?"
         self.fields["entered_by_id"].label = "Entered by"
         self.fields["place_code"].label = "Location/Beach"
