@@ -3833,33 +3833,86 @@ class ObservationManagementView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         observation_id = self.kwargs.get('observation_id')
+        # 默认设置为 null
+        context['initial_data'] = 'null'
         if observation_id:
-            observation_data_view = ObservationDataView()
-            response = observation_data_view.get(self.request, observation_id)
-            if response.status_code == 200:
-                data = json.loads(response.content)
-                if data['status'] == 'success':
-                    context['initial_data'] = json.dumps(data['data'])
-        
-        context.update({
-            'places': TrtPlaces.objects.all(),
-            'damage_codes_choices': TrtDamageCodes.objects.all(),
-            'damage_cause_choices': TrtDamageCauseCodes.objects.all(),
-            'activity_code_choices': TrtActivities.objects.all(),
-            'beach_position_code_choices': TrtBeachPositions.objects.all(),
-            'tag_states_choices': TrtTagStates.objects.all(),
-            'body_parts_choices': TrtBodyParts.objects.all(),
-            'yes_no_choices': TrtYesNo.objects.all(),
-            'datum_code_choices': TrtDatumCodes.objects.all(),
-            'condition_code_choices': TrtConditionCodes.objects.all(),
-            'egg_count_method_choices': TrtEggCountMethods.objects.all(),
-            'search_persons_url': reverse('wamtram2:search-persons'),
-            'search_places_url': reverse('wamtram2:search-places'),
-            'submit_url': reverse('wamtram2:observation_detail', kwargs={'observation_id': observation_id}) if observation_id else reverse('wamtram2:observation_detail'),
-            'tag_state_choices': TrtTagStates.objects.all(),
-            'pit_tag_state_choices': TrtPitTagStates.objects.all(),
-            'measurement_type_choices': TrtMeasurementTypes.objects.all(),
-        })
+            try:
+                print(f"尝试获取观察记录数据，ID: {observation_id}")  # 添加日志
+                observation_data_view = ObservationDataView()
+                response = observation_data_view.get(self.request, observation_id)
+                print(f"响应状态码: {response.status_code}")  # 添加日志
+                print(f"响应内容: {response.content}")  # 添加日志
+                if response.status_code == 200:
+                    data = json.loads(response.content)
+                    if data['status'] == 'success':
+                        context['initial_data'] = json.dumps(data['data'])
+                        print(f"成功设置 initial_data: {context['initial_data']}")  # 添加日志
+                    else:
+                        print(f"响应状态不是success: {data['status']}")  # 添加日志
+                else:
+                    print(f"响应状态码不是200: {response.status_code}")  # 添加日志
+            except Exception as e:
+                print(f"获取观察记录数据时出错: {str(e)}")  # 添加日志
+                import traceback
+                print(traceback.format_exc())  # 打印完整的错误堆栈
+        # 序列化选项数据
+        try:
+            context.update({
+                'tag_states_choices': [
+                    {
+                        'tag_state': state.tag_state,
+                        'description': state.description
+                    } for state in TrtTagStates.objects.all()
+                ],
+                'pit_tag_state_choices': [
+                    {
+                        'pit_tag_state': state.pit_tag_state,
+                        'description': state.description
+                    } for state in TrtPitTagStates.objects.all()
+                ],
+                'measurement_type_choices': [
+                    {
+                        'measurement_type': type.measurement_type,
+                        'description': type.description
+                    } for type in TrtMeasurementTypes.objects.all()
+                ],
+                'body_parts_choices': [
+                    {
+                        'body_part': part.body_part,
+                        'description': part.description
+                    } for part in TrtBodyParts.objects.all()
+                ],
+                'damage_codes_choices': [
+                    {
+                        'damage_code': code.damage_code,
+                        'description': code.description
+                    } for code in TrtDamageCodes.objects.all()
+                ],
+                'damage_cause_choices': [
+                    {
+                        'damage_cause_code': cause.damage_cause_code,
+                        'description': cause.description
+                    } for cause in TrtDamageCauseCodes.objects.all()
+                ],
+                'places': TrtPlaces.objects.all(),
+                'activity_code_choices': TrtActivities.objects.all(),
+                'beach_position_code_choices': TrtBeachPositions.objects.all(),
+                'yes_no_choices': TrtYesNo.objects.all(),
+                'datum_code_choices': TrtDatumCodes.objects.all(),
+                'condition_code_choices': TrtConditionCodes.objects.all(),
+                'egg_count_method_choices': TrtEggCountMethods.objects.all(),
+                'search_persons_url': reverse('wamtram2:search-persons'),
+                'search_places_url': reverse('wamtram2:search-places'),
+                'submit_url': reverse('wamtram2:observation_detail', kwargs={'observation_id': observation_id}) if observation_id else reverse('wamtram2:observation_detail'),
+            })
+        except Exception as e:
+            print(f"更新context时出错: {str(e)}")  # 添加日志
+            import traceback
+            print(traceback.format_exc())  # 打印完整的错误堆栈
+            
+            for key in ['tag_states_choices', 'pit_tag_state_choices', 'measurement_type_choices',
+                'body_parts_choices', 'damage_codes_choices', 'damage_cause_choices']:
+                context[key] = json.dumps(context[key])
         return context
 
 
@@ -3910,34 +3963,50 @@ class ObservationDataView(LoginRequiredMixin, View):
     def get(self, request, observation_id=None):
         try:
             if observation_id:
+                print(f"尝试获取观察记录 ID: {observation_id}")  # 添加日志
                 observation = TrtObservations.objects.get(pk=observation_id)
-                return JsonResponse({
-                    'status': 'success', 
-                    'data': self._get_observation_data(observation)
-                })
+                try:
+                    data = self._get_observation_data(observation)
+                    print(f"成功获取观察数据: {data}")  # 添加日志
+                    return JsonResponse({
+                        'status': 'success', 
+                        'data': data
+                    })
+                except Exception as e:
+                    print(f"获取观察数据时出错: {str(e)}")  # 添加日志
+                    import traceback
+                    print(traceback.format_exc())  # 打印完整的错误堆栈
+                    return JsonResponse({
+                        'status': 'error',
+                        'message': f'Error getting observation data: {str(e)}'
+                    }, status=500)
             else:
                 observations = self._filter_observations(request)
                 data = [self._get_observation_summary(obs) for obs in observations]
                 return JsonResponse({'status': 'success', 'data': data})
-                
         except TrtObservations.DoesNotExist:
-            return JsonResponse({'status': 'error', 'message': 'Observation not found'}, status=404)
+            print(f"未找到观察记录 ID: {observation_id}")  # 添加日志
+            return JsonResponse({
+                'status': 'error', 
+                'message': f'Observation {observation_id} not found'
+            }, status=404)
         except Exception as e:
-            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
-        
+            print(f"处理请求时出错: {str(e)}")  # 添加日志
+            import traceback
+            print(traceback.format_exc())  # 打印完整的错误堆栈
+            return JsonResponse({
+                'status': 'error',
+                'message': f'Error processing request: {str(e)}'
+            }, status=500)
+    
     def _get_observation_data(self, observation):
         """Get full observation data"""
-        try:
-            damage = observation.trtdamage
-            damage_data = {
-                'body_part': damage.body_part.body_part if damage.body_part else None,
-                'damage_code': damage.damage_code.damage_code if damage.damage_code else None,
-                'damage_cause_code': damage.damage_cause_code.damage_cause_code if damage.damage_cause_code else None,
-                'comments': damage.comments
-            }
-        except TrtDamage.DoesNotExist:
-            damage_data = None
-            
+        damage_data = [{
+            'body_part': damage.body_part.body_part if damage.body_part else None,
+            'damage_code': damage.damage_code.damage_code if damage.damage_code else None,
+            'damage_cause_code': damage.damage_cause_code.damage_cause_code if damage.damage_cause_code else None,
+            'comments': damage.comments
+        } for damage in TrtDamage.objects.filter(observation=observation)]
         persons_data = {
             'measurer_person': {
                 'id': observation.measurer_person.person_id if observation.measurer_person else None,
@@ -3956,7 +4025,6 @@ class ObservationDataView(LoginRequiredMixin, View):
                 'text': str(observation.reporter_person) if observation.reporter_person else None
             }
         }
-        
         place_data = None
         if observation.place_code:
             place_data = {
@@ -3966,18 +4034,26 @@ class ObservationDataView(LoginRequiredMixin, View):
     
         tag_info = {
             'recorded_tags': [{
-                'tag_id': tag.tag_id,
-                'tag_side': tag.tag_side,
+                'tag_id': str(tag.tag_id),
+                'tag_side': tag.side,
                 'tag_position': tag.tag_position,
                 'tag_state': tag.tag_state.tag_state if tag.tag_state else None,
+                'comments': tag.comments
             } for tag in observation.trtrecordedtags_set.all()],
             'recorded_pit_tags': [{
-                'tag_id': tag.pittag_id,
+                'tag_id': str(tag.pittag_id),
                 'tag_position': tag.pit_tag_position,
                 'tag_state': tag.pit_tag_state.pit_tag_state if tag.pit_tag_state else None,
+                'comments': tag.comments
             } for tag in observation.trtrecordedpittags_set.all()]
         }
-
+    
+        measurements = [{
+            'measurement_type': str(measurement.measurement_type) if measurement.measurement_type else None,
+            'measurement_value': str(measurement.measurement_value),
+            'comments': measurement.comments
+        } for measurement in observation.trtmeasurements_set.all()]
+    
         return {
             'basic_info': {
                 'observation_id': observation.observation_id,
@@ -3989,25 +4065,23 @@ class ObservationDataView(LoginRequiredMixin, View):
                 'beach_position_code': str(observation.beach_position_code.beach_position_code) if observation.beach_position_code else '',
                 'condition_code': str(observation.condition_code.condition_code) if observation.condition_code else '',
                 'egg_count_method': str(observation.egg_count_method.egg_count_method) if observation.egg_count_method else '',
-                'status': str(observation.observation_status),
+                'observation_status': str(observation.observation_status),
                 'measurer_person': persons_data['measurer_person'],
                 'measurer_reporter_person': persons_data['measurer_reporter_person'],
                 'tagger_person': persons_data['tagger_person'],
                 'reporter_person': persons_data['reporter_person'],
                 'place_code': place_data,
-                'datum_code': str(observation.datum_code),
-                'latitude': str(observation.latitude),
-                'longitude': str(observation.longitude)
+                'datum_code': str(observation.datum_code) if observation.datum_code else '',
+                'latitude': str(observation.latitude) if observation.latitude else '',
+                'longitude': str(observation.longitude) if observation.longitude else '',
+                'clutch_completed': str(observation.clutch_completed) if observation.clutch_completed else '',
+                'date_convention': str(observation.date_convention) if observation.date_convention else '',
             },
             'tag_info': tag_info,
-            'measurements': [{
-                'measurement_type': str(measurement.measurement_type.description),
-                'measurement_value': str(measurement.measurement_value)
-            } for measurement in observation.trtmeasurements_set.all()],
-
-            'damage_records': [damage_data] if damage_data else [],
+            'measurements': measurements,
+            'damage_records': damage_data,
         }
-    
+        
     def _filter_observations(self, request):
         """Filter observations based on request parameters"""
         observations = TrtObservations.objects.all()

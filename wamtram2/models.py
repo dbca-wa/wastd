@@ -101,7 +101,7 @@ class TrtConditionCodes(models.Model):
 
 class TrtDamage(models.Model):
     observation = models.OneToOneField(
-        "TrtObservations", models.CASCADE, db_column="OBSERVATION_ID", primary_key=True
+        "TrtObservations", models.CASCADE, db_column="OBSERVATION_ID", primary_key=True, related_name="damages"
     )  # Field name made lowercase.
     body_part = models.ForeignKey(
         TrtBodyParts, models.CASCADE, db_column="BODY_PART"
