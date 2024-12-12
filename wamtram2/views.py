@@ -4049,7 +4049,7 @@ class ObservationDataView(LoginRequiredMixin, View):
         }
     
         measurements = [{
-            'measurement_type': str(measurement.measurement_type) if measurement.measurement_type else None,
+            'measurement_type': str(measurement.measurement_type.measurement_type) if measurement.measurement_type else None,
             'measurement_value': str(measurement.measurement_value),
             'comments': measurement.comments
         } for measurement in observation.trtmeasurements_set.all()]

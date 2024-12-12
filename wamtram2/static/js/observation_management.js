@@ -138,7 +138,7 @@ function setBasicFields() {
     const basicFields = [
         'observation_id', 'turtle_id', 'alive', 'nesting',
         'activity_code', 'beach_position_code', 'condition_code',
-        'egg_count_method', 'status', 'comments',
+        'egg_count_method', 'observation_status', 'comments', 'clutch_completed', 'date_convention',
         'datum_code', 'latitude', 'longitude' 
     ];
 
@@ -176,7 +176,7 @@ function setMeasurements() {
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Measurement Type</label>
-                                <select class="form-control" name="measurement_type">
+                                <select class="form-control" name="measurement_type" value="${measurement.measurement_type}">
                                     <option value="">Select...</option>
                                     ${measurementTypeChoices.map(type => `
                                         <option value="${type.measurement_type}" ${measurement.measurement_type === type.measurement_type ? 'selected' : ''}>
@@ -189,7 +189,7 @@ function setMeasurements() {
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Value</label>
-                                <input type="number" step="0.1" class="form-control" name="measurement_value" value="${measurement.measurement_value}">
+                                <input type="number" class="form-control" name="measurement_value" value="${measurement.measurement_value}">
                             </div>
                         </div>
                     </div>
@@ -217,7 +217,7 @@ function setDamageRecords() {
             <div class="card mb-3 damage-card">
                 <div class="card-body">
                     <div class="form-row">
-                        <div class="col-md-3">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label>Body Part</label>
                                 <select class="form-control" name="body_part">
@@ -230,7 +230,7 @@ function setDamageRecords() {
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label>Damage Code</label>
                                 <select class="form-control" name="damage_code">
@@ -243,20 +243,7 @@ function setDamageRecords() {
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label>Damage Cause</label>
-                                <select class="form-control" name="damage_cause_code">
-                                    <option value="">Select...</option>
-                                    ${damageCauseChoices.map(cause => `
-                                        <option value="${cause.damage_cause_code}" ${damage.damage_cause_code === cause.damage_cause_code ? 'selected' : ''}>
-                                            ${cause.description}
-                                        </option>
-                                    `).join('')}
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label>Comments</label>
                                 <input type="text" class="form-control" name="damage_comments" value="${damage.comments || ''}">
