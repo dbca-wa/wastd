@@ -230,11 +230,14 @@
                                             -
                                         {% endif %}
                                     </span>
-                                    {% if column.field in editable_columns %}
-                                        <span class="edit-mode" style="display: none;">
-                                            <input type="text" value="{{ entry.turtle_id|default:'' }}">
-                                        </span>
-                                    {% endif %}
+                                    <span class="edit-mode" style="display: none;">
+                                        <input type="text"
+                                            name="turtle_id"
+                                            value="{{ entry.turtle_id|default:'' }}"
+                                            class="form-control"
+                                            readonly >
+                                    </span>
+
                                 {% elif column.field == 'species_code' %}
                                     <span class="view-mode">
                                         {{ entry.species_code.common_name|default:'-' }}
@@ -530,7 +533,7 @@
                                     <span class="view-mode">
                                         {{ entry|get_field_value:column.field}}
                                     </span>
-                                    <select class="form-control edit-mode" data-original-value="{{ entry|get_field_value:column.field.tag_state|default:'' }}">
+                                    <select class="form-control edit-mode" data-original-value="{{ entry|get_field_value:column.field|default:'' }}">
                                         <option value="">---------</option>
                                         {% for state in tag_states_choices %}
                                             <option value="{{ state.tag_state }}" {% if entry|get_field_value:column.field == state %}selected{% endif %}>

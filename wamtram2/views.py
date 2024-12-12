@@ -3603,7 +3603,7 @@ class EntryCurationView(LoginRequiredMixin, PaginateMixin, ListView):
             model_fields = TrtDataEntry._meta.get_fields()
     
             default_visible_fields = {
-                'data_entry_id','observation_id', 'turtle_id', 'entered_by', 'species_code', 'place_code',
+                'data_entry_id','observation_id', 'turtle_id', 'entered_by_id', 'species_code', 'place_code',
                 'observation_date', 'do_not_process','error_message', 'comments'
             }
             
@@ -3683,10 +3683,10 @@ class EntryCurationView(LoginRequiredMixin, PaginateMixin, ListView):
                     'egg_count', 'egg_count_method', 'clutch_completed'
                 ],
                 'Personnel': [
-                    'entered_by','entered_by_id',
-                    'measured_by', 'measured_by_id',
-                    'recorded_by', 'recorded_by_id',
-                    'tagged_by', 'tagged_by_id',
+                    'entered_by_id',
+                    'measured_by_id',
+                    'recorded_by_id',
+                    'tagged_by_id',
                 ],
                 'Comments': [
                     'turtle_comments', 'comment_fromrecordedtagstable',
@@ -3772,17 +3772,37 @@ class SaveEntryChangesView(LoginRequiredMixin, View):
             
         field = TrtDataEntry._meta.get_field(field_name)
         
+        if field.is_relation:
+            if value == '':
+                return None
+            try:
+                related_model = field.related_model
+                pk_name = related_model._meta.pk.name
+                lookup = {pk_name: value}
+                instance = related_model.objects.get(**lookup)
+
+                if field_name.endswith('_by_id'):
+                    base_field = field_name[:-3]  
+                    if hasattr(entry, base_field):
+                        setattr(entry, base_field, f"{instance.first_name} {instance.surname}")
+                return instance
+            except related_model.DoesNotExist:
+                raise ValueError(f"Invalid value for {field_name}: {value}")
+        
+ 
         if field.get_internal_type() in ['IntegerField', 'FloatField']:
             try:
                 value = float(value)
                 if value < 0:
                     raise ValueError(f"{field_name} cannot be negative")
+                return value
             except ValueError:
                 raise ValueError(f"Invalid number for {field_name}: {value}")
         
         if field.get_internal_type() == 'CharField':
             if not isinstance(value, str):
                 raise ValueError(f"Invalid string for {field_name}: {value}")
+            return value
         
         return value
 
