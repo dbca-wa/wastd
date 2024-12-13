@@ -3903,7 +3903,7 @@ class ObservationManagementView(LoginRequiredMixin, TemplateView):
                     } for type in TrtIdentificationTypes.objects.all()
                 ],
                 'date_convention_choices': [
-                    {'code': 'C', 'description': 'Complete'},
+                    {'code': 'C', 'description': 'Calendar'},
                     {'code': 'E', 'description': 'Evening'},
                     {'code': 'U', 'description': 'Unknown'}
                 ],
@@ -3931,11 +3931,16 @@ class ObservationManagementView(LoginRequiredMixin, TemplateView):
 
 class ObservationDataView(LoginRequiredMixin, View):
     @transaction.atomic
-    def post(self, request):
+    def post(self, request, observation_id=None): 
         try:
             data = json.loads(request.body)
-            observation_id = data.get('observation_id')
-            observation = TrtObservations.objects.get(pk=observation_id) if observation_id else TrtObservations()
+            
+            if observation_id:
+                observation = TrtObservations.objects.get(pk=observation_id)
+
+            else:
+                observation_id = data.get('observation_id')
+                observation = TrtObservations.objects.get(pk=observation_id) if observation_id else TrtObservations()
             
             if observation_id:
                 observation = TrtObservations.objects.get(pk=observation_id)
