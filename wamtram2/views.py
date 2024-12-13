@@ -4243,24 +4243,64 @@ class SaveObservationView(LoginRequiredMixin, View):
                 'message': f'保存观察记录时出错: {str(e)}'
             }, status=500)
 
+    FOREIGN_KEY_FIELDS = {
+        'other_tags_identification_type': TrtIdentificationTypes,
+        'measurer_person': TrtPersons,
+        'measurer_reporter_person': TrtPersons,
+        'tagger_person': TrtPersons,
+        'reporter_person': TrtPersons,
+        'place_code': TrtPlaces,
+        'alive': TrtYesNo,
+        'nesting': TrtYesNo,
+        'clutch_completed': TrtYesNo,
+        'activity_code': TrtActivities,
+        'beach_position_code': TrtBeachPositions,
+        'condition_code': TrtConditionCodes,
+        'egg_count_method': TrtEggCountMethods,
+        'datum_code': TrtDatumCodes
+    }
+
     def _update_basic_info(self, observation, basic_info):
         """更新基本信息"""
-        # 处理日期时间
-        if 'observation_date' in basic_info:
-            try:
-                datetime_obj = datetime.strptime(
-                    basic_info['observation_date'], 
-                    '%Y-%m-%dT%H:%M'
-                )
-                observation.observation_date = datetime_obj
-                observation.observation_time = datetime_obj
-            except ValueError as e:
-                raise ValidationError(f"日期格式无效: {str(e)}")
+        try:
+            # 处理日期时间
+            if 'observation_date' in basic_info:
+                try:
+                    datetime_obj = datetime.strptime(
+                        basic_info['observation_date'], 
+                        '%Y-%m-%dT%H:%M'
+                    )
+                    observation.observation_date = datetime_obj
+                    observation.observation_time = datetime_obj
+                except ValueError as e:
+                    raise ValidationError(f"日期格式无效: {str(e)}")
 
-        # 更新其他基本字段
-        for field, value in basic_info.items():
-            if hasattr(observation, field):
-                setattr(observation, field, value)
+            # 更新其他基本字段
+            for field, value in basic_info.items():
+                if hasattr(observation, field):
+                    # 检查是否是外键字段
+                    if field in self.FOREIGN_KEY_FIELDS:
+                        if value:  # 如果有值
+                            if isinstance(value, dict) and 'id' in value:  # 处理Select2格式的数据
+                                value = value['id']
+                            try:
+                                # 获取外键对象
+                                related_obj = self.FOREIGN_KEY_FIELDS[field].objects.get(pk=value)
+                                setattr(observation, field, related_obj)
+                            except self.FOREIGN_KEY_FIELDS[field].DoesNotExist:
+                                print(f"找不到{field}对应的记录: {value}")
+                                # 可以选择忽略或抛出异常
+                                setattr(observation, field, None)
+                        else:  # 如果值为空，设置为None
+                            setattr(observation, field, None)
+                    else:  # 非外键字段直接赋值
+                        setattr(observation, field, value)
+
+        except Exception as e:
+            print(f"更新基本信息时出错: {str(e)}")
+            import traceback
+            print(traceback.format_exc())
+            raise ValidationError(f"更新基本信息时出错: {str(e)}")
 
     def _update_tags(self, observation, tag_data):
         """更新标签记录"""

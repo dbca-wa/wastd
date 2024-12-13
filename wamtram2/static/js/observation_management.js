@@ -620,29 +620,40 @@ function handleFormSubmit() {
 // Get basic information from form
 function getBasicInfo() {
     const observationDateTime = $('[name="observation_date"]').val();
+    
+    function getSelect2Value(selectName) {
+        const $select = $(`select[name="${selectName}"]`);
+        const data = $select.select2('data')[0];
+        return data ? data.id : null; 
+    }
+
     return {
         observation_id: $('[name="observation_id"]').val(),
         observation_date: observationDateTime,
-        alive: $('[name="alive"]').val(),
-        nesting: $('[name="nesting"]').val(),
-        activity_code: $('[name="activity_code"]').val(),
-        beach_position_code: $('[name="beach_position_code"]').val(),
-        condition_code: $('[name="condition_code"]').val(),
-        number_of_eggs: $('[name="number_of_eggs"]').val(),
-        egg_count_method: $('[name="egg_count_method"]').val(),
-        status: $('[name="status"]').val(),
-        comments: $('[name="comments"]').val(),
-        other_tags: $('[name="other_tags"]').val(),
-        other_tags_identification_type: $('[name="other_tags_identification_type"]').val(),
-        scars_left: $('[name="scars_left"]').prop('checked'),
-        scars_right: $('[name="scars_right"]').prop('checked'),
-        scars_left_scale_1: $('[name="scars_left_scale_1"]').prop('checked'),
-        scars_left_scale_2: $('[name="scars_left_scale_2"]').prop('checked'),
-        scars_left_scale_3: $('[name="scars_left_scale_3"]').prop('checked'),
-        scars_right_scale_1: $('[name="scars_right_scale_1"]').prop('checked'),
-        scars_right_scale_2: $('[name="scars_right_scale_2"]').prop('checked'),
-        scars_right_scale_3: $('[name="scars_right_scale_3"]').prop('checked'),
-        tag_scar_not_checked: $('[name="tag_scar_not_checked"]').prop('checked')
+        alive: $('[name="alive"]').val() || null,
+        nesting: $('[name="nesting"]').val() || null,
+        clutch_completed: $('[name="clutch_completed"]').val() || null,
+        activity_code: $('[name="activity_code"]').val() || null,
+        beach_position_code: $('[name="beach_position_code"]').val() || null,
+        condition_code: $('[name="condition_code"]').val() || null,
+        number_of_eggs: $('[name="number_of_eggs"]').val() || null,
+        egg_count_method: $('[name="egg_count_method"]').val() || null,
+        datum_code: $('[name="datum_code"]').val() || null,
+        
+        measurer_person: getSelect2Value('measurer_person'),
+        measurer_reporter_person: getSelect2Value('measurer_reporter_person'),
+        tagger_person: getSelect2Value('tagger_person'),
+        reporter_person: getSelect2Value('reporter_person'),
+        place_code: getSelect2Value('place_code'),
+        
+        comments: $('[name="comments"]').val() || '',
+        other_tags: $('[name="other_tags"]').val() || '',
+        other_tags_identification_type: $('[name="other_tags_identification_type"]').val() || null,
+        
+        latitude: $('[name="latitude"]').val() || null,
+        longitude: $('[name="longitude"]').val() || null,
+        
+        date_convention: $('[name="date_convention"]').val() || null
     };
 }
 
