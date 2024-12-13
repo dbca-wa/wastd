@@ -4134,7 +4134,6 @@ class ObservationDataView(LoginRequiredMixin, View):
             'scars': scars_data
         }
         
-        
     def _filter_observations(self, request):
         """Filter observations based on request parameters"""
         observations = TrtObservations.objects.all()
@@ -4199,59 +4198,143 @@ class ObservationDataView(LoginRequiredMixin, View):
             'total_pit_tags': len(pit_tags)
         }
 
-    # Helper methods for updating related records
+        
+
+class SaveObservationView(LoginRequiredMixin, View):
+    @transaction.atomic
+    def post(self, request, observation_id=None):
+        try:
+            data = json.loads(request.body)
+            
+            # 获取或创建观察记录
+            observation_id = observation_id or data.get('observation_id')
+            if observation_id:
+                observation = TrtObservations.objects.get(pk=observation_id)
+            else:
+                observation = TrtObservations()
+            
+            # 更新基本信息
+            self._update_basic_info(observation, data.get('basic_info', {}))
+            observation.save()
+            
+            # 更新相关记录
+            self._update_tags(observation, data.get('tag_info', {}))
+            self._update_measurements(observation, data.get('measurements', []))
+            self._update_damage_records(observation, data.get('damage_records', []))
+            self._update_identifications(observation, data.get('recorded_identifications', []))
+            self._update_location(observation, data.get('location', {}))
+            
+            return JsonResponse({
+                'status': 'success', 
+                'observation_id': observation.observation_id
+            })
+            
+        except ValidationError as e:
+            return JsonResponse({
+                'status': 'error',
+                'message': str(e)
+            }, status=400)
+        except Exception as e:
+            print(f"保存观察记录时出错: {str(e)}")
+            import traceback
+            print(traceback.format_exc())
+            return JsonResponse({
+                'status': 'error',
+                'message': f'保存观察记录时出错: {str(e)}'
+            }, status=500)
+
+    def _update_basic_info(self, observation, basic_info):
+        """更新基本信息"""
+        # 处理日期时间
+        if 'observation_date' in basic_info:
+            try:
+                datetime_obj = datetime.strptime(
+                    basic_info['observation_date'], 
+                    '%Y-%m-%dT%H:%M'
+                )
+                observation.observation_date = datetime_obj
+                observation.observation_time = datetime_obj
+            except ValueError as e:
+                raise ValidationError(f"日期格式无效: {str(e)}")
+
+        # 更新其他基本字段
+        for field, value in basic_info.items():
+            if hasattr(observation, field):
+                setattr(observation, field, value)
+
     def _update_tags(self, observation, tag_data):
-        """Update tag records"""
+        """更新标签记录"""
+        # 删除现有记录
         observation.trtrecordedtags_set.all().delete()
         observation.trtrecordedpittags_set.all().delete()
         
+        # 创建新的标签记录
         for tag in tag_data.get('recorded_tags', []):
-            TrtRecordedTags.objects.create(
-                observation=observation,
-                **tag
-            )
+            if tag.get('tag_id'):  # 只处理有效的标签ID
+                TrtRecordedTags.objects.create(
+                    observation=observation,
+                    tag_id=tag['tag_id'],
+                    side=tag.get('tag_side'),
+                    tag_position=tag.get('tag_position'),
+                    tag_state_id=tag.get('tag_state'),
+                    comments=tag.get('comments')
+                )
         
+        # 创建新的PIT标签记录
         for pit_tag in tag_data.get('recorded_pit_tags', []):
-            TrtRecordedPitTags.objects.create(
-                observation=observation,
-                **pit_tag
-            )
+            if pit_tag.get('tag_id'):  # 只处理有效的PIT标签ID
+                TrtRecordedPitTags.objects.create(
+                    observation=observation,
+                    pittag_id=pit_tag['tag_id'],
+                    pit_tag_position=pit_tag.get('tag_position'),
+                    pit_tag_state_id=pit_tag.get('tag_state'),
+                    comments=pit_tag.get('comments')
+                )
 
     def _update_measurements(self, observation, measurements):
-        """Update measurement records"""
+        """更新测量记录"""
         observation.trtmeasurements_set.all().delete()
         for measurement in measurements:
-            TrtMeasurements.objects.create(
-                observation=observation,
-                **measurement
-            )
+            if measurement.get('measurement_value'):  # 只处理有值的测量
+                TrtMeasurements.objects.create(
+                    observation=observation,
+                    measurement_type_id=measurement.get('measurement_type'),
+                    measurement_value=measurement['measurement_value'],
+                    comments=measurement.get('comments')
+                )
 
     def _update_damage_records(self, observation, damage_records):
-        """Update damage records"""
+        """更新损伤记录"""
         observation.trtdamage_set.all().delete()
         for damage in damage_records:
-            TrtDamage.objects.create(
-                observation=observation,
-                **damage
-            )
+            if damage.get('body_part') and damage.get('damage_code'):  # 必填字段验证
+                TrtDamage.objects.create(
+                    observation=observation,
+                    body_part_id=damage['body_part'],
+                    damage_code_id=damage['damage_code'],
+                    damage_cause_code_id=damage.get('damage_cause_code'),
+                    comments=damage.get('comments')
+                )
 
     def _update_location(self, observation, location_data):
-        """Update location information"""
-        for field, value in location_data.items():
-            if hasattr(observation, field):
-                setattr(observation, field, value)
-        observation.save()
-        
+        """更新位置信息"""
+        if location_data:
+            for field in ['place_code', 'datum_code', 'latitude', 'longitude']:
+                if field in location_data:
+                    setattr(observation, field, location_data[field])
+
     def _update_identifications(self, observation, identification_data):
-        """Update identification records"""
+        """更新识别记录"""
         TrtRecordedIdentification.objects.filter(observation_id=observation.observation_id).delete()
         for record in identification_data:
-            TrtRecordedIdentification.objects.create(
-                observation_id=observation.observation_id,
-                **record
-            )
-            
-        
+            if record.get('turtle_id'):  # 只处理有效的turtle_id
+                TrtRecordedIdentification.objects.create(
+                    observation_id=observation.observation_id,
+                    turtle_id=record['turtle_id'],
+                    identification_type_id=record.get('identification_type'),
+                    identifier=record.get('identifier'),
+                    comments=record.get('comments')
+                )
 class TurtleManagementView(TemplateView):
     template_name = 'wamtram2/turtle_management.html'
     

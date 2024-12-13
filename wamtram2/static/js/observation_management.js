@@ -579,10 +579,15 @@ function handleFormSubmit() {
         measurements: getMeasurements(),
         damage_records: getDamageRecords(),
         location: getLocationInfo(),
-        recorded_identifications: getIdentifications(), 
-        other_tags_data: getOtherTagInfo(), 
+        recorded_identifications: getIdentifications(),
+        other_tags_data: getOtherTagInfo(),
         scars: getScars()
     };
+
+    const observation_id = formData.observation_id;
+    const submitUrl = observation_id ? 
+        `/wamtram2/api/observations/${observation_id}/save/` : 
+        '/wamtram2/api/observations/save/';
 
     $.ajax({
         url: submitUrl,
@@ -594,17 +599,24 @@ function handleFormSubmit() {
         },
         success: function(response) {
             if (response.status === 'success') {
-                showSuccessMessage('Observation saved successfully');
+                showSuccessMessage('观察记录保存成功');
+                // 如果是新建记录，可能需要更新URL或其他UI元素
+                if (!observation_id) {
+                    window.history.replaceState(
+                        {}, 
+                        '', 
+                        `/wamtram2/curation/observations-management/${response.observation_id}/`
+                    );
+                }
             } else {
-                showErrorMessage(response.message || 'Error saving observation');
+                showErrorMessage(response.message || '保存观察记录时出错');
             }
         },
         error: function(xhr) {
-            showErrorMessage('Error saving observation');
+            showErrorMessage('保存观察记录时发生错误');
         }
     });
 }
-
 // Get basic information from form
 function getBasicInfo() {
     const observationDateTime = $('[name="observation_date"]').val();
