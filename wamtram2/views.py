@@ -31,6 +31,8 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.shared import Inches, Pt, RGBColor
 from functools import reduce
 import operator
+import traceback
+from django.db import IntegrityError
 
 from wastd.utils import Breadcrumb, PaginateMixin
 from .models import (
@@ -4373,19 +4375,52 @@ class SaveObservationView(LoginRequiredMixin, View):
                     comments=measurement.get('comments')
                 )
 
+
     def _update_damage_records(self, observation, damage_records):
         """更新损伤记录"""
-        observation.trtdamage_set.all().delete()
-        for damage in damage_records:
-            if damage.get('body_part') and damage.get('damage_code'):  # 必填字段验证
-                TrtDamage.objects.create(
-                    observation=observation,
-                    body_part_id=damage['body_part'],
-                    damage_code_id=damage['damage_code'],
-                    damage_cause_code_id=damage.get('damage_cause_code'),
-                    comments=damage.get('comments')
-                )
+        try:
+            # 获取现有的损伤记录
+            existing_damages = {
+                (damage.body_part_id): damage 
+                for damage in observation.damages.all()
+            }
+            
+            # 处理新的损伤记录
+            for damage in damage_records:
+                if damage.get('body_part') and damage.get('damage_code'):
+                    body_part_id = damage['body_part']
+                    
+                    try:
+                        if body_part_id in existing_damages:
+                            # 更新现有记录
+                            existing_damage = existing_damages[body_part_id]
+                            existing_damage.damage_code_id = damage['damage_code']
+                            existing_damage.damage_cause_code_id = damage.get('damage_cause_code')
+                            existing_damage.comments = damage.get('comments')
+                            existing_damage.save()
+                        else:
+                            # 创建新记录
+                            TrtDamage.objects.create(
+                                observation=observation,
+                                body_part_id=body_part_id,
+                                damage_code_id=damage['damage_code'],
+                                damage_cause_code_id=damage.get('damage_cause_code'),
+                                comments=damage.get('comments')
+                            )
+                    except IntegrityError as e:
+                        print(f"处理损伤记录时出现完整性错误: {str(e)}")
+                        print(f"observation_id={observation.observation_id}, body_part={body_part_id}")
+                        continue
+                    except Exception as e:
+                        print(f"处理损伤记录时出错: {str(e)}")
+                        print(traceback.format_exc())
+                        continue
 
+        except Exception as e:
+            print(f"更新损伤记录时出错: {str(e)}")
+            print(traceback.format_exc())
+            raise ValidationError(f"更新损伤记录时出错: {str(e)}")
+        
     def _update_location(self, observation, location_data):
         """更新位置信息"""
         if location_data:
