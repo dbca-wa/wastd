@@ -4311,33 +4311,56 @@ class SaveObservationView(LoginRequiredMixin, View):
 
     def _update_tags(self, observation, tag_data):
         """更新标签记录"""
-        # 删除现有记录
-        observation.trtrecordedtags_set.all().delete()
-        observation.trtrecordedpittags_set.all().delete()
-        
-        # 创建新的标签记录
-        for tag in tag_data.get('recorded_tags', []):
-            if tag.get('tag_id'):  # 只处理有效的标签ID
-                TrtRecordedTags.objects.create(
-                    observation=observation,
-                    tag_id=tag['tag_id'],
-                    side=tag.get('tag_side'),
-                    tag_position=tag.get('tag_position'),
-                    tag_state_id=tag.get('tag_state'),
-                    comments=tag.get('comments')
-                )
-        
-        # 创建新的PIT标签记录
-        for pit_tag in tag_data.get('recorded_pit_tags', []):
-            if pit_tag.get('tag_id'):  # 只处理有效的PIT标签ID
-                TrtRecordedPitTags.objects.create(
-                    observation=observation,
-                    pittag_id=pit_tag['tag_id'],
-                    pit_tag_position=pit_tag.get('tag_position'),
-                    pit_tag_state_id=pit_tag.get('tag_state'),
-                    comments=pit_tag.get('comments')
-                )
+        try:
+            # 删除现有记录
+            observation.trtrecordedtags_set.all().delete()
+            observation.trtrecordedpittags_set.all().delete()
+            
+            # 创建新的标签记录
+            for tag in tag_data.get('recorded_tags', []):
+                if tag.get('tag_id'):  # 只处理有效的标签ID
+                    try:
+                        # 获取或创建 TrtTags 实例
+                        tag_instance = TrtTags.objects.get(tag_id=tag['tag_id'])
+                        
+                        # 创建记录
+                        TrtRecordedTags.objects.create(
+                            observation=observation,
+                            tag_id=tag_instance,  # 使用 TrtTags 实例
+                            side=tag.get('tag_side'),
+                            tag_position=tag.get('tag_position'),
+                            tag_state_id=tag.get('tag_state'),
+                            barnacles=False,  # 设置默认值
+                            turtle_id=observation.turtle_id or 0  # 设置默认值
+                        )
+                    except TrtTags.DoesNotExist:
+                        print(f"找不到标签记录: {tag['tag_id']}")
+                        # 可以选择记录错误或继续处理
+                        continue
+            
+            # 创建新的PIT标签记录
+            for pit_tag in tag_data.get('recorded_pit_tags', []):
+                if pit_tag.get('tag_id'):  # 只处理有效的PIT标签ID
+                    try:
+                        # 获取或创建 TrtPitTags 实例
+                        pit_tag_instance = TrtPitTags.objects.get(pittag_id=pit_tag['tag_id'])
+                        
+                        TrtRecordedPitTags.objects.create(
+                            observation=observation,
+                            pittag_id=pit_tag_instance,
+                            pit_tag_position=pit_tag.get('tag_position'),
+                            pit_tag_state_id=pit_tag.get('tag_state'),
+                        )
+                    except TrtPitTags.DoesNotExist:
+                        print(f"找不到PIT标签记录: {pit_tag['tag_id']}")
+                        continue
 
+        except Exception as e:
+            print(f"更新标签记录时出错: {str(e)}")
+            import traceback
+            print(traceback.format_exc())
+            raise ValidationError(f"更新标签记录时出错: {str(e)}")
+    
     def _update_measurements(self, observation, measurements):
         """更新测量记录"""
         observation.trtmeasurements_set.all().delete()
