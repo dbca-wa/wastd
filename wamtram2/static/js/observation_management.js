@@ -133,6 +133,11 @@ function setBasicFields() {
         }
     });
 
+    if (basicInfo.turtle_id) {
+        $('[name="turtle_id"]').val(basicInfo.turtle_id);
+        $('#turtleDetailLink').attr('href', `/wamtram2/turtles/${basicInfo.turtle_id}/`);
+    }
+
     // Set place select
     if (basicInfo.place_code) {
         const $placeSelect = $('select[name="place_code"]');
@@ -675,6 +680,19 @@ function getDamageRecords() {
         });
     });
     return damageRecords;
+}
+
+function getIdentifications() {
+    const identifications = [];
+    $('.identification-card').each(function() {
+        identifications.push({
+            turtle_id: $(this).find('[name="turtle_id[]"]').val(),
+            identification_type: $(this).find('[name="identification_type[]"]').val(),
+            identifier: $(this).find('[name="identifier[]"]').val(),
+            comments: $(this).find('[name="identification_comments[]"]').val()
+        });
+    });
+    return identifications;
 }
 
 // Get location information from form
