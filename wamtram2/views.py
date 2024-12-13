@@ -4270,6 +4270,8 @@ class SaveObservationView(LoginRequiredMixin, View):
                         basic_info['observation_date'], 
                         '%Y-%m-%dT%H:%M'
                     )
+                    # 将“naive” datetime 转换为带时区的 datetime
+                    datetime_obj = timezone.make_aware(datetime_obj, timezone.get_current_timezone())
                     observation.observation_date = datetime_obj
                     observation.observation_time = datetime_obj
                 except ValueError as e:
@@ -4294,6 +4296,8 @@ class SaveObservationView(LoginRequiredMixin, View):
                         else:  # 如果值为空，设置为None
                             setattr(observation, field, None)
                     else:  # 非外键字段直接赋值
+                        if field == 'clutch_completed' and isinstance(value, TrtYesNo):
+                            value = value.code  # 假设TrtYesNo有一个code字段
                         setattr(observation, field, value)
 
         except Exception as e:
@@ -4361,7 +4365,16 @@ class SaveObservationView(LoginRequiredMixin, View):
         if location_data:
             for field in ['place_code', 'datum_code', 'latitude', 'longitude']:
                 if field in location_data:
-                    setattr(observation, field, location_data[field])
+                    if field in self.FOREIGN_KEY_FIELDS and location_data[field]:
+                        try:
+                            related_obj = self.FOREIGN_KEY_FIELDS[field].objects.get(
+                                pk=location_data[field]
+                            )
+                            setattr(observation, field, related_obj)
+                        except self.FOREIGN_KEY_FIELDS[field].DoesNotExist:
+                            setattr(observation, field, None)
+                    else:
+                        setattr(observation, field, location_data[field])
 
     def _update_identifications(self, observation, identification_data):
         """更新识别记录"""
@@ -4375,6 +4388,8 @@ class SaveObservationView(LoginRequiredMixin, View):
                     identifier=record.get('identifier'),
                     comments=record.get('comments')
                 )
+
+
 class TurtleManagementView(TemplateView):
     template_name = 'wamtram2/turtle_management.html'
     
