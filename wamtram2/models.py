@@ -1616,7 +1616,7 @@ class TrtObservations(models.Model):
         blank=True,
         null=True,
         max_length=1,
-        related_name="clutchcompleted"
+        related_name="clutch_completedobs"
     )
     number_of_eggs = models.SmallIntegerField(
         db_column="NUMBER_OF_EGGS", blank=True, null=True
