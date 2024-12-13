@@ -4108,6 +4108,7 @@ class ObservationDataView(LoginRequiredMixin, View):
                 'activity_code': str(observation.activity_code.activity_code) if observation.activity_code else '',
                 'beach_position_code': str(observation.beach_position_code.beach_position_code) if observation.beach_position_code else '',
                 'condition_code': str(observation.condition_code.condition_code) if observation.condition_code else '',
+                'number_of_eggs': str(observation.number_of_eggs) if observation.number_of_eggs else '',
                 'egg_count_method': str(observation.egg_count_method.egg_count_method) if observation.egg_count_method else '',
                 'observation_status': str(observation.observation_status),
                 'measurer_person': persons_data['measurer_person'],

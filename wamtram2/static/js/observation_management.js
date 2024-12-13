@@ -144,7 +144,7 @@ function setBasicFields() {
         'observation_id', 'turtle_id', 'alive', 'nesting',
         'activity_code', 'beach_position_code', 'condition_code',
         'egg_count_method', 'observation_status', 'comments', 'clutch_completed', 'date_convention',
-        'datum_code', 'latitude', 'longitude' 
+        'datum_code', 'latitude', 'longitude', 'number_of_eggs'
     ];
 
     basicFields.forEach(fieldName => {
@@ -609,6 +609,7 @@ function getBasicInfo() {
         activity_code: $('[name="activity_code"]').val(),
         beach_position_code: $('[name="beach_position_code"]').val(),
         condition_code: $('[name="condition_code"]').val(),
+        number_of_eggs: $('[name="number_of_eggs"]').val(),
         egg_count_method: $('[name="egg_count_method"]').val(),
         status: $('[name="status"]').val(),
         comments: $('[name="comments"]').val(),
