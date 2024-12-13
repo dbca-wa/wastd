@@ -101,13 +101,15 @@ function initializePlaceSearch() {
 
 // Set all initial form values
 function setInitialFormValues() {
-    setBasicFields();
-    setTagInfo();
-    setMeasurements();
-    setDamageRecords();
-    setOtherIdentification();
-    setOtherTags();
-    setScars();
+    if (initialData) { 
+        setBasicFields();
+        setTagInfo();
+        setMeasurements();
+        setDamageRecords();
+        setOtherIdentification();
+        setScars();
+        setOtherTagInfo();
+    }
 }
 
 // Set basic form fields
@@ -375,7 +377,6 @@ function setTagInfo() {
     }
 }
 
-// Set other identification
 function setOtherIdentification() {
     const container = document.getElementById('otherIdContainer');
     if (!container || !initialData.recorded_identifications) return;
@@ -395,25 +396,33 @@ function setOtherIdentification() {
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label>Turtle ID</label>
-                                <input type="text" class="form-control" name="turtle_id" value="${record.turtle_id || ''}" readonly>
+                                <input type="text" class="form-control" name="turtle_id[]" value="${record.turtle_id || ''}" readonly>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label>Identification Type</label>
-                                <input type="text" class="form-control" name="identification_type" value="${record.identification_type || ''}" readonly>
+                                <select class="form-control" name="identification_type[]">
+                                    <option value="">Select...</option>
+                                    ${identificationTypeChoices.map(type => `
+                                        <option value="${type.identification_type}" 
+                                            ${record.identification_type === type.identification_type ? 'selected' : ''}>
+                                            ${type.description}
+                                        </option>
+                                    `).join('')}
+                                </select>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label>Identifier</label>
-                                <input type="text" class="form-control" name="identifier" value="${record.identifier || ''}" readonly>
+                                <input type="text" class="form-control" name="identifier[]" value="${record.identifier || ''}">
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label>Comments</label>
-                                <input type="text" class="form-control" name="identification_comments" value="${record.comments || ''}">
+                                <input type="text" class="form-control" name="identification_comments[]" value="${record.comments || ''}">
                             </div>
                         </div>
                     </div>
@@ -422,24 +431,36 @@ function setOtherIdentification() {
         `;
         container.insertAdjacentHTML('beforeend', recordHtml);
     });
+
+    container.querySelectorAll('select').forEach(select => {
+        $(select).select2({
+            placeholder: 'Select...',
+            allowClear: true
+        });
+    });
 }
 
-function setOtherTags() {
-    const container = document.getElementById('otherIdContainer');
-    if (!container || !initialData.other_tags) return;
+function setOtherTagInfo() {
+    const container = document.getElementById('otherTagInfoContainer');
+    console.log('Setting other tag info:', initialData.other_tags_data); // 添加调试日志
+    
+    if (!container || !initialData.other_tags_data) {
+        console.log('Container or other tags data missing:', {
+            container, 
+            other_tags_data: initialData.other_tags_data
+        });
+        return;
+    }
 
-    const otherTagsHtml = `
+    const otherTagInfoHtml = `
         <div class="card mb-3">
             <div class="card-body">
                 <div class="form-row">
                     <div class="col-md-6">
                         <div class="form-group">
                             <label>Other Tags</label>
-                            <input type="text" 
-                                class="form-control" 
-                                name="other_tags" 
-                                value="${initialData.other_tags.other_tags || ''}"
-                            >
+                            <input type="text" class="form-control" name="other_tags" 
+                                value="${initialData.other_tags_data.other_tags || ''}">
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -449,7 +470,7 @@ function setOtherTags() {
                                 <option value="">Select...</option>
                                 ${identificationTypeChoices.map(type => `
                                     <option value="${type.identification_type}" 
-                                            ${initialData.other_tags.identification_type === type.identification_type ? 'selected' : ''}>
+                                        ${initialData.other_tags_data.identification_type === type.identification_type ? 'selected' : ''}>
                                         ${type.description}
                                     </option>
                                 `).join('')}
@@ -460,16 +481,14 @@ function setOtherTags() {
             </div>
         </div>
     `;
-    container.insertAdjacentHTML('afterbegin', otherTagsHtml);
-    
+    container.innerHTML = otherTagInfoHtml;
+
     $('[name="other_tags_identification_type"]').select2({
         placeholder: 'Select identification type...',
         allowClear: true
     });
 }
 
-
-// 添加 setScars 函数
 function setScars() {
     const container = document.getElementById('scarsContainer');
     if (!container || !initialData.scars) return;
@@ -552,7 +571,10 @@ function handleFormSubmit() {
         tag_info: getTagInfo(),
         measurements: getMeasurements(),
         damage_records: getDamageRecords(),
-        location: getLocationInfo()
+        location: getLocationInfo(),
+        recorded_identifications: getIdentifications(), 
+        other_tags_data: getOtherTagInfo(), 
+        scars: getScars()
     };
 
     $.ajax({
@@ -615,6 +637,29 @@ function getMeasurements() {
     });
     return measurements;
 }
+
+function getOtherTagInfo() {
+    return {
+        other_tags: $('[name="other_tags"]').val(),
+        identification_type: $('[name="other_tags_identification_type"]').val()
+    };
+}
+
+
+function getScars() {
+    return {
+        scars_left: $('[name="scars_left"]').prop('checked'),
+        scars_right: $('[name="scars_right"]').prop('checked'),
+        scars_left_scale_1: $('[name="scars_left_scale_1"]').prop('checked'),
+        scars_left_scale_2: $('[name="scars_left_scale_2"]').prop('checked'),
+        scars_left_scale_3: $('[name="scars_left_scale_3"]').prop('checked'),
+        scars_right_scale_1: $('[name="scars_right_scale_1"]').prop('checked'),
+        scars_right_scale_2: $('[name="scars_right_scale_2"]').prop('checked'),
+        scars_right_scale_3: $('[name="scars_right_scale_3"]').prop('checked'),
+        tag_scar_not_checked: $('[name="tag_scar_not_checked"]').prop('checked')
+    };
+}
+
 
 // Get damage records from form
 function getDamageRecords() {

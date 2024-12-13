@@ -4034,12 +4034,22 @@ class ObservationDataView(LoginRequiredMixin, View):
             'identification_type_description': observation.other_tags_identification_type.description if observation.other_tags_identification_type else None
         }
             
-        recorded_identifications = [{
-            'turtle_id': record.turtle.turtle_id if record.turtle else None,
-            'identification_type': record.identification_type.identification_type if record.identification_type else None,
-            'identifier': record.identifier.identifier if record.identifier else None,
-            'comments': record.comments
-        } for record in TrtRecordedIdentification.objects.filter(observation_id=observation.observation_id)]
+        recorded_identifications = []
+        for record in TrtRecordedIdentification.objects.filter(observation_id=observation.observation_id):
+            try:
+                # 获取所有关联的记录
+                turtles = TrtIdentification.objects.filter(turtle2=record)
+                for turtle in turtles:
+                    recorded_identifications.append({
+                        'turtle_id': turtle.turtle_id,
+                        'identification_type': record.identification_type.identification_type if record.identification_type else None,
+                        'identifier': record.identifier.identifier if record.identifier else None,
+                        'comments': record.comments
+                    })
+                    
+            except Exception as e:
+                print(f"Error processing recorded identification: {str(e)}")
+                continue
                 
         persons_data = {
             'measurer_person': {
@@ -4116,8 +4126,9 @@ class ObservationDataView(LoginRequiredMixin, View):
             'damage_records': damage_data,
             'recorded_identifications': recorded_identifications,
             'other_tags_data': other_tags_data,
-            'scars_data': scars_data
+            'scars': scars_data
         }
+        
         
     def _filter_observations(self, request):
         """Filter observations based on request parameters"""
