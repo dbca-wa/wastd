@@ -4290,14 +4290,8 @@ class SaveObservationView(LoginRequiredMixin, View):
                             try:
                                 # 获取外键对象
                                 model_class = self.FOREIGN_KEY_FIELDS[field]
-                                if model_class == TrtYesNo:
-                                    # 对于 TrtYesNo 类型的字段，获取对应的实例
-                                    yes_no_instance = TrtYesNo.objects.get(code=value)
-                                    setattr(observation, field, yes_no_instance)
-                                else:
-                                    # 其他外键字段正常处理
-                                    related_obj = model_class.objects.get(pk=value)
-                                    setattr(observation, field, related_obj)
+                                related_obj = model_class.objects.get(pk=value)
+                                setattr(observation, field, related_obj)
                             except model_class.DoesNotExist:
                                 print(f"找不到{field}对应的记录: {value}")
                                 setattr(observation, field, None)

@@ -1609,9 +1609,15 @@ class TrtObservations(models.Model):
         null=True,
         related_name="nestingobs",
     )  # fake foreign key #models.CharField(db_column='NESTING', max_length=1, blank=True, null=True)  # Field name made lowercase.
-    clutch_completed = models.CharField(
-        db_column="CLUTCH_COMPLETED", max_length=1, blank=True, null=True
-    )  # Field name made lowercase.
+    clutch_completed = models.ForeignKey(
+        "TrtYesNo",
+        models.SET_NULL,
+        db_column="CLUTCH_COMPLETED",
+        blank=True,
+        null=True,
+        max_length=1,
+        related_name="clutchcompleted"
+    )
     number_of_eggs = models.SmallIntegerField(
         db_column="NUMBER_OF_EGGS", blank=True, null=True
     )  # Field name made lowercase.
