@@ -3902,6 +3902,11 @@ class ObservationManagementView(LoginRequiredMixin, TemplateView):
                         'description': type.description
                     } for type in TrtIdentificationTypes.objects.all()
                 ],
+                'date_convention_choices': [
+                    {'code': 'C', 'description': 'Complete'},
+                    {'code': 'E', 'description': 'Evening'},
+                    {'code': 'U', 'description': 'Unknown'}
+                ],
                 'places': TrtPlaces.objects.all(),
                 'activity_code_choices': TrtActivities.objects.all(),
                 'beach_position_code_choices': TrtBeachPositions.objects.all(),

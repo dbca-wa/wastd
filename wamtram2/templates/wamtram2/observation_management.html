@@ -117,7 +117,12 @@
             <div class="col-md-4">
                 <div class="form-group">
                     <label>Date Convention</label>
-                    <input type="text" class="form-control" name="date_convention" >
+                    <select class="form-control" name="date_convention">
+                        <option value="">Select...</option>
+                        {% for option in date_convention_choices %}
+                            <option value="{{ option.code }}">{{ option.description }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
             </div>
             <div class="col-md-4">
@@ -364,6 +369,7 @@
         const damageCodesChoices = {{ damage_codes_choices|safe }};
         const damageCauseChoices = {{ damage_cause_choices|safe }};
         const identificationTypeChoices = {{ identification_type_choices|safe }};
+        const dateConventionChoices = {{ date_convention_choices|safe }}; 
 
     </script>
     <script src="{% static 'js/observation_management.js' %}"></script>

@@ -16,7 +16,8 @@ function initializeBasicSelects() {
         'beach_position_code',
         'condition_code',
         'egg_count_method',
-        'datum_code'
+        'datum_code',
+        'date_convention'
     ];
 
     basicSelects.forEach(selectName => {
