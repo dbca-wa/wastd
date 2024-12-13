@@ -4262,6 +4262,7 @@ class SaveObservationView(LoginRequiredMixin, View):
         'datum_code': TrtDatumCodes
     }
 
+
     def _update_basic_info(self, observation, basic_info):
         """更新基本信息"""
         try:
@@ -4272,7 +4273,6 @@ class SaveObservationView(LoginRequiredMixin, View):
                         basic_info['observation_date'], 
                         '%Y-%m-%dT%H:%M'
                     )
-                    # 将“naive” datetime 转换为带时区的 datetime
                     datetime_obj = timezone.make_aware(datetime_obj, timezone.get_current_timezone())
                     observation.observation_date = datetime_obj
                     observation.observation_time = datetime_obj
@@ -4291,8 +4291,9 @@ class SaveObservationView(LoginRequiredMixin, View):
                                 # 获取外键对象
                                 model_class = self.FOREIGN_KEY_FIELDS[field]
                                 if model_class == TrtYesNo:
-                                    # 对于 TrtYesNo 类型的字段，直接使用 code 值
-                                    setattr(observation, field, value)
+                                    # 对于 TrtYesNo 类型的字段，获取对应的实例
+                                    yes_no_instance = TrtYesNo.objects.get(code=value)
+                                    setattr(observation, field, yes_no_instance)
                                 else:
                                     # 其他外键字段正常处理
                                     related_obj = model_class.objects.get(pk=value)
@@ -4310,7 +4311,7 @@ class SaveObservationView(LoginRequiredMixin, View):
             import traceback
             print(traceback.format_exc())
             raise ValidationError(f"更新基本信息时出错: {str(e)}")
-
+        
     def _update_tags(self, observation, tag_data):
         """更新标签记录"""
         try:
