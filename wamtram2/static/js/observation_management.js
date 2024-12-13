@@ -105,6 +105,9 @@ function setInitialFormValues() {
     setTagInfo();
     setMeasurements();
     setDamageRecords();
+    setOtherIdentification();
+    setOtherTags();
+    setScars();
 }
 
 // Set basic form fields
@@ -372,6 +375,176 @@ function setTagInfo() {
     }
 }
 
+// Set other identification
+function setOtherIdentification() {
+    const container = document.getElementById('otherIdContainer');
+    if (!container || !initialData.recorded_identifications) return;
+
+    container.innerHTML = '';
+
+    if (initialData.recorded_identifications.length === 0) {
+        container.innerHTML = '<p class="text-muted">No other identification records found</p>';
+        return;
+    }
+
+    initialData.recorded_identifications.forEach(record => {
+        const recordHtml = `
+            <div class="card mb-3 identification-card">
+                <div class="card-body">
+                    <div class="form-row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Turtle ID</label>
+                                <input type="text" class="form-control" name="turtle_id" value="${record.turtle_id || ''}" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Identification Type</label>
+                                <input type="text" class="form-control" name="identification_type" value="${record.identification_type || ''}" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Identifier</label>
+                                <input type="text" class="form-control" name="identifier" value="${record.identifier || ''}" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Comments</label>
+                                <input type="text" class="form-control" name="identification_comments" value="${record.comments || ''}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        container.insertAdjacentHTML('beforeend', recordHtml);
+    });
+}
+
+function setOtherTags() {
+    const container = document.getElementById('otherIdContainer');
+    if (!container || !initialData.other_tags) return;
+
+    const otherTagsHtml = `
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Other Tags</label>
+                            <input type="text" 
+                                class="form-control" 
+                                name="other_tags" 
+                                value="${initialData.other_tags.other_tags || ''}"
+                            >
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Identification Type</label>
+                            <select class="form-control" name="other_tags_identification_type">
+                                <option value="">Select...</option>
+                                ${identificationTypeChoices.map(type => `
+                                    <option value="${type.identification_type}" 
+                                            ${initialData.other_tags.identification_type === type.identification_type ? 'selected' : ''}>
+                                        ${type.description}
+                                    </option>
+                                `).join('')}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    container.insertAdjacentHTML('afterbegin', otherTagsHtml);
+    
+    $('[name="other_tags_identification_type"]').select2({
+        placeholder: 'Select identification type...',
+        allowClear: true
+    });
+}
+
+
+// 添加 setScars 函数
+function setScars() {
+    const container = document.getElementById('scarsContainer');
+    if (!container || !initialData.scars) return;
+
+    const scarsHtml = `
+        <div class="form-row">
+            <div class="col-md-6">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Left Side</h5>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" name="scars_left" 
+                                ${initialData.scars.scars_left ? 'checked' : ''}>
+                            <label class="form-check-label">Scars Left</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" name="scars_left_scale_1" 
+                                ${initialData.scars.scars_left_scale_1 ? 'checked' : ''}>
+                            <label class="form-check-label">Scale 1</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" name="scars_left_scale_2" 
+                                ${initialData.scars.scars_left_scale_2 ? 'checked' : ''}>
+                            <label class="form-check-label">Scale 2</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" name="scars_left_scale_3" 
+                                ${initialData.scars.scars_left_scale_3 ? 'checked' : ''}>
+                            <label class="form-check-label">Scale 3</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Right Side</h5>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" name="scars_right" 
+                                ${initialData.scars.scars_right ? 'checked' : ''}>
+                            <label class="form-check-label">Scars Right</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" name="scars_right_scale_1" 
+                                ${initialData.scars.scars_right_scale_1 ? 'checked' : ''}>
+                            <label class="form-check-label">Scale 1</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" name="scars_right_scale_2" 
+                                ${initialData.scars.scars_right_scale_2 ? 'checked' : ''}>
+                            <label class="form-check-label">Scale 2</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" name="scars_right_scale_3" 
+                                ${initialData.scars.scars_right_scale_3 ? 'checked' : ''}>
+                            <label class="form-check-label">Scale 3</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" name="tag_scar_not_checked" 
+                        ${initialData.scars.tag_scar_not_checked ? 'checked' : ''}>
+                    <label class="form-check-label">Tag Scar Not Checked</label>
+                </div>
+            </div>
+        </div>
+    `;
+    container.innerHTML = scarsHtml;
+}
+
+
 // Handle form submission
 function handleFormSubmit() {
     const formData = {
@@ -416,7 +589,18 @@ function getBasicInfo() {
         condition_code: $('[name="condition_code"]').val(),
         egg_count_method: $('[name="egg_count_method"]').val(),
         status: $('[name="status"]').val(),
-        comments: $('[name="comments"]').val()
+        comments: $('[name="comments"]').val(),
+        other_tags: $('[name="other_tags"]').val(),
+        other_tags_identification_type: $('[name="other_tags_identification_type"]').val(),
+        scars_left: $('[name="scars_left"]').prop('checked'),
+        scars_right: $('[name="scars_right"]').prop('checked'),
+        scars_left_scale_1: $('[name="scars_left_scale_1"]').prop('checked'),
+        scars_left_scale_2: $('[name="scars_left_scale_2"]').prop('checked'),
+        scars_left_scale_3: $('[name="scars_left_scale_3"]').prop('checked'),
+        scars_right_scale_1: $('[name="scars_right_scale_1"]').prop('checked'),
+        scars_right_scale_2: $('[name="scars_right_scale_2"]').prop('checked'),
+        scars_right_scale_3: $('[name="scars_right_scale_3"]').prop('checked'),
+        tag_scar_not_checked: $('[name="tag_scar_not_checked"]').prop('checked')
     };
 }
 

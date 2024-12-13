@@ -3827,6 +3827,8 @@ class SaveEntryChangesView(LoginRequiredMixin, View):
                 'success': False,
                 'error': str(e)
             })
+
+
 class ObservationManagementView(LoginRequiredMixin, TemplateView):
     template_name = 'wamtram2/observation_management.html'
     
@@ -3894,6 +3896,12 @@ class ObservationManagementView(LoginRequiredMixin, TemplateView):
                         'description': cause.description
                     } for cause in TrtDamageCauseCodes.objects.all()
                 ],
+                'identification_type_choices': [
+                    {
+                        'identification_type': type.identification_type,
+                        'description': type.description
+                    } for type in TrtIdentificationTypes.objects.all()
+                ],
                 'places': TrtPlaces.objects.all(),
                 'activity_code_choices': TrtActivities.objects.all(),
                 'beach_position_code_choices': TrtBeachPositions.objects.all(),
@@ -3952,6 +3960,7 @@ class ObservationDataView(LoginRequiredMixin, View):
             self._update_tags(observation, data.get('tag_info', {}))
             self._update_measurements(observation, data.get('measurements', []))
             self._update_damage_records(observation, data.get('damage_records', []))
+            self._update_identifications(observation, data.get('recorded_identifications', [])) 
             self._update_location(observation, data.get('location', {}))
             
             return JsonResponse({'status': 'success', 'observation_id': observation.observation_id})
@@ -4001,12 +4010,37 @@ class ObservationDataView(LoginRequiredMixin, View):
     
     def _get_observation_data(self, observation):
         """Get full observation data"""
+        scars_data = {
+            'scars_left': observation.scars_left,
+            'scars_right': observation.scars_right,
+            'scars_left_scale_1': observation.scars_left_scale_1,
+            'scars_left_scale_2': observation.scars_left_scale_2,
+            'scars_left_scale_3': observation.scars_left_scale_3,
+            'scars_right_scale_1': observation.scars_right_scale_1,
+            'scars_right_scale_2': observation.scars_right_scale_2,
+            'scars_right_scale_3': observation.scars_right_scale_3,
+            'tag_scar_not_checked': observation.tagscarnotchecked
+        }
         damage_data = [{
             'body_part': damage.body_part.body_part if damage.body_part else None,
             'damage_code': damage.damage_code.damage_code if damage.damage_code else None,
             'damage_cause_code': damage.damage_cause_code.damage_cause_code if damage.damage_cause_code else None,
             'comments': damage.comments
         } for damage in TrtDamage.objects.filter(observation=observation)]
+        
+        other_tags_data = {
+            'other_tags': observation.other_tags,
+            'identification_type': observation.other_tags_identification_type.identification_type if observation.other_tags_identification_type else None,
+            'identification_type_description': observation.other_tags_identification_type.description if observation.other_tags_identification_type else None
+        }
+            
+        recorded_identifications = [{
+            'turtle_id': record.turtle.turtle_id if record.turtle else None,
+            'identification_type': record.identification_type.identification_type if record.identification_type else None,
+            'identifier': record.identifier.identifier if record.identifier else None,
+            'comments': record.comments
+        } for record in TrtRecordedIdentification.objects.filter(observation_id=observation.observation_id)]
+                
         persons_data = {
             'measurer_person': {
                 'id': observation.measurer_person.person_id if observation.measurer_person else None,
@@ -4080,6 +4114,9 @@ class ObservationDataView(LoginRequiredMixin, View):
             'tag_info': tag_info,
             'measurements': measurements,
             'damage_records': damage_data,
+            'recorded_identifications': recorded_identifications,
+            'other_tags_data': other_tags_data,
+            'scars_data': scars_data
         }
         
     def _filter_observations(self, request):
@@ -4189,6 +4226,15 @@ class ObservationDataView(LoginRequiredMixin, View):
                 setattr(observation, field, value)
         observation.save()
         
+    def _update_identifications(self, observation, identification_data):
+        """Update identification records"""
+        TrtRecordedIdentification.objects.filter(observation_id=observation.observation_id).delete()
+        for record in identification_data:
+            TrtRecordedIdentification.objects.create(
+                observation_id=observation.observation_id,
+                **record
+            )
+            
         
 class TurtleManagementView(TemplateView):
     template_name = 'wamtram2/turtle_management.html'
