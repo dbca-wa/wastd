@@ -573,6 +573,7 @@ function setScars() {
 // Handle form submission
 function handleFormSubmit() {
     const formData = {
+        observation_id: $('[name="observation_id"]').val(),
         basic_info: getBasicInfo(),
         tag_info: getTagInfo(),
         measurements: getMeasurements(),

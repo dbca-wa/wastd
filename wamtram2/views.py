@@ -3935,13 +3935,7 @@ class ObservationDataView(LoginRequiredMixin, View):
         try:
             data = json.loads(request.body)
             
-            if observation_id:
-                observation = TrtObservations.objects.get(pk=observation_id)
-
-            else:
-                observation_id = data.get('observation_id')
-                observation = TrtObservations.objects.get(pk=observation_id) if observation_id else TrtObservations()
-            
+            observation_id = observation_id or data.get('observation_id')
             if observation_id:
                 observation = TrtObservations.objects.get(pk=observation_id)
             else:
