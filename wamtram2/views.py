@@ -4287,17 +4287,20 @@ class SaveObservationView(LoginRequiredMixin, View):
                                 value = value['id']
                             try:
                                 # 获取外键对象
-                                related_obj = self.FOREIGN_KEY_FIELDS[field].objects.get(pk=value)
-                                setattr(observation, field, related_obj)
-                            except self.FOREIGN_KEY_FIELDS[field].DoesNotExist:
+                                model_class = self.FOREIGN_KEY_FIELDS[field]
+                                if model_class == TrtYesNo:
+                                    # 对于 TrtYesNo 类型的字段，直接使用 code 值
+                                    setattr(observation, field, value)
+                                else:
+                                    # 其他外键字段正常处理
+                                    related_obj = model_class.objects.get(pk=value)
+                                    setattr(observation, field, related_obj)
+                            except model_class.DoesNotExist:
                                 print(f"找不到{field}对应的记录: {value}")
-                                # 可以选择忽略或抛出异常
                                 setattr(observation, field, None)
                         else:  # 如果值为空，设置为None
                             setattr(observation, field, None)
                     else:  # 非外键字段直接赋值
-                        if field == 'clutch_completed' and isinstance(value, TrtYesNo):
-                            value = value.code  # 假设TrtYesNo有一个code字段
                         setattr(observation, field, value)
 
         except Exception as e:
@@ -4339,7 +4342,7 @@ class SaveObservationView(LoginRequiredMixin, View):
         """更新测量记录"""
         observation.trtmeasurements_set.all().delete()
         for measurement in measurements:
-            if measurement.get('measurement_value'):  # 只处理有值的测量
+            if measurement.get('measurement_value'): 
                 TrtMeasurements.objects.create(
                     observation=observation,
                     measurement_type_id=measurement.get('measurement_type'),
