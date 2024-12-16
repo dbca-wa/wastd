@@ -4334,18 +4334,18 @@ class SaveObservationView(LoginRequiredMixin, View):
                             existing_tag.tag_position = tag.get('tag_position')
                             existing_tag.tag_state_id = tag.get('tag_state')
                             existing_tag.barnacles = False
-                            existing_tag.turtle_id = observation.turtle_id or 0
+                            existing_tag.turtle_id = observation.turtle_id
                             existing_tag.save()
                         else:
-                            # 创建新记录
+                            # 创建新记录 - 使用 observation_id 而不是 observation
                             TrtRecordedTags.objects.create(
-                                observation_id=observation,
+                                observation_id=observation,  # 这是正确的字段名
                                 tag_id=tag_instance,
                                 side=tag.get('tag_side'),
                                 tag_position=tag.get('tag_position'),
                                 tag_state_id=tag.get('tag_state'),
                                 barnacles=False,
-                                turtle_id=observation.turtle_id or 0
+                                turtle_id=observation.turtle_id
                             )
                     except TrtTags.DoesNotExist:
                         print(f"找不到标签记录: {tag['tag_id']}")
@@ -4368,7 +4368,7 @@ class SaveObservationView(LoginRequiredMixin, View):
                         else:
                             # 创建新记录
                             TrtRecordedPitTags.objects.create(
-                                observation_id=observation,
+                                observation_id=observation,  # 同样使用正确的字段名
                                 pittag_id=pit_tag_instance,
                                 pit_tag_position=pit_tag.get('tag_position'),
                                 pit_tag_state_id=pit_tag.get('tag_state'),
@@ -4383,64 +4383,64 @@ class SaveObservationView(LoginRequiredMixin, View):
             print(f"更新标签记录时出错: {str(e)}")
             print(traceback.format_exc())
             raise ValidationError(f"更新标签记录时出错: {str(e)}")
-        
-    def _update_measurements(self, observation, measurements):
-        """更新测量记录"""
-        observation.trtmeasurements_set.all().delete()
-        for measurement in measurements:
-            if measurement.get('measurement_value'): 
-                TrtMeasurements.objects.create(
-                    observation=observation,
-                    measurement_type_id=measurement.get('measurement_type'),
-                    measurement_value=measurement['measurement_value'],
-                    comments=measurement.get('comments')
-                )
-
-
-    def _update_damage_records(self, observation, damage_records):
-        """更新损伤记录"""
-        try:
-            # 获取现有的损伤记录
-            existing_damages = {
-                (damage.body_part_id): damage 
-                for damage in observation.damages.all()
-            }
             
-            # 处理新的损伤记录
-            for damage in damage_records:
-                if damage.get('body_part') and damage.get('damage_code'):
-                    body_part_id = damage['body_part']
-                    
-                    try:
-                        if body_part_id in existing_damages:
-                            # 更新现有记录
-                            existing_damage = existing_damages[body_part_id]
-                            existing_damage.damage_code_id = damage['damage_code']
-                            existing_damage.damage_cause_code_id = damage.get('damage_cause_code')
-                            existing_damage.comments = damage.get('comments')
-                            existing_damage.save()
-                        else:
-                            # 创建新记录
-                            TrtDamage.objects.create(
-                                observation=observation,
-                                body_part_id=body_part_id,
-                                damage_code_id=damage['damage_code'],
-                                damage_cause_code_id=damage.get('damage_cause_code'),
-                                comments=damage.get('comments')
-                            )
-                    except IntegrityError as e:
-                        print(f"处理损伤记录时出现完整性错误: {str(e)}")
-                        print(f"observation_id={observation.observation_id}, body_part={body_part_id}")
-                        continue
-                    except Exception as e:
-                        print(f"处理损伤记录时出错: {str(e)}")
-                        print(traceback.format_exc())
-                        continue
+        def _update_measurements(self, observation, measurements):
+            """更新测量记录"""
+            observation.trtmeasurements_set.all().delete()
+            for measurement in measurements:
+                if measurement.get('measurement_value'): 
+                    TrtMeasurements.objects.create(
+                        observation=observation,
+                        measurement_type_id=measurement.get('measurement_type'),
+                        measurement_value=measurement['measurement_value'],
+                        comments=measurement.get('comments')
+                    )
 
-        except Exception as e:
-            print(f"更新损伤记录时出错: {str(e)}")
-            print(traceback.format_exc())
-            raise ValidationError(f"更新损伤记录时出错: {str(e)}")
+
+        def _update_damage_records(self, observation, damage_records):
+            """更新损伤记录"""
+            try:
+                # 获取现有的损伤记录
+                existing_damages = {
+                    (damage.body_part_id): damage 
+                    for damage in observation.damages.all()
+                }
+                
+                # 处理新的损伤记录
+                for damage in damage_records:
+                    if damage.get('body_part') and damage.get('damage_code'):
+                        body_part_id = damage['body_part']
+                        
+                        try:
+                            if body_part_id in existing_damages:
+                                # 更新现有记录
+                                existing_damage = existing_damages[body_part_id]
+                                existing_damage.damage_code_id = damage['damage_code']
+                                existing_damage.damage_cause_code_id = damage.get('damage_cause_code')
+                                existing_damage.comments = damage.get('comments')
+                                existing_damage.save()
+                            else:
+                                # 创建新记录
+                                TrtDamage.objects.create(
+                                    observation=observation,
+                                    body_part_id=body_part_id,
+                                    damage_code_id=damage['damage_code'],
+                                    damage_cause_code_id=damage.get('damage_cause_code'),
+                                    comments=damage.get('comments')
+                                )
+                        except IntegrityError as e:
+                            print(f"处理损伤记录时出现完整性错误: {str(e)}")
+                            print(f"observation_id={observation.observation_id}, body_part={body_part_id}")
+                            continue
+                        except Exception as e:
+                            print(f"处理损伤记录时出错: {str(e)}")
+                            print(traceback.format_exc())
+                            continue
+
+            except Exception as e:
+                print(f"更新损伤记录时出错: {str(e)}")
+                print(traceback.format_exc())
+                raise ValidationError(f"更新损伤记录时出错: {str(e)}")
         
     def _update_location(self, observation, location_data):
         """更新位置信息"""
