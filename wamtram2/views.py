@@ -4303,6 +4303,14 @@ class SaveObservationView(LoginRequiredMixin, View):
                         else:  # 如果值为空，设置为None
                             setattr(observation, field, None)
                     else:  # 非外键字段直接赋值
+                        if field == 'number_of_eggs':
+                            if value == '' or value is None:
+                                value = None
+                            else:
+                                try:
+                                    value = int(value)
+                                except ValueError:
+                                    value = None
                         setattr(observation, field, value)
 
         except Exception as e:
@@ -4403,7 +4411,20 @@ class SaveObservationView(LoginRequiredMixin, View):
                         except self.FOREIGN_KEY_FIELDS[field].DoesNotExist:
                             setattr(observation, field, None)
                     else:
-                        setattr(observation, field, location_data[field])
+                        # 处理数值字段的空值情况
+                        value = location_data[field]
+                        if field in ['latitude', 'longitude']:
+                            # 如果是空字符串或None，设置为None
+                            if value == '' or value is None:
+                                value = None
+                            # 如果是有效数字字符串，转换为float
+                            elif isinstance(value, str):
+                                try:
+                                    value = float(value)
+                                except ValueError:
+                                    value = None
+                        setattr(observation, field, value)
+            observation.save()
 
     def _update_identifications(self, observation, identification_data):
         """更新识别记录"""
