@@ -4273,7 +4273,12 @@ class SaveObservationView(LoginRequiredMixin, View):
                         basic_info['observation_date'], 
                         '%Y-%m-%dT%H:%M'
                     )
-                    datetime_obj = timezone.make_aware(datetime_obj, timezone.get_current_timezone())
+                    # 确保使用正确的时区
+                    if timezone.is_naive(datetime_obj):
+                        datetime_obj = timezone.make_aware(
+                            datetime_obj, 
+                            timezone.get_current_timezone()
+                        )
                     observation.observation_date = datetime_obj
                     observation.observation_time = datetime_obj
                 except ValueError as e:
@@ -4471,6 +4476,39 @@ class SaveObservationView(LoginRequiredMixin, View):
                     comments=record.get('comments')
                 )
 
+    def _update_measurements(self, observation, measurements):
+        """更新测量记录"""
+        try:
+            # 获取现有的测量记录
+            existing_measurements = {
+                measure.measurement_type_id: measure 
+                for measure in observation.trtmeasurements_set.all()
+            }
+            
+            # 处理每个测量记录
+            for measurement in measurements:
+                if measurement.get('measurement_value') is not None:  # 确保有测量值
+                    measurement_type = measurement.get('measurement_type')
+                    
+                    if measurement_type in existing_measurements:
+                        # 更新现有记录
+                        existing_measure = existing_measurements[measurement_type]
+                        existing_measure.measurement_value = measurement['measurement_value']
+                        existing_measure.comments = measurement.get('comments')
+                        existing_measure.save()
+                    else:
+                        # 创建新记录
+                        TrtMeasurements.objects.create(
+                            observation_id=observation,
+                            measurement_type_id=measurement_type,
+                            measurement_value=measurement['measurement_value'],
+                            comments=measurement.get('comments')
+                        )
+
+        except Exception as e:
+            print(f"更新测量记录时出错: {str(e)}")
+            print(traceback.format_exc())
+            raise ValidationError(f"更新测量记录时出错: {str(e)}")
 
 class TurtleManagementView(TemplateView):
     template_name = 'wamtram2/turtle_management.html'
