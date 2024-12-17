@@ -1927,6 +1927,23 @@ class ExportDataView(LoginRequiredMixin, View):
             species = request.GET.get("species")
             sex = request.GET.get("sex")
             file_format = request.GET.get("format", "csv")
+            
+            filename_parts = []
+            if place_code:
+                filename_parts.append(place_code)
+            if species:
+                filename_parts.append(species)
+            if sex:
+                filename_parts.append(sex)
+                
+            date_range = ""
+            if from_date and to_date:
+                date_range = f"({from_date.strftime('%Y%m%d')}-{to_date.strftime('%Y%m%d')})"
+            
+            filename = "_".join(filename_parts) + date_range
+            
+            if not filename:
+                filename = f"data_export{date_range}"
 
             queryset = TrtDataEntry.objects.all()
             
@@ -1956,7 +1973,7 @@ class ExportDataView(LoginRequiredMixin, View):
 
             if file_format == "csv":
                 response = HttpResponse(content_type="text/csv")
-                response["Content-Disposition"] = 'attachment; filename="data_export.csv"'
+                response["Content-Disposition"] = f'attachment; filename="{filename}.csv"'  # 注意这里的f-string
                 writer = csv.writer(response)
 
                 headers = [field.name for field in TrtDataEntry._meta.fields]
@@ -1976,7 +1993,7 @@ class ExportDataView(LoginRequiredMixin, View):
                     
             else:  # xlsx format
                 response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-                response["Content-Disposition"] = 'attachment; filename="data_export.xlsx"'
+                response["Content-Disposition"] = f'attachment; filename="{filename}.xlsx"'  # 注意这里的f-string
                 wb = Workbook()
                 ws = wb.active
                 
@@ -2014,6 +2031,8 @@ class ExportDataView(LoginRequiredMixin, View):
             import traceback
             traceback.print_exc()
             return HttpResponse(f"Error during export: {str(e)}", status=500)
+
+
 class DudTagManageView(LoginRequiredMixin, View):
     template_name = 'wamtram2/dud_tag_manage.html'
 
