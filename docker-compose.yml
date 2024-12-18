@@ -12,6 +12,31 @@ services:
     volumes:
       - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
 
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    platform: linux/amd64  # 对 M1/M2 Mac 很重要
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=YourStrong@Passw0rd  # 请更改为安全的密码
+      - MSSQL_PID=Developer  # Developer 版本是免费的
+      - MSSQL_MEMORY_LIMIT_MB=2048
+    ports:
+      - "1433:1433"
+    deploy:
+      resources:
+        limits:
+          memory: 3G
+        reservations:
+          memory: 2G
+    volumes:
+      - mssql_data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD", "/opt/mssql-tools/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "YourStrong@Passw0rd", "-Q", "SELECT 1"]
+      interval: 30s
+      timeout: 20s
+      retries: 4
+      start_period: 120s
+
   web:
     build: .
     env_file:
@@ -19,7 +44,17 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - db
+      db:
+        condition: service_started
+      sqlserver:
+        condition: service_started
     volumes:
       - .:/app
     restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+
+volumes:
+  mssql_data:

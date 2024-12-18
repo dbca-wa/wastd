@@ -18,10 +18,27 @@ RUN curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor
   && apt-get update -y \
   && ACCEPT_EULA=Y apt-get install -y msodbcsql18
 
+# RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
+#     && curl https://packages.microsoft.com/config/debian/12/prod.list > /etc/apt/sources.list.d/mssql-release.list \
+#     && apt-get update \
+#     && ACCEPT_EULA=Y apt-get install -y --no-install-recommends \
+#         unixodbc \
+#         unixodbc-dev \
+#         msodbcsql18 \
+#     && rm -rf /var/lib/apt/lists/*
+
+# Check ODBC driver
+RUN odbcinst -j
+
 # Configure ODBC driver
+# RUN echo "[ODBC Driver 18 for SQL Server]\n\
+# Description=Microsoft ODBC Driver 18 for SQL Server\n\
+# Driver=/opt/microsoft/msodbcsql18/lib64/libmsodbcsql-18.3.so.3.1\n\
+# UsageCount=1" > /etc/odbcinst.ini
+
 RUN echo "[ODBC Driver 18 for SQL Server]\n\
 Description=Microsoft ODBC Driver 18 for SQL Server\n\
-Driver=/opt/microsoft/msodbcsql18/lib64/libmsodbcsql-18.3.so.3.1\n\
+Driver=/opt/microsoft/msodbcsql18/lib64/libmsodbcsql-18.4.so.1.1\n\
 UsageCount=1" > /etc/odbcinst.ini
 
 # Change the OpenSSL config to allow old TLS versions, because our database host is outdated.

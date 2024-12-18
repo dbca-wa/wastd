@@ -3063,232 +3063,6 @@ class FlipperTagsListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMixin
             'status_choices': TrtTagStatus.objects.all(),
         })
         return context
-    
-# class TransferObservationsByTagView(LoginRequiredMixin, View):
-#     template_name = 'wamtram2/transfer_observation.html'
-
-#     """
-#     Transfer observations associated with a specific flipper tag to another turtle.
-
-#     Parameters:
-#     - tag_id: Flipper tag ID
-#     - turtle_id: Target turtle ID
-#     - observation_ids: List of observation IDs to transfer
-#     """
-
-#     def dispatch(self, request, *args, **kwargs):
-#         # Check user permissions
-#         if not (request.user.is_superuser or
-#                 request.user.groups.filter(name="WAMTRAM2_STAFF").exists()):
-#             raise PermissionDenied
-#         return super().dispatch(request, *args, **kwargs)
-
-#     def get(self, request):
-#         return render(request, self.template_name)
-
-#     def get_turtle_info(self, turtle_id):
-#         """Get turtle information"""
-#         try:
-#             turtle = TrtTurtles.objects.get(turtle_id=turtle_id)
-#             return {
-#                 'success': True,
-#                 'data': {
-#                     'species': turtle.species_code.common_name,
-#                     'sex': turtle.sex,
-#                     'turtle_status': turtle.turtle_status.description,
-#                     'location_code': turtle.location_code.location_name,
-#                     'comments': turtle.comments
-#                 }
-#             }
-#         except TrtTurtles.DoesNotExist:
-#             return {
-#                 'success': False,
-#                 'error': f'Turtle {turtle_id} not found'
-#             }
-
-#     def get_observations(self, tag_id):
-#         """Get observations data for a specific tag"""
-#         if not TrtTags.objects.filter(tag_id=tag_id).exists():
-#             return []
-        
-#         observations = TrtObservations.objects.filter(
-#             trtrecordedtags__tag_id=tag_id
-#         ).select_related('turtle').values(
-#             'observation_id',
-#             'observation_date',
-#             'turtle_id',
-#             'place_code',
-#             'comments'
-#         ).order_by('-observation_date')
-#         return list(observations)
-
-#     def post(self, request):
-#         # Handle AJAX request for turtle info
-#         if request.headers.get('X-Requested-With') == 'FetchTurtleInfo':
-#             turtle_id = request.POST.get('turtle_id')
-#             return JsonResponse(self.get_turtle_info(turtle_id))
-
-#         # Handle AJAX request for observations
-#         if request.headers.get('X-Requested-With') == 'FetchObservations':
-#             tag_id = request.POST.get('tag_id')
-#             if not tag_id:
-#                 return JsonResponse({
-#                     'success': False,
-#                     'error': 'Tag ID is required'
-#                 })
-
-#             observations = self.get_observations(tag_id)
-#             return JsonResponse({
-#                 'success': True,
-#                 'observations': observations
-#             })
-
-#         # Handle transfer request  
-#         try:
-#             # Get request parameters
-#             tag_id = request.POST.get('tag_id')
-#             turtle_id = request.POST.get('turtle_id')
-#             observation_ids = request.POST.getlist('observation_ids[]')
-
-#             # Validate input parameters
-#             if not observation_ids:
-#                 return JsonResponse({
-#                     'success': False,
-#                     'error': 'No observations selected for transfer'
-#                 }, status=400)
-
-#             if not all([tag_id, turtle_id]):
-#                 return JsonResponse({
-#                     'success': False,
-#                     'error': 'Missing required parameters'
-#                 }, status=400)
-
-#             # Validate tag existence
-#             try:
-#                 tag = TrtTags.objects.get(tag_id=tag_id)
-#             except TrtTags.DoesNotExist:
-#                 return JsonResponse({
-#                     'success': False,
-#                     'error': f'Tag {tag_id} does not exist'
-#                 }, status=404)
-
-#             # Check if trying to transfer to the same turtle
-#             if tag.turtle_id and str(tag.turtle_id) == str(turtle_id):
-#                 return JsonResponse({
-#                     'success': False,
-#                     'error': 'Cannot transfer observations to the same turtle'
-#                 }, status=400)
-
-#             # Validate target turtle existence
-#             if not TrtTurtles.objects.filter(turtle_id=turtle_id).exists():
-#                 return JsonResponse({
-#                     'success': False,
-#                     'error': f'Target turtle {turtle_id} does not exist'
-#                 }, status=404)
-
-#             # Get observations associated with the tag
-#             observations = TrtObservations.objects.filter(
-#                 observation_id__in=observation_ids,
-#                 trtrecordedtags__tag_id=tag_id
-#             )
-
-#             if not observations.exists():
-#                 return JsonResponse({
-#                     'success': False,
-#                     'error': 'No observations found for this tag'
-#                 }, status=404)
-
-#             # Start transaction
-#             with transaction.atomic():
-#                 try:
-#                     # Step 1: Get all observations for this tag
-#                     observation_ids = observations.values_list('observation_id', flat=True)
-                    
-#                     # Step 2: Get all related tags
-#                     related_tag_ids = TrtRecordedTags.objects.filter(
-#                         observation_id__in=observation_ids
-#                     ).values_list('tag_id', flat=True).distinct()
-                    
-#                     # Step 3: Backup current records
-#                     recorded_tags = list(TrtRecordedTags.objects.filter(
-#                         observation_id__in=observation_ids
-#                     ).values(
-#                         'observation_id_id',
-#                         'tag_id_id',
-#                         'other_tag_id',
-#                         'side',
-#                         'tag_state',
-#                         'comments',
-#                         'tag_position',
-#                         'barnacles'
-#                     ))
-
-#                     recorded_pit_tags = list(TrtRecordedPitTags.objects.filter(
-#                         observation_id__in=observation_ids
-#                     ).values(
-#                         'observation_id_id',
-#                         'pittag_id_id',
-#                         'pit_tag_state',
-#                         'pit_tag_position',
-#                         'comments',
-#                         'checked'
-#                     ))
-                    
-#                     if not recorded_tags:
-#                         return JsonResponse({
-#                             'success': False,
-#                             'error': 'No recorded tags found'
-#                         }, status=400)
-                    
-#                     # Step 4: Delete recorded tags and pit tags
-#                     TrtRecordedTags.objects.filter(
-#                         observation_id__in=observation_ids
-#                     ).delete()
-
-#                     TrtRecordedPitTags.objects.filter(
-#                         observation_id__in=observation_ids
-#                     ).delete()
-
-#                     # Step 5: Update tags with new turtle ID
-#                     TrtTags.objects.filter(
-#                         tag_id__in=related_tag_ids
-#                     ).update(turtle_id=turtle_id)
-
-#                     # Step 6: Update observations with new turtle ID
-#                     observations.update(turtle_id=turtle_id)
-                    
-#                     # Step 7: Recreate recorded tags with new turtle ID
-#                     new_recorded_tags = []
-#                     for tag in recorded_tags:
-#                         tag['turtle_id'] = turtle_id
-#                         new_recorded_tags.append(TrtRecordedTags(**tag))
-#                     TrtRecordedTags.objects.bulk_create(new_recorded_tags)
-
-#                     # Step 8: Recreate recorded pit tags with new turtle ID
-#                     if recorded_pit_tags:
-#                         new_recorded_pit_tags = []
-#                         for pit_tag in recorded_pit_tags:
-#                             pit_tag['turtle_id'] = turtle_id
-#                             new_recorded_pit_tags.append(TrtRecordedPitTags(**pit_tag))
-#                         TrtRecordedPitTags.objects.bulk_create(new_recorded_pit_tags)
-
-#                     return JsonResponse({
-#                         'success': True,
-#                         'message': f'Successfully transferred {len(observation_ids)} observations'
-#                     })
-                    
-#                 except Exception as e:
-#                     # Transaction will automatically rollback
-#                     return JsonResponse({
-#                 'success': False,
-#                     'error': str(e)
-#                 }, status=500)
-
-#         except Exception as e:
-#             return JsonResponse({
-#                 'success': False,
-#                 'error': str(e)
-#             }, status=500)
             
 class TransferObservationsByTagView(LoginRequiredMixin, View):
     template_name = 'wamtram2/transfer_observation.html'
@@ -3856,7 +3630,7 @@ class ObservationManagementView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         observation_id = self.kwargs.get('observation_id')
-        # 默认设置为 null
+        
         context['initial_data'] = 'null'
         if observation_id:
             try:
@@ -3940,9 +3714,9 @@ class ObservationManagementView(LoginRequiredMixin, TemplateView):
                 'submit_url': reverse('wamtram2:observation_detail', kwargs={'observation_id': observation_id}) if observation_id else reverse('wamtram2:observation_detail'),
             })
         except Exception as e:
-            print(f"更新context时出错: {str(e)}")  # 添加日志
+            print(f"更新context时出错: {str(e)}") 
             import traceback
-            print(traceback.format_exc())  # 打印完整的错误堆栈
+            print(traceback.format_exc()) 
             
             for key in ['tag_states_choices', 'pit_tag_state_choices', 'measurement_type_choices',
                 'body_parts_choices', 'damage_codes_choices', 'damage_cause_choices']:
@@ -4283,16 +4057,14 @@ class SaveObservationView(LoginRequiredMixin, View):
 
 
     def _update_basic_info(self, observation, basic_info):
-        """更新基本信息"""
+        """Update basic information"""
         try:
-            # 处理日期时间
             if 'observation_date' in basic_info:
                 try:
                     datetime_obj = datetime.strptime(
                         basic_info['observation_date'], 
                         '%Y-%m-%dT%H:%M'
                     )
-                    # 确保使用正确的时区
                     if timezone.is_naive(datetime_obj):
                         datetime_obj = timezone.make_aware(
                             datetime_obj, 
@@ -4301,27 +4073,27 @@ class SaveObservationView(LoginRequiredMixin, View):
                     observation.observation_date = datetime_obj
                     observation.observation_time = datetime_obj
                 except ValueError as e:
-                    raise ValidationError(f"日期格式无效: {str(e)}")
+                    raise ValidationError(f"Invalid date format: {str(e)}")
 
-            # 更新其他基本字段
+            # Update other basic fields
             for field, value in basic_info.items():
                 if hasattr(observation, field):
-                    # 检查是否是外键字段
+                    # Check if it's a foreign key field
                     if field in self.FOREIGN_KEY_FIELDS:
-                        if value:  # 如果有值
-                            if isinstance(value, dict) and 'id' in value:  # 处理Select2格式的数据
+                        if value:  # If there's a value
+                            if isinstance(value, dict) and 'id' in value:  # Handle Select2 format
                                 value = value['id']
                             try:
-                                # 获取外键对象
+                                # Get the foreign key object
                                 model_class = self.FOREIGN_KEY_FIELDS[field]
                                 related_obj = model_class.objects.get(pk=value)
                                 setattr(observation, field, related_obj)
                             except model_class.DoesNotExist:
-                                print(f"找不到{field}对应的记录: {value}")
+                                print(f"Can't find the record for {field}: {value}")
                                 setattr(observation, field, None)
-                        else:  # 如果值为空，设置为None
+                        else:  # If the value is empty, set to None
                             setattr(observation, field, None)
-                    else:  # 非外键字段直接赋值
+                    else:  # Non-foreign key fields are assigned directly
                         if field == 'number_of_eggs':
                             if value == '' or value is None:
                                 value = None
@@ -4333,15 +4105,15 @@ class SaveObservationView(LoginRequiredMixin, View):
                         setattr(observation, field, value)
 
         except Exception as e:
-            print(f"更新基本信息时出错: {str(e)}")
+            print(f"Error updating basic information: {str(e)}")
             import traceback
             print(traceback.format_exc())
-            raise ValidationError(f"更新基本信息时出错: {str(e)}")
+            raise ValidationError(f"Error updating basic information: {str(e)}")
         
     def _update_tags(self, observation, tag_data):
-        """更新标签记录"""
-        try:
-            # 获取现有记录
+        """Update tag records tag records tag records"""
+        try:    
+            # Get existing recordsisting recordsisting records
             existing_tags = {
                 tag.tag_id_id: tag 
                 for tag in TrtRecordedTags.objects.filter(observation_id=observation)
@@ -4351,7 +4123,7 @@ class SaveObservationView(LoginRequiredMixin, View):
                 for pit in TrtRecordedPitTags.objects.filter(observation_id=observation)
             }
             
-            # 处理普通标签
+            # Process normal tags
             processed_tag_ids = set()
             for tag in tag_data.get('recorded_tags', []):
                 if tag.get('tag_id'):
@@ -4360,7 +4132,7 @@ class SaveObservationView(LoginRequiredMixin, View):
                         processed_tag_ids.add(tag_instance.tag_id)
                         
                         if tag_instance.tag_id in existing_tags:
-                            # 更新现有记录
+                            # Update existing record
                             existing_tag = existing_tags[tag_instance.tag_id]
                             existing_tag.side = tag.get('tag_side')
                             existing_tag.tag_position = tag.get('tag_position')
@@ -4369,9 +4141,8 @@ class SaveObservationView(LoginRequiredMixin, View):
                             existing_tag.turtle_id = observation.turtle_id
                             existing_tag.save()
                         else:
-                            # 创建新记录 - 使用 observation_id 而不是 observation
                             TrtRecordedTags.objects.create(
-                                observation_id=observation,  # 这是正确的字段名
+                                observation_id=observation,
                                 tag_id=tag_instance,
                                 side=tag.get('tag_side'),
                                 tag_position=tag.get('tag_position'),
@@ -4383,7 +4154,7 @@ class SaveObservationView(LoginRequiredMixin, View):
                         print(f"找不到标签记录: {tag['tag_id']}")
                         continue
             
-            # 处理 PIT 标签
+            # Process PIT tags
             processed_pit_tag_ids = set()
             for pit_tag in tag_data.get('recorded_pit_tags', []):
                 if pit_tag.get('tag_id'):
@@ -4392,15 +4163,15 @@ class SaveObservationView(LoginRequiredMixin, View):
                         processed_pit_tag_ids.add(pit_tag_instance.pittag_id)
                         
                         if pit_tag_instance.pittag_id in existing_pit_tags:
-                            # 更新现有记录
+                            # Update existing record
                             existing_pit = existing_pit_tags[pit_tag_instance.pittag_id]
                             existing_pit.pit_tag_position = pit_tag.get('tag_position')
                             existing_pit.pit_tag_state_id = pit_tag.get('tag_state')
                             existing_pit.save()
                         else:
-                            # 创建新记录
+                            # Create new record
                             TrtRecordedPitTags.objects.create(
-                                observation_id=observation,  # 同样使用正确的字段名
+                                observation_id=observation,
                                 pittag_id=pit_tag_instance,
                                 pit_tag_position=pit_tag.get('tag_position'),
                                 pit_tag_state_id=pit_tag.get('tag_state'),
@@ -4408,16 +4179,16 @@ class SaveObservationView(LoginRequiredMixin, View):
                                 checked=True
                             )
                     except TrtPitTags.DoesNotExist:
-                        print(f"找不到PIT标签记录: {pit_tag['tag_id']}")
+                        print(f"Can't find the record for PIT tag: {pit_tag['tag_id']}")
                         continue
 
         except Exception as e:
-            print(f"更新标签记录时出错: {str(e)}")
+            print(f"Error updating tag records: {str(e)}")
             print(traceback.format_exc())
-            raise ValidationError(f"更新标签记录时出错: {str(e)}")
+            raise ValidationError(f"Error updating tag records: {str(e)}")
         
     def _update_location(self, observation, location_data):
-        """更新位置信息"""
+        """Update location information"""
         if location_data:
             for field in ['place_code', 'datum_code', 'latitude', 'longitude']:
                 if field in location_data:
@@ -4430,13 +4201,13 @@ class SaveObservationView(LoginRequiredMixin, View):
                         except self.FOREIGN_KEY_FIELDS[field].DoesNotExist:
                             setattr(observation, field, None)
                     else:
-                        # 处理数值字段的空值情况
+                        # Handle empty values for numeric fields
                         value = location_data[field]
                         if field in ['latitude', 'longitude']:
-                            # 如果是空字符串或None，设置为None
+                            # If it's an empty string or None, set to None
                             if value == '' or value is None:
                                 value = None
-                            # 如果是有效数字字符串，转换为float
+                            # If it's a valid numeric string, convert to float
                             elif isinstance(value, str):
                                 try:
                                     value = float(value)
@@ -4446,9 +4217,9 @@ class SaveObservationView(LoginRequiredMixin, View):
             observation.save()
 
     def _update_identifications(self, observation, identification_data):
-        """更新识别记录"""
+        """Update identification records"""
         try:
-            # 获取现有记录
+            # Get existing records
             existing_identifications = {
                 str(record.turtle_id): record 
                 for record in TrtRecordedIdentification.objects.filter(
@@ -4456,28 +4227,28 @@ class SaveObservationView(LoginRequiredMixin, View):
                 )
             }
             
-            # 处理新记录
+            # Process new records
             for record in identification_data:
                 if record.get('turtle_id'):
                     try:
-                        # 处理turtle_id
+                        # Process turtle_id
                         turtle_id = record['turtle_id']
                         if isinstance(turtle_id, str) and turtle_id.startswith('T'):
-                            # 如果是以'T'开头的字符串，去掉'T'
+                            # If it starts with 'T', remove 'T'
                             numeric_turtle_id = turtle_id[1:]
                         else:
                             numeric_turtle_id = str(turtle_id)
                         
-                        # 检查是否存在现有记录
+                        # Check if the record exists
                         if numeric_turtle_id in existing_identifications:
-                            # 更新现有记录
+                            # Update existing record
                             existing_record = existing_identifications[numeric_turtle_id]
                             existing_record.identification_type_id = record.get('identification_type')
                             existing_record.identifier = record.get('identifier')
                             existing_record.comments = record.get('comments')
                             existing_record.save()
                         else:
-                            # 创建新记录
+                            # Create new record
                             TrtRecordedIdentification.objects.create(
                                 observation_id=observation.observation_id,
                                 turtle_id=numeric_turtle_id,
@@ -4487,40 +4258,40 @@ class SaveObservationView(LoginRequiredMixin, View):
                             )
                             
                     except (ValueError, TypeError) as e:
-                        print(f"处理turtle_id时出错: {str(e)}, turtle_id: {record.get('turtle_id')}")
+                        print(f"Error processing turtle_id: {str(e)}, turtle_id: {record.get('turtle_id')}")
                         continue
                     except Exception as e:
-                        print(f"处理识别记录时出错: {str(e)}")
+                        print(f"Error processing identification records: {str(e)}")
                         print(traceback.format_exc())
                         continue
                         
         except Exception as e:
-            print(f"更新识别记录时出错: {str(e)}")
+            print(f"Error updating identification records: {str(e)}")
             print(traceback.format_exc())
-            raise ValidationError(f"更新识别记录时出错: {str(e)}")
+            raise ValidationError(f"Error updating identification records: {str(e)}")
 
     def _update_measurements(self, observation, measurements):
-        """更新测量记录"""
+        """Update measurement records"""
         try:
-            # 获取现有的测量记录
+            # Get existing records
             existing_measurements = {
                 measure.measurement_type_id: measure 
                 for measure in observation.trtmeasurements_set.all()
             }
             
-            # 处理每个测量记录
+            #   
             for measurement in measurements:
-                if measurement.get('measurement_value') is not None:  # 确保有测量值
+                if measurement.get('measurement_value') is not None:  # Ensure there's a measurement value
                     measurement_type = measurement.get('measurement_type')
                     
                     if measurement_type in existing_measurements:
-                        # 更新现有记录
+                        # Update existing record
                         existing_measure = existing_measurements[measurement_type]
                         existing_measure.measurement_value = measurement['measurement_value']
                         existing_measure.comments = measurement.get('comments')
                         existing_measure.save()
                     else:
-                        # 创建新记录
+                        # Create new record
                         TrtMeasurements.objects.create(
                             observation_id=observation,
                             measurement_type_id=measurement_type,
@@ -4529,34 +4300,34 @@ class SaveObservationView(LoginRequiredMixin, View):
                         )
 
         except Exception as e:
-            print(f"更新测量记录时出错: {str(e)}")
+            print(f"Error updating measurement records: {str(e)}")
             print(traceback.format_exc())
-            raise ValidationError(f"更新测量记录时出错: {str(e)}")
+            raise ValidationError(f"Error updating measurement records: {str(e)}")
 
     def _update_damage_records(self, observation, damage_records):
-        """更新损伤记录"""
+        """Update damage records"""
         try:
-            # 获取现有的损伤记录
+            # Get existing records
             existing_damages = {
                 damage.body_part_id: damage 
                 for damage in observation.damages.all()
             }
             
-            # 处理每个损伤记录
+            # Process each damage record
             for damage in damage_records:
                 if damage.get('body_part') and damage.get('damage_code'):
                     body_part_id = damage['body_part']
                     
                     try:
                         if body_part_id in existing_damages:
-                            # 更新现有记录
+                            # Update existing record
                             existing_damage = existing_damages[body_part_id]
                             existing_damage.damage_code_id = damage['damage_code']
                             existing_damage.damage_cause_code_id = damage.get('damage_cause_code')
                             existing_damage.comments = damage.get('comments')
                             existing_damage.save()
                         else:
-                            # 创建新记录
+                            # Create new record
                             TrtDamage.objects.create(
                                 observation=observation,
                                 body_part_id=body_part_id,
@@ -4565,52 +4336,52 @@ class SaveObservationView(LoginRequiredMixin, View):
                                 comments=damage.get('comments')
                             )
                     except IntegrityError as e:
-                        print(f"处理损伤记录时出现完整性错误: {str(e)}")
+                        print(f"Integrity error processing damage records: {str(e)}")
                         print(f"observation_id={observation.observation_id}, body_part={body_part_id}")
                         continue
                     except Exception as e:
-                        print(f"处理损伤记录时出错: {str(e)}")
+                        print(f"Error processing damage records: {str(e)}")
                         print(traceback.format_exc())
                         continue
 
         except Exception as e:
-            print(f"更新损伤记录时出错: {str(e)}")
+            print(f"Error updating damage records: {str(e)}")
             print(traceback.format_exc())
-            raise ValidationError(f"更新损伤记录时出错: {str(e)}")
+            raise ValidationError(f"Error updating damage records: {str(e)}")
 
     def _update_scars(self, observation, scars_data):
-        """更新疤痕记录"""
+        """Update scar records"""
         try:
             if scars_data:
-                # 更新左侧疤痕
+                # Update left scars
                 observation.scars_left = scars_data.get('scars_left', False)
                 observation.scars_left_scale_1 = scars_data.get('scars_left_scale_1', False)
                 observation.scars_left_scale_2 = scars_data.get('scars_left_scale_2', False)
                 observation.scars_left_scale_3 = scars_data.get('scars_left_scale_3', False)
                 
-                # 更新右侧疤痕
+                # Update right scars
                 observation.scars_right = scars_data.get('scars_right', False)
                 observation.scars_right_scale_1 = scars_data.get('scars_right_scale_1', False)
                 observation.scars_right_scale_2 = scars_data.get('scars_right_scale_2', False)
                 observation.scars_right_scale_3 = scars_data.get('scars_right_scale_3', False)
                 
-                # 更新检查状态
+                # Update check status
                 observation.tagscarnotchecked = scars_data.get('tag_scar_not_checked', False)
                 observation.didnotcheckforinjury = scars_data.get('did_not_check_for_injury', False)
                 
                 observation.save()
         except Exception as e:
-            print(f"更新疤痕记录时出错: {str(e)}")
+            print(f"Error updating scar records: {str(e)}")
             print(traceback.format_exc())
-            raise ValidationError(f"更新疤痕记录时出错: {str(e)}")
+            raise ValidationError(f"Error updating scar records: {str(e)}")
 
     def _update_other_tags(self, observation, other_tags_data):
-        """更新其他标签信息"""
+        """Update other tag information"""
         try:
             if other_tags_data:
                 observation.other_tags = other_tags_data.get('other_tags')
                 
-                # 更新标识类型
+                # Update identification type
                 identification_type = other_tags_data.get('identification_type')
                 if identification_type:
                     try:
@@ -4625,16 +4396,16 @@ class SaveObservationView(LoginRequiredMixin, View):
                     
                 observation.save()
         except Exception as e:
-            print(f"更新其他标签信息时出错: {str(e)}")
+            print(f"Error updating other tag information: {str(e)}")
             print(traceback.format_exc())
-            raise ValidationError(f"更新其他标签信息时出错: {str(e)}")
+            raise ValidationError(f"Error updating other tag information: {str(e)}")
 
     def _update_status(self, observation):
-        """更新观察记录状态"""
+        """Update observation status"""
         try:
-            # 根据业务规则计算状态
+            # Calculate status based on business rules
             if observation.nesting and observation.nesting.code == 'Y':
-                # 检查是否是初次观察
+                # Check if it's the first observation
                 previous_observations = TrtObservations.objects.filter(
                     turtle_id=observation.turtle_id,
                     observation_date__lt=observation.observation_date
@@ -4646,50 +4417,50 @@ class SaveObservationView(LoginRequiredMixin, View):
                 
             observation.save()
         except Exception as e:
-            print(f"更新观察记录状态时出错: {str(e)}")
+            print(f"Error updating observation status: {str(e)}")
             print(traceback.format_exc())
-            raise ValidationError(f"更新观察记录状态时出错: {str(e)}")
+            raise ValidationError(f"Error updating observation status: {str(e)}")
 
     def _validate_data(self, data):
-        """验证输入数据"""
+        """Validate input data"""
         try:
-            # 验证必填字段
+            # Validate required fields
             required_fields = ['observation_date', 'turtle_id']
             for field in required_fields:
                 if not data.get('basic_info', {}).get(field):
-                    raise ValidationError(f"缺少必填字段: {field}")
+                    raise ValidationError(f"Missing required field: {field}")
             
-            # 验证日期格式
+            # Validate date format
             try:
                 datetime.strptime(
                     data['basic_info']['observation_date'], 
                     '%Y-%m-%dT%H:%M'
                 )
             except (ValueError, KeyError):
-                raise ValidationError("日期格式无效")
+                raise ValidationError("Invalid date format")
             
-            # 验证坐标
+            # Validate coordinates
             location = data.get('location', {})
             if location.get('latitude') is not None:
                 try:
                     lat = float(location['latitude'])
                     if not -90 <= lat <= 90:
-                        raise ValidationError("纬度必须在 -90 到 90 之间")
+                        raise ValidationError("Latitude must be between -90 and 90")
                 except ValueError:
-                    raise ValidationError("纬度必须是有效的数字")
+                    raise ValidationError("Latitude must be a valid number")
                     
             if location.get('longitude') is not None:
                 try:
                     lon = float(location['longitude'])
                     if not -180 <= lon <= 180:
-                        raise ValidationError("经度必须在 -180 到 180 之间")
+                        raise ValidationError("Longitude must be between -180 and 180")
                 except ValueError:
-                    raise ValidationError("经度必须是有效的数字")
+                    raise ValidationError("Longitude must be a valid number")
                     
         except Exception as e:
-            print(f"数据验证时出错: {str(e)}")
+            print(f"Error validating data: {str(e)}")
             print(traceback.format_exc())
-            raise ValidationError(f"数据验证时出错: {str(e)}")
+            raise ValidationError(f"Error validating data: {str(e)}")
 
 
 class TurtleManagementView(TemplateView):
