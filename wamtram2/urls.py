@@ -43,7 +43,7 @@ urlpatterns = [
     path('api/batch/<int:batch_id>/info/', views.BatchInfoView.as_view(), name='batch_info'),
     path('api/move-entry/', views.MoveEntryView.as_view(), name='move_entry'),
     path('curation/persons/manage/', views.PersonManageView.as_view(), name='manage_person'),
-    path('curation/tags/register/', views.TagRegisterView.as_view(), name='tag_register'),
+    path('curation/tags-register/', views.TagRegisterView.as_view(), name='tag_register'),
     path('turtle/<int:pk>/export/', views.TurtleDetailView.as_view(http_method_names=['get']), name='export_turtle_word'),
     path('admin-tools/', views.AdminToolsView.as_view(), name='admin_tools'),
     path('curation/pit-tags/', views.PitTagsListView.as_view(), name='pit_tags_list'),
@@ -58,4 +58,6 @@ urlpatterns = [
     path('curation/observations-management/<int:observation_id>/',views.ObservationManagementView.as_view(), name='observation_management'),
     path('api/turtle-search/', views.TurtleManagementView.as_view(), name='turtle_search'),
     path('api/turtle-update/', views.TurtleManagementView.as_view(), name='turtle_update'),
+    path('api/observations/<int:observation_id>/save/', views.SaveObservationView.as_view(), name='save_observation'),
+    path('api/observations/save/', views.SaveObservationView.as_view(), name='create_observation'),
 ]

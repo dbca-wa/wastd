@@ -16,7 +16,8 @@ function initializeBasicSelects() {
         'beach_position_code',
         'condition_code',
         'egg_count_method',
-        'datum_code'
+        'datum_code',
+        'date_convention'
     ];
 
     basicSelects.forEach(selectName => {
@@ -101,10 +102,15 @@ function initializePlaceSearch() {
 
 // Set all initial form values
 function setInitialFormValues() {
-    setBasicFields();
-    setTagInfo();
-    setMeasurements();
-    setDamageRecords();
+    if (initialData) { 
+        setBasicFields();
+        setTagInfo();
+        setMeasurements();
+        setDamageRecords();
+        setOtherIdentification();
+        setScars();
+        setOtherTagInfo();
+    }
 }
 
 // Set basic form fields
@@ -127,6 +133,11 @@ function setBasicFields() {
         }
     });
 
+    if (basicInfo.turtle_id) {
+        $('[name="turtle_id"]').val(basicInfo.turtle_id);
+        $('#turtleDetailLink').attr('href', `/wamtram2/turtles/${basicInfo.turtle_id}/`);
+    }
+
     // Set place select
     if (basicInfo.place_code) {
         const $placeSelect = $('select[name="place_code"]');
@@ -138,8 +149,8 @@ function setBasicFields() {
     const basicFields = [
         'observation_id', 'turtle_id', 'alive', 'nesting',
         'activity_code', 'beach_position_code', 'condition_code',
-        'egg_count_method', 'status', 'comments',
-        'datum_code', 'latitude', 'longitude' 
+        'egg_count_method', 'observation_status', 'comments', 'clutch_completed', 'date_convention',
+        'datum_code', 'latitude', 'longitude', 'number_of_eggs'
     ];
 
     basicFields.forEach(fieldName => {
@@ -176,7 +187,7 @@ function setMeasurements() {
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Measurement Type</label>
-                                <select class="form-control" name="measurement_type">
+                                <select class="form-control" name="measurement_type" value="${measurement.measurement_type}">
                                     <option value="">Select...</option>
                                     ${measurementTypeChoices.map(type => `
                                         <option value="${type.measurement_type}" ${measurement.measurement_type === type.measurement_type ? 'selected' : ''}>
@@ -189,7 +200,7 @@ function setMeasurements() {
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Value</label>
-                                <input type="number" step="0.1" class="form-control" name="measurement_value" value="${measurement.measurement_value}">
+                                <input type="number" class="form-control" name="measurement_value" value="${measurement.measurement_value}">
                             </div>
                         </div>
                     </div>
@@ -217,7 +228,7 @@ function setDamageRecords() {
             <div class="card mb-3 damage-card">
                 <div class="card-body">
                     <div class="form-row">
-                        <div class="col-md-3">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label>Body Part</label>
                                 <select class="form-control" name="body_part">
@@ -230,7 +241,7 @@ function setDamageRecords() {
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label>Damage Code</label>
                                 <select class="form-control" name="damage_code">
@@ -243,20 +254,7 @@ function setDamageRecords() {
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label>Damage Cause</label>
-                                <select class="form-control" name="damage_cause_code">
-                                    <option value="">Select...</option>
-                                    ${damageCauseChoices.map(cause => `
-                                        <option value="${cause.damage_cause_code}" ${damage.damage_cause_code === cause.damage_cause_code ? 'selected' : ''}>
-                                            ${cause.description}
-                                        </option>
-                                    `).join('')}
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label>Comments</label>
                                 <input type="text" class="form-control" name="damage_comments" value="${damage.comments || ''}">
@@ -385,15 +383,211 @@ function setTagInfo() {
     }
 }
 
+function setOtherIdentification() {
+    const container = document.getElementById('otherIdContainer');
+    if (!container || !initialData.recorded_identifications) return;
+
+    container.innerHTML = '';
+
+    if (initialData.recorded_identifications.length === 0) {
+        container.innerHTML = '<p class="text-muted">No other identification records found</p>';
+        return;
+    }
+
+    initialData.recorded_identifications.forEach(record => {
+        const recordHtml = `
+            <div class="card mb-3 identification-card">
+                <div class="card-body">
+                    <div class="form-row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Turtle ID</label>
+                                <input type="text" class="form-control" name="turtle_id[]" value="${record.turtle_id || ''}" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Identification Type</label>
+                                <select class="form-control" name="identification_type[]">
+                                    <option value="">Select...</option>
+                                    ${identificationTypeChoices.map(type => `
+                                        <option value="${type.identification_type}" 
+                                            ${record.identification_type === type.identification_type ? 'selected' : ''}>
+                                            ${type.description}
+                                        </option>
+                                    `).join('')}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Identifier</label>
+                                <input type="text" class="form-control" name="identifier[]" value="${record.identifier || ''}">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Comments</label>
+                                <input type="text" class="form-control" name="identification_comments[]" value="${record.comments || ''}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        container.insertAdjacentHTML('beforeend', recordHtml);
+    });
+
+    container.querySelectorAll('select').forEach(select => {
+        $(select).select2({
+            placeholder: 'Select...',
+            allowClear: true
+        });
+    });
+}
+
+function setOtherTagInfo() {
+    const container = document.getElementById('otherTagInfoContainer');
+    console.log('Setting other tag info:', initialData.other_tags_data); // 添加调试日志
+    
+    if (!container || !initialData.other_tags_data) {
+        console.log('Container or other tags data missing:', {
+            container, 
+            other_tags_data: initialData.other_tags_data
+        });
+        return;
+    }
+
+    const otherTagInfoHtml = `
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Other Tags</label>
+                            <input type="text" class="form-control" name="other_tags" 
+                                value="${initialData.other_tags_data.other_tags || ''}">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Identification Type</label>
+                            <select class="form-control" name="other_tags_identification_type">
+                                <option value="">Select...</option>
+                                ${identificationTypeChoices.map(type => `
+                                    <option value="${type.identification_type}" 
+                                        ${initialData.other_tags_data.identification_type === type.identification_type ? 'selected' : ''}>
+                                        ${type.description}
+                                    </option>
+                                `).join('')}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    container.innerHTML = otherTagInfoHtml;
+
+    $('[name="other_tags_identification_type"]').select2({
+        placeholder: 'Select identification type...',
+        allowClear: true
+    });
+}
+
+function setScars() {
+    const container = document.getElementById('scarsContainer');
+    if (!container || !initialData.scars) return;
+
+    const scarsHtml = `
+        <div class="form-row">
+            <div class="col-md-6">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Left Side</h5>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" name="scars_left" 
+                                ${initialData.scars.scars_left ? 'checked' : ''}>
+                            <label class="form-check-label">Scars Left</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" name="scars_left_scale_1" 
+                                ${initialData.scars.scars_left_scale_1 ? 'checked' : ''}>
+                            <label class="form-check-label">Scale 1</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" name="scars_left_scale_2" 
+                                ${initialData.scars.scars_left_scale_2 ? 'checked' : ''}>
+                            <label class="form-check-label">Scale 2</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" name="scars_left_scale_3" 
+                                ${initialData.scars.scars_left_scale_3 ? 'checked' : ''}>
+                            <label class="form-check-label">Scale 3</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Right Side</h5>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" name="scars_right" 
+                                ${initialData.scars.scars_right ? 'checked' : ''}>
+                            <label class="form-check-label">Scars Right</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" name="scars_right_scale_1" 
+                                ${initialData.scars.scars_right_scale_1 ? 'checked' : ''}>
+                            <label class="form-check-label">Scale 1</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" name="scars_right_scale_2" 
+                                ${initialData.scars.scars_right_scale_2 ? 'checked' : ''}>
+                            <label class="form-check-label">Scale 2</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" name="scars_right_scale_3" 
+                                ${initialData.scars.scars_right_scale_3 ? 'checked' : ''}>
+                            <label class="form-check-label">Scale 3</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" name="tag_scar_not_checked" 
+                        ${initialData.scars.tag_scar_not_checked ? 'checked' : ''}>
+                    <label class="form-check-label">Tag Scar Not Checked</label>
+                </div>
+            </div>
+        </div>
+    `;
+    container.innerHTML = scarsHtml;
+}
+
+
 // Handle form submission
 function handleFormSubmit() {
     const formData = {
+        observation_id: $('[name="observation_id"]').val(),
         basic_info: getBasicInfo(),
         tag_info: getTagInfo(),
         measurements: getMeasurements(),
         damage_records: getDamageRecords(),
-        location: getLocationInfo()
+        location: getLocationInfo(),
+        recorded_identifications: getIdentifications(),
+        other_tags_data: getOtherTagInfo(),
+        scars: getScars()
     };
+
+    const observation_id = formData.observation_id;
+    const submitUrl = observation_id ? 
+        `/wamtram2/api/observations/${observation_id}/save/` : 
+        '/wamtram2/api/observations/save/';
 
     $.ajax({
         url: submitUrl,
@@ -405,31 +599,61 @@ function handleFormSubmit() {
         },
         success: function(response) {
             if (response.status === 'success') {
-                showSuccessMessage('Observation saved successfully');
+                showSuccessMessage('观察记录保存成功');
+                // 如果是新建记录，可能需要更新URL或其他UI元素
+                if (!observation_id) {
+                    window.history.replaceState(
+                        {}, 
+                        '', 
+                        `/wamtram2/curation/observations-management/${response.observation_id}/`
+                    );
+                }
             } else {
-                showErrorMessage(response.message || 'Error saving observation');
+                showErrorMessage(response.message || '保存观察记录时出错');
             }
         },
         error: function(xhr) {
-            showErrorMessage('Error saving observation');
+            showErrorMessage('保存观察记录时发生错误');
         }
     });
 }
-
 // Get basic information from form
 function getBasicInfo() {
     const observationDateTime = $('[name="observation_date"]').val();
+    
+    function getSelect2Value(selectName) {
+        const $select = $(`select[name="${selectName}"]`);
+        const data = $select.select2('data')[0];
+        return data ? data.id : null; 
+    }
+
     return {
         observation_id: $('[name="observation_id"]').val(),
         observation_date: observationDateTime,
-        alive: $('[name="alive"]').val(),
-        nesting: $('[name="nesting"]').val(),
-        activity_code: $('[name="activity_code"]').val(),
-        beach_position_code: $('[name="beach_position_code"]').val(),
-        condition_code: $('[name="condition_code"]').val(),
-        egg_count_method: $('[name="egg_count_method"]').val(),
-        status: $('[name="status"]').val(),
-        comments: $('[name="comments"]').val()
+        alive: $('[name="alive"]').val() || null,
+        nesting: $('[name="nesting"]').val() || null,
+        clutch_completed: $('[name="clutch_completed"]').val() || null,
+        activity_code: $('[name="activity_code"]').val() || null,
+        beach_position_code: $('[name="beach_position_code"]').val() || null,
+        condition_code: $('[name="condition_code"]').val() || null,
+        number_of_eggs: $('[name="number_of_eggs"]').val() || null,
+        egg_count_method: $('[name="egg_count_method"]').val() || null,
+        datum_code: $('[name="datum_code"]').val() || null,
+        
+        measurer_person: getSelect2Value('measurer_person'),
+        measurer_reporter_person: getSelect2Value('measurer_reporter_person'),
+        tagger_person: getSelect2Value('tagger_person'),
+        reporter_person: getSelect2Value('reporter_person'),
+        place_code: getSelect2Value('place_code'),
+        
+        comments: $('[name="comments"]').val() || '',
+        other_tags: $('[name="other_tags"]').val() || '',
+        other_tags_identification_type: $('[name="other_tags_identification_type"]').val() || null,
+        
+        latitude: $('[name="latitude"]').val() || null,
+        longitude: $('[name="longitude"]').val() || null,
+        
+        date_convention: $('[name="date_convention"]').val() || null
     };
 }
 
@@ -445,6 +669,29 @@ function getMeasurements() {
     return measurements;
 }
 
+function getOtherTagInfo() {
+    return {
+        other_tags: $('[name="other_tags"]').val(),
+        identification_type: $('[name="other_tags_identification_type"]').val()
+    };
+}
+
+
+function getScars() {
+    return {
+        scars_left: $('[name="scars_left"]').prop('checked'),
+        scars_right: $('[name="scars_right"]').prop('checked'),
+        scars_left_scale_1: $('[name="scars_left_scale_1"]').prop('checked'),
+        scars_left_scale_2: $('[name="scars_left_scale_2"]').prop('checked'),
+        scars_left_scale_3: $('[name="scars_left_scale_3"]').prop('checked'),
+        scars_right_scale_1: $('[name="scars_right_scale_1"]').prop('checked'),
+        scars_right_scale_2: $('[name="scars_right_scale_2"]').prop('checked'),
+        scars_right_scale_3: $('[name="scars_right_scale_3"]').prop('checked'),
+        tag_scar_not_checked: $('[name="tag_scar_not_checked"]').prop('checked')
+    };
+}
+
+
 // Get damage records from form
 function getDamageRecords() {
     const damageRecords = [];
@@ -457,6 +704,19 @@ function getDamageRecords() {
         });
     });
     return damageRecords;
+}
+
+function getIdentifications() {
+    const identifications = [];
+    $('.identification-card').each(function() {
+        identifications.push({
+            turtle_id: $(this).find('[name="turtle_id[]"]').val(),
+            identification_type: $(this).find('[name="identification_type[]"]').val(),
+            identifier: $(this).find('[name="identifier[]"]').val(),
+            comments: $(this).find('[name="identification_comments[]"]').val()
+        });
+    });
+    return identifications;
 }
 
 // Get location information from form
