@@ -70,7 +70,7 @@ class Command(BaseCommand):
             enc.save()
 
         # Check: Any turtle nest encounter with uncertain nest age.
-        nest_encounters = TurtleNestEncounter.objects.filter(nest_age=NEST_AGE_DEFAULT, status=Encounter.STATUS_IMPORTED)
+        nest_encounters = TurtleNestEncounter.objects.filter(nest_age="unknown", status=Encounter.STATUS_IMPORTED)
         if nest_encounters:
             logger.info(f'Flagging {nest_encounters.count()} turtle nest encounters for curation due to uncertain nest age')
         for enc in nest_encounters:
