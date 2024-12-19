@@ -1634,12 +1634,6 @@ class ValidateTagView(View):
     def validate_recaptured_pit_tag(self, request):
         """
         Validates a recaptured PIT tag.
-
-        Args:
-            request (HttpRequest): The HTTP request.
-
-        Returns:
-            JsonResponse: The JSON response.
         """
         turtle_id = request.GET.get('turtle_id')
         tag = request.GET.get('tag')
@@ -1648,6 +1642,21 @@ class ValidateTagView(View):
             return JsonResponse({'valid': False, 'message': 'Missing parameters'})
 
         try:
+            new_pit_tag_entry = TrtDataEntry.objects.filter(
+                Q(new_pittag_id__pittag_id=tag) |
+                Q(new_pittag_id_2__pittag_id=tag) |
+                Q(new_pittag_id_3__pittag_id=tag) |
+                Q(new_pittag_id_4__pittag_id=tag),
+                observation_id__isnull=True,
+            ).order_by('-entry_batch__entry_date').first()
+            
+            if new_pit_tag_entry:
+                return JsonResponse({
+                    'valid': True, 
+                    'message': 'PIT Tag found in previous unprocessed entry',
+                    'entry_date': new_pit_tag_entry.entry_batch.entry_date.strftime('%Y-%m-%d')
+                })
+
             if turtle_id:
                 turtle_id = int(turtle_id)
                 pit_tag = TrtPitTags.objects.filter(pittag_id=tag).select_related('turtle').first()
@@ -1689,9 +1698,6 @@ class ValidateTagView(View):
                     return JsonResponse({'valid': False, 'message': 'PIT tag not found', 'tag_not_found': True})
         except Exception as e:
             return JsonResponse({'valid': False, 'message': str(e)})
-
-
-
 
     def get(self, request, *args, **kwargs):
         """
@@ -2420,6 +2426,7 @@ def search_templates(request):
         data = [{'template_id': t.template_id, 'name': t.name} for t in templates]
         return JsonResponse(data, safe=False)
     return JsonResponse([], safe=False)
+    
     
 class BatchCodeManageView(View):
     template_name = 'wamtram2/batch_detail_manage.html'
@@ -3515,7 +3522,6 @@ class EntryCurationView(LoginRequiredMixin, PaginateMixin, ListView):
                             })
                             processed_fields.add(field_name)
                 
-            
                 sorted_fields = sorted(group_fields, key=lambda x: field_order.get(x['field'], float('inf')))
                 all_columns.extend(sorted_fields)
     
