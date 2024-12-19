@@ -1048,6 +1048,12 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
+
+    let isSubmitting = false;
+    
+    const form = document.getElementById('dataEntryForm');
+    let isFormDirty = false;
+
     // URL for adding a new person
     const adminUrl = "{% url 'admin:wamtram2_trtpersons_add' %}";
     
@@ -1058,8 +1064,6 @@
     const entryId = "{{ entry_id }}";
     const templateId = "{{ selected_template }}";
 
-    const form = document.getElementById('dataEntryForm');
-    let isFormDirty = false;
 
     // Function to set tag and validate
     function setTagAndValidate(fieldId, tagId) {
