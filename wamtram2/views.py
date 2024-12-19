@@ -4006,14 +4006,13 @@ class SaveObservationView(LoginRequiredMixin, View):
         try:
             data = json.loads(request.body)
             
-            # 获取或创建观察记录
             observation_id = observation_id or data.get('observation_id')
             if observation_id:
                 observation = TrtObservations.objects.get(pk=observation_id)
             else:
                 observation = TrtObservations()
             
-            # 更新基本信息
+
             self._update_basic_info(observation, data.get('basic_info', {}))
             observation.save()
             self._update_tags(observation, data.get('tag_info', {}))
@@ -4036,12 +4035,12 @@ class SaveObservationView(LoginRequiredMixin, View):
                 'message': str(e)
             }, status=400)
         except Exception as e:
-            print(f"保存观察记录时出错: {str(e)}")
+            print(f"Error during save record: {str(e)}")
             import traceback
             print(traceback.format_exc())
             return JsonResponse({
                 'status': 'error',
-                'message': f'保存观察记录时出错: {str(e)}'
+                'message': f'Error during save record: {str(e)}'
             }, status=500)
 
     FOREIGN_KEY_FIELDS = {
