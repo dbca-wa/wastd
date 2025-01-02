@@ -1244,9 +1244,13 @@ class TrtDocuments(models.Model):
     turtle_id = models.IntegerField(
         db_column="TURTLE_ID", blank=True, null=True
     )  # Field name made lowercase.
-    person_id = models.IntegerField(
-        db_column="PERSON_ID", blank=True, null=True
-    )  # Field name made lowercase.
+    person_id = models.ForeignKey(
+        'TrtPersons',
+        db_column="PERSON_ID",
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL
+    ) # Field name made lowercase.
     species_code = models.CharField(
         db_column="SPECIES_CODE", max_length=2, blank=True, null=True
     )  # Field name made lowercase.
@@ -2536,7 +2540,6 @@ class TrtYesNo(models.Model):
 
     def __str__(self):
         return f"{self.description}"
-
 
 SEX_CHOICES = [
     ("F", "Female"),

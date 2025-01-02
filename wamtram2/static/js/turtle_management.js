@@ -464,7 +464,8 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label>Person</label>
-                                    <input type="text" class="form-control" name="person_id" value="${doc.person_id || ''}" >
+                                    <input type="text" class="form-control" name="person_name" value="${doc.person_name || ''}" readonly>
+                                    <input type="hidden" name="person_id" value="${doc.person_id || ''}">
                                 </div>
                             </div>
                             <div class="col-md-3">
@@ -486,18 +487,49 @@ document.addEventListener('DOMContentLoaded', function() {
             loadingSpinner.style.display = 'block';
             loadingOverlay.style.display = 'block';
 
-            const formData = {};
-            const formElements = searchResultForm.querySelectorAll('input, select');
-            formElements.forEach(element => {
-                formData[element.name] = element.value;
+            const formData = {
+                basic: {},
+                flipperTags: [],
+                pitTags: [],
+                identifications: []
+            };
+
+            // Collect basic information
+            searchResultForm.querySelectorAll('input, select').forEach(element => {
+                if (!element.closest('.tag-card, .pit-tag-card, .identification-card')) {
+                    formData.basic[element.name] = element.value;
+                }
+            });
+
+            // Collect flipper tags
+            document.querySelectorAll('.tag-card').forEach(card => {
+                const tagData = {};
+                card.querySelectorAll('input, select').forEach(element => {
+                    tagData[element.name] = element.value;
+                });
+                formData.flipperTags.push(tagData);
+            });
+
+            // Collect PIT tags
+            document.querySelectorAll('.pit-tag-card').forEach(card => {
+                const tagData = {};
+                card.querySelectorAll('input, select').forEach(element => {
+                    tagData[element.name] = element.value;
+                });
+                formData.pitTags.push(tagData);
+            });
+
+            // Collect identifications
+            document.querySelectorAll('.identification-card').forEach(card => {
+                const identData = {};
+                card.querySelectorAll('input, select').forEach(element => {
+                    identData[element.name] = element.value;
+                });
+                formData.identifications.push(identData);
             });
 
             const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-            if (!csrfToken) {
-                throw new Error('CSRF token not found');
-            }
-    
-
+            
             const response = await fetch('/wamtram2/api/turtle-update/', {
                 method: 'POST',
                 headers: {
@@ -512,6 +544,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (data.status === 'success') {
                 showAlert('Changes saved successfully!', 'success');
+                hasUnsavedChanges = false;
             } else {
                 showAlert(data.message || 'Error saving changes', 'danger');
             }
@@ -571,6 +604,151 @@ document.addEventListener('DOMContentLoaded', function() {
             pendingSearchData = null;
             handleSearch(searchType, searchValue);
         }
+    });
+
+    // Load tag statuses from template data
+    function loadTagStatuses() {
+        const tagStatusesScript = document.getElementById('tag-statuses-data');
+        if (tagStatusesScript) {
+            try {
+                return JSON.parse(tagStatusesScript.textContent);
+            } catch (e) {
+                console.error('Error parsing tag statuses:', e);
+                return [];
+            }
+        }
+        return [];
+    }
+
+    // Populate tag status select
+    function populateTagStatus(selectElement) {
+        const statuses = loadTagStatuses();
+        selectElement.innerHTML = '<option value="">Select Status</option>';
+        statuses.forEach(status => {
+            const option = document.createElement('option');
+            option.value = status.tag_status;
+            option.textContent = status.description;
+            selectElement.appendChild(option);
+        });
+    }
+
+    // Initialize all existing tag status selects
+    document.querySelectorAll('[name="tag_status"]').forEach(select => {
+        populateTagStatus(select);
+    });
+
+    // Handle saving flipper tags
+    async function handleSaveFlipperTags() {
+        try {
+            loadingSpinner.style.display = 'block';
+            loadingOverlay.style.display = 'block';
+
+            const formData = {
+                turtle_id: document.querySelector('[name="turtle_id"]').value,
+                flipperTags: []
+            };
+
+            // Collect flipper tags
+            document.querySelectorAll('.tag-card').forEach(card => {
+                const tagData = {};
+                card.querySelectorAll('input, select').forEach(element => {
+                    tagData[element.name] = element.value;
+                });
+                formData.flipperTags.push(tagData);
+            });
+
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            
+            const response = await fetch('/wamtram2/api/flipper-tags-update/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify(formData)
+            });
+
+            const data = await response.json();
+
+            if (data.status === 'success') {
+                showAlert('Flipper tags saved successfully!', 'success');
+                // Reset unsaved changes flag for flipper tags section
+                document.querySelectorAll('.tag-card').forEach(card => {
+                    card.dataset.hasChanges = 'false';
+                });
+            } else {
+                showAlert(data.message || 'Error saving flipper tags', 'danger');
+            }
+        } catch (error) {
+            console.error('Save error:', error);
+            showAlert('An error occurred while saving flipper tags. Please try again.', 'danger');
+        } finally {
+            loadingSpinner.style.display = 'none';
+            loadingOverlay.style.display = 'none';
+        }
+    }
+
+    // Add event listener for flipper tags save button
+    document.getElementById('saveFlipperTagsBtn')?.addEventListener('click', function() {
+        handleSaveFlipperTags();
+    });
+
+    // Track changes specifically for flipper tags
+    document.getElementById('tagContainer')?.addEventListener('change', function(e) {
+        if (e.target.closest('.tag-card')) {
+            e.target.closest('.tag-card').dataset.hasChanges = 'true';
+        }
+    });
+
+    // Modified add flipper tag button handler
+    document.getElementById('addFlipperTagBtn')?.addEventListener('click', function() {
+        const template = document.getElementById('flipperTagTemplate');
+        const container = document.getElementById('tagContainer');
+        const clone = template.content.cloneNode(true);
+        
+        // Populate tag status select for the new tag
+        const statusSelect = clone.querySelector('[name="tag_status"]');
+        populateTagStatus(statusSelect);
+        
+        // Add delete button event listener
+        clone.querySelector('.delete-tag').addEventListener('click', function() {
+            this.closest('.tag-card').remove();
+        });
+        
+        container.appendChild(clone);
+    });
+
+    // Add new PIT tag button handler
+    document.getElementById('addPitTagBtn')?.addEventListener('click', function() {
+        const template = document.getElementById('pitTagTemplate');
+        const container = document.getElementById('pitTagContainer');
+        const clone = template.content.cloneNode(true);
+        
+        // Add delete button event listener
+        clone.querySelector('.delete-pit-tag').addEventListener('click', function() {
+            this.closest('.pit-tag-card').remove();
+            hasUnsavedChanges = true;
+        });
+        
+        container.appendChild(clone);
+        hasUnsavedChanges = true;
+    });
+
+    // Add new identification button handler
+    document.getElementById('addIdentificationBtn')?.addEventListener('click', function() {
+        const template = document.getElementById('identificationTemplate');
+        const container = document.getElementById('identificationContainer');
+        const clone = template.content.cloneNode(true);
+        
+        // Add delete button event listener
+        clone.querySelector('.delete-identification').addEventListener('click', function() {
+            this.closest('.identification-card').remove();
+            hasUnsavedChanges = true;
+        });
+        
+        container.appendChild(clone);
+        hasUnsavedChanges = true;
     });
 
     clearForm();

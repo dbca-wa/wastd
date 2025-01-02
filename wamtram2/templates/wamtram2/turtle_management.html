@@ -223,18 +223,26 @@
             <div class="tab-content">
                 <!-- Flipper Tag Information Tab -->
                 <div id="flipperTagInfo" class="tab-pane active">
-                    <div class="section-card">
-                        <!-- Add New Tag Button -->
-                        <div class="form-row mb-3">
-                            <div class="col-12">
-                                <button type="button" class="btn btn-success" id="addFlipperTagBtn">
-                                    <i class="fas fa-plus"></i> Add New Flipper Tag
-                                </button>
-                            </div>
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h5 class="mb-0">Flipper Tags</h5>
                         </div>
-                        <!-- Container for Flipper Tags -->
-                        <div id="tagContainer">
-                            <!-- Tags will be dynamically inserted here -->
+                        <div class="card-body">
+                            <div id="tagContainer">
+                                <!-- Tags will be populated here -->
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    <button type="button" class="btn btn-success" id="addFlipperTagBtn">
+                                        <i class="fas fa-plus"></i> Add New Flipper Tag
+                                    </button>
+                                </div>
+                                <div class="col-md-6 text-right">
+                                    <button type="button" class="btn btn-primary" id="saveFlipperTagsBtn">
+                                        <i class="fas fa-save"></i> Save Flipper Tags
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -405,6 +413,137 @@
         </div>
     </div>
 </div>
+
+<!-- Template for Flipper Tag Card -->
+<template id="flipperTagTemplate">
+    <div class="card mb-3 tag-card">
+        <div class="card-body">
+            <div class="form-row">
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label>Tag ID</label>
+                        <input type="text" class="form-control" name="tag_id" required>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label>Side</label>
+                        <select class="form-control" name="side">
+                            <option value="L">L</option>
+                            <option value="R">R</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select class="form-control" name="tag_status">
+                            <!-- Will be populated by JavaScript -->
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label>Issue Location</label>
+                        <input type="text" class="form-control" name="issue_location">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Comments</label>
+                        <input type="text" class="form-control" name="comments">
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="form-group">
+                        <label>&nbsp;</label>
+                        <button type="button" class="btn btn-danger btn-block delete-tag">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<!-- Template for PIT Tag Card -->
+<template id="pitTagTemplate">
+    <div class="card mb-3 pit-tag-card">
+        <div class="card-body">
+            <div class="form-row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>PIT Tag ID</label>
+                        <input type="text" class="form-control" name="pit_tag_id" required>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select class="form-control" name="pit_tag_status">
+                            <!-- Will be populated by JavaScript -->
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Comments</label>
+                        <input type="text" class="form-control" name="comments">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label>&nbsp;</label>
+                        <button type="button" class="btn btn-danger btn-block delete-pit-tag">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<!-- Template for Identification Card -->
+<template id="identificationTemplate">
+    <div class="card mb-3 identification-card">
+        <div class="card-body">
+            <div class="form-row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Identification Type</label>
+                        <select class="form-control" name="identification_type" required>
+                            <!-- Will be populated by JavaScript -->
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Identifier</label>
+                        <input type="text" class="form-control" name="identifier" required>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Comments</label>
+                        <input type="text" class="form-control" name="comments">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label>&nbsp;</label>
+                        <button type="button" class="btn btn-danger btn-block delete-identification">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+{{ tag_statuses|json_script:"tag-statuses-data" }}
 {% endblock %}
 
 {% block extra_js %}

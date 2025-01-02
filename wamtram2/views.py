@@ -4484,6 +4484,10 @@ class TurtleManagementView(TemplateView):
         context['turtle_status_choices'] = TrtTurtleStatus.objects.all()
         context['species_choices'] = TrtSpecies.objects.all()
         context['location_choices'] = TrtLocations.objects.all()
+        context['tag_statuses'] = [
+            {'tag_status': status.tag_status, 'description': status.description}
+            for status in TrtTagStatus.objects.all()
+        ]
         
         return context
 
@@ -4634,7 +4638,9 @@ class TurtleManagementView(TemplateView):
                 'document_id': doc.pk,
                 'document_type': str(doc.document_type),
                 'file_name': doc.filename,
-                'person_id': str(doc.person_id)
+                'person_id': doc.person_id.person_id if doc.person_id else '',
+                'person_name': str(doc.person_id) if doc.person_id else '', 
+                'comments': doc.comments
             } for doc in documents]
                 
             turtle_data.append({
