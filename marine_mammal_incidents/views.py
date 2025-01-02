@@ -34,32 +34,49 @@ def incident_form(request, pk=None):
     if request.method == 'POST':
         form = IncidentForm(request.POST, instance=incident)
         formset = UploadedFileFormSet(request.POST, request.FILES, instance=incident)
+        
+        print("Form data:", request.POST) 
+        print("Form is valid:", form.is_valid())  
+        print("Formset is valid:", formset.is_valid())  
+        
         if form.is_valid() and formset.is_valid():
-            incident = form.save()
-            formset.instance = incident
-            formset.save()
-            
-            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                return JsonResponse({
-                    'status': 'success',
-                    'message': 'Incident saved successfully'
-                })
-            
-            messages.success(request, 'Incident saved successfully')
-            return redirect('marine_mammal_incidents:incident_list')
+            try:
+                incident = form.save()
+                formset.instance = incident
+                formset.save()
+                
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    return JsonResponse({
+                        'status': 'success',
+                        'message': 'Incident saved successfully'
+                    })
+                
+                messages.success(request, 'Incident saved successfully')
+                return redirect('marine_mammal_incidents:incident_list')
+                
+            except Exception as e:
+                print(f"Error saving: {str(e)}")
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    return JsonResponse({
+                        'status': 'error',
+                        'message': 'Error saving incident',
+                        'errors': {
+                            'form_errors': {'__all__': [str(e)]},
+                        }
+                    }, status=400)
         else:
+            print("Form errors:", form.errors)
+            print("Formset errors:", formset.errors)
+            
             if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                errors = {
-                    'form_errors': form.errors,
-                    'formset_errors': formset.errors
-                }
                 return JsonResponse({
                     'status': 'error',
                     'message': 'Error saving incident',
-                    'errors': errors
+                    'errors': {
+                        'form_errors': form.errors,
+                        'formset_errors': formset.errors
+                    }
                 }, status=400)
-                
-            messages.error(request, 'Error saving incident. Please check the form.')
     else:
         form = IncidentForm(instance=incident)
         formset = UploadedFileFormSet(instance=incident)

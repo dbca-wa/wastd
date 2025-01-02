@@ -358,16 +358,18 @@
         var alert = $('#message-alert');
         alert.removeClass('alert-success alert-danger alert-warning alert-info');
         alert.addClass('alert-' + type);
-        alert.text(message);
+        alert.html(message.replace(/\n/g, '<br>'));
         alert.slideDown();
 
         $('html, body').animate({ scrollTop: 0 }, 'slow', function() {
             alert.slideDown();
         });
-    
-        setTimeout(function() {
-            alert.slideUp();
-        }, 5000);
+
+        if (type !== 'danger') {
+            setTimeout(function() {
+                alert.slideUp();
+            }, 5000);
+        }
     }
 
     function showLoadingSpinner() {
@@ -437,6 +439,7 @@
                     'X-Requested-With': 'XMLHttpRequest'
                 },
                 success: function(response) {
+                    console.log('Success response:', response);
                     if (response.status === 'success') {
                         showMessage(response.message, 'success');
                         setTimeout(function() {
@@ -447,13 +450,26 @@
                     }
                 },
                 error: function(xhr) {
+                    console.log('Error response:', xhr.responseJSON);
                     var response = xhr.responseJSON || {};
-                    var message = response.message || 'Error saving incident';
-                    showMessage(message, 'danger');
                     
+                    var errorMessage = 'Error saving incident:\n';
                     if (response.errors) {
-                        console.log('Form errors:', response.errors);
+                        if (response.errors.form_errors) {
+                            Object.keys(response.errors.form_errors).forEach(function(field) {
+                                errorMessage += `\n${field}: ${response.errors.form_errors[field].join(', ')}`;
+                            });
+                        }
+                        if (response.errors.formset_errors) {
+                            response.errors.formset_errors.forEach(function(formErrors, index) {
+                                if (Object.keys(formErrors).length > 0) {
+                                    errorMessage += `\nFile ${index + 1}: ${JSON.stringify(formErrors)}`;
+                                }
+                            });
+                        }
                     }
+                    
+                    showMessage(errorMessage, 'danger');
                 },
                 complete: function() {
                     hideLoadingSpinner();
