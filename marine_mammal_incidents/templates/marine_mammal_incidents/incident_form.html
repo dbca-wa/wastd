@@ -426,23 +426,34 @@
             e.preventDefault();
             var formData = new FormData(this);
             showLoadingSpinner();
-            var url = $(this).attr('action');
+            
             $.ajax({
-                url: url,
+                url: $(this).attr('action'),
                 type: "POST",
                 data: formData,
                 processData: false,
                 contentType: false,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
                 success: function(response) {
-                    showMessage('Incident saved successfully', 'success');
-                    setTimeout(function() {
-                        window.location.href = "{% url 'marine_mammal_incidents:incident_list' %}";
-                    }, 2000);
+                    if (response.status === 'success') {
+                        showMessage(response.message, 'success');
+                        setTimeout(function() {
+                            window.location.href = "{% url 'marine_mammal_incidents:incident_list' %}";
+                        }, 2000);
+                    } else {
+                        showMessage('Unexpected response format', 'danger');
+                    }
                 },
                 error: function(xhr) {
-                    var response = xhr.responseJSON;
+                    var response = xhr.responseJSON || {};
                     var message = response.message || 'Error saving incident';
                     showMessage(message, 'danger');
+                    
+                    if (response.errors) {
+                        console.log('Form errors:', response.errors);
+                    }
                 },
                 complete: function() {
                     hideLoadingSpinner();
