@@ -13,6 +13,7 @@ from django.views.decorators.http import require_GET
 from .decorators import superuser_or_data_curator_required
 from django.contrib.auth.decorators import user_passes_test
 from django.core.exceptions import PermissionDenied
+from django.core.exceptions import ValidationError
 
 def user_in_marine_animal_incidents_group(user):
     return user.is_superuser or user.groups.filter(name='MARINE_ANIMAL_INCIDENTS') or user.groups.filter(name='data curator').exists()
@@ -28,31 +29,36 @@ def incident_form(request, pk=None):
         Uploaded_file, 
         form=UploadedFileForm, 
         extra=1, 
-        can_delete=True
+        can_delete=True,
+        validate_min=False,
     )
     
     if request.method == 'POST':
         form = IncidentForm(request.POST, instance=incident)
         formset = UploadedFileFormSet(request.POST, request.FILES, instance=incident)
         
+        formset_has_changes = False
+        for form in formset:
+            if form.cleaned_data.get('DELETE', False):
+                formset_has_changes = True
+                break
+            if form.cleaned_data.get('file', None):
+                formset_has_changes = True
+                break
+            if form.has_changed() and 'title' in form.changed_data:
+                formset_has_changes = True
+                break
 
-        formset_valid = True
-        if request.FILES:  
-            formset_valid = formset.is_valid()
-        else:
-            for form in formset:
-                if not form.has_changed():
-                    form.is_valid()
-            formset_valid = True
-        
-        if form.is_valid() and formset_valid:
+        if form.is_valid():
             try:
                 incident = form.save()
                 
-
-                if request.FILES or any(f.has_changed() for f in formset):
-                    formset.instance = incident
-                    formset.save()
+                if formset_has_changes:
+                    if formset.is_valid():
+                        formset.instance = incident
+                        formset.save()
+                    else:
+                        raise ValidationError("File upload form validation failed")
                 
                 if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
                     return JsonResponse({
@@ -75,7 +81,8 @@ def incident_form(request, pk=None):
                     }, status=400)
         else:
             print("Form errors:", form.errors)
-            print("Formset errors:", formset.errors if hasattr(formset, 'errors') else None)
+            if formset_has_changes:
+                print("Formset errors:", formset.errors if hasattr(formset, 'errors') else None)
             
             if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
                 return JsonResponse({
@@ -83,7 +90,7 @@ def incident_form(request, pk=None):
                     'message': 'Error saving incident',
                     'errors': {
                         'form_errors': form.errors,
-                        'formset_errors': formset.errors if hasattr(formset, 'errors') else None
+                        'formset_errors': formset.errors if formset_has_changes and hasattr(formset, 'errors') else None
                     }
                 }, status=400)
     else:
