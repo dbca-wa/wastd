@@ -292,9 +292,20 @@
                                     {{ form.id }}
                                 </div>
                                 <div class="col-md-6">
-                                    <p class="mb-0">
-                                        Current file: <a href="{{ form.instance.file.url }}" target="_blank">{{ form.instance.file.name }}</a>
-                                    </p>
+                                    {% if form.instance.file %}
+                                        <p class="mb-0">
+                                            Current file: 
+                                            {% if form.instance.file.name %}
+                                                <a href="{{ form.instance.file.url }}" target="_blank">
+                                                    {{ form.instance.file.name }}
+                                                </a>
+                                            {% else %}
+                                                <span class="text-muted">No file attached</span>
+                                            {% endif %}
+                                        </p>
+                                    {% else %}
+                                        <p class="mb-0 text-muted">No file attached</p>
+                                    {% endif %}
                                 </div>
                                 <div class="col-md-2 text-right">
                                     <button type="button" class="btn btn-danger delete-file">Delete</button>
@@ -304,10 +315,20 @@
                                 <div class="col-md-4">
                                     {{ form.title.label_tag }}
                                     {{ form.title }}
+                                    {% if form.title.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.title.errors }}
+                                        </div>
+                                    {% endif %}
                                 </div>
                                 <div class="col-md-6">
                                     {{ form.file.label_tag }}
                                     {{ form.file }}
+                                    {% if form.file.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.file.errors }}
+                                        </div>
+                                    {% endif %}
                                 </div>
                                 <div class="col-md-2 text-right">
                                     <button type="button" class="btn btn-danger delete-file">Delete</button>
@@ -393,25 +414,24 @@
     function addFileForm() {
         var form_idx = $('#id_uploaded_file_set-TOTAL_FORMS').val();
         var newForm = $('.file-form:last').clone(true);
+        
+    
         newForm.find(':input').each(function() {
             var name = $(this).attr('name');
             if (name) {
                 name = name.replace('-' + (form_idx-1) + '-', '-' + form_idx + '-');
                 var id = 'id_' + name;
-                $(this).attr({'name': name, 'id': id}).val('').removeAttr('checked');
+                $(this).attr({'name': name, 'id': id})
+                      .val('')
+                      .removeClass('is-invalid');
             }
         });
-        newForm.find('label').each(function() {
-            var newFor = $(this).attr('for');
-            if (newFor) {
-                newFor = newFor.replace('-' + (form_idx-1) + '-', '-' + form_idx + '-');
-                $(this).attr('for', newFor);
-            }
-        });
+        
+        // 清除错误消息
+        newForm.find('.invalid-feedback').remove();
+        
         $('#file-upload-forms').append(newForm);
         $('#id_uploaded_file_set-TOTAL_FORMS').val(parseInt(form_idx) + 1);
-        newForm.find('input[type="file"]').val('');
-        newForm.find('.file-name-display').remove();
         updateDeleteButtons();
     }
 
@@ -419,14 +439,20 @@
     
 
     $(document).ready(function() {
-        if ($('#file-upload-forms .file-form:visible').length === 0) {
-            addFileForm();
-        }    
-
         updateDeleteButtons();
 
         $('#incidentForm').submit(function(e) {
             e.preventDefault();
+            
+            $('.file-form').each(function() {
+                var fileInput = $(this).find('input[type="file"]');
+                var titleInput = $(this).find('input[name$="-title"]');
+                
+                if (!fileInput.val() && !titleInput.val() && !$(this).find('input[name$="-id"]').val()) {
+                    $(this).remove();
+                }
+            });
+
             var formData = new FormData(this);
             showLoadingSpinner();
             

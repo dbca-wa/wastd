@@ -28,7 +28,7 @@ def incident_form(request, pk=None):
         Incident, 
         Uploaded_file, 
         form=UploadedFileForm, 
-        extra=1, 
+        extra=1,
         can_delete=True,
         validate_min=False,
     )
@@ -39,6 +39,9 @@ def incident_form(request, pk=None):
         
         formset_has_changes = False
         for form in formset:
+            if not form.has_changed() and not form.instance.pk:
+                continue
+            
             if form.instance.pk:
                 if form.data.get(f'{form.prefix}-DELETE'):
                     formset_has_changes = True
