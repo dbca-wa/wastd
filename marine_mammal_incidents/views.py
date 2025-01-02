@@ -35,15 +35,24 @@ def incident_form(request, pk=None):
         form = IncidentForm(request.POST, instance=incident)
         formset = UploadedFileFormSet(request.POST, request.FILES, instance=incident)
         
-        print("Form data:", request.POST) 
-        print("Form is valid:", form.is_valid())  
-        print("Formset is valid:", formset.is_valid())  
+
+        formset_valid = True
+        if request.FILES:  
+            formset_valid = formset.is_valid()
+        else:
+            for form in formset:
+                if not form.has_changed():
+                    form.is_valid()
+            formset_valid = True
         
-        if form.is_valid() and formset.is_valid():
+        if form.is_valid() and formset_valid:
             try:
                 incident = form.save()
-                formset.instance = incident
-                formset.save()
+                
+
+                if request.FILES or any(f.has_changed() for f in formset):
+                    formset.instance = incident
+                    formset.save()
                 
                 if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
                     return JsonResponse({
@@ -66,7 +75,7 @@ def incident_form(request, pk=None):
                     }, status=400)
         else:
             print("Form errors:", form.errors)
-            print("Formset errors:", formset.errors)
+            print("Formset errors:", formset.errors if hasattr(formset, 'errors') else None)
             
             if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
                 return JsonResponse({
@@ -74,7 +83,7 @@ def incident_form(request, pk=None):
                     'message': 'Error saving incident',
                     'errors': {
                         'form_errors': form.errors,
-                        'formset_errors': formset.errors
+                        'formset_errors': formset.errors if hasattr(formset, 'errors') else None
                     }
                 }, status=400)
     else:
