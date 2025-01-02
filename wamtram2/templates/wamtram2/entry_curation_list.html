@@ -232,10 +232,11 @@
                                     </span>
                                     <span class="edit-mode" style="display: none;">
                                         <input type="text"
+                                            class="form-control"
                                             name="turtle_id"
                                             value="{{ entry.turtle_id|default:'' }}"
-                                            class="form-control"
-                                            readonly >
+                                            data-original-value="{{ entry.turtle_id|default:'' }}"
+                                            >
                                     </span>
 
                                 {% elif column.field == 'species_code' %}
