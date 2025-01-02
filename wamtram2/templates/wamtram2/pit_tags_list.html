@@ -35,12 +35,12 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <div class="col-md-5">
+                <div class="col-md-4">
                     {% if is_paginated %}
                         {% include "pagination.html" %}
                     {% endif %}
                 </div>
-                <div class="col-md-7">
+                <div class="col-md-8">
                     {% include "includes/tag_filter.html" with placeholder="Search" clear_url="wamtram2:pit_tags_list" %}
                 </div>
             </div>
