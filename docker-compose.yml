@@ -2,15 +2,13 @@ services:
   db:
     image: postgis/postgis
     platform: linux/amd64
-    environment:
-      POSTGRES_DB: test_db
-      POSTGRES_USER: test_user
-      POSTGRES_PASSWORD: test_password
-      POSTGRES_INITDB_ARGS: "--auth-local=trust --auth-host=trust"
+    env_file:
+      - .env
     ports:
       - "5431:5432"
     volumes:
       - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+      - postgres_data:/var/lib/postgresql/data 
 
   web:
     build: .
@@ -44,9 +42,11 @@ services:
     volumes:
       - ./backup:/backup
       - ./init-sqlserver.sh:/init-sqlserver.sh
+      - sqlserver_data:/var/opt/mssql
     env_file:
       - .env
     entrypoint: ["/bin/bash", "/init-sqlserver.sh"]
 
 volumes:
   postgres_data:
+  sqlserver_data:
