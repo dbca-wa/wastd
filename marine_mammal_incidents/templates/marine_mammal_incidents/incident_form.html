@@ -285,9 +285,11 @@
                 <div id="file-upload-forms">
                     {% for form in formset %}
                         <div class="row file-form mb-3">
-                            {% if form.instance.file %}
+                            {% if form.instance.pk %}
                                 <div class="col-md-4">
                                     <strong>{{ form.instance.title }}</strong>
+                                    <input type="hidden" name="{{ form.title.html_name }}" value="{{ form.instance.title }}">
+                                    {{ form.id }}
                                 </div>
                                 <div class="col-md-6">
                                     <p class="mb-0">
@@ -296,9 +298,8 @@
                                 </div>
                                 <div class="col-md-2 text-right">
                                     <button type="button" class="btn btn-danger delete-file">Delete</button>
+                                    {{ form.DELETE.as_hidden }}
                                 </div>
-                                {{ form.id }}
-                                {{ form.DELETE.as_hidden }}
                             {% else %}
                                 <div class="col-md-4">
                                     {{ form.title.label_tag }}

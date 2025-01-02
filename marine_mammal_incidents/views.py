@@ -39,10 +39,11 @@ def incident_form(request, pk=None):
         
         formset_has_changes = False
         for form in formset:
-            if form.has_changed():
-                formset_has_changes = True
-                break
-            if form.data.get(f'{form.prefix}-DELETE'):
+            if form.instance.pk:
+                if form.data.get(f'{form.prefix}-DELETE'):
+                    formset_has_changes = True
+                    break
+            elif form.has_changed():
                 formset_has_changes = True
                 break
 
@@ -55,6 +56,7 @@ def incident_form(request, pk=None):
                         formset.instance = incident
                         formset.save()
                     else:
+                        print("Formset validation errors:", formset.errors)
                         raise ValidationError("File upload form validation failed")
                 
                 if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
