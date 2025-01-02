@@ -3522,6 +3522,7 @@ class EntryCurationView(LoginRequiredMixin, PaginateMixin, ListView):
                             })
                             processed_fields.add(field_name)
                 
+            
                 sorted_fields = sorted(group_fields, key=lambda x: field_order.get(x['field'], float('inf')))
                 all_columns.extend(sorted_fields)
     
@@ -3815,6 +3816,10 @@ class ObservationDataView(LoginRequiredMixin, View):
     
     def _get_observation_data(self, observation):
         """Get full observation data"""
+        
+        print("Debug: Starting to get observation data for ID:", observation.observation_id)
+        
+        
         scars_data = {
             'scars_left': observation.scars_left,
             'scars_right': observation.scars_right,
@@ -3842,7 +3847,6 @@ class ObservationDataView(LoginRequiredMixin, View):
         recorded_identifications = []
         for record in TrtRecordedIdentification.objects.filter(observation_id=observation.observation_id):
             try:
-                # 获取所有关联的记录
                 turtles = TrtIdentification.objects.filter(turtle2=record)
                 for turtle in turtles:
                     recorded_identifications.append({
@@ -3902,7 +3906,8 @@ class ObservationDataView(LoginRequiredMixin, View):
             'measurement_value': str(measurement.measurement_value),
             'comments': measurement.comments
         } for measurement in observation.trtmeasurements_set.all()]
-    
+        
+
         return {
             'basic_info': {
                 'observation_id': observation.observation_id,
@@ -3924,7 +3929,7 @@ class ObservationDataView(LoginRequiredMixin, View):
                 'datum_code': str(observation.datum_code) if observation.datum_code else '',
                 'latitude': str(observation.latitude) if observation.latitude else '',
                 'longitude': str(observation.longitude) if observation.longitude else '',
-                'clutch_completed': str(observation.clutch_completed) if observation.clutch_completed else '',
+                'clutch_completed': str(observation.clutch_completed.code) if observation.clutch_completed else '',
                 'date_convention': str(observation.date_convention) if observation.date_convention else '',
             },
             'tag_info': tag_info,

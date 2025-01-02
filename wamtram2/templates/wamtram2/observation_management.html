@@ -27,9 +27,14 @@
 {% block page_content_inner %}
 {% csrf_token %}
 <div class="container-fluid mt-3">
+    <!-- Message container should be outside tabs -->
+    <div id="messageContainer"></div>
+
     <div class="form-row mt-3">
         <div class="col-12">
-            <button type="button" class="btn btn-primary" onclick="handleFormSubmit()">Save Observation</button>
+            <button id="saveButton" class="btn btn-primary">
+                <i class="fas fa-save"></i> Save
+            </button>
         </div>
     </div>
     <!-- Basic Information Section -->
@@ -87,6 +92,7 @@
                 <div class="form-group">
                     <label>Clutch Completed?</label>
                     <select class="form-control" name="clutch_completed">
+                        <option value="">Select...</option>
                         {% for option in yes_no_choices %}
                             <option value="{{ option.code }}">{{ option.description }}</option>
                         {% endfor %}
@@ -340,8 +346,6 @@
         </div>
     </div>
 
-    <!-- Message container should be outside tabs -->
-    <div id="messageContainer"></div>
 </div>
 
 <!-- Loading spinner -->
