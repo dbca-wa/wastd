@@ -39,13 +39,10 @@ def incident_form(request, pk=None):
         
         formset_has_changes = False
         for form in formset:
-            if form.cleaned_data.get('DELETE', False):
+            if form.has_changed():
                 formset_has_changes = True
                 break
-            if form.cleaned_data.get('file', None):
-                formset_has_changes = True
-                break
-            if form.has_changed() and 'title' in form.changed_data:
+            if form.data.get(f'{form.prefix}-DELETE'):
                 formset_has_changes = True
                 break
 
