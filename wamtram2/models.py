@@ -42,6 +42,9 @@ class TrtBeachPositions(models.Model):
     class Meta:
         managed = False
         db_table = "TRT_BEACH_POSITIONS"
+        
+    def __str__(self):
+        return f"{self.description}"
 
 
 class TrtBodyParts(models.Model):
@@ -96,36 +99,74 @@ class TrtConditionCodes(models.Model):
         return f"{self.description}"
 
 
+# class TrtDamage(models.Model):
+#     observation = models.ForeignKey(
+#         "TrtObservations", models.CASCADE, db_column="OBSERVATION_ID", primary_key=True, related_name="damages"
+#     )  # Field name made lowercase.
+#     body_part = models.ForeignKey(
+#         TrtBodyParts, models.CASCADE, db_column="BODY_PART"
+#     )  # Field name made lowercase.
+#     damage_code = models.ForeignKey(
+#         "TrtDamageCodes", models.CASCADE, db_column="DAMAGE_CODE"
+#     )  # Field name made lowercase.
+#     damage_cause_code = models.ForeignKey(
+#         "TrtDamageCauseCodes",
+#         models.SET_NULL,
+#         db_column="DAMAGE_CAUSE_CODE",
+#         blank=True,
+#         null=True,
+#     )  # Field name made lowercase.
+#     comments = models.CharField(
+#         db_column="COMMENTS", max_length=255, blank=True, null=True
+#     )  # Field name made lowercase.
+
+#     class Meta:
+#         managed = False
+#         db_table = "TRT_DAMAGE"
+#         constraints = [
+#             models.UniqueConstraint(
+#                 fields=["observation", "body_part"],
+#                 name="unique_observation_body_part"
+#             )
+#         ]
+
+
 class TrtDamage(models.Model):
     observation = models.OneToOneField(
-        "TrtObservations", models.CASCADE, db_column="OBSERVATION_ID", primary_key=True
-    )  # Field name made lowercase.
+        "TrtObservations", 
+        models.CASCADE, 
+        db_column="OBSERVATION_ID",
+        related_name="damages",
+        primary_key=True
+    )
     body_part = models.ForeignKey(
-        TrtBodyParts, models.CASCADE, db_column="BODY_PART"
-    )  # Field name made lowercase.
+        TrtBodyParts, 
+        models.CASCADE, 
+        db_column="BODY_PART"
+    )
     damage_code = models.ForeignKey(
-        "TrtDamageCodes", models.CASCADE, db_column="DAMAGE_CODE"
-    )  # Field name made lowercase.
+        "TrtDamageCodes", 
+        models.CASCADE, 
+        db_column="DAMAGE_CODE"
+    )
     damage_cause_code = models.ForeignKey(
         "TrtDamageCauseCodes",
         models.SET_NULL,
         db_column="DAMAGE_CAUSE_CODE",
         blank=True,
         null=True,
-    )  # Field name made lowercase.
+    )
     comments = models.CharField(
-        db_column="COMMENTS", max_length=255, blank=True, null=True
-    )  # Field name made lowercase.
+        db_column="COMMENTS", 
+        max_length=255, 
+        blank=True, 
+        null=True
+    )
 
     class Meta:
         managed = False
         db_table = "TRT_DAMAGE"
-        constraints = [
-            models.UniqueConstraint(
-                fields=["observation", "body_part"],
-                name="unique_observation_body_part"
-            )
-        ]
+        unique_together = ('observation', 'body_part')
 
 
 class TrtDamageCause(models.Model):
@@ -539,7 +580,7 @@ class TrtDataEntry(models.Model):
         db_column="MEASUREMENT_VALUE_2", blank=True, null=True
     )  # Field name made lowercase.
     datum_code = models.CharField(
-        db_column="DATUM_CODE", max_length=5, blank=True, null=True
+        db_column="DATUM_CODE", max_length=5, blank=True, null=True, default='WGS84'
     )  # Field name made lowercase.
     zone = models.IntegerField(
         db_column="ZONE", blank=True, null=True
@@ -990,7 +1031,7 @@ class TrtDataEntryExceptions(models.Model):
         db_column="NEW_RIGHT_TAG_ID", max_length=10, blank=True, null=True
     )  # Field name made lowercase.
     alive = models.CharField(
-        db_column="ALIVE", max_length=1, blank=True, null=True
+        db_column="ALIVE", max_length=1, blank=True, null=True, default='Y'
     )  # Field name made lowercase.
     place_code = models.CharField(
         db_column="PLACE_CODE", max_length=4, blank=True, null=True
@@ -1203,9 +1244,13 @@ class TrtDocuments(models.Model):
     turtle_id = models.IntegerField(
         db_column="TURTLE_ID", blank=True, null=True
     )  # Field name made lowercase.
-    person_id = models.IntegerField(
-        db_column="PERSON_ID", blank=True, null=True
-    )  # Field name made lowercase.
+    person_id = models.ForeignKey(
+        'TrtPersons',
+        db_column="PERSON_ID",
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL
+    ) # Field name made lowercase.
     species_code = models.CharField(
         db_column="SPECIES_CODE", max_length=2, blank=True, null=True
     )  # Field name made lowercase.
@@ -1606,9 +1651,15 @@ class TrtObservations(models.Model):
         null=True,
         related_name="nestingobs",
     )  # fake foreign key #models.CharField(db_column='NESTING', max_length=1, blank=True, null=True)  # Field name made lowercase.
-    clutch_completed = models.CharField(
-        db_column="CLUTCH_COMPLETED", max_length=1, blank=True, null=True
-    )  # Field name made lowercase.
+    clutch_completed = models.ForeignKey(
+        "TrtYesNo",
+        models.SET_NULL,
+        db_column="CLUTCH_COMPLETED",
+        blank=True,
+        null=True,
+        max_length=1,
+        related_name="clutch_completedobs"
+    )
     number_of_eggs = models.SmallIntegerField(
         db_column="NUMBER_OF_EGGS", blank=True, null=True
     )  # Field name made lowercase.
@@ -2058,8 +2109,9 @@ class TrtRecordedTags(models.Model):
     side = models.CharField(
         db_column="SIDE", max_length=1, blank=True, null=True
     )  # Field name made lowercase.
-    tag_state = models.CharField(
-        db_column="TAG_STATE", max_length=10, blank=True, null=True
+    tag_state = models.ForeignKey(
+        'TrtTagStates', models.CASCADE, db_column="TAG_STATE", max_length=10,
+        blank=True, null=True
     )  # Field name made lowercase.
     comments = models.CharField(
         db_column="COMMENTS", max_length=255, blank=True, null=True
@@ -2221,7 +2273,6 @@ class TrtSpecies(models.Model):
     def __str__(self):
         return f"{self.common_name}"
     
-
 
 class TrtTags(models.Model):
     tag_id = models.CharField(

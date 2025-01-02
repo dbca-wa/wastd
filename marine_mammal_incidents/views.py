@@ -38,9 +38,27 @@ def incident_form(request, pk=None):
             incident = form.save()
             formset.instance = incident
             formset.save()
+            
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'status': 'success',
+                    'message': 'Incident saved successfully'
+                })
+            
             messages.success(request, 'Incident saved successfully')
             return redirect('marine_mammal_incidents:incident_list')
         else:
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                errors = {
+                    'form_errors': form.errors,
+                    'formset_errors': formset.errors
+                }
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Error saving incident',
+                    'errors': errors
+                }, status=400)
+                
             messages.error(request, 'Error saving incident. Please check the form.')
     else:
         form = IncidentForm(instance=incident)

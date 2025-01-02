@@ -1,0 +1,143 @@
+
+.form-label {
+    color: #495057;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.table-container {
+    overflow-y: auto;
+    position: relative;
+    height: 40vh;
+    margin: 1rem 0;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+}
+
+
+.table {
+    width: 100%;
+    margin-bottom: 0;
+    color: #212529;
+}
+
+
+.table thead th {
+    position: sticky;
+    top: 0;
+    background: #f8f9fa;
+    z-index: 1;
+    font-weight: 500;
+    border-bottom: 2px solid #dee2e6;
+}
+
+
+.table tbody tr:hover {
+    background-color: rgba(0,0,0,.075);
+    cursor: pointer;
+}
+
+
+.section-card {
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+
+.nav-tabs {
+    margin-bottom: 20px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.nav-tabs .nav-link {
+    color: #495057;
+    border: 1px solid transparent;
+    border-top-left-radius: .25rem;
+    border-top-right-radius: .25rem;
+}
+
+.nav-tabs .nav-link.active {
+    color: #495057;
+    background-color: #fff;
+    border-color: #dee2e6 #dee2e6 #fff;
+}
+
+
+.form-row {
+    margin-bottom: 15px;
+}
+
+.form-control.readonly-field {
+    background-color: #e9ecef;
+    cursor: not-allowed;
+}
+
+
+.modified {
+    background-color: #fff3cd;
+}
+
+@media (max-width: 768px) {
+    .container-fluid {
+        padding: 10px;
+    }
+    
+    .section-card {
+        padding: 15px;
+    }
+    
+    .table {
+        font-size: 0.875rem;
+    }
+    
+    .table th,
+    .table td {
+        padding: 0.5rem;
+    }
+}
+
+.search-area {
+    margin-bottom: 1.5rem;
+}
+
+.search-area .input-group {
+    margin-bottom: 0.5rem;
+}
+
+
+.tag-info-area {
+    margin-top: 1.5rem;
+}
+
+.observation-area {
+    margin-top: 1.5rem;
+} 
+
+.section-card {
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+    margin-bottom: 20px;
+}
+
+.card {
+    margin-bottom: 15px;
+}
+
+.card-body {
+    padding: 15px;
+}
+
+.btn-success {
+    margin-bottom: 15px;
+}
+
+.tab-content {
+    padding-top: 20px;
+}
