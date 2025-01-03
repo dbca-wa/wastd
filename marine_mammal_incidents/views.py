@@ -20,91 +20,76 @@ def user_in_marine_animal_incidents_group(user):
 
 @user_passes_test(user_in_marine_animal_incidents_group, login_url=None, redirect_field_name=None)
 def incident_form(request, pk=None):
+    """Handle incident creation and update"""
     if not user_in_marine_animal_incidents_group(request.user):
-        raise PermissionDenied("You do not have permission to access this page.")
+        raise PermissionDenied("You don't have permission to access this page")
     
+    # Get incident instance if updating
     incident = get_object_or_404(Incident, pk=pk) if pk else None
+    
+    # Create file upload formset
     UploadedFileFormSet = inlineformset_factory(
         Incident, 
-        Uploaded_file, 
-        form=UploadedFileForm, 
+        Uploaded_file,
+        form=UploadedFileForm,
         extra=1,
         can_delete=True,
-        validate_min=False,
     )
-    
+
     if request.method == 'POST':
         form = IncidentForm(request.POST, instance=incident)
         formset = UploadedFileFormSet(request.POST, request.FILES, instance=incident)
-        
-        formset_has_changes = False
-        for form in formset:
-            if not form.has_changed() and not form.instance.pk:
-                continue
-            
-            if form.instance.pk:
-                if form.data.get(f'{form.prefix}-DELETE'):
-                    formset_has_changes = True
-                    break
-            elif form.has_changed():
-                formset_has_changes = True
-                break
 
-        if form.is_valid():
+        if form.is_valid() and formset.is_valid():
             try:
+                # 1. Save the incident first
                 incident = form.save()
-                
-                if formset_has_changes:
-                    if formset.is_valid():
-                        formset.instance = incident
-                        formset.save()
-                    else:
-                        print("Formset validation errors:", formset.errors)
-                        raise ValidationError("File upload form validation failed")
+
+                # 2. Save the file uploads
+                formset.instance = incident
+                formset.save()
+
+                # 3. Return success response
+                response_data = {
+                    'status': 'success',
+                    'message': 'Incident saved successfully'
+                }
                 
                 if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                    return JsonResponse({
-                        'status': 'success',
-                        'message': 'Incident saved successfully'
-                    })
-                
-                messages.success(request, 'Incident saved successfully')
-                return redirect('marine_mammal_incidents:incident_list')
-                
+                    return JsonResponse(response_data)
+                else:
+                    messages.success(request, 'Incident saved successfully')
+                    return redirect('marine_mammal_incidents:incident_list')
+
             except Exception as e:
-                print(f"Error saving: {str(e)}")
-                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                    return JsonResponse({
-                        'status': 'error',
-                        'message': 'Error saving incident',
-                        'errors': {
-                            'form_errors': {'__all__': [str(e)]},
-                        }
-                    }, status=400)
-        else:
-            print("Form errors:", form.errors)
-            if formset_has_changes:
-                print("Formset errors:", formset.errors if hasattr(formset, 'errors') else None)
-            
-            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                return JsonResponse({
+                error_data = {
                     'status': 'error',
-                    'message': 'Error saving incident',
-                    'errors': {
-                        'form_errors': form.errors,
-                        'formset_errors': formset.errors if formset_has_changes and hasattr(formset, 'errors') else None
-                    }
-                }, status=400)
+                    'message': f'Error saving incident: {str(e)}',
+                }
+                return JsonResponse(error_data, status=400)
+        else:
+            # Handle form validation errors
+            errors = {
+                'status': 'error',
+                'errors': {
+                    'form_errors': form.errors,
+                    'formset_errors': [f.errors for f in formset]
+                }
+            }
+            return JsonResponse(errors, status=400)
+
     else:
+        # GET request - display form
         form = IncidentForm(instance=incident)
         formset = UploadedFileFormSet(instance=incident)
-    
+
     context = {
         'form': form,
         'formset': formset,
-        'form_title': 'Update Incident' if incident else 'Create New Incident',
-        'submit_button_text': 'Update Incident' if incident else 'Create Incident',
+        'form_title': 'Update Incident' if pk else 'Create New Incident',
+        'submit_button_text': 'Update' if pk else 'Create'
     }
+
     return render(request, 'marine_mammal_incidents/incident_form.html', context)
 
 

@@ -303,16 +303,13 @@
                                     {% if form.instance.file %}
                                         <p class="mb-0">
                                             Current file: 
-                                            {% if form.instance.file.name %}
-                                                <a href="{{ form.instance.file.url }}" target="_blank">
-                                                    {{ form.instance.file.name }}
-                                                </a>
-                                            {% else %}
-                                                <span class="text-muted">No file attached</span>
-                                            {% endif %}
+                                            <a href="{{ form.instance.file.url }}" target="_blank">
+                                                {{ form.instance.file.name }}
+                                            </a>
                                         </p>
-                                    {% else %}
-                                        <p class="mb-0 text-muted">No file attached</p>
+                                        {% if form.instance.file.content_type|slice:":6" == 'image/' %}
+                                            <img src="{{ form.instance.file.url }}" class="image-preview" style="display: block;" alt="uploaded image">
+                                        {% endif %}
                                     {% endif %}
                                 </div>
                                 <div class="col-md-2 text-right">
@@ -332,7 +329,7 @@
                                 <div class="col-md-6">
                                     {{ form.file.label_tag }}
                                     {{ form.file }}
-                                    <img class="image-preview" src="#" alt="预览图片">
+                                    <img class="image-preview" src="#" alt="Preview image">
                                     {% if form.file.errors %}
                                         <div class="invalid-feedback d-block">
                                             {{ form.file.errors }}
@@ -372,6 +369,7 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
+    // Date and time picker initialization
     flatpickr("#{{ form.incident_date.id_for_label }}", {
         dateFormat: "Y-m-d",
         allowInput: true
@@ -385,16 +383,13 @@
         allowInput: true
     });
 
+    // Message display function
     function showMessage(message, type) {
         var alert = $('#message-alert');
         alert.removeClass('alert-success alert-danger alert-warning alert-info');
         alert.addClass('alert-' + type);
         alert.html(message.replace(/\n/g, '<br>'));
         alert.slideDown();
-
-        $('html, body').animate({ scrollTop: 0 }, 'slow', function() {
-            alert.slideDown();
-        });
 
         if (type !== 'danger') {
             setTimeout(function() {
@@ -403,6 +398,7 @@
         }
     }
 
+    // Loading spinner functions
     function showLoadingSpinner() {
         $('.loading-spinner, .loading-overlay').show();
     }
@@ -411,74 +407,70 @@
         $('.loading-spinner, .loading-overlay').hide();
     }
 
-    function updateDeleteButtons() {
-        var visibleForms = $('.file-form:visible');
-        if (visibleForms.length === 1) {
-            visibleForms.find('.delete-file').prop('disabled', true);
-        } else {
-            $('.delete-file').prop('disabled', false);
-        }
-    }
-
+    // File preview function
     function handleFileSelect(event) {
         const file = event.target.files[0];
         const preview = $(event.target).siblings('.image-preview');
         
-        if (file) {
-            // 检查是否为图片文件
-            if (file.type.startsWith('image/')) {
-                const reader = new FileReader();
-                
-                reader.onload = function(e) {
-                    preview.attr('src', e.target.result);
-                    preview.show();
-                }
-                
-                reader.readAsDataURL(file);
-            } else {
-                preview.hide();
+        if (file && file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.attr('src', e.target.result);
+                preview.show();
             }
+            reader.readAsDataURL(file);
         } else {
             preview.hide();
         }
     }
 
+    // Add new file form function
     function addFileForm() {
         var form_idx = $('#id_uploaded_file_set-TOTAL_FORMS').val();
-        var newForm = $('.file-form:last').clone(true);
+        var newForm = $('.file-form:first').clone(true);
         
-    
+        // Clear form values and update indices
         newForm.find(':input').each(function() {
             var name = $(this).attr('name');
             if (name) {
-                name = name.replace('-' + (form_idx-1) + '-', '-' + form_idx + '-');
+                name = name.replace('-0-', '-' + form_idx + '-');
                 var id = 'id_' + name;
-                $(this).attr({'name': name, 'id': id})
-                      .val('')
-                      .removeClass('is-invalid');
+                $(this).attr({'name': name, 'id': id}).val('');
             }
         });
         
-        // 清除错误消息
+        // Clear preview and errors
+        newForm.find('.image-preview').hide();
         newForm.find('.invalid-feedback').remove();
-        
-        // 为新添加的文件输入框绑定事件
-        newForm.find('input[type="file"]').on('change', handleFileSelect);
         
         $('#file-upload-forms').append(newForm);
         $('#id_uploaded_file_set-TOTAL_FORMS').val(parseInt(form_idx) + 1);
-        updateDeleteButtons();
     }
 
-
-    
-
     $(document).ready(function() {
-        updateDeleteButtons();
+        // File input change handler
+        $(document).on('change', 'input[type="file"]', handleFileSelect);
 
+        // Add more files button handler
+        $('#add-more-files').click(addFileForm);
+
+        // Delete file button handler
+        $(document).on('click', '.delete-file', function() {
+            var fileForm = $(this).closest('.file-form');
+            var deleteCheckbox = fileForm.find('input[type=checkbox][name$=DELETE]');
+            if (deleteCheckbox.length) {
+                deleteCheckbox.prop('checked', true);
+                fileForm.hide();
+            } else {
+                fileForm.remove();
+            }
+        });
+
+        // Form submission handler
         $('#incidentForm').submit(function(e) {
             e.preventDefault();
             
+            // Remove empty file forms before submission
             $('.file-form').each(function() {
                 var fileInput = $(this).find('input[type="file"]');
                 var titleInput = $(this).find('input[name$="-title"]');
@@ -497,25 +489,16 @@
                 data: formData,
                 processData: false,
                 contentType: false,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
                 success: function(response) {
-                    console.log('Success response:', response);
-                    if (response.status === 'success') {
-                        showMessage(response.message, 'success');
-                        setTimeout(function() {
-                            window.location.href = "{% url 'marine_mammal_incidents:incident_list' %}";
-                        }, 2000);
-                    } else {
-                        showMessage('Unexpected response format', 'danger');
-                    }
+                    showMessage(response.message, 'success');
+                    setTimeout(function() {
+                        window.location.href = "{% url 'marine_mammal_incidents:incident_list' %}";
+                    }, 2000);
                 },
                 error: function(xhr) {
-                    console.log('Error response:', xhr.responseJSON);
                     var response = xhr.responseJSON || {};
-                    
                     var errorMessage = 'Error saving incident:\n';
+                    
                     if (response.errors) {
                         if (response.errors.form_errors) {
                             Object.keys(response.errors.form_errors).forEach(function(field) {
@@ -538,28 +521,6 @@
                 }
             });
         });
-
-        $('#add-more-files').click(addFileForm);
-
-        $(document).on('click', '.delete-file', function() {
-            var fileForm = $(this).closest('.file-form');
-            var deleteCheckbox = fileForm.find('input[type=checkbox][name$=DELETE]');
-            if (deleteCheckbox.length) {
-                deleteCheckbox.prop('checked', true);
-                fileForm.hide();
-            } else {
-                fileForm.remove();
-            }
-            if ($('.file-form:visible').length === 0) {
-                addFileForm();
-            }
-            updateDeleteButtons();
-        });
-
-        // 为现有的文件输入框绑定事件
-        $(document).on('change', 'input[type="file"]', handleFileSelect);
     });
-
-    
 </script>
 {% endblock %}
