@@ -13,63 +13,83 @@ from django.views.decorators.http import require_GET
 from .decorators import superuser_or_data_curator_required
 from django.contrib.auth.decorators import user_passes_test
 from django.core.exceptions import PermissionDenied
+from django.core.exceptions import ValidationError
 
 def user_in_marine_animal_incidents_group(user):
     return user.is_superuser or user.groups.filter(name='MARINE_ANIMAL_INCIDENTS') or user.groups.filter(name='data curator').exists()
 
 @user_passes_test(user_in_marine_animal_incidents_group, login_url=None, redirect_field_name=None)
 def incident_form(request, pk=None):
+    """Handle incident creation and update"""
     if not user_in_marine_animal_incidents_group(request.user):
-        raise PermissionDenied("You do not have permission to access this page.")
+        raise PermissionDenied("You don't have permission to access this page")
     
+    # Get incident instance if updating
     incident = get_object_or_404(Incident, pk=pk) if pk else None
+    
+    # Create file upload formset
     UploadedFileFormSet = inlineformset_factory(
         Incident, 
-        Uploaded_file, 
-        form=UploadedFileForm, 
-        extra=1, 
-        can_delete=True
+        Uploaded_file,
+        form=UploadedFileForm,
+        extra=0,
+        can_delete=True,
     )
-    
+
     if request.method == 'POST':
         form = IncidentForm(request.POST, instance=incident)
         formset = UploadedFileFormSet(request.POST, request.FILES, instance=incident)
+
         if form.is_valid() and formset.is_valid():
-            incident = form.save()
-            formset.instance = incident
-            formset.save()
-            
-            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                return JsonResponse({
+            try:
+                # 1. Save the incident first
+                incident = form.save()
+
+                # 2. Save the file uploads
+                formset.instance = incident
+                formset.save()
+
+                # 3. Return success response
+                response_data = {
                     'status': 'success',
                     'message': 'Incident saved successfully'
-                })
-            
-            messages.success(request, 'Incident saved successfully')
-            return redirect('marine_mammal_incidents:incident_list')
-        else:
-            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                errors = {
-                    'form_errors': form.errors,
-                    'formset_errors': formset.errors
                 }
-                return JsonResponse({
-                    'status': 'error',
-                    'message': 'Error saving incident',
-                    'errors': errors
-                }, status=400)
                 
-            messages.error(request, 'Error saving incident. Please check the form.')
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    return JsonResponse(response_data)
+                else:
+                    messages.success(request, 'Incident saved successfully')
+                    return redirect('marine_mammal_incidents:incident_list')
+
+            except Exception as e:
+                error_data = {
+                    'status': 'error',
+                    'message': f'Error saving incident: {str(e)}',
+                }
+                return JsonResponse(error_data, status=400)
+        else:
+            # Handle form validation errors
+            errors = {
+                'status': 'error',
+                'errors': {
+                    'form_errors': form.errors,
+                    'formset_errors': [f.errors for f in formset]
+                }
+            }
+            return JsonResponse(errors, status=400)
+
     else:
+        # GET request - display form
         form = IncidentForm(instance=incident)
         formset = UploadedFileFormSet(instance=incident)
-    
+
     context = {
         'form': form,
         'formset': formset,
-        'form_title': 'Update Incident' if incident else 'Create New Incident',
-        'submit_button_text': 'Update Incident' if incident else 'Create Incident',
+        'form_title': 'Update Incident' if pk else 'Create New Incident',
+        'submit_button_text': 'Update' if pk else 'Create'
     }
+
     return render(request, 'marine_mammal_incidents/incident_form.html', context)
 
 

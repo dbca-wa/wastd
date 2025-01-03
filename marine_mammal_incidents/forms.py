@@ -48,26 +48,6 @@ class IncidentForm(forms.ModelForm):
         for field in required_fields:
             self.fields[field].required = True
 
-# class UploadedFileForm(forms.ModelForm):
-#     class Meta:
-#         model = Uploaded_file
-#         fields = ['title', 'file']
-#         labels = {
-#             'title': 'Attachment name',
-#             'file': 'File'
-#         }
-        
-#     def clean(self):
-#         cleaned_data = super().clean()
-#         title = cleaned_data.get('title')
-#         file = cleaned_data.get('file')
-
-#         if file and not title:
-#             raise forms.ValidationError("The attachment name is required.")
-
-#         return cleaned_data
-
-
 class UploadedFileForm(forms.ModelForm):
     class Meta:
         model = Uploaded_file
