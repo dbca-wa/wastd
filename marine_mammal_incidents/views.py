@@ -32,7 +32,7 @@ def incident_form(request, pk=None):
         Incident, 
         Uploaded_file,
         form=UploadedFileForm,
-        extra=1,
+        extra=0,
         can_delete=True,
     )
 

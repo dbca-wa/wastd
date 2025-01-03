@@ -307,8 +307,11 @@
                                                 {{ form.instance.file.name }}
                                             </a>
                                         </p>
-                                        {% if form.instance.file.content_type|slice:":6" == 'image/' %}
-                                            <img src="{{ form.instance.file.url }}" class="image-preview" style="display: block;" alt="uploaded image">
+                                        {% if form.instance.file.name|lower|slice:"-3:" in "jpg,png,gif,bmp,jpeg" %}
+                                            <img src="{{ form.instance.file.url }}" 
+                                                 class="image-preview" 
+                                                 style="display: block; max-width: 200px; margin-top: 10px;" 
+                                                 alt="preview">
                                         {% endif %}
                                     {% endif %}
                                 </div>
@@ -343,7 +346,7 @@
                         </div>
                     {% endfor %}
                 </div>
-                <button type="button" id="add-more-files" class="btn btn-secondary mt-2">Add More Files</button>
+                <button type="button" id="add-more-files" class="btn btn-secondary mt-2">Add Files</button>
             </div>
                     
             <div class="row mt-4">
@@ -410,15 +413,20 @@
     // File preview function
     function handleFileSelect(event) {
         const file = event.target.files[0];
-        const preview = $(event.target).siblings('.image-preview');
+        const preview = $(event.target).closest('.file-form').find('.image-preview');
         
-        if (file && file.type.startsWith('image/')) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                preview.attr('src', e.target.result);
-                preview.show();
+        if (file) {
+            const fileType = file.type.toLowerCase();
+            if (fileType.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.attr('src', e.target.result);
+                    preview.css('display', 'block');
+                }
+                reader.readAsDataURL(file);
+            } else {
+                preview.hide();
             }
-            reader.readAsDataURL(file);
         } else {
             preview.hide();
         }
@@ -427,23 +435,27 @@
     // Add new file form function
     function addFileForm() {
         var form_idx = $('#id_uploaded_file_set-TOTAL_FORMS').val();
-        var newForm = $('.file-form:first').clone(true);
+        var emptyForm = `
+            <div class="row file-form mb-3">
+                <div class="col-md-4">
+                    <label>Attachment name:</label>
+                    <input type="text" name="uploaded_file_set-${form_idx}-title" 
+                           id="id_uploaded_file_set-${form_idx}-title" class="form-control">
+                </div>
+                <div class="col-md-6">
+                    <label>File:</label>
+                    <input type="file" name="uploaded_file_set-${form_idx}-file" 
+                           id="id_uploaded_file_set-${form_idx}-file" class="form-control">
+                    <img class="image-preview" src="#" alt="Preview" 
+                         style="display: none; max-width: 200px; margin-top: 10px;">
+                </div>
+                <div class="col-md-2 text-right">
+                    <button type="button" class="btn btn-danger delete-file">Delete</button>
+                </div>
+            </div>
+        `;
         
-        // Clear form values and update indices
-        newForm.find(':input').each(function() {
-            var name = $(this).attr('name');
-            if (name) {
-                name = name.replace('-0-', '-' + form_idx + '-');
-                var id = 'id_' + name;
-                $(this).attr({'name': name, 'id': id}).val('');
-            }
-        });
-        
-        // Clear preview and errors
-        newForm.find('.image-preview').hide();
-        newForm.find('.invalid-feedback').remove();
-        
-        $('#file-upload-forms').append(newForm);
+        $('#file-upload-forms').append(emptyForm);
         $('#id_uploaded_file_set-TOTAL_FORMS').val(parseInt(form_idx) + 1);
     }
 
