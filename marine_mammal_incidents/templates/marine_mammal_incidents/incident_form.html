@@ -46,6 +46,14 @@
             font-size: 0.9em;
             color: #6c757d;
         }
+        .image-preview {
+            max-width: 200px;
+            max-height: 200px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            display: none;
+        }
     </style>
 {% endblock %}
 
@@ -324,6 +332,7 @@
                                 <div class="col-md-6">
                                     {{ form.file.label_tag }}
                                     {{ form.file }}
+                                    <img class="image-preview" src="#" alt="预览图片">
                                     {% if form.file.errors %}
                                         <div class="invalid-feedback d-block">
                                             {{ form.file.errors }}
@@ -411,6 +420,29 @@
         }
     }
 
+    function handleFileSelect(event) {
+        const file = event.target.files[0];
+        const preview = $(event.target).siblings('.image-preview');
+        
+        if (file) {
+            // 检查是否为图片文件
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    preview.attr('src', e.target.result);
+                    preview.show();
+                }
+                
+                reader.readAsDataURL(file);
+            } else {
+                preview.hide();
+            }
+        } else {
+            preview.hide();
+        }
+    }
+
     function addFileForm() {
         var form_idx = $('#id_uploaded_file_set-TOTAL_FORMS').val();
         var newForm = $('.file-form:last').clone(true);
@@ -429,6 +461,9 @@
         
         // 清除错误消息
         newForm.find('.invalid-feedback').remove();
+        
+        // 为新添加的文件输入框绑定事件
+        newForm.find('input[type="file"]').on('change', handleFileSelect);
         
         $('#file-upload-forms').append(newForm);
         $('#id_uploaded_file_set-TOTAL_FORMS').val(parseInt(form_idx) + 1);
@@ -520,6 +555,9 @@
             }
             updateDeleteButtons();
         });
+
+        // 为现有的文件输入框绑定事件
+        $(document).on('change', 'input[type="file"]', handleFileSelect);
     });
 
     
