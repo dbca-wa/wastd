@@ -69,8 +69,9 @@ from .models import (
     TrtPitTagStates,
     TrtDatumCodes,
     TrtConditionCodes,
-    TrtDamageCauseCodes
-    
+    TrtDamageCauseCodes,
+    TrtSamples,
+    TrtDocumentTypes
     
 )
 from .forms import TrtDataEntryForm, SearchForm, TrtEntryBatchesForm, TemplateForm, BatchesCodeForm, TrtPersonsForm, TagRegisterForm
@@ -4488,6 +4489,27 @@ class TurtleManagementView(TemplateView):
             {'tag_status': status.tag_status, 'description': status.description}
             for status in TrtTagStatus.objects.all()
         ]
+        context['pit_tag_statuses'] = [
+            {'pit_tag_status': status.pit_tag_status, 'description': status.description}
+            for status in TrtPitTagStatus.objects.all()
+        ]
+        
+        context['identification_types'] = [
+            {'identification_type': type.identification_type, 'description': type.description}
+            for type in TrtIdentificationTypes.objects.all()
+        ]
+        
+        context['tissue_types'] = [
+            {'tissue_type': type.tissue_type, 'description': type.description}
+            for type in TrtTissueTypes.objects.all()
+        ]
+        
+        context['document_types'] = [
+            {'document_type': type.document_type, 'description': type.description}
+            for type in TrtDocumentTypes.objects.all()
+        ]
+        
+        
         
         return context
 
@@ -4581,7 +4603,7 @@ class TurtleManagementView(TemplateView):
             tag_data = [{
                 'tag_id': tag.tag_id,
                 'side': tag.side,
-                'tag_status': tag.tag_status.description if tag.tag_status else None,
+                'tag_status': tag.tag_status.tag_status if tag.tag_status else None,
                 'issue_location': tag.issue_location,
                 'custodian_person': str(tag.custodian_person) if tag.custodian_person else None,
                 'return_date': tag.return_date.strftime('%Y-%m-%d') if tag.return_date else None,
@@ -4667,4 +4689,282 @@ class TurtleManagementView(TemplateView):
             'data': turtle_data
         })
         
-        
+    
+class FlipperTagsUpdateView(View):
+    def post(self, request, *args, **kwargs):
+        try:
+            data = json.loads(request.body)
+            turtle_id = data.get('turtle_id')
+            flipper_tags = data.get('flipperTags', [])
+            deleted_tags = data.get('deletedTags', [])
+
+            turtle = TrtTurtles.objects.get(turtle_id=turtle_id)
+
+            # Handle deletions
+            if deleted_tags:
+                TrtTags.objects.filter(
+                    tag_id__in=deleted_tags,
+                    turtle=turtle
+                ).update(
+                    turtle=None,
+                    tag_status=TrtTagStatus.objects.get(tag_status='SAL') 
+                )
+
+            # Handle updates and additions
+            for tag_data in flipper_tags:
+                tag_id = tag_data.get('tag_id')
+                tag_status_code = tag_data.get('tag_status')
+                
+                tag_status = None
+                if tag_status_code:
+                    try:
+                        tag_status = TrtTagStatus.objects.get(tag_status=tag_status_code)
+                    except TrtTagStatus.DoesNotExist:
+                        raise ValidationError(f"Invalid tag status code: {tag_status_code}")
+                
+                tag, created = TrtTags.objects.get_or_create(
+                    tag_id=tag_id,
+                    defaults={
+                        'turtle': turtle,
+                        'side': tag_data.get('side'),
+                        'tag_status': tag_status, 
+                        'issue_location': tag_data.get('issue_location'),
+                        'comments': tag_data.get('comments')
+                    }
+                )
+                if not created:
+                    # Update existing tag
+                    tag.turtle = turtle
+                    tag.side = tag_data.get('side')
+                    tag.tag_status = tag_status
+                    tag.issue_location = tag_data.get('issue_location')
+                    tag.comments = tag_data.get('comments')
+                    tag.save()
+
+            return JsonResponse({
+                'status': 'success',
+                'message': 'Flipper tags updated successfully'
+            })
+
+        except ValidationError as e:
+            return JsonResponse({
+                'status': 'error',
+                'message': str(e)
+            }, status=400)
+        except TrtTurtles.DoesNotExist:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Turtle not found'
+            }, status=404)
+        except Exception as e:
+            return JsonResponse({
+                'status': 'error',
+                'message': str(e)
+            }, status=500)
+            
+            
+
+class PitTagsUpdateView(View):
+    def post(self, request, *args, **kwargs):
+        try:
+            data = json.loads(request.body)
+            turtle_id = data.get('turtle_id')
+            pit_tags = data.get('pitTags', [])
+            deleted_tags = data.get('deletedTags', [])
+
+            turtle = TrtTurtles.objects.get(turtle_id=turtle_id)
+
+            # Handle deletions
+            if deleted_tags:
+                TrtPitTags.objects.filter(
+                    pit_tag_id__in=deleted_tags,
+                    turtle=turtle
+                ).update(
+                    turtle=None,
+                    tag_status=TrtTagStatus.objects.get(tag_status='SAL')
+                )
+
+            # Handle updates and additions
+            for tag_data in pit_tags:
+                tag_id = tag_data.get('pit_tag_id')
+                tag_status_code = tag_data.get('pit_tag_status')
+                
+                try:
+                    tag_status = TrtTagStatus.objects.get(tag_status=tag_status_code) if tag_status_code else None
+                except TrtTagStatus.DoesNotExist:
+                    raise ValidationError(f"Invalid tag status code: {tag_status_code}")
+                
+                tag, created = TrtPitTags.objects.get_or_create(
+                    pit_tag_id=tag_id,
+                    defaults={
+                        'turtle': turtle,
+                        'tag_status': tag_status,
+                        'comments': tag_data.get('comments')
+                    }
+                )
+                if not created:
+                    tag.turtle = turtle
+                    tag.tag_status = tag_status
+                    tag.comments = tag_data.get('comments')
+                    tag.save()
+
+            return JsonResponse({
+                'status': 'success',
+                'message': 'PIT tags updated successfully'
+            })
+
+        except ValidationError as e:
+            return JsonResponse({
+                'status': 'error',
+                'message': str(e)
+            }, status=400)
+        except TrtTurtles.DoesNotExist:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Turtle not found'
+            }, status=404)
+        except Exception as e:
+            return JsonResponse({
+                'status': 'error',
+                'message': str(e)
+            }, status=500)
+
+class IdentificationsUpdateView(View):
+    def post(self, request, *args, **kwargs):
+        try:
+            data = json.loads(request.body)
+            turtle_id = data.get('turtle_id')
+            identifications = data.get('identifications', [])
+            deleted_identifications = data.get('deletedIdentifications', [])
+
+            turtle = TrtTurtles.objects.get(turtle_id=turtle_id)
+
+            # Handle deletions
+            if deleted_identifications:
+                TrtIdentification.objects.filter(
+                    turtle=turtle,
+                    identification_type__in=deleted_identifications
+                ).delete()
+
+            # Handle updates and additions
+            for ident_data in identifications:
+                ident_type = ident_data.get('identification_type')
+                identifier = ident_data.get('identification_value')
+                
+                try:
+                    ident_type_obj = TrtIdentificationTypes.objects.get(identification_type=ident_type) if ident_type else None
+                except TrtIdentificationTypes.DoesNotExist:
+                    raise ValidationError(f"Invalid identification type: {ident_type}")
+                
+                # 由于使用 OneToOneField，我们需要使用 update_or_create
+                TrtIdentification.objects.update_or_create(
+                    turtle=turtle,
+                    identification_type=ident_type_obj,
+                    defaults={
+                        'identifier': identifier,
+                        'comments': ident_data.get('comments')
+                    }
+                )
+
+            return JsonResponse({
+                'status': 'success',
+                'message': 'Identifications updated successfully'
+            })
+
+        except ValidationError as e:
+            return JsonResponse({
+                'status': 'error',
+                'message': str(e)
+            }, status=400)
+        except TrtTurtles.DoesNotExist:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Turtle not found'
+            }, status=404)
+        except Exception as e:
+            return JsonResponse({
+                'status': 'error',
+                'message': str(e)
+            }, status=500)
+            
+            
+
+@login_required
+def samples_update(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            turtle_id = data.get('turtle_id')
+            samples = data.get('samples', [])
+            deleted_samples = data.get('deletedSamples', [])
+
+            # Delete marked samples
+            if deleted_samples:
+                TrtSamples.objects.filter(sample_id__in=deleted_samples).delete()
+
+            # Update or create samples
+            for sample in samples:
+                sample_id = sample.get('sample_id')
+                if sample_id:
+                    # Update existing sample
+                    TrtSamples.objects.filter(sample_id=sample_id).update(
+                        tissue_type=sample.get('tissue_type'),
+                        sample_label=sample.get('sample_label'),
+                        observation_id=sample.get('observation_id'),
+                        comments=sample.get('comments')
+                    )
+                else:
+                    # Create new sample
+                    TrtSamples.objects.create(
+                        turtle_id=turtle_id,
+                        tissue_type=sample.get('tissue_type'),
+                        sample_label=sample.get('sample_label'),
+                        observation_id=sample.get('observation_id'),
+                        comments=sample.get('comments')
+                    )
+
+            return JsonResponse({'status': 'success'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)})
+
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+
+@login_required
+def documents_update(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            turtle_id = data.get('turtle_id')
+            documents = data.get('documents', [])
+            deleted_documents = data.get('deletedDocuments', [])
+
+            # Delete marked documents
+            if deleted_documents:
+                TrtDocuments.objects.filter(document_id__in=deleted_documents).delete()
+
+            # Update or create documents
+            for document in documents:
+                document_id = document.get('document_id')
+                if document_id:
+                    # Update existing document
+                    TrtDocuments.objects.filter(document_id=document_id).update(
+                        document_type=document.get('document_type'),
+                        file_name=document.get('file_name'),
+                        person_id=document.get('person_id'),
+                        comments=document.get('comments')
+                    )
+                else:
+                    # Create new document
+                    TrtDocuments.objects.create(
+                        turtle_id=turtle_id,
+                        document_type=document.get('document_type'),
+                        file_name=document.get('file_name'),
+                        person_id=document.get('person_id'),
+                        comments=document.get('comments')
+                    )
+
+            return JsonResponse({'status': 'success'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)})
+
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'})     

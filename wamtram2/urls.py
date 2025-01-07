@@ -60,4 +60,9 @@ urlpatterns = [
     path('api/turtle-update/', views.TurtleManagementView.as_view(), name='turtle_update'),
     path('api/observations/<int:observation_id>/save/', views.SaveObservationView.as_view(), name='save_observation'),
     path('api/observations/save/', views.SaveObservationView.as_view(), name='create_observation'),
+    path('api/flipper-tags-update/', views.FlipperTagsUpdateView.as_view(), name='flipper_tags_update'),
+    path('api/pit-tags-update/', views.PitTagsUpdateView.as_view(), name='pit_tags_update'),
+    path('api/identifications-update/', views.IdentificationsUpdateView.as_view(), name='identifications_update'),
+    path('api/samples-update/', views.samples_update, name='samples_update'),
+    path('api/documents-update/', views.documents_update, name='documents_update'),
 ]
