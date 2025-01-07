@@ -235,37 +235,44 @@ def import_incidents(request):
             # Skip the header row
             for row in ws.iter_rows(min_row=2):
                 try:
-
-                    species_name = row[0].value
-                    species = Species.objects.get(scientific_name=species_name)
+                    # Check required fields
+                    if not row[0].value:  # species
+                        raise ValidationError(f"Row {row[0].row}: Species name cannot be empty")
+                        
+                    species = Species.objects.get(scientific_name=row[0].value)
+                    
+                    # Process time field
+                    incident_time = row[5].value
+                    if incident_time in [None, '00:00:00', '']:
+                        incident_time = None
                     
                     # Create Incident instance
                     incident = Incident(
                         species=species,
-                        latitude=row[1].value,
-                        longitude=row[2].value,
-                        incident_date=datetime.strptime(str(row[4].value), '%Y-%m-%d').date(),
-                        incident_time=row[5].value,
-                        species_confirmed_genetically=row[6].value == 'Y',
-                        location_name=row[7].value,
-                        number_of_animals=row[9].value or 1,
-                        mass_incident=row[10].value == 'Y',
-                        incident_type=row[11].value,
-                        sex=row[12].value,
-                        age_class=row[13].value,
-                        length=row[14].value,
-                        weight=row[15].value,
-                        weight_is_estimated=row[16].value == 'Y',
-                        carcass_location_fate=row[17].value,
-                        entanglement_gear=row[18].value,
-                        DBCA_staff_attended=row[19].value == 'Y',
-                        condition_when_found=row[20].value,
-                        outcome=row[21].value,
-                        cause_of_death=row[22].value,
-                        photos_taken=row[23].value == 'Y',
-                        samples_taken=row[24].value == 'Y',
-                        post_mortem=row[25].value == 'Y',
-                        comments=row[26].value
+                        latitude=row[1].value if row[1].value is not None else None,
+                        longitude=row[2].value if row[2].value is not None else None,
+                        incident_date=datetime.strptime(str(row[4].value), '%Y-%m-%d').date() if row[4].value else None,
+                        incident_time=incident_time,
+                        species_confirmed_genetically=row[6].value == 'Y' if row[6].value else False,
+                        location_name=row[7].value if row[7].value else '',
+                        number_of_animals=int(row[9].value) if row[9].value else 1,
+                        mass_incident=row[10].value == 'Y' if row[10].value else False,
+                        incident_type=row[11].value if row[11].value else 'Stranding',
+                        sex=row[12].value if row[12].value else 'Unknown',
+                        age_class=row[13].value if row[13].value else 'Unknown',
+                        length=float(row[14].value) if row[14].value else None,
+                        weight=float(row[15].value) if row[15].value else None,
+                        weight_is_estimated=row[16].value == 'Y' if row[16].value else False,
+                        carcass_location_fate=row[17].value if row[17].value else '',
+                        entanglement_gear=row[18].value if row[18].value else '',
+                        DBCA_staff_attended=row[19].value == 'Y' if row[19].value else False,
+                        condition_when_found=row[20].value if row[20].value else 'Unknown',
+                        outcome=row[21].value if row[21].value else 'Unknown',
+                        cause_of_death=row[22].value if row[22].value else '',
+                        photos_taken=row[23].value == 'Y' if row[23].value else False,
+                        samples_taken=row[24].value == 'Y' if row[24].value else False,
+                        post_mortem=row[25].value == 'Y' if row[25].value else False,
+                        comments=row[26].value if row[26].value else ''
                     )
                     
                     incident.full_clean()
