@@ -16,6 +16,54 @@ from django.core.exceptions import PermissionDenied
 from django.core.exceptions import ValidationError
 from openpyxl import load_workbook
 from datetime import datetime
+from datetime import time
+from openpyxl.utils.datetime import from_excel
+from django.contrib.gis.geos import Point
+from decimal import Decimal
+
+INCIDENT_TYPE_MAP = {
+    'stranding': 'Stranding',
+    'entanglement': 'Entanglement',
+    'entrapment': 'Entrapment',
+    'vessel collision': 'Vessel collision',
+    'unusual mortality event': 'Unusual mortality event',
+    'hauled-out': 'Hauled-out'
+}
+
+SEX_MAP = {
+    'F': 'Female',
+    'M': 'Male',
+    'U': 'Unknown',
+    'f': 'Female',
+    'm': 'Male',
+    'u': 'Unknown'
+}
+
+CONDITION_MAP = {
+    'Stage 1= alive': 'Stage 1 = alive',
+    'Stage 2= fresh dead': 'Stage 2 = fresh dead',
+    'Stage 3= mild decomposition': 'Stage 3 = mild decomposition',
+    'Stage 4= advanced decomposition': 'Stage 4 = advanced decomposition',
+    'Stage 5= mummified/skeletal': 'Stage 5 = mummified/skeletal',
+    'unknown': 'Unknown'
+}
+
+OUTCOME_MAP = {
+    'Dead': 'Died',
+    'Euthanased': 'Euthanased',
+    'Restranded and euthanased': 'Restranded and euthanased',
+    'Refloated, fate unknown': 'Refloated, fate unknown',
+    'Unknown': 'Unknown'
+}
+
+def round_decimal(value, places=2):
+    """Round decimal to 2 decimal places"""
+    if value is None:
+        return None
+    try:
+        return Decimal(str(value)).quantize(Decimal('0.01'))
+    except:
+        return None
 
 def user_in_marine_animal_incidents_group(user):
     return user.is_superuser or user.groups.filter(name='MARINE_ANIMAL_INCIDENTS') or user.groups.filter(name='data curator').exists()
@@ -225,47 +273,88 @@ def import_incidents(request):
     if request.method == 'POST' and request.FILES.get('excel_file'):
         try:
             excel_file = request.FILES['excel_file']
-            wb = load_workbook(excel_file)
+            wb = load_workbook(excel_file, data_only=True)
             ws = wb.active
             
             success_count = 0
-            error_count = 0
+            failed_rows = [] 
             error_messages = []
+            
+            # Save header row
+            headers = [cell.value for cell in ws[1]]
             
             # Skip the header row
             for row in ws.iter_rows(min_row=2):
                 try:
-
-                    species_name = row[0].value
-                    species = Species.objects.get(scientific_name=species_name)
+                    # Check required fields
+                    if not row[0].value:  # species
+                        raise ValidationError(f"Row {row[0].row}: Species name cannot be empty")
+                        
+                    species = Species.objects.get(scientific_name=row[0].value)
+                    
+                    # Process time field
+                    cell = row[5]
+                    incident_time = None
+                    
+                    if cell.value:
+                        if isinstance(cell.value, (datetime, time)):
+                            incident_time = cell.value.time() if isinstance(cell.value, datetime) else cell.value
+                        elif isinstance(cell.value, str) and cell.value != '00:00:00':
+                            try:
+                                incident_time = datetime.strptime(cell.value, '%H:%M:%S').time()
+                            except ValueError:
+                                pass
+                        elif isinstance(cell.value, float):
+                            try:
+                                # Convert Excel time value
+                                dt = from_excel(cell.value)
+                                incident_time = dt.time()
+                            except:
+                                pass
+                    
+                    print(f"Original cell value: {cell.value}")
+                    print(f"Cell type: {type(cell.value)}")
+                    print(f"Converted time: {incident_time}")
+                    
+                    # Final check
+                    print(f"Final time value used: {incident_time}")
                     
                     # Create Incident instance
+                    incident_date = None
+                    if row[4].value:
+                        if isinstance(row[4].value, datetime):
+                            incident_date = row[4].value.date()
+                        elif isinstance(row[4].value, str):
+                            try:
+                                incident_date = datetime.strptime(row[4].value, '%Y-%m-%d').date()
+                            except ValueError:
+                                pass
+                    
                     incident = Incident(
                         species=species,
-                        latitude=row[1].value,
-                        longitude=row[2].value,
-                        incident_date=datetime.strptime(str(row[4].value), '%Y-%m-%d').date(),
-                        incident_time=row[5].value,
-                        species_confirmed_genetically=row[6].value == 'Y',
-                        location_name=row[7].value,
-                        number_of_animals=row[9].value or 1,
-                        mass_incident=row[10].value == 'Y',
-                        incident_type=row[11].value,
-                        sex=row[12].value,
-                        age_class=row[13].value,
-                        length=row[14].value,
-                        weight=row[15].value,
-                        weight_is_estimated=row[16].value == 'Y',
-                        carcass_location_fate=row[17].value,
-                        entanglement_gear=row[18].value,
-                        DBCA_staff_attended=row[19].value == 'Y',
-                        condition_when_found=row[20].value,
-                        outcome=row[21].value,
-                        cause_of_death=row[22].value,
-                        photos_taken=row[23].value == 'Y',
-                        samples_taken=row[24].value == 'Y',
-                        post_mortem=row[25].value == 'Y',
-                        comments=row[26].value
+                        geo_location=Point(row[2].value, row[1].value) if row[1].value and row[2].value else None,
+                        incident_date=incident_date,
+                        incident_time=incident_time,
+                        species_confirmed_genetically=row[6].value == 'Y' if row[6].value else False,
+                        location_name=row[7].value if row[7].value else '',
+                        number_of_animals=int(row[9].value) if row[9].value else 1,
+                        mass_incident=row[10].value == 'Y' if row[10].value else False,
+                        incident_type=INCIDENT_TYPE_MAP.get(str(row[11].value).lower(), 'Stranding'),
+                        sex=SEX_MAP.get(str(row[12].value).strip(), 'Unknown'),
+                        age_class=row[13].value if row[13].value else 'Unknown',
+                        length=round_decimal(row[14].value),
+                        weight=round_decimal(row[15].value),
+                        weight_is_estimated=row[16].value == 'Y' if row[16].value else False,
+                        carcass_location_fate=row[17].value if row[17].value else '',
+                        entanglement_gear=row[18].value if row[18].value else '',
+                        DBCA_staff_attended=row[19].value == 'Y' if row[19].value else False,
+                        condition_when_found=CONDITION_MAP.get(str(row[20].value).strip(), 'Unknown'),
+                        outcome=OUTCOME_MAP.get(str(row[21].value).strip(), 'Unknown'),
+                        cause_of_death=row[22].value if row[22].value else '',
+                        photos_taken=row[23].value == 'Y' if row[23].value else False,
+                        samples_taken=row[24].value == 'Y' if row[24].value else False,
+                        post_mortem=row[25].value == 'Y' if row[25].value else False,
+                        comments=row[26].value if row[26].value else ''
                     )
                     
                     incident.full_clean()
@@ -273,17 +362,53 @@ def import_incidents(request):
                     success_count += 1
                     
                 except (ValidationError, Exception) as e:
-                    error_count += 1
-                    error_messages.append(f"Row {row[0].row}: {str(e)}")
+                    # Save failed row data and error message
+                    row_data = [cell.value for cell in row]
+                    failed_rows.append({
+                        'row_number': row[0].row,
+                        'data': row_data,
+                        'error': str(e)
+                    })
+                    error_messages.append(f"行 {row[0].row}: {str(e)}")
                     continue
             
+            # If there are failed rows, create an error report Excel file
+            if failed_rows:
+                wb_error = Workbook()
+                ws_error = wb_error.active
+                ws_error.title = "Failed Records"
+                
+                # Write header row
+                headers.append("Error Message")  # Add error message column
+                ws_error.append(headers)
+                
+                # Write failed row data
+                for failed_row in failed_rows:
+                    row_data = failed_row['data']
+                    row_data.append(failed_row['error'])  # Add error message
+                    ws_error.append(row_data)
+                
+                # Generate file name
+                timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                filename = f'failed_imports_{timestamp}.xlsx'
+                
+                # 保存并返回错误报告文件
+                response = HttpResponse(
+                    content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                )
+                response['Content-Disposition'] = f'attachment; filename="{filename}"'
+                wb_error.save(response)
+                
+                messages.warning(
+                    request, 
+                    f'Successfully imported {success_count} records.'
+                    f'Failed {len(failed_rows)} records, please download the error report for correction.'
+                )
+                return response
+            
             messages.success(request, f'Successfully imported {success_count} records.')
-            if error_count:
-                messages.warning(request, f'Failed to import {error_count} records.')
-                for error in error_messages:
-                    messages.error(request, error)
-                    
+            
         except Exception as e:
-            messages.error(request, f'Failed to import: {str(e)}')
+            messages.error(request, f'Import failed: {str(e)}')
             
     return render(request, 'marine_mammal_incidents/import_form.html')
