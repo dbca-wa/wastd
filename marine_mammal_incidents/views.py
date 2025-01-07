@@ -16,6 +16,7 @@ from django.core.exceptions import PermissionDenied
 from django.core.exceptions import ValidationError
 from openpyxl import load_workbook
 from datetime import datetime
+from datetime import time
 
 def user_in_marine_animal_incidents_group(user):
     return user.is_superuser or user.groups.filter(name='MARINE_ANIMAL_INCIDENTS') or user.groups.filter(name='data curator').exists()
@@ -242,9 +243,39 @@ def import_incidents(request):
                     species = Species.objects.get(scientific_name=row[0].value)
                     
                     # Process time field
-                    incident_time = row[5].value
-                    if incident_time in [None, '00:00:00', '']:
-                        incident_time = None
+                    incident_time_value = row[5].value
+                    print(f"Original time value: {incident_time_value}")
+                    print(f"Time value type: {type(incident_time_value)}")
+                    
+                    incident_time = None
+                    if incident_time_value:
+                        # if is datetime object
+                        if isinstance(incident_time_value, datetime):
+                            incident_time = incident_time_value.time()
+                            print(f"Converted time from datetime: {incident_time}")
+                        # if is time object
+                        elif isinstance(incident_time_value, time):
+                            incident_time = incident_time_value
+                            print(f"Time object time: {incident_time}")
+                        # if is number (Excel time format)
+                        elif isinstance(incident_time_value, float):
+                            # Excel time is a decimal representing days
+                            hours = int(incident_time_value * 24)
+                            minutes = int((incident_time_value * 24 * 60) % 60)
+                            seconds = int((incident_time_value * 24 * 60 * 60) % 60)
+                            incident_time = time(hours, minutes, seconds)
+                            print(f"Converted time from Excel number: {incident_time}")
+                        # if is string
+                        elif isinstance(incident_time_value, str):
+                            try:
+                                incident_time = datetime.strptime(incident_time_value, '%H:%M:%S').time()
+                                print(f"Converted time from string: {incident_time}")
+                            except ValueError as e:
+                                print(f"String conversion error: {e}")
+                                incident_time = None
+                    
+                    # Final check
+                    print(f"Final time value used: {incident_time}")
                     
                     # Create Incident instance
                     incident = Incident(
