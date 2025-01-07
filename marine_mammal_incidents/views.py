@@ -56,6 +56,15 @@ OUTCOME_MAP = {
     'Unknown': 'Unknown'
 }
 
+def round_decimal(value, places=2):
+    """Round decimal to 2 decimal places"""
+    if value is None:
+        return None
+    try:
+        return Decimal(str(value)).quantize(Decimal('0.01'))
+    except:
+        return None
+
 def user_in_marine_animal_incidents_group(user):
     return user.is_superuser or user.groups.filter(name='MARINE_ANIMAL_INCIDENTS') or user.groups.filter(name='data curator').exists()
 
@@ -268,8 +277,11 @@ def import_incidents(request):
             ws = wb.active
             
             success_count = 0
-            error_count = 0
+            failed_rows = [] 
             error_messages = []
+            
+            # Save header row
+            headers = [cell.value for cell in ws[1]]
             
             # Skip the header row
             for row in ws.iter_rows(min_row=2):
@@ -330,8 +342,8 @@ def import_incidents(request):
                         incident_type=INCIDENT_TYPE_MAP.get(str(row[11].value).lower(), 'Stranding'),
                         sex=SEX_MAP.get(str(row[12].value).strip(), 'Unknown'),
                         age_class=row[13].value if row[13].value else 'Unknown',
-                        length=Decimal(str(row[14].value)) if row[14].value else None,
-                        weight=Decimal(str(row[15].value)) if row[15].value else None,
+                        length=round_decimal(row[14].value),
+                        weight=round_decimal(row[15].value),
                         weight_is_estimated=row[16].value == 'Y' if row[16].value else False,
                         carcass_location_fate=row[17].value if row[17].value else '',
                         entanglement_gear=row[18].value if row[18].value else '',
@@ -350,17 +362,53 @@ def import_incidents(request):
                     success_count += 1
                     
                 except (ValidationError, Exception) as e:
-                    error_count += 1
-                    error_messages.append(f"Row {row[0].row}: {str(e)}")
+                    # Save failed row data and error message
+                    row_data = [cell.value for cell in row]
+                    failed_rows.append({
+                        'row_number': row[0].row,
+                        'data': row_data,
+                        'error': str(e)
+                    })
+                    error_messages.append(f"行 {row[0].row}: {str(e)}")
                     continue
             
+            # If there are failed rows, create an error report Excel file
+            if failed_rows:
+                wb_error = Workbook()
+                ws_error = wb_error.active
+                ws_error.title = "Failed Records"
+                
+                # Write header row
+                headers.append("Error Message")  # Add error message column
+                ws_error.append(headers)
+                
+                # Write failed row data
+                for failed_row in failed_rows:
+                    row_data = failed_row['data']
+                    row_data.append(failed_row['error'])  # Add error message
+                    ws_error.append(row_data)
+                
+                # Generate file name
+                timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                filename = f'failed_imports_{timestamp}.xlsx'
+                
+                # 保存并返回错误报告文件
+                response = HttpResponse(
+                    content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                )
+                response['Content-Disposition'] = f'attachment; filename="{filename}"'
+                wb_error.save(response)
+                
+                messages.warning(
+                    request, 
+                    f'Successfully imported {success_count} records.'
+                    f'Failed {len(failed_rows)} records, please download the error report for correction.'
+                )
+                return response
+            
             messages.success(request, f'Successfully imported {success_count} records.')
-            if error_count:
-                messages.warning(request, f'Failed to import {error_count} records.')
-                for error in error_messages:
-                    messages.error(request, error)
-                    
+            
         except Exception as e:
-            messages.error(request, f'Failed to import: {str(e)}')
+            messages.error(request, f'Import failed: {str(e)}')
             
     return render(request, 'marine_mammal_incidents/import_form.html')
