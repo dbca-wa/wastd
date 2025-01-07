@@ -18,6 +18,8 @@ from openpyxl import load_workbook
 from datetime import datetime
 from datetime import time
 from openpyxl.utils.datetime import from_excel
+from django.contrib.gis.geos import Point
+from decimal import Decimal
 
 def user_in_marine_animal_incidents_group(user):
     return user.is_superuser or user.groups.filter(name='MARINE_ANIMAL_INCIDENTS') or user.groups.filter(name='data curator').exists()
@@ -283,8 +285,7 @@ def import_incidents(request):
                     
                     incident = Incident(
                         species=species,
-                        latitude=row[1].value if row[1].value is not None else None,
-                        longitude=row[2].value if row[2].value is not None else None,
+                        geo_location=Point(row[2].value, row[1].value) if row[1].value and row[2].value else None,
                         incident_date=incident_date,
                         incident_time=incident_time,
                         species_confirmed_genetically=row[6].value == 'Y' if row[6].value else False,
@@ -294,8 +295,8 @@ def import_incidents(request):
                         incident_type=row[11].value if row[11].value else 'Stranding',
                         sex=row[12].value if row[12].value else 'Unknown',
                         age_class=row[13].value if row[13].value else 'Unknown',
-                        length=float(row[14].value) if row[14].value else None,
-                        weight=float(row[15].value) if row[15].value else None,
+                        length=Decimal(str(row[14].value)) if row[14].value else None,
+                        weight=Decimal(str(row[15].value)) if row[15].value else None,
                         weight_is_estimated=row[16].value == 'Y' if row[16].value else False,
                         carcass_location_fate=row[17].value if row[17].value else '',
                         entanglement_gear=row[18].value if row[18].value else '',
