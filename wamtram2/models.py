@@ -2541,6 +2541,7 @@ class TrtYesNo(models.Model):
     def __str__(self):
         return f"{self.description}"
 
+
 SEX_CHOICES = [
     ("F", "Female"),
     ("M", "Male"),

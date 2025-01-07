@@ -312,13 +312,6 @@ def import_incidents(request):
                             except:
                                 pass
                     
-                    print(f"Original cell value: {cell.value}")
-                    print(f"Cell type: {type(cell.value)}")
-                    print(f"Converted time: {incident_time}")
-                    
-                    # Final check
-                    print(f"Final time value used: {incident_time}")
-                    
                     # Create Incident instance
                     incident_date = None
                     if row[4].value:

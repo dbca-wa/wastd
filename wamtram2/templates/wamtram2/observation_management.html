@@ -81,9 +81,11 @@
             <div class="col-md-2">
                 <div class="form-group">
                     <label>Nesting?</label>
-                    <select class="form-control" name="nesting">
+                    <select class="form-control select2" name="nesting">
                         {% for option in yes_no_choices %}
-                            <option value="{{ option.code }}">{{ option.description }}</option>
+                            <option value="{{ option.code }}" {% if initial_data.basic_info.nesting == option.code %}selected{% endif %}>
+                                {{ option.description }}
+                            </option>
                         {% endfor %}
                     </select>
                 </div>
@@ -91,10 +93,11 @@
             <div class="col-md-2">
                 <div class="form-group">
                     <label>Clutch Completed?</label>
-                    <select class="form-control" name="clutch_completed">
-                        <option value="">Select...</option>
+                    <select class="form-control select2" name="clutch_completed">
                         {% for option in yes_no_choices %}
-                            <option value="{{ option.code }}">{{ option.description }}</option>
+                            <option value="{{ option.code }}" {% if initial_data.basic_info.clutch_completed == option.code %}selected{% endif %}>
+                                {{ option.description }}
+                            </option>
                         {% endfor %}
                     </select>
                 </div>
@@ -278,10 +281,10 @@
     <!-- Tabs for Additional Information -->
     <ul class="nav nav-tabs" role="tablist">
         <li class="nav-item">
-            <a class="nav-link active" data-toggle="tab" href="#flipperTags">Recorded Flipper Tags</a>
+            <a class="nav-link active" data-toggle="tab" href="#flipper-tags">Recorded Flipper Tags</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" data-toggle="tab" href="#pitTags">Recorded PIT Tags</a>
+            <a class="nav-link" data-toggle="tab" href="#pit-tags">Recorded PIT Tags</a>
         </li>
         <li class="nav-item">
             <a class="nav-link" data-toggle="tab" href="#otherIdentification">Recorded Other Identification</a>
@@ -295,25 +298,89 @@
         <li class="nav-item">
             <a class="nav-link" data-toggle="tab" href="#scars">Scars</a>
         </li>
+        <!-- Causeomment out Other Information tab 
         <li class="nav-item">
             <a class="nav-link" data-toggle="tab" href="#otherInfo">Other Information</a>
         </li>
+        -->
     </ul>
 
     <!-- Tab Content -->
     <div class="tab-content">
-        <div id="flipperTags" class="tab-pane active">
-            <div class="section-card">
-                <h4>Recorded Flipper Tags</h4>
-                <div id="tagContainer"></div>
+        <!-- Recorded Flipper Tags Panel -->
+        <div class="tab-pane fade show active" id="flipper-tags" role="tabpanel">
+            <div class="card">
+                <div class="card-body">
+                    <h5>Recorded Flipper Tags</h5>
+                    
+                    <div class="form-row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Tag ID</label>
+                                <input type="text" class="form-control" name="tag_id" value="{{ tag.tag_id }}">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Side</label>
+                                <select class="form-control select2" name="side">
+                                    <option value="">Select Side</option>
+                                    <option value="L">Left</option>
+                                    <option value="R">Right</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Position</label>
+                                <select class="form-control select2" name="position">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label>State</label>
+                                <select class="form-control select2" name="tag_state">
+                                    {% for state in tag_states_choices %}
+                                        <option value="{{ state.tag_state }}">{{ state.description }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="form-group">
+                                <label>&nbsp;</label>
+                                <button type="button" class="btn btn-danger btn-block delete-flipper-tag">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn btn-primary mt-3" id="addFlipperTagBtn">
+                        <i class="fas fa-plus"></i> Add Flipper Tag
+                    </button>
+                </div>
             </div>
         </div>
-        <div id="pitTags" class="tab-pane fade">
-            <div class="section-card">
-                <h4>Recorded PIT Tags</h4>
-                <div id="pitTagContainer"></div>
+
+        <!-- Recorded PIT Tags Panel -->
+        <div class="tab-pane fade" id="pit-tags" role="tabpanel">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Recorded PIT Tags</h5>
+                    <div id="pitTagContainer">
+                        <!-- Existing PIT tags will be loaded here -->
+                    </div>
+                    <button type="button" class="btn btn-primary mt-3" id="addPitTagBtn">
+                        <i class="fas fa-plus"></i> Add PIT Tag
+                    </button>
+                </div>
             </div>
         </div>
+
         <div id="otherIdentification" class="tab-pane fade">
             <div class="section-card">
                 <h4>Recorded Other Identification</h4>
@@ -338,12 +405,14 @@
                 <div id="scarsContainer"></div>
             </div>
         </div>
+        <!-- Comment out Other Information content area
         <div id="otherInfo" class="tab-pane fade">
             <div class="section-card">
                 <h4>Other Tag Information</h4>
                 <div id="otherTagInfoContainer"></div>
             </div>
         </div>
+        -->
     </div>
 
 </div>
@@ -357,6 +426,92 @@
 
 <!-- Loading overlay -->
 <div class="loading-overlay"></div>
+
+<!-- Tag Templates -->
+<template id="flipperTagTemplate">
+    <div class="form-row mb-3 flipper-tag-card">
+        <div class="col-md-3">
+            <div class="form-group">
+                <label>Tag ID</label>
+                <input type="text" class="form-control" name="tag_id">
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="form-group">
+                <label>Side</label>
+                <select class="form-control" name="side">
+                    <option value="">Select Side</option>
+                    <option value="L">Left</option>
+                    <option value="R">Right</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <label>Position</label>
+                <select class="form-control" name="position">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <label>State</label>
+                <select class="form-control" name="tag_status">
+                    <!-- Will be populated by JavaScript -->
+                </select>
+            </div>
+        </div>
+        <div class="col-md-1">
+            <div class="form-group">
+                <label>&nbsp;</label>
+                <button type="button" class="btn btn-danger btn-block delete-flipper-tag">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</template>
+
+<!-- Add template for PIT Tag Card -->
+<template id="pitTagTemplate">
+    <div class="card mb-3 pit-tag-card">
+        <div class="card-body">
+            <div class="form-row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>PIT Tag ID</label>
+                        <input type="text" class="form-control" name="pit_tag_id">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Tag Status</label>
+                        <select class="form-control" name="pit_tag_status">
+                            <option value="">Select Status</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Comments</label>
+                        <input type="text" class="form-control" name="comments">
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="form-group">
+                        <label>&nbsp;</label>
+                        <button type="button" class="btn btn-danger btn-block delete-pit-tag">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
 {% endblock %}
 
 {% block extra_js %}

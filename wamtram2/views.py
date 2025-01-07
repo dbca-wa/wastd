@@ -2665,6 +2665,7 @@ class AddPersonView(LoginRequiredMixin, FormView):
 
         return redirect('wamtram2:add_person')
 
+
 class AvailableBatchesView(LoginRequiredMixin, View):
     def get(self, request):
         if request.user.is_superuser:
@@ -2687,6 +2688,7 @@ class AvailableBatchesView(LoginRequiredMixin, View):
             'comment': batch.comments
         } for batch in batches], safe=False)
 
+
 class BatchInfoView(LoginRequiredMixin, View):
     def get(self, request, batch_id):
         try:
@@ -2701,6 +2703,7 @@ class BatchInfoView(LoginRequiredMixin, View):
             })
         except TrtEntryBatches.DoesNotExist:
             return JsonResponse({'error': 'Batch not found'}, status=404)
+
 
 class MoveEntryView(LoginRequiredMixin, View):
     def post(self, request):
@@ -2744,7 +2747,7 @@ class MoveEntryView(LoginRequiredMixin, View):
             return JsonResponse({'error': str(e)}, status=403)
         except Exception as e:
             return JsonResponse({'error': f'Operation failed: {str(e)}'}, status=500)
-        
+
 
 class PersonManageView(LoginRequiredMixin, UserPassesTestMixin, PaginateMixin, ListView):
     model = TrtPersons
@@ -2889,7 +2892,7 @@ class PersonManageView(LoginRequiredMixin, UserPassesTestMixin, PaginateMixin, L
             messages.error(self.request, f"Error updating person: {str(e)}")
         
         return self.get(self.request)
-    
+
 
 class TagRegisterView(LoginRequiredMixin, FormView):
     template_name = 'wamtram2/tag_register.html'
@@ -2989,7 +2992,7 @@ class AdminToolsView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     
     def test_func(self):
         return (self.request.user.is_superuser)
-    
+
 
 class PitTagsListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMixin, ListView):
     model = TrtPitTags
@@ -3028,7 +3031,7 @@ class PitTagsListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMixin, Li
             'status_choices': TrtPitTagStatus.objects.all(),
         })
         return context
-    
+
 
 class FlipperTagsListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMixin, ListView):
     model = TrtTags
@@ -3071,7 +3074,8 @@ class FlipperTagsListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMixin
             'status_choices': TrtTagStatus.objects.all(),
         })
         return context
-            
+
+
 class TransferObservationsByTagView(LoginRequiredMixin, View):
     template_name = 'wamtram2/transfer_observation.html'
 
@@ -3185,8 +3189,8 @@ class TransferObservationsByTagView(LoginRequiredMixin, View):
                 'success': False,
                 'error': str(e)
             }, status=500)
-            
-            
+
+
 class NestingSeasonListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMixin, ListView):
     model = TrtNestingSeason
     template_name = 'wamtram2/nesting_season_list.html'
@@ -3215,9 +3219,14 @@ class NestingSeasonListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMix
             'search_term': self.request.GET.get('search', ''),
         })
         return context
-            
-            
-class BatchCurationView(LoginRequiredMixin, PaginateMixin,ListView):
+
+
+class SuperUserRequiredMixin(UserPassesTestMixin):
+    def test_func(self):
+        return self.request.user.is_superuser
+
+
+class BatchCurationView(LoginRequiredMixin, SuperUserRequiredMixin, PaginateMixin, ListView):
     model = TrtEntryBatches
     template_name = 'wamtram2/batch_curation_list.html'
     context_object_name = 'batches'
@@ -3289,7 +3298,7 @@ class BatchCurationView(LoginRequiredMixin, PaginateMixin,ListView):
         return HttpResponseBadRequest()
 
 
-class EntryCurationView(LoginRequiredMixin, PaginateMixin, ListView):
+class EntryCurationView(LoginRequiredMixin, SuperUserRequiredMixin, PaginateMixin, ListView):
     model = TrtDataEntry
     template_name = 'wamtram2/entry_curation_list.html'
     context_object_name = 'entries'
@@ -3566,7 +3575,7 @@ class EntryCurationView(LoginRequiredMixin, PaginateMixin, ListView):
         return HttpResponseBadRequest()
 
 
-class SaveEntryChangesView(LoginRequiredMixin, View):
+class SaveEntryChangesView(LoginRequiredMixin, SuperUserRequiredMixin, View):
     READONLY_FIELDS = {'data_entry_id', 'observation_id'}
     
     def validate_field(self, field_name, value, entry):
@@ -3632,7 +3641,7 @@ class SaveEntryChangesView(LoginRequiredMixin, View):
             })
 
 
-class ObservationManagementView(LoginRequiredMixin, TemplateView):
+class ObservationManagementView(LoginRequiredMixin, SuperUserRequiredMixin, TemplateView):
     template_name = 'wamtram2/observation_management.html'
     
     def get_context_data(self, **kwargs):
@@ -3642,11 +3651,11 @@ class ObservationManagementView(LoginRequiredMixin, TemplateView):
         context['initial_data'] = 'null'
         if observation_id:
             try:
-                print(f"尝试获取观察记录数据，ID: {observation_id}")  # 添加日志
+                print(f"尝试获取观察记录数据，ID: {observation_id}")
                 observation_data_view = ObservationDataView()
                 response = observation_data_view.get(self.request, observation_id)
-                print(f"响应状态码: {response.status_code}")  # 添加日志
-                print(f"响应内容: {response.content}")  # 添加日志
+                print(f"响应状态码: {response.status_code}") 
+                print(f"响应内容: {response.content}")  
                 if response.status_code == 200:
                     data = json.loads(response.content)
                     if data['status'] == 'success':
@@ -3732,7 +3741,7 @@ class ObservationManagementView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class ObservationDataView(LoginRequiredMixin, View):
+class ObservationDataView(LoginRequiredMixin, SuperUserRequiredMixin, View):
     @transaction.atomic
     def post(self, request, observation_id=None): 
         try:
@@ -4006,22 +4015,24 @@ class ObservationDataView(LoginRequiredMixin, View):
         }
 
 
-class SaveObservationView(LoginRequiredMixin, View):
+class SaveObservationView(LoginRequiredMixin, SuperUserRequiredMixin, View):
     @transaction.atomic
     def post(self, request, observation_id=None):
         try:
             data = json.loads(request.body)
             
-            # 获取或创建观察记录
+            # Get or create observation record
             observation_id = observation_id or data.get('observation_id')
             if observation_id:
                 observation = TrtObservations.objects.get(pk=observation_id)
             else:
                 observation = TrtObservations()
             
-            # 更新基本信息
+            # Update basic information
             self._update_basic_info(observation, data.get('basic_info', {}))
             observation.save()
+
+            # Keep existing update methods
             self._update_tags(observation, data.get('tag_info', {}))
             self._update_measurements(observation, data.get('measurements', []))
             self._update_damage_records(observation, data.get('damage_records', []))
@@ -4029,26 +4040,136 @@ class SaveObservationView(LoginRequiredMixin, View):
             self._update_location(observation, data.get('location', {}))
             self._update_scars(observation, data.get('scars', {}))
             self._update_other_tags(observation, data.get('other_tags_data', {}))
-            self._update_status(observation)  
+            self._update_status(observation)
+
+            # Add new tag management functionality
+            if 'flipper_tags' in data:
+                self._update_flipper_tags(observation, data.get('flipper_tags', []), data.get('deleted_flipper_tags', []))
+            if 'pit_tags' in data:
+                self._update_pit_tags(observation, data.get('pit_tags', []), data.get('deleted_pit_tags', []))
             
             return JsonResponse({
-                'status': 'success', 
+                'status': 'success',
                 'observation_id': observation.observation_id
             })
-            
-        except ValidationError as e:
+        except Exception as e:
             return JsonResponse({
                 'status': 'error',
                 'message': str(e)
-            }, status=400)
-        except Exception as e:
-            print(f"保存观察记录时出错: {str(e)}")
-            import traceback
-            print(traceback.format_exc())
-            return JsonResponse({
-                'status': 'error',
-                'message': f'保存观察记录时出错: {str(e)}'
             }, status=500)
+
+    def _update_flipper_tags(self, observation, flipper_tags, deleted_tags):
+        """Update flipper tags"""
+        try:
+            # Handle deleted tags
+            if deleted_tags:
+                TrtTags.objects.filter(
+                    tag_id__in=deleted_tags,
+                    observation=observation
+                ).delete()
+
+            # Handle updates and new tags
+            for tag_data in flipper_tags:
+                tag_id = tag_data.get('tag_id')
+                tag_status_code = tag_data.get('tag_status')
+                
+                tag_status = None
+                if tag_status_code:
+                    try:
+                        tag_status = TrtTagStatus.objects.get(tag_status=tag_status_code)
+                    except TrtTagStatus.DoesNotExist:
+                        raise ValidationError(f"Invalid tag status code: {tag_status_code}")
+                
+                tag, created = TrtTags.objects.get_or_create(
+                    tag_id=tag_id,
+                    observation=observation,
+                    defaults={
+                        'side': tag_data.get('side'),
+                        'tag_status': tag_status,
+                        'comments': tag_data.get('comments')
+                    }
+                )
+                if not created:
+                    tag.side = tag_data.get('side')
+                    tag.tag_status = tag_status
+                    tag.comments = tag_data.get('comments')
+                    tag.save()
+
+        except Exception as e:
+            raise ValidationError(f"Error updating flipper tags: {str(e)}")
+
+    def _update_pit_tags(self, observation, pit_tags, deleted_tags):
+        """Update PIT tags"""
+        try:
+            # Handle deleted tags
+            if deleted_tags:
+                TrtPitTags.objects.filter(
+                    pit_tag_id__in=deleted_tags,
+                    observation=observation
+                ).delete()
+
+            # Handle updates and new tags
+            for tag_data in pit_tags:
+                tag_id = tag_data.get('pit_tag_id')
+                tag_status_code = tag_data.get('pit_tag_status')
+                
+                tag_status = None
+                if tag_status_code:
+                    try:
+                        tag_status = TrtTagStatus.objects.get(tag_status=tag_status_code)
+                    except TrtTagStatus.DoesNotExist:
+                        raise ValidationError(f"Invalid tag status code: {tag_status_code}")
+                
+                tag, created = TrtPitTags.objects.get_or_create(
+                    pit_tag_id=tag_id,
+                    observation=observation,
+                    defaults={
+                        'tag_status': tag_status,
+                        'comments': tag_data.get('comments')
+                    }
+                )
+                if not created:
+                    tag.tag_status = tag_status
+                    tag.comments = tag_data.get('comments')
+                    tag.save()
+
+        except Exception as e:
+            raise ValidationError(f"Error updating PIT tags: {str(e)}")
+
+    def _update_other_identifications(self, observation, identifications, deleted_identifications):
+        """Update other identifications"""
+        try:
+            # Handle deleted identifications
+            if deleted_identifications:
+                TrtIdentification.objects.filter(
+                    id__in=deleted_identifications,
+                    observation=observation
+                ).delete()
+
+            # Handle updates and new identifications
+            for ident_data in identifications:
+                ident_type = ident_data.get('identification_type')
+                if ident_type:
+                    try:
+                        ident_type = TrtIdentificationTypes.objects.get(identification_type=ident_type)
+                    except TrtIdentificationTypes.DoesNotExist:
+                        raise ValidationError(f"Invalid identification type: {ident_type}")
+                
+                identification, created = TrtIdentification.objects.get_or_create(
+                    identifier=ident_data.get('identifier'),
+                    observation=observation,
+                    defaults={
+                        'identification_type': ident_type,
+                        'comments': ident_data.get('comments')
+                    }
+                )
+                if not created:
+                    identification.identification_type = ident_type
+                    identification.comments = ident_data.get('comments')
+                    identification.save()
+
+        except Exception as e:
+            raise ValidationError(f"Error updating other identifications: {str(e)}")
 
     FOREIGN_KEY_FIELDS = {
         'other_tags_identification_type': TrtIdentificationTypes,
@@ -4069,63 +4190,47 @@ class SaveObservationView(LoginRequiredMixin, View):
 
 
     def _update_basic_info(self, observation, basic_info):
-        """Update basic information"""
         try:
-            if 'observation_date' in basic_info:
-                try:
-                    datetime_obj = datetime.strptime(
-                        basic_info['observation_date'], 
-                        '%Y-%m-%dT%H:%M'
-                    )
-                    if timezone.is_naive(datetime_obj):
-                        datetime_obj = timezone.make_aware(
-                            datetime_obj, 
-                            timezone.get_current_timezone()
-                        )
-                    observation.observation_date = datetime_obj
-                    observation.observation_time = datetime_obj
-                except ValueError as e:
-                    raise ValidationError(f"Invalid date format: {str(e)}")
+            # Process yes/no fields
+            yes_no_fields = ['alive', 'nesting', 'clutch_completed']
+            for field in yes_no_fields:
+                value = basic_info.get(field)
+                if value:
+                    try:
+                        yes_no_instance = TrtYesNo.objects.get(code=value)
+                        setattr(observation, field, yes_no_instance)
+                    except TrtYesNo.DoesNotExist:
+                        setattr(observation, field, None)
+                else:
+                    setattr(observation, field, None)
 
-            # Update other basic fields
+            # Process other basic information fields
             for field, value in basic_info.items():
-                if hasattr(observation, field):
-                    # Check if it's a foreign key field
+                if field not in yes_no_fields:
                     if field in self.FOREIGN_KEY_FIELDS:
-                        if value:  # If there's a value
-                            if isinstance(value, dict) and 'id' in value:  # Handle Select2 format
-                                value = value['id']
+                        # Process other foreign key fields
+                        if value:
                             try:
-                                # Get the foreign key object
                                 model_class = self.FOREIGN_KEY_FIELDS[field]
-                                related_obj = model_class.objects.get(pk=value)
-                                setattr(observation, field, related_obj)
-                            except model_class.DoesNotExist:
-                                print(f"Can't find the record for {field}: {value}")
+                                instance = model_class.objects.get(pk=value)
+                                setattr(observation, field, instance)
+                            except (model_class.DoesNotExist, ValueError):
                                 setattr(observation, field, None)
-                        else:  # If the value is empty, set to None
+                        else:
                             setattr(observation, field, None)
-                    else:  # Non-foreign key fields are assigned directly
-                        if field == 'number_of_eggs':
-                            if value == '' or value is None:
-                                value = None
-                            else:
-                                try:
-                                    value = int(value)
-                                except ValueError:
-                                    value = None
+                    else:
+                        # Process normal fields
                         setattr(observation, field, value)
 
         except Exception as e:
-            print(f"Error updating basic information: {str(e)}")
-            import traceback
+            print(f"Error updating basic info: {str(e)}")
             print(traceback.format_exc())
-            raise ValidationError(f"Error updating basic information: {str(e)}")
+            raise ValidationError(f"Error updating basic info: {str(e)}")
         
     def _update_tags(self, observation, tag_data):
-        """Update tag records tag records tag records"""
+        """Update tag records"""
         try:    
-            # Get existing recordsisting recordsisting records
+            # Get existing records
             existing_tags = {
                 tag.tag_id_id: tag 
                 for tag in TrtRecordedTags.objects.filter(observation_id=observation)
@@ -4163,7 +4268,7 @@ class SaveObservationView(LoginRequiredMixin, View):
                                 turtle_id=observation.turtle_id
                             )
                     except TrtTags.DoesNotExist:
-                        print(f"找不到标签记录: {tag['tag_id']}")
+                        print(f"Cannot find tag record: {tag['tag_id']}")
                         continue
             
             # Process PIT tags
@@ -4475,7 +4580,7 @@ class SaveObservationView(LoginRequiredMixin, View):
             raise ValidationError(f"Error validating data: {str(e)}")
 
 
-class TurtleManagementView(TemplateView):
+class TurtleManagementView(LoginRequiredMixin,SuperUserRequiredMixin, TemplateView):
     template_name = 'wamtram2/turtle_management.html'
     
     def get_context_data(self, **kwargs):
@@ -4688,9 +4793,9 @@ class TurtleManagementView(TemplateView):
             'status': 'success',
             'data': turtle_data
         })
-        
-    
-class FlipperTagsUpdateView(View):
+
+
+class FlipperTagsUpdateView(LoginRequiredMixin,SuperUserRequiredMixin,View):
     def post(self, request, *args, **kwargs):
         try:
             data = json.loads(request.body)
@@ -4761,10 +4866,9 @@ class FlipperTagsUpdateView(View):
                 'status': 'error',
                 'message': str(e)
             }, status=500)
-            
-            
 
-class PitTagsUpdateView(View):
+
+class PitTagsUpdateView(LoginRequiredMixin,SuperUserRequiredMixin,View):
     def post(self, request, *args, **kwargs):
         try:
             data = json.loads(request.body)
@@ -4829,7 +4933,8 @@ class PitTagsUpdateView(View):
                 'message': str(e)
             }, status=500)
 
-class IdentificationsUpdateView(View):
+
+class IdentificationsUpdateView(LoginRequiredMixin,SuperUserRequiredMixin,View):
     def post(self, request, *args, **kwargs):
         try:
             data = json.loads(request.body)
@@ -4886,23 +4991,21 @@ class IdentificationsUpdateView(View):
                 'status': 'error',
                 'message': str(e)
             }, status=500)
-            
-            
 
-@login_required
-def samples_update(request):
-    if request.method == 'POST':
+
+class SamplesUpdateView(LoginRequiredMixin, SuperUserRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
         try:
             data = json.loads(request.body)
             turtle_id = data.get('turtle_id')
             samples = data.get('samples', [])
             deleted_samples = data.get('deletedSamples', [])
 
-            # Delete marked samples
+            # Handle deletions
             if deleted_samples:
                 TrtSamples.objects.filter(sample_id__in=deleted_samples).delete()
 
-            # Update or create samples
+            # Handle updates and additions
             for sample in samples:
                 sample_id = sample.get('sample_id')
                 if sample_id:
@@ -4924,25 +5027,27 @@ def samples_update(request):
                     )
 
             return JsonResponse({'status': 'success'})
+            
         except Exception as e:
-            return JsonResponse({'status': 'error', 'message': str(e)})
+            return JsonResponse({
+                'status': 'error',
+                'message': str(e)
+            }, status=500)
 
-    return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
 
-@login_required
-def documents_update(request):
-    if request.method == 'POST':
+class DocumentsUpdateView(LoginRequiredMixin, SuperUserRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
         try:
             data = json.loads(request.body)
             turtle_id = data.get('turtle_id')
             documents = data.get('documents', [])
             deleted_documents = data.get('deletedDocuments', [])
 
-            # Delete marked documents
+            # Handle deletions
             if deleted_documents:
                 TrtDocuments.objects.filter(document_id__in=deleted_documents).delete()
 
-            # Update or create documents
+            # Handle updates and additions
             for document in documents:
                 document_id = document.get('document_id')
                 if document_id:
@@ -4964,7 +5069,10 @@ def documents_update(request):
                     )
 
             return JsonResponse({'status': 'success'})
+            
         except Exception as e:
-            return JsonResponse({'status': 'error', 'message': str(e)})
+            return JsonResponse({
+                'status': 'error',
+                'message': str(e)
+            }, status=500)
 
-    return JsonResponse({'status': 'error', 'message': 'Invalid request method'})     

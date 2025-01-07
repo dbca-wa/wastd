@@ -63,6 +63,6 @@ urlpatterns = [
     path('api/flipper-tags-update/', views.FlipperTagsUpdateView.as_view(), name='flipper_tags_update'),
     path('api/pit-tags-update/', views.PitTagsUpdateView.as_view(), name='pit_tags_update'),
     path('api/identifications-update/', views.IdentificationsUpdateView.as_view(), name='identifications_update'),
-    path('api/samples-update/', views.samples_update, name='samples_update'),
-    path('api/documents-update/', views.documents_update, name='documents_update'),
+    path('api/samples-update/', views.SamplesUpdateView.as_view(), name='samples_update'),
+    path('api/documents-update/', views.DocumentsUpdateView.as_view(), name='documents_update'),
 ]
