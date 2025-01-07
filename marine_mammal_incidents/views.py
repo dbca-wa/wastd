@@ -21,6 +21,41 @@ from openpyxl.utils.datetime import from_excel
 from django.contrib.gis.geos import Point
 from decimal import Decimal
 
+INCIDENT_TYPE_MAP = {
+    'stranding': 'Stranding',
+    'entanglement': 'Entanglement',
+    'entrapment': 'Entrapment',
+    'vessel collision': 'Vessel collision',
+    'unusual mortality event': 'Unusual mortality event',
+    'hauled-out': 'Hauled-out'
+}
+
+SEX_MAP = {
+    'F': 'Female',
+    'M': 'Male',
+    'U': 'Unknown',
+    'f': 'Female',
+    'm': 'Male',
+    'u': 'Unknown'
+}
+
+CONDITION_MAP = {
+    'Stage 1= alive': 'Stage 1 = alive',
+    'Stage 2= fresh dead': 'Stage 2 = fresh dead',
+    'Stage 3= mild decomposition': 'Stage 3 = mild decomposition',
+    'Stage 4= advanced decomposition': 'Stage 4 = advanced decomposition',
+    'Stage 5= mummified/skeletal': 'Stage 5 = mummified/skeletal',
+    'unknown': 'Unknown'
+}
+
+OUTCOME_MAP = {
+    'Dead': 'Died',
+    'Euthanased': 'Euthanased',
+    'Restranded and euthanased': 'Restranded and euthanased',
+    'Refloated, fate unknown': 'Refloated, fate unknown',
+    'Unknown': 'Unknown'
+}
+
 def user_in_marine_animal_incidents_group(user):
     return user.is_superuser or user.groups.filter(name='MARINE_ANIMAL_INCIDENTS') or user.groups.filter(name='data curator').exists()
 
@@ -292,8 +327,8 @@ def import_incidents(request):
                         location_name=row[7].value if row[7].value else '',
                         number_of_animals=int(row[9].value) if row[9].value else 1,
                         mass_incident=row[10].value == 'Y' if row[10].value else False,
-                        incident_type=row[11].value if row[11].value else 'Stranding',
-                        sex=row[12].value if row[12].value else 'Unknown',
+                        incident_type=INCIDENT_TYPE_MAP.get(str(row[11].value).lower(), 'Stranding'),
+                        sex=SEX_MAP.get(str(row[12].value).strip(), 'Unknown'),
                         age_class=row[13].value if row[13].value else 'Unknown',
                         length=Decimal(str(row[14].value)) if row[14].value else None,
                         weight=Decimal(str(row[15].value)) if row[15].value else None,
@@ -301,8 +336,8 @@ def import_incidents(request):
                         carcass_location_fate=row[17].value if row[17].value else '',
                         entanglement_gear=row[18].value if row[18].value else '',
                         DBCA_staff_attended=row[19].value == 'Y' if row[19].value else False,
-                        condition_when_found=row[20].value if row[20].value else 'Unknown',
-                        outcome=row[21].value if row[21].value else 'Unknown',
+                        condition_when_found=CONDITION_MAP.get(str(row[20].value).strip(), 'Unknown'),
+                        outcome=OUTCOME_MAP.get(str(row[21].value).strip(), 'Unknown'),
                         cause_of_death=row[22].value if row[22].value else '',
                         photos_taken=row[23].value == 'Y' if row[23].value else False,
                         samples_taken=row[24].value == 'Y' if row[24].value else False,
