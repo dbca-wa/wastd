@@ -14,6 +14,8 @@ from .decorators import superuser_or_data_curator_required
 from django.contrib.auth.decorators import user_passes_test
 from django.core.exceptions import PermissionDenied
 from django.core.exceptions import ValidationError
+from openpyxl import load_workbook
+from datetime import datetime
 
 def user_in_marine_animal_incidents_group(user):
     return user.is_superuser or user.groups.filter(name='MARINE_ANIMAL_INCIDENTS') or user.groups.filter(name='data curator').exists()
@@ -217,3 +219,71 @@ def get_locations(request):
     ).values_list('location_name', flat=True).distinct()
     
     return JsonResponse(list(locations), safe=False)
+
+@superuser_or_data_curator_required
+def import_incidents(request):
+    if request.method == 'POST' and request.FILES.get('excel_file'):
+        try:
+            excel_file = request.FILES['excel_file']
+            wb = load_workbook(excel_file)
+            ws = wb.active
+            
+            success_count = 0
+            error_count = 0
+            error_messages = []
+            
+            # Skip the header row
+            for row in ws.iter_rows(min_row=2):
+                try:
+
+                    species_name = row[0].value
+                    species = Species.objects.get(scientific_name=species_name)
+                    
+                    # Create Incident instance
+                    incident = Incident(
+                        species=species,
+                        latitude=row[1].value,
+                        longitude=row[2].value,
+                        incident_date=datetime.strptime(str(row[4].value), '%Y-%m-%d').date(),
+                        incident_time=row[5].value,
+                        species_confirmed_genetically=row[6].value == 'Y',
+                        location_name=row[7].value,
+                        number_of_animals=row[9].value or 1,
+                        mass_incident=row[10].value == 'Y',
+                        incident_type=row[11].value,
+                        sex=row[12].value,
+                        age_class=row[13].value,
+                        length=row[14].value,
+                        weight=row[15].value,
+                        weight_is_estimated=row[16].value == 'Y',
+                        carcass_location_fate=row[17].value,
+                        entanglement_gear=row[18].value,
+                        DBCA_staff_attended=row[19].value == 'Y',
+                        condition_when_found=row[20].value,
+                        outcome=row[21].value,
+                        cause_of_death=row[22].value,
+                        photos_taken=row[23].value == 'Y',
+                        samples_taken=row[24].value == 'Y',
+                        post_mortem=row[25].value == 'Y',
+                        comments=row[26].value
+                    )
+                    
+                    incident.full_clean()
+                    incident.save()
+                    success_count += 1
+                    
+                except (ValidationError, Exception) as e:
+                    error_count += 1
+                    error_messages.append(f"Row {row[0].row}: {str(e)}")
+                    continue
+            
+            messages.success(request, f'Successfully imported {success_count} records.')
+            if error_count:
+                messages.warning(request, f'Failed to import {error_count} records.')
+                for error in error_messages:
+                    messages.error(request, error)
+                    
+        except Exception as e:
+            messages.error(request, f'Failed to import: {str(e)}')
+            
+    return render(request, 'marine_mammal_incidents/import_form.html')
