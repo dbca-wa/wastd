@@ -3827,6 +3827,11 @@ class ObservationDataView(LoginRequiredMixin, SuperUserRequiredMixin, View):
     def _get_observation_data(self, observation):
         """Get full observation data"""
         
+        print("Debug: Fetching tags for observation:", observation.observation_id)
+        tags = observation.trtrecordedtags_set.all()
+        for tag in tags:
+            print(f"Debug: Tag found - tag_id: {tag.tag_id}, other_tag_id: {tag.other_tag_id}")
+        
         print("Debug: Starting to get observation data for ID:", observation.observation_id)
         
         
@@ -3872,19 +3877,19 @@ class ObservationDataView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                 
         persons_data = {
             'measurer_person': {
-                'id': observation.measurer_person.person_id if observation.measurer_person else None,
+                'id': str(observation.measurer_person.person_id) if observation.measurer_person else None,
                 'text': str(observation.measurer_person) if observation.measurer_person else None
             },
             'measurer_reporter_person': {
-                'id': observation.measurer_reporter_person.person_id if observation.measurer_reporter_person else None,
+                'id': str(observation.measurer_reporter_person.person_id) if observation.measurer_reporter_person else None,
                 'text': str(observation.measurer_reporter_person) if observation.measurer_reporter_person else None
             },
             'tagger_person': {
-                'id': observation.tagger_person.person_id if observation.tagger_person else None,
+                'id': str(observation.tagger_person.person_id) if observation.tagger_person else None,
                 'text': str(observation.tagger_person) if observation.tagger_person else None
             },
             'reporter_person': {
-                'id': observation.reporter_person.person_id if observation.reporter_person else None,
+                'id': str(observation.reporter_person.person_id) if observation.reporter_person else None,
                 'text': str(observation.reporter_person) if observation.reporter_person else None
             }
         }
@@ -3897,10 +3902,11 @@ class ObservationDataView(LoginRequiredMixin, SuperUserRequiredMixin, View):
     
         tag_info = {
             'recorded_tags': [{
-                'tag_id': str(tag.tag_id),
+                'tag_id': str(tag.tag_id.tag_id) if tag.tag_id else str(tag.other_tag_id), 
                 'tag_side': tag.side,
                 'tag_position': tag.tag_position,
                 'tag_state': tag.tag_state.tag_state if tag.tag_state else None,
+                'barnacles': tag.barnacles,
                 'comments': tag.comments
             } for tag in observation.trtrecordedtags_set.all()],
             'recorded_pit_tags': [{
@@ -3920,17 +3926,17 @@ class ObservationDataView(LoginRequiredMixin, SuperUserRequiredMixin, View):
 
         return {
             'basic_info': {
-                'observation_id': observation.observation_id,
-                'turtle_id': observation.turtle_id,
-                'observation_date': observation.observation_date.strftime('%Y-%m-%dT%H:%M') if observation.observation_date else '', 
-                'alive': str(observation.alive.code) if observation.alive else '',
-                'nesting': str(observation.nesting.code) if observation.nesting else '',
-                'activity_code': str(observation.activity_code.activity_code) if observation.activity_code else '',
-                'beach_position_code': str(observation.beach_position_code.beach_position_code) if observation.beach_position_code else '',
-                'condition_code': str(observation.condition_code.condition_code) if observation.condition_code else '',
+                'observation_id': str(observation.observation_id),
+                'turtle_id': str(observation.turtle_id),
+                'observation_date': observation.observation_date.strftime('%Y-%m-%dT%H:%M') if observation.observation_date else '',
+                'alive': observation.alive.code if observation.alive else '',
+                'nesting': observation.nesting.code if observation.nesting else '',
+                'activity_code': observation.activity_code.activity_code if observation.activity_code else '',
+                'beach_position_code': observation.beach_position_code.beach_position_code if observation.beach_position_code else '',
+                'condition_code': observation.condition_code.condition_code if observation.condition_code else '',
                 'number_of_eggs': str(observation.number_of_eggs) if observation.number_of_eggs else '',
-                'egg_count_method': str(observation.egg_count_method.egg_count_method) if observation.egg_count_method else '',
-                'observation_status': str(observation.observation_status),
+                'egg_count_method': observation.egg_count_method.egg_count_method if observation.egg_count_method else '',
+                'observation_status': observation.observation_status,
                 'measurer_person': persons_data['measurer_person'],
                 'measurer_reporter_person': persons_data['measurer_reporter_person'],
                 'tagger_person': persons_data['tagger_person'],
@@ -3939,8 +3945,9 @@ class ObservationDataView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                 'datum_code': str(observation.datum_code) if observation.datum_code else '',
                 'latitude': str(observation.latitude) if observation.latitude else '',
                 'longitude': str(observation.longitude) if observation.longitude else '',
-                'clutch_completed': str(observation.clutch_completed.code) if observation.clutch_completed else '',
-                'date_convention': str(observation.date_convention) if observation.date_convention else '',
+                'clutch_completed': observation.clutch_completed.code if observation.clutch_completed else '',
+                'date_convention': observation.date_convention if observation.date_convention else '',
+                'entered_by': str(observation.entered_by) if observation.entered_by else '',
             },
             'tag_info': tag_info,
             'measurements': measurements,
@@ -4580,6 +4587,173 @@ class SaveObservationView(LoginRequiredMixin, SuperUserRequiredMixin, View):
             raise ValidationError(f"Error validating data: {str(e)}")
 
 
+class RecordedTagsUpdateView(LoginRequiredMixin, SuperUserRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        try:
+            data = json.loads(request.body)
+            observation_id = data.get('observation_id')
+            recorded_tags = data.get('recorded_tags', [])
+            deleted_tags = data.get('deleted_tags', [])
+
+            observation = TrtObservations.objects.get(observation_id=observation_id)
+
+            # Handle deleted tags
+            if deleted_tags:
+                TrtRecordedTags.objects.filter(
+                    observation_id=observation,
+                    tag_id__tag_id__in=deleted_tags
+                ).delete()
+
+            # Handle updated and new tags
+            for tag_data in recorded_tags:
+                tag_id = tag_data.get('tag_id')
+                if not tag_id:  # Skip empty tag_id
+                    continue
+
+                # Get or create TrtTags record
+                tag, _ = TrtTags.objects.get_or_create(
+                    tag_id=tag_id
+                )
+
+                # Get tag state if provided
+                tag_state = None
+                if tag_data.get('tag_state'):
+                    tag_state = TrtTagStates.objects.get(tag_state=tag_data.get('tag_state'))
+
+                # Get turtle_id safely
+                turtle_id = observation.turtle_id if observation.turtle_id else None
+
+                # Convert barnacles string to boolean
+                # barnacles = tag_data.get('barnacles')
+                # if barnacles is None:
+                #     barnacles = False
+
+                # # Update or create TrtRecordedTags record
+                # recorded_tag, created = TrtRecordedTags.objects.update_or_create(
+                #     observation_id=observation,
+                #     tag_id=tag,
+                #     defaults={
+                #         'side': tag_data.get('tag_side'),
+                #         'tag_position': tag_data.get('tag_position'),
+                #         'tag_state': tag_state,
+                #         'turtle_id': turtle_id,
+                #         'barnacles': barnacles
+                #     }
+                # )
+                
+                barnacles = tag_data.get('barnacles')
+                print("Received barnacles value:", barnacles)
+                print("Barnacles type:", type(barnacles))
+
+                # Update or create TrtRecordedTags record
+                try:
+                    recorded_tag, created = TrtRecordedTags.objects.update_or_create(
+                        observation_id=observation,
+                        tag_id=tag,
+                        defaults={
+                            'side': tag_data.get('tag_side'),
+                            'tag_position': tag_data.get('tag_position'),
+                            'tag_state': tag_state,
+                            'turtle_id': turtle_id or 0,  # 确保有默认值
+                            'barnacles': barnacles  # 直接使用布尔值
+                        }
+                    )
+                    print("Update successful:", created)
+                    print("Updated record:", recorded_tag.barnacles)
+                    print("All defaults:", {
+                        'side': tag_data.get('tag_side'),
+                        'tag_position': tag_data.get('tag_position'),
+                        'tag_state': tag_state,
+                        'turtle_id': turtle_id or 0,
+                        'barnacles': barnacles
+                    })
+                except Exception as e:
+                    print("Error during update:", str(e))
+                    raise
+
+            return JsonResponse({
+                'status': 'success',
+                'message': 'Tags updated successfully'
+            })
+
+        except TrtObservations.DoesNotExist:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Observation not found'
+            }, status=404)
+        except TrtTagStates.DoesNotExist:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Invalid tag state'
+            }, status=400)
+        except Exception as e:
+            print(f"Error updating tags: {str(e)}")  # add debug log
+            return JsonResponse({
+                'status': 'error',
+                'message': str(e)
+            }, status=500)
+
+class RecordedPitTagsUpdateView(LoginRequiredMixin, SuperUserRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        try:
+            data = json.loads(request.body)
+            observation_id = data.get('observation_id')
+            recorded_tags = data.get('recorded_pit_tags', [])
+            deleted_tags = data.get('deleted_tags', [])
+
+            observation = TrtObservations.objects.get(observation_id=observation_id)
+
+            # Handle deleted tags
+            if deleted_tags:
+                TrtRecordedPitTags.objects.filter(
+                    observation_id=observation,
+                    pittag_id__pittag_id__in=deleted_tags
+                ).delete()
+
+            # Handle updated and new tags
+            for tag_data in recorded_tags:
+                tag_id = tag_data.get('pittag_id')
+                if not tag_id:
+                    continue
+
+                # Get or create TrtPitTags record
+                pit_tag, _ = TrtPitTags.objects.get_or_create(pittag_id=tag_id)
+
+                # Get tag state if provided
+                tag_state = None
+                if tag_data.get('pit_tag_state'):
+                    tag_state = TrtPitTagStates.objects.get(
+                        pit_tag_state=tag_data.get('pit_tag_state')
+                    )
+
+                # Get turtle_id safely
+                turtle_id = observation.turtle_id
+
+                # Update or create record
+                recorded_tag, _ = TrtRecordedPitTags.objects.update_or_create(
+                    observation_id=observation,
+                    pittag_id=pit_tag,
+                    defaults={
+                        'pit_tag_position': tag_data.get('pit_tag_position'),
+                        'pit_tag_state': tag_state,
+                        'turtle_id': turtle_id,
+                        'checked': bool(tag_data.get('checked', False))
+                    }
+                )
+
+            return JsonResponse({
+                'status': 'success',
+                'message': 'PIT tags updated successfully'
+            })
+
+        except Exception as e:
+            print(f"Error updating PIT tags: {str(e)}")
+            return JsonResponse({
+                'status': 'error',
+                'message': str(e)
+            }, status=500)
+            
+            
 class TurtleManagementView(LoginRequiredMixin,SuperUserRequiredMixin, TemplateView):
     template_name = 'wamtram2/turtle_management.html'
     

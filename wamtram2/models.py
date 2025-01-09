@@ -1213,6 +1213,9 @@ class TrtDatumCodes(models.Model):
     class Meta:
         managed = False
         db_table = "TRT_DATUM_CODES"
+        
+    def __str__(self):
+        return self.datum_code
 
 
 class TrtDefault(models.Model):

@@ -313,54 +313,15 @@
                 <div class="card-body">
                     <h5>Recorded Flipper Tags</h5>
                     
-                    <div class="form-row">
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label>Tag ID</label>
-                                <input type="text" class="form-control" name="tag_id" value="{{ tag.tag_id }}">
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label>Side</label>
-                                <select class="form-control select2" name="side">
-                                    <option value="">Select Side</option>
-                                    <option value="L">Left</option>
-                                    <option value="R">Right</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label>Position</label>
-                                <select class="form-control select2" name="position">
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="form-group">
-                                <label>State</label>
-                                <select class="form-control select2" name="tag_state">
-                                    {% for state in tag_states_choices %}
-                                        <option value="{{ state.tag_state }}">{{ state.description }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-1">
-                            <div class="form-group">
-                                <label>&nbsp;</label>
-                                <button type="button" class="btn btn-danger btn-block delete-flipper-tag">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </div>
+                    <div id="tagContainer">
+                        <!-- Existing PIT tags will be loaded here -->
                     </div>
 
                     <button type="button" class="btn btn-primary mt-3" id="addFlipperTagBtn">
                         <i class="fas fa-plus"></i> Add Flipper Tag
+                    </button>
+                    <button type="button" class="btn btn-success mt-3" id="saveTagsBtn">
+                        <i class="fas fa-save"></i> Save Changes
                     </button>
                 </div>
             </div>
@@ -376,6 +337,9 @@
                     </div>
                     <button type="button" class="btn btn-primary mt-3" id="addPitTagBtn">
                         <i class="fas fa-plus"></i> Add PIT Tag
+                    </button>
+                    <button type="button" class="btn btn-success mt-3" onclick="savePitTagChanges()">
+                        <i class="fas fa-save"></i> Save Changes
                     </button>
                 </div>
             </div>
@@ -537,6 +501,7 @@
         const identificationTypeChoices = {{ identification_type_choices|safe }};
         const dateConventionChoices = {{ date_convention_choices|safe }}; 
 
+        const turtleDetailUrlTemplate = "{% url 'wamtram2:turtle_detail' 0 %}".replace('/0/', '/'); 
     </script>
     <script src="{% static 'js/observation_management.js' %}"></script>
 {% endblock %} 

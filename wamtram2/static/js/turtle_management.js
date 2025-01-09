@@ -387,7 +387,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="form-row">
                             <div class="col-md-1">
                                 <div class="form-group">
-                                    <label>Observation ID</label>
+                                    <label>Observation</label>
                                     <a href="/wamtram2/curation/observations-management/${obs.observation_id}/"class="form-control"target="_blank">${obs.observation_id}</a>
                                 </div>
                             </div>
@@ -494,7 +494,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div class="col-md-2">
                                 <div class="form-group">
                                     <label>Person</label>
-                                    <input type="text" class="form-control" name="person_name" value="${doc.person_name || ''}" readonly>
+                                    <input type="text" class="form-control" name="person_name" value="${doc.person_name || ''}">
                                     <input type="hidden" name="person_id" value="${doc.person_id || ''}">
                                 </div>
                             </div>

@@ -84,11 +84,11 @@ function resetChangeTracking() {
 
 // Document ready handler
 $(document).ready(function() {
-    initializeBasicSelects();
+    // Initialize search selects
     initializeSearchSelects();
     
-    // Initialize change tracking
-    initializeChangeTracking();
+    // Initialize basic dropdowns
+    initializeBasicSelects();
     
     // If initialData is defined, set initial form values
     if (typeof initialData !== 'undefined' && initialData) {
@@ -99,11 +99,6 @@ $(document).ready(function() {
     $('#saveButton').on('click', function(e) {
         e.preventDefault();
         handleSave();
-    });
-
-    $('.select2').select2({
-        theme: 'bootstrap4',
-        width: '100%'
     });
 });
 
@@ -333,7 +328,8 @@ function initializeBasicSelects() {
         'condition_code',
         'egg_count_method',
         'datum_code',
-        'date_convention'
+        'date_convention',
+        'clutch_completed'
     ];
 
     basicSelects.forEach(selectName => {
@@ -426,7 +422,7 @@ function setInitialFormValues() {
         setDamageRecords();
         setOtherIdentification();
         setScars();
-        setOtherTagInfo();
+        saveOriginalFormData();
         
         // Then initialize change tracking after all values are set
         setTimeout(() => {
@@ -437,121 +433,191 @@ function setInitialFormValues() {
 
 // Set basic form fields
 function setBasicFields() {
-    const basicInfo = initialData.basic_info;
-    if (!basicInfo) return;
-
-    // Set date/time
-    if (basicInfo.observation_date) {
-        $('[name="observation_date"]').val(basicInfo.observation_date);
+    if (!initialData || !initialData.basic_info) {
+        console.error('No initial data or basic info available');
+        return;
     }
+    
+    const basicInfo = initialData.basic_info;
+    console.log('Setting basic fields with:', basicInfo);
 
-    // Set person fields
-    const personFields = ['measurer_person', 'measurer_reporter_person', 'tagger_person', 'reporter_person'];
-    personFields.forEach(field => {
-        if (basicInfo[field] && basicInfo[field].id) {
-            const $select = $(`select[name="${field}"]`);
-            const option = new Option(basicInfo[field].text, basicInfo[field].id, true, true);
-            $select.append(option).trigger('change');
+    // Set simple fields
+    const simpleFields = {
+        'observation_id': basicInfo.observation_id,
+        'turtle_id': basicInfo.turtle_id,
+        'observation_date': basicInfo.observation_date,
+        'number_of_eggs': basicInfo.number_of_eggs,
+        'latitude': basicInfo.latitude,
+        'longitude': basicInfo.longitude,
+        'observation_status': basicInfo.observation_status,
+        'entered_by': basicInfo.entered_by,
+        'place_description': basicInfo.place_description,
+        'action_taken': basicInfo.action_taken,
+        'comments': basicInfo.comments
+    };
+
+    Object.entries(simpleFields).forEach(([field, value]) => {
+        const $field = $(`[name="${field}"]`);
+        if ($field.length) {
+            $field.val(value);
+        } else {
+            console.warn(`Field not found: ${field}`);
         }
     });
 
-    if (basicInfo.turtle_id) {
-        $('[name="turtle_id"]').val(basicInfo.turtle_id);
-        $('#turtleDetailLink').attr('href', `/wamtram2/turtles/${basicInfo.turtle_id}/`);
-    }
+    // Set dropdown fields
+    const dropdownFields = {
+        'alive': basicInfo.alive,
+        'nesting': basicInfo.nesting,
+        'clutch_completed': basicInfo.clutch_completed,
+        'activity_code': basicInfo.activity_code,
+        'beach_position_code': basicInfo.beach_position_code,
+        'condition_code': basicInfo.condition_code,
+        'egg_count_method': basicInfo.egg_count_method,
+        'datum_code': basicInfo.datum_code,
+        'date_convention': basicInfo.date_convention
+    };
 
-    // Set place select
-    if (basicInfo.place_code) {
-        const $placeSelect = $('select[name="place_code"]');
-        const option = new Option(basicInfo.place_code.text, basicInfo.place_code.id, true, true);
-        $placeSelect.append(option).trigger('change');
-    }
+    Object.entries(dropdownFields).forEach(([field, value]) => {
+        const $select = $(`select[name="${field}"]`);
+        if ($select.length) {
+            if (value) {
+                $select.val(value).trigger('change');
+            }
+        } else {
+            console.warn(`Dropdown not found: ${field}`);
+        }
+    });
 
-    // Set other basic fields
-    const basicFields = [
-        'observation_id', 'turtle_id', 'alive', 'nesting','clutch_completed',
-        'activity_code', 'beach_position_code', 'condition_code',
-        'egg_count_method', 'observation_status', 'comments',
-        'date_convention', 'datum_code',
-        'latitude', 'longitude', 'number_of_eggs'
-    ];
+    // Set Select2 fields
+    const select2Fields = {
+        'measurer_person': basicInfo.measurer_person,
+        'measurer_reporter_person': basicInfo.measurer_reporter_person,
+        'tagger_person': basicInfo.tagger_person,
+        'reporter_person': basicInfo.reporter_person,
+        'place_code': basicInfo.place_code
+    };
 
-    basicFields.forEach(fieldName => {
-        if (basicInfo[fieldName] !== undefined) {
-            const $field = $(`[name="${fieldName}"]`);
-            if ($field.length) {
-                if ($field.is('select')) {
-                    $field.val(basicInfo[fieldName]).trigger('change');
-                } else {
-                    $field.val(basicInfo[fieldName]);
-                }
+    // Set Select2 fields
+    Object.entries(select2Fields).forEach(([field, data]) => {
+        if (data && data.id) {
+            const $select = $(`select[name="${field}"]`);
+            if ($select.length) {
+                // Create new option
+                const option = new Option(data.text, data.id, true, true);
+                $select.append(option).trigger('change');
+                console.log(`Set ${field} select2 to:`, data);
+            } else {
+                console.warn(`Select2 field not found: ${field}`);
             }
         }
     });
+
+    // Set turtle detail link
+    const turtleDetailLink = document.getElementById('turtleDetailLink');
+    if (turtleDetailLink && basicInfo.turtle_id) {
+        turtleDetailLink.href = `${turtleDetailUrlTemplate}${basicInfo.turtle_id}/`;
+    }
 }
 
-// Set tag information
-function setTagInfo() {
-    // Regular tags
-    const tagContainer = document.getElementById('tagContainer');
-    if (tagContainer && initialData.tag_info?.recorded_tags) {
-        tagContainer.innerHTML = '';
-        
-        if (initialData.tag_info.recorded_tags.length === 0) {
-            tagContainer.innerHTML = '<p class="text-muted">No flipper tags found</p>';
-            return;
-        }
-
-        initialData.tag_info.recorded_tags.forEach(tag => {
-            const tagHtml = `
-                <div class="card mb-3 tag-card">
-                    <div class="card-body">
-                        <div class="form-row">
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label>Tag ID</label>
-                                    <input type="text" class="form-control" name="tag_id" value="${tag.tag_id || ''}" >
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label>Side</label>
-                                    <select class="form-control" name="tag_side">
-                                        <option value="L" ${tag.tag_side === 'L' ? 'selected' : ''}>L</option>
-                                        <option value="R" ${tag.tag_side === 'R' ? 'selected' : ''}>R</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label>Position</label>
-                                    <select class="form-control" name="tag_position">
-                                        <option value="1" ${tag.tag_position === '1' ? 'selected' : ''}>1</option>
-                                        <option value="2" ${tag.tag_position === '2' ? 'selected' : ''}>2</option>
-                                        <option value="3" ${tag.tag_position === '3' ? 'selected' : ''}>3</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label>State</label>
-                                    <select class="form-control" name="tag_state">
-                                        <option value="">Select...</option>
-                                        ${tagStateChoices.map(state => `
-                                            <option value="${state.tag_state}" ${tag.tag_state === state.tag_state ? 'selected' : ''}>
-                                                ${state.description}
-                                            </option>
-                                        `).join('')}
-                                    </select>
-                                </div>
+// Generate tag HTML template
+function generateTagHtml(tag = {}) {
+    const cardId = 'tag-card-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+    return `
+        <div class="card mb-3 tag-card" id="${cardId}">
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label>Tag ID</label>
+                            <input type="text" class="form-control" name="tag_id" value="${tag.tag_id || ''}" >
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label>Side</label>
+                            <select class="form-control select2" name="tag_side">
+                                <option value="">Select Side</option>
+                                <option value="L" ${tag.tag_side === 'L' ? 'selected' : ''}>Left</option>
+                                <option value="R" ${tag.tag_side === 'R' ? 'selected' : ''}>Right</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label>Position</label>
+                            <select class="form-control select2" name="tag_position">
+                                <option value="">Select Position</option>
+                                <option value="1" ${String(tag.tag_position) === '1' ? 'selected' : ''}>1</option>
+                                <option value="2" ${String(tag.tag_position) === '2' ? 'selected' : ''}>2</option>
+                                <option value="3" ${String(tag.tag_position) === '3' ? 'selected' : ''}>3</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>State</label>
+                            <select class="form-control select2" name="tag_state">
+                                <option value="">Select State</option>
+                                ${tagStateChoices.map(state => `
+                                    <option value="${state.tag_state}" ${tag.tag_state === state.tag_state ? 'selected' : ''}>
+                                        ${state.description}
+                                    </option>
+                                `).join('')}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label>Barnacles</label>
+                            <div class="form-control border-0 d-flex align-items-center">
+                                <input type="checkbox" class="form-control" 
+                                    name="barnacles" 
+                                    id="barnacles-${cardId}" 
+                                    style="width: 15px; height: 15px; margin: 0;"
+                                    ${tag.barnacles ? 'checked' : ''}>
                             </div>
                         </div>
                     </div>
+                    <div class="col-md-1">
+                        <div class="form-group">
+                            <label>&nbsp;</label>
+                            <button type="button" class="btn btn-danger btn-block delete-flipper-tag">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
-            `;
-            tagContainer.insertAdjacentHTML('beforeend', tagHtml);
-        });
+            </div>
+        </div>
+    `;
+}
+
+// Set tag info
+function setTagInfo() {
+    // Flipper tags
+    const tagContainer = document.getElementById('tagContainer');
+    
+    if (!tagContainer) {
+        console.error('Tag container not found!');
+        return;
     }
+
+    if (!initialData.tag_info?.recorded_tags) {
+        console.error('No tag data found!');
+        return;
+    }
+
+    tagContainer.innerHTML = '';
+    
+    if (initialData.tag_info.recorded_tags.length === 0) {
+        tagContainer.innerHTML = '<p class="text-muted">No flipper tags found</p>';
+        return;
+    }
+
+    initialData.tag_info.recorded_tags.forEach(tag => {
+        tagContainer.insertAdjacentHTML('beforeend', generateTagHtml(tag));
+    });
 
     // PIT tags
     const pitTagContainer = document.getElementById('pitTagContainer');
@@ -603,6 +669,26 @@ function setTagInfo() {
             pitTagContainer.insertAdjacentHTML('beforeend', pitTagHtml);
         });
     }
+
+    const allTagSelects = [
+        // Flipper tag selects
+        'tag_side',
+        'tag_position',
+        'tag_state',
+        // PIT tag selects
+        'pit_tag_position',
+        'pit_tag_state'
+    ];
+
+    allTagSelects.forEach(selectName => {
+        $(`#tagContainer select[name="${selectName}"], #pitTagContainer select[name="${selectName}"]`).select2({
+            theme: 'bootstrap4',
+            placeholder: 'Select...',
+            allowClear: true,
+            width: '100%'
+        });
+    });
+
 }
 
 // Set measurements data
@@ -880,139 +966,19 @@ function setScars() {
             </div>
         `;
         container.innerHTML = scarsHtml;
-    }
-    
-
-function setOtherTagInfo() {
-    const container = document.getElementById('otherTagInfoContainer');
-    console.log('Setting other tag info:', initialData.other_tags_data); // 添加调试日志
-    
-    if (!container || !initialData.other_tags_data) {
-        console.log('Container or other tags data missing:', {
-            container, 
-            other_tags_data: initialData.other_tags_data
-        });
-        return;
-    }
-
-    const otherTagInfoHtml = `
-        <div class="card mb-3">
-            <div class="card-body">
-                <div class="form-row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label>Other Tags</label>
-                            <input type="text" class="form-control" name="other_tags" 
-                                value="${initialData.other_tags_data.other_tags || ''}">
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label>Identification Type</label>
-                            <select class="form-control" name="other_tags_identification_type">
-                                <option value="">Select...</option>
-                                ${identificationTypeChoices.map(type => `
-                                    <option value="${type.identification_type}" 
-                                        ${initialData.other_tags_data.identification_type === type.identification_type ? 'selected' : ''}>
-                                        ${type.description}
-                                    </option>
-                                `).join('')}
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-    container.innerHTML = otherTagInfoHtml;
-
-    $('[name="other_tags_identification_type"]').select2({
-        placeholder: 'Select identification type...',
-        allowClear: true
-    });
 }
-
-// Add Flipper Tag
-document.getElementById('addFlipperTagBtn')?.addEventListener('click', function() {
-    const template = document.getElementById('flipperTagTemplate');
-    const container = document.getElementById('flipperTagContainer');
-    const clone = template.content.cloneNode(true);
     
-    // Populate tag status dropdown
-    const statusSelect = clone.querySelector('[name="tag_status"]');
-    populateTagStatus(statusSelect);
-    
-    container.appendChild(clone);
-});
-
-// Delete handlers
-document.addEventListener('click', function(e) {
-    if (e.target.closest('.delete-flipper-tag')) {
-        const tagCard = e.target.closest('.flipper-tag-card');
-        if (tagCard && confirm('Are you sure you want to delete this flipper tag?')) {
-            const tagId = tagCard.querySelector('[name="tag_id"]').value;
-            if (tagId) {
-                deletedFlipperTags.push(tagId);
-            }
-            tagCard.remove();
-        }
-    }
-});
-
-// Save handlers
-function saveFlipperTags() {
-    const formData = {
-        observation_id: currentObservationId,
-        flipperTags: [],
-        deletedTags: deletedFlipperTags
-    };
-
-    document.querySelectorAll('.flipper-tag-card').forEach(card => {
-        formData.flipperTags.push({
-            tag_id: card.querySelector('[name="tag_id"]').value,
-            side: card.querySelector('[name="side"]').value,
-            tag_status: card.querySelector('[name="tag_status"]').value,
-            comments: card.querySelector('[name="comments"]').value
-        });
-    });
-
-    return formData;
-}
-
-// 当页面加载时初始化数据
-document.addEventListener('DOMContentLoaded', function() {
-    // 获取初始数据
-    const initialDataElement = document.getElementById('initial-data');
-    if (initialDataElement) {
-        const initialData = JSON.parse(initialDataElement.textContent);
-        
-        // 在设置表单值之前，先保存一个空的原始数据
-        saveOriginalFormData();
-        
-        // 设置表单值
-        if (initialData.basic_info) {
-            Object.entries(initialData.basic_info).forEach(([key, value]) => {
-                const element = document.querySelector(`[name="${key}"]`);
-                if (element) {
-                    element.value = value;
-                }
-            });
-        }
-        
-        // 在设置完表单值后，再次保存作为真正的原始数据
-        saveOriginalFormData();
-    }
-});
 
 function saveOriginalFormData() {
     originalFormData = {};
     const formElements = document.querySelectorAll('input, select, textarea');
     formElements.forEach(element => {
-        // 确保我们保存实际的值，而不是默认的空值
+        
         originalFormData[element.name] = element.value;
     });
-    console.log('Saved original form data:', originalFormData); // 添加调试日志
+    console.log('Saved original form data:', originalFormData);
 }
+
 
 function getFormChanges() {
     const changes = {};
@@ -1023,7 +989,7 @@ function getFormChanges() {
         const currentValue = element.value;
         const originalValue = originalFormData[element.name];
         
-        console.log(`Comparing ${element.name}:`, { // 添加调试日志
+        console.log(`Comparing ${element.name}:`, { 
             original: originalValue,
             current: currentValue
         });
@@ -1039,3 +1005,183 @@ function getFormChanges() {
     
     return changes;
 }
+
+// Add global variable to track deleted tags
+let deletedTags = new Set();
+
+// Add new tag
+function addFlipperTag() {
+    const tagContainer = document.getElementById('tagContainer');
+    
+    if (tagContainer.innerHTML.includes('No flipper tags found')) {
+        tagContainer.innerHTML = '';
+    }
+    
+    tagContainer.insertAdjacentHTML('beforeend', generateTagHtml());
+    
+}
+
+// Handle delete tag
+function handleDeleteTag(event) {
+    const tagCard = event.target.closest('.tag-card');
+    const tagId = tagCard.querySelector('[name="tag_id"]').value;
+    
+    if (tagCard.classList.contains('deleted')) {
+        // Can't delete the tag
+        tagCard.classList.remove('deleted');
+        deletedTags.delete(tagId);
+    } else {
+        // Note the tag is deleted
+        tagCard.classList.add('deleted');
+        if (tagId) {
+            deletedTags.add(tagId);
+        }
+    }
+}
+
+// Save tag changes
+async function saveTagChanges() {
+    const newTags = [];
+    const modifiedTags = [];
+    
+    document.querySelectorAll('.tag-card:not(.deleted)').forEach(card => {
+        const tagData = {
+            tag_id: card.querySelector('[name="tag_id"]').value.trim(),
+            tag_side: card.querySelector('[name="tag_side"]').value || null,
+            tag_position: card.querySelector('[name="tag_position"]').value || null,
+            tag_state: card.querySelector('[name="tag_state"]').value || null,
+            barnacles: Boolean(card.querySelector('[name="barnacles"]').checked)
+        };
+        
+        const originalTag = initialData.tag_info.recorded_tags.find(
+            tag => tag.tag_id === tagData.tag_id
+        );
+        
+        // For existing tags, check if there are actual changes
+        if (originalTag) {
+            const originalTag = initialData.tag_info.recorded_tags.find(
+                tag => tag.tag_id === tagData.tag_id
+            );
+            
+            if (originalTag) {
+                const originalValues = {
+                    tag_side: originalTag.tag_side || null,
+                    tag_position: originalTag.tag_position || null,
+                    tag_state: originalTag.tag_state || null,
+                    barnacles: !!originalTag.barnacles
+                };
+
+                const hasChanges = (
+                    tagData.tag_side !== originalValues.tag_side ||
+                    String(tagData.tag_position) !== String(originalTag.tag_position) ||
+                    tagData.tag_state !== originalValues.tag_state ||
+                    tagData.barnacles !== originalValues.barnacles
+                );
+
+                
+                if (hasChanges) {
+                    modifiedTags.push(tagData);
+                }
+            }
+        } else {
+            newTags.push(tagData);
+        }
+    });
+
+    // If no changes, return early
+    if (newTags.length === 0 && modifiedTags.length === 0 && deletedTags.size === 0) {
+        alert('No changes to save');
+        return;
+    }
+
+    // Create confirmation message
+    let confirmMessage = 'Please confirm the following changes:\n\n';
+    
+    if (newTags.length > 0) {
+        confirmMessage += 'New Tags:\n';
+        newTags.forEach(tag => {
+            confirmMessage += `- Tag ID: ${tag.tag_id || 'N/A'}\n`;
+            if (tag.tag_side) confirmMessage += `  Side: ${tag.tag_side}\n`;
+            if (tag.tag_position) confirmMessage += `  Position: ${tag.tag_position}\n`;
+            if (tag.tag_state) confirmMessage += `  State: ${tag.tag_state}\n`;
+            if (tag.barnacles) confirmMessage += `  Barnacles: Yes\n`;
+        });
+        confirmMessage += '\n';
+    }
+
+    if (modifiedTags.length > 0) {
+        confirmMessage += 'Modified Tags:\n';
+        modifiedTags.forEach(tag => {
+            const originalTag = initialData.tag_info.recorded_tags.find(t => t.tag_id === tag.tag_id);
+            confirmMessage += `- Tag ID: ${tag.tag_id}\n`;
+            if (tag.tag_side !== originalTag.tag_side) {
+                confirmMessage += `  Side: ${originalTag.tag_side || 'N/A'} → ${tag.tag_side || 'N/A'}\n`;
+            }
+            if (String(tag.tag_position) !== String(originalTag.tag_position)) {
+                confirmMessage += `  Position: ${originalTag.tag_position || 'N/A'} → ${tag.tag_position || 'N/A'}\n`;
+            }
+            if (tag.tag_state !== originalTag.tag_state) {
+                confirmMessage += `  State: ${originalTag.tag_state || 'N/A'} → ${tag.tag_state || 'N/A'}\n`;
+            }
+            if (tag.barnacles !== !!originalTag.barnacles) {
+                confirmMessage += `  Barnacles: ${originalTag.barnacles ? 'Yes' : 'No'} → ${tag.barnacles ? 'Yes' : 'No'}\n`;
+            }
+        });
+        confirmMessage += '\n';
+    }
+
+    if (deletedTags.size > 0) {
+        confirmMessage += 'Deleted Tags:\n';
+        deletedTags.forEach(tagId => {
+            confirmMessage += `- Tag ID: ${tagId}\n`;
+        });
+    }
+
+    if (!confirm(confirmMessage)) {
+        return;
+    }
+
+    try {
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        
+        const response = await fetch('/wamtram2/api/recorded-tags/update/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify({
+                observation_id: initialData.basic_info.observation_id,
+                recorded_tags: [...newTags, ...modifiedTags],
+                deleted_tags: Array.from(deletedTags)
+            })
+        });
+
+        const data = await response.json();
+        if (data.status === 'success') {
+            alert('Tags updated successfully!');
+            location.reload();
+        } else {
+            alert(`Error: ${data.message}`);
+        }
+    } catch (error) {
+        alert(`Save failed: ${error.message}`);
+    }
+}
+
+
+// Event listener setup
+document.addEventListener('DOMContentLoaded', function() {
+    // Add Flipper Tag button
+    document.getElementById('addFlipperTagBtn').addEventListener('click', addFlipperTag);
+    
+    // Delete button (using event delegation)
+    document.getElementById('tagContainer').addEventListener('click', function(e) {
+        if (e.target.closest('.delete-flipper-tag')) {
+            handleDeleteTag(e);
+        }
+    });
+    
+    // Save button
+    document.getElementById('saveTagsBtn').addEventListener('click', saveTagChanges);
+});
