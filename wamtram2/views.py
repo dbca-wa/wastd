@@ -2035,8 +2035,6 @@ class ExportDataView(LoginRequiredMixin, View):
             return response
 
         except Exception as e:
-            import traceback
-            traceback.print_exc()
             return HttpResponse(f"Error during export: {str(e)}", status=500)
 
 
@@ -3651,25 +3649,15 @@ class ObservationManagementView(LoginRequiredMixin, SuperUserRequiredMixin, Temp
         context['initial_data'] = 'null'
         if observation_id:
             try:
-                print(f"尝试获取观察记录数据，ID: {observation_id}")
                 observation_data_view = ObservationDataView()
                 response = observation_data_view.get(self.request, observation_id)
-                print(f"响应状态码: {response.status_code}") 
-                print(f"响应内容: {response.content}")  
                 if response.status_code == 200:
                     data = json.loads(response.content)
                     if data['status'] == 'success':
                         context['initial_data'] = json.dumps(data['data'])
-                        print(f"成功设置 initial_data: {context['initial_data']}")  # 添加日志
-                    else:
-                        print(f"响应状态不是success: {data['status']}")  # 添加日志
-                else:
-                    print(f"响应状态码不是200: {response.status_code}")  # 添加日志
             except Exception as e:
-                print(f"获取观察记录数据时出错: {str(e)}")  # 添加日志
-                import traceback
-                print(traceback.format_exc())  # 打印完整的错误堆栈
-        # 序列化选项数据
+                context['initial_data'] = 'null'
+
         try:
             context.update({
                 'tag_states_choices': [
@@ -3731,9 +3719,6 @@ class ObservationManagementView(LoginRequiredMixin, SuperUserRequiredMixin, Temp
                 'submit_url': reverse('wamtram2:observation_detail', kwargs={'observation_id': observation_id}) if observation_id else reverse('wamtram2:observation_detail'),
             })
         except Exception as e:
-            print(f"更新context时出错: {str(e)}") 
-            import traceback
-            print(traceback.format_exc()) 
             
             for key in ['tag_states_choices', 'pit_tag_state_choices', 'measurement_type_choices',
                 'body_parts_choices', 'damage_codes_choices', 'damage_cause_choices']:
@@ -3788,19 +3773,14 @@ class ObservationDataView(LoginRequiredMixin, SuperUserRequiredMixin, View):
     def get(self, request, observation_id=None):
         try:
             if observation_id:
-                print(f"尝试获取观察记录 ID: {observation_id}")  # 添加日志
                 observation = TrtObservations.objects.get(pk=observation_id)
                 try:
                     data = self._get_observation_data(observation)
-                    print(f"成功获取观察数据: {data}")  # 添加日志
                     return JsonResponse({
                         'status': 'success', 
                         'data': data
                     })
                 except Exception as e:
-                    print(f"获取观察数据时出错: {str(e)}")  # 添加日志
-                    import traceback
-                    print(traceback.format_exc())  # 打印完整的错误堆栈
                     return JsonResponse({
                         'status': 'error',
                         'message': f'Error getting observation data: {str(e)}'
@@ -3810,15 +3790,11 @@ class ObservationDataView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                 data = [self._get_observation_summary(obs) for obs in observations]
                 return JsonResponse({'status': 'success', 'data': data})
         except TrtObservations.DoesNotExist:
-            print(f"未找到观察记录 ID: {observation_id}")  # 添加日志
             return JsonResponse({
                 'status': 'error', 
                 'message': f'Observation {observation_id} not found'
             }, status=404)
         except Exception as e:
-            print(f"处理请求时出错: {str(e)}")  # 添加日志
-            import traceback
-            print(traceback.format_exc())  # 打印完整的错误堆栈
             return JsonResponse({
                 'status': 'error',
                 'message': f'Error processing request: {str(e)}'
@@ -3826,15 +3802,6 @@ class ObservationDataView(LoginRequiredMixin, SuperUserRequiredMixin, View):
     
     def _get_observation_data(self, observation):
         """Get full observation data"""
-        
-        print("Debug: Fetching tags for observation:", observation.observation_id)
-        tags = observation.trtrecordedtags_set.all()
-        for tag in tags:
-            print(f"Debug: Tag found - tag_id: {tag.tag_id}, other_tag_id: {tag.other_tag_id}")
-        
-        print("Debug: Starting to get observation data for ID:", observation.observation_id)
-        
-        
         scars_data = {
             'scars_left': observation.scars_left,
             'scars_right': observation.scars_right,
@@ -3858,21 +3825,18 @@ class ObservationDataView(LoginRequiredMixin, SuperUserRequiredMixin, View):
             'identification_type': observation.other_tags_identification_type.identification_type if observation.other_tags_identification_type else None,
             'identification_type_description': observation.other_tags_identification_type.description if observation.other_tags_identification_type else None
         }
-            
+        
         recorded_identifications = []
-        for record in TrtRecordedIdentification.objects.filter(observation_id=observation.observation_id):
+        records = TrtRecordedIdentification.objects.filter(observation_id=observation.observation_id)
+        for record in records:
             try:
-                turtles = TrtIdentification.objects.filter(turtle2=record)
-                for turtle in turtles:
-                    recorded_identifications.append({
-                        'turtle_id': turtle.turtle_id,
-                        'identification_type': record.identification_type.identification_type if record.identification_type else None,
-                        'identifier': record.identifier.identifier if record.identifier else None,
-                        'comments': record.comments
-                    })
-                    
+                recorded_identifications.append({
+                    'recorded_identification_id': record.recorded_identification_id,
+                    'identification_type': record.identification_type.identification_type if record.identification_type else None,
+                    'identifier': record.identifier if record.identifier else None,
+                    'comments': record.comments
+                })
             except Exception as e:
-                print(f"Error processing recorded identification: {str(e)}")
                 continue
                 
         persons_data = {
@@ -3918,11 +3882,27 @@ class ObservationDataView(LoginRequiredMixin, SuperUserRequiredMixin, View):
         }
     
         measurements = [{
+            'id': measurement.id,
             'measurement_type': str(measurement.measurement_type.measurement_type) if measurement.measurement_type else None,
             'measurement_value': str(measurement.measurement_value),
             'comments': measurement.comments
         } for measurement in observation.trtmeasurements_set.all()]
         
+        identification_types = [{
+            'identification_type': type_obj.identification_type,
+            'description': type_obj.description
+        } for type_obj in TrtIdentificationTypes.objects.all()]
+
+        # Add damage related reference data
+        body_parts = [{
+            'body_part': part.body_part,
+            'description': part.description
+        } for part in TrtBodyParts.objects.all()]
+
+        damage_codes = [{
+            'damage_code': code.damage_code,
+            'description': code.description
+        } for code in TrtDamageCodes.objects.all()]
 
         return {
             'basic_info': {
@@ -3954,7 +3934,10 @@ class ObservationDataView(LoginRequiredMixin, SuperUserRequiredMixin, View):
             'damage_records': damage_data,
             'recorded_identifications': recorded_identifications,
             'other_tags_data': other_tags_data,
-            'scars': scars_data
+            'scars': scars_data,
+            'identification_types': identification_types,
+            'body_parts': body_parts,
+            'damage_codes': damage_codes
         }
         
     def _filter_observations(self, request):
@@ -4230,8 +4213,6 @@ class SaveObservationView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                         setattr(observation, field, value)
 
         except Exception as e:
-            print(f"Error updating basic info: {str(e)}")
-            print(traceback.format_exc())
             raise ValidationError(f"Error updating basic info: {str(e)}")
         
     def _update_tags(self, observation, tag_data):
@@ -4275,7 +4256,6 @@ class SaveObservationView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                                 turtle_id=observation.turtle_id
                             )
                     except TrtTags.DoesNotExist:
-                        print(f"Cannot find tag record: {tag['tag_id']}")
                         continue
             
             # Process PIT tags
@@ -4303,12 +4283,9 @@ class SaveObservationView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                                 checked=True
                             )
                     except TrtPitTags.DoesNotExist:
-                        print(f"Can't find the record for PIT tag: {pit_tag['tag_id']}")
                         continue
 
         except Exception as e:
-            print(f"Error updating tag records: {str(e)}")
-            print(traceback.format_exc())
             raise ValidationError(f"Error updating tag records: {str(e)}")
         
     def _update_location(self, observation, location_data):
@@ -4382,16 +4359,11 @@ class SaveObservationView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                             )
                             
                     except (ValueError, TypeError) as e:
-                        print(f"Error processing turtle_id: {str(e)}, turtle_id: {record.get('turtle_id')}")
                         continue
                     except Exception as e:
-                        print(f"Error processing identification records: {str(e)}")
-                        print(traceback.format_exc())
                         continue
                         
         except Exception as e:
-            print(f"Error updating identification records: {str(e)}")
-            print(traceback.format_exc())
             raise ValidationError(f"Error updating identification records: {str(e)}")
 
     def _update_measurements(self, observation, measurements):
@@ -4424,8 +4396,6 @@ class SaveObservationView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                         )
 
         except Exception as e:
-            print(f"Error updating measurement records: {str(e)}")
-            print(traceback.format_exc())
             raise ValidationError(f"Error updating measurement records: {str(e)}")
 
     def _update_damage_records(self, observation, damage_records):
@@ -4460,17 +4430,11 @@ class SaveObservationView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                                 comments=damage.get('comments')
                             )
                     except IntegrityError as e:
-                        print(f"Integrity error processing damage records: {str(e)}")
-                        print(f"observation_id={observation.observation_id}, body_part={body_part_id}")
                         continue
                     except Exception as e:
-                        print(f"Error processing damage records: {str(e)}")
-                        print(traceback.format_exc())
                         continue
 
         except Exception as e:
-            print(f"Error updating damage records: {str(e)}")
-            print(traceback.format_exc())
             raise ValidationError(f"Error updating damage records: {str(e)}")
 
     def _update_scars(self, observation, scars_data):
@@ -4495,8 +4459,6 @@ class SaveObservationView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                 
                 observation.save()
         except Exception as e:
-            print(f"Error updating scar records: {str(e)}")
-            print(traceback.format_exc())
             raise ValidationError(f"Error updating scar records: {str(e)}")
 
     def _update_other_tags(self, observation, other_tags_data):
@@ -4520,8 +4482,6 @@ class SaveObservationView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                     
                 observation.save()
         except Exception as e:
-            print(f"Error updating other tag information: {str(e)}")
-            print(traceback.format_exc())
             raise ValidationError(f"Error updating other tag information: {str(e)}")
 
     def _update_status(self, observation):
@@ -4541,8 +4501,6 @@ class SaveObservationView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                 
             observation.save()
         except Exception as e:
-            print(f"Error updating observation status: {str(e)}")
-            print(traceback.format_exc())
             raise ValidationError(f"Error updating observation status: {str(e)}")
 
     def _validate_data(self, data):
@@ -4582,8 +4540,6 @@ class SaveObservationView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                     raise ValidationError("Longitude must be a valid number")
                     
         except Exception as e:
-            print(f"Error validating data: {str(e)}")
-            print(traceback.format_exc())
             raise ValidationError(f"Error validating data: {str(e)}")
 
 
@@ -4622,28 +4578,8 @@ class RecordedTagsUpdateView(LoginRequiredMixin, SuperUserRequiredMixin, View):
 
                 # Get turtle_id safely
                 turtle_id = observation.turtle_id if observation.turtle_id else None
-
-                # Convert barnacles string to boolean
-                # barnacles = tag_data.get('barnacles')
-                # if barnacles is None:
-                #     barnacles = False
-
-                # # Update or create TrtRecordedTags record
-                # recorded_tag, created = TrtRecordedTags.objects.update_or_create(
-                #     observation_id=observation,
-                #     tag_id=tag,
-                #     defaults={
-                #         'side': tag_data.get('tag_side'),
-                #         'tag_position': tag_data.get('tag_position'),
-                #         'tag_state': tag_state,
-                #         'turtle_id': turtle_id,
-                #         'barnacles': barnacles
-                #     }
-                # )
                 
                 barnacles = tag_data.get('barnacles')
-                print("Received barnacles value:", barnacles)
-                print("Barnacles type:", type(barnacles))
 
                 # Update or create TrtRecordedTags record
                 try:
@@ -4654,21 +4590,11 @@ class RecordedTagsUpdateView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                             'side': tag_data.get('tag_side'),
                             'tag_position': tag_data.get('tag_position'),
                             'tag_state': tag_state,
-                            'turtle_id': turtle_id or 0,  # 确保有默认值
-                            'barnacles': barnacles  # 直接使用布尔值
+                            'turtle_id': turtle_id,
+                            'barnacles': barnacles
                         }
                     )
-                    print("Update successful:", created)
-                    print("Updated record:", recorded_tag.barnacles)
-                    print("All defaults:", {
-                        'side': tag_data.get('tag_side'),
-                        'tag_position': tag_data.get('tag_position'),
-                        'tag_state': tag_state,
-                        'turtle_id': turtle_id or 0,
-                        'barnacles': barnacles
-                    })
                 except Exception as e:
-                    print("Error during update:", str(e))
                     raise
 
             return JsonResponse({
@@ -4687,11 +4613,11 @@ class RecordedTagsUpdateView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                 'message': 'Invalid tag state'
             }, status=400)
         except Exception as e:
-            print(f"Error updating tags: {str(e)}")  # add debug log
             return JsonResponse({
                 'status': 'error',
                 'message': str(e)
             }, status=500)
+
 
 class RecordedPitTagsUpdateView(LoginRequiredMixin, SuperUserRequiredMixin, View):
     def post(self, request, *args, **kwargs):
@@ -4702,6 +4628,7 @@ class RecordedPitTagsUpdateView(LoginRequiredMixin, SuperUserRequiredMixin, View
             deleted_tags = data.get('deleted_tags', [])
 
             observation = TrtObservations.objects.get(observation_id=observation_id)
+            turtle = observation.turtle 
 
             # Handle deleted tags
             if deleted_tags:
@@ -4726,9 +4653,6 @@ class RecordedPitTagsUpdateView(LoginRequiredMixin, SuperUserRequiredMixin, View
                         pit_tag_state=tag_data.get('pit_tag_state')
                     )
 
-                # Get turtle_id safely
-                turtle_id = observation.turtle_id
-
                 # Update or create record
                 recorded_tag, _ = TrtRecordedPitTags.objects.update_or_create(
                     observation_id=observation,
@@ -4736,8 +4660,9 @@ class RecordedPitTagsUpdateView(LoginRequiredMixin, SuperUserRequiredMixin, View
                     defaults={
                         'pit_tag_position': tag_data.get('pit_tag_position'),
                         'pit_tag_state': tag_state,
-                        'turtle_id': turtle_id,
-                        'checked': bool(tag_data.get('checked', False))
+                        'turtle_id': turtle, 
+                        'checked': bool(tag_data.get('checked', False)),
+                        'comments': tag_data.get('comments', '')
                     }
                 )
 
@@ -4747,13 +4672,188 @@ class RecordedPitTagsUpdateView(LoginRequiredMixin, SuperUserRequiredMixin, View
             })
 
         except Exception as e:
-            print(f"Error updating PIT tags: {str(e)}")
             return JsonResponse({
                 'status': 'error',
                 'message': str(e)
             }, status=500)
-            
-            
+        
+        
+class RecordedIdentificationsUpdateView(LoginRequiredMixin, SuperUserRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        try:
+            data = json.loads(request.body)
+            observation_id = data.get('observation_id')
+            recorded_identifications = data.get('recorded_identifications', [])
+            deleted_identifications = data.get('deleted_identifications', [])
+
+            observation = TrtObservations.objects.get(observation_id=observation_id)
+            turtle = observation.turtle
+
+            # Handle deleted identifications
+            if deleted_identifications:
+                TrtRecordedIdentification.objects.filter(
+                    observation_id=observation_id,
+                    recorded_identification_id__in=deleted_identifications
+                ).delete()
+
+            # Handle updated and new identifications
+            for identification_data in recorded_identifications:
+                identification_type = identification_data.get('identification_type')
+                if not identification_type:
+                    continue
+
+                # Get identification type
+                id_type = TrtIdentificationTypes.objects.get(
+                    identification_type=identification_type
+                )
+
+                # Update or create record
+                recorded_identification, _ = TrtRecordedIdentification.objects.update_or_create(
+                    observation_id=observation_id,
+                    identification_type=id_type,
+                    defaults={
+                        'turtle': turtle,
+                        'identifier': identification_data.get('identifier', ''),
+                        'comments': identification_data.get('comments', '')
+                    }
+                )
+
+            return JsonResponse({
+                'status': 'success',
+                'message': 'Identifications updated successfully'
+            })
+
+        except TrtObservations.DoesNotExist:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Observation not found'
+            }, status=404)
+        except TrtIdentificationTypes.DoesNotExist:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Invalid identification type'
+            }, status=400)
+        except Exception as e:
+            return JsonResponse({
+                'status': 'error',
+                'message': str(e)
+            }, status=500)
+
+
+class RecordedMeasurementsUpdateView(LoginRequiredMixin, SuperUserRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        try:
+            data = json.loads(request.body)
+            observation_id = data.get('observation_id')
+            recorded_measurements = data.get('recorded_measurements', [])
+            deleted_measurements = data.get('deleted_measurements', [])
+
+            observation = TrtObservations.objects.get(observation_id=observation_id)
+
+            # Handle deleted measurements
+            if deleted_measurements:
+                TrtMeasurements.objects.filter(
+                    observation_id=observation_id,
+                    id__in=deleted_measurements
+                ).delete()
+
+            # Handle updated and new measurements
+            for measurement_data in recorded_measurements:
+                measurement_type = measurement_data.get('measurement_type')
+                if not measurement_type:
+                    continue
+
+                # Get measurement type
+                meas_type = TrtMeasurementTypes.objects.get(
+                    measurement_type=measurement_type
+                )
+
+                # Update or create record
+                measurement, _ = TrtMeasurements.objects.update_or_create(
+                    observation=observation,
+                    measurement_type=meas_type,
+                    defaults={
+                        'measurement_value': measurement_data.get('measurement_value'),
+                        'comments': measurement_data.get('comments', '')
+                    }
+                )
+
+            return JsonResponse({
+                'status': 'success',
+                'message': 'Measurements updated successfully'
+            })
+
+        except TrtObservations.DoesNotExist:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Observation not found'
+            }, status=404)
+        except TrtMeasurementTypes.DoesNotExist:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Invalid measurement type'
+            }, status=400)
+        except Exception as e:
+            return JsonResponse({
+                'status': 'error',
+                'message': str(e)
+            }, status=500)
+
+
+class RecordedDamageUpdateView(LoginRequiredMixin, SuperUserRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        try:
+            data = json.loads(request.body)
+            observation_id = data.get('observation_id')
+            recorded_damage = data.get('recorded_damage', [])
+            deleted_damage = data.get('deleted_damage', [])
+
+            observation = TrtObservations.objects.get(observation_id=observation_id)
+
+            # Handle deleted damage records
+            if deleted_damage:
+                TrtDamage.objects.filter(
+                    observation_id__in=deleted_damage
+                ).delete()
+
+            # Handle updated and new damage records
+            for damage_data in recorded_damage:
+                damage_id = damage_data.get('observation_id')
+                
+                damage_fields = {
+                    'body_part_id': damage_data.get('body_part'),
+                    'damage_code_id': damage_data.get('damage_code'),
+                    'damage_cause_code_id': damage_data.get('damage_cause_code'),
+                    'comments': damage_data.get('comments')
+                }
+
+                if damage_id:  # Update existing record
+                    TrtDamage.objects.filter(
+                        observation_id=damage_id
+                    ).update(**damage_fields)
+                else:  # Create new record
+                    TrtDamage.objects.create(
+                        observation=observation, 
+                        **damage_fields
+                    )
+
+            return JsonResponse({
+                'status': 'success',
+                'message': 'Damage records updated successfully'
+            })
+
+        except TrtObservations.DoesNotExist:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Observation not found'
+            }, status=404)
+        except Exception as e:
+            return JsonResponse({
+                'status': 'error',
+                'message': str(e)
+            }, status=500)
+
+
 class TurtleManagementView(LoginRequiredMixin,SuperUserRequiredMixin, TemplateView):
     template_name = 'wamtram2/turtle_management.html'
     

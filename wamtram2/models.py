@@ -169,6 +169,48 @@ class TrtDamage(models.Model):
         unique_together = ('observation', 'body_part')
 
 
+# class TrtDamage(models.Model):
+#     observation = models.ForeignKey(
+#         "TrtObservations", 
+#         models.CASCADE, 
+#         db_column="OBSERVATION_ID",
+#         related_name="damages"
+#     )
+#     body_part = models.ForeignKey(
+#         TrtBodyParts, 
+#         models.CASCADE, 
+#         db_column="BODY_PART"
+#     )
+#     damage_code = models.ForeignKey(
+#         "TrtDamageCodes", 
+#         models.CASCADE, 
+#         db_column="DAMAGE_CODE"
+#     )
+#     damage_cause_code = models.ForeignKey(
+#         "TrtDamageCauseCodes",
+#         models.SET_NULL,
+#         db_column="DAMAGE_CAUSE_CODE",
+#         blank=True,
+#         null=True,
+#     )
+#     comments = models.CharField(
+#         db_column="COMMENTS", 
+#         max_length=255, 
+#         blank=True, 
+#         null=True
+#     )
+
+#     class Meta:
+#         managed = False
+#         db_table = "TRT_DAMAGE"
+#         unique_together = ('observation', 'body_part')
+#         constraints = [
+#             models.UniqueConstraint(
+#                 fields=['observation', 'body_part'],
+#                 name='trt_damage_pk'
+#             )
+#         ]
+
 class TrtDamageCause(models.Model):
     observation_id = models.IntegerField(
         db_column="OBSERVATION_ID"
@@ -2037,16 +2079,21 @@ class TrtRecordedIdentification(models.Model):
         db_column="OBSERVATION_ID"
     )  # Field name made lowercase.
     turtle = models.ForeignKey(
-        TrtIdentification, models.CASCADE, db_column="TURTLE_ID", related_name="turtle2"
+        "TrtTurtles",
+        models.CASCADE,
+        db_column="TURTLE_ID",
+        related_name="turtle2"
     )  # Field name made lowercase.
     identification_type = models.ForeignKey(
-        TrtIdentification, models.CASCADE, db_column="IDENTIFICATION_TYPE"
-    )  # Field name made lowercase.
-    identifier = models.ForeignKey(
-        TrtIdentification,
+        "TrtIdentificationTypes",
         models.CASCADE,
+        db_column="IDENTIFICATION_TYPE"
+    )  # Field name made lowercase.
+    identifier = models.CharField(
         db_column="IDENTIFIER",
-        related_name="identifier2",
+        max_length=50,
+        blank=True,
+        null=True,
     )  # Field name made lowercase.
     comments = models.CharField(
         db_column="COMMENTS", max_length=255, blank=True, null=True

@@ -89,12 +89,13 @@
     }
 } 
 
-.tag-card.deleted {
+.tag-card.deleted, .pit-tag-card.deleted, .identification-card.deleted, .measurement-card.deleted, .damage-card.deleted {
     opacity: 0.5;
     position: relative;
 }
 
-.tag-card.deleted::before {
+.tag-card.deleted::before, .pit-tag-card.deleted::before, .identification-card.deleted::before, 
+.measurement-card.deleted::before, .damage-card.deleted::before {
     content: 'DELETED';
     position: absolute;
     top: 50%;
@@ -106,3 +107,4 @@
     z-index: 1;
     pointer-events: none;
 }
+

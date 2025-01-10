@@ -420,7 +420,7 @@ function setInitialFormValues() {
         setTagInfo();
         setMeasurements();
         setDamageRecords();
-        setOtherIdentification();
+        setIdentification();
         setScars();
         saveOriginalFormData();
         
@@ -506,7 +506,6 @@ function setBasicFields() {
                 // Create new option
                 const option = new Option(data.text, data.id, true, true);
                 $select.append(option).trigger('change');
-                console.log(`Set ${field} select2 to:`, data);
             } else {
                 console.warn(`Select2 field not found: ${field}`);
             }
@@ -582,7 +581,7 @@ function generateTagHtml(tag = {}) {
                     <div class="col-md-1">
                         <div class="form-group">
                             <label>&nbsp;</label>
-                            <button type="button" class="btn btn-danger btn-block delete-flipper-tag">
+                            <button type="button" class="btn btn-danger btn-block">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
@@ -592,6 +591,113 @@ function generateTagHtml(tag = {}) {
         </div>
     `;
 }
+
+// Generate PIT tag HTML template
+function generatePitTagHtml(tag = {}) {
+    const cardId = 'pit-tag-card-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+    return `
+        <div class="card mb-3 pit-tag-card" id="${cardId}">
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>PIT Tag ID</label>
+                            <input type="text" class="form-control" name="pittag_id" value="${tag.tag_id || ''}" >
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label>Side</label>
+                            <select class="form-control" name="pit_tag_position">
+                                <option value="">Select Position</option>
+                                <option value="LF" ${tag.tag_position === 'LF' ? 'selected' : ''}>Left</option>
+                                <option value="RF" ${tag.tag_position === 'RF' ? 'selected' : ''}>Right</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>State</label>
+                            <select class="form-control" name="pit_tag_state">
+                                <option value="">Select...</option>
+                                ${pitTagStateChoices.map(state => `
+                                    <option value="${state.pit_tag_state}" ${tag.tag_state === state.pit_tag_state ? 'selected' : ''}>
+                                        ${state.description}
+                                    </option>
+                                `).join('')}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Comments</label>
+                            <input type="text" class="form-control" name="comments" value="${tag.comments || ''}" >
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                        <div class="form-group">
+                            <label>&nbsp;</label>
+                            <button type="button" class="btn btn-danger btn-block">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// Generate identification HTML template
+function generateIdentificationHtml(identification = {}) {
+    const cardId = 'identification-card-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+    return `
+        <div class="card mb-3 identification-card" id="${cardId}" 
+            data-identification-id="${identification.recorded_identification_id || ''}">
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Identification Type</label>
+                            <select class="form-control" name="identification_type">
+                                <option value="">Select...</option>
+                                ${initialData.identification_types.map(type => `
+                                    <option value="${type.identification_type}" 
+                                        ${identification.identification_type === type.identification_type ? 'selected' : ''}>
+                                        ${type.description}
+                                    </option>
+                                `).join('')}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Identifier</label>
+                            <input type="text" class="form-control" name="identifier" 
+                                value="${identification.identifier || ''}">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Comments</label>
+                            <input type="text" class="form-control" name="comments" 
+                                value="${identification.comments || ''}">
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                        <div class="form-group">
+                            <label>&nbsp;</label>
+                            <button type="button" class="btn btn-danger btn-block">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
 
 // Set tag info
 function setTagInfo() {
@@ -630,65 +736,60 @@ function setTagInfo() {
         }
 
         initialData.tag_info.recorded_pit_tags.forEach(pitTag => {
-            const pitTagHtml = `
-                <div class="card mb-3 pit-tag-card">
-                    <div class="card-body">
-                        <div class="form-row">
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label>PIT Tag ID</label>
-                                    <input type="text" class="form-control" name="pittag_id" value="${pitTag.tag_id || ''}" >
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label>Position</label>
-                                    <select class="form-control" name="pit_tag_position">
-                                        <option value="LF" ${pitTag.tag_position === 'LF' ? 'selected' : ''}>L</option>
-                                        <option value="RF" ${pitTag.tag_position === 'RF' ? 'selected' : ''}>R</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label>State</label>
-                                    <select class="form-control" name="pit_tag_state">
-                                        <option value="">Select...</option>
-                                        ${pitTagStateChoices.map(state => `
-                                            <option value="${state.pit_tag_state}" ${pitTag.tag_state === state.pit_tag_state ? 'selected' : ''}>
-                                                ${state.description}
-                                            </option>
-                                        `).join('')}
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            pitTagContainer.insertAdjacentHTML('beforeend', pitTagHtml);
+            pitTagContainer.insertAdjacentHTML('beforeend', generatePitTagHtml(pitTag));
         });
     }
 
-    const allTagSelects = [
-        // Flipper tag selects
-        'tag_side',
-        'tag_position',
-        'tag_state',
-        // PIT tag selects
-        'pit_tag_position',
-        'pit_tag_state'
-    ];
+}
 
-    allTagSelects.forEach(selectName => {
-        $(`#tagContainer select[name="${selectName}"], #pitTagContainer select[name="${selectName}"]`).select2({
-            theme: 'bootstrap4',
-            placeholder: 'Select...',
-            allowClear: true,
-            width: '100%'
-        });
-    });
-
+// Generate measurement HTML template
+function generateMeasurementHtml(measurement = {}) {
+    const cardId = 'measurement-card-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+    return `
+        <div class="card mb-3 measurement-card" id="${cardId}" 
+            data-measurement-id="${measurement.id || ''}">
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="col-md-5">
+                        <div class="form-group">
+                            <label>Measurement Type</label>
+                            <select class="form-control" name="measurement_type">
+                                <option value="">Select...</option>
+                                ${measurementTypeChoices.map(type => `
+                                    <option value="${type.measurement_type}" 
+                                        ${measurement.measurement_type === type.measurement_type ? 'selected' : ''}>
+                                        ${type.description}
+                                    </option>
+                                `).join('')}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Value</label>
+                            <input type="number" class="form-control" name="measurement_value" 
+                                value="${measurement.measurement_value || ''}" step="0.1">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label>Comments</label>
+                            <input type="text" class="form-control" name="comments" 
+                                value="${measurement.comments || ''}">
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                        <div class="form-group">
+                            <label>&nbsp;</label>
+                            <button type="button" class="btn btn-danger btn-block">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
 }
 
 // Set measurements data
@@ -704,34 +805,7 @@ function setMeasurements() {
     }
 
     initialData.measurements.forEach(measurement => {
-        const measurementHtml = `
-            <div class="card mb-3 measurement-card">
-                <div class="card-body">
-                    <div class="form-row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>Measurement Type</label>
-                                <select class="form-control" name="measurement_type" value="${measurement.measurement_type}">
-                                    <option value="">Select...</option>
-                                    ${measurementTypeChoices.map(type => `
-                                        <option value="${type.measurement_type}" ${measurement.measurement_type === type.measurement_type ? 'selected' : ''}>
-                                            ${type.description}
-                                        </option>
-                                    `).join('')}
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>Value</label>
-                                <input type="number" class="form-control" name="measurement_value" value="${measurement.measurement_value}">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-        measurementContainer.insertAdjacentHTML('beforeend', measurementHtml);
+        measurementContainer.insertAdjacentHTML('beforeend', generateMeasurementHtml(measurement));
     });
 }
 
@@ -748,149 +822,29 @@ function setDamageRecords() {
     }
 
     initialData.damage_records.forEach(damage => {
-        const damageHtml = `
-            <div class="card mb-3 damage-card">
-                <div class="card-body">
-                    <div class="form-row">
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label>Body Part</label>
-                                <select class="form-control" name="body_part">
-                                    <option value="">Select...</option>
-                                    ${bodyPartsChoices.map(part => `
-                                        <option value="${part.body_part}" ${damage.body_part === part.body_part ? 'selected' : ''}>
-                                            ${part.description}
-                                        </option>
-                                    `).join('')}
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label>Damage Code</label>
-                                <select class="form-control" name="damage_code">
-                                    <option value="">Select...</option>
-                                    ${damageCodesChoices.map(code => `
-                                        <option value="${code.damage_code}" ${damage.damage_code === code.damage_code ? 'selected' : ''}>
-                                            ${code.description}
-                                        </option>
-                                    `).join('')}
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label>Comments</label>
-                                <input type="text" class="form-control" name="damage_comments" value="${damage.comments || ''}">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-        damageContainer.insertAdjacentHTML('beforeend', damageHtml);
+        damageContainer.insertAdjacentHTML('beforeend', generateDamageHtml(damage));
     });
 }
 
+
 // Set other identification data
-function setOtherIdentification() {
+function setIdentification() {
     const container = document.getElementById('otherIdContainer');
-    if (!container || !initialData.recorded_identifications) return;
+    if (!container) return;
     
     container.innerHTML = '';
 
-    // Set other identification data
-    if (initialData.other_tags_data) {
-        const otherIdentificationHtml = `
-            <div class="card mb-3">
-                <div class="card-body">
-                    <div class="form-row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>Other Identification</label>
-                                <input type="text" class="form-control" name="other_tags" 
-                                    value="${initialData.other_tags_data.other_tags || ''}">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>Identification Type</label>
-                                <select class="form-control" name="other_tags_identification_type">
-                                    <option value="">Select...</option>
-                                    ${identificationTypeChoices.map(type => `
-                                        <option value="${type.identification_type}" 
-                                            ${initialData.other_tags_data.identification_type === type.identification_type ? 'selected' : ''}>
-                                            ${type.description}
-                                        </option>
-                                    `).join('')}
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-        container.insertAdjacentHTML('beforeend', otherIdentificationHtml);
-
-        $('[name="other_tags_identification_type"]').select2({
-            placeholder: 'Select identification type...',
-            allowClear: true
-        });
-    }
-
-    if (initialData.recorded_identifications.length === 0) {
-        if (!initialData.other_tags_data) {
-            container.innerHTML = '<p class="text-muted">No other identifications found</p>';
-        }
+    // Check if there are any recorded identifications
+    if (!initialData.recorded_identifications || initialData.recorded_identifications.length === 0) {
+        container.innerHTML = '<p class="text-muted">No recorded identifications found</p>';
         return;
     }
 
+    // Display recorded identifications
     initialData.recorded_identifications.forEach(identification => {
-        const identificationHtml = `
-            <div class="card mb-3 identification-card">
-                <div class="card-body">
-                    <div class="form-row">
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label>Turtle ID</label>
-                                <input type="text" class="form-control" name="turtle_id[]" 
-                                    value="${identification.turtle_id || ''}">
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label>Identification Type</label>
-                                <select class="form-control" name="identification_type[]">
-                                    <option value="">Select...</option>
-                                    ${identificationTypeChoices.map(type => `
-                                        <option value="${type.identification_type}" 
-                                            ${identification.identification_type === type.identification_type ? 'selected' : ''}>
-                                            ${type.description}
-                                        </option>
-                                    `).join('')}
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label>Identifier</label>
-                                <input type="text" class="form-control" name="identifier[]" 
-                                    value="${identification.identifier || ''}">
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label>Comments</label>
-                                <input type="text" class="form-control" name="identification_comments[]" 
-                                    value="${identification.comments || ''}">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-        container.insertAdjacentHTML('beforeend', identificationHtml);
+        container.insertAdjacentHTML('beforeend', generateIdentificationHtml(identification));
     });
+
 }
 
 
@@ -976,7 +930,6 @@ function saveOriginalFormData() {
         
         originalFormData[element.name] = element.value;
     });
-    console.log('Saved original form data:', originalFormData);
 }
 
 
@@ -988,11 +941,7 @@ function getFormChanges() {
     formElements.forEach(element => {
         const currentValue = element.value;
         const originalValue = originalFormData[element.name];
-        
-        console.log(`Comparing ${element.name}:`, { 
-            original: originalValue,
-            current: currentValue
-        });
+    
         
         if (currentValue !== originalValue) {
             const label = element.previousElementSibling?.textContent || element.name;
@@ -1009,6 +958,7 @@ function getFormChanges() {
 // Add global variable to track deleted tags
 let deletedTags = new Set();
 
+
 // Add new tag
 function addFlipperTag() {
     const tagContainer = document.getElementById('tagContainer');
@@ -1022,7 +972,7 @@ function addFlipperTag() {
 }
 
 // Handle delete tag
-function handleDeleteTag(event) {
+function deleteTag(event) {
     const tagCard = event.target.closest('.tag-card');
     const tagId = tagCard.querySelector('[name="tag_id"]').value;
     
@@ -1169,19 +1119,846 @@ async function saveTagChanges() {
     }
 }
 
+// Add new PIT tag
+function addPitTag() {
+    const pitTagContainer = document.getElementById('pitTagContainer');
+    
+    if (pitTagContainer.innerHTML.includes('No PIT tags found')) {
+        pitTagContainer.innerHTML = '';
+    }
+    
+    pitTagContainer.insertAdjacentHTML('beforeend', generatePitTagHtml());
+}
 
-// Event listener setup
+// Delete PIT tag
+function deletePitTag(event) {
+    const tagCard = event.target.closest('.pit-tag-card');
+    const tagId = tagCard.querySelector('[name="pittag_id"]').value;
+    
+    if (tagCard.classList.contains('deleted')) {
+        // Undelete the tag
+        tagCard.classList.remove('deleted');
+        deletedTags.delete(tagId);
+    } else {
+        // Mark the tag as deleted
+        tagCard.classList.add('deleted');
+        if (tagId) {
+            deletedTags.add(tagId);
+        }
+    }
+}
+
+// Save PIT tag changes
+async function savePitTagChanges() {
+    const newTags = [];
+    const modifiedTags = [];
+    
+    document.querySelectorAll('.pit-tag-card:not(.deleted)').forEach(card => {
+        const tagData = {
+            pittag_id: card.querySelector('[name="pittag_id"]').value.trim(),
+            pit_tag_position: card.querySelector('[name="pit_tag_position"]').value || null,
+            pit_tag_state: card.querySelector('[name="pit_tag_state"]').value || null,
+            comments: card.querySelector('[name="comments"]').value.trim()
+        };
+        
+        const originalTag = initialData.tag_info.recorded_pit_tags.find(
+            tag => tag.tag_id === tagData.pittag_id
+        );
+        
+        if (originalTag) {
+            const hasChanges = (
+                tagData.pit_tag_position !== originalTag.tag_position ||
+                tagData.pit_tag_state !== originalTag.tag_state ||
+                tagData.comments !== originalTag.comments
+            );
+            
+            if (hasChanges) {
+                modifiedTags.push(tagData);
+            }
+        } else {
+            newTags.push(tagData);
+        }
+    });
+
+    if (newTags.length === 0 && modifiedTags.length === 0 && deletedTags.size === 0) {
+        alert('No changes to save');
+        return;
+    }
+
+    // Create confirmation message
+    let confirmMessage = 'Please confirm the following changes:\n\n';
+    
+    if (newTags.length > 0) {
+        confirmMessage += 'New PIT Tags:\n';
+        newTags.forEach(tag => {
+            confirmMessage += `- Tag ID: ${tag.pittag_id}\n`;
+            if (tag.pit_tag_position) confirmMessage += `  Position: ${tag.pit_tag_position}\n`;
+            if (tag.pit_tag_state) confirmMessage += `  State: ${tag.pit_tag_state}\n`;
+            if (tag.comments) confirmMessage += `  Comments: ${tag.comments}\n`;
+        });
+    }
+
+    if (modifiedTags.length > 0) {
+        confirmMessage += '\nModified PIT Tags:\n';
+        modifiedTags.forEach(tag => {
+            const originalTag = initialData.tag_info.recorded_pit_tags.find(t => t.tag_id === tag.pittag_id);
+            confirmMessage += `- Tag ID: ${tag.pittag_id}\n`;
+            
+            if (tag.pit_tag_position !== originalTag.tag_position) {
+                confirmMessage += `  Position: ${originalTag.tag_position || 'N/A'} → ${tag.pit_tag_position || 'N/A'}\n`;
+            }
+            
+            if (tag.pit_tag_state !== originalTag.tag_state) {
+                confirmMessage += `  State: ${originalTag.tag_state || 'N/A'} → ${tag.pit_tag_state || 'N/A'}\n`;
+            }
+            
+            if (tag.comments !== originalTag.comments) {
+                confirmMessage += `  Comments: ${originalTag.comments || 'N/A'} → ${tag.comments || 'N/A'}\n`;
+            }
+        });
+        confirmMessage += '\n';
+    }
+
+    if (deletedTags.size > 0) {
+        confirmMessage += '\nDeleted PIT Tags:\n';
+        deletedTags.forEach(tagId => {
+            confirmMessage += `- Tag ID: ${tagId}\n`;
+        });
+    }
+
+    if (!confirm(confirmMessage)) {
+        return;
+    }
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    try {
+        const response = await fetch('/wamtram2/api/recorded-pit-tags/update/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify({
+                observation_id: initialData.basic_info.observation_id,
+                recorded_pit_tags: [...newTags, ...modifiedTags],
+                deleted_tags: Array.from(deletedTags)
+            })
+        });
+
+        const result = await response.json();
+        if (result.status === 'success') {
+            alert('PIT tags updated successfully');
+            location.reload();
+        } else {
+            throw new Error(result.message);
+        }
+    } catch (error) {
+        alert(`Save failed: ${error.message}`);
+    }
+}
+
+// Add new identification
+function addIdentification() {
+    const container = document.getElementById('otherIdContainer');
+    if (!container) return;
+    
+    // Remove "No recorded identifications" message if it exists
+    if (container.querySelector('.text-muted')) {
+        container.innerHTML = '';
+    }
+    
+    // Add new empty identification card
+    container.insertAdjacentHTML('beforeend', generateIdentificationHtml({}));
+    
+}
+
+// Save identification changes
+function saveIdentificationChanges() {
+    const newIdentifications = [];
+    const modifiedIdentifications = [];
+    const deletedIdentifications = [];
+    
+    // Collect current identifications
+    document.querySelectorAll('.identification-card:not(.deleted)').forEach(card => {
+        const identificationData = {
+            identification_type: card.querySelector('[name="identification_type"]').value,
+            identifier: card.querySelector('[name="identifier"]').value.trim(),
+            comments: card.querySelector('[name="comments"]').value.trim(),
+            recorded_identification_id: card.dataset.identificationId || null
+        };
+        
+        if (identificationData.recorded_identification_id) {
+            const originalId = initialData.recorded_identifications.find(
+                id => id.recorded_identification_id === parseInt(identificationData.recorded_identification_id)
+            );
+            
+            if (originalId) {
+                const hasChanges = (
+                    String(identificationData.identification_type).trim() !== String(originalId.identification_type).trim() ||
+                    String(identificationData.identifier).trim() !== String(originalId.identifier).trim() ||
+                    String(identificationData.comments).trim() !== String(originalId.comments).trim()
+                );
+                
+                if (hasChanges) {
+            
+                    if (
+                        String(identificationData.identification_type).trim() !== String(originalId.identification_type).trim() ||
+                        String(identificationData.identifier).trim() !== String(originalId.identifier).trim() ||
+                        String(identificationData.comments).trim() !== String(originalId.comments).trim()
+                    ) {
+                        modifiedIdentifications.push({
+                            ...identificationData,
+                            original: originalId
+                        });
+                    }
+                }
+            }
+        } else {
+            
+            newIdentifications.push(identificationData);
+        }
+    });
+
+    // Collect deleted identifications
+    document.querySelectorAll('.identification-card.deleted').forEach(card => {
+        const id = card.dataset.identificationId;
+        if (id) {
+            deletedIdentifications.push(id);
+        }
+    });
+
+    if (newIdentifications.length === 0 && modifiedIdentifications.length === 0 && deletedIdentifications.length === 0) {
+        alert('No changes to save');
+        return;
+    }
+
+    // Create confirmation message
+    let confirmMessage = 'Please confirm the following changes:\n\n';
+    
+    if (newIdentifications.length > 0) {
+        confirmMessage += 'New Identifications:\n';
+        newIdentifications.forEach(id => {
+            const typeDescription = initialData.identification_types.find(
+                type => type.identification_type === id.identification_type
+            )?.description || id.identification_type;
+            
+            confirmMessage += `- Type: ${typeDescription}\n`;
+            if (id.identifier) confirmMessage += `  Identifier: ${id.identifier}\n`;
+            if (id.comments) confirmMessage += `  Comments: ${id.comments}\n`;
+        });
+    }
+
+    if (modifiedIdentifications.length > 0) {
+        confirmMessage += '\nModified Identifications:\n';
+        modifiedIdentifications.forEach(id => {
+            const typeDescription = initialData.identification_types.find(
+                type => String(type.identification_type).trim() === String(id.identification_type).trim()
+            )?.description || id.identification_type;
+            
+            const originalTypeDescription = initialData.identification_types.find(
+                type => String(type.identification_type).trim() === String(id.original.identification_type).trim()
+            )?.description || id.original.identification_type;
+
+            if (String(id.identification_type).trim() !== String(id.original.identification_type).trim()) {
+                confirmMessage += `- Type: ${originalTypeDescription} → ${typeDescription}\n`;
+            } else {
+                confirmMessage += `- Type: ${typeDescription}\n`;
+            }
+            
+            if (String(id.identifier).trim() !== String(id.original.identifier).trim()) {
+                confirmMessage += `  Identifier: ${id.original.identifier || 'N/A'} → ${id.identifier || 'N/A'}\n`;
+            }
+            if (String(id.comments).trim() !== String(id.original.comments).trim()) {
+                confirmMessage += `  Comments: ${id.original.comments || 'N/A'} → ${id.comments || 'N/A'}\n`;
+            }
+        });
+    }
+
+    if (deletedIdentifications.length > 0) {
+        confirmMessage += '\nDeleted Identifications:\n';
+        deletedIdentifications.forEach(id => {
+            const originalId = initialData.recorded_identifications.find(
+                ident => ident.recorded_identification_id === parseInt(id)
+            );
+            const typeDescription = originalId ? 
+                initialData.identification_types.find(
+                    type => type.identification_type === originalId.identification_type
+                )?.description || originalId.identification_type 
+                : 'Unknown';
+            
+            confirmMessage += `- ID: ${id} (${typeDescription})\n`;
+            if (originalId?.identifier) confirmMessage += `  Identifier: ${originalId.identifier}\n`;
+            if (originalId?.comments) confirmMessage += `  Comments: ${originalId.comments}\n`;
+        });
+    }
+
+    if (!confirm(confirmMessage)) {
+        return;
+    }
+
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    
+    // Send data to server
+    fetch('/wamtram2/api/recorded-identifications/update/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
+        },
+        body: JSON.stringify({
+            observation_id: initialData.basic_info.observation_id,
+            recorded_identifications: [...newIdentifications, ...modifiedIdentifications],
+            deleted_identifications: deletedIdentifications
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            alert('Identifications updated successfully');
+            location.reload();
+        } else {
+            throw new Error(data.message);
+        }
+    })
+    .catch(error => {
+        alert(`Save failed: ${error.message}`);
+    });
+}
+
+// Initialize deletedIdentifications set
+let deletedIdentifications = new Set();
+
+// Delete identification
+function deleteIdentification(event) {
+    const identificationCard = event.target.closest('.identification-card');
+    const identificationId = identificationCard.dataset.identificationId;
+    if (identificationCard.classList.contains('deleted')) {
+        identificationCard.classList.remove('deleted');
+        deletedIdentifications.delete(identificationId);
+    } else {
+        identificationCard.classList.add('deleted');
+        if (identificationId) {
+            deletedIdentifications.add(identificationId);
+        }
+    }
+
+}
+
+// Event listeners setup
 document.addEventListener('DOMContentLoaded', function() {
     // Add Flipper Tag button
     document.getElementById('addFlipperTagBtn').addEventListener('click', addFlipperTag);
     
     // Delete button (using event delegation)
     document.getElementById('tagContainer').addEventListener('click', function(e) {
-        if (e.target.closest('.delete-flipper-tag')) {
-            handleDeleteTag(e);
+        if (e.target.closest('.btn-danger')) {
+            deleteTag(e);
         }
     });
     
     // Save button
     document.getElementById('saveTagsBtn').addEventListener('click', saveTagChanges);
+
+    // PIT Tag buttons
+    const addPitTagBtn = document.getElementById('addPitTagBtn');
+    if (addPitTagBtn) {
+        addPitTagBtn.addEventListener('click', addPitTag);
+    }
+    
+    // Delete PIT tag (using event delegation)
+    const pitTagContainer = document.getElementById('pitTagContainer');
+    if (pitTagContainer) {
+        pitTagContainer.addEventListener('click', function(e) {
+            if (e.target.closest('.btn-danger')) {
+                deletePitTag(e);
+            }
+        });
+    }
+    
+    // Save PIT Tags button
+    const savePitTagsBtn = document.getElementById('savePitTagsBtn');
+    if (savePitTagsBtn) {
+        savePitTagsBtn.addEventListener('click', savePitTagChanges);
+    }
+
+    // Add Identification button
+    const addIdentificationBtn = document.getElementById('addIdentificationBtn');
+    if (addIdentificationBtn) {
+        addIdentificationBtn.addEventListener('click', addIdentification);
+    }
+    
+    // Save Identifications button
+    const saveIdentificationsBtn = document.getElementById('saveIdentificationsBtn');
+    if (saveIdentificationsBtn) {
+        saveIdentificationsBtn.addEventListener('click', saveIdentificationChanges);
+    }
+    
+    // Delete identification button handler
+    const otherIdContainer = document.getElementById('otherIdContainer');
+    
+    if (otherIdContainer) {
+        otherIdContainer.addEventListener('click', function(e) {
+            
+            if (e.target.closest('.btn-danger')) {
+                deleteIdentification(e);
+            }
+        });
+    }
+
+    // Measurements buttons
+    const addMeasurementBtn = document.getElementById('addMeasurementBtn');
+    if (addMeasurementBtn) {
+        addMeasurementBtn.addEventListener('click', addMeasurement);
+    }
+    
+    // Delete measurement (using event delegation)
+    const measurementContainer = document.getElementById('measurementContainer');
+    if (measurementContainer) {
+        measurementContainer.addEventListener('click', function(e) {
+            console.log('Container clicked');
+            console.log('Clicked element:', e.target);
+            const deleteBtn = e.target.closest('.btn-danger');
+            console.log('Delete button:', deleteBtn);
+            
+            if (deleteBtn) {
+                console.log('Delete button clicked');
+                deleteMeasurement(e);
+            }
+        });
+    }
+    
+    // Save Measurements button
+    const saveMeasurementsBtn = document.getElementById('saveMeasurementsBtn');
+    if (saveMeasurementsBtn) {
+        saveMeasurementsBtn.addEventListener('click', saveMeasurementChanges);
+    }
+
+        // Damage buttons
+        const addDamageBtn = document.getElementById('addDamageBtn');
+        if (addDamageBtn) {
+            addDamageBtn.addEventListener('click', addDamage);
+        }
+        
+        // Delete damage (using event delegation)
+        const damageContainer = document.getElementById('damageContainer');
+        if (damageContainer) {
+            damageContainer.addEventListener('click', function(e) {
+                if (e.target.closest('.btn-danger')) {
+                    deleteDamage(e);
+                }
+            });
+        }
+        
+        // Save Damage button
+        const saveDamageBtn = document.getElementById('saveDamageBtn');
+        if (saveDamageBtn) {
+            saveDamageBtn.addEventListener('click', saveDamageChanges);
+        }
 });
+
+// Add global variable to track deleted measurements
+let deletedMeasurements = new Set();
+
+// Add new measurement
+function addMeasurement() {
+    const measurementContainer = document.getElementById('measurementContainer');
+    
+    if (measurementContainer.innerHTML.includes('No measurements found')) {
+        measurementContainer.innerHTML = '';
+    }
+    
+    measurementContainer.insertAdjacentHTML('beforeend', generateMeasurementHtml());
+}
+
+// Delete measurement
+function deleteMeasurement(event) {
+    console.log('Delete measurement called');
+    const measurementCard = event.target.closest('.measurement-card');
+    console.log('Measurement card:', measurementCard);
+    
+    const measurementId = measurementCard.dataset.measurementId;
+    console.log('Measurement ID:', measurementId);
+    
+    if (measurementCard.classList.contains('deleted')) {
+        console.log('Undeleting measurement');
+        measurementCard.classList.remove('deleted');
+        deletedMeasurements.delete(measurementId);
+    } else {
+        console.log('Marking measurement as deleted');
+        measurementCard.classList.add('deleted');
+        if (measurementId) {
+            deletedMeasurements.add(measurementId);
+        }
+    }
+    console.log('Current deletedMeasurements:', deletedMeasurements);
+}
+
+// Save measurement changes
+async function saveMeasurementChanges() {
+    const newMeasurements = [];
+    const modifiedMeasurements = [];
+    
+    document.querySelectorAll('.measurement-card:not(.deleted)').forEach(card => {
+        const measurementType = card.querySelector('[name="measurement_type"]').value;
+        let measurementValue = card.querySelector('[name="measurement_value"]').value;
+        const comments = card.querySelector('[name="comments"]').value.trim();
+        
+        if (measurementType.endsWith('(mm)') || measurementType.endsWith('(g)')) {
+            measurementValue = parseInt(measurementValue);
+        } else if (measurementType.endsWith('(kg)')) {
+            measurementValue = parseFloat(measurementValue).toFixed(3);
+        }
+
+        const measurementData = {
+            measurement_type: String(measurementType),
+            measurement_value: measurementValue,
+            comments: comments,
+            id: card.dataset.measurementId || null
+        };
+        
+        if (measurementData.id) {
+            const originalMeasurement = initialData.measurements.find(
+                m => m.id === parseInt(measurementData.id)
+            );
+            
+            if (originalMeasurement) {
+                let originalValue = originalMeasurement.measurement_value;
+                if (originalMeasurement.measurement_type.endsWith('(mm)') || 
+                    originalMeasurement.measurement_type.endsWith('(g)')) {
+                    originalValue = parseInt(originalValue);
+                } else if (originalMeasurement.measurement_type.endsWith('(kg)')) {
+                    originalValue = parseFloat(originalValue).toFixed(3);
+                }
+
+                // 分别检查每个字段的变化
+                const typeChanged = measurementData.measurement_type !== String(originalMeasurement.measurement_type);
+                const valueChanged = String(measurementData.measurement_value) !== String(originalValue);
+                const commentsChanged = measurementData.comments !== (originalMeasurement.comments || '');
+
+                // 只有在真正有变化时才添加到修改列表
+                if (typeChanged || valueChanged || commentsChanged) {
+                    const changes = {
+                        ...measurementData,
+                        original: originalMeasurement,
+                        changedFields: {
+                            type: typeChanged,
+                            value: valueChanged,
+                            comments: commentsChanged
+                        }
+                    };
+                    modifiedMeasurements.push(changes);
+                }
+            }
+        } else {
+            newMeasurements.push(measurementData);
+        }
+    });
+
+    // If no changes, return early
+    if (newMeasurements.length === 0 && modifiedMeasurements.length === 0 && deletedMeasurements.size === 0) {
+        alert('No changes to save');
+        return;
+    }
+
+    // Create confirmation message
+    let confirmMessage = 'Please confirm the following changes:\n\n';
+    
+    if (newMeasurements.length > 0) {
+        confirmMessage += 'New Measurements:\n';
+        newMeasurements.forEach(measurement => {
+            const typeDescription = measurementTypeChoices.find(
+                type => type.measurement_type === measurement.measurement_type
+            )?.description || measurement.measurement_type;
+            
+            confirmMessage += `- Type: ${typeDescription}\n`;
+            confirmMessage += `  Value: ${measurement.measurement_value}\n`;
+            if (measurement.comments) confirmMessage += `  Comments: ${measurement.comments}\n`;
+        });
+        confirmMessage += '\n';
+    }
+
+    if (modifiedMeasurements.length > 0) {
+        confirmMessage += 'Modified Measurements:\n';
+        modifiedMeasurements.forEach(measurement => {
+            confirmMessage += `- Type: ${measurement.measurement_type}\n`;
+            
+            if (measurement.changedFields.value) {
+                confirmMessage += `  Value: ${measurement.original.measurement_value} → ${measurement.measurement_value}\n`;
+            }
+            if (measurement.changedFields.comments) {
+                confirmMessage += `  Comments: ${measurement.original.comments || 'N/A'} → ${measurement.comments || 'N/A'}\n`;
+            }
+        });
+        confirmMessage += '\n';
+    }
+
+    if (deletedMeasurements.size > 0) {
+        confirmMessage += 'Deleted Measurements:\n';
+        deletedMeasurements.forEach(id => {
+            const measurement = initialData.measurements.find(m => m.id === parseInt(id));
+            const typeDescription = measurementTypeChoices.find(
+                type => type.measurement_type === measurement.measurement_type
+            )?.description || measurement.measurement_type;
+            
+            confirmMessage += `- Type: ${typeDescription}\n`;
+            confirmMessage += `  Value: ${measurement.measurement_value}\n`;
+            if (measurement.comments) confirmMessage += `  Comments: ${measurement.comments}\n`;
+        });
+    }
+
+    if (!confirm(confirmMessage)) {
+        return;
+    }
+
+    try {
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        
+        const response = await fetch('/wamtram2/api/recorded-measurements/update/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify({
+                observation_id: initialData.basic_info.observation_id,
+                recorded_measurements: [...newMeasurements, ...modifiedMeasurements],
+                deleted_measurements: Array.from(deletedMeasurements)
+            })
+        });
+
+        const data = await response.json();
+        if (data.status === 'success') {
+            alert('Measurements updated successfully!');
+            location.reload();
+        } else {
+            alert(`Error: ${data.message}`);
+        }
+    } catch (error) {
+        alert(`Save failed: ${error.message}`);
+    }
+}
+
+// Add global variable to track deleted damage records
+let deletedDamage = new Set();
+
+// Generate damage HTML template
+function generateDamageHtml(damage = {}) {
+    const cardId = 'damage-card-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+    return `
+        <div class="card mb-3 damage-card" id="${cardId}" 
+            data-damage-id="${damage.observation_id || ''}">
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Body Part</label>
+                            <select class="form-control" name="body_part">
+                                <option value="">Select...</option>
+                                ${initialData.body_parts.map(part => `
+                                    <option value="${part.body_part}" 
+                                        ${damage.body_part === part.body_part ? 'selected' : ''}>
+                                        ${part.description}
+                                    </option>
+                                `).join('')}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Damage Code</label>
+                            <select class="form-control" name="damage_code">
+                                <option value="">Select...</option>
+                                ${initialData.damage_codes.map(code => `
+                                    <option value="${code.damage_code}" 
+                                        ${damage.damage_code === code.damage_code ? 'selected' : ''}>
+                                        ${code.description}
+                                    </option>
+                                `).join('')}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Comments</label>
+                            <input type="text" class="form-control" name="comments" 
+                                value="${damage.comments || ''}">
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                        <div class="form-group">
+                            <label>&nbsp;</label>
+                            <button type="button" class="btn btn-danger btn-block">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// Add new damage record
+function addDamage() {
+    const damageContainer = document.getElementById('damageContainer');
+    
+    if (damageContainer.innerHTML.includes('No damage records found')) {
+        damageContainer.innerHTML = '';
+    }
+    
+    damageContainer.insertAdjacentHTML('beforeend', generateDamageHtml());
+}
+
+// Delete damage record
+function deleteDamage(event) {
+    const damageCard = event.target.closest('.damage-card');
+    const damageId = damageCard.dataset.damageId;
+    
+    if (damageCard.classList.contains('deleted')) {
+        damageCard.classList.remove('deleted');
+        deletedDamage.delete(damageId);
+    } else {
+        damageCard.classList.add('deleted');
+        if (damageId) {
+            deletedDamage.add(damageId);
+        }
+    }
+}
+
+// Save damage changes
+async function saveDamageChanges() {
+    const newDamage = [];
+    const modifiedDamage = [];
+    
+    document.querySelectorAll('.damage-card:not(.deleted)').forEach(card => {
+        const bodyPartSelect = card.querySelector('[name="body_part"]');
+        const damageCodeSelect = card.querySelector('[name="damage_code"]');
+        const commentsInput = card.querySelector('[name="comments"]');
+        
+        if (!bodyPartSelect || !damageCodeSelect) {
+            console.error('Required elements not found in damage card');
+            return;
+        }
+
+        const damageData = {
+            body_part: bodyPartSelect.value,
+            damage_code: damageCodeSelect.value,
+            comments: commentsInput ? commentsInput.value.trim() : '',
+        };
+        
+        // Skip if required fields are missing
+        if (!damageData.body_part || !damageData.damage_code) {
+            return;
+        }
+
+        const existingDamage = initialData.damage_records.find(
+            d => d.body_part === damageData.body_part
+        );
+        
+        if (existingDamage) {
+            if (existingDamage.damage_code !== damageData.damage_code || 
+                existingDamage.comments !== damageData.comments) {
+                modifiedDamage.push(damageData);
+            }
+        } else {
+            newDamage.push(damageData);
+        }
+    });
+
+    // If no changes, return early
+    if (newDamage.length === 0 && modifiedDamage.length === 0 && deletedDamage.size === 0) {
+        alert('No changes to save');
+        return;
+    }
+
+    // Create confirmation message
+    let confirmMessage = 'Please confirm the following changes:\n\n';
+    
+    if (newDamage.length > 0) {
+        confirmMessage += 'New Damage Records:\n';
+        newDamage.forEach(damage => {
+            const bodyPartDesc = initialData.body_parts.find(
+                part => part.body_part === damage.body_part
+            )?.description || damage.body_part;
+            const damageCodeDesc = initialData.damage_codes.find(
+                code => code.damage_code === damage.damage_code
+            )?.description || damage.damage_code;
+            
+            confirmMessage += `- Body Part: ${bodyPartDesc}\n`;
+            confirmMessage += `  Damage Code: ${damageCodeDesc}\n`;
+            if (damage.comments) confirmMessage += `  Comments: ${damage.comments}\n`;
+        });
+        confirmMessage += '\n';
+    }
+
+    if (modifiedDamage.length > 0) {
+        confirmMessage += 'Modified Damage Records:\n';
+        modifiedDamage.forEach(damage => {
+            const bodyPartDesc = initialData.body_parts.find(
+                part => part.body_part === damage.body_part
+            )?.description || damage.body_part;
+            const existingDamage = initialData.damage_records.find(
+                d => d.body_part === damage.body_part
+            );
+            
+            confirmMessage += `- Body Part: ${bodyPartDesc}\n`;
+            if (existingDamage.damage_code !== damage.damage_code) {
+                const oldDesc = initialData.damage_codes.find(
+                    code => code.damage_code === existingDamage.damage_code
+                )?.description || existingDamage.damage_code;
+                const newDesc = initialData.damage_codes.find(
+                    code => code.damage_code === damage.damage_code
+                )?.description || damage.damage_code;
+                confirmMessage += `  Damage Code: ${oldDesc} → ${newDesc}\n`;
+            }
+            if (existingDamage.comments !== damage.comments) {
+                confirmMessage += `  Comments: ${existingDamage.comments || 'N/A'} → ${damage.comments || 'N/A'}\n`;
+            }
+        });
+        confirmMessage += '\n';
+    }
+
+    if (deletedDamage.size > 0) {
+        confirmMessage += 'Deleted Damage Records:\n';
+        deletedDamage.forEach(bodyPart => {
+            const damage = initialData.damage_records.find(d => d.body_part === bodyPart);
+            if (damage) {
+                const bodyPartDesc = initialData.body_parts.find(
+                    part => part.body_part === damage.body_part
+                )?.description || damage.body_part;
+                confirmMessage += `- Body Part: ${bodyPartDesc}\n`;
+                if (damage.comments) confirmMessage += `  Comments: ${damage.comments}\n`;
+            }
+        });
+    }
+
+    if (!confirm(confirmMessage)) {
+        return;
+    }
+
+    try {
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        
+        const response = await fetch('/wamtram2/api/recorded-damage/update/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify({
+                observation_id: initialData.basic_info.observation_id,
+                recorded_damage: [...newDamage, ...modifiedDamage],
+                deleted_damage: Array.from(deletedDamage)
+            })
+        });
+
+        const data = await response.json();
+        if (data.status === 'success') {
+            alert('Damage records updated successfully!');
+            location.reload();
+        } else {
+            alert(`Error: ${data.message}`);
+        }
+    } catch (error) {
+        alert(`Save failed: ${error.message}`);
+    }
+}

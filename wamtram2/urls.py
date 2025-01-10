@@ -66,5 +66,8 @@ urlpatterns = [
     path('api/samples-update/', views.SamplesUpdateView.as_view(), name='samples_update'),
     path('api/documents-update/', views.DocumentsUpdateView.as_view(), name='documents_update'),
     path('api/recorded-tags/update/', views.RecordedTagsUpdateView.as_view(), name='recorded_tags_update'),
-    path('api/recorded-pit-tags/update/', views.RecordedPitTagsUpdateView.as_view(), name='update_pit_tags'),
+    path('api/recorded-pit-tags/update/', views.RecordedPitTagsUpdateView.as_view(), name='recorded_pit_tags_update'),
+    path('api/recorded-identifications/update/', views.RecordedIdentificationsUpdateView.as_view(), name='recorded_identifications_update'),
+    path('api/recorded-measurements/update/', views.RecordedMeasurementsUpdateView.as_view(), name='recorded_measurements_update'),
+    path('api/recorded-damage/update/', views.RecordedDamageUpdateView.as_view(), name='recorded_damage_update'),
 ]

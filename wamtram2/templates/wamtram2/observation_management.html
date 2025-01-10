@@ -287,7 +287,7 @@
             <a class="nav-link" data-toggle="tab" href="#pit-tags">Recorded PIT Tags</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" data-toggle="tab" href="#otherIdentification">Recorded Other Identification</a>
+            <a class="nav-link" data-toggle="tab" href="#otherIdentification">Recorded Identification</a>
         </li>
         <li class="nav-item">
             <a class="nav-link" data-toggle="tab" href="#measurements">Measurements</a>
@@ -347,20 +347,50 @@
 
         <div id="otherIdentification" class="tab-pane fade">
             <div class="section-card">
-                <h4>Recorded Other Identification</h4>
-                <div id="otherIdContainer"></div>
+                <h4>Recorded Identification</h4>
+                <div id="otherIdContainer">
+                    <!-- Existing identifications will be loaded here -->
+                </div>
+                <button type="button" class="btn btn-primary mt-3" id="addIdentificationBtn">
+                    <i class="fas fa-plus"></i> Add Identification
+                </button>
+                <button type="button" class="btn btn-success mt-3" id="saveIdentificationsBtn">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
             </div>
         </div>
+
+        
         <div id="measurements" class="tab-pane fade">
             <div class="section-card">
                 <h4>Measurements</h4>
-                <div id="measurementContainer"></div>
+                <div id="measurementContainer">
+                    <!-- Existing measurements will be loaded here -->
+                </div>
+                <div class="mt-3">
+                    <button type="button" class="btn btn-primary" id="addMeasurementBtn">
+                        <i class="fas fa-plus"></i> Add Measurement
+                    </button>
+                    <button type="button" class="btn btn-success" id="saveMeasurementsBtn">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                </div>
             </div>
         </div>
         <div id="damage" class="tab-pane fade">
             <div class="section-card">
                 <h4>Damage</h4>
-                <div id="damageContainer"></div>
+                <div id="damageContainer">
+                    <!-- Existing damage records will be loaded here -->
+                </div>
+                <div class="mt-3">
+                    <button type="button" class="btn btn-primary" id="addDamageBtn">
+                        <i class="fas fa-plus"></i> Add Damage
+                    </button>
+                    <button type="button" class="btn btn-success" id="saveDamageBtn">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                </div>
             </div>
         </div>
         <div id="scars" class="tab-pane fade">
@@ -391,90 +421,6 @@
 <!-- Loading overlay -->
 <div class="loading-overlay"></div>
 
-<!-- Tag Templates -->
-<template id="flipperTagTemplate">
-    <div class="form-row mb-3 flipper-tag-card">
-        <div class="col-md-3">
-            <div class="form-group">
-                <label>Tag ID</label>
-                <input type="text" class="form-control" name="tag_id">
-            </div>
-        </div>
-        <div class="col-md-2">
-            <div class="form-group">
-                <label>Side</label>
-                <select class="form-control" name="side">
-                    <option value="">Select Side</option>
-                    <option value="L">Left</option>
-                    <option value="R">Right</option>
-                </select>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="form-group">
-                <label>Position</label>
-                <select class="form-control" name="position">
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                </select>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="form-group">
-                <label>State</label>
-                <select class="form-control" name="tag_status">
-                    <!-- Will be populated by JavaScript -->
-                </select>
-            </div>
-        </div>
-        <div class="col-md-1">
-            <div class="form-group">
-                <label>&nbsp;</label>
-                <button type="button" class="btn btn-danger btn-block delete-flipper-tag">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </div>
-        </div>
-    </div>
-</template>
-
-<!-- Add template for PIT Tag Card -->
-<template id="pitTagTemplate">
-    <div class="card mb-3 pit-tag-card">
-        <div class="card-body">
-            <div class="form-row">
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <label>PIT Tag ID</label>
-                        <input type="text" class="form-control" name="pit_tag_id">
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="form-group">
-                        <label>Tag Status</label>
-                        <select class="form-control" name="pit_tag_status">
-                            <option value="">Select Status</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <label>Comments</label>
-                        <input type="text" class="form-control" name="comments">
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group">
-                        <label>&nbsp;</label>
-                        <button type="button" class="btn btn-danger btn-block delete-pit-tag">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</template>
 
 {% endblock %}
 
