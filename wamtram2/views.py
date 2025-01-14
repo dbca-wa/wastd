@@ -281,14 +281,108 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
         return context
 
     def post(self, request, *args, **kwargs):
-        form = self.get_form()
-        form.instance.entry_batch_id = self.kwargs.get("batch_id")
-        
-        if form.is_valid():
-            return self.form_valid(form)
-        else:
-            context = self.get_context_data(form=form, object_list=self.get_queryset())
-            return self.render_to_response(context)
+        try:
+            data = json.loads(request.body)
+            location_code = data.get('location_code')
+            place_code = data.get('place_code')
+            year = data.get('year')
+            night_start = int(data.get('night_start', 1))
+            night_end = int(data.get('night_end', 1))
+            start_date = data.get('start_date')
+            entered_person_id = data.get('entered_person_id')
+            template_id = data.get('template_id')
+
+            # Get TrtPersons instance
+            try:
+                entered_person = TrtPersons.objects.get(person_id=entered_person_id) if entered_person_id else None
+            except TrtPersons.DoesNotExist:
+                return JsonResponse({
+                    'success': False,
+                    'error': 'Invalid team leader selected'
+                })
+
+            # Get Template instance
+            template = None
+            if template_id:
+                try:
+                    template = Template.objects.get(template_id=template_id)
+                except Template.DoesNotExist:
+                    return JsonResponse({
+                        'success': False,
+                        'error': 'Invalid template selected'
+                    })
+
+            if night_end < night_start:
+                return JsonResponse({
+                    'success': False,
+                    'error': 'End night must be greater than or equal to start night'
+                })
+
+            batches_created = []
+            current_date = datetime.strptime(start_date, '%Y-%m-%d') if start_date else None
+
+            for night in range(night_start, night_end + 1):
+                try:
+                    # Generate batch code
+                    if place_code:
+                        batch_code = f"N{night}{place_code}{str(year)[-2:]}"
+                    else:
+                        batch_code = f"N{night}{location_code}{str(year)[-2:]}"
+
+                    # Generate comments
+                    if current_date:
+                        date_str = current_date.strftime('%Y-%m-%d')
+                    else:
+                        date_str = ''
+
+                    if place_code:
+                        place = TrtPlaces.objects.get(place_code=place_code)
+                        comments = f"{place.get_full_name()} - {year} - Night {night}"
+                    else:
+                        location = TrtLocations.objects.get(location_code=location_code)
+                        comments = f"{location.location_name} - {year} - Night {night}"
+
+                    if date_str:
+                        comments += f" - Start on the night of: {date_str}"
+
+                    # Create batch
+                    batch = TrtEntryBatches.objects.create(
+                        batches_code=batch_code,
+                        comments=comments,
+                        entry_date=current_date if current_date else timezone.now(),
+                        pr_date_convention=False,
+                        entered_person=entered_person, 
+                        template=template
+                    )
+
+                    # Add organisation relationship
+                    for org in request.user.organisations.all():
+                        TrtEntryBatchOrganisation.objects.create(
+                            trtentrybatch=batch,
+                            organisation=org.code
+                        )
+
+                    batches_created.append(batch_code)
+
+                    if current_date:
+                        current_date += timedelta(days=1)
+
+                except Exception as e:
+                    return JsonResponse({
+                        'success': False,
+                        'error': f'Error creating batch {night}: {str(e)}'
+                    })
+
+            return JsonResponse({
+                'success': True,
+                'batches': batches_created
+            })
+
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'error': str(e)
+            })
 
     def form_valid(self, form):
         batch = form.save(commit=False)
@@ -1803,7 +1897,6 @@ class ExportDataView(LoginRequiredMixin, View):
         return super().dispatch(request, *args, **kwargs)
 
     def get(self, request):
-        
         # If it's an export request (has format parameter)
         if request.GET.get("format"):
             return self.export_data(request)
@@ -1813,6 +1906,8 @@ class ExportDataView(LoginRequiredMixin, View):
         if action:
             if action == 'get_places':
                 return self.get_places(request)
+            elif action == 'get_locations':
+                return self.get_locations(request)
             elif action == 'get_species':
                 return self.get_species(request)
             elif action == 'get_sexes':
@@ -1821,12 +1916,57 @@ class ExportDataView(LoginRequiredMixin, View):
         # If no action or format, render the form
         return render(request, self.template_name)
 
-    def get_places(self, request):
-        """Retrieve places based on the specified date range."""
+    def get_locations(self, request):
+        """Retrieve locations based on the specified date range."""
         from_date, to_date = self._get_date_range(
             request.GET.get("observation_date_from"),
             request.GET.get("observation_date_to")
         )
+
+        queryset = TrtDataEntry.objects.all()
+        user = request.user
+        if not user.is_superuser:
+            user_organisations = user.organisations.all()
+            if user_organisations.exists():
+                related_batch_ids = TrtEntryBatchOrganisation.objects.filter(
+                    organisation__in=[org.code for org in user_organisations]
+                ).values_list('trtentrybatch_id', flat=True)
+                queryset = queryset.filter(entry_batch_id__in=related_batch_ids)
+            else:
+                return JsonResponse({"locations": []})
+
+        if from_date and to_date:
+            queryset = queryset.filter(observation_date__range=[from_date, to_date])
+
+        # Get unique locations from the places used in the filtered data entries
+        locations = TrtLocations.objects.filter(
+            location_code__in=TrtPlaces.objects.filter(
+                place_code__in=queryset.values_list('place_code', flat=True)
+            ).values_list('location_code', flat=True)
+        ).distinct()
+
+        # Use the custom ordering from TrtLocations model
+        locations = TrtLocations.get_ordered_locations().filter(
+            location_code__in=locations.values_list('location_code', flat=True)
+        )
+
+        location_list = [
+            {
+                "value": location.location_code,
+                "label": location.location_name
+            }
+            for location in locations
+        ]
+
+        return JsonResponse({"locations": location_list})
+
+    def get_places(self, request):
+        """Retrieve places based on the specified date range and location."""
+        from_date, to_date = self._get_date_range(
+            request.GET.get("observation_date_from"),
+            request.GET.get("observation_date_to")
+        )
+        location_code = request.GET.get("location_code")
 
         # First get data accessible to the user
         queryset = TrtDataEntry.objects.all()
@@ -1846,7 +1986,13 @@ class ExportDataView(LoginRequiredMixin, View):
 
         places = TrtPlaces.objects.filter(
             place_code__in=queryset.values_list('place_code', flat=True)
-        ).select_related('location_code').distinct()
+        )
+        
+        # Filter places by location if specified
+        if location_code:
+            places = places.filter(location_code=location_code)
+            
+        places = places.select_related('location_code').distinct()
 
         place_list = [
             {
@@ -1930,28 +2076,30 @@ class ExportDataView(LoginRequiredMixin, View):
                 request.GET.get("observation_date_to")
             )
             
+            if not from_date or not to_date:
+                return HttpResponse("Please select both start and end dates", status=400)
+            
+            location_code = request.GET.get("location_code")
             place_code = request.GET.get("place_code")
             species = request.GET.get("species")
             sex = request.GET.get("sex")
             file_format = request.GET.get("format", "csv")
             
+            # Build filename
             filename_parts = []
-            if place_code:
+            if location_code:
+                filename_parts.append(location_code)
+            elif place_code:
                 filename_parts.append(place_code)
             if species:
                 filename_parts.append(species)
             if sex:
                 filename_parts.append(sex)
                 
-            date_range = ""
-            if from_date and to_date:
-                date_range = f"({from_date.strftime('%Y%m%d')}-{to_date.strftime('%Y%m%d')})"
-            
-            filename = "_".join(filename_parts) + date_range
-            
-            if not filename:
-                filename = f"data_export{date_range}"
+            date_range = f"({from_date.strftime('%Y%m%d')}-{to_date.strftime('%Y%m%d')})"
+            filename = "_".join(filename_parts) + date_range if filename_parts else f"data_export{date_range}"
 
+            # Build queryset
             queryset = TrtDataEntry.objects.all()
             
             # Apply organization filter
@@ -1964,78 +2112,110 @@ class ExportDataView(LoginRequiredMixin, View):
                     ).values_list('trtentrybatch_id', flat=True)
                     queryset = queryset.filter(entry_batch_id__in=related_batch_ids)
                 else:
-                    return HttpResponse("No data available for your organisation")
+                    return HttpResponse("No data available for your organisation", status=403)
             
             # Apply filters
-            if from_date and to_date:
-                queryset = queryset.filter(observation_date__range=[from_date, to_date])
-            if place_code:
+            queryset = queryset.filter(observation_date__range=[from_date, to_date])
+            
+            if location_code:
+                queryset = queryset.filter(place_code__location_code=location_code)
+            elif place_code:
                 queryset = queryset.filter(place_code=place_code)
+                
             if species:
                 queryset = queryset.filter(species_code=species)
             if sex:
                 queryset = queryset.filter(sex=sex)
                 
-            queryset = queryset.select_related('entry_batch')
+            # Optimize query with select_related
+            queryset = queryset.select_related(
+                'entry_batch',
+                'place_code',
+                'place_code__location_code'
+            )
 
-            if file_format == "csv":
-                response = HttpResponse(content_type="text/csv")
-                response["Content-Disposition"] = f'attachment; filename="{filename}.csv"'  # 注意这里的f-string
-                writer = csv.writer(response)
+            # Check if there's any data to export
+            if not queryset.exists():
+                return HttpResponse("No data found matching the selected criteria", status=404)
 
-                headers = [field.name for field in TrtDataEntry._meta.fields]
-                headers.append('organisations')
-                writer.writerow(headers)
-        
-                
-                for entry in queryset:
-                    organisations = TrtEntryBatchOrganisation.objects.filter(
-                        trtentrybatch=entry.entry_batch
-                    ).values_list('organisation', flat=True)
-                    org_str = ', '.join(organisations)
-                    
-                    row = [getattr(entry, field.name) for field in TrtDataEntry._meta.fields]
-                    row.append(org_str)
-                    writer.writerow(row)
-                    
-            else:  # xlsx format
-                response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-                response["Content-Disposition"] = f'attachment; filename="{filename}.xlsx"'  # 注意这里的f-string
-                wb = Workbook()
-                ws = wb.active
-                
-                headers = [field.name for field in TrtDataEntry._meta.fields]
-                headers.append('organisations')
-                ws.append(headers)
-                
-                for entry in queryset:
-                    organisations = TrtEntryBatchOrganisation.objects.filter(
-                        trtentrybatch=entry.entry_batch
-                    ).values_list('organisation', flat=True)
-                    org_str = ', '.join(organisations)
-                    
-                    row = []
-                    for field in TrtDataEntry._meta.fields:
-                        value = getattr(entry, field.name)
-                        if field.is_relation:
-                            value = str(value) if value else ''
-                        elif isinstance(value, datetime):
-                            value = value.strftime('%Y-%m-%d %H:%M:%S')
-                        elif isinstance(value, date):
-                            value = value.strftime('%Y-%m-%d')
-                        elif value is None:
-                            value = ''
-                        row.append(value)
-                    
-                    row.append(org_str)
-                    ws.append(row)
-                
-                wb.save(response)
+            try:
+                if file_format == "csv":
+                    response = HttpResponse(content_type="text/csv")
+                    response["Content-Disposition"] = f'attachment; filename="{filename}.csv"'
+                    writer = csv.writer(response)
 
-            return response
+                    # Write headers
+                    headers = [field.name for field in TrtDataEntry._meta.fields]
+                    headers.append('organisations')
+                    writer.writerow(headers)
+                
+                    # Write data
+                    for entry in queryset:
+                        organisations = TrtEntryBatchOrganisation.objects.filter(
+                            trtentrybatch=entry.entry_batch
+                        ).values_list('organisation', flat=True)
+                        org_str = ', '.join(organisations)
+                        
+                        row = []
+                        for field in TrtDataEntry._meta.fields:
+                            value = getattr(entry, field.name)
+                            if isinstance(value, (datetime, date)):
+                                value = value.isoformat() if value else ''
+                            elif value is None:
+                                value = ''
+                            row.append(str(value))
+                        row.append(org_str)
+                        writer.writerow(row)
+                        
+                else:  # xlsx format
+                    response = HttpResponse(
+                        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    )
+                    response["Content-Disposition"] = f'attachment; filename="{filename}.xlsx"'
+                    
+                    wb = Workbook()
+                    ws = wb.active
+                    
+                    # Write headers
+                    headers = [field.name for field in TrtDataEntry._meta.fields]
+                    headers.append('organisations')
+                    ws.append(headers)
+                    
+                    # Write data
+                    for entry in queryset:
+                        organisations = TrtEntryBatchOrganisation.objects.filter(
+                            trtentrybatch=entry.entry_batch
+                        ).values_list('organisation', flat=True)
+                        org_str = ', '.join(organisations)
+                        
+                        row = []
+                        for field in TrtDataEntry._meta.fields:
+                            value = getattr(entry, field.name)
+                            if isinstance(value, (datetime, date)):
+                                value = value.isoformat() if value else ''
+                            elif value is None:
+                                value = ''
+                            else:
+                                value = str(value)
+                            row.append(value)
+                        row.append(org_str)
+                        ws.append(row)
+                    
+                    wb.save(response)
+
+                return response
+
+            except Exception as e:
+                return HttpResponse(
+                    f"Error generating export file: {str(e)}", 
+                    status=500
+                )
 
         except Exception as e:
-            return HttpResponse(f"Error during export: {str(e)}", status=500)
+            return HttpResponse(
+                f"Error during export: {str(e)}", 
+                status=500
+            )
 
 
 class DudTagManageView(LoginRequiredMixin, View):
@@ -2415,6 +2595,244 @@ def quick_add_batch(request):
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
 
+
+class BatchCreateBatchesView(LoginRequiredMixin, View):
+    template_name = 'wamtram2/batch_create_batches.html'
+
+    def get(self, request):
+        # Check permission
+        if not (
+            request.user.groups.filter(name="WAMTRAM2_STAFF").exists()
+            or request.user.groups.filter(name="WAMTRAM2_TEAM_LEADER").exists()
+            or request.user.is_superuser
+        ):
+            return HttpResponseForbidden(
+                "You do not have permission to view this page"
+            )
+
+        context = {
+            'locations': TrtLocations.get_ordered_locations(),
+            'years': range(datetime.now().year - 5, datetime.now().year + 2),
+            'places_json': json.dumps(
+                [{'place_code': p.place_code, 
+                    'place_name': p.place_name,
+                    'full_name': p.get_full_name()} 
+                for p in TrtPlaces.objects.all()]
+            ),
+        }
+        return render(request, self.template_name, context)
+
+    # def post(self, request):
+    #     try:
+    #         data = json.loads(request.body)
+    #         location_code = data.get('location_code')
+    #         place_code = data.get('place_code')
+    #         year = data.get('year')
+    #         night_start = int(data.get('night_start', 1))
+    #         night_end = int(data.get('night_end', 1))
+    #         start_date = data.get('start_date')
+            
+    #         entered_person_id = None
+    #         if data.get('entered_person_id'):
+    #             try:
+    #                 TrtPersons.objects.get(person_id=int(data.get('entered_person_id')))
+    #                 entered_person_id = int(data.get('entered_person_id'))
+    #             except (TrtPersons.DoesNotExist, ValueError):
+    #                 return JsonResponse({
+    #                     'success': False,
+    #                     'error': 'Invalid team leader selected'
+    #                 })
+
+    #         template = None
+    #         if data.get('template_id'):
+    #             try:
+    #                 template = Template.objects.get(
+    #                     template_id=int(data.get('template_id'))
+    #                 )
+    #             except (Template.DoesNotExist, ValueError):
+    #                 return JsonResponse({
+    #                     'success': False,
+    #                     'error': 'Invalid template selected'
+    #                 })
+
+    #         if night_end < night_start:
+    #             return JsonResponse({
+    #                 'success': False,
+    #                 'error': 'End night must be greater than or equal to start night'
+    #             })
+
+    #         batches_created = []
+    #         current_date = datetime.strptime(start_date, '%Y-%m-%d') if start_date else None
+
+    #         for night in range(night_start, night_end + 1):
+    #             try:
+    #                 # Generate batch code
+    #                 if place_code:
+    #                     batch_code = f"N{night}{place_code}{str(year)[-2:]}"
+    #                 else:
+    #                     batch_code = f"N{night}{location_code}{str(year)[-2:]}"
+
+    #                 # Generate comments
+    #                 if current_date:
+    #                     date_str = current_date.strftime('%Y-%m-%d')
+    #                 else:
+    #                     date_str = ''
+
+    #                 if place_code:
+    #                     place = TrtPlaces.objects.get(place_code=place_code)
+    #                     comments = f"{place.get_full_name()} - {year} - Night {night}"
+    #                 else:
+    #                     location = TrtLocations.objects.get(location_code=location_code)
+    #                     comments = f"{location.location_name} - {year} - Night {night}"
+
+    #                 if date_str:
+    #                     comments += f" - Start on the night of: {date_str}"
+
+    #                 # Create batch
+    #                 batch = TrtEntryBatches.objects.create(
+    #                     batches_code=batch_code,
+    #                     comments=comments,
+    #                     entry_date=current_date if current_date else timezone.now(),
+    #                     pr_date_convention=False,
+    #                     entered_person_id=entered_person_id,
+    #                     template=template
+    #                 )
+
+    #                 # Add organisation relationship
+    #                 for org in request.user.organisations.all():
+    #                     TrtEntryBatchOrganisation.objects.create(
+    #                         trtentrybatch=batch,
+    #                         organisation=org.code
+    #                     )
+
+    #                 batches_created.append(batch_code)
+
+    #                 if current_date:
+    #                     current_date += timedelta(days=1)
+
+    #             except Exception as e:
+    #                 return JsonResponse({
+    #                     'success': False,
+    #                     'error': f'Error creating batch {night}: {str(e)}'
+    #                 })
+
+    #         return JsonResponse({
+    #             'success': True,
+    #             'batches': batches_created
+    #         })
+
+    #     except Exception as e:
+    #         return JsonResponse({
+    #             'success': False,
+    #             'error': str(e)
+    #         })
+    def post(self, request):
+        try:
+            data = json.loads(request.body)
+            location_code = data.get('location_code')
+            place_code = data.get('place_code')
+            year = data.get('year')
+            night_start = int(data.get('night_start', 1))
+            night_end = int(data.get('night_end', 1))
+            start_date = data.get('start_date')
+            
+            entered_person = None
+            if data.get('entered_person_id'):
+                try:
+                    entered_person = TrtPersons.objects.get(
+                        person_id=int(data.get('entered_person_id'))
+                    )
+                except (TrtPersons.DoesNotExist, ValueError):
+                    return JsonResponse({
+                        'success': False,
+                        'error': 'Invalid team leader selected'
+                    })
+
+            # 获取Template实例
+            template = None
+            if data.get('template_id'):
+                try:
+                    template = Template.objects.get(
+                        template_id=int(data.get('template_id'))
+                    )
+                except (Template.DoesNotExist, ValueError):
+                    return JsonResponse({
+                        'success': False,
+                        'error': 'Invalid template selected'
+                    })
+
+            if night_end < night_start:
+                return JsonResponse({
+                    'success': False,
+                    'error': 'End night must be greater than or equal to start night'
+                })
+
+            batches_created = []
+            current_date = datetime.strptime(start_date, '%Y-%m-%d') if start_date else None
+
+            for night in range(night_start, night_end + 1):
+                try:
+                    # Generate batch code
+                    if place_code:
+                        batch_code = f"N{night}{place_code}{str(year)[-2:]}"
+                    else:
+                        batch_code = f"N{night}{location_code}{str(year)[-2:]}"
+
+                    # Generate comments
+                    if current_date:
+                        date_str = current_date.strftime('%Y-%m-%d')
+                    else:
+                        date_str = ''
+
+                    if place_code:
+                        place = TrtPlaces.objects.get(place_code=place_code)
+                        comments = f"{place.get_full_name()} - {year} - Night {night}"
+                    else:
+                        location = TrtLocations.objects.get(location_code=location_code)
+                        comments = f"{location.location_name} - {year} - Night {night}"
+
+                    if date_str:
+                        comments += f" - Start on the night of: {date_str}"
+
+                    # Create batch with entered_person instance
+                    batch = TrtEntryBatches(
+                        batches_code=batch_code,
+                        comments=comments,
+                        entry_date=current_date if current_date else timezone.now(),
+                        pr_date_convention=False,
+                        entered_person_id=entered_person,
+                        template=template
+                    )
+                    batch.save()
+
+                    # Add organisation relationship
+                    for org in request.user.organisations.all():
+                        TrtEntryBatchOrganisation.objects.create(
+                            trtentrybatch=batch,
+                            organisation=org.code
+                        )
+
+                    batches_created.append(batch_code)
+
+                    if current_date:
+                        current_date += timedelta(days=1)
+
+                except Exception as e:
+                    return JsonResponse({
+                        'success': False,
+                        'error': f'Error creating batch {night}: {str(e)}'
+                    })
+
+            return JsonResponse({
+                'success': True,
+                'batches': batches_created
+            })
+
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'error': str(e)
+            })
 
 def search_templates(request):
     query = request.GET.get('q', '')
@@ -4028,29 +4446,19 @@ class SaveObservationView(LoginRequiredMixin, SuperUserRequiredMixin, View):
         try:
             data = json.loads(request.body)
             basic_info = data.get('basic_info', {})
-            
-            print("DEBUG: Initial data received:")
-            print(f"Full data: {data}")
-            print(f"Basic info before processing: {basic_info}")
-                
             # Get or create observation record
             observation_id = basic_info.get('observation_id')
-            print(f"DEBUG: Looking for observation_id: {observation_id}")
             if observation_id:
                 try:
                     observation = TrtObservations.objects.get(pk=observation_id)
-                    print(f"DEBUG: Found existing observation with turtle_id: {observation.turtle.turtle_id}")
                     basic_info['turtle_id'] = str(observation.turtle.turtle_id)
-                    print(f"DEBUG: Added turtle_id to basic_info: {basic_info}")
                 except TrtObservations.DoesNotExist:
-                    print(f"DEBUG: Observation {observation_id} not found")
                     return JsonResponse({
                         'status': 'error',
                         'message': f'Observation {observation_id} not found'
                     }, status=404)
             else:
                 observation = TrtObservations()
-                print("DEBUG: Creating new observation")
             
             # Process turtle field
             turtle_id = basic_info.get('turtle_id')
@@ -4100,54 +4508,37 @@ class SaveObservationView(LoginRequiredMixin, SuperUserRequiredMixin, View):
 
     def _update_basic_info(self, observation, basic_info):
         try:
-            print("Starting _update_basic_info")
-            print(f"Received basic_info: {basic_info}")
             
             for field, value in basic_info.items():
-                print(f"\nProcessing field: {field}, value: {value}")
                 
                 if field in self.FOREIGN_KEY_FIELDS:
-                    print(f"Field {field} is a foreign key field")
                     if value is not None:
                         try:
                             model_class = self.FOREIGN_KEY_FIELDS[field]
-                            print(f"Model class for {field}: {model_class}")
                             
                             if model_class == TrtYesNo:
-                                print(f"Processing TrtYesNo field: {field}")
                                 value = str(value).upper()
-                                print(f"Converted value: {value}")
                                 
-                                if value not in ['Y', 'N', 'U']:
-                                    print(f"Invalid value for {field}: {value}")
+                                if value not in ['Y', 'N', 'U', 'D', 'P']:
                                     setattr(observation, field, None)
                                     continue
                                     
-                                print(f"Attempting to get TrtYesNo instance with code={value}")
                                 instance = model_class.objects.get(code=value)
-                                print(f"Found instance: {instance}")
                             else:
-                                print(f"Getting instance of {model_class} with pk={value}")
                                 instance = model_class.objects.get(pk=value)
                                 
-                            print(f"Setting {field} to instance: {instance}")
                             setattr(observation, field, instance)
                             
                         except model_class.DoesNotExist:
-                            print(f"Could not find {model_class.__name__} instance with value: {value}")
                             setattr(observation, field, None)
                         except Exception as e:
-                            print(f"Error processing {field}: {str(e)}")
                             setattr(observation, field, None)
                     else:
-                        print(f"Setting {field} to None (value is None)")
                         setattr(observation, field, None)
                 else:
-                    print(f"Setting regular field {field} to {value}")
                     setattr(observation, field, value)
                     
         except Exception as e:
-            print(f"Error in _update_basic_info: {str(e)}")
             raise ValidationError(f"Error updating basic info: {str(e)}")
 
     def _update_status(self, observation):

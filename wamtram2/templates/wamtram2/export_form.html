@@ -62,19 +62,35 @@
                     </div>
                 </div>
             </div>
-            <!-- Step 2: Select Place, Species, and Sex -->
+            <!-- Step 2: Select Location, Place, Species, and Sex -->
             <div class="step-container">
                 <div class="step-header">Step 2: Select Filters</div>
+                <small class="form-text text-info mb-3 d-block">
+                    <i class="fas fa-info-circle"></i>
+                    Choose either a Location or a specific Place, not both.
+                </small>
                 <div class="row">
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="form-group">
-                            <label for="place_code">Place Code</label>
+                            <label for="location_code">Location</label>
+                            <select id="location_code" name="location_code" class="form-control form-control-sm select2">
+                                <option value="">All Locations</option>
+                            </select>
+                            <small class="form-text text-warning">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                Note: When selecting an entire location, please consider downloading data in smaller date ranges to avoid timeout issues.
+                            </small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="place_code">Place</label>
                             <select id="place_code" name="place_code" class="form-control form-control-sm select2">
                                 <option value="">All Places</option>
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="form-group">
                             <label for="species">Species</label>
                             <select id="species" name="species" class="form-control form-control-sm select2">
@@ -82,7 +98,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="form-group">
                             <label for="sex">Sex</label>
                             <select id="sex" name="sex" class="form-control form-control-sm select2">
@@ -145,7 +161,7 @@
             document.getElementById('loading-overlay').style.display = 'none';
         }
 
-        // Load places, species, and sex options via AJAX
+        // Load all filters via AJAX
         function loadFilters() {
             const fromDate = document.getElementById('observation_date_from').value;
             const toDate = document.getElementById('observation_date_to').value;
@@ -153,15 +169,15 @@
             if (fromDate && toDate) {
                 showLoadingSpinner();
 
-                // Get CSRF Token
-                const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
                 Promise.all([
+                    fetch(`{% url 'wamtram2:export_data' %}?action=get_locations&observation_date_from=${fromDate}&observation_date_to=${toDate}`),
                     fetch(`{% url 'wamtram2:export_data' %}?action=get_places&observation_date_from=${fromDate}&observation_date_to=${toDate}`),
                     fetch(`{% url 'wamtram2:export_data' %}?action=get_species&observation_date_from=${fromDate}&observation_date_to=${toDate}`),
                     fetch(`{% url 'wamtram2:export_data' %}?action=get_sexes&observation_date_from=${fromDate}&observation_date_to=${toDate}`)
                 ])
                 .then(responses => Promise.all(responses.map(r => r.json())))
-                .then(([placesData, speciesData, sexesData]) => {
+                .then(([locationsData, placesData, speciesData, sexesData]) => {
+                    updateSelectOptions('location_code', locationsData.locations);
                     updateSelectOptions('place_code', placesData.places);
                     updateSelectOptions('species', speciesData.species);
                     updateSelectOptions('sex', sexesData.sexes);
@@ -171,14 +187,36 @@
                     console.error('Error:', error);
                     hideLoadingSpinner();
                 });
+            }
+        }
 
+        // Update places based on selected location
+        function updatePlaces() {
+            const fromDate = document.getElementById('observation_date_from').value;
+            const toDate = document.getElementById('observation_date_to').value;
+            const locationCode = document.getElementById('location_code').value;
+
+            if (fromDate && toDate) {
+                showLoadingSpinner();
+                
+                fetch(`{% url 'wamtram2:export_data' %}?action=get_places&observation_date_from=${fromDate}&observation_date_to=${toDate}&location_code=${locationCode}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        updateSelectOptions('place_code', data.places);
+                        hideLoadingSpinner();
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        hideLoadingSpinner();
+                    });
             }
         }
 
         // Update select options dynamically
         function updateSelectOptions(selectId, options) {
             const select = document.getElementById(selectId);
-            select.innerHTML = `<option value="">All ${select.previousElementSibling.textContent}</option>`; // Add "All" option
+            const label = select.previousElementSibling.textContent;
+            select.innerHTML = `<option value="">All ${label}</option>`;
             options.forEach(function(option) {
                 const optionElement = document.createElement('option');
                 optionElement.value = option.value;
@@ -187,8 +225,20 @@
             });
         }
 
-        // Listen to date changes to trigger filter loading
+        // Event Listeners
         document.getElementById('observation_date_from').addEventListener('change', loadFilters);
         document.getElementById('observation_date_to').addEventListener('change', loadFilters);
+        document.getElementById('location_code').addEventListener('change', function() {
+            // Clear place selection when location changes
+            document.getElementById('place_code').value = '';
+            updatePlaces();
+        });
+
+        // Initialize select2 for all select elements
+        $(document).ready(function() {
+            $('.select2').select2({
+                theme: 'bootstrap4'
+            });
+        });
     </script>
 {% endblock %}
