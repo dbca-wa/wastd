@@ -3716,7 +3716,6 @@ class ObservationManagementView(LoginRequiredMixin, SuperUserRequiredMixin, Temp
                 'egg_count_method_choices': TrtEggCountMethods.objects.all(),
                 'search_persons_url': reverse('wamtram2:search-persons'),
                 'search_places_url': reverse('wamtram2:search-places'),
-                'submit_url': reverse('wamtram2:observation_detail', kwargs={'observation_id': observation_id}) if observation_id else reverse('wamtram2:observation_detail'),
             })
         except Exception as e:
             
@@ -3907,7 +3906,7 @@ class ObservationDataView(LoginRequiredMixin, SuperUserRequiredMixin, View):
         return {
             'basic_info': {
                 'observation_id': str(observation.observation_id),
-                'turtle_id': str(observation.turtle_id),
+                'turtle_id': str(observation.turtle.turtle_id), 
                 'observation_date': observation.observation_date.strftime('%Y-%m-%dT%H:%M') if observation.observation_date else '',
                 'alive': observation.alive.code if observation.alive else '',
                 'nesting': observation.nesting.code if observation.nesting else '',
@@ -4006,162 +4005,8 @@ class ObservationDataView(LoginRequiredMixin, SuperUserRequiredMixin, View):
 
 
 class SaveObservationView(LoginRequiredMixin, SuperUserRequiredMixin, View):
-    @transaction.atomic
-    def post(self, request, observation_id=None):
-        try:
-            data = json.loads(request.body)
-            
-            # Get or create observation record
-            observation_id = observation_id or data.get('observation_id')
-            if observation_id:
-                observation = TrtObservations.objects.get(pk=observation_id)
-            else:
-                observation = TrtObservations()
-            
-            # Update basic information
-            self._update_basic_info(observation, data.get('basic_info', {}))
-            observation.save()
-
-            # Keep existing update methods
-            self._update_tags(observation, data.get('tag_info', {}))
-            self._update_measurements(observation, data.get('measurements', []))
-            self._update_damage_records(observation, data.get('damage_records', []))
-            self._update_identifications(observation, data.get('recorded_identifications', []))
-            self._update_location(observation, data.get('location', {}))
-            self._update_scars(observation, data.get('scars', {}))
-            self._update_other_tags(observation, data.get('other_tags_data', {}))
-            self._update_status(observation)
-
-            # Add new tag management functionality
-            if 'flipper_tags' in data:
-                self._update_flipper_tags(observation, data.get('flipper_tags', []), data.get('deleted_flipper_tags', []))
-            if 'pit_tags' in data:
-                self._update_pit_tags(observation, data.get('pit_tags', []), data.get('deleted_pit_tags', []))
-            
-            return JsonResponse({
-                'status': 'success',
-                'observation_id': observation.observation_id
-            })
-        except Exception as e:
-            return JsonResponse({
-                'status': 'error',
-                'message': str(e)
-            }, status=500)
-
-    def _update_flipper_tags(self, observation, flipper_tags, deleted_tags):
-        """Update flipper tags"""
-        try:
-            # Handle deleted tags
-            if deleted_tags:
-                TrtTags.objects.filter(
-                    tag_id__in=deleted_tags,
-                    observation=observation
-                ).delete()
-
-            # Handle updates and new tags
-            for tag_data in flipper_tags:
-                tag_id = tag_data.get('tag_id')
-                tag_status_code = tag_data.get('tag_status')
-                
-                tag_status = None
-                if tag_status_code:
-                    try:
-                        tag_status = TrtTagStatus.objects.get(tag_status=tag_status_code)
-                    except TrtTagStatus.DoesNotExist:
-                        raise ValidationError(f"Invalid tag status code: {tag_status_code}")
-                
-                tag, created = TrtTags.objects.get_or_create(
-                    tag_id=tag_id,
-                    observation=observation,
-                    defaults={
-                        'side': tag_data.get('side'),
-                        'tag_status': tag_status,
-                        'comments': tag_data.get('comments')
-                    }
-                )
-                if not created:
-                    tag.side = tag_data.get('side')
-                    tag.tag_status = tag_status
-                    tag.comments = tag_data.get('comments')
-                    tag.save()
-
-        except Exception as e:
-            raise ValidationError(f"Error updating flipper tags: {str(e)}")
-
-    def _update_pit_tags(self, observation, pit_tags, deleted_tags):
-        """Update PIT tags"""
-        try:
-            # Handle deleted tags
-            if deleted_tags:
-                TrtPitTags.objects.filter(
-                    pit_tag_id__in=deleted_tags,
-                    observation=observation
-                ).delete()
-
-            # Handle updates and new tags
-            for tag_data in pit_tags:
-                tag_id = tag_data.get('pit_tag_id')
-                tag_status_code = tag_data.get('pit_tag_status')
-                
-                tag_status = None
-                if tag_status_code:
-                    try:
-                        tag_status = TrtTagStatus.objects.get(tag_status=tag_status_code)
-                    except TrtTagStatus.DoesNotExist:
-                        raise ValidationError(f"Invalid tag status code: {tag_status_code}")
-                
-                tag, created = TrtPitTags.objects.get_or_create(
-                    pit_tag_id=tag_id,
-                    observation=observation,
-                    defaults={
-                        'tag_status': tag_status,
-                        'comments': tag_data.get('comments')
-                    }
-                )
-                if not created:
-                    tag.tag_status = tag_status
-                    tag.comments = tag_data.get('comments')
-                    tag.save()
-
-        except Exception as e:
-            raise ValidationError(f"Error updating PIT tags: {str(e)}")
-
-    def _update_other_identifications(self, observation, identifications, deleted_identifications):
-        """Update other identifications"""
-        try:
-            # Handle deleted identifications
-            if deleted_identifications:
-                TrtIdentification.objects.filter(
-                    id__in=deleted_identifications,
-                    observation=observation
-                ).delete()
-
-            # Handle updates and new identifications
-            for ident_data in identifications:
-                ident_type = ident_data.get('identification_type')
-                if ident_type:
-                    try:
-                        ident_type = TrtIdentificationTypes.objects.get(identification_type=ident_type)
-                    except TrtIdentificationTypes.DoesNotExist:
-                        raise ValidationError(f"Invalid identification type: {ident_type}")
-                
-                identification, created = TrtIdentification.objects.get_or_create(
-                    identifier=ident_data.get('identifier'),
-                    observation=observation,
-                    defaults={
-                        'identification_type': ident_type,
-                        'comments': ident_data.get('comments')
-                    }
-                )
-                if not created:
-                    identification.identification_type = ident_type
-                    identification.comments = ident_data.get('comments')
-                    identification.save()
-
-        except Exception as e:
-            raise ValidationError(f"Error updating other identifications: {str(e)}")
-
     FOREIGN_KEY_FIELDS = {
+        'turtle': TrtTurtles,
         'other_tags_identification_type': TrtIdentificationTypes,
         'measurer_person': TrtPersons,
         'measurer_reporter_person': TrtPersons,
@@ -4178,318 +4023,137 @@ class SaveObservationView(LoginRequiredMixin, SuperUserRequiredMixin, View):
         'datum_code': TrtDatumCodes
     }
 
+    @transaction.atomic
+    def post(self, request, observation_id=None):
+        try:
+            data = json.loads(request.body)
+            basic_info = data.get('basic_info', {})
+            
+            print("DEBUG: Initial data received:")
+            print(f"Full data: {data}")
+            print(f"Basic info before processing: {basic_info}")
+                
+            # Get or create observation record
+            observation_id = basic_info.get('observation_id')
+            print(f"DEBUG: Looking for observation_id: {observation_id}")
+            if observation_id:
+                try:
+                    observation = TrtObservations.objects.get(pk=observation_id)
+                    print(f"DEBUG: Found existing observation with turtle_id: {observation.turtle.turtle_id}")
+                    basic_info['turtle_id'] = str(observation.turtle.turtle_id)
+                    print(f"DEBUG: Added turtle_id to basic_info: {basic_info}")
+                except TrtObservations.DoesNotExist:
+                    print(f"DEBUG: Observation {observation_id} not found")
+                    return JsonResponse({
+                        'status': 'error',
+                        'message': f'Observation {observation_id} not found'
+                    }, status=404)
+            else:
+                observation = TrtObservations()
+                print("DEBUG: Creating new observation")
+            
+            # Process turtle field
+            turtle_id = basic_info.get('turtle_id')
+            if not turtle_id:
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Turtle ID is required'
+                }, status=400)
+                
+            try:
+                turtle = TrtTurtles.objects.get(turtle_id=turtle_id)
+                observation.turtle = turtle
+            except TrtTurtles.DoesNotExist:
+                return JsonResponse({
+                    'status': 'error',
+                    'message': f'Turtle with ID {turtle_id} not found'
+                }, status=400)
+            
+            # Remove turtle_id, as we've already handled it separately
+            if 'turtle_id' in basic_info:
+                del basic_info['turtle_id']
+            
+            # Update basic information
+            self._update_basic_info(observation, basic_info)
+            
+            # Ensure required fields are set
+            if not observation.observation_date:
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Observation date is required'
+                }, status=400)
+            
+            observation.save()
+            
+            # Update status
+            self._update_status(observation)
+            
+            return JsonResponse({
+                'status': 'success',
+                'observation_id': observation.observation_id
+            })
+        except Exception as e:
+            return JsonResponse({
+                'status': 'error',
+                'message': str(e)
+            }, status=500)
 
     def _update_basic_info(self, observation, basic_info):
         try:
-            # Process yes/no fields
-            yes_no_fields = ['alive', 'nesting', 'clutch_completed']
-            for field in yes_no_fields:
-                value = basic_info.get(field)
-                if value:
-                    try:
-                        yes_no_instance = TrtYesNo.objects.get(code=value)
-                        setattr(observation, field, yes_no_instance)
-                    except TrtYesNo.DoesNotExist:
+            print("Starting _update_basic_info")
+            print(f"Received basic_info: {basic_info}")
+            
+            for field, value in basic_info.items():
+                print(f"\nProcessing field: {field}, value: {value}")
+                
+                if field in self.FOREIGN_KEY_FIELDS:
+                    print(f"Field {field} is a foreign key field")
+                    if value is not None:
+                        try:
+                            model_class = self.FOREIGN_KEY_FIELDS[field]
+                            print(f"Model class for {field}: {model_class}")
+                            
+                            if model_class == TrtYesNo:
+                                print(f"Processing TrtYesNo field: {field}")
+                                value = str(value).upper()
+                                print(f"Converted value: {value}")
+                                
+                                if value not in ['Y', 'N', 'U']:
+                                    print(f"Invalid value for {field}: {value}")
+                                    setattr(observation, field, None)
+                                    continue
+                                    
+                                print(f"Attempting to get TrtYesNo instance with code={value}")
+                                instance = model_class.objects.get(code=value)
+                                print(f"Found instance: {instance}")
+                            else:
+                                print(f"Getting instance of {model_class} with pk={value}")
+                                instance = model_class.objects.get(pk=value)
+                                
+                            print(f"Setting {field} to instance: {instance}")
+                            setattr(observation, field, instance)
+                            
+                        except model_class.DoesNotExist:
+                            print(f"Could not find {model_class.__name__} instance with value: {value}")
+                            setattr(observation, field, None)
+                        except Exception as e:
+                            print(f"Error processing {field}: {str(e)}")
+                            setattr(observation, field, None)
+                    else:
+                        print(f"Setting {field} to None (value is None)")
                         setattr(observation, field, None)
                 else:
-                    setattr(observation, field, None)
-
-            # Process other basic information fields
-            for field, value in basic_info.items():
-                if field not in yes_no_fields:
-                    if field in self.FOREIGN_KEY_FIELDS:
-                        # Process other foreign key fields
-                        if value:
-                            try:
-                                model_class = self.FOREIGN_KEY_FIELDS[field]
-                                instance = model_class.objects.get(pk=value)
-                                setattr(observation, field, instance)
-                            except (model_class.DoesNotExist, ValueError):
-                                setattr(observation, field, None)
-                        else:
-                            setattr(observation, field, None)
-                    else:
-                        # Process normal fields
-                        setattr(observation, field, value)
-
+                    print(f"Setting regular field {field} to {value}")
+                    setattr(observation, field, value)
+                    
         except Exception as e:
+            print(f"Error in _update_basic_info: {str(e)}")
             raise ValidationError(f"Error updating basic info: {str(e)}")
-        
-    def _update_tags(self, observation, tag_data):
-        """Update tag records"""
-        try:    
-            # Get existing records
-            existing_tags = {
-                tag.tag_id_id: tag 
-                for tag in TrtRecordedTags.objects.filter(observation_id=observation)
-            }
-            existing_pit_tags = {
-                pit.pittag_id_id: pit 
-                for pit in TrtRecordedPitTags.objects.filter(observation_id=observation)
-            }
-            
-            # Process normal tags
-            processed_tag_ids = set()
-            for tag in tag_data.get('recorded_tags', []):
-                if tag.get('tag_id'):
-                    try:
-                        tag_instance = TrtTags.objects.get(tag_id=tag['tag_id'])
-                        processed_tag_ids.add(tag_instance.tag_id)
-                        
-                        if tag_instance.tag_id in existing_tags:
-                            # Update existing record
-                            existing_tag = existing_tags[tag_instance.tag_id]
-                            existing_tag.side = tag.get('tag_side')
-                            existing_tag.tag_position = tag.get('tag_position')
-                            existing_tag.tag_state_id = tag.get('tag_state')
-                            existing_tag.barnacles = False
-                            existing_tag.turtle_id = observation.turtle_id
-                            existing_tag.save()
-                        else:
-                            TrtRecordedTags.objects.create(
-                                observation_id=observation,
-                                tag_id=tag_instance,
-                                side=tag.get('tag_side'),
-                                tag_position=tag.get('tag_position'),
-                                tag_state_id=tag.get('tag_state'),
-                                barnacles=False,
-                                turtle_id=observation.turtle_id
-                            )
-                    except TrtTags.DoesNotExist:
-                        continue
-            
-            # Process PIT tags
-            processed_pit_tag_ids = set()
-            for pit_tag in tag_data.get('recorded_pit_tags', []):
-                if pit_tag.get('tag_id'):
-                    try:
-                        pit_tag_instance = TrtPitTags.objects.get(pittag_id=pit_tag['tag_id'])
-                        processed_pit_tag_ids.add(pit_tag_instance.pittag_id)
-                        
-                        if pit_tag_instance.pittag_id in existing_pit_tags:
-                            # Update existing record
-                            existing_pit = existing_pit_tags[pit_tag_instance.pittag_id]
-                            existing_pit.pit_tag_position = pit_tag.get('tag_position')
-                            existing_pit.pit_tag_state_id = pit_tag.get('tag_state')
-                            existing_pit.save()
-                        else:
-                            # Create new record
-                            TrtRecordedPitTags.objects.create(
-                                observation_id=observation,
-                                pittag_id=pit_tag_instance,
-                                pit_tag_position=pit_tag.get('tag_position'),
-                                pit_tag_state_id=pit_tag.get('tag_state'),
-                                turtle_id=observation.turtle,
-                                checked=True
-                            )
-                    except TrtPitTags.DoesNotExist:
-                        continue
-
-        except Exception as e:
-            raise ValidationError(f"Error updating tag records: {str(e)}")
-        
-    def _update_location(self, observation, location_data):
-        """Update location information"""
-        if location_data:
-            for field in ['place_code', 'datum_code', 'latitude', 'longitude']:
-                if field in location_data:
-                    if field in self.FOREIGN_KEY_FIELDS and location_data[field]:
-                        try:
-                            related_obj = self.FOREIGN_KEY_FIELDS[field].objects.get(
-                                pk=location_data[field]
-                            )
-                            setattr(observation, field, related_obj)
-                        except self.FOREIGN_KEY_FIELDS[field].DoesNotExist:
-                            setattr(observation, field, None)
-                    else:
-                        # Handle empty values for numeric fields
-                        value = location_data[field]
-                        if field in ['latitude', 'longitude']:
-                            # If it's an empty string or None, set to None
-                            if value == '' or value is None:
-                                value = None
-                            # If it's a valid numeric string, convert to float
-                            elif isinstance(value, str):
-                                try:
-                                    value = float(value)
-                                except ValueError:
-                                    value = None
-                        setattr(observation, field, value)
-            observation.save()
-
-    def _update_identifications(self, observation, identification_data):
-        """Update identification records"""
-        try:
-            # Get existing records
-            existing_identifications = {
-                str(record.turtle_id): record 
-                for record in TrtRecordedIdentification.objects.filter(
-                    observation_id=observation.observation_id
-                )
-            }
-            
-            # Process new records
-            for record in identification_data:
-                if record.get('turtle_id'):
-                    try:
-                        # Process turtle_id
-                        turtle_id = record['turtle_id']
-                        if isinstance(turtle_id, str) and turtle_id.startswith('T'):
-                            # If it starts with 'T', remove 'T'
-                            numeric_turtle_id = turtle_id[1:]
-                        else:
-                            numeric_turtle_id = str(turtle_id)
-                        
-                        # Check if the record exists
-                        if numeric_turtle_id in existing_identifications:
-                            # Update existing record
-                            existing_record = existing_identifications[numeric_turtle_id]
-                            existing_record.identification_type_id = record.get('identification_type')
-                            existing_record.identifier = record.get('identifier')
-                            existing_record.comments = record.get('comments')
-                            existing_record.save()
-                        else:
-                            # Create new record
-                            TrtRecordedIdentification.objects.create(
-                                observation_id=observation.observation_id,
-                                turtle_id=numeric_turtle_id,
-                                identification_type_id=record.get('identification_type'),
-                                identifier=record.get('identifier'),
-                                comments=record.get('comments')
-                            )
-                            
-                    except (ValueError, TypeError) as e:
-                        continue
-                    except Exception as e:
-                        continue
-                        
-        except Exception as e:
-            raise ValidationError(f"Error updating identification records: {str(e)}")
-
-    def _update_measurements(self, observation, measurements):
-        """Update measurement records"""
-        try:
-            # Get existing records
-            existing_measurements = {
-                measure.measurement_type_id: measure 
-                for measure in observation.trtmeasurements_set.all()
-            }
-            
-            #   
-            for measurement in measurements:
-                if measurement.get('measurement_value') is not None:  # Ensure there's a measurement value
-                    measurement_type = measurement.get('measurement_type')
-                    
-                    if measurement_type in existing_measurements:
-                        # Update existing record
-                        existing_measure = existing_measurements[measurement_type]
-                        existing_measure.measurement_value = measurement['measurement_value']
-                        existing_measure.comments = measurement.get('comments')
-                        existing_measure.save()
-                    else:
-                        # Create new record
-                        TrtMeasurements.objects.create(
-                            observation_id=observation,
-                            measurement_type_id=measurement_type,
-                            measurement_value=measurement['measurement_value'],
-                            comments=measurement.get('comments')
-                        )
-
-        except Exception as e:
-            raise ValidationError(f"Error updating measurement records: {str(e)}")
-
-    def _update_damage_records(self, observation, damage_records):
-        """Update damage records"""
-        try:
-            # Get existing records
-            existing_damages = {
-                damage.body_part_id: damage 
-                for damage in observation.damages.all()
-            }
-            
-            # Process each damage record
-            for damage in damage_records:
-                if damage.get('body_part') and damage.get('damage_code'):
-                    body_part_id = damage['body_part']
-                    
-                    try:
-                        if body_part_id in existing_damages:
-                            # Update existing record
-                            existing_damage = existing_damages[body_part_id]
-                            existing_damage.damage_code_id = damage['damage_code']
-                            existing_damage.damage_cause_code_id = damage.get('damage_cause_code')
-                            existing_damage.comments = damage.get('comments')
-                            existing_damage.save()
-                        else:
-                            # Create new record
-                            TrtDamage.objects.create(
-                                observation=observation,
-                                body_part_id=body_part_id,
-                                damage_code_id=damage['damage_code'],
-                                damage_cause_code_id=damage.get('damage_cause_code'),
-                                comments=damage.get('comments')
-                            )
-                    except IntegrityError as e:
-                        continue
-                    except Exception as e:
-                        continue
-
-        except Exception as e:
-            raise ValidationError(f"Error updating damage records: {str(e)}")
-
-    def _update_scars(self, observation, scars_data):
-        """Update scar records"""
-        try:
-            if scars_data:
-                # Update left scars
-                observation.scars_left = scars_data.get('scars_left', False)
-                observation.scars_left_scale_1 = scars_data.get('scars_left_scale_1', False)
-                observation.scars_left_scale_2 = scars_data.get('scars_left_scale_2', False)
-                observation.scars_left_scale_3 = scars_data.get('scars_left_scale_3', False)
-                
-                # Update right scars
-                observation.scars_right = scars_data.get('scars_right', False)
-                observation.scars_right_scale_1 = scars_data.get('scars_right_scale_1', False)
-                observation.scars_right_scale_2 = scars_data.get('scars_right_scale_2', False)
-                observation.scars_right_scale_3 = scars_data.get('scars_right_scale_3', False)
-                
-                # Update check status
-                observation.tagscarnotchecked = scars_data.get('tag_scar_not_checked', False)
-                observation.didnotcheckforinjury = scars_data.get('did_not_check_for_injury', False)
-                
-                observation.save()
-        except Exception as e:
-            raise ValidationError(f"Error updating scar records: {str(e)}")
-
-    def _update_other_tags(self, observation, other_tags_data):
-        """Update other tag information"""
-        try:
-            if other_tags_data:
-                observation.other_tags = other_tags_data.get('other_tags')
-                
-                # Update identification type
-                identification_type = other_tags_data.get('identification_type')
-                if identification_type:
-                    try:
-                        identification_type_obj = TrtIdentificationTypes.objects.get(
-                            identification_type=identification_type
-                        )
-                        observation.other_tags_identification_type = identification_type_obj
-                    except TrtIdentificationTypes.DoesNotExist:
-                        observation.other_tags_identification_type = None
-                else:
-                    observation.other_tags_identification_type = None
-                    
-                observation.save()
-        except Exception as e:
-            raise ValidationError(f"Error updating other tag information: {str(e)}")
 
     def _update_status(self, observation):
         """Update observation status"""
         try:
-            # Calculate status based on business rules
             if observation.nesting and observation.nesting.code == 'Y':
-                # Check if it's the first observation
                 previous_observations = TrtObservations.objects.filter(
                     turtle_id=observation.turtle_id,
                     observation_date__lt=observation.observation_date
@@ -4502,45 +4166,6 @@ class SaveObservationView(LoginRequiredMixin, SuperUserRequiredMixin, View):
             observation.save()
         except Exception as e:
             raise ValidationError(f"Error updating observation status: {str(e)}")
-
-    def _validate_data(self, data):
-        """Validate input data"""
-        try:
-            # Validate required fields
-            required_fields = ['observation_date', 'turtle_id']
-            for field in required_fields:
-                if not data.get('basic_info', {}).get(field):
-                    raise ValidationError(f"Missing required field: {field}")
-            
-            # Validate date format
-            try:
-                datetime.strptime(
-                    data['basic_info']['observation_date'], 
-                    '%Y-%m-%dT%H:%M'
-                )
-            except (ValueError, KeyError):
-                raise ValidationError("Invalid date format")
-            
-            # Validate coordinates
-            location = data.get('location', {})
-            if location.get('latitude') is not None:
-                try:
-                    lat = float(location['latitude'])
-                    if not -90 <= lat <= 90:
-                        raise ValidationError("Latitude must be between -90 and 90")
-                except ValueError:
-                    raise ValidationError("Latitude must be a valid number")
-                    
-            if location.get('longitude') is not None:
-                try:
-                    lon = float(location['longitude'])
-                    if not -180 <= lon <= 180:
-                        raise ValidationError("Longitude must be between -180 and 180")
-                except ValueError:
-                    raise ValidationError("Longitude must be a valid number")
-                    
-        except Exception as e:
-            raise ValidationError(f"Error validating data: {str(e)}")
 
 
 class RecordedTagsUpdateView(LoginRequiredMixin, SuperUserRequiredMixin, View):
@@ -4676,8 +4301,8 @@ class RecordedPitTagsUpdateView(LoginRequiredMixin, SuperUserRequiredMixin, View
                 'status': 'error',
                 'message': str(e)
             }, status=500)
-        
-        
+
+
 class RecordedIdentificationsUpdateView(LoginRequiredMixin, SuperUserRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         try:
@@ -4807,39 +4432,76 @@ class RecordedDamageUpdateView(LoginRequiredMixin, SuperUserRequiredMixin, View)
             observation_id = data.get('observation_id')
             recorded_damage = data.get('recorded_damage', [])
             deleted_damage = data.get('deleted_damage', [])
-
+            
             observation = TrtObservations.objects.get(observation_id=observation_id)
 
             # Handle deleted damage records
             if deleted_damage:
                 TrtDamage.objects.filter(
-                    observation_id__in=deleted_damage
+                    observation=observation,
+                    body_part_id__in=deleted_damage
                 ).delete()
 
             # Handle updated and new damage records
             for damage_data in recorded_damage:
-                damage_id = damage_data.get('observation_id')
+                body_part = damage_data.get('body_part')
                 
                 damage_fields = {
-                    'body_part_id': damage_data.get('body_part'),
+                    'body_part_id': body_part,
                     'damage_code_id': damage_data.get('damage_code'),
                     'damage_cause_code_id': damage_data.get('damage_cause_code'),
                     'comments': damage_data.get('comments')
                 }
 
-                if damage_id:  # Update existing record
-                    TrtDamage.objects.filter(
-                        observation_id=damage_id
-                    ).update(**damage_fields)
-                else:  # Create new record
-                    TrtDamage.objects.create(
-                        observation=observation, 
-                        **damage_fields
-                    )
+                # If the body part is in the deleted list, delete the record
+                TrtDamage.objects.filter(
+                    observation=observation,
+                    body_part_id=body_part
+                ).delete()
+
+                # Create new record
+                TrtDamage.objects.create(
+                    observation=observation,
+                    **damage_fields
+                )
 
             return JsonResponse({
                 'status': 'success',
                 'message': 'Damage records updated successfully'
+            })
+
+        except Exception as e:
+            return JsonResponse({
+                'status': 'error',
+                'message': str(e)
+            }, status=500)
+
+
+class RecordedScarsUpdateView(LoginRequiredMixin, SuperUserRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        try:
+            data = json.loads(request.body)
+            observation_id = data.get('observation_id')
+            scars_data = data.get('scars', {})
+
+            observation = TrtObservations.objects.get(observation_id=observation_id)
+
+            # Update all scars related fields
+            observation.scars_left = scars_data.get('scars_left', False)
+            observation.scars_right = scars_data.get('scars_right', False)
+            observation.scars_left_scale_1 = scars_data.get('scars_left_scale_1', False)
+            observation.scars_left_scale_2 = scars_data.get('scars_left_scale_2', False)
+            observation.scars_left_scale_3 = scars_data.get('scars_left_scale_3', False)
+            observation.scars_right_scale_1 = scars_data.get('scars_right_scale_1', False)
+            observation.scars_right_scale_2 = scars_data.get('scars_right_scale_2', False)
+            observation.scars_right_scale_3 = scars_data.get('scars_right_scale_3', False)
+            observation.tagscarnotchecked = scars_data.get('tag_scar_not_checked', False)
+
+            observation.save()
+
+            return JsonResponse({
+                'status': 'success',
+                'message': 'Scars updated successfully'
             })
 
         except TrtObservations.DoesNotExist:
@@ -4852,6 +4514,7 @@ class RecordedDamageUpdateView(LoginRequiredMixin, SuperUserRequiredMixin, View)
                 'status': 'error',
                 'message': str(e)
             }, status=500)
+
 
 
 class TurtleManagementView(LoginRequiredMixin,SuperUserRequiredMixin, TemplateView):
@@ -5350,3 +5013,103 @@ class DocumentsUpdateView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                 'message': str(e)
             }, status=500)
 
+
+class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
+    template_name = 'wamtram2/nesting_season_stats.html'
+    
+    def get_context_data(self, **kwargs):
+        """Prepare all data for template context"""
+        context = {
+            'seasons': TrtNestingSeason.objects.all().order_by('-startdate'),
+            'locations': TrtLocations.objects.all().order_by('location_code'),
+            'places': TrtPlaces.objects.all().order_by('place_code'),
+            'species': TrtSpecies.objects.filter(hide_dataentry=False).order_by('species_code'),
+            'sex_choices': [('F', 'Female'), ('M', 'Male'), ('I', 'Indeterminate')],
+        }
+        
+        # Add selected filters to context
+        context.update({
+            'selected_season': self.request.GET.get('season'),
+            'data_type': self.request.GET.get('data_type', 'processed'),
+            'selected_location': self.request.GET.get('location'),
+            'selected_place': self.request.GET.get('place'),
+            'selected_sex': self.request.GET.get('sex'),
+            'selected_species': self.request.GET.get('species'),
+        })
+        
+        # Add query results if season is selected
+        if context['selected_season']:
+            context['results'] = self.get_query_results(context)
+            
+        return context
+    
+    def get_query_results(self, context):
+        """Execute query based on selected filters"""
+        season = TrtNestingSeason.objects.get(nesting_seasonid=context['selected_season'])
+        
+        # Select model based on data type
+        if context['data_type'] == 'processed':
+            query = TrtObservations.objects.filter(
+                observation_date__gte=season.startdate,
+                observation_date__lte=season.enddate
+            )
+            
+            # Apply filters
+            if context['selected_place']:
+                query = query.filter(place_code=context['selected_place'])
+            elif context['selected_location']:
+                query = query.filter(
+                    place_code__place_code__startswith=context['selected_location']
+                )
+                
+            if context['selected_sex']:
+                query = query.filter(turtle__sex=context['selected_sex'])
+                
+            if context['selected_species']:
+                query = query.filter(turtle__species_code=context['selected_species'])
+        else:
+            query = TrtDataEntry.objects.filter(
+                observation_date__gte=season.startdate,
+                observation_date__lte=season.enddate
+            )
+            
+            # Apply filters for field entries
+            if context['selected_place']:
+                query = query.filter(place_code=context['selected_place'])
+            elif context['selected_location']:
+                query = query.filter(
+                    place_code__place_code__startswith=context['selected_location']
+                )
+                
+            if context['selected_sex']:
+                query = query.filter(sex=context['selected_sex'])
+                
+            if context['selected_species']:
+                query = query.filter(species_code=context['selected_species'])
+            
+        # Group results
+        results = query.values(
+            'place_code__place_code',
+            'place_code__place_name'
+        ).annotate(
+            count=Count('*')
+        ).order_by('place_code__place_code')
+
+        # Calculate total if location is selected
+        if context['selected_location'] and not context['selected_place']:
+            total = sum(item['count'] for item in results)
+            return {
+                'details': list(results),
+                'total': total
+            }
+        return {
+            'details': list(results),
+            'total': None
+        }
+    
+    def get(self, request, *args, **kwargs):
+        """Handle GET request"""
+        context = self.get_context_data()
+        return render(request, self.template_name, context)
+    
+    

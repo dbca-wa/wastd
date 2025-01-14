@@ -26,8 +26,8 @@ urlpatterns = [
     path('templates-manage/get-places/', views.TemplateManageView.as_view(), name='get_template_places'),
     path('search-persons/', views.search_persons, name='search-persons'),
     path('search-places/', views.search_places, name='search-places'),
-    path('export/', views.ExportDataView.as_view(), name='export_data'),
-    path('dud-tag-manage/', views.DudTagManageView.as_view(), name='dud_tag_manage'),
+    path('curation/export/', views.ExportDataView.as_view(), name='export_data'),
+    path('curation/dud-tag-manage/', views.DudTagManageView.as_view(), name='dud_tag_manage'),
     path('batches-curation/', views.BatchesCurationView.as_view(), name='batches_curation'),
     path('create-new-entry/', views.CreateNewEntryView.as_view(), name='create_new_entry'),
     path('quick-add-batch/', views.quick_add_batch, name='quick_add_batch'),
@@ -70,4 +70,6 @@ urlpatterns = [
     path('api/recorded-identifications/update/', views.RecordedIdentificationsUpdateView.as_view(), name='recorded_identifications_update'),
     path('api/recorded-measurements/update/', views.RecordedMeasurementsUpdateView.as_view(), name='recorded_measurements_update'),
     path('api/recorded-damage/update/', views.RecordedDamageUpdateView.as_view(), name='recorded_damage_update'),
+    path('api/recorded-scars/update/', views.RecordedScarsUpdateView.as_view(), name='recorded_scars_update'),
+    path('curation/nesting-season-stats/', views.NestingSeasonStatsView.as_view(), name='nesting_season_stats'),
 ]
