@@ -56,6 +56,38 @@
     <h2 class="section-title">Administration Tools</h2>
     
     <div class="row">
+        <!-- Nesting Season Statistics -->
+        <div class="col-md-4 mb-4">
+            <a href="{% url 'wamtram2:nesting_season_stats' %}" class="text-decoration-none">
+                <div class="tool-card p-4 text-center">
+                    <div class="tool-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h3 class="tool-title">Nesting Season Statistics</h3>
+                    <p class="tool-description">View and analyze nesting season data statistics.</p>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-arrow-right mr-2"></i>Access Tool
+                    </button>
+                </div>
+            </a>
+        </div>
+
+        <!-- Batch Curation -->
+        <div class="col-md-4 mb-4">
+            <a href="{% url 'wamtram2:batch_curation' %}" class="text-decoration-none">
+                <div class="tool-card p-4 text-center">
+                    <div class="tool-icon">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <h3 class="tool-title">Batch Curation</h3>
+                    <p class="tool-description">Review and manage data entry batches for curation.</p>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-arrow-right mr-2"></i>Access Tool
+                    </button>
+                </div>
+            </a>
+        </div>
+
         <!-- Turtle Management -->
         <div class="col-md-4 mb-4">
             <a href="{% url 'wamtram2:turtle_management' %}" class="text-decoration-none">
@@ -169,22 +201,6 @@
             </a>
         </div>
 
-        <!-- Batch Curation -->
-        <div class="col-md-4 mb-4">
-            <a href="{% url 'wamtram2:batch_curation' %}" class="text-decoration-none">
-                <div class="tool-card p-4 text-center">
-                    <div class="tool-icon">
-                        <i class="fas fa-tasks"></i>
-                    </div>
-                    <h3 class="tool-title">Batch Curation</h3>
-                    <p class="tool-description">Review and manage data entry batches for curation.</p>
-                    <button class="btn btn-primary">
-                        <i class="fas fa-arrow-right mr-2"></i>Access Tool
-                    </button>
-                </div>
-            </a>
-        </div>
-
         <!-- Dud Tags Management -->
         <div class="col-md-4 mb-4">
             <a href="{% url 'wamtram2:dud_tag_manage' %}" class="text-decoration-none">
@@ -233,6 +249,7 @@
                 </div>
             </a>
         </div>
+
 
     </div>
 </div>

@@ -79,8 +79,7 @@ class TrtCauseOfDeath(models.Model):
     def __str__(self):
         return f"{self.description}"
 
-    def __str__(self):
-        return f"{self.description}"
+
 
 
 class TrtConditionCodes(models.Model):
@@ -97,38 +96,6 @@ class TrtConditionCodes(models.Model):
 
     def __str__(self):
         return f"{self.description}"
-
-
-# class TrtDamage(models.Model):
-#     observation = models.ForeignKey(
-#         "TrtObservations", models.CASCADE, db_column="OBSERVATION_ID", primary_key=True, related_name="damages"
-#     )  # Field name made lowercase.
-#     body_part = models.ForeignKey(
-#         TrtBodyParts, models.CASCADE, db_column="BODY_PART"
-#     )  # Field name made lowercase.
-#     damage_code = models.ForeignKey(
-#         "TrtDamageCodes", models.CASCADE, db_column="DAMAGE_CODE"
-#     )  # Field name made lowercase.
-#     damage_cause_code = models.ForeignKey(
-#         "TrtDamageCauseCodes",
-#         models.SET_NULL,
-#         db_column="DAMAGE_CAUSE_CODE",
-#         blank=True,
-#         null=True,
-#     )  # Field name made lowercase.
-#     comments = models.CharField(
-#         db_column="COMMENTS", max_length=255, blank=True, null=True
-#     )  # Field name made lowercase.
-
-#     class Meta:
-#         managed = False
-#         db_table = "TRT_DAMAGE"
-#         constraints = [
-#             models.UniqueConstraint(
-#                 fields=["observation", "body_part"],
-#                 name="unique_observation_body_part"
-#             )
-#         ]
 
 
 class TrtDamage(models.Model):
@@ -1213,6 +1180,9 @@ class TrtDatumCodes(models.Model):
     class Meta:
         managed = False
         db_table = "TRT_DATUM_CODES"
+        
+    def __str__(self):
+        return self.datum_code
 
 
 class TrtDefault(models.Model):
@@ -2034,16 +2004,21 @@ class TrtRecordedIdentification(models.Model):
         db_column="OBSERVATION_ID"
     )  # Field name made lowercase.
     turtle = models.ForeignKey(
-        TrtIdentification, models.CASCADE, db_column="TURTLE_ID", related_name="turtle2"
+        "TrtTurtles",
+        models.CASCADE,
+        db_column="TURTLE_ID",
+        related_name="turtle2"
     )  # Field name made lowercase.
     identification_type = models.ForeignKey(
-        TrtIdentification, models.CASCADE, db_column="IDENTIFICATION_TYPE"
-    )  # Field name made lowercase.
-    identifier = models.ForeignKey(
-        TrtIdentification,
+        "TrtIdentificationTypes",
         models.CASCADE,
+        db_column="IDENTIFICATION_TYPE"
+    )  # Field name made lowercase.
+    identifier = models.CharField(
         db_column="IDENTIFIER",
-        related_name="identifier2",
+        max_length=50,
+        blank=True,
+        null=True,
     )  # Field name made lowercase.
     comments = models.CharField(
         db_column="COMMENTS", max_length=255, blank=True, null=True
@@ -2540,6 +2515,7 @@ class TrtYesNo(models.Model):
 
     def __str__(self):
         return f"{self.description}"
+
 
 SEX_CHOICES = [
     ("F", "Female"),

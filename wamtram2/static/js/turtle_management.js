@@ -387,7 +387,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="form-row">
                             <div class="col-md-1">
                                 <div class="form-group">
-                                    <label>Observation ID</label>
+                                    <label>Observation</label>
                                     <a href="/wamtram2/curation/observations-management/${obs.observation_id}/"class="form-control"target="_blank">${obs.observation_id}</a>
                                 </div>
                             </div>
@@ -473,30 +473,67 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        turtle.documents.forEach(document => {
-            const template = document.getElementById('documentTemplate');
-            const clone = template.content.cloneNode(true);
+        turtle.documents.forEach(doc => {
+            const documentHtml = `
+                <div class="card mb-3 document-card" data-document-id="${doc.document_id || ''}">
+                    <div class="card-body">
+                        <div class="form-row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>File Type</label>
+                                    <select class="form-control" name="document_type">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>File Name</label>
+                                    <input type="text" class="form-control" name="file_name" value="${doc.file_name || ''}">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label>Person</label>
+                                    <input type="text" class="form-control" name="person_name" value="${doc.person_name || ''}">
+                                    <input type="hidden" name="person_id" value="${doc.person_id || ''}">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Comments</label>
+                                    <input type="text" class="form-control" name="comments" value="${doc.comments || ''}">
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                <div class="form-group">
+                                    <label>&nbsp;</label>
+                                    <button type="button" class="btn btn-danger btn-block delete-document">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', documentHtml);
             
-            // Fill document type dropdown
-            const documentTypeSelect = clone.querySelector('[name="document_type"]');
-            const documentTypes = JSON.parse(document.getElementById('document-types-data').textContent);
-            documentTypes.forEach(type => {
-                const option = document.createElement('option');
-                option.value = type.document_type;
-                option.textContent = type.description;
-                if (type.document_type === document.document_type) {
-                    option.selected = true;
-                }
-                documentTypeSelect.appendChild(option);
-            });
+            // Get the document type select box from the recently added document card
+            const documentTypeSelect = container.lastElementChild.querySelector('[name="document_type"]');
+            const documentTypesData = document.getElementById('document-types-data');
             
-            // Fill other fields
-            clone.querySelector('[name="file_name"]').value = document.file_name || '';
-            clone.querySelector('[name="person_name"]').value = document.person_name || '';
-            clone.querySelector('[name="person_id"]').value = document.person_id || '';
-            clone.querySelector('[name="comments"]').value = document.comments || '';
-            
-            container.appendChild(clone);
+            if (documentTypesData) {
+                const documentTypes = JSON.parse(documentTypesData.textContent);
+                documentTypes.forEach(type => {
+                    const option = document.createElement('option');
+                    option.value = type.document_type;
+                    option.textContent = type.description;
+                    if (type.document_type === doc.document_type) {
+                        option.selected = true;
+                    }
+                    documentTypeSelect.appendChild(option);
+                });
+            }
         });
     }
 
