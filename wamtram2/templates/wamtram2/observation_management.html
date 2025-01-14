@@ -397,6 +397,9 @@
             <div class="section-card">
                 <h4>Scars</h4>
                 <div id="scarsContainer"></div>
+                <button type="button" class="btn btn-success mt-3" onclick="saveScarsChanges()">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
             </div>
         </div>
         <!-- Comment out Other Information content area
@@ -430,7 +433,7 @@
     <script>
         const searchPersonsUrl = '{{ search_persons_url }}';
         const searchPlacesUrl = '{{ search_places_url }}';
-        const submitUrl = '{{ submit_url }}';
+        const submitUrl = '/wamtram2/api/observations/save/';
         {% if initial_data %}
             const initialData = {{ initial_data|safe }};
             console.log(initialData);

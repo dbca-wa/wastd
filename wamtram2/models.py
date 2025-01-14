@@ -99,38 +99,6 @@ class TrtConditionCodes(models.Model):
         return f"{self.description}"
 
 
-# class TrtDamage(models.Model):
-#     observation = models.ForeignKey(
-#         "TrtObservations", models.CASCADE, db_column="OBSERVATION_ID", primary_key=True, related_name="damages"
-#     )  # Field name made lowercase.
-#     body_part = models.ForeignKey(
-#         TrtBodyParts, models.CASCADE, db_column="BODY_PART"
-#     )  # Field name made lowercase.
-#     damage_code = models.ForeignKey(
-#         "TrtDamageCodes", models.CASCADE, db_column="DAMAGE_CODE"
-#     )  # Field name made lowercase.
-#     damage_cause_code = models.ForeignKey(
-#         "TrtDamageCauseCodes",
-#         models.SET_NULL,
-#         db_column="DAMAGE_CAUSE_CODE",
-#         blank=True,
-#         null=True,
-#     )  # Field name made lowercase.
-#     comments = models.CharField(
-#         db_column="COMMENTS", max_length=255, blank=True, null=True
-#     )  # Field name made lowercase.
-
-#     class Meta:
-#         managed = False
-#         db_table = "TRT_DAMAGE"
-#         constraints = [
-#             models.UniqueConstraint(
-#                 fields=["observation", "body_part"],
-#                 name="unique_observation_body_part"
-#             )
-#         ]
-
-
 class TrtDamage(models.Model):
     observation = models.OneToOneField(
         "TrtObservations", 
@@ -168,48 +136,6 @@ class TrtDamage(models.Model):
         db_table = "TRT_DAMAGE"
         unique_together = ('observation', 'body_part')
 
-
-# class TrtDamage(models.Model):
-#     observation = models.ForeignKey(
-#         "TrtObservations", 
-#         models.CASCADE, 
-#         db_column="OBSERVATION_ID",
-#         related_name="damages"
-#     )
-#     body_part = models.ForeignKey(
-#         TrtBodyParts, 
-#         models.CASCADE, 
-#         db_column="BODY_PART"
-#     )
-#     damage_code = models.ForeignKey(
-#         "TrtDamageCodes", 
-#         models.CASCADE, 
-#         db_column="DAMAGE_CODE"
-#     )
-#     damage_cause_code = models.ForeignKey(
-#         "TrtDamageCauseCodes",
-#         models.SET_NULL,
-#         db_column="DAMAGE_CAUSE_CODE",
-#         blank=True,
-#         null=True,
-#     )
-#     comments = models.CharField(
-#         db_column="COMMENTS", 
-#         max_length=255, 
-#         blank=True, 
-#         null=True
-#     )
-
-#     class Meta:
-#         managed = False
-#         db_table = "TRT_DAMAGE"
-#         unique_together = ('observation', 'body_part')
-#         constraints = [
-#             models.UniqueConstraint(
-#                 fields=['observation', 'body_part'],
-#                 name='trt_damage_pk'
-#             )
-#         ]
 
 class TrtDamageCause(models.Model):
     observation_id = models.IntegerField(

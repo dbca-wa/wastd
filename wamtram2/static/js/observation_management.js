@@ -699,49 +699,6 @@ function generateIdentificationHtml(identification = {}) {
 }
 
 
-// Set tag info
-function setTagInfo() {
-    // Flipper tags
-    const tagContainer = document.getElementById('tagContainer');
-    
-    if (!tagContainer) {
-        console.error('Tag container not found!');
-        return;
-    }
-
-    if (!initialData.tag_info?.recorded_tags) {
-        console.error('No tag data found!');
-        return;
-    }
-
-    tagContainer.innerHTML = '';
-    
-    if (initialData.tag_info.recorded_tags.length === 0) {
-        tagContainer.innerHTML = '<p class="text-muted">No flipper tags found</p>';
-        return;
-    }
-
-    initialData.tag_info.recorded_tags.forEach(tag => {
-        tagContainer.insertAdjacentHTML('beforeend', generateTagHtml(tag));
-    });
-
-    // PIT tags
-    const pitTagContainer = document.getElementById('pitTagContainer');
-    if (pitTagContainer && initialData.tag_info?.recorded_pit_tags) {
-        pitTagContainer.innerHTML = '';
-        
-        if (initialData.tag_info.recorded_pit_tags.length === 0) {
-            pitTagContainer.innerHTML = '<p class="text-muted">No PIT tags found</p>';
-            return;
-        }
-
-        initialData.tag_info.recorded_pit_tags.forEach(pitTag => {
-            pitTagContainer.insertAdjacentHTML('beforeend', generatePitTagHtml(pitTag));
-        });
-    }
-
-}
-
 // Generate measurement HTML template
 function generateMeasurementHtml(measurement = {}) {
     const cardId = 'measurement-card-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
@@ -791,6 +748,51 @@ function generateMeasurementHtml(measurement = {}) {
         </div>
     `;
 }
+
+
+// Set tag info
+function setTagInfo() {
+    // Flipper tags
+    const tagContainer = document.getElementById('tagContainer');
+    
+    if (!tagContainer) {
+        console.error('Tag container not found!');
+        return;
+    }
+
+    if (!initialData.tag_info?.recorded_tags) {
+        console.error('No tag data found!');
+        return;
+    }
+
+    tagContainer.innerHTML = '';
+    
+    if (initialData.tag_info.recorded_tags.length === 0) {
+        tagContainer.innerHTML = '<p class="text-muted">No flipper tags found</p>';
+        return;
+    }
+
+    initialData.tag_info.recorded_tags.forEach(tag => {
+        tagContainer.insertAdjacentHTML('beforeend', generateTagHtml(tag));
+    });
+
+    // PIT tags
+    const pitTagContainer = document.getElementById('pitTagContainer');
+    if (pitTagContainer && initialData.tag_info?.recorded_pit_tags) {
+        pitTagContainer.innerHTML = '';
+        
+        if (initialData.tag_info.recorded_pit_tags.length === 0) {
+            pitTagContainer.innerHTML = '<p class="text-muted">No PIT tags found</p>';
+            return;
+        }
+
+        initialData.tag_info.recorded_pit_tags.forEach(pitTag => {
+            pitTagContainer.insertAdjacentHTML('beforeend', generatePitTagHtml(pitTag));
+        });
+    }
+
+}
+
 
 // Set measurements data
 function setMeasurements() {
@@ -1514,13 +1516,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const measurementContainer = document.getElementById('measurementContainer');
     if (measurementContainer) {
         measurementContainer.addEventListener('click', function(e) {
-            console.log('Container clicked');
-            console.log('Clicked element:', e.target);
             const deleteBtn = e.target.closest('.btn-danger');
-            console.log('Delete button:', deleteBtn);
             
             if (deleteBtn) {
-                console.log('Delete button clicked');
                 deleteMeasurement(e);
             }
         });
@@ -1571,25 +1569,19 @@ function addMeasurement() {
 
 // Delete measurement
 function deleteMeasurement(event) {
-    console.log('Delete measurement called');
     const measurementCard = event.target.closest('.measurement-card');
-    console.log('Measurement card:', measurementCard);
     
     const measurementId = measurementCard.dataset.measurementId;
-    console.log('Measurement ID:', measurementId);
     
     if (measurementCard.classList.contains('deleted')) {
-        console.log('Undeleting measurement');
         measurementCard.classList.remove('deleted');
         deletedMeasurements.delete(measurementId);
     } else {
-        console.log('Marking measurement as deleted');
         measurementCard.classList.add('deleted');
         if (measurementId) {
             deletedMeasurements.add(measurementId);
         }
     }
-    console.log('Current deletedMeasurements:', deletedMeasurements);
 }
 
 // Save measurement changes
@@ -1811,15 +1803,17 @@ function addDamage() {
 // Delete damage record
 function deleteDamage(event) {
     const damageCard = event.target.closest('.damage-card');
-    const damageId = damageCard.dataset.damageId;
+    const bodyPartSelect = damageCard.querySelector('[name="body_part"]');
+    const bodyPart = bodyPartSelect ? bodyPartSelect.value : null;
+
     
     if (damageCard.classList.contains('deleted')) {
         damageCard.classList.remove('deleted');
-        deletedDamage.delete(damageId);
+        deletedDamage.delete(bodyPart);
     } else {
         damageCard.classList.add('deleted');
-        if (damageId) {
-            deletedDamage.add(damageId);
+        if (bodyPart) {
+            deletedDamage.add(bodyPart);
         }
     }
 }
@@ -1935,6 +1929,12 @@ async function saveDamageChanges() {
         return;
     }
 
+    const requestData = {
+        observation_id: initialData.basic_info.observation_id,
+        recorded_damage: [...newDamage, ...modifiedDamage],
+        deleted_damage: Array.from(deletedDamage)
+    };
+
     try {
         const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
         
@@ -1944,16 +1944,76 @@ async function saveDamageChanges() {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': csrfToken
             },
+            body: JSON.stringify(requestData)
+        });
+
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+            alert('Damage records updated successfully!');
+            location.reload();
+        } else {
+            alert(`Error: ${data.message}`);
+        }
+    } catch (error) {
+        console.error('Save failed:', error);
+        alert(`Save failed: ${error.message}`);
+    }
+}
+
+async function saveScarsChanges() {
+    const scarsData = {
+        scars_left: document.querySelector('[name="scars_left"]').checked,
+        scars_right: document.querySelector('[name="scars_right"]').checked,
+        scars_left_scale_1: document.querySelector('[name="scars_left_scale_1"]').checked,
+        scars_left_scale_2: document.querySelector('[name="scars_left_scale_2"]').checked,
+        scars_left_scale_3: document.querySelector('[name="scars_left_scale_3"]').checked,
+        scars_right_scale_1: document.querySelector('[name="scars_right_scale_1"]').checked,
+        scars_right_scale_2: document.querySelector('[name="scars_right_scale_2"]').checked,
+        scars_right_scale_3: document.querySelector('[name="scars_right_scale_3"]').checked,
+        tag_scar_not_checked: document.querySelector('[name="tag_scar_not_checked"]').checked
+    };
+
+    // Check for changes
+    const hasChanges = Object.keys(scarsData).some(key => 
+        scarsData[key] !== initialData.scars[key]
+    );
+
+    if (!hasChanges) {
+        alert('No changes to save');
+        return;
+    }
+
+    // Create confirmation message
+    let confirmMessage = 'Please confirm the following changes:\n\n';
+    Object.keys(scarsData).forEach(key => {
+        if (scarsData[key] !== initialData.scars[key]) {
+            confirmMessage += `${key}: ${initialData.scars[key]} → ${scarsData[key]}\n`;
+        }
+    });
+
+    if (!confirm(confirmMessage)) {
+        return;
+    }
+
+    try {
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        
+        const response = await fetch('/wamtram2/api/recorded-scars/update/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
             body: JSON.stringify({
                 observation_id: initialData.basic_info.observation_id,
-                recorded_damage: [...newDamage, ...modifiedDamage],
-                deleted_damage: Array.from(deletedDamage)
+                scars: scarsData
             })
         });
 
         const data = await response.json();
         if (data.status === 'success') {
-            alert('Damage records updated successfully!');
+            alert('Scars updated successfully!');
             location.reload();
         } else {
             alert(`Error: ${data.message}`);
