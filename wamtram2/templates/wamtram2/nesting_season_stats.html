@@ -5,6 +5,7 @@
     {{ block.super }}
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/@ttskch/select2-bootstrap4-theme/dist/select2-bootstrap4.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
 {% endblock %}
 
 {% block breadcrumbs %}
@@ -12,7 +13,7 @@
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
             <li class="breadcrumb-item"><a href="{% url 'wamtram2:admin_tools' %}">Curation Tools</a></li>
-            <li class="breadcrumb-item active">Nesting Season Statistics</li>
+            <li class="breadcrumb-item active">Turtle Data Statistics</li>
         </ol>
     </nav>
 {% endblock %}
@@ -29,18 +30,16 @@
             <div class="form-row">
                 <div class="col-md-4">
                     <div class="form-group">
-                        <label>Nesting Season:</label>
-                        <select name="season" class="form-control select2">
-                            <option value="">Select Season</option>
-                            {% for season in seasons %}
-                                <option value="{{ season.nesting_seasonid }}" {% if selected_season == season.nesting_seasonid|stringformat:"s" %}selected{% endif %}>
-                                    {{ season.nesting_season }}
-                                </option>
-                            {% endfor %}
-                        </select>
+                        <label>Start Date:</label>
+                        <input type="date" name="start_date" class="form-control" value="{{ start_date }}" required>
                     </div>
                 </div>
-                
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>End Date:</label>
+                        <input type="date" name="end_date" class="form-control" value="{{ end_date }}" required>
+                    </div>
+                </div>
                 <div class="col-md-4">
                     <div class="form-group">
                         <label>Data Type:</label>
@@ -79,6 +78,14 @@
                             {% endfor %}
                         </select>
                     </div>
+                </div>
+            </div>
+
+            <div class="form-row mb-3">
+                <div class="col-12">
+                    <small class="text-muted">
+                        <i class="fas fa-info-circle"></i> Note: Please select either Location or Place, not both. Location will show totals for all places within that location.
+                    </small>
                 </div>
             </div>
 
@@ -152,7 +159,7 @@
             </table>
         </div>
     </div>
-    {% elif selected_season %}
+    {% elif start_date and end_date %}
     <div class="section-card">
         <p>No data found matching the selected criteria.</p>
     </div>
@@ -163,6 +170,7 @@
 {% block extra_js %}
     {{ block.super }}
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
     <script>
         $(document).ready(function() {
             $('.select2').select2({
