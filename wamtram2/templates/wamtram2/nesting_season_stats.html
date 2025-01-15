@@ -21,6 +21,8 @@
 <div class="container-fluid mt-3">
     <div id="messageContainer"></div>
 
+    <h1 class="page-title"> {{ page_title }} </h1>
+
     <form method="get" class="mb-4">
         <div class="section-card">
             <h4>Filter Options</h4>
@@ -133,13 +135,19 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for result in results %}
+                    {% for result in results.details %}
                     <tr>
                         <td>{{ result.place_code__place_code }}</td>
                         <td>{{ result.place_code__place_name }}</td>
                         <td>{{ result.count }}</td>
                     </tr>
                     {% endfor %}
+                    {% if results.total is not None %}
+                    <tr class="table-info">
+                        <td colspan="2"><strong>Total</strong></td>
+                        <td><strong>{{ results.total }}</strong></td>
+                    </tr>
+                    {% endif %}
                 </tbody>
             </table>
         </div>
