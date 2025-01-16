@@ -31,13 +31,15 @@
                 <div class="col-md-4">
                     <div class="form-group">
                         <label>Start Date:</label>
-                        <input type="date" name="start_date" class="form-control" value="{{ start_date }}" required>
+                        <input type="date" name="start_date" class="form-control" 
+                            value="{{ start_date }}" required>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="form-group">
                         <label>End Date:</label>
-                        <input type="date" name="end_date" class="form-control" value="{{ end_date }}" required>
+                        <input type="date" name="end_date" class="form-control" 
+                            value="{{ end_date }}" required>
                     </div>
                 </div>
                 <div class="col-md-4">
@@ -55,11 +57,11 @@
                 <div class="col-md-4">
                     <div class="form-group">
                         <label>Location:</label>
-                        <select name="location" class="form-control select2">
-                            <option value="">All Locations</option>
-                            {% for loc in locations %}
-                                <option value="{{ loc.location_code }}" {% if selected_location == loc.location_code %}selected{% endif %}>
-                                    {{ loc.location_name }}
+                        <select name="location" class="form-control select2" multiple>
+                            {% for location in locations %}
+                                <option value="{{ location.location_code }}" 
+                                    {% if location.location_code in selected_locations %}selected{% endif %}>
+                                    {{ location.location_name }}
                                 </option>
                             {% endfor %}
                         </select>
@@ -69,11 +71,11 @@
                 <div class="col-md-4">
                     <div class="form-group">
                         <label>Place:</label>
-                        <select name="place" class="form-control select2">
-                            <option value="">All Places</option>
-                            {% for p in places %}
-                                <option value="{{ p.place_code }}" {% if selected_place == p.place_code %}selected{% endif %}>
-                                    {{ p.place_name }}
+                        <select name="place" class="form-control select2" multiple>
+                            {% for place in places %}
+                                <option value="{{ place.place_code }}" 
+                                    {% if place.place_code in selected_places %}selected{% endif %}>
+                                    {{ place.place_name }}
                                 </option>
                             {% endfor %}
                         </select>
@@ -131,7 +133,26 @@
 
     {% if results %}
     <div class="section-card">
-        <h4>Results</h4>
+        {% if results %}
+            <h4>Results: 
+                {% if selected_places %}
+                    {% for place in places %}
+                        {% if place.place_code in selected_places %}
+                            {{ place.place_name }}{% if not forloop.last %}, {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                {% elif selected_locations %}
+                    {% for location in locations %}
+                        {% if location.location_code in selected_locations %}
+                            {{ location.location_name }}{% if not forloop.last %}, {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                {% else %}
+                    All Locations
+                {% endif %}
+                ({{ start_date }} - {{ end_date }})
+            </h4>
+        {% endif %}
         <div class="table-responsive">
             <table class="table table-striped">
                 <thead>
@@ -176,6 +197,38 @@
             $('.select2').select2({
                 theme: 'bootstrap4'
             });
+
+            const locationSelect = $('select[name="location"]');
+            const placeSelect = $('select[name="place"]');
+
+            // 监听 location 的变化
+            locationSelect.on('change', function() {
+                const selectedLocations = $(this).val();
+                if (selectedLocations && selectedLocations.length > 0) {
+                    placeSelect.val('').trigger('change');
+                    placeSelect.prop('disabled', true);
+                } else {
+                    placeSelect.prop('disabled', false);
+                }
+            });
+
+            // 监听 place 的变化
+            placeSelect.on('change', function() {
+                const selectedPlaces = $(this).val();
+                if (selectedPlaces && selectedPlaces.length > 0) {
+                    locationSelect.val('').trigger('change');
+                    locationSelect.prop('disabled', true);
+                } else {
+                    locationSelect.prop('disabled', false);
+                }
+            });
+
+            // 页面加载时初始化状态
+            if (locationSelect.val() && locationSelect.val().length > 0) {
+                placeSelect.prop('disabled', true);
+            } else if (placeSelect.val() && placeSelect.val().length > 0) {
+                locationSelect.prop('disabled', true);
+            }
         });
     </script>
 {% endblock %} 

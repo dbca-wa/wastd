@@ -5390,12 +5390,14 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
             'species': TrtSpecies.objects.filter(hide_dataentry=False).order_by('species_code'),
             'sex_choices': [('F', 'Female'), ('M', 'Male'), ('I', 'Indeterminate')],
         }
+        selected_locations = self.request.GET.getlist('location')
+        selected_places = self.request.GET.getlist('place')
         
         # Add selected filters to context
         context.update({
             'data_type': self.request.GET.get('data_type', 'processed'),
-            'selected_location': self.request.GET.get('location'),
-            'selected_place': self.request.GET.get('place'),
+            'selected_locations': selected_locations,
+            'selected_places': selected_places,
             'selected_sex': self.request.GET.get('sex'),
             'selected_species': self.request.GET.get('species'),
             'start_date': self.request.GET.get('start_date'),
@@ -5422,12 +5424,13 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                 )
                 
                 # Apply filters
-                if context['selected_place']:
-                    query = query.filter(place_code=context['selected_place'])
-                elif context['selected_location']:
-                    query = query.filter(
-                        place_code__place_code__startswith=context['selected_location']
-                    )
+                if context.get('selected_places'):
+                    query = query.filter(place_code__in=context['selected_places'])
+                elif context.get('selected_locations'):
+                    location_filter = Q()
+                    for loc in context['selected_locations']:
+                        location_filter |= Q(place_code__place_code__startswith=loc)
+                    query = query.filter(location_filter)
                     
                 if context['selected_sex']:
                     query = query.filter(turtle__sex=context['selected_sex'])
@@ -5450,12 +5453,13 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                 )
                 
                 # Apply filters
-                if context['selected_place']:
-                    query = query.filter(place_code=context['selected_place'])
-                elif context['selected_location']:
-                    query = query.filter(
-                        place_code__place_code__startswith=context['selected_location']
-                    )
+                if context.get('selected_places'):
+                    query = query.filter(place_code__in=context['selected_places'])
+                elif context.get('selected_locations'):
+                    location_filter = Q()
+                    for loc in context['selected_locations']:
+                        location_filter |= Q(place_code__place_code__startswith=loc)
+                    query = query.filter(location_filter)
                 
                 if context['selected_sex']:
                     query = query.filter(sex=context['selected_sex'])
@@ -5544,7 +5548,7 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
 
             results_list = list(results)
 
-            if context['selected_location'] and not context['selected_place']:
+            if context.get('selected_locations') and not context.get('selected_places'): 
                 total = sum(item['count'] for item in results_list)
                 print(f"Total count: {total}")
                 return {
