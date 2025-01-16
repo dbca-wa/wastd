@@ -5,7 +5,7 @@ from .models import (
     TrtEntryBatches, TrtPlaces, TrtPitTags, 
     Template, TrtObservations,TrtTagStates, 
     TrtMeasurementTypes,TrtYesNo,SEX_CHOICES,
-    TrtNestingSeason
+    TrtNestingSeason, TrtBodyParts, TrtDamageCodes
     )
 from django_select2.forms import ModelSelect2Widget
 from django.core.validators import RegexValidator
@@ -13,8 +13,8 @@ from django.db.models import Case, When, IntegerField
 from datetime import timedelta
 from django.conf import settings
 from django.core.exceptions import ValidationError
-from django.contrib.admin import widgets
- 
+
+
 
 
 
@@ -277,6 +277,30 @@ class TrtDataEntryForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.batch_id = kwargs.pop("batch_id", None)
         super().__init__(*args, **kwargs)
+
+        damage_codes = TrtDamageCodes.objects.all()
+        
+        # Set damage code field
+        for i in range(1, 7):
+            damage_code_field = f'damage_code_{i}'
+            if damage_code_field in self.fields:
+                self.fields[damage_code_field] = forms.ModelChoiceField(
+                    queryset=damage_codes,
+                    required=False,
+                    to_field_name='damage_code',
+                    widget=forms.Select(attrs={
+                        'class': 'form-control',
+                        'data-initial': getattr(self.instance, damage_code_field).damage_code if self.instance and getattr(self.instance, damage_code_field) else ''
+                    }),
+                    empty_label='---------'
+                )
+                
+                # Set initial value
+                if self.instance and getattr(self.instance, damage_code_field):
+                    self.initial[damage_code_field] = getattr(self.instance, damage_code_field)
+        
+        
+        
         self.fields['entered_by'].widget = forms.TextInput(attrs={
             'class': 'form-control', 
             'placeholder': 'Enter name',

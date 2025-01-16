@@ -466,9 +466,6 @@ class TrtDataEntry(models.Model):
         null=True,
         related_name="clutchcompleted"
     )
-    # clutch_completed = models.CharField(
-    #     db_column="CLUTCH_COMPLETED", max_length=1, blank=True, null=True
-    # )  # Field name made lowercase.
     measured_by = models.CharField(
         db_column="MEASURED_BY", max_length=50, blank=True, null=True
     )  # Field name made lowercase. Used by old MSAccess frontend

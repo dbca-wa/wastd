@@ -25,7 +25,7 @@
 {% block page_content_inner %}
 <div class="container">
     <div class="page-header">
-        <h1 class="page-title">{% if batch_id %}Edit{% else %}Add{% endif %} Batch</h1>
+        <h1 class="page-title">{{page_title}} {% if batch_id %}Edit{% else %}Add{% endif %} Batch</h1>
     </div>
 
     {% include "includes/messages.html" %}

@@ -2,7 +2,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.utils import timezone
 from django.db import connections, DatabaseError
-from django.db.models import Q, Exists, OuterRef, Count, Subquery
+from django.db.models import Q, Exists, OuterRef, Count, Subquery, ExpressionWrapper, BooleanField
 from django.http import HttpResponseForbidden, HttpResponseRedirect, HttpResponse,HttpResponseBadRequest, JsonResponse
 from django.contrib.auth.mixins import LoginRequiredMixin,UserPassesTestMixin
 from django.shortcuts import render, redirect, get_object_or_404
@@ -141,6 +141,7 @@ class EntryBatchesListView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['page_title'] = 'Manage Batches - ' + settings.SITE_TITLE
 
         # Paginate the queryset
         queryset = self.get_queryset()
@@ -243,6 +244,8 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
         context["persons"] = {
             person.person_id: person for person in TrtPersons.objects.all()
         }
+        
+        context['page_title'] = 'Entry Batch Detail - ' + settings.SITE_TITLE
 
         batch = TrtEntryBatches.objects.get(entry_batch_id=self.kwargs.get("batch_id"))
         context["batch"] = batch
@@ -614,7 +617,6 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         else:
             return redirect(success_url)
 
-
     def form_invalid(self, form):
         error_message = "Error saving the entry. If you cannot resolve the issue, please set aside this data sheet for admin review and continue with the next data sheet."
         
@@ -642,7 +644,9 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         entry_id = self.kwargs.get("entry_id")
         batch_id = self.kwargs.get("batch_id")
         cookies_key_prefix = batch_id
-        form = context.get('form')
+        form = kwargs.get('form', context.get('form'))
+        
+        context['page_title'] = 'New Entry - ' + settings.SITE_TITLE
         
         if form.is_bound:
             context.update({
@@ -863,6 +867,12 @@ class FindTurtleView(LoginRequiredMixin, View):
     View class for finding a turtle based on tag and pit tag ID.
     """
     template_name= "wamtram2/find_turtle.html"
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_title'] = 'Find Turtle - ' + settings.SITE_TITLE
+        return context
+    
     def dispatch(self, request, *args, **kwargs):
         if not (
             request.user.groups.filter(name="WAMTRAM2_VOLUNTEER").exists()
@@ -1143,6 +1153,11 @@ class ObservationDetailView(LoginRequiredMixin, DetailView):
     model = TrtObservations
     template_name = "wamtram2/observation_detail.html"
     
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_title'] = 'Observation Detail - ' + settings.SITE_TITLE
+        return context
+    
     def dispatch(self, request, *args, **kwargs):
         if not (
             request.user.groups.filter(name="WAMTRAM2_VOLUNTEER").exists()
@@ -1197,7 +1212,8 @@ class TurtleListView(LoginRequiredMixin, PaginateMixin, ListView):
             dict: The context data.
         """
         context = super().get_context_data(**kwargs)
-        context["page_title"] = f"{settings.SITE_CODE} | WAMTRAM2"
+        # context["page_title"] = f"{settings.SITE_CODE} | WAMTRAM2"
+        context['page_title'] = 'Tagged Turtles - ' + settings.SITE_TITLE
         # Pass in any query string
         if "q" in self.request.GET:
             context["query_string"] = self.request.GET["q"]
@@ -1291,9 +1307,8 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
             observations_data.append(obs_data)
             
         identifications = TrtIdentification.objects.filter(turtle_id=obj.pk)
-        
+        context['page_title'] = f'Turtle {obj.pk} - {settings.SITE_TITLE}'
         context.update({
-            "page_title": f"{settings.SITE_CODE} | WAMTRAM2 | {obj.pk}",
             "tags": obj.trttags_set.all(),
             "pittags": unique_pittags,
             "observations_data": observations_data,
@@ -1525,6 +1540,7 @@ class TemplateManageView(LoginRequiredMixin, FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['page_title'] = 'Manage Templates - ' + settings.SITE_TITLE
         context['templates'] = Template.objects.all().order_by('-template_id')
         context['locations'] = list(TrtLocations.get_ordered_locations())
         context['places'] = list(TrtPlaces.objects.all())
@@ -1897,6 +1913,9 @@ class ExportDataView(LoginRequiredMixin, View):
         return super().dispatch(request, *args, **kwargs)
 
     def get(self, request):
+        context = {
+            'page_title': 'Export Data - ' + settings.SITE_TITLE, 
+        }
         # If it's an export request (has format parameter)
         if request.GET.get("format"):
             return self.export_data(request)
@@ -1914,7 +1933,7 @@ class ExportDataView(LoginRequiredMixin, View):
                 return self.get_sexes(request)
         
         # If no action or format, render the form
-        return render(request, self.template_name)
+        return render(request, self.template_name, context)
 
     def get_locations(self, request):
         """Retrieve locations based on the specified date range."""
@@ -2227,11 +2246,15 @@ class DudTagManageView(LoginRequiredMixin, View):
         return super().dispatch(request, *args, **kwargs)
 
     def get(self, request):
+        context = {
+            'page_title': 'DUD Tag Management - ' + settings.SITE_TITLE,
+        }
+        
         entries = TrtDataEntry.objects.filter(
             dud_flipper_tag__isnull=False
         ).select_related('observation_id', 'turtle_id')
         tag_states = TrtTagStates.objects.all()
-        return render(request, self.template_name, {'entries': entries, 'tag_states': tag_states})
+        return render(request, self.template_name, {'entries': entries, 'tag_states': tag_states}, context)
 
     def post(self, request):
         entry_id = request.POST.get('entry_id')
@@ -2352,6 +2375,8 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        
+        context['page_title'] = 'Manage Batches - ' + settings.SITE_TITLE
         
         user = self.request.user
         
@@ -2498,7 +2523,6 @@ class CreateNewEntryView(LoginRequiredMixin, ListView):
 
         return queryset.filter(query).order_by('-entry_batch_id')
 
-
     def get_context_data(self, **kwargs):
         """
         Provide context data to the template, including locations, places, and years
@@ -2506,6 +2530,8 @@ class CreateNewEntryView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         
         user = self.request.user
+        
+        context['page_title'] = 'Create New Entry - ' + settings.SITE_TITLE
         
         role = self.get_user_role(user)
         context['user_role'] = role
@@ -2598,6 +2624,11 @@ def quick_add_batch(request):
 
 class BatchCreateBatchesView(LoginRequiredMixin, View):
     template_name = 'wamtram2/batch_create_batches.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_title'] = 'Batch Create - ' + settings.SITE_TITLE
+        return context
 
     def get(self, request):
         # Check permission
@@ -2621,111 +2652,7 @@ class BatchCreateBatchesView(LoginRequiredMixin, View):
             ),
         }
         return render(request, self.template_name, context)
-
-    # def post(self, request):
-    #     try:
-    #         data = json.loads(request.body)
-    #         location_code = data.get('location_code')
-    #         place_code = data.get('place_code')
-    #         year = data.get('year')
-    #         night_start = int(data.get('night_start', 1))
-    #         night_end = int(data.get('night_end', 1))
-    #         start_date = data.get('start_date')
-            
-    #         entered_person_id = None
-    #         if data.get('entered_person_id'):
-    #             try:
-    #                 TrtPersons.objects.get(person_id=int(data.get('entered_person_id')))
-    #                 entered_person_id = int(data.get('entered_person_id'))
-    #             except (TrtPersons.DoesNotExist, ValueError):
-    #                 return JsonResponse({
-    #                     'success': False,
-    #                     'error': 'Invalid team leader selected'
-    #                 })
-
-    #         template = None
-    #         if data.get('template_id'):
-    #             try:
-    #                 template = Template.objects.get(
-    #                     template_id=int(data.get('template_id'))
-    #                 )
-    #             except (Template.DoesNotExist, ValueError):
-    #                 return JsonResponse({
-    #                     'success': False,
-    #                     'error': 'Invalid template selected'
-    #                 })
-
-    #         if night_end < night_start:
-    #             return JsonResponse({
-    #                 'success': False,
-    #                 'error': 'End night must be greater than or equal to start night'
-    #             })
-
-    #         batches_created = []
-    #         current_date = datetime.strptime(start_date, '%Y-%m-%d') if start_date else None
-
-    #         for night in range(night_start, night_end + 1):
-    #             try:
-    #                 # Generate batch code
-    #                 if place_code:
-    #                     batch_code = f"N{night}{place_code}{str(year)[-2:]}"
-    #                 else:
-    #                     batch_code = f"N{night}{location_code}{str(year)[-2:]}"
-
-    #                 # Generate comments
-    #                 if current_date:
-    #                     date_str = current_date.strftime('%Y-%m-%d')
-    #                 else:
-    #                     date_str = ''
-
-    #                 if place_code:
-    #                     place = TrtPlaces.objects.get(place_code=place_code)
-    #                     comments = f"{place.get_full_name()} - {year} - Night {night}"
-    #                 else:
-    #                     location = TrtLocations.objects.get(location_code=location_code)
-    #                     comments = f"{location.location_name} - {year} - Night {night}"
-
-    #                 if date_str:
-    #                     comments += f" - Start on the night of: {date_str}"
-
-    #                 # Create batch
-    #                 batch = TrtEntryBatches.objects.create(
-    #                     batches_code=batch_code,
-    #                     comments=comments,
-    #                     entry_date=current_date if current_date else timezone.now(),
-    #                     pr_date_convention=False,
-    #                     entered_person_id=entered_person_id,
-    #                     template=template
-    #                 )
-
-    #                 # Add organisation relationship
-    #                 for org in request.user.organisations.all():
-    #                     TrtEntryBatchOrganisation.objects.create(
-    #                         trtentrybatch=batch,
-    #                         organisation=org.code
-    #                     )
-
-    #                 batches_created.append(batch_code)
-
-    #                 if current_date:
-    #                     current_date += timedelta(days=1)
-
-    #             except Exception as e:
-    #                 return JsonResponse({
-    #                     'success': False,
-    #                     'error': f'Error creating batch {night}: {str(e)}'
-    #                 })
-
-    #         return JsonResponse({
-    #             'success': True,
-    #             'batches': batches_created
-    #         })
-
-    #     except Exception as e:
-    #         return JsonResponse({
-    #             'success': False,
-    #             'error': str(e)
-    #         })
+    
     def post(self, request):
         try:
             data = json.loads(request.body)
@@ -2847,6 +2774,11 @@ def search_templates(request):
     
 class BatchCodeManageView(View):
     template_name = 'wamtram2/batch_detail_manage.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_title'] = 'Batch Detail Management - ' + settings.SITE_TITLE
+        return context
 
     def dispatch(self, request, *args, **kwargs):
         
@@ -3017,6 +2949,7 @@ class AddPersonView(LoginRequiredMixin, FormView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['page_title'] = 'Add Person - ' + settings.SITE_TITLE
         return context
     
     def handle_file_upload(self, request):
@@ -3170,6 +3103,11 @@ class PersonManageView(LoginRequiredMixin, UserPassesTestMixin, PaginateMixin, L
     template_name = 'wamtram2/manage_person.html'
     context_object_name = 'persons'
     paginate_by = 50
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_title'] = 'Manage Person - ' + settings.SITE_TITLE
+        return context
     
     def test_func(self):
         return self.request.user.is_superuser
@@ -3408,6 +3346,11 @@ class AdminToolsView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     
     def test_func(self):
         return (self.request.user.is_superuser)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_title'] = 'Admin Tools - ' + settings.SITE_TITLE
+        return context
 
 
 class PitTagsListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMixin, ListView):
@@ -3415,6 +3358,7 @@ class PitTagsListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMixin, Li
     template_name = 'wamtram2/pit_tags_list.html'
     context_object_name = 'pit_tags'
     paginate_by = 30
+    
     
     def test_func(self):
         return self.request.user.is_superuser
@@ -3440,6 +3384,7 @@ class PitTagsListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMixin, Li
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update({
+            'page_title': 'Pit Tags - ' + settings.SITE_TITLE,
             'admin_add_url': 'admin:wamtram2_trtpittags_add',
             'admin_change_url': 'admin:wamtram2_trtpittags_change',
             'search_term': self.request.GET.get('search', ''),
@@ -3454,6 +3399,11 @@ class FlipperTagsListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMixin
     template_name = 'wamtram2/flipper_tags_list.html'
     context_object_name = 'flipper_tags'
     paginate_by = 30
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_title'] = 'Flipper Tags - ' + settings.SITE_TITLE
+        return context
     
     def test_func(self):
         return self.request.user.is_superuser
@@ -3502,7 +3452,9 @@ class TransferObservationsByTagView(LoginRequiredMixin, View):
         return super().dispatch(request, *args, **kwargs)
 
     def get(self, request):
-        return render(request, self.template_name)
+        context = self.get_context_data()
+        context['page_title'] = 'Transfer Observations - ' + settings.SITE_TITLE
+        return render(request, self.template_name, context)
 
     def get_turtle_info(self, turtle_id):
         """Get turtle information"""
@@ -3613,6 +3565,11 @@ class NestingSeasonListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMix
     context_object_name = 'seasons'
     paginate_by = 30
     
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_title'] = 'Nesting Seasons - ' + settings.SITE_TITLE
+        return context
+    
     def test_func(self):
         return self.request.user.is_superuser
     
@@ -3647,6 +3604,11 @@ class BatchCurationView(LoginRequiredMixin, SuperUserRequiredMixin, PaginateMixi
     template_name = 'wamtram2/batch_curation_list.html'
     context_object_name = 'batches'
     paginate_by = 30
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_title'] = 'Batch Curation - ' + settings.SITE_TITLE
+        return context
 
     def dispatch(self, request, *args, **kwargs):
         if not (
@@ -3812,6 +3774,8 @@ class EntryCurationView(LoginRequiredMixin, SuperUserRequiredMixin, PaginateMixi
                 context['object_list'] = []
             
             context.update({
+                'page_title': 'Entry Curation List - ' + settings.SITE_TITLE,
+                
                 'species_choices': TrtSpecies.objects.all(),
                 'places_choices': TrtPlaces.objects.select_related('location_code').all(),
                 'activities_choices': TrtActivities.objects.all(),
@@ -4063,8 +4027,9 @@ class ObservationManagementView(LoginRequiredMixin, SuperUserRequiredMixin, Temp
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         observation_id = self.kwargs.get('observation_id')
-        
+        context['page_title'] = 'Observation Management - ' + settings.SITE_TITLE
         context['initial_data'] = 'null'
+        
         if observation_id:
             try:
                 observation_data_view = ObservationDataView()
@@ -4913,6 +4878,14 @@ class TurtleManagementView(LoginRequiredMixin,SuperUserRequiredMixin, TemplateVi
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        turtle_id = self.request.GET.get('turtle_id', '')  
+        title_parts = []
+        if turtle_id:
+            title_parts.append(f'Turtle {turtle_id}')
+        title_parts.append('Turtle Management')
+        title_parts.append(settings.SITE_TITLE)
+        
+        context['page_title'] = ' - '.join(title_parts)
         context['sex_choices'] = SEX_CHOICES
         context['cause_of_death_choices'] = TrtCauseOfDeath.objects.all()
         context['turtle_status_choices'] = TrtTurtleStatus.objects.all()
@@ -5411,92 +5384,192 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
     def get_context_data(self, **kwargs):
         """Prepare all data for template context"""
         context = {
-            'seasons': TrtNestingSeason.objects.all().order_by('-startdate'),
+            'page_title': 'Turtle Data Statistics - ' + settings.SITE_TITLE,
             'locations': TrtLocations.objects.all().order_by('location_code'),
             'places': TrtPlaces.objects.all().order_by('place_code'),
             'species': TrtSpecies.objects.filter(hide_dataentry=False).order_by('species_code'),
             'sex_choices': [('F', 'Female'), ('M', 'Male'), ('I', 'Indeterminate')],
         }
+        selected_locations = self.request.GET.getlist('location')
+        selected_places = self.request.GET.getlist('place')
         
         # Add selected filters to context
         context.update({
-            'selected_season': self.request.GET.get('season'),
             'data_type': self.request.GET.get('data_type', 'processed'),
-            'selected_location': self.request.GET.get('location'),
-            'selected_place': self.request.GET.get('place'),
+            'selected_locations': selected_locations,
+            'selected_places': selected_places,
             'selected_sex': self.request.GET.get('sex'),
             'selected_species': self.request.GET.get('species'),
+            'start_date': self.request.GET.get('start_date'),
+            'end_date': self.request.GET.get('end_date'),
         })
         
-        # Add query results if season is selected
-        if context['selected_season']:
+        # Add query results if dates are selected
+        if context['start_date'] and context['end_date']:
             context['results'] = self.get_query_results(context)
             
         return context
     
     def get_query_results(self, context):
         """Execute query based on selected filters"""
-        season = TrtNestingSeason.objects.get(nesting_seasonid=context['selected_season'])
-        
-        # Select model based on data type
-        if context['data_type'] == 'processed':
-            query = TrtObservations.objects.filter(
-                observation_date__gte=season.startdate,
-                observation_date__lte=season.enddate
-            )
+        try:
+            start_date = datetime.strptime(context['start_date'], '%Y-%m-%d').date()
+            end_date = datetime.strptime(context['end_date'], '%Y-%m-%d').date()
             
-            # Apply filters
-            if context['selected_place']:
-                query = query.filter(place_code=context['selected_place'])
-            elif context['selected_location']:
-                query = query.filter(
-                    place_code__place_code__startswith=context['selected_location']
+            if context['data_type'] == 'processed':
+                # For processed data, just count unique turtles
+                query = TrtObservations.objects.filter(
+                    observation_date__gte=start_date,
+                    observation_date__lte=end_date
                 )
                 
-            if context['selected_sex']:
-                query = query.filter(turtle__sex=context['selected_sex'])
+                # Apply filters
+                if context.get('selected_places'):
+                    query = query.filter(place_code__in=context['selected_places'])
+                elif context.get('selected_locations'):
+                    location_filter = Q()
+                    for loc in context['selected_locations']:
+                        location_filter |= Q(place_code__place_code__startswith=loc)
+                    query = query.filter(location_filter)
+                    
+                if context['selected_sex']:
+                    query = query.filter(turtle__sex=context['selected_sex'])
+                    
+                if context['selected_species']:
+                    query = query.filter(turtle__species_code=context['selected_species'])
                 
-            if context['selected_species']:
-                query = query.filter(turtle__species_code=context['selected_species'])
-        else:
-            query = TrtDataEntry.objects.filter(
-                observation_date__gte=season.startdate,
-                observation_date__lte=season.enddate
-            )
-            
-            # Apply filters for field entries
-            if context['selected_place']:
-                query = query.filter(place_code=context['selected_place'])
-            elif context['selected_location']:
-                query = query.filter(
-                    place_code__place_code__startswith=context['selected_location']
+                # Group by place and count unique turtles
+                results = query.values(
+                    'place_code__place_code',
+                    'place_code__place_name'
+                ).annotate(
+                    count=Count('turtle', distinct=True)
+                ).order_by('place_code__place_code')
+                
+            else:
+                query = TrtDataEntry.objects.filter(
+                    observation_date__gte=start_date,
+                    observation_date__lte=end_date
                 )
                 
-            if context['selected_sex']:
-                query = query.filter(sex=context['selected_sex'])
+                # Apply filters
+                if context.get('selected_places'):
+                    query = query.filter(place_code__in=context['selected_places'])
+                elif context.get('selected_locations'):
+                    location_filter = Q()
+                    for loc in context['selected_locations']:
+                        location_filter |= Q(place_code__place_code__startswith=loc)
+                    query = query.filter(location_filter)
                 
-            if context['selected_species']:
-                query = query.filter(species_code=context['selected_species'])
-            
-        # Group results
-        results = query.values(
-            'place_code__place_code',
-            'place_code__place_name'
-        ).annotate(
-            count=Count('*')
-        ).order_by('place_code__place_code')
+                if context['selected_sex']:
+                    query = query.filter(sex=context['selected_sex'])
+                if context['selected_species']:
+                    query = query.filter(species_code=context['selected_species'])
 
-        # Calculate total if location is selected
-        if context['selected_location'] and not context['selected_place']:
-            total = sum(item['count'] for item in results)
+
+                # Split into two groups: with and without turtle_id
+                has_turtle_query = query.filter(turtle_id__isnull=False)
+                no_turtle_query = query.filter(turtle_id__isnull=True)
+
+                # For records with turtle_id, count unique turtles
+                has_turtle_results = has_turtle_query.values(
+                    'place_code__place_code',
+                    'place_code__place_name',
+                    'turtle_id'
+                ).distinct()
+
+                # Process records without turtle_id
+                no_turtle_results = no_turtle_query.values(
+                    'place_code__place_code',
+                    'place_code__place_name',
+                    'recapture_left_tag_id',
+                    'recapture_left_tag_id_2',
+                    'recapture_left_tag_id_3',
+                    'recapture_right_tag_id',
+                    'recapture_right_tag_id_2',
+                    'recapture_right_tag_id_3',
+                    'recapture_pittag_id',
+                    'recapture_pittag_id_2',
+                    'recapture_pittag_id_3',
+                    'recapture_pittag_id_4',
+                    'new_left_tag_id',
+                    'new_left_tag_id_2',
+                    'new_right_tag_id',
+                    'new_right_tag_id_2',
+                    'new_pittag_id',
+                    'new_pittag_id_2',
+                    'new_pittag_id_3',
+                    'new_pittag_id_4',
+                ).distinct()
+
+                # Merge results
+                results_dict = {}
+                
+                # Handle records with turtle_id
+                for result in has_turtle_results:
+                    place_code = result['place_code__place_code']
+                    if place_code not in results_dict:
+                        results_dict[place_code] = {
+                            'place_code__place_code': place_code,
+                            'place_code__place_name': result['place_code__place_name'],
+                            'count': 0
+                        }
+                    results_dict[place_code]['count'] += 1
+
+                # Handle records without turtle_id
+                print("\nProcessing records without turtle_id...")
+                processed_tags = set()
+                for result in no_turtle_results:
+                    place_code = result['place_code__place_code']
+                    if place_code not in results_dict:
+                        results_dict[place_code] = {
+                            'place_code__place_code': place_code,
+                            'place_code__place_name': result['place_code__place_name'],
+                            'count': 0
+                        }
+                    
+                    # Collect all non-null tag values
+                    all_tags = []
+                    for field, value in result.items():
+                        if field not in ['place_code__place_code', 'place_code__place_name'] and value:
+                            all_tags.append(str(value))
+                    
+                    if all_tags:
+                        tag_combo = tuple(sorted(all_tags))
+                        if tag_combo not in processed_tags:
+                            results_dict[place_code]['count'] += 1
+                            processed_tags.add(tag_combo)
+                            print(f"New unique tag combination found: {tag_combo}")
+                    else:
+                        results_dict[place_code]['count'] += 1
+                        print("No tags found, counting as new record")
+
+                results = sorted(results_dict.values(), key=lambda x: x['place_code__place_code'])
+
+            results_list = list(results)
+
+            if context.get('selected_locations') and not context.get('selected_places'): 
+                total = sum(item['count'] for item in results_list)
+                print(f"Total count: {total}")
+                return {
+                    'details': results_list,
+                    'total': total
+                }
+            
             return {
-                'details': list(results),
-                'total': total
+                'details': results_list,
+                'total': None
             }
-        return {
-            'details': list(results),
-            'total': None
-        }
+
+        except Exception as e:
+            print(f"Error in get_query_results: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            return {
+                'details': [],
+                'total': None,
+                'error': str(e)
+            }
     
     def get(self, request, *args, **kwargs):
         """Handle GET request"""
