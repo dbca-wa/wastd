@@ -1936,13 +1936,19 @@ class ExportDataView(LoginRequiredMixin, View):
         return render(request, self.template_name, context)
 
     def get_locations(self, request):
-        """Retrieve locations based on the specified date range."""
+        """Retrieve locations based on the specified date range and entry type."""
         from_date, to_date = self._get_date_range(
             request.GET.get("observation_date_from"),
             request.GET.get("observation_date_to")
         )
+        entry_type = request.GET.get("entry_type", "field")
 
         queryset = TrtDataEntry.objects.all()
+        
+        # Filter based on entry_type
+        if entry_type == "processed":
+            queryset = queryset.exclude(observation_id__isnull=True)
+
         user = request.user
         if not user.is_superuser:
             user_organisations = user.organisations.all()
@@ -1978,14 +1984,15 @@ class ExportDataView(LoginRequiredMixin, View):
         ]
 
         return JsonResponse({"locations": location_list})
-
+    
     def get_places(self, request):
-        """Retrieve places based on the specified date range and location."""
+        """Retrieve places based on the specified date range, location, and entry type."""
         from_date, to_date = self._get_date_range(
             request.GET.get("observation_date_from"),
             request.GET.get("observation_date_to")
         )
         location_code = request.GET.get("location_code")
+        entry_type = request.GET.get("entry_type", "field")
 
         # First get data accessible to the user
         queryset = TrtDataEntry.objects.all()
@@ -2000,9 +2007,15 @@ class ExportDataView(LoginRequiredMixin, View):
             else:
                 return JsonResponse({"places": []})
 
+        # Apply date range filter
         if from_date and to_date:
             queryset = queryset.filter(observation_date__range=[from_date, to_date])
 
+        # Filter based on entry_type
+        if entry_type == "processed":
+            queryset = queryset.exclude(observation_id__isnull=True)
+
+        # Get places from filtered queryset
         places = TrtPlaces.objects.filter(
             place_code__in=queryset.values_list('place_code', flat=True)
         )
@@ -2023,14 +2036,14 @@ class ExportDataView(LoginRequiredMixin, View):
         ]
         
         return JsonResponse({"places": place_list})
-
+    
     def get_species(self, request):
         """Retrieve species based on the specified date range."""
         from_date, to_date = self._get_date_range(
             request.GET.get("observation_date_from"),
             request.GET.get("observation_date_to")
         )
-
+        entry_type = request.GET.get("entry_type", "field")
         queryset = TrtDataEntry.objects.all()
         user = request.user
         if not user.is_superuser:
@@ -2045,6 +2058,10 @@ class ExportDataView(LoginRequiredMixin, View):
 
         if from_date and to_date:
             queryset = queryset.filter(observation_date__range=[from_date, to_date])
+
+        # Filter based on entry_type
+        if entry_type == "processed":
+            queryset = queryset.exclude(observation_id__isnull=True)
 
         species = TrtSpecies.objects.filter(
             species_code__in=queryset.values_list('species_code', flat=True)
@@ -2063,6 +2080,7 @@ class ExportDataView(LoginRequiredMixin, View):
             request.GET.get("observation_date_from"),
             request.GET.get("observation_date_to")
         )
+        entry_type = request.GET.get("entry_type", "field")
 
         queryset = TrtDataEntry.objects.all()
         user = request.user
@@ -2078,6 +2096,10 @@ class ExportDataView(LoginRequiredMixin, View):
 
         if from_date and to_date:
             queryset = queryset.filter(observation_date__range=[from_date, to_date])
+
+        # Filter based on entry_type
+        if entry_type == "processed":
+            queryset = queryset.exclude(observation_id__isnull=True)
 
         used_sexes = queryset.values_list('sex', flat=True).distinct()
         sex_list = [
@@ -2103,6 +2125,7 @@ class ExportDataView(LoginRequiredMixin, View):
             species = request.GET.get("species")
             sex = request.GET.get("sex")
             file_format = request.GET.get("format", "csv")
+            entry_type = request.GET.get("entry_type", "field")
             
             # Build filename
             filename_parts = []
@@ -2114,6 +2137,8 @@ class ExportDataView(LoginRequiredMixin, View):
                 filename_parts.append(species)
             if sex:
                 filename_parts.append(sex)
+            if entry_type == "processed":
+                filename_parts.append("processed")
                 
             date_range = f"({from_date.strftime('%Y%m%d')}-{to_date.strftime('%Y%m%d')})"
             filename = "_".join(filename_parts) + date_range if filename_parts else f"data_export{date_range}"
@@ -2135,6 +2160,9 @@ class ExportDataView(LoginRequiredMixin, View):
             
             # Apply filters
             queryset = queryset.filter(observation_date__range=[from_date, to_date])
+            
+            if entry_type == "processed":
+                queryset = queryset.exclude(observation_id__isnull=True)
             
             if location_code:
                 queryset = queryset.filter(place_code__location_code=location_code)
@@ -5575,5 +5603,8 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
         """Handle GET request"""
         context = self.get_context_data()
         return render(request, self.template_name, context)
+    
+    
+    
     
     
