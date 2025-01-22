@@ -281,6 +281,10 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
             do_not_process=False
         ).order_by("-data_entry_id")
         
+        entries = self.object.trtdataentry_set.all()
+        all_entries_processed = all(entry.observation_id is not None for entry in entries)
+        context['all_entries_processed'] = all_entries_processed
+        
         return context
 
     def post(self, request, *args, **kwargs):
@@ -773,6 +777,9 @@ class ValidateDataEntryBatchView(LoginRequiredMixin, View):
                     "EXEC dbo.ValidateDataEntryBatchWEB @ENTRY_BATCH_ID = %s",
                     [self.kwargs["batch_id"]],
                 )
+                batch = TrtEntryBatches.objects.get(pk=self.kwargs["batch_id"])
+                batch.last_validated_at = timezone.now()
+                batch.save()
                 messages.add_message(request, messages.INFO, "Validation finished.")
         except DatabaseError as e:
             messages.add_message(
@@ -831,10 +838,8 @@ class ProcessDataEntryBatchView(LoginRequiredMixin, View):
     """
 
     def dispatch(self, request, *args, **kwargs):
-        # FIXME: Permission check
         if not (
-            request.user.groups.filter(name="WAMTRAM2_STAFF").exists()
-            or request.user.is_superuser
+            request.user.is_superuser
         ):
             return HttpResponseForbidden(
                 "You do not have permission to view this record"
@@ -848,6 +853,9 @@ class ProcessDataEntryBatchView(LoginRequiredMixin, View):
                     "EXEC dbo.EntryBatchProcessWEB @ENTRY_BATCH_ID = %s;",
                     [self.kwargs["batch_id"]],
                 )
+                batch = TrtEntryBatches.objects.get(pk=self.kwargs["batch_id"])
+                batch.last_processed_at = timezone.now()
+                batch.save()
                 messages.add_message(request, messages.INFO, "Processing finished.")
         except DatabaseError as e:
             messages.add_message(
@@ -1153,11 +1161,6 @@ class ObservationDetailView(LoginRequiredMixin, DetailView):
     model = TrtObservations
     template_name = "wamtram2/observation_detail.html"
     
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['page_title'] = 'Observation Detail - ' + settings.SITE_TITLE
-        return context
-    
     def dispatch(self, request, *args, **kwargs):
         if not (
             request.user.groups.filter(name="WAMTRAM2_VOLUNTEER").exists()
@@ -1183,6 +1186,7 @@ class ObservationDetailView(LoginRequiredMixin, DetailView):
         context["tags"] = obj.trtrecordedtags_set.all()
         context["pittags"] = obj.trtrecordedpittags_set.all()
         context["measurements"] = obj.trtmeasurements_set.all()
+        context["page_title"] = 'Observation Detail - ' + settings.SITE_TITLE
         
         if obj.place_code:
             context["place_full_name"] = obj.place_code.get_full_name()
@@ -1302,7 +1306,9 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
         for obs in observations:
             obs_data = {
                 'observation': obs,
-                'measurements': obs.trtmeasurements_set.all()
+                'measurements': obs.trtmeasurements_set.all(),
+                'tags': obs.trtrecordedtags_set.all(), 
+                'pittags': obs.trtrecordedpittags_set.all()
             }
             observations_data.append(obs_data)
             
@@ -2267,6 +2273,7 @@ class ExportDataView(LoginRequiredMixin, View):
 
 class DudTagManageView(LoginRequiredMixin, View):
     template_name = 'wamtram2/dud_tag_manage.html'
+    HIDE_STATUS_LIST = ['1DD', '2DB', '3DC', '4DM']
 
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_superuser:
@@ -2274,38 +2281,140 @@ class DudTagManageView(LoginRequiredMixin, View):
         return super().dispatch(request, *args, **kwargs)
 
     def get(self, request):
+        # Get flipper tag IDs
+        flipper_tag_ids = set()
+        flipper_entries = TrtDataEntry.objects.filter(
+            Q(dud_flipper_tag__isnull=False) |
+            Q(dud_flipper_tag_2__isnull=False)
+        )
+        for entry in flipper_entries:
+            if entry.dud_flipper_tag:
+                flipper_tag_ids.add(entry.dud_flipper_tag)
+            if entry.dud_flipper_tag_2:
+                flipper_tag_ids.add(entry.dud_flipper_tag_2)
+
+        # Get all pit tags IDs
+        pit_tag_ids = set()
+        pit_entries = TrtDataEntry.objects.filter(
+            Q(dud_pit_tag__isnull=False) |
+            Q(dud_pit_tag_2__isnull=False)
+        )
+        for entry in pit_entries:
+            if entry.dud_pit_tag:
+                pit_tag_ids.add(entry.dud_pit_tag)
+            if entry.dud_pit_tag_2:
+                pit_tag_ids.add(entry.dud_pit_tag_2)
+
+        # Get tags and their status
+        flipper_tags = TrtTags.objects.filter(
+            tag_id__in=flipper_tag_ids
+        ).exclude(tag_status__tag_status__in=self.HIDE_STATUS_LIST)
+
+        pit_tags = TrtPitTags.objects.filter(
+            pittag_id__in=pit_tag_ids
+        ).exclude(pit_tag_status__pit_tag_status__in=self.HIDE_STATUS_LIST)
+
+        # Get base entries
+        base_entries = TrtDataEntry.objects.filter(
+            Q(dud_flipper_tag__in=flipper_tags.values_list('tag_id', flat=True)) |
+            Q(dud_flipper_tag_2__in=flipper_tags.values_list('tag_id', flat=True)) |
+            Q(dud_pit_tag__in=pit_tags.values_list('pittag_id', flat=True)) |
+            Q(dud_pit_tag_2__in=pit_tags.values_list('pittag_id', flat=True))
+        ).select_related('observation_id', 'turtle_id')
+
+        # Add current status to each entry
+        entries = []
+        for entry in base_entries:
+            # Process flipper tag
+            if entry.dud_flipper_tag:
+                entry_data = self._process_entry(entry, entry.dud_flipper_tag, 'flipper', flipper_tags)
+                entries.append(entry_data)
+            
+            # Process flipper tag 2
+            if entry.dud_flipper_tag_2:
+                entry_data = self._process_entry(entry, entry.dud_flipper_tag_2, 'flipper_2', flipper_tags)
+                entries.append(entry_data)
+            
+            # Process pit tag
+            if entry.dud_pit_tag:
+                entry_data = self._process_entry(entry, entry.dud_pit_tag, 'pit', pit_tags)
+                entries.append(entry_data)
+            
+            # Process pit tag 2
+            if entry.dud_pit_tag_2:
+                entry_data = self._process_entry(entry, entry.dud_pit_tag_2, 'pit_2', pit_tags)
+                entries.append(entry_data)
+
         context = {
             'page_title': 'DUD Tag Management - ' + settings.SITE_TITLE,
+            'entries': entries,
         }
         
-        entries = TrtDataEntry.objects.filter(
-            dud_flipper_tag__isnull=False
-        ).select_related('observation_id', 'turtle_id')
-        tag_states = TrtTagStates.objects.all()
-        return render(request, self.template_name, {'entries': entries, 'tag_states': tag_states}, context)
+        return render(request, self.template_name, context)
 
+    def _process_entry(self, entry, tag_id, tag_type, tags_queryset):
+        """Helper method to process each tag entry"""
+        entry_data = {
+            'entry': entry,
+            'tag_type': tag_type,
+            'tag_id': tag_id,
+            'current_status': 'No Status',
+            'available_states': TrtTagStatus.objects.all() if tag_type.startswith('flipper') else TrtPitTagStatus.objects.all()
+        }
+
+        if tag_type.startswith('flipper'):
+            try:
+                tag = tags_queryset.get(tag_id=tag_id)
+                entry_data['current_status'] = tag.tag_status.description if tag.tag_status else "No Status"
+            except TrtTags.DoesNotExist:
+                pass
+        else:  # pit tags
+            try:
+                tag = tags_queryset.get(pittag_id=tag_id)
+                entry_data['current_status'] = tag.pit_tag_status.description if tag.pit_tag_status else "No Status"
+            except TrtPitTags.DoesNotExist:
+                pass
+
+        return entry_data
+    
     def post(self, request):
+        print("POST Data:", request.POST)
+        
         entry_id = request.POST.get('entry_id')
         tag_type = request.POST.get('tag_type')
         tag_id = request.POST.get('tag_id')
+        tag_status = request.POST.get('tag_status')
+        
+        print("Entry ID:", entry_id)
+        print("Tag Type:", tag_type)
+        print("Tag ID:", tag_id)
+        print("Tag Status:", tag_status)
+        
+        if not all([entry_id, tag_type, tag_id]):
+            print("Missing required data")
+            return redirect('wamtram2:dud_tag_manage')
+
         entry = get_object_or_404(TrtDataEntry, pk=entry_id)
-
-        if entry.observation_id:
-            observation = entry.observation_id
-            
-            if tag_type == 'flipper':
-                observation.dud_flipper_tag = tag_id
-            elif tag_type == 'flipper_2':
-                observation.dud_flipper_tag_2 = tag_id
-            elif tag_type == 'pit':
-                observation.dud_pit_tag = tag_id
-            elif tag_type == 'pit_2':
-                observation.dud_pit_tag_2 = tag_id
-
-            observation.save()
+        
+        if tag_status:
+            if tag_type.startswith('flipper'):
+                try:
+                    tag = TrtTags.objects.get(tag_id=tag_id)
+                    tag.tag_status_id = tag_status
+                    tag.save()
+                    print(f"Updated flipper tag {tag_id} status to {tag_status}")
+                except TrtTags.DoesNotExist:
+                    print(f"Flipper tag {tag_id} not found")
+            else:  # pit tags
+                try:
+                    tag = TrtPitTags.objects.get(pittag_id=tag_id)
+                    tag.pit_tag_status_id = tag_status
+                    tag.save()
+                    print(f"Updated PIT tag {tag_id} status to {tag_status}")
+                except TrtPitTags.DoesNotExist:
+                    print(f"PIT tag {tag_id} not found")
 
         return redirect('wamtram2:dud_tag_manage')
-
 
 class BatchesCurationView(LoginRequiredMixin,ListView):
     model = TrtEntryBatches
@@ -2353,9 +2462,13 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
             do_not_process_count=Count(
                 'trtdataentry',
                 filter=Q(trtdataentry__do_not_process=True)
+            ),
+            processed_count=Count(
+                'trtdataentry',
+                filter=Q(trtdataentry__observation_id__isnull=False)
             )
         )
-        
+            
         location = self.request.GET.get('location')
         place = self.request.GET.get('place')
         year = self.request.GET.get('year')
@@ -2387,7 +2500,6 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
         result = queryset.filter(query).order_by('-entry_batch_id') if query else queryset.order_by('-entry_batch_id')
         return result
     
-    
     def get_user_role(self, user):
         if user.is_superuser:
             return "Super User"
@@ -2403,6 +2515,39 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        
+        for batch in context['batches']:
+            if batch.entry_count > 0:
+                batch.processed_percentage = (batch.processed_count / batch.entry_count) * 100
+            else:
+                batch.processed_percentage = 0
+
+        filter_params = {}
+        if self.request.GET.get('location'):
+            filter_params['location'] = self.request.GET.get('location')
+        if self.request.GET.get('place'):
+            filter_params['place'] = self.request.GET.get('place')
+        if self.request.GET.get('year'):
+            filter_params['year'] = self.request.GET.get('year')
+        if self.request.GET.get('show_all'):
+            filter_params['show_all'] = self.request.GET.get('show_all')
+            
+        if context.get('page_obj'):
+            page_obj = context['page_obj']
+            if page_obj.has_previous():
+                prev_url = f"?page={page_obj.previous_page_number()}"
+                for key, value in filter_params.items():
+                    prev_url += f"&{key}={value}"
+                context['prev_url'] = prev_url
+                
+            if page_obj.has_next():
+                next_url = f"?page={page_obj.next_page_number()}"
+                for key, value in filter_params.items():
+                    next_url += f"&{key}={value}"
+                context['next_url'] = next_url
+                
+        current_url = self.request.get_full_path()
+        context['current_url'] = current_url
         
         context['page_title'] = 'Manage Batches - ' + settings.SITE_TITLE
         
@@ -2422,7 +2567,6 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
         context['selected_place'] = self.request.GET.get('place', '')
         context['selected_year'] = self.request.GET.get('year', '')
         context['templates'] = Template.objects.all()
-        context['batches'] = self.get_queryset()
         context['is_initial_load'] = not bool(self.request.GET)
         places = TrtPlaces.objects.select_related('location_code').all()
         places_data = [
@@ -3430,7 +3574,14 @@ class FlipperTagsListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMixin
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['page_title'] = 'Flipper Tags - ' + settings.SITE_TITLE
+        context.update({
+            'admin_add_url': 'admin:wamtram2_trttags_add',
+            'admin_change_url': 'admin:wamtram2_trttags_change',
+            'search_term': self.request.GET.get('search', ''),
+            'current_status': self.request.GET.get('status', ''),
+            'status_choices': TrtTagStatus.objects.all(),
+            'page_title': 'Flipper Tags - ' + settings.SITE_TITLE
+        })
         return context
     
     def test_func(self):
@@ -3458,16 +3609,7 @@ class FlipperTagsListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMixin
             
         return queryset
         
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context.update({
-            'admin_add_url': 'admin:wamtram2_trttags_add',
-            'admin_change_url': 'admin:wamtram2_trttags_change',
-            'search_term': self.request.GET.get('search', ''),
-            'current_status': self.request.GET.get('status', ''),
-            'status_choices': TrtTagStatus.objects.all(),
-        })
-        return context
+
 
 
 class TransferObservationsByTagView(LoginRequiredMixin, View):
@@ -3478,10 +3620,14 @@ class TransferObservationsByTagView(LoginRequiredMixin, View):
                 request.user.groups.filter(name="WAMTRAM2_STAFF").exists()):
             raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
+    def get_context_data(self):
+        """Return the context data for template rendering"""
+        return {
+            'page_title': 'Transfer Observations - ' + settings.SITE_TITLE
+        }
 
     def get(self, request):
         context = self.get_context_data()
-        context['page_title'] = 'Transfer Observations - ' + settings.SITE_TITLE
         return render(request, self.template_name, context)
 
     def get_turtle_info(self, turtle_id):
@@ -3593,11 +3739,6 @@ class NestingSeasonListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMix
     context_object_name = 'seasons'
     paginate_by = 30
     
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['page_title'] = 'Nesting Seasons - ' + settings.SITE_TITLE
-        return context
-    
     def test_func(self):
         return self.request.user.is_superuser
     
@@ -3618,6 +3759,7 @@ class NestingSeasonListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMix
             'admin_add_url': reverse('admin:wamtram2_trtnestingseason_add'), 
             'admin_change_url': 'admin:wamtram2_trtnestingseason_change',
             'search_term': self.request.GET.get('search', ''),
+            'page_title': 'Nesting Seasons - ' + settings.SITE_TITLE
         })
         return context
 
@@ -3632,11 +3774,6 @@ class BatchCurationView(LoginRequiredMixin, SuperUserRequiredMixin, PaginateMixi
     template_name = 'wamtram2/batch_curation_list.html'
     context_object_name = 'batches'
     paginate_by = 30
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['page_title'] = 'Batch Curation - ' + settings.SITE_TITLE
-        return context
 
     def dispatch(self, request, *args, **kwargs):
         if not (
@@ -3692,6 +3829,7 @@ class BatchCurationView(LoginRequiredMixin, SuperUserRequiredMixin, PaginateMixi
             'visible_columns': user_columns,
             'search_term': self.request.GET.get('search', ''),
             'clear_url': self.request.path,
+            'page_title': 'Batch Curation - ' + settings.SITE_TITLE
         })
         return context
 
