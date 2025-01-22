@@ -776,10 +776,16 @@ class ValidateDataEntryBatchView(LoginRequiredMixin, View):
                     "EXEC dbo.ValidateDataEntryBatchWEB @ENTRY_BATCH_ID = %s",
                     [self.kwargs["batch_id"]],
                 )
+                # Make sure the cursor is closed after the query is executed
+                cursor.fetchall()
+                
+                # Update the validation time
                 batch = TrtEntryBatches.objects.get(pk=self.kwargs["batch_id"])
                 batch.last_validated_at = timezone.now()
                 batch.save()
+                
                 messages.add_message(request, messages.INFO, "Validation finished.")
+                
         except DatabaseError as e:
             messages.add_message(
                 request, messages.ERROR, "Database error: {}".format(e)
@@ -852,10 +858,16 @@ class ProcessDataEntryBatchView(LoginRequiredMixin, View):
                     "EXEC dbo.EntryBatchProcessWEB @ENTRY_BATCH_ID = %s;",
                     [self.kwargs["batch_id"]],
                 )
+                # Ensure all results are fetched and the cursor is closed
+                cursor.fetchall()
+                
+                # Update the processing time
                 batch = TrtEntryBatches.objects.get(pk=self.kwargs["batch_id"])
                 batch.last_processed_at = timezone.now()
                 batch.save()
+                
                 messages.add_message(request, messages.INFO, "Processing finished.")
+                
         except DatabaseError as e:
             messages.add_message(
                 request, messages.ERROR, "Database error: {}".format(e)
