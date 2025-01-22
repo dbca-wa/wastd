@@ -88,6 +88,22 @@
             </a>
         </div>
 
+        <!-- Review Entries -->
+        <div class="col-md-4 mb-4">
+            <a href="{% url 'wamtram2:batches_review' %}" class="text-decoration-none">
+                <div class="tool-card p-4 text-center">
+                    <div class="tool-icon">
+                        <i class="fas fa-clipboard-check"></i>
+                    </div>
+                    <h3 class="tool-title">Review Entries</h3>
+                    <p class="tool-description">Review entries that need attention or have system messages.</p>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-arrow-right mr-2"></i>Access Tool
+                    </button>
+                </div>
+            </a>
+        </div>
+
         <!-- Turtle Management -->
         <div class="col-md-4 mb-4">
             <a href="{% url 'wamtram2:turtle_management' %}" class="text-decoration-none">
@@ -152,6 +168,22 @@
             </a>
         </div>
 
+        <!-- Dud Tags Management -->
+        <div class="col-md-4 mb-4">
+            <a href="{% url 'wamtram2:dud_tag_manage' %}" class="text-decoration-none">
+                <div class="tool-card p-4 text-center">
+                    <div class="tool-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <h3 class="tool-title">Dud Tags</h3>
+                    <p class="tool-description">Manage and track problematic tags.</p>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-arrow-right mr-2"></i>Access Tool
+                    </button>
+                </div>
+            </a>
+        </div>
+
 
         <!-- Batch Create Batches -->
         <div class="col-md-4 mb-4">
@@ -194,22 +226,6 @@
                     </div>
                     <h3 class="tool-title">Template Management</h3>
                     <p class="tool-description">Manage data entry templates and forms.</p>
-                    <button class="btn btn-primary">
-                        <i class="fas fa-arrow-right mr-2"></i>Access Tool
-                    </button>
-                </div>
-            </a>
-        </div>
-
-        <!-- Dud Tags Management -->
-        <div class="col-md-4 mb-4">
-            <a href="{% url 'wamtram2:dud_tag_manage' %}" class="text-decoration-none">
-                <div class="tool-card p-4 text-center">
-                    <div class="tool-icon">
-                        <i class="fas fa-exclamation-triangle"></i>
-                    </div>
-                    <h3 class="tool-title">Dud Tags</h3>
-                    <p class="tool-description">Manage and track problematic tags.</p>
                     <button class="btn btn-primary">
                         <i class="fas fa-arrow-right mr-2"></i>Access Tool
                     </button>

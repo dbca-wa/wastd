@@ -1,0 +1,153 @@
+{% extends "base_wastd.html" %}
+{% load bootstrap4 static %}
+{% load proper_paginate %}
+{% load url_replace %}
+{% load group_filters %}
+
+{% block breadcrumbs %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block page_content_inner %}
+<div class="container mt-4">
+    <h1>{{ page_title }}</h1>
+
+    <!-- Filter -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <label>Location</label>
+            <select class="form-control" id="location" name="location">
+                <option value="">Select Location</option>
+                {% for loc in locations %}
+                    <option value="{{ loc.location_code }}" {% if loc.location_code == selected_location %}selected{% endif %}>
+                        {{ loc.location_name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label>Place</label>
+            <select class="form-control" id="place" name="place">
+                <option value="">Select Place</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label>Year</label>
+            <select class="form-control" id="year" name="year">
+                <option value="">Select Year</option>
+                {% for year in years %}
+                    <option value="{{ year }}" {% if year|stringformat:"i" == selected_year %}selected{% endif %}>
+                        {{ year }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col">
+            <button class="btn btn-primary" id="searchBtn">Search</button>
+            <button class="btn btn-secondary" id="clearBtn">Clear Filter</button>
+        </div>
+    </div>
+
+    {% if is_paginated %}
+        {% include "pagination.html" %}
+    {% endif %}
+
+    <!-- Result list -->
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Batch</th>
+                    <th>Entry ID</th>
+                    <th>Needs Review</th>
+                    <th>Error Message</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in entries %}
+                <tr>
+                    <td>
+                        <a href="{% url 'wamtram2:entry_batch_detail' batch_id=entry.entry_batch.entry_batch_id %}">
+                            {{ entry.entry_batch.batches_code }}
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{% url 'wamtram2:trtdataentry' entry_id=entry.data_entry_id %}">
+                            {{ entry.data_entry_id }}
+                        </a>
+                    </td>
+                    <td>{% if entry.do_not_process %}Yes{% else %}No{% endif %}</td>
+                    <td>{{ entry.error_message }}</td>
+                    <td>
+                        <a href="{% url 'wamtram2:entry_batch_detail' batch_id=entry.entry_batch.entry_batch_id %}#entry-{{ entry.data_entry_id }}" 
+                            class="btn btn-sm btn-primary">
+                            Review
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center">No entries found that need review.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if is_paginated %}
+        {% include "pagination.html" %}
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    $('#location').change(function() {
+        var locationCode = $(this).val();
+        if (locationCode) {
+            $.get('{% url "wamtram2:get_places" %}', {
+                location_code: locationCode
+            }).done(function(places) {
+                var placeSelect = $('#place');
+                placeSelect.empty();
+                placeSelect.append($('<option>').val('').text('Select Place'));
+                places.forEach(function(place) {
+                    placeSelect.append($('<option>')
+                        .val(place.place_code)
+                        .text(place.place_name));
+                });
+            });
+        }
+    });
+
+    // Search button
+    $('#searchBtn').click(function() {
+        var params = new URLSearchParams();
+        
+        var location = $('#location').val();
+        var place = $('#place').val();
+        var year = $('#year').val();
+        
+        if (location) params.append('location', location);
+        if (place) params.append('place', place);
+        if (year) params.append('year', year);
+        
+        window.location.href = '?' + params.toString();
+    });
+
+    // Clear filter button
+    $('#clearBtn').click(function() {
+        window.location.href = window.location.pathname;
+    });
+});
+</script>
+{% endblock %} 

@@ -52,6 +52,7 @@ urlpatterns = [
     path('curation/nesting-seasons/', views.NestingSeasonListView.as_view(), name='nesting_season_list'),
     path('curation/batches/', views.BatchCurationView.as_view(), name='batch_curation'),
     path('curation/batch/<int:batch_id>/entries/', views.EntryCurationView.as_view(), name='entries_curation'),
+    path('curation/batch/multi-entries/', views.EntryCurationView.as_view(), name='multi_entries_curation'),
     path('save-entry-changes/', views.SaveEntryChangesView.as_view(), name='save_entry_changes'),
     path('api/observations/<int:observation_id>/', views.ObservationDataView.as_view(), name='observation_detail'),
     path('curation/turtle-management/', views.TurtleManagementView.as_view(), name='turtle_management'),
@@ -73,4 +74,5 @@ urlpatterns = [
     path('api/recorded-scars/update/', views.RecordedScarsUpdateView.as_view(), name='recorded_scars_update'),
     path('curation/nesting-season-stats/', views.NestingSeasonStatsView.as_view(), name='nesting_season_stats'),
     path('batch-create-batches/', views.BatchCreateBatchesView.as_view(), name='batch_create_batches'),
+    path('batches-review/', views.BatchesReviewView.as_view(), name='batches_review'),
 ]

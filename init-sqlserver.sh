@@ -11,7 +11,7 @@ chmod +x /opt/sqlpackage/sqlpackage
 
 /opt/sqlpackage/sqlpackage \
     /Action:Import \
-    /SourceFile:/backup/turtle_tagging_prod-20250116162426.bacpac \
+    /SourceFile:/backup/turtle_tagging_prod-20250122.bacpac \
     /TargetServerName:sqlserver \
     /TargetDatabaseName:turtle_tagging_uat \
     /TargetUser:sa \
