@@ -225,8 +225,7 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
     def get_queryset(self):
         queryset = super().get_queryset()
         batch_id = self.kwargs.get("batch_id")
-        
-    
+
         filter_value = self.request.GET.get("filter")
         if filter_value == "needs_review":
             queryset = queryset.filter(entry_batch_id=batch_id, do_not_process=True)
@@ -281,7 +280,7 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
             do_not_process=False
         ).order_by("-data_entry_id")
         
-        entries = self.object.trtdataentry_set.all()
+        entries = TrtDataEntry.objects.filter(entry_batch_id=batch.entry_batch_id)
         all_entries_processed = all(entry.observation_id is not None for entry in entries)
         context['all_entries_processed'] = all_entries_processed
         
