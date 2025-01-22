@@ -1313,6 +1313,16 @@ class TrtEntryBatches(models.Model):
         blank=True,
         null=True,
     )
+    last_validated_at = models.DateTimeField(
+        db_column="LAST_VALIDATED_AT", 
+        blank=True, 
+        null=True
+    )
+    last_processed_at = models.DateTimeField(
+        db_column="LAST_PROCESSED_AT", 
+        blank=True, 
+        null=True
+    )
 
     class Meta:
         managed = False
