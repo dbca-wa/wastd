@@ -438,7 +438,6 @@
         const submitUrl = '/wamtram2/api/observations/save/';
         {% if initial_data %}
             const initialData = {{ initial_data|safe }};
-            console.log(initialData);
         {% else %}
             const initialData = null;
         {% endif %}

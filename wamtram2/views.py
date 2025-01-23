@@ -2373,20 +2373,14 @@ class DudTagManageView(LoginRequiredMixin, View):
         return entry_data
     
     def post(self, request):
-        print("POST Data:", request.POST)
+
         
         entry_id = request.POST.get('entry_id')
         tag_type = request.POST.get('tag_type')
         tag_id = request.POST.get('tag_id')
         tag_status = request.POST.get('tag_status')
         
-        print("Entry ID:", entry_id)
-        print("Tag Type:", tag_type)
-        print("Tag ID:", tag_id)
-        print("Tag Status:", tag_status)
-        
         if not all([entry_id, tag_type, tag_id]):
-            print("Missing required data")
             return redirect('wamtram2:dud_tag_manage')
 
         entry = get_object_or_404(TrtDataEntry, pk=entry_id)
@@ -2397,17 +2391,15 @@ class DudTagManageView(LoginRequiredMixin, View):
                     tag = TrtTags.objects.get(tag_id=tag_id)
                     tag.tag_status_id = tag_status
                     tag.save()
-                    print(f"Updated flipper tag {tag_id} status to {tag_status}")
                 except TrtTags.DoesNotExist:
-                    print(f"Flipper tag {tag_id} not found")
+                    pass
             else:  # pit tags
                 try:
                     tag = TrtPitTags.objects.get(pittag_id=tag_id)
                     tag.pit_tag_status_id = tag_status
                     tag.save()
-                    print(f"Updated PIT tag {tag_id} status to {tag_status}")
                 except TrtPitTags.DoesNotExist:
-                    print(f"PIT tag {tag_id} not found")
+                    pass
 
         return redirect('wamtram2:dud_tag_manage')
 
@@ -3845,7 +3837,7 @@ class BatchCurationView(LoginRequiredMixin, SuperUserRequiredMixin, PaginateMixi
         # Get column display settings from user settings or session
         user_columns = self.request.session.get('batch_grid_columns', [col['field'] for col in all_columns if col['visible']])
         
-        # 添加筛选器所需的数据
+        # Add data needed for filters
         context.update({
             'all_columns': all_columns,
             'visible_columns': user_columns,
@@ -3977,42 +3969,50 @@ class EntryCurationView(LoginRequiredMixin, SuperUserRequiredMixin, PaginateMixi
         # Get batch_id
         batch_id = self.kwargs.get('batch_id')
         batch_ids = self.request.GET.getlist('batch_ids', [])
+        
         if batch_id:
+            # Single batch case
             batch_ids = [batch_id]
+            batches = TrtEntryBatches.objects.filter(entry_batch_id=batch_id)
+            context['clear_url'] = reverse('wamtram2:entries_curation', kwargs={'batch_id': batch_id})
+        else:
+            # Multiple batch case
+            batches = TrtEntryBatches.objects.filter(entry_batch_id__in=batch_ids)
+            # Build clear_url with all batch_ids
+            base_url = reverse('wamtram2:multi_entries_curation')
+            query_params = '&'.join([f'batch_ids={bid}' for bid in batch_ids])
+            context['clear_url'] = f"{base_url}?{query_params}"
             
-        # Get all related batch information
-        batches = TrtEntryBatches.objects.filter(entry_batch_id__in=batch_ids)
+        if not batches.exists():
+            # If no batches found, return empty context
+            context.update({
+                'page_title': 'Entry Curation - No Batches Selected',
+                'batch_id': None,
+                'is_multi_batch': False,
+                'all_columns': [],
+                'visible_columns': [],
+                'search_term': '',
+                'batch_ids': [],
+            })
+            return context
+
         batch_codes = [f"{batch.batches_code}" for batch in batches]
         
         # Update page title
         if len(batch_ids) > 1:
             context['page_title'] = f'Entry Curation - Multiple Batches ({", ".join(batch_codes)})'
             context['batch_id'] = f'Multiple ({len(batch_ids)})'
+            context['is_multi_batch'] = True
         else:
             context['page_title'] = f'Entry Curation - Batch {batch_codes[0]}'
             context['batch_id'] = batch_ids[0]
+            context['is_multi_batch'] = False
             
         context['sex_choices'] = TrtDataEntry.SEX_CHOICES
         if not context.get('object_list'):
             context['object_list'] = []
             
-        context.update({
-            'species_choices': TrtSpecies.objects.all(),
-            'places_choices': TrtPlaces.objects.select_related('location_code').all(),
-            'activities_choices': TrtActivities.objects.all(),
-            'yesno_choices': TrtYesNo.objects.all(),
-            'persons_choices': TrtPersons.objects.all(),
-            'damage_codes_choices': TrtDamageCodes.objects.all(),
-            'body_parts_choices': TrtBodyParts.objects.all(),
-            'measurement_types_choices': TrtMeasurementTypes.objects.all(),
-            'tag_states_choices': TrtTagStates.objects.all(),
-            'tissue_types_choices': TrtTissueTypes.objects.all(),
-            'egg_count_methods_choices': TrtEggCountMethods.objects.all(),
-            'identification_types_choices': TrtIdentificationTypes.objects.all(),
-            'tags_choices': TrtTags.objects.all(),
-            'pit_tags_choices': TrtPitTags.objects.all(),
-        })
-            
+
         model_fields = TrtDataEntry._meta.get_fields()
     
         default_visible_fields = {
@@ -4107,7 +4107,6 @@ class EntryCurationView(LoginRequiredMixin, SuperUserRequiredMixin, PaginateMixi
             ]
         }
     
-    
         field_order = {}
         order_index = 0
         for group_fields in field_groups.values():
@@ -4156,14 +4155,26 @@ class EntryCurationView(LoginRequiredMixin, SuperUserRequiredMixin, PaginateMixi
                                             [col['field'] for col in all_columns if col['visible']])
             
         batch_id = self.kwargs.get('batch_id')
-            
-    
+        
         context.update({
             'all_columns': all_columns,
             'visible_columns': user_columns,
             'search_term': self.request.GET.get('search', ''),
-            'clear_url': reverse('wamtram2:entries_curation', kwargs={'batch_id': batch_id}),
-            'batch_id': batch_id,
+            'batch_ids': batch_ids, 
+            'species_choices': TrtSpecies.objects.all(),
+            'places_choices': TrtPlaces.objects.select_related('location_code').all(),
+            'activities_choices': TrtActivities.objects.all(),
+            'yesno_choices': TrtYesNo.objects.all(),
+            'persons_choices': TrtPersons.objects.all(),
+            'damage_codes_choices': TrtDamageCodes.objects.all(),
+            'body_parts_choices': TrtBodyParts.objects.all(),
+            'measurement_types_choices': TrtMeasurementTypes.objects.all(),
+            'tag_states_choices': TrtTagStates.objects.all(),
+            'tissue_types_choices': TrtTissueTypes.objects.all(),
+            'egg_count_methods_choices': TrtEggCountMethods.objects.all(),
+            'identification_types_choices': TrtIdentificationTypes.objects.all(),
+            'tags_choices': TrtTags.objects.all(),
+            'pit_tags_choices': TrtPitTags.objects.all(),
         })
             
         return context
@@ -5738,7 +5749,6 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                     results_dict[place_code]['count'] += 1
 
                 # Handle records without turtle_id
-                print("\nProcessing records without turtle_id...")
                 processed_tags = set()
                 for result in no_turtle_results:
                     place_code = result['place_code__place_code']
@@ -5760,10 +5770,8 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                         if tag_combo not in processed_tags:
                             results_dict[place_code]['count'] += 1
                             processed_tags.add(tag_combo)
-                            print(f"New unique tag combination found: {tag_combo}")
                     else:
                         results_dict[place_code]['count'] += 1
-                        print("No tags found, counting as new record")
 
                 results = sorted(results_dict.values(), key=lambda x: x['place_code__place_code'])
 
@@ -5771,7 +5779,6 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
 
             if context.get('selected_locations') and not context.get('selected_places'): 
                 total = sum(item['count'] for item in results_list)
-                print(f"Total count: {total}")
                 return {
                     'details': results_list,
                     'total': total
@@ -5783,9 +5790,6 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
             }
 
         except Exception as e:
-            print(f"Error in get_query_results: {str(e)}")
-            import traceback
-            traceback.print_exc()
             return {
                 'details': [],
                 'total': None,
