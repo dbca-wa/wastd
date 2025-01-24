@@ -5,7 +5,7 @@ from .models import (
     TrtEntryBatches, TrtPlaces, TrtPitTags, 
     Template, TrtObservations,TrtTagStates, 
     TrtMeasurementTypes,TrtYesNo,SEX_CHOICES,
-    TrtNestingSeason, TrtDamageCodes
+    TrtNestingSeason, TrtDamageCodes, TrtDatumCodes
     )
 from django_select2.forms import ModelSelect2Widget
 from django.core.validators import RegexValidator
@@ -248,7 +248,7 @@ class TrtDataEntryForm(forms.ModelForm):
             "damage_code_5",
             "body_part_6",
             "damage_code_6",
-
+            "datum_code",
         ]  # "__all__"
         widgets = {
             "turtle_id": forms.HiddenInput(),
@@ -271,6 +271,18 @@ class TrtDataEntryForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.batch_id = kwargs.pop("batch_id", None)
         super().__init__(*args, **kwargs)
+        
+        if not self.instance.pk: 
+            self.fields['alive'].initial = TrtYesNo.objects.get(code='Y')
+            self.fields['datum_code'].initial = 'WGS84'
+        
+        self.fields['alive'].queryset = TrtYesNo.objects.all()
+        
+        self.fields['datum_code'] = forms.ModelChoiceField(
+            queryset=TrtDatumCodes.objects.all(),
+            initial='WGS84',
+            required=False
+        )
 
         damage_codes = TrtDamageCodes.objects.all()
         
