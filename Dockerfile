@@ -1,3 +1,4 @@
+
 # syntax=docker/dockerfile:1
 # Prepare the base environment.
 FROM python:3.11.8-slim as builder_base_wastd
