@@ -5839,7 +5839,7 @@ class BatchesReviewView(LoginRequiredMixin, SuperUserRequiredMixin,PaginateMixin
                 
             queryset = queryset.filter(batch_query)
         
-        return queryset.select_related('entry_batch').order_by('data_entry_id')
+        return queryset.select_related('entry_batch').order_by('-data_entry_id')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
