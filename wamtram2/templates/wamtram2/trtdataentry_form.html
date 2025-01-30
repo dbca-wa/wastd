@@ -915,6 +915,24 @@
   <div id="advancedDataCard" class="card border-dark mt-3" style="display: none;">
     <div class="card-header"><strong>Advanced Data</strong></div>
     <div class="card-body">
+      <!-- Alive Status -->
+      <div class="row">
+        <div class="col-md-12">
+          <label><strong>Alive Status</strong></label>
+        </div>
+        <div class="col-md-6">
+          {% bootstrap_field form.alive show_label=False %}
+        </div>
+      </div>
+      <!-- Datum Code -->
+      <div class="row">
+        <div class="col-md-12">
+          <label><strong>Datum Code</strong></label>
+        </div>
+        <div class="col-md-6">
+          {% bootstrap_field form.datum_code show_label=False %}
+        </div>
+      </div>
       <!-- Egg -->
       <div class="row">
         <div class="col-md-12">
