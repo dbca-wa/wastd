@@ -2373,20 +2373,14 @@ class DudTagManageView(LoginRequiredMixin, View):
         return entry_data
     
     def post(self, request):
-        print("POST Data:", request.POST)
+
         
         entry_id = request.POST.get('entry_id')
         tag_type = request.POST.get('tag_type')
         tag_id = request.POST.get('tag_id')
         tag_status = request.POST.get('tag_status')
         
-        print("Entry ID:", entry_id)
-        print("Tag Type:", tag_type)
-        print("Tag ID:", tag_id)
-        print("Tag Status:", tag_status)
-        
         if not all([entry_id, tag_type, tag_id]):
-            print("Missing required data")
             return redirect('wamtram2:dud_tag_manage')
 
         entry = get_object_or_404(TrtDataEntry, pk=entry_id)
@@ -2397,17 +2391,15 @@ class DudTagManageView(LoginRequiredMixin, View):
                     tag = TrtTags.objects.get(tag_id=tag_id)
                     tag.tag_status_id = tag_status
                     tag.save()
-                    print(f"Updated flipper tag {tag_id} status to {tag_status}")
                 except TrtTags.DoesNotExist:
-                    print(f"Flipper tag {tag_id} not found")
+                    pass
             else:  # pit tags
                 try:
                     tag = TrtPitTags.objects.get(pittag_id=tag_id)
                     tag.pit_tag_status_id = tag_status
                     tag.save()
-                    print(f"Updated PIT tag {tag_id} status to {tag_status}")
                 except TrtPitTags.DoesNotExist:
-                    print(f"PIT tag {tag_id} not found")
+                    pass
 
         return redirect('wamtram2:dud_tag_manage')
 
@@ -3790,6 +3782,30 @@ class BatchCurationView(LoginRequiredMixin, SuperUserRequiredMixin, PaginateMixi
             flagged_count=Count('trtdataentry', filter=Q(trtdataentry__do_not_process=True))
         )
         
+
+        location = self.request.GET.get('location')
+        place = self.request.GET.get('place')
+        year = self.request.GET.get('year')
+        
+        if location or place or year:
+            if location and place and year:
+                year_code = str(year)[-2:]
+                queryset = queryset.filter(
+                    batches_code__contains=place,
+                    batches_code__endswith=year_code
+                )
+            elif location and year:
+                year_code = str(year)[-2:]
+                queryset = queryset.filter(
+                    batches_code__contains=location,
+                    batches_code__endswith=year_code
+                )
+            elif location:
+                queryset = queryset.filter(batches_code__contains=location)
+            elif year:
+                year_code = str(year)[-2:]
+                queryset = queryset.filter(batches_code__endswith=year_code)
+        
         search = self.request.GET.get('search')
         if search:
             queryset = queryset.filter(
@@ -3811,20 +3827,28 @@ class BatchCurationView(LoginRequiredMixin, SuperUserRequiredMixin, PaginateMixi
             {'field': 'entered_person_id', 'title': 'Entered By', 'visible': True},
             {'field': 'entry_count', 'title': 'Entry Count', 'visible': True},
             {'field': 'flagged_count', 'title': 'Flagged Count', 'visible': True},
+            {'field': 'last_validated_at', 'title': 'Last Validated Time', 'visible': True},
             {'field': 'template', 'title': 'Template', 'visible': False},
             {'field': 'comments', 'title': 'Comments', 'visible': False},
             {'field': 'pr_date_convention', 'title': 'PR Date Convention', 'visible': False},
+            {'field': 'last_processed_at', 'title': 'Last Processed Time', 'visible': False},
         ]
         
         # Get column display settings from user settings or session
         user_columns = self.request.session.get('batch_grid_columns', [col['field'] for col in all_columns if col['visible']])
         
+        # Add data needed for filters
         context.update({
             'all_columns': all_columns,
             'visible_columns': user_columns,
             'search_term': self.request.GET.get('search', ''),
             'clear_url': self.request.path,
-            'page_title': 'Batch Curation - ' + settings.SITE_TITLE
+            'page_title': 'Batch Curation - ' + settings.SITE_TITLE,
+            'locations': TrtLocations.get_ordered_locations(),
+            'years': range(2020, datetime.now().year + 1),
+            'selected_location': self.request.GET.get('location', ''),
+            'selected_place': self.request.GET.get('place', ''),
+            'selected_year': self.request.GET.get('year', '')
         })
         return context
 
@@ -3844,8 +3868,19 @@ class EntryCurationView(LoginRequiredMixin, SuperUserRequiredMixin, PaginateMixi
     paginate_by = 10
 
     def get_queryset(self):
+        # Get batch_ids
         batch_id = self.kwargs.get('batch_id')
-        queryset = super().get_queryset().filter(entry_batch_id=batch_id)
+        batch_ids = self.request.GET.getlist('batch_ids', [])
+        
+        if batch_id:
+            # Single batch case
+            batch_ids = [batch_id]
+        
+        queryset = super().get_queryset()
+        
+        if batch_ids:
+            # Use __in to query multiple batches
+            queryset = queryset.filter(entry_batch_id__in=batch_ids)
             
         queryset = queryset.select_related(
             'observation_id',
@@ -3929,184 +3964,220 @@ class EntryCurationView(LoginRequiredMixin, SuperUserRequiredMixin, PaginateMixi
         return queryset.order_by("-data_entry_id")
         
     def get_context_data(self, **kwargs):
-            context = super().get_context_data(**kwargs)
-            context['sex_choices'] = TrtDataEntry.SEX_CHOICES
-            if not context.get('object_list'):
-                context['object_list'] = []
+        context = super().get_context_data(**kwargs)
+        
+        # Get batch_id
+        batch_id = self.kwargs.get('batch_id')
+        batch_ids = self.request.GET.getlist('batch_ids', [])
+        
+        if batch_id:
+            # Single batch case
+            batch_ids = [batch_id]
+            batches = TrtEntryBatches.objects.filter(entry_batch_id=batch_id)
+            context['clear_url'] = reverse('wamtram2:entries_curation', kwargs={'batch_id': batch_id})
+        else:
+            # Multiple batch case
+            batches = TrtEntryBatches.objects.filter(entry_batch_id__in=batch_ids)
+            # Build clear_url with all batch_ids
+            base_url = reverse('wamtram2:multi_entries_curation')
+            query_params = '&'.join([f'batch_ids={bid}' for bid in batch_ids])
+            context['clear_url'] = f"{base_url}?{query_params}"
             
+        if not batches.exists():
+            # If no batches found, return empty context
             context.update({
-                'page_title': 'Entry Curation List - ' + settings.SITE_TITLE,
-                
-                'species_choices': TrtSpecies.objects.all(),
-                'places_choices': TrtPlaces.objects.select_related('location_code').all(),
-                'activities_choices': TrtActivities.objects.all(),
-                'yesno_choices': TrtYesNo.objects.all(),
-                'persons_choices': TrtPersons.objects.all(),
-                'damage_codes_choices': TrtDamageCodes.objects.all(),
-                'body_parts_choices': TrtBodyParts.objects.all(),
-                'measurement_types_choices': TrtMeasurementTypes.objects.all(),
-                'tag_states_choices': TrtTagStates.objects.all(),
-                'tissue_types_choices': TrtTissueTypes.objects.all(),
-                'egg_count_methods_choices': TrtEggCountMethods.objects.all(),
-                'identification_types_choices': TrtIdentificationTypes.objects.all(),
-                'tags_choices': TrtTags.objects.all(),
-                'pit_tags_choices': TrtPitTags.objects.all(),
+                'page_title': 'Entry Curation - No Batches Selected',
+                'batch_id': None,
+                'is_multi_batch': False,
+                'all_columns': [],
+                'visible_columns': [],
+                'search_term': '',
+                'batch_ids': [],
             })
-            
-            model_fields = TrtDataEntry._meta.get_fields()
-    
-            default_visible_fields = {
-                'data_entry_id','observation_id', 'turtle_id', 'entered_by_id', 'species_code', 'place_code',
-                'observation_date', 'do_not_process','error_message', 'comments'
-            }
-            
-            field_groups = {
-                'Basic Information': [
-                    'data_entry_id', 'observation_id', 'turtle_id', 'comments','error_message','species_code', 'sex', 'place_code', 
-                    'observation_date', 'observation_time', 'do_not_process', 'latitude', 'longitude',
-                ],
-                'Measurements': [
-                    'curved_carapace_length', 'curved_carapace_width',
-                    'curved_carapace_length_notch', 'cc_length_not_measured',
-                    'cc_width_not_measured', 'cc_notch_length_not_measured',
-                    'measurement_type_1', 'measurement_value_1',
-                    'measurement_type_2', 'measurement_value_2',
-                    'measurement_type_3', 'measurement_value_3',
-                    'measurement_type_4', 'measurement_value_4',
-                    'measurement_type_5', 'measurement_value_5',
-                    'measurement_type_6', 'measurement_value_6'
-                ],
-                'Status and Activities': [
-                    'alive', 'activity_code', 'nesting', 'interrupted',
-                    'identification_confidence'
-                ],
-                'Flipper Tags': [
-                    'flipper_tag_check',
-                    'recapture_left_tag_id', 'recapture_left_tag_state', 'recapture_left_tag_position', 'recapture_left_tag_state', 'recapture_left_tag_barnacles'
-                    'recapture_left_tag_id_2', 'recapture_left_tag_state_2', 'recapture_left_tag_position_2', 'recapture_left_tag_state_2', 'recapture_left_tag_barnacles_2',
-                    'recapture_right_tag_id', 'recapture_right_tag_state', 'recapture_right_tag_position', 'recapture_right_tag_state', 'recapture_right_tag_barnacles',
-                    'recapture_right_tag_id_2', 'recapture_right_tag_state_2', 'recapture_right_tag_position_2', 'recapture_right_tag_state_2', 'recapture_right_tag_barnacles_2',
-
-                    'new_left_tag_id', 'new_left_tag_state', 'new_left_tag_position',
-                    'new_left_tag_id_2', 'new_left_tag_state_2', 'new_left_tag_position_2',
-                    'new_right_tag_id', 'new_right_tag_state', 'new_right_tag_position',
-                    'new_right_tag_id_2', 'new_right_tag_state_2', 'new_right_tag_position_2',
-
-                    'other_left_tag', 
-                    'other_right_tag', 
-                ],
-                'PIT Tags': [
-                    'pit_tag_check',
-                    'recapture_pittag_id', 
-                    'recapture_pittag_id_2', 
-                    'recapture_pittag_id_3', 
-                    'recapture_pittag_id_4',
-                    'new_pittag_id', 'new_pit_tag_sticker_present',
-                    'new_pittag_id_2', 'new_pit_tag_2_sticker_present',
-                    'new_pittag_id_3', 'new_pit_tag_3_sticker_present', 
-                    'new_pittag_id_4','new_pit_tag_4_sticker_present',
-                ],
-                'Dud Tags': [
-                    'dud_flipper_tag', 'dud_flipper_tag_2', 'dud_pit_tag', 'dud_pit_tag_2'
-                ],
-                'Other Tags': [
-                    'other_tags', 'other_tags_identification_type'
-                    'identifer', 'identification_type'
-                ],
-                'Tag Scars': [
-                    'scar_check',
-                    'scars_left', 'scars_right',
-                    'scars_left_scale_1', 'scars_left_scale_2', 'scars_left_scale_3',
-                    'scars_right_scale_1', 'scars_right_scale_2', 'scars_right_scale_3'
-                ],
-                'Damage and Scars': [
-                    'injury_check',
-                    'body_part_1', 'damage_code_1',
-                    'body_part_2', 'damage_code_2',
-                    'body_part_3', 'damage_code_3',
-                    'body_part_4', 'damage_code_4',
-                    'body_part_5', 'damage_code_5',
-                    'body_part_6', 'damage_code_6',
-                ],
-                'Tissue Samples': [
-                    'tissue_type_1', 'sample_label_1',
-                    'tissue_type_2', 'sample_label_2'
-                ],
-                'Nesting Data': [
-                    'egg_count', 'egg_count_method', 'clutch_completed'
-                ],
-                'Personnel': [
-                    'entered_by_id',
-                    'measured_by_id',
-                    'recorded_by_id',
-                    'tagged_by_id',
-                ],
-                'Comments': [
-                    'turtle_comments', 'comment_fromrecordedtagstable',
-                    'error_number'
-                ]
-            }
-    
-    
-            field_order = {}
-            order_index = 0
-            for group_fields in field_groups.values():
-                for field in group_fields:
-                    field_order[field] = order_index
-                    order_index += 1
-    
-            all_columns = []
-            processed_fields = set()
-    
-    
-            for group_name, field_patterns in field_groups.items():
-                group_fields = []
-                for field in model_fields:
-                    if hasattr(field, 'name'):
-                        field_name = field.name
-                        if field_name in field_patterns:
-                            group_fields.append({
-                                'field': field_name,
-                                'title': field_name.replace('_', ' ').title(),
-                                'visible': field_name in default_visible_fields,
-                                'group': group_name
-                            })
-                            processed_fields.add(field_name)
-                
-            
-                sorted_fields = sorted(group_fields, key=lambda x: field_order.get(x['field'], float('inf')))
-                all_columns.extend(sorted_fields)
-    
-    
-            other_fields = []
-            for field in model_fields:
-                if hasattr(field, 'name') and field.name not in processed_fields:
-                    other_fields.append({
-                        'field': field.name,
-                        'title': field.name.replace('_', ' ').title(),
-                        'visible': field.name in default_visible_fields,
-                        'group': 'Other'
-                    })
-            
-    
-            all_columns.extend(sorted(other_fields, key=lambda x: x['field']))
-    
-    
-            user_columns = self.request.session.get('entry_grid_columns',
-                                                [col['field'] for col in all_columns if col['visible']])
-            
-            batch_id = self.kwargs.get('batch_id')
-            
-    
-            context.update({
-                'all_columns': all_columns,
-                'visible_columns': user_columns,
-                'search_term': self.request.GET.get('search', ''),
-                'clear_url': reverse('wamtram2:entries_curation', kwargs={'batch_id': batch_id}),
-                'batch_id': batch_id,
-            })
-            
             return context
+
+        batch_codes = [f"{batch.batches_code}" for batch in batches]
+        
+        # Update page title
+        if len(batch_ids) > 1:
+            context['page_title'] = f'Entry Curation - Multiple Batches ({", ".join(batch_codes)})'
+            context['batch_id'] = f'Multiple ({len(batch_ids)})'
+            context['is_multi_batch'] = True
+        else:
+            context['page_title'] = f'Entry Curation - Batch {batch_codes[0]}'
+            context['batch_id'] = batch_ids[0]
+            context['is_multi_batch'] = False
+            
+        context['sex_choices'] = TrtDataEntry.SEX_CHOICES
+        if not context.get('object_list'):
+            context['object_list'] = []
+            
+
+        model_fields = TrtDataEntry._meta.get_fields()
+    
+        default_visible_fields = {
+            'data_entry_id','observation_id', 'turtle_id', 'entered_by_id', 'species_code', 'place_code',
+            'observation_date', 'do_not_process','error_message', 'comments'
+        }
+            
+        field_groups = {
+            'Basic Information': [
+                'data_entry_id', 'observation_id', 'turtle_id', 'comments','error_message','species_code', 'sex', 'place_code', 
+                'observation_date', 'observation_time', 'do_not_process', 'latitude', 'longitude',
+            ],
+            'Measurements': [
+                'curved_carapace_length', 'curved_carapace_width',
+                'curved_carapace_length_notch', 'cc_length_not_measured',
+                'cc_width_not_measured', 'cc_notch_length_not_measured',
+                'measurement_type_1', 'measurement_value_1',
+                'measurement_type_2', 'measurement_value_2',
+                'measurement_type_3', 'measurement_value_3',
+                'measurement_type_4', 'measurement_value_4',
+                'measurement_type_5', 'measurement_value_5',
+                'measurement_type_6', 'measurement_value_6'
+            ],
+            'Status and Activities': [
+                'alive', 'activity_code', 'nesting', 'interrupted',
+                'identification_confidence'
+            ],
+            'Flipper Tags': [
+                'flipper_tag_check',
+                'recapture_left_tag_id', 'recapture_left_tag_state', 'recapture_left_tag_position', 'recapture_left_tag_state', 'recapture_left_tag_barnacles'
+                'recapture_left_tag_id_2', 'recapture_left_tag_state_2', 'recapture_left_tag_position_2', 'recapture_left_tag_state_2', 'recapture_left_tag_barnacles_2',
+                'recapture_right_tag_id', 'recapture_right_tag_state', 'recapture_right_tag_position', 'recapture_right_tag_state', 'recapture_right_tag_barnacles',
+                'recapture_right_tag_id_2', 'recapture_right_tag_state_2', 'recapture_right_tag_position_2', 'recapture_right_tag_state_2', 'recapture_right_tag_barnacles_2',
+
+                'new_left_tag_id', 'new_left_tag_state', 'new_left_tag_position',
+                'new_left_tag_id_2', 'new_left_tag_state_2', 'new_left_tag_position_2',
+                'new_right_tag_id', 'new_right_tag_state', 'new_right_tag_position',
+                'new_right_tag_id_2', 'new_right_tag_state_2', 'new_right_tag_position_2',
+
+                'other_left_tag', 
+                'other_right_tag', 
+            ],
+            'PIT Tags': [
+                'pit_tag_check',
+                'recapture_pittag_id', 
+                'recapture_pittag_id_2', 
+                'recapture_pittag_id_3', 
+                'recapture_pittag_id_4',
+                'new_pittag_id', 'new_pit_tag_sticker_present',
+                'new_pittag_id_2', 'new_pit_tag_2_sticker_present',
+                'new_pittag_id_3', 'new_pit_tag_3_sticker_present', 
+                'new_pittag_id_4','new_pit_tag_4_sticker_present',
+            ],
+            'Dud Tags': [
+                'dud_flipper_tag', 'dud_flipper_tag_2', 'dud_pit_tag', 'dud_pit_tag_2'
+            ],
+            'Other Tags': [
+                'other_tags', 'other_tags_identification_type'
+                'identifer', 'identification_type'
+            ],
+            'Tag Scars': [
+                'scar_check',
+                'scars_left', 'scars_right',
+                'scars_left_scale_1', 'scars_left_scale_2', 'scars_left_scale_3',
+                'scars_right_scale_1', 'scars_right_scale_2', 'scars_right_scale_3'
+            ],
+            'Damage and Scars': [
+                'injury_check',
+                'body_part_1', 'damage_code_1',
+                'body_part_2', 'damage_code_2',
+                'body_part_3', 'damage_code_3',
+                'body_part_4', 'damage_code_4',
+                'body_part_5', 'damage_code_5',
+                'body_part_6', 'damage_code_6',
+            ],
+            'Tissue Samples': [
+                'tissue_type_1', 'sample_label_1',
+                'tissue_type_2', 'sample_label_2'
+            ],
+            'Nesting Data': [
+                'egg_count', 'egg_count_method', 'clutch_completed'
+            ],
+            'Personnel': [
+                'entered_by_id',
+                'measured_by_id',
+                'recorded_by_id',
+                'tagged_by_id',
+            ],
+            'Comments': [
+                'turtle_comments', 'comment_fromrecordedtagstable',
+                'error_number'
+            ]
+        }
+    
+        field_order = {}
+        order_index = 0
+        for group_fields in field_groups.values():
+            for field in group_fields:
+                field_order[field] = order_index
+                order_index += 1
+    
+        all_columns = []
+        processed_fields = set()
+    
+    
+        for group_name, field_patterns in field_groups.items():
+            group_fields = []
+            for field in model_fields:
+                if hasattr(field, 'name'):
+                    field_name = field.name
+                    if field_name in field_patterns:
+                        group_fields.append({
+                            'field': field_name,
+                            'title': field_name.replace('_', ' ').title(),
+                            'visible': field_name in default_visible_fields,
+                            'group': group_name
+                        })
+                        processed_fields.add(field_name)
+                
+            
+            sorted_fields = sorted(group_fields, key=lambda x: field_order.get(x['field'], float('inf')))
+            all_columns.extend(sorted_fields)
+    
+    
+        other_fields = []
+        for field in model_fields:
+            if hasattr(field, 'name') and field.name not in processed_fields:
+                other_fields.append({
+                    'field': field.name,
+                    'title': field.name.replace('_', ' ').title(),
+                    'visible': field.name in default_visible_fields,
+                    'group': 'Other'
+                })
+            
+    
+        all_columns.extend(sorted(other_fields, key=lambda x: x['field']))
+    
+    
+        user_columns = self.request.session.get('entry_grid_columns',
+                                            [col['field'] for col in all_columns if col['visible']])
+            
+        batch_id = self.kwargs.get('batch_id')
+        
+        context.update({
+            'all_columns': all_columns,
+            'visible_columns': user_columns,
+            'search_term': self.request.GET.get('search', ''),
+            'batch_ids': batch_ids, 
+            'species_choices': TrtSpecies.objects.all(),
+            'places_choices': TrtPlaces.objects.select_related('location_code').all(),
+            'activities_choices': TrtActivities.objects.all(),
+            'yesno_choices': TrtYesNo.objects.all(),
+            'persons_choices': TrtPersons.objects.all(),
+            'damage_codes_choices': TrtDamageCodes.objects.all(),
+            'body_parts_choices': TrtBodyParts.objects.all(),
+            'measurement_types_choices': TrtMeasurementTypes.objects.all(),
+            'tag_states_choices': TrtTagStates.objects.all(),
+            'tissue_types_choices': TrtTissueTypes.objects.all(),
+            'egg_count_methods_choices': TrtEggCountMethods.objects.all(),
+            'identification_types_choices': TrtIdentificationTypes.objects.all(),
+            'tags_choices': TrtTags.objects.all(),
+            'pit_tags_choices': TrtPitTags.objects.all(),
+        })
+            
+        return context
     
     def post(self, request, *args, **kwargs):
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
@@ -5678,7 +5749,6 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                     results_dict[place_code]['count'] += 1
 
                 # Handle records without turtle_id
-                print("\nProcessing records without turtle_id...")
                 processed_tags = set()
                 for result in no_turtle_results:
                     place_code = result['place_code__place_code']
@@ -5700,10 +5770,8 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                         if tag_combo not in processed_tags:
                             results_dict[place_code]['count'] += 1
                             processed_tags.add(tag_combo)
-                            print(f"New unique tag combination found: {tag_combo}")
                     else:
                         results_dict[place_code]['count'] += 1
-                        print("No tags found, counting as new record")
 
                 results = sorted(results_dict.values(), key=lambda x: x['place_code__place_code'])
 
@@ -5711,7 +5779,6 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
 
             if context.get('selected_locations') and not context.get('selected_places'): 
                 total = sum(item['count'] for item in results_list)
-                print(f"Total count: {total}")
                 return {
                     'details': results_list,
                     'total': total
@@ -5723,9 +5790,6 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
             }
 
         except Exception as e:
-            print(f"Error in get_query_results: {str(e)}")
-            import traceback
-            traceback.print_exc()
             return {
                 'details': [],
                 'total': None,
@@ -5738,6 +5802,58 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
         return render(request, self.template_name, context)
     
     
-    
+class BatchesReviewView(LoginRequiredMixin, SuperUserRequiredMixin,PaginateMixin, ListView):
+    model = TrtDataEntry
+    template_name = 'wamtram2/batches_review.html'
+    context_object_name = 'entries'
+    paginate_by = 50
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        
+        queryset = queryset.filter(
+            Q(do_not_process=True) |  
+            (Q(error_message__isnull=False) & 
+            ~Q(error_message='None') & 
+            ~Q(error_message='Observation added to database'))  
+        )
+            
+        # Apply batch filter conditions
+        location = self.request.GET.get('location')
+        place = self.request.GET.get('place')
+        year = self.request.GET.get('year')
+        
+        if location or place or year:
+            batch_query = Q()
+            if location and place and year:
+                year_code = str(year)[-2:]
+                batch_query = Q(entry_batch__batches_code__contains=place) & Q(entry_batch__batches_code__endswith=year_code)
+            elif location and year:
+                year_code = str(year)[-2:]
+                batch_query = Q(entry_batch__batches_code__contains=location) & Q(entry_batch__batches_code__endswith=year_code)
+            elif location:
+                batch_query = Q(entry_batch__batches_code__contains=location)
+            elif year:
+                year_code = str(year)[-2:]
+                batch_query = Q(entry_batch__batches_code__endswith=year_code)
+                
+            queryset = queryset.filter(batch_query)
+        
+        return queryset.select_related('entry_batch').order_by('data_entry_id')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_title'] = 'Review Entries - ' + settings.SITE_TITLE
+        
+        # Add data for filter selection
+        context['locations'] = TrtLocations.get_ordered_locations()
+        context['years'] = range(2020, datetime.now().year + 1)
+        
+        # Save current filter conditions
+        context['selected_location'] = self.request.GET.get('location', '')
+        context['selected_place'] = self.request.GET.get('place', '')
+        context['selected_year'] = self.request.GET.get('year', '')
+        
+        return context
     
     

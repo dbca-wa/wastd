@@ -70,7 +70,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const damageCodeSelect = document.getElementById(`id_damage_code_${i}`);
             if (damageCodeSelect) {
                 const initialValue = damageCodeSelect.getAttribute('data-initial');
-                console.log(`Initializing damage_code_${i} with value:`, initialValue);
                 if (initialValue) {
                     damageCodeSelect.value = initialValue;
                     damageCodeSelect.dispatchEvent(new Event('change'));
@@ -98,16 +97,13 @@ function toggleInjuryFields() {
 }
 
 function updateBodyPartOptions() {
-    console.log('Updating body part options...');
     const bodyPartFields = ['id_body_part_1', 'id_body_part_2', 'id_body_part_3', 'id_body_part_4', 'id_body_part_5', 'id_body_part_6'];
     const selectedValues = new Set();
 
     bodyPartFields.forEach(fieldId => {
         const select = document.getElementById(fieldId);
         if (select && select.value) {
-            console.log(`${fieldId} selected value:`, select.value);
             selectedValues.add(select.value);
         }
     });
-    console.log('Selected values:', Array.from(selectedValues));
 }

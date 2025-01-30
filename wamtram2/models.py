@@ -332,7 +332,8 @@ class TrtDataEntry(models.Model):
         db_column="ALIVE",
         blank=True,
         null=True,
-        related_name="nesting",
+        related_name="alive",
+        default= 'Y'
     )  # fake foreign key #models.CharField(db_column='ALIVE', max_length=1, blank=True, null=True)  # Field name made lowercase.
     place_code = models.ForeignKey(
         "TrtPlaces", models.SET_NULL, db_column="PLACE_CODE", blank=True, null=True
@@ -544,8 +545,12 @@ class TrtDataEntry(models.Model):
         db_column="MEASUREMENT_VALUE_2", blank=True, null=True
     )  # Field name made lowercase.
     datum_code = models.CharField(
-        db_column="DATUM_CODE", max_length=5, blank=True, null=True, default='WGS84'
-    )  # Field name made lowercase.
+        db_column="DATUM_CODE",
+        max_length=5,
+        blank=True,
+        null=True,
+        default='WGS84'
+    )
     zone = models.IntegerField(
         db_column="ZONE", blank=True, null=True
     )  # Field name made lowercase.
