@@ -82,44 +82,6 @@
         .observation-link:hover {
             text-decoration: underline;
         }
-        .sort-icon {
-            cursor: pointer;
-            margin-left: 5px;
-            color: #999;
-        }
-        
-        .sort-icon.active {
-            color: #333;
-        }
-        
-        .sort-icon.asc:after {
-            content: "↑";
-        }
-        
-        .sort-icon.desc:after {
-            content: "↓";
-        }
-        
-        .sort-icon.none:after {
-            content: "↕";
-        }
-        .turtle-link {
-            color: #007bff;
-            text-decoration: none;
-        }
-        .turtle-link:hover {
-            text-decoration: underline;
-        }
-        .data-entry-link,
-        .observation-link {
-            color: #007bff;
-            text-decoration: none;
-        }
-        
-        .data-entry-link:hover,
-        .observation-link:hover {
-            text-decoration: underline;
-        }
     </style>
 {% endblock extra_style %}
 
@@ -220,10 +182,6 @@
                                 {{ column.title }}
                                 <span class="sort-icon none" data-field="{{ column.field }}"></span>
                             </th>
-                            <th data-field="{{ column.field }}">
-                                {{ column.title }}
-                                <span class="sort-icon none" data-field="{{ column.field }}"></span>
-                            </th>
                             {% endif %}
                         {% endfor %}
                     </tr>
@@ -242,19 +200,6 @@
                                                 {% else %}text{% endif %}">
 
                                 {% if column.field == 'data_entry_id' %}
-                                <span class="view-mode">
-                                <a href="{% url 'wamtram2:trtdataentry' entry_id=entry.data_entry_id %}" 
-                                            class="data-entry-link" 
-                                            target="_blank" 
-                                            rel="noopener noreferrer">
-                                            {{ entry.data_entry_id }}
-                                </a>
-                                </span>
-                                <input type="text"
-                                        class="form-control edit-mode"
-                                        value="{{ entry.data_entry_id }}"
-                                        data-original-value="{{ entry.data_entry_id }}"
-                                        readonly>
                                 <span class="view-mode">
                                 <a href="{% url 'wamtram2:trtdataentry' entry_id=entry.data_entry_id %}" 
                                             class="data-entry-link" 
@@ -288,33 +233,9 @@
                                     value="{{ entry.observation_id.observation_id|default:'' }}"
                                     data-original-value="{{ entry.observation_id.observation_id|default:'' }}"
                                     readonly>
-                                <span class="view-mode">
-                                        {% if entry.observation_id %}
-                                <a href="{% url 'wamtram2:observationdetail' pk=entry.observation_id.observation_id %}" 
-                                    class="observation-link" 
-                                    target="_blank" 
-                                    rel="noopener noreferrer">
-                                        {{ entry.observation_id.observation_id }}
-                                </a>
-                                    {% else %}
-                                        -
-                                    {% endif %}
-                                </span>
-                                <input type="text"
-                                    class="form-control edit-mode"
-                                    value="{{ entry.observation_id.observation_id|default:'' }}"
-                                    data-original-value="{{ entry.observation_id.observation_id|default:'' }}"
-                                    readonly>
                                 
                                 {% elif column.field == 'turtle_id' %}
                                     <span class="view-mode">
-                                        {% if entry.turtle_id %}
-                                            <a href="{% url 'wamtram2:turtle_detail' entry.turtle_id %}" class="turtle-link" target="_blank" rel="noopener noreferrer">
-                                                {{ entry.turtle_id }}
-                                            </a>
-                                        {% else %}
-                                            -
-                                        {% endif %}
                                         {% if entry.turtle_id %}
                                             <a href="{% url 'wamtram2:turtle_detail' entry.turtle_id %}" class="turtle-link" target="_blank" rel="noopener noreferrer">
                                                 {{ entry.turtle_id }}
@@ -337,10 +258,8 @@
                                         {{ entry.species_code.common_name|default:'-' }}
                                     </span>
                                     <select class="form-control edit-mode" data-original-value="{{ entry.species_code.species_code|default:'' }}">
-                                    <select class="form-control edit-mode" data-original-value="{{ entry.species_code.species_code|default:'' }}">
                                         <option value="">---------</option>
                                         {% for species in species_choices %}
-                                            <option value="{{ species.species_code }}" {% if entry.species_code == species %}selected{% endif %}>
                                             <option value="{{ species.species_code }}" {% if entry.species_code == species %}selected{% endif %}>
                                                 {{ species.common_name }}
                                             </option>
@@ -354,15 +273,8 @@
                                     <div class="edit-mode">
                                         <select class="form-control" 
                                                 name="{{ column.field }}" 
-                                        <select class="form-control" 
-                                                name="{{ column.field }}" 
                                                 data-original-value="{{ entry.sex|default:'' }}">
                                             <option value="">---------</option>
-                                            {% for value, label in sex_choices %}
-                                                <option value="{{ value }}" {% if entry.sex == value %}selected{% endif %}>
-                                                    {{ label }}
-                                                </option>
-                                            {% endfor %}
                                             {% for value, label in sex_choices %}
                                                 <option value="{{ value }}" {% if entry.sex == value %}selected{% endif %}>
                                                     {{ label }}
@@ -380,22 +292,13 @@
                                             class="search-field form-control" 
                                             placeholder="Search place"
                                             value="{{ entry.place_code.get_full_name|default:'' }}">
-                                            id="search_place_code" 
-                                            class="search-field form-control" 
-                                            placeholder="Search place"
-                                            value="{{ entry.place_code.get_full_name|default:'' }}">
                                         <input type="hidden" 
-                                            class="actual-value"
                                             class="actual-value"
                                             name="place_code" 
                                             value="{{ entry.place_code.place_code|default:'' }}"
                                             data-original-value="{{ entry.place_code.place_code|default:'' }}">
                                         <div class="search-results" style="display:none;"></div>
-                                            value="{{ entry.place_code.place_code|default:'' }}"
-                                            data-original-value="{{ entry.place_code.place_code|default:'' }}">
-                                        <div class="search-results" style="display:none;"></div>
                                     </div>
-                                
                                 
                                 {% elif column.field == 'observation_date' %}
                                     <span class="view-mode">
@@ -448,10 +351,8 @@
                                         {{ entry.measurement_type_1.description|default:'-' }}
                                     </span>
                                     <select class="form-control edit-mode" data-original-value="{{ entry.measurement_type_1.measurement_type|default:'' }}">
-                                    <select class="form-control edit-mode" data-original-value="{{ entry.measurement_type_1.measurement_type|default:'' }}">
                                         <option value="">---------</option>
                                         {% for type in measurement_types_choices %}
-                                            <option value="{{ type.measurement_type }}" {% if entry.measurement_type_1 == type %}selected{% endif %}>
                                             <option value="{{ type.measurement_type }}" {% if entry.measurement_type_1 == type %}selected{% endif %}>
                                                 {{ type.description }}
                                             </option>
@@ -467,13 +368,10 @@
                                 {% elif column.field == 'measurement_type_2' %}
                                     <span class="view-mode">
                                         {{ entry.measurement_type_2.description|default:'-' }}
-                                        {{ entry.measurement_type_2.description|default:'-' }}
                                     </span>
-                                    <select class="form-control edit-mode" data-original-value="{{ entry.measurement_type_2.measurement_type|default:'' }}">
                                     <select class="form-control edit-mode" data-original-value="{{ entry.measurement_type_2.measurement_type|default:'' }}">
                                         <option value="">---------</option>
                                         {% for type in measurement_types_choices %}
-                                            <option value="{{ type.measurement_type }}" {% if entry.measurement_type_2 == type %}selected{% endif %}>
                                             <option value="{{ type.measurement_type }}" {% if entry.measurement_type_2 == type %}selected{% endif %}>
                                                 {{ type.description }}
                                             </option>
@@ -491,10 +389,8 @@
                                         {{ entry.measurement_type_3.description|default:'-' }}
                                     </span>
                                     <select class="form-control edit-mode" data-original-value="{{ entry.measurement_type_3.measurement_type|default:'' }}">
-                                    <select class="form-control edit-mode" data-original-value="{{ entry.measurement_type_3.measurement_type|default:'' }}">
                                         <option value="">---------</option>
                                         {% for type in measurement_types_choices %}
-                                            <option value="{{ type.measurement_type }}" {% if entry.measurement_type_3 == type %}selected{% endif %}>
                                             <option value="{{ type.measurement_type }}" {% if entry.measurement_type_3 == type %}selected{% endif %}>
                                                 {{ type.description }}
                                             </option>
@@ -512,10 +408,8 @@
                                         {{ entry.measurement_type_4.description|default:'-' }}
                                     </span>
                                     <select class="form-control edit-mode" data-original-value="{{ entry.measurement_type_4.measurement_type|default:'' }}">
-                                    <select class="form-control edit-mode" data-original-value="{{ entry.measurement_type_4.measurement_type|default:'' }}">
                                         <option value="">---------</option>
                                         {% for type in measurement_types_choices %}
-                                            <option value="{{ type.measurement_type }}" {% if entry.measurement_type_4 == type %}selected{% endif %}>
                                             <option value="{{ type.measurement_type }}" {% if entry.measurement_type_4 == type %}selected{% endif %}>
                                                 {{ type.description }}
                                             </option>
@@ -533,10 +427,8 @@
                                         {{ entry.measurement_type_5.description|default:'-' }}
                                     </span>
                                     <select class="form-control edit-mode" data-original-value="{{ entry.measurement_type_5.measurement_type|default:'' }}">
-                                    <select class="form-control edit-mode" data-original-value="{{ entry.measurement_type_5.measurement_type|default:'' }}">
                                         <option value="">---------</option>
                                         {% for type in measurement_types_choices %}
-                                            <option value="{{ type.measurement_type }}" {% if entry.measurement_type_5 == type %}selected{% endif %}>
                                             <option value="{{ type.measurement_type }}" {% if entry.measurement_type_5 == type %}selected{% endif %}>
                                                 {{ type.description }}
                                             </option>
@@ -554,11 +446,8 @@
                                         {{ entry.measurement_type_6.description|default:'-' }}
                                     </span>
                                     <select class="form-control edit-mode" data-original-value="{{ entry.measurement_type_6.measurement_type|default:'' }}">
-                                    <select class="form-control edit-mode" data-original-value="{{ entry.measurement_type_6.measurement_type|default:'' }}">
                                         <option value="">---------</option>
                                         {% for type in measurement_types_choices %}
-                                            <option value="{{ type.measurement_type }}" {% if entry.measurement_type_6 == type %}selected{% endif %}>
-                                                {{ type.description }}
                                             <option value="{{ type.measurement_type }}" {% if entry.measurement_type_6 == type %}selected{% endif %}>
                                                 {{ type.description }}
                                             </option>
@@ -585,10 +474,8 @@
                                         {{ entry.activity_code.description|default:'-' }}
                                     </span>
                                     <select class="form-control edit-mode" data-original-value="{{ entry.activity_code.activity_code|default:'' }}">
-                                    <select class="form-control edit-mode" data-original-value="{{ entry.activity_code.activity_code|default:'' }}">
                                         <option value="">---------</option>
                                         {% for activity in activities_choices %}
-                                            <option value="{{ activity.activity_code }}" {% if entry.activity_code == activity %}selected{% endif %}>
                                             <option value="{{ activity.activity_code }}" {% if entry.activity_code == activity %}selected{% endif %}>
                                                 {{ activity.description }}
                                             </option>
@@ -617,10 +504,6 @@
                                             {{ entry.identification_confidence|default:'-' }}
                                     </span>
                                     <input type="text" 
-                                        class="form-control edit-mode"
-                                        value="{{ entry.identification_confidence|default:'' }}"
-                                        data-original-value="{{ entry.identification_confidence|default:'' }}">
-                                    
                                         class="form-control edit-mode"
                                         value="{{ entry.identification_confidence|default:'' }}"
                                         data-original-value="{{ entry.identification_confidence|default:'' }}">
@@ -669,7 +552,6 @@
                                         <option value="">---------</option>
                                         {% for state in tag_states_choices %}
                                             <option value="{{ state.tag_state }}" {% if entry|get_field_value:column.field == state %}selected{% endif %}>
-                                            <option value="{{ state.tag_state }}" {% if entry|get_field_value:column.field == state %}selected{% endif %}>
                                                 {{ state.description }}
                                             </option>
                                         {% endfor %}
@@ -713,10 +595,8 @@
                                         {{ entry|get_field_value:column.field }}
                                     </span>
                                     <select class="form-control edit-mode" data-original-value="{{ entry|get_field_value:column.field.body_part|default:'' }}">
-                                    <select class="form-control edit-mode" data-original-value="{{ entry|get_field_value:column.field.body_part|default:'' }}">
                                         <option value="">---------</option>
                                         {% for part in body_parts_choices %}
-                                            <option value="{{ part.body_part }}" {% if entry|get_field_value:column.field == part %}selected{% endif %}>
                                             <option value="{{ part.body_part }}" {% if entry|get_field_value:column.field == part %}selected{% endif %}>
                                                 {{ part.description }}
                                             </option>
@@ -728,10 +608,8 @@
                                         {{ entry|get_field_value:column.field|default:'-' }}
                                     </span>
                                     <select class="form-control edit-mode" data-original-value="{{ entry|get_field_value:column.field.damage_code|default:'' }}">
-                                    <select class="form-control edit-mode" data-original-value="{{ entry|get_field_value:column.field.damage_code|default:'' }}">
                                         <option value="">---------</option>
                                         {% for code in damage_codes_choices %}
-                                            <option value="{{ code.damage_code }}" {% if entry|get_field_value:column.field == code %}selected{% endif %}>
                                             <option value="{{ code.damage_code }}" {% if entry|get_field_value:column.field == code %}selected{% endif %}>
                                                 {{ code.description }}
                                             </option>
@@ -740,17 +618,12 @@
                                     
                             <!-- Tissue Samples -->
                             {% elif column.field == 'tissue_type_1' or column.field == 'tissue_type_2' %}
-                            <!-- Tissue Samples -->
-                            {% elif column.field == 'tissue_type_1' or column.field == 'tissue_type_2' %}
                                 <span class="view-mode">
                                     {{ entry|get_field_value:column.field|default:'-' }}
                                 </span>
                                 <select class="form-control edit-mode" data-original-value="{{ entry|get_field_value:column.field.tissue_type|default:'' }}">
-                                <select class="form-control edit-mode" data-original-value="{{ entry|get_field_value:column.field.tissue_type|default:'' }}">
                                     <option value="">---------</option>
                                     {% for type in tissue_types_choices %}
-                                        <option value="{{ type.tissue_type }}" {% if entry|get_field_value:column.field == type %}selected{% endif %}>
-                                            {{ type.description }}
                                         <option value="{{ type.tissue_type }}" {% if entry|get_field_value:column.field == type %}selected{% endif %}>
                                             {{ type.description }}
                                         </option>
@@ -981,18 +854,11 @@
 
             let searchUrl = '';
             if (fieldName === 'place_code') {
-            if (fieldName === 'place_code') {
                 searchUrl = '{% url "wamtram2:search-places" %}';
-            } else if (fieldName.includes('_by_id')) {
-                searchUrl = '{% url "wamtram2:search-persons" %}';
             } else if (fieldName.includes('_by_id')) {
                 searchUrl = '{% url "wamtram2:search-persons" %}';
             }
 
-            $.get(searchUrl, { q: query }, function(data) {
-                searchResults.empty();
-                
-                if (data.length > 0) {
             $.get(searchUrl, { q: query }, function(data) {
                 searchResults.empty();
                 
@@ -1014,8 +880,6 @@
                                     data-code="${place.place_code}" 
                                     data-name="${place.full_name}">
                                     ${place.full_name} 
-                                    data-name="${place.full_name}">
-                                    ${place.full_name} 
                                 </div>`
                             );
                         });
@@ -1033,7 +897,6 @@
             const fieldName = searchField.closest('td').data('field');
 
             if (fieldName.includes('_by_id')) {
-
 
                 const personId = item.data('id');
                 const personName = item.data('name');
@@ -1130,8 +993,6 @@
             const entryId = $(this).closest('tr').data('entry-id');
             const fieldName = $(this).closest('td').data('field');
             let newValue = $(this).val();
-
-            console.log('Field changed:', fieldName, 'New value:', newValue);
             
             if($(this).is('select')) {
                 if($(this).find('option:selected').text() === 'Yes' || $(this).find('option:selected').text() === 'No') {
@@ -1187,68 +1048,6 @@
                     $('.loading-overlay').hide();
                 }
             });
-        });
-
-        // Order by column
-        $('.sort-icon').click(function() {
-            const field = $(this).data('field');
-            const currentState = $(this).attr('class').includes('none') ? 'none' : 
-                $(this).attr('class').includes('asc') ? 'asc' : 'desc';
-            
-            // Reset all sort icons
-            $('.sort-icon').removeClass('active asc desc').addClass('none');
-            
-            // Update current sort icon state
-            let newState;
-            if (currentState === 'none') {
-                newState = 'asc';
-            } else if (currentState === 'asc') {
-                newState = 'desc';
-            } else {
-                newState = 'none';
-            }
-            
-            if (newState !== 'none') {
-                $(this).removeClass('none').addClass(`active ${newState}`);
-            }
-            
-            // Execute sorting
-            const tbody = $('table tbody');
-            const rows = tbody.find('tr').get();
-            
-            if (newState === 'none') {
-                // Restore original order
-                rows.sort((a, b) => {
-                    return $(a).data('entry-id') - $(b).data('entry-id');
-                });
-            } else {
-                rows.sort((a, b) => {
-                    let aValue = $(a).find(`td[data-field="${field}"] .view-mode`).text().trim();
-                    let bValue = $(b).find(`td[data-field="${field}"] .view-mode`).text().trim();
-                    
-                    // Sort numeric values
-                    if (!isNaN(aValue) && !isNaN(bValue)) {
-                        aValue = parseFloat(aValue) || 0;
-                        bValue = parseFloat(bValue) || 0;
-                    }
-                    
-                    // Sort date values
-                    if (field === 'observation_date') {
-                        aValue = new Date(aValue || 0);
-                        bValue = new Date(bValue || 0);
-                    }
-                    
-                    if (newState === 'asc') {
-                        return aValue > bValue ? 1 : -1;
-                    } else {
-                        return aValue < bValue ? 1 : -1;
-                    }
-                });
-            }
-            
-            // Reinsert sorted rows
-            tbody.empty();
-            rows.forEach(row => tbody.append(row));
         });
 
         // Order by column

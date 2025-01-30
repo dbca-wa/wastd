@@ -33,8 +33,6 @@ from functools import reduce
 import operator
 import traceback
 from django.db import IntegrityError
-import traceback
-from django.db import IntegrityError
 
 from wastd.utils import Breadcrumb, PaginateMixin
 from .models import (
@@ -44,7 +42,6 @@ from .models import (
     TrtEntryBatches,
     TrtDataEntry,
     TrtPersons,
-    TrtBeachPositions,
     TrtBeachPositions,
     TrtObservations,
     Template,
@@ -792,13 +789,6 @@ class ValidateDataEntryBatchView(LoginRequiredMixin, View):
             return redirect("wamtram2:entries_curation", batch_id=self.kwargs["batch_id"])
         else:
             return redirect("wamtram2:entry_batch_detail", batch_id=self.kwargs["batch_id"])
-            
-        return_to = request.GET.get('return_to')
-        
-        if return_to == 'curation':
-            return redirect("wamtram2:entries_curation", batch_id=self.kwargs["batch_id"])
-        else:
-            return redirect("wamtram2:entry_batch_detail", batch_id=self.kwargs["batch_id"])
 
 
 class DeleteEntryView(LoginRequiredMixin,DeleteView):
@@ -819,7 +809,6 @@ class DeleteEntryView(LoginRequiredMixin,DeleteView):
     def get_success_url(self):
         batch_id = self.kwargs['batch_id']
         return reverse_lazy('wamtram2:entry_batch_detail', kwargs={'batch_id': batch_id})
-
 
 
 class ProcessDataEntryBatchView(LoginRequiredMixin, View):
@@ -874,14 +863,6 @@ class ProcessDataEntryBatchView(LoginRequiredMixin, View):
             return redirect("wamtram2:entries_curation", batch_id=self.kwargs["batch_id"])
         else:
             return redirect("wamtram2:entry_batch_detail", batch_id=self.kwargs["batch_id"])
-            
-        return_to = request.GET.get('return_to')
-        
-        if return_to == 'curation':
-            return redirect("wamtram2:entries_curation", batch_id=self.kwargs["batch_id"])
-        else:
-            return redirect("wamtram2:entry_batch_detail", batch_id=self.kwargs["batch_id"])
-
 
 
 class FindTurtleView(LoginRequiredMixin, View):
@@ -1022,7 +1003,6 @@ class FindTurtleView(LoginRequiredMixin, View):
         batch = None
         template_name = "No template associated"
         existing_turtle_entry = None
-        existing_turtle_entry = None
         
         if batch_id:
             batch = TrtEntryBatches.objects.filter(entry_batch_id=batch_id).first()
@@ -1099,77 +1079,7 @@ class FindTurtleView(LoginRequiredMixin, View):
                             'place_code', 
                             'species_code'
                         ).order_by('-entry_batch__entry_date').first()
-                    existing_turtle_entry = TrtDataEntry.objects.filter(
-                        Q(new_left_tag_id__tag_id=tag_id) |
-                        Q(new_left_tag_id_2__tag_id=tag_id) |
-                        Q(new_right_tag_id__tag_id=tag_id) |
-                        Q(new_right_tag_id_2__tag_id=tag_id) |
-                        Q(new_pittag_id__pittag_id=tag_id) |
-                        Q(new_pittag_id_2__pittag_id=tag_id) |
-                        Q(new_pittag_id_3__pittag_id=tag_id) |
-                        Q(new_pittag_id_4__pittag_id=tag_id),
-                        turtle_id__isnull=False,  
-                        observation_id__isnull=True
-                    ).select_related(
-                        'turtle_id', 
-                        'entry_batch', 
-                        'place_code', 
-                        'species_code'
-                    ).order_by('-entry_batch__entry_date').first()
-                    
-                    if existing_turtle_entry:
-                        turtle = existing_turtle_entry.turtle_id
-                        if any([
-                            str(existing_turtle_entry.new_left_tag_id).upper() == str(tag_id).upper(),
-                            str(existing_turtle_entry.new_left_tag_id_2).upper() == str(tag_id).upper()
-                        ]):
-                            tag_type = "recapture_tag"
-                            tag_side = "L"
-                        elif any([
-                            str(existing_turtle_entry.new_right_tag_id).upper() == str(tag_id).upper(),
-                            str(existing_turtle_entry.new_right_tag_id_2).upper() == str(tag_id).upper()
-                        ]):
-                            tag_type = "recapture_tag"
-                            tag_side = "R"
-                        else:
-                            tag_type = "recapture_pit_tag"
-                            tag_side = None
-                    else:
-                        new_tag_entry = TrtDataEntry.objects.filter(
-                            Q(new_left_tag_id__tag_id=tag_id) |
-                            Q(new_left_tag_id_2__tag_id=tag_id) |
-                            Q(new_right_tag_id__tag_id=tag_id) |
-                            Q(new_right_tag_id_2__tag_id=tag_id) |
-                            Q(new_pittag_id__pittag_id=tag_id) |
-                            Q(new_pittag_id_2__pittag_id=tag_id) |
-                            Q(new_pittag_id_3__pittag_id=tag_id) |
-                            Q(new_pittag_id_4__pittag_id=tag_id),
-                            observation_id__isnull=True,
-                            turtle_id__isnull=True
-                        ).select_related(
-                            'entry_batch', 
-                            'place_code', 
-                            'species_code'
-                        ).order_by('-entry_batch__entry_date').first()
 
-                        if new_tag_entry:
-                            if any([
-                                str(new_tag_entry.new_left_tag_id).upper() == str(tag_id).upper(),
-                                str(new_tag_entry.new_left_tag_id_2).upper() == str(tag_id).upper()
-                            ]):
-                                tag_type = "recapture_tag"
-                                tag_side = "L"
-                            elif any([
-                                str(new_tag_entry.new_right_tag_id).upper() == str(tag_id).upper(),
-                                str(new_tag_entry.new_right_tag_id_2).upper() == str(tag_id).upper()
-                            ]):
-                                tag_type = "recapture_tag"
-                                tag_side = "R"
-                            else:
-                                tag_type = "recapture_pit_tag"
-                                tag_side = None
-                        else:
-                            no_turtle_found = True
                         if new_tag_entry:
                             if any([
                                 str(new_tag_entry.new_left_tag_id).upper() == str(tag_id).upper(),
@@ -1204,22 +1114,7 @@ class FindTurtleView(LoginRequiredMixin, View):
                         })
                     else:
                         response = redirect(reverse('wamtram2:find_turtle', kwargs={'batch_id': batch_id}))
-                    if existing_turtle_entry:
-                        response = render(request, "wamtram2/find_turtle.html", {
-                            "form": form,
-                            "turtle": turtle,
-                            "existing_turtle_entry": existing_turtle_entry,
-                            "tag_id": tag_id,
-                            "tag_type": tag_type,
-                            "tag_side": tag_side,
-                            "batch_id": batch_id,
-                            "batch": batch,
-                            "template_name": template_name,
-                        })
-                    else:
-                        response = redirect(reverse('wamtram2:find_turtle', kwargs={'batch_id': batch_id}))
                     return self.set_cookie(response, batch_id, tag_id, tag_type, tag_side)
-                                
                                 
                 elif new_tag_entry:
                     response = render(request, "wamtram2/find_turtle.html", {
@@ -1874,21 +1769,6 @@ class ValidateTagView(View):
                     'entry_date': new_pit_tag_entry.entry_batch.entry_date.strftime('%Y-%m-%d')
                 })
 
-            new_pit_tag_entry = TrtDataEntry.objects.filter(
-                Q(new_pittag_id__pittag_id=tag) |
-                Q(new_pittag_id_2__pittag_id=tag) |
-                Q(new_pittag_id_3__pittag_id=tag) |
-                Q(new_pittag_id_4__pittag_id=tag),
-                observation_id__isnull=True,
-            ).order_by('-entry_batch__entry_date').first()
-            
-            if new_pit_tag_entry:
-                return JsonResponse({
-                    'valid': True, 
-                    'message': 'PIT Tag found in previous unprocessed entry',
-                    'entry_date': new_pit_tag_entry.entry_batch.entry_date.strftime('%Y-%m-%d')
-                })
-
             if turtle_id:
                 turtle_id = int(turtle_id)
                 pit_tag = TrtPitTags.objects.filter(pittag_id=tag).select_related('turtle').first()
@@ -1990,7 +1870,6 @@ def search_places(request):
         place['full_name'] = f"{place['place_name']} ({place['location_code__location_name']})"
     
     return JsonResponse(list(places), safe=False)
-
 
 
 class ExportDataView(LoginRequiredMixin, View):
@@ -3052,7 +2931,6 @@ def search_templates(request):
     return JsonResponse([], safe=False)
     
     
-    
 class BatchCodeManageView(View):
     template_name = 'wamtram2/batch_detail_manage.html'
     
@@ -3298,17 +3176,6 @@ class AddPersonView(LoginRequiredMixin, FormView):
 
 class AvailableBatchesView(LoginRequiredMixin, View):
     def get(self, request):
-        if request.user.is_superuser:
-            batches = TrtEntryBatches.objects.all()
-        else:
-            user_orgs = request.user.organisations.all()
-            batches = TrtEntryBatches.objects.filter(
-                batch_organisations__organisation__in=[org.code for org in user_orgs]
-            )
-            
-        current_batch_id = request.GET.get('current_batch_id')
-        
-        batches = batches.exclude(
         if request.user.is_superuser:
             batches = TrtEntryBatches.objects.all()
         else:
@@ -4017,7 +3884,6 @@ class EntryCurationView(LoginRequiredMixin, SuperUserRequiredMixin, PaginateMixi
             
         queryset = queryset.select_related(
             'observation_id',
-            'observation_id',
             'species_code',
             'place_code',
             'activity_code',
@@ -4348,40 +4214,14 @@ class SaveEntryChangesView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                 raise ValueError(f"Invalid value for {field_name}: {value}")
         
  
-        
-        if field.is_relation:
-            if value == '':
-                return None
-            try:
-                related_model = field.related_model
-                pk_name = related_model._meta.pk.name
-                lookup = {pk_name: value}
-                instance = related_model.objects.get(**lookup)
-
-                if field_name.endswith('_by_id'):
-                    base_field = field_name[:-3]  
-                    if hasattr(entry, base_field):
-                        setattr(entry, base_field, f"{instance.first_name} {instance.surname}")
-                return instance
-            except related_model.DoesNotExist:
-                raise ValueError(f"Invalid value for {field_name}: {value}")
-        
- 
         if field.get_internal_type() in ['IntegerField', 'FloatField']:
             try:
                 value = float(value)
                 if value < 0:
                     raise ValueError(f"{field_name} cannot be negative")
                 return value
-                return value
             except ValueError:
                 raise ValueError(f"Invalid number for {field_name}: {value}")
-        
-        if field.get_internal_type() == 'CharField':
-            if not isinstance(value, str):
-                raise ValueError(f"Invalid string for {field_name}: {value}")
-            return value
-        
         
         if field.get_internal_type() == 'CharField':
             if not isinstance(value, str):
@@ -5999,7 +5839,7 @@ class BatchesReviewView(LoginRequiredMixin, SuperUserRequiredMixin,PaginateMixin
                 
             queryset = queryset.filter(batch_query)
         
-        return queryset.select_related('entry_batch').order_by('-data_entry_id')
+        return queryset.select_related('entry_batch').order_by('data_entry_id')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
