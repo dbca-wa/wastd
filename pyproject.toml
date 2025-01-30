@@ -9,7 +9,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
-django = "4.2.15"
+django = "4.2.16"
 django-extensions = "3.2.3"
 psycopg2 = "2.9.9"
 dj-database-url = "2.1.0"
@@ -33,7 +33,7 @@ django-geojson = "4.0.0"
 django-import-export = "3.3.7"
 django-export-download = "0.2.3"
 pillow = "10.3.0"
-whitenoise = {version = "6.6.0", extras = ["brotli"]}
+whitenoise = {version = "6.8.2", extras = ["brotli"]}
 phonenumbers = "8.13.32"
 django-phonenumber-field = "7.3.0"
 mssql-django = "1.4.1"
