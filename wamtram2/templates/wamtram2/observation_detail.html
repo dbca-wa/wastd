@@ -201,6 +201,39 @@
 <p>None recorded</p>
 {% endif %}
 
+<div class="row">
+  <div class="col">
+    <h3>Damages</h3>
+  </div>
+</div>
+
+{% if damages %}
+<div class="row">
+  <div class="col">
+    <table class="table table-striped table-bordered table-sm">
+      <thead>
+        <tr>
+          <th>Body Part</th>
+          <th>Damage Type</th>
+          <th>Damage Cause</th>
+          <th>Comments</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>{{ damages.body_part }}</td>
+          <td>{{ damages.damage_code }}</td>
+          <td>{{ damages.damage_cause_code|default_if_none:"" }}</td>
+          <td>{{ damages.comments|default_if_none:"" }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+{% else %}
+<p>No damage recorded</p>
+{% endif %}
+
 {% endblock page_content_inner %}
 
 {% block extra_js %}

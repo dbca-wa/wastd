@@ -1177,11 +1177,14 @@ class ObservationDetailView(LoginRequiredMixin, DetailView):
         obj = self.object
         
         context["observation"] = obj
-        
         context["tags"] = obj.trtrecordedtags_set.all()
         context["pittags"] = obj.trtrecordedpittags_set.all()
         context["measurements"] = obj.trtmeasurements_set.all()
         context["page_title"] = 'Observation Detail - ' + settings.SITE_TITLE
+        try:
+            context["damages"] = obj.damages
+        except TrtDamage.DoesNotExist:
+            context["damages"] = None
         
         if obj.place_code:
             context["place_full_name"] = obj.place_code.get_full_name()
