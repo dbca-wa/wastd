@@ -2403,11 +2403,12 @@ class DudTagManageView(LoginRequiredMixin, View):
 
         return redirect('wamtram2:dud_tag_manage')
 
-class BatchesCurationView(LoginRequiredMixin,ListView):
+
+class BatchesCurationView(LoginRequiredMixin, PaginateMixin, ListView):
     model = TrtEntryBatches
     template_name = 'wamtram2/batches_curation.html'
     context_object_name = 'batches'
-    paginate_by = 20
+    paginate_by = 30  
     
     def dispatch(self, request, *args, **kwargs):
         if not (
@@ -2450,11 +2451,15 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
                 'trtdataentry',
                 filter=Q(trtdataentry__do_not_process=True)
             ),
-            processed_count=Count(
-                'trtdataentry',
-                filter=Q(trtdataentry__observation_id__isnull=False)
-            )
         )
+        
+        if user.is_superuser:
+            queryset = queryset.annotate(
+                processed_count=Count(
+                    'trtdataentry',
+                    filter=Q(trtdataentry__observation_id__isnull=False)
+                )
+            )
             
         location = self.request.GET.get('location')
         place = self.request.GET.get('place')
@@ -2462,7 +2467,7 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
         show_all = self.request.GET.get('show_all')
         
         if not self.request.GET:
-            return queryset[:20]
+            return queryset[:30]
         
         if show_all:
             return queryset
@@ -2487,6 +2492,7 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
         result = queryset.filter(query).order_by('-entry_batch_id') if query else queryset.order_by('-entry_batch_id')
         return result
     
+    
     def get_user_role(self, user):
         if user.is_superuser:
             return "Super User"
@@ -2503,11 +2509,12 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         
-        for batch in context['batches']:
-            if batch.entry_count > 0:
-                batch.processed_percentage = (batch.processed_count / batch.entry_count) * 100
-            else:
-                batch.processed_percentage = 0
+        if self.request.user.is_superuser:
+            for batch in context['batches']:
+                if batch.entry_count > 0:
+                    batch.processed_percentage = (batch.processed_count / batch.entry_count) * 100
+                else:
+                    batch.processed_percentage = 0
 
         filter_params = {}
         if self.request.GET.get('location'):
@@ -2581,7 +2588,7 @@ class BatchesCurationView(LoginRequiredMixin,ListView):
             html = render_to_string('wamtram2/batches_curation.html', context, request=request)
             return JsonResponse({
                 'html': html,
-                'count': context['paginator'].count if 'paginator' in context else 0,
+                'count': len(self.object_list),
                 'num_pages': context['paginator'].num_pages if 'paginator' in context else 1,
                 'current_page': context['page_obj'].number if 'page_obj' in context else 1,
                 'show_all': context.get('show_all', False),
