@@ -170,6 +170,41 @@
                 </div>
 
                 {% if request.user.is_superuser or request.user|has_group:"WAMTRAM2_STAFF" %}
+                    <!-- Tags -->
+                    {% if obs_data.tags or obs_data.pittags %}
+                    <div class="mb-3">
+                        <h6>Tags recorded in this observation:</h6>
+                        <table class="table table-sm table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Tag Type</th>
+                                    <th>Tag ID</th>
+                                    <th>Position/Side</th>
+                                    <th>Comments</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for tag in obs_data.tags %}
+                                <tr>
+                                    <td>Flipper</td>
+                                    <td>{{ tag.tag_id }}</td>
+                                    <td>{{ tag.side|default_if_none:"" }}</td>
+                                    <td>{{ tag.comments|default_if_none:"" }}</td>
+                                </tr>
+                                {% endfor %}
+                                {% for tag in obs_data.pittags %}
+                                <tr>
+                                    <td>PIT</td>
+                                    <td>{{ tag.pittag_id }}</td>
+                                    <td>{{ tag.pit_tag_position|default_if_none:"" }}</td>
+                                    <td>{{ tag.comments|default_if_none:"" }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endif %}
+
                     <!-- Measurements -->
                     {% if obs_data.measurements %}
                     <div class="mb-3">
