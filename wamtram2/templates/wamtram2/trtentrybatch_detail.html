@@ -89,14 +89,21 @@
 {% endblock %}
 
 {% block page_content_inner %}
+    <h1 class="page-title"> {{ page_title }} </h1>
     {# Step1: Display the entry batch details #}
     <div class="step-container">
         <div class="step-header">Batch Info</div>
         <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-2">
                 <div class="form-group">
                     <label><strong>Team Leader Name</strong></label>
                     <p class="form-control-static">{{ batch.entered_person_id|default:"None" }}</p>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label><strong>Batch Code</strong></label>
+                    <p class="form-control-static">{{ batch.batches_code|default:"None" }}</p>
                 </div>
             </div>
             <div class="col-md-4">
@@ -105,10 +112,34 @@
                     <p class="form-control-static">{{ batch.comments|default:"None" }}</p>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="form-group">
                     <label><strong>Template</strong></label>
                     <p class="form-control-static">{{ batch.template.name|default:"None" }}</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label><strong>Last Validated</strong></label>
+                    <p class="form-control-static">
+                        {% if batch.last_validated_at %}
+                            {{ batch.last_validated_at|date:"Y-m-d H:i:s" }}
+                        {% else %}
+                            Never
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label><strong>Last Processed</strong></label>
+                    <p class="form-control-static">
+                        {% if batch.last_processed_at %}
+                            {{ batch.last_processed_at|date:"Y-m-d H:i:s" }}
+                        {% else %}
+                            Never
+                        {% endif %}
+                    </p>
                 </div>
             </div>
         </div>
@@ -124,39 +155,7 @@
         </div>
         {% endif %}
     </div>
-    {% comment %} {# Step2: Create new entry #}
-    <div class="step-container">
-        <div class="step-header">Step 2: Create New Entry</div>
-        <div class="row align-items-end">
-            <div class="col-md-6 d-flex align-items-end">
-                <select id="templateSelector" class="form-control flex-grow-1 mr-2">
-                    <option value="">Select a template</option>
-                        {% for template in templates %}
-                    <option value="{{ template.template_id }}" {% if template.template_id == selected_template %} selected {% endif %}>
-                                {{ template.name }}
-                    </option>
-                        {% endfor %}
-                    </select>
-                {% if user.is_superuser %}
-                <button type="button" class="btn btn-outline-primary add-template-btn align-self-end" onClick="window.open('{% url 'wamtram2:template_manage'%}');" title="Add new template">
-                    <i class="fas fa-plus"></i>
-                </button>
-                {% endif %}
-            </div>
-            <div class="col-md-4 mb-2">
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="setDefaultEnterer" {% if use_default_enterer %} checked {% endif %}>
-                    <label class="form-check-label" for="setDefaultEnterer">
-                        Set batch enterer as default entry enterer
-                    </label>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <a href="{% url 'wamtram2:find_turtle' batch_id=batch.entry_batch_id %}" id="createEntryBtn" class="btn btn-primary float-right">Create a new entry</a>
-            </div>
-        </div>
-        <div id="templateSelectedMessage" class="mt-2 text-success" style="display: none;">Template selected</div>
-    </div> {% endcomment %}
+
     {% if request.user.is_superuser or request.user|has_group:"WAMTRAM2_STAFF" or request.user|has_group:"WAMTRAM2_TEAM_LEADER" and object_list %}
     {# Step3: Batch Actions #}
     <div class="step-container">
@@ -164,10 +163,10 @@
         <div class="row">
             <div class="col-md-8">
                 {% if request.user.is_superuser or request.user|has_group:"WAMTRAM2_STAFF" or request.user|has_group:"WAMTRAM2_TEAM_LEADER"%}
-                <a id="validateBtn" href="{% url 'wamtram2:validate_data_entry_batch' batch_id=batch.entry_batch_id %}" class="btn btn-primary mr-2">Validate this Batch</a>
+                <a id="validateBtn" href="{% url 'wamtram2:validate_data_entry_batch' batch_id=batch.entry_batch_id %}" class="btn btn-primary mr-2" {% if all_entries_processed %}disabled{% endif %}>Validate this Batch</a>
                 {% endif %}
                 {% if request.user.is_superuser %}
-                <a id="processBtn" href="{% url 'wamtram2:process_data_entry_batch' batch_id=batch.entry_batch_id %}" class="btn btn-primary">Add this batch to the database</a>
+                <a id="processBtn" href="{% url 'wamtram2:process_data_entry_batch' batch_id=batch.entry_batch_id %}" class="btn btn-primary" {% if all_entries_processed %}disabled{% endif %}>Add this batch to the database</a>
                 {% endif %}
             </div>
             <div class="col-md-4">
@@ -186,6 +185,12 @@
         </div>
     </div>
 {% endif %}
+
+    {% if all_entries_processed %}
+    <div class="alert alert-info mt-3">
+        All entries in this batch have already been processed.
+    </div>
+    {% endif %}
 
     {% block pagination_row %}
         {# Pagination controls #}
@@ -258,7 +263,7 @@
 
                 <tbody>
                     {% for obj in object_list %}
-                    <tr class="{% if obj.highlight_row %}highlight-row{% endif %} {% if obj.observation_id %}has-observation{% endif %}">
+                    <tr class="{% if obj.highlight_row %}highlight-row{% endif %} {% if obj.observation_id %}has-observation{% endif %} {% if obj.error_message %}highlight-row{% endif %}">
                         <td><a href="{% url 'wamtram2:trtdataentry' obj.data_entry_id %}">{{ obj.data_entry_id }}</a></td>
                         <td>{% if obj.observation_id %}<a href="{% url 'wamtram2:observationdetail' pk=obj.observation_id.pk %}">{{ obj.observation_id.pk }}</a>{% endif %}</td>                     
                         <td>{{ obj.observation_date|perth_time|date:"j M Y H:i" }}</td>
@@ -746,5 +751,7 @@
             rows.forEach(row => tbody.append(row));
         });
     });
+
+    const allEntriesProcessed = {{ all_entries_processed|yesno:"true,false" }};
 </script>
 {% endblock %}

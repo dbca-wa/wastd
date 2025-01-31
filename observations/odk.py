@@ -834,9 +834,9 @@ def import_marine_wildlife_incident(form_id="marine_wildlife_incident", auth_hea
             encounter.activity = status['activity']
             encounter.behaviour = status['behaviour']
 
-            death = submission['death']
-            encounter.cause_of_death = death['cause_of_death']
-            encounter.cause_of_death_confidence = death['cause_of_death_confidence']
+            death = submission['death'] if submission['death'] else 'Unknown health'
+            encounter.cause_of_death = death['cause_of_death'] if death else 'Not applicable'
+            encounter.cause_of_death_confidence = death['cause_of_death_confidence'] if death else 'Not applicable'
 
             checks = submission['checks']
             encounter.checked_for_injuries = checks['checked_for_injuries']
@@ -1006,7 +1006,7 @@ def import_marine_wildlife_incident(form_id="marine_wildlife_incident", auth_hea
                         tag_type=obs['tag_type'],
                         tag_location=obs['tag_location'],
                         name=obs['tag_id'],
-                        status=obs['tag_status'],
+                        status=obs['tag_status'] if obs['tag_status'] else 'resighted',
                         recorder=user,
                         comments=obs['tag_comment'],
                     )

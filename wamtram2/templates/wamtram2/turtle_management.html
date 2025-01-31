@@ -31,7 +31,7 @@
     <div class="row mb-3">
         <div class="col">
             <div class="d-flex justify-content-between align-items-center">
-                <h2>Turtle Management</h2>
+                <h1 class="page-title"> {{ page_title }} </h1>
             </div>
         </div>
     </div>
@@ -223,54 +223,78 @@
             <div class="tab-content">
                 <!-- Flipper Tag Information Tab -->
                 <div id="flipperTagInfo" class="tab-pane active">
-                    <div class="section-card">
-                        <!-- Add New Tag Button -->
-                        <div class="form-row mb-3">
-                            <div class="col-12">
-                                <button type="button" class="btn btn-success" id="addFlipperTagBtn">
-                                    <i class="fas fa-plus"></i> Add New Flipper Tag
-                                </button>
-                            </div>
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h5 class="mb-0">Flipper Tags</h5>
                         </div>
-                        <!-- Container for Flipper Tags -->
-                        <div id="tagContainer">
-                            <!-- Tags will be dynamically inserted here -->
+                        <div class="card-body">
+                            <div id="tagContainer">
+                                <!-- Tags will be populated here -->
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    <button type="button" class="btn btn-success" id="addFlipperTagBtn">
+                                        <i class="fas fa-plus"></i> Add New Flipper Tag
+                                    </button>
+                                </div>
+                                <div class="col-md-6 text-right">
+                                    <button type="button" class="btn btn-primary" id="saveFlipperTagsBtn">
+                                        <i class="fas fa-save"></i> Save Flipper Tags
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- PIT Tag Information Tab -->
                 <div id="pitTagInfo" class="tab-pane fade">
-                    <div class="section-card">
-                        <!-- Add New PIT Tag Button -->
-                        <div class="form-row mb-3">
-                            <div class="col-12">
-                                <button type="button" class="btn btn-success" id="addPitTagBtn">
-                                    <i class="fas fa-plus"></i> Add New PIT Tag
-                                </button>
-                            </div>
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h5 class="mb-0">PIT Tags</h5>
                         </div>
-                        <!-- Container for PIT Tags -->
-                        <div id="pitTagContainer">
-                            <!-- PIT Tags will be dynamically inserted here -->
+                        <div class="card-body">
+                            <div id="pitTagContainer">
+                                <!-- PIT Tags will be populated here -->
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    <button type="button" class="btn btn-success" id="addPitTagBtn">
+                                        <i class="fas fa-plus"></i> Add New PIT Tag
+                                    </button>
+                                </div>
+                                <div class="col-md-6 text-right">
+                                    <button type="button" class="btn btn-primary" id="savePitTagsBtn">
+                                        <i class="fas fa-save"></i> Save PIT Tags
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Other Identification Information Tab -->
                 <div id="otherIdentificationInfo" class="tab-pane fade">
-                    <div class="section-card">
-                        <!-- Add New Identification Button -->
-                        <div class="form-row mb-3">
-                            <div class="col-12">
-                                <button type="button" class="btn btn-success" id="addIdentificationBtn">
-                                    <i class="fas fa-plus"></i> Add New Identification
-                                </button>
-                            </div>
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h5 class="mb-0">Identification</h5>
                         </div>
-                        <!-- Container for Other Identifications -->
-                        <div id="identificationContainer">
-                            <!-- Other Identifications will be dynamically inserted here -->
+                        <div class="card-body">
+                            <div id="identificationContainer">
+                                <!-- Identification items will be populated here -->
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    <button type="button" class="btn btn-success" id="addIdentificationBtn">
+                                        <i class="fas fa-plus"></i> Add New Identification
+                                    </button>
+                                </div>
+                                <div class="col-md-6 text-right">
+                                    <button type="button" class="btn btn-primary" id="saveIdentificationBtn">
+                                        <i class="fas fa-save"></i> Save Identification
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -290,7 +314,9 @@
                     <a class="nav-link" data-toggle="tab" href="#sampleInfo">Samples</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#relatedDocumentInfo">Related Documents</a>
+                    <a class="nav-link" id="document-tab" data-toggle="tab" href="#documentInfo" role="tab" aria-controls="documentInfo" aria-selected="false">
+                        Related Documents
+                    </a>
                 </li>
             </ul>
             
@@ -300,13 +326,13 @@
                 <div id="observationInfo" class="tab-pane active">
                     <div class="section-card">
                         <!-- Add New Observation Button -->
-                        <div class="form-row mb-3">
+                        {% comment %} <div class="form-row mb-3">
                             <div class="col-12">
                                 <button type="button" class="btn btn-success" id="addObservationBtn">
                                     <i class="fas fa-plus"></i> Add New Observation
                                 </button>
                             </div>
-                        </div>
+                        </div> {% endcomment %}
                         <!-- Container for Observations -->
                         <div id="observationContainer">
                             <!-- Observations will be dynamically inserted here -->
@@ -316,36 +342,52 @@
 
                 <!-- Sample Information Tab -->
                 <div id="sampleInfo" class="tab-pane fade">
-                    <div class="section-card">
-                        <!-- Add New Sample Button -->
-                        <div class="form-row mb-3">
-                            <div class="col-12">
-                                <button type="button" class="btn btn-success" id="addSampleBtn">
-                                    <i class="fas fa-plus"></i> Add New Sample
-                                </button>
-                            </div>
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h5 class="mb-0">Samples</h5>
                         </div>
-                        <!-- Container for Samples -->
-                        <div id="sampleContainer">
-                            <!-- Samples will be dynamically inserted here -->
+                        <div class="card-body">
+                            <div id="sampleContainer">
+                                <!-- Sample items will be populated here -->
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    <button type="button" class="btn btn-success" id="addSampleBtn">
+                                        <i class="fas fa-plus"></i> Add New Sample
+                                    </button>
+                                </div>
+                                <div class="col-md-6 text-right">
+                                    <button type="button" class="btn btn-primary" id="saveSamplesBtn">
+                                        <i class="fas fa-save"></i> Save Samples
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Related Document Information Tab -->
-                <div id="relatedDocumentInfo" class="tab-pane fade">
-                    <div class="section-card">
-                        <!-- Add New Document Button -->
-                        <div class="form-row mb-3">
-                            <div class="col-12">
-                                <button type="button" class="btn btn-success" id="addDocumentBtn">
-                                    <i class="fas fa-plus"></i> Add New Document
-                                </button>
-                            </div>
+                <!-- Related Documents Tab -->
+                <div id="documentInfo" class="tab-pane fade" role="tabpanel" aria-labelledby="document-tab">
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h5 class="mb-0">Related Documents</h5>
                         </div>
-                        <!-- Container for Documents -->
-                        <div id="documentContainer">
-                            <!-- Documents will be dynamically inserted here -->
+                        <div class="card-body">
+                            <div id="documentContainer">
+                                <!-- Document items will be populated here -->
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    <button type="button" class="btn btn-success" id="addDocumentBtn">
+                                        <i class="fas fa-plus"></i> Add New Document
+                                    </button>
+                                </div>
+                                <div class="col-md-6 text-right">
+                                    <button type="button" class="btn btn-primary" id="saveDocumentsBtn">
+                                        <i class="fas fa-save"></i> Save Documents
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -405,6 +447,228 @@
         </div>
     </div>
 </div>
+
+<!-- Template for Flipper Tag Card -->
+<template id="flipperTagTemplate">
+    <div class="card mb-3 tag-card">
+        <div class="card-body">
+            <div class="form-row">
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label>Tag ID</label>
+                        <input type="text" class="form-control" name="tag_id" required>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label>Side</label>
+                        <select class="form-control" name="side">
+                            <option value="L">L</option>
+                            <option value="R">R</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select class="form-control" name="tag_status">
+                            <!-- Will be populated by JavaScript -->
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label>Issue Location</label>
+                        <input type="text" class="form-control" name="issue_location">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Comments</label>
+                        <input type="text" class="form-control" name="comments">
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="form-group">
+                        <label>&nbsp;</label>
+                        <button type="button" class="btn btn-danger btn-block delete-tag">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<!-- Template for PIT Tag Card -->
+<template id="pitTagTemplate">
+    <div class="card mb-3 tag-card">
+        <div class="card-body">
+            <div class="form-row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>PIT Tag ID</label>
+                        <input type="text" class="form-control" name="pit_tag_id">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select class="form-control" name="pit_tag_status">
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-5">
+                    <div class="form-group">
+                        <label>Comments</label>
+                        <input type="text" class="form-control" name="comments">
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="form-group">
+                        <label>&nbsp;</label>
+                        <button type="button" class="btn btn-danger btn-block delete-pit-tag">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<!-- Template for Identification Card -->
+<template id="identificationTemplate">
+    <div class="card mb-3 identification-card">
+        <div class="card-body">
+            <div class="form-row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Type</label>
+                        <select class="form-control" name="identification_type">
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Identifier</label>
+                        <input type="text" class="form-control" name="identifier">
+                    </div>
+                </div>
+                <div class="col-md-5">
+                    <div class="form-group">
+                        <label>Comments</label>
+                        <input type="text" class="form-control" name="comments">
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="form-group">
+                        <label>&nbsp;</label>
+                        <button type="button" class="btn btn-danger btn-block delete-identification">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<!-- Template for Sample Card -->
+<template id="sampleTemplate">
+    <div class="card mb-3 sample-card">
+        <div class="card-body">
+            <div class="form-row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Tissue Type</label>
+                        <select class="form-control" name="tissue_type">
+                            <option value="">Select Type</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Sample Label</label>
+                        <input type="text" class="form-control" name="sample_label">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label>Observation ID</label>
+                        <input type="text" class="form-control" name="observation_id">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Comments</label>
+                        <input type="text" class="form-control" name="comments">
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="form-group">
+                        <label>&nbsp;</label>
+                        <button type="button" class="btn btn-danger btn-block delete-sample">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<!-- Template for Document Card -->
+<template id="documentTemplate">
+    <div class="card mb-3 document-card">
+        <div class="card-body">
+            <div class="form-row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Document Type</label>
+                        <select class="form-control" name="document_type">
+                            <option value="">Select Type</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>File Name</label>
+                        <input type="text" class="form-control" name="file_name">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label>Person</label>
+                        <input type="text" class="form-control" name="person_name" readonly>
+                        <input type="hidden" name="person_id">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Comments</label>
+                        <input type="text" class="form-control" name="comments">
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="form-group">
+                        <label>&nbsp;</label>
+                        <button type="button" class="btn btn-danger btn-block delete-document">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+{{ tag_statuses|json_script:"tag-statuses-data" }}
+{{ pit_tag_statuses|json_script:"pit-tag-statuses-data" }}
+{{ identification_types|json_script:"identification-types-data" }}
+{{ tissue_types|json_script:"tissue-types-data" }}
+{{ document_types|json_script:"document-types-data" }}
 {% endblock %}
 
 {% block extra_js %}

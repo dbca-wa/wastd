@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "wastd"
-version = "2.1.6"
+version = "2.1.7"
 
 description = "Western Australian Sea Turtles Database"
 authors = ["Florian Mayer <florian.mayer@dbca.wa.gov.au>", "Ashley Felton <ashley.felton@dbca.wa.gov.au>","Evan Hallein <evan.hallein@dbca.wa.gov.au>", "Rick Wang <rick.wang@dbca.wa.gov.au>"]
@@ -47,16 +47,17 @@ django-easy-select2 = "1.5.8"
 sentry-sdk = {version = "2.14.0", extras = ["django"]}
 django-debug-toolbar = "^4.2.2"
 python-docx = "^1.1.2"
+setuptools = "^75.8.0"
 
 [tool.poetry.group.dev.dependencies]
-ipython = "^8.30.0"
+ipython = "^8.23.0"
 ipdb = "^0.13.13"
 black = "^24.3.0"
 ruff = "^0.3.3"
 sphinx = "^7.0.1"
 vulture = "^2.7"
 django-debug-toolbar = "^4.2.0"
-pre-commit = "^4.0.1"
+pre-commit = "^3.7.0"
 coverage = "^7.5.3"
 
 [build-system]

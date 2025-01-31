@@ -1,0 +1,234 @@
+{% extends "base_wastd.html" %}
+{% load static bootstrap4 %}
+
+{% block extra_style %}
+    {{ block.super }}
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@ttskch/select2-bootstrap4-theme/dist/select2-bootstrap4.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+{% endblock %}
+
+{% block breadcrumbs %}
+    <nav aria-label="breadcrumb" class="d-none d-md-block">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'wamtram2:admin_tools' %}">Curation Tools</a></li>
+            <li class="breadcrumb-item active">Turtle Data Statistics</li>
+        </ol>
+    </nav>
+{% endblock %}
+
+{% block page_content_inner %}
+<div class="container-fluid mt-3">
+    <div id="messageContainer"></div>
+
+    <h1 class="page-title"> {{ page_title }} </h1>
+
+    <form method="get" class="mb-4">
+        <div class="section-card">
+            <h4>Filter Options</h4>
+            <div class="form-row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Start Date:</label>
+                        <input type="date" name="start_date" class="form-control" 
+                            value="{{ start_date }}" required>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>End Date:</label>
+                        <input type="date" name="end_date" class="form-control" 
+                            value="{{ end_date }}" required>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Data Type:</label>
+                        <select name="data_type" class="form-control select2">
+                            <option value="processed" {% if data_type == 'processed' %}selected{% endif %}>Processed Observations</option>
+                            <option value="field" {% if data_type == 'field' %}selected{% endif %}>Field Entries</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Location:</label>
+                        <select name="location" class="form-control select2" multiple>
+                            {% for location in locations %}
+                                <option value="{{ location.location_code }}" 
+                                    {% if location.location_code in selected_locations %}selected{% endif %}>
+                                    {{ location.location_name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Place:</label>
+                        <select name="place" class="form-control select2" multiple>
+                            {% for place in places %}
+                                <option value="{{ place.place_code }}" 
+                                    {% if place.place_code in selected_places %}selected{% endif %}>
+                                    {{ place.place_name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row mb-3">
+                <div class="col-12">
+                    <small class="text-muted">
+                        <i class="fas fa-info-circle"></i> Note: Please select either Location or Place, not both. Location will show totals for all places within that location.
+                    </small>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Sex:</label>
+                        <select name="sex" class="form-control select2">
+                            <option value="">All Sexes</option>
+                            {% for sex_code, sex_name in sex_choices %}
+                                <option value="{{ sex_code }}" {% if selected_sex == sex_code %}selected{% endif %}>
+                                    {{ sex_name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Species:</label>
+                        <select name="species" class="form-control select2">
+                            <option value="">All Species</option>
+                            {% for sp in species %}
+                                <option value="{{ sp.species_code }}" {% if selected_species == sp.species_code %}selected{% endif %}>
+                                    {{ sp.common_name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    {% if results %}
+    <div class="section-card">
+        {% if results %}
+            <h4>Results: 
+                {% if selected_places %}
+                    {% for place in places %}
+                        {% if place.place_code in selected_places %}
+                            {{ place.place_name }}{% if not forloop.last %}, {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                {% elif selected_locations %}
+                    {% for location in locations %}
+                        {% if location.location_code in selected_locations %}
+                            {{ location.location_name }}{% if not forloop.last %}, {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                {% else %}
+                    All Locations
+                {% endif %}
+                ({{ start_date }} - {{ end_date }})
+            </h4>
+        {% endif %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Place Code</th>
+                        <th>Description</th>
+                        <th>Count</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for result in results.details %}
+                    <tr>
+                        <td>{{ result.place_code__place_code }}</td>
+                        <td>{{ result.place_code__place_name }}</td>
+                        <td>{{ result.count }}</td>
+                    </tr>
+                    {% endfor %}
+                    {% if results.total is not None %}
+                    <tr class="table-info">
+                        <td colspan="2"><strong>Total</strong></td>
+                        <td><strong>{{ results.total }}</strong></td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% elif start_date and end_date %}
+    <div class="section-card">
+        <p>No data found matching the selected criteria.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+    {{ block.super }}
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.select2').select2({
+                theme: 'bootstrap4'
+            });
+
+            const locationSelect = $('select[name="location"]');
+            const placeSelect = $('select[name="place"]');
+
+            // 监听 location 的变化
+            locationSelect.on('change', function() {
+                const selectedLocations = $(this).val();
+                if (selectedLocations && selectedLocations.length > 0) {
+                    placeSelect.val('').trigger('change');
+                    placeSelect.prop('disabled', true);
+                } else {
+                    placeSelect.prop('disabled', false);
+                }
+            });
+
+            // 监听 place 的变化
+            placeSelect.on('change', function() {
+                const selectedPlaces = $(this).val();
+                if (selectedPlaces && selectedPlaces.length > 0) {
+                    locationSelect.val('').trigger('change');
+                    locationSelect.prop('disabled', true);
+                } else {
+                    locationSelect.prop('disabled', false);
+                }
+            });
+
+            // 页面加载时初始化状态
+            if (locationSelect.val() && locationSelect.val().length > 0) {
+                placeSelect.prop('disabled', true);
+            } else if (placeSelect.val() && placeSelect.val().length > 0) {
+                locationSelect.prop('disabled', true);
+            }
+        });
+    </script>
+{% endblock %} 

@@ -83,7 +83,7 @@
             text-decoration: underline;
         }
     </style>
-{% endblock %}
+{% endblock extra_style %}
 
 {% block breadcrumbs %}
     <nav aria-label="breadcrumb" class="d-none d-md-block">
@@ -91,18 +91,21 @@
             <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
             <li class="breadcrumb-item"><a href="{% url 'wamtram2:admin_tools' %}">Curation Tools</a></li>
             <li class="breadcrumb-item"><a href="{% url 'wamtram2:batch_curation' %}">Batch List</a></li>
-            <li class="breadcrumb-item active">Entries for Batch {{ batch_id }}</li>
+            {% if is_multi_batch %}
+                <li class="breadcrumb-item active">Multiple Batches</li>
+            {% else %}
+                <li class="breadcrumb-item active">Entries for Batch {{ batch_id }}</li>
+            {% endif %}
         </ol>
     </nav>
-{% endblock %}
-
+{% endblock breadcrumbs %}
 
 {% block page_content_inner %}
     <div class="container-fluid mt-3">
 
         <div class="row mb-3">
             <div class="col">
-                <h2>Entries for Batch {{ batch_id }}</h2>
+                <h2> {{ page_title }} - Entries for Batch {{ batch_id }}</h2>
             </div>
             <div class="col">
                 <div class="btn-group" role="group">
@@ -135,16 +138,27 @@
         <div class="row mb-3">
             <div class="col-md-8">
                 {% if request.user.is_superuser or request.user|has_group:"WAMTRAM2_STAFF" or request.user|has_group:"WAMTRAM2_TEAM_LEADER"%}
-                <a id="validateBtn" href="{% url 'wamtram2:validate_data_entry_batch' batch_id=batch_id %}?return_to=curation" class="btn btn-primary mr-2">
-                    Validate this Batch</a>
+                    {% if not is_multi_batch %}
+                        <a id="validateBtn" href="{% url 'wamtram2:validate_data_entry_batch' batch_id=batch_id %}?return_to=curation" class="btn btn-primary mr-2">
+                            Validate this Batch</a>
+                    {% endif %}
                 {% endif %}
+                
                 {% if request.user.is_superuser %}
-                <a id="processBtn" href="{% url 'wamtram2:process_data_entry_batch' batch_id=batch_id %}?return_to=curation" class="btn btn-primary">
-                    Add this batch to the database</a>
+                    {% if not is_multi_batch %}
+                        <a id="processBtn" href="{% url 'wamtram2:process_data_entry_batch' batch_id=batch_id %}?return_to=curation" class="btn btn-primary">
+                            Add this batch to the database</a>
+                    {% endif %}
                 {% endif %}
             </div>
             <div class="col-md-4">
                 <form method="get" class="form-inline float-right">
+                    {% if is_multi_batch %}
+                        {% for bid in batch_ids %}
+                            <input type="hidden" name="batch_ids" value="{{ bid }}">
+                        {% endfor %}
+                    {% endif %}
+                    
                     <div class="form-group">
                         <label class="mr-2" for="filter">Filter</label>
                         <select name="filter" class="form-control" onchange="this.form.submit()">
@@ -232,10 +246,11 @@
                                     </span>
                                     <span class="edit-mode" style="display: none;">
                                         <input type="text"
+                                            class="form-control"
                                             name="turtle_id"
                                             value="{{ entry.turtle_id|default:'' }}"
-                                            class="form-control"
-                                            readonly >
+                                            data-original-value="{{ entry.turtle_id|default:'' }}"
+                                            >
                                     </span>
 
                                 {% elif column.field == 'species_code' %}
@@ -734,17 +749,12 @@
         <div class="loading-overlay" style="display: none;"></div>
         
     </div>
-{% endblock %}
+{% endblock page_content_inner %}
 
 {% block extra_js %}
 {{ block.super }}
 <script>
     let editableFields = {}; 
-
-    function viewEntry(entryId) {
-        console.log('Clicked entry:', entryId);
-        // TODO: Implement entry detail view
-    };
 
     function saveChanges() {
         if(Object.keys(editableFields).length === 0) {
@@ -983,8 +993,6 @@
             const entryId = $(this).closest('tr').data('entry-id');
             const fieldName = $(this).closest('td').data('field');
             let newValue = $(this).val();
-
-            console.log('Field changed:', fieldName, 'New value:', newValue);
             
             if($(this).is('select')) {
                 if($(this).find('option:selected').text() === 'Yes' || $(this).find('option:selected').text() === 'No') {
@@ -1105,4 +1113,4 @@
         });
     });
 </script>
-{% endblock %}
+{% endblock extra_js %}
