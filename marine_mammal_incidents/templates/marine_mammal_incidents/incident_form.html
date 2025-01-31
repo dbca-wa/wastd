@@ -46,6 +46,14 @@
             font-size: 0.9em;
             color: #6c757d;
         }
+        .image-preview {
+            max-width: 200px;
+            max-height: 200px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            display: none;
+        }
     </style>
 {% endblock %}
 
@@ -279,44 +287,67 @@
                 </div>
             </div>
                     
-<div class="step-container mt-4">
-    <div class="step-header">Upload Files</div>
-    {{ formset.management_form }}
-    <div id="file-upload-forms">
-        {% for form in formset %}
-            <div class="row file-form mb-3">
-                {% if form.instance.file %}
-                    <div class="col-md-4">
-                        <strong>{{ form.instance.title }}</strong>
-                    </div>
-                    <div class="col-md-6">
-                        <p class="mb-0">
-                            Current file: <a href="{{ form.instance.file.url }}" target="_blank">{{ form.instance.file.name }}</a>
-                        </p>
-                    </div>
-                    <div class="col-md-2 text-right">
-                        <button type="button" class="btn btn-danger delete-file">Delete</button>
-                    </div>
-                    {{ form.id }}
-                    {{ form.DELETE.as_hidden }}
-                {% else %}
-                    <div class="col-md-4">
-                        {{ form.title.label_tag }}
-                        {{ form.title }}
-                    </div>
-                    <div class="col-md-6">
-                        {{ form.file.label_tag }}
-                        {{ form.file }}
-                    </div>
-                    <div class="col-md-2 text-right">
-                        <button type="button" class="btn btn-danger delete-file">Delete</button>
-                    </div>
-                {% endif %}
+            <div class="step-container mt-4">
+                <div class="step-header">Upload Files</div>
+                {{ formset.management_form }}
+                <div id="file-upload-forms">
+                    {% for form in formset %}
+                        <div class="row file-form mb-3">
+                            {% if form.instance.pk %}
+                                <div class="col-md-4">
+                                    <strong>{{ form.instance.title }}</strong>
+                                    <input type="hidden" name="{{ form.title.html_name }}" value="{{ form.instance.title }}">
+                                    {{ form.id }}
+                                </div>
+                                <div class="col-md-6">
+                                    {% if form.instance.file %}
+                                        <p class="mb-0">
+                                            Current file: 
+                                            <a href="{{ form.instance.file.url }}" target="_blank">
+                                                {{ form.instance.file.name }}
+                                            </a>
+                                        </p>
+                                        {% if form.instance.file.name|lower|slice:"-3:" in "jpg,png,gif,bmp,jpeg" %}
+                                            <img src="{{ form.instance.file.url }}" 
+                                                 class="image-preview" 
+                                                 style="display: block; max-width: 200px; margin-top: 10px;" 
+                                                 alt="preview">
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-2 text-right">
+                                    <button type="button" class="btn btn-danger delete-file">Delete</button>
+                                    {{ form.DELETE.as_hidden }}
+                                </div>
+                            {% else %}
+                                <div class="col-md-4">
+                                    {{ form.title.label_tag }}
+                                    {{ form.title }}
+                                    {% if form.title.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.title.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form.file.label_tag }}
+                                    {{ form.file }}
+                                    <img class="image-preview" src="#" alt="Preview image">
+                                    {% if form.file.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.file.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-2 text-right">
+                                    <button type="button" class="btn btn-danger delete-file">Delete</button>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+                <button type="button" id="add-more-files" class="btn btn-secondary mt-2">Add Files</button>
             </div>
-        {% endfor %}
-    </div>
-    <button type="button" id="add-more-files" class="btn btn-secondary mt-2">Add More Files</button>
-</div>
                     
             <div class="row mt-4">
                 <div class="col-md-4">
@@ -341,6 +372,7 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
+    // Date and time picker initialization
     flatpickr("#{{ form.incident_date.id_for_label }}", {
         dateFormat: "Y-m-d",
         allowInput: true
@@ -354,22 +386,22 @@
         allowInput: true
     });
 
+    // Message display function
     function showMessage(message, type) {
         var alert = $('#message-alert');
         alert.removeClass('alert-success alert-danger alert-warning alert-info');
         alert.addClass('alert-' + type);
-        alert.text(message);
+        alert.html(message.replace(/\n/g, '<br>'));
         alert.slideDown();
 
-        $('html, body').animate({ scrollTop: 0 }, 'slow', function() {
-            alert.slideDown();
-        });
-    
-        setTimeout(function() {
-            alert.slideUp();
-        }, 5000);
+        if (type !== 'danger') {
+            setTimeout(function() {
+                alert.slideUp();
+            }, 5000);
+        }
     }
 
+    // Loading spinner functions
     function showLoadingSpinner() {
         $('.loading-spinner, .loading-overlay').show();
     }
@@ -378,80 +410,63 @@
         $('.loading-spinner, .loading-overlay').hide();
     }
 
-    function updateDeleteButtons() {
-        var visibleForms = $('.file-form:visible');
-        if (visibleForms.length === 1) {
-            visibleForms.find('.delete-file').prop('disabled', true);
+    // File preview function
+    function handleFileSelect(event) {
+        const file = event.target.files[0];
+        const preview = $(event.target).closest('.file-form').find('.image-preview');
+        
+        if (file) {
+            const fileType = file.type.toLowerCase();
+            if (fileType.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.attr('src', e.target.result);
+                    preview.css('display', 'block');
+                }
+                reader.readAsDataURL(file);
+            } else {
+                preview.hide();
+            }
         } else {
-            $('.delete-file').prop('disabled', false);
+            preview.hide();
         }
     }
 
+    // Add new file form function
     function addFileForm() {
         var form_idx = $('#id_uploaded_file_set-TOTAL_FORMS').val();
-        var newForm = $('.file-form:last').clone(true);
-        newForm.find(':input').each(function() {
-            var name = $(this).attr('name');
-            if (name) {
-                name = name.replace('-' + (form_idx-1) + '-', '-' + form_idx + '-');
-                var id = 'id_' + name;
-                $(this).attr({'name': name, 'id': id}).val('').removeAttr('checked');
-            }
-        });
-        newForm.find('label').each(function() {
-            var newFor = $(this).attr('for');
-            if (newFor) {
-                newFor = newFor.replace('-' + (form_idx-1) + '-', '-' + form_idx + '-');
-                $(this).attr('for', newFor);
-            }
-        });
-        $('#file-upload-forms').append(newForm);
+        var emptyForm = `
+            <div class="row file-form mb-3">
+                <div class="col-md-4">
+                    <label>Attachment name:</label>
+                    <input type="text" name="uploaded_file_set-${form_idx}-title" 
+                           id="id_uploaded_file_set-${form_idx}-title" class="form-control">
+                </div>
+                <div class="col-md-6">
+                    <label>File:</label>
+                    <input type="file" name="uploaded_file_set-${form_idx}-file" 
+                           id="id_uploaded_file_set-${form_idx}-file" class="form-control">
+                    <img class="image-preview" src="#" alt="Preview" 
+                         style="display: none; max-width: 200px; margin-top: 10px;">
+                </div>
+                <div class="col-md-2 text-right">
+                    <button type="button" class="btn btn-danger delete-file">Delete</button>
+                </div>
+            </div>
+        `;
+        
+        $('#file-upload-forms').append(emptyForm);
         $('#id_uploaded_file_set-TOTAL_FORMS').val(parseInt(form_idx) + 1);
-        newForm.find('input[type="file"]').val('');
-        newForm.find('.file-name-display').remove();
-        updateDeleteButtons();
     }
 
-
-    
-
     $(document).ready(function() {
-        if ($('#file-upload-forms .file-form:visible').length === 0) {
-            addFileForm();
-        }    
+        // File input change handler
+        $(document).on('change', 'input[type="file"]', handleFileSelect);
 
-        updateDeleteButtons();
-
-        $('#incidentForm').submit(function(e) {
-            e.preventDefault();
-            var formData = new FormData(this);
-            showLoadingSpinner();
-            var url = $(this).attr('action');
-            $.ajax({
-                url: url,
-                type: "POST",
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function(response) {
-                    showMessage('Incident saved successfully', 'success');
-                    setTimeout(function() {
-                        window.location.href = "{% url 'marine_mammal_incidents:incident_list' %}";
-                    }, 2000);
-                },
-                error: function(xhr) {
-                    var response = xhr.responseJSON;
-                    var message = response.message || 'Error saving incident';
-                    showMessage(message, 'danger');
-                },
-                complete: function() {
-                    hideLoadingSpinner();
-                }
-            });
-        });
-
+        // Add more files button handler
         $('#add-more-files').click(addFileForm);
 
+        // Delete file button handler
         $(document).on('click', '.delete-file', function() {
             var fileForm = $(this).closest('.file-form');
             var deleteCheckbox = fileForm.find('input[type=checkbox][name$=DELETE]');
@@ -461,13 +476,63 @@
             } else {
                 fileForm.remove();
             }
-            if ($('.file-form:visible').length === 0) {
-                addFileForm();
-            }
-            updateDeleteButtons();
+        });
+
+        // Form submission handler
+        $('#incidentForm').submit(function(e) {
+            e.preventDefault();
+            
+            // Remove empty file forms before submission
+            $('.file-form').each(function() {
+                var fileInput = $(this).find('input[type="file"]');
+                var titleInput = $(this).find('input[name$="-title"]');
+                
+                if (!fileInput.val() && !titleInput.val() && !$(this).find('input[name$="-id"]').val()) {
+                    $(this).remove();
+                }
+            });
+
+            var formData = new FormData(this);
+            showLoadingSpinner();
+            
+            $.ajax({
+                url: $(this).attr('action'),
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    showMessage(response.message, 'success');
+                    setTimeout(function() {
+                        window.location.href = "{% url 'marine_mammal_incidents:incident_list' %}";
+                    }, 2000);
+                },
+                error: function(xhr) {
+                    var response = xhr.responseJSON || {};
+                    var errorMessage = 'Error saving incident:\n';
+                    
+                    if (response.errors) {
+                        if (response.errors.form_errors) {
+                            Object.keys(response.errors.form_errors).forEach(function(field) {
+                                errorMessage += `\n${field}: ${response.errors.form_errors[field].join(', ')}`;
+                            });
+                        }
+                        if (response.errors.formset_errors) {
+                            response.errors.formset_errors.forEach(function(formErrors, index) {
+                                if (Object.keys(formErrors).length > 0) {
+                                    errorMessage += `\nFile ${index + 1}: ${JSON.stringify(formErrors)}`;
+                                }
+                            });
+                        }
+                    }
+                    
+                    showMessage(errorMessage, 'danger');
+                },
+                complete: function() {
+                    hideLoadingSpinner();
+                }
+            });
         });
     });
-
-    
 </script>
 {% endblock %}

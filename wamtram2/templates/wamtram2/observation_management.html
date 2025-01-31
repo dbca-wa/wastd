@@ -27,9 +27,16 @@
 {% block page_content_inner %}
 {% csrf_token %}
 <div class="container-fluid mt-3">
+    <!-- Message container should be outside tabs -->
+    <div id="messageContainer"></div>
+
+    <h1 class="page-title"> {{ page_title }} </h1>  
+
     <div class="form-row mt-3">
         <div class="col-12">
-            <button type="button" class="btn btn-primary" onclick="handleFormSubmit()">Save Observation</button>
+            <button id="saveButton" class="btn btn-primary">
+                <i class="fas fa-save"></i> Save
+            </button>
         </div>
     </div>
     <!-- Basic Information Section -->
@@ -76,9 +83,11 @@
             <div class="col-md-2">
                 <div class="form-group">
                     <label>Nesting?</label>
-                    <select class="form-control" name="nesting">
+                    <select class="form-control select2" name="nesting">
                         {% for option in yes_no_choices %}
-                            <option value="{{ option.code }}">{{ option.description }}</option>
+                            <option value="{{ option.code }}" {% if initial_data.basic_info.nesting == option.code %}selected{% endif %}>
+                                {{ option.description }}
+                            </option>
                         {% endfor %}
                     </select>
                 </div>
@@ -86,9 +95,11 @@
             <div class="col-md-2">
                 <div class="form-group">
                     <label>Clutch Completed?</label>
-                    <select class="form-control" name="clutch_completed">
+                    <select class="form-control select2" name="clutch_completed">
                         {% for option in yes_no_choices %}
-                            <option value="{{ option.code }}">{{ option.description }}</option>
+                            <option value="{{ option.code }}" {% if initial_data.basic_info.clutch_completed == option.code %}selected{% endif %}>
+                                {{ option.description }}
+                            </option>
                         {% endfor %}
                     </select>
                 </div>
@@ -272,13 +283,13 @@
     <!-- Tabs for Additional Information -->
     <ul class="nav nav-tabs" role="tablist">
         <li class="nav-item">
-            <a class="nav-link active" data-toggle="tab" href="#flipperTags">Recorded Flipper Tags</a>
+            <a class="nav-link active" data-toggle="tab" href="#flipper-tags">Recorded Flipper Tags</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" data-toggle="tab" href="#pitTags">Recorded PIT Tags</a>
+            <a class="nav-link" data-toggle="tab" href="#pit-tags">Recorded PIT Tags</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" data-toggle="tab" href="#otherIdentification">Recorded Other Identification</a>
+            <a class="nav-link" data-toggle="tab" href="#otherIdentification">Recorded Identification</a>
         </li>
         <li class="nav-item">
             <a class="nav-link" data-toggle="tab" href="#measurements">Measurements</a>
@@ -289,59 +300,120 @@
         <li class="nav-item">
             <a class="nav-link" data-toggle="tab" href="#scars">Scars</a>
         </li>
+        <!-- Causeomment out Other Information tab 
         <li class="nav-item">
             <a class="nav-link" data-toggle="tab" href="#otherInfo">Other Information</a>
         </li>
+        -->
     </ul>
 
     <!-- Tab Content -->
     <div class="tab-content">
-        <div id="flipperTags" class="tab-pane active">
-            <div class="section-card">
-                <h4>Recorded Flipper Tags</h4>
-                <div id="tagContainer"></div>
+        <!-- Recorded Flipper Tags Panel -->
+        <div class="tab-pane fade show active" id="flipper-tags" role="tabpanel">
+            <div class="card">
+                <div class="card-body">
+                    <h5>Recorded Flipper Tags</h5>
+                    
+                    <div id="tagContainer">
+                        <!-- Existing PIT tags will be loaded here -->
+                    </div>
+
+                    <button type="button" class="btn btn-primary mt-3" id="addFlipperTagBtn">
+                        <i class="fas fa-plus"></i> Add Flipper Tag
+                    </button>
+                    <button type="button" class="btn btn-success mt-3" id="saveTagsBtn">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                </div>
             </div>
         </div>
-        <div id="pitTags" class="tab-pane fade">
-            <div class="section-card">
-                <h4>Recorded PIT Tags</h4>
-                <div id="pitTagContainer"></div>
+
+        <!-- Recorded PIT Tags Panel -->
+        <div class="tab-pane fade" id="pit-tags" role="tabpanel">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Recorded PIT Tags</h5>
+                    <div id="pitTagContainer">
+                        <!-- Existing PIT tags will be loaded here -->
+                    </div>
+                    <button type="button" class="btn btn-primary mt-3" id="addPitTagBtn">
+                        <i class="fas fa-plus"></i> Add PIT Tag
+                    </button>
+                    <button type="button" class="btn btn-success mt-3" onclick="savePitTagChanges()">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                </div>
             </div>
         </div>
+
         <div id="otherIdentification" class="tab-pane fade">
             <div class="section-card">
-                <h4>Recorded Other Identification</h4>
-                <div id="otherIdContainer"></div>
+                <h4>Recorded Identification</h4>
+                <div id="otherIdContainer">
+                    <!-- Existing identifications will be loaded here -->
+                </div>
+                <button type="button" class="btn btn-primary mt-3" id="addIdentificationBtn">
+                    <i class="fas fa-plus"></i> Add Identification
+                </button>
+                <button type="button" class="btn btn-success mt-3" id="saveIdentificationsBtn">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
             </div>
         </div>
+
+        
         <div id="measurements" class="tab-pane fade">
             <div class="section-card">
                 <h4>Measurements</h4>
-                <div id="measurementContainer"></div>
+                <div id="measurementContainer">
+                    <!-- Existing measurements will be loaded here -->
+                </div>
+                <div class="mt-3">
+                    <button type="button" class="btn btn-primary" id="addMeasurementBtn">
+                        <i class="fas fa-plus"></i> Add Measurement
+                    </button>
+                    <button type="button" class="btn btn-success" id="saveMeasurementsBtn">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                </div>
             </div>
         </div>
         <div id="damage" class="tab-pane fade">
             <div class="section-card">
                 <h4>Damage</h4>
-                <div id="damageContainer"></div>
+                <div id="damageContainer">
+                    <!-- Existing damage records will be loaded here -->
+                </div>
+                <div class="mt-3">
+                    <button type="button" class="btn btn-primary" id="addDamageBtn">
+                        <i class="fas fa-plus"></i> Add Damage
+                    </button>
+                    <button type="button" class="btn btn-success" id="saveDamageBtn">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                </div>
             </div>
         </div>
         <div id="scars" class="tab-pane fade">
             <div class="section-card">
                 <h4>Scars</h4>
                 <div id="scarsContainer"></div>
+                <button type="button" class="btn btn-success mt-3" onclick="saveScarsChanges()">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
             </div>
         </div>
+        <!-- Comment out Other Information content area
         <div id="otherInfo" class="tab-pane fade">
             <div class="section-card">
                 <h4>Other Tag Information</h4>
                 <div id="otherTagInfoContainer"></div>
             </div>
         </div>
+        -->
     </div>
 
-    <!-- Message container should be outside tabs -->
-    <div id="messageContainer"></div>
 </div>
 
 <!-- Loading spinner -->
@@ -353,6 +425,8 @@
 
 <!-- Loading overlay -->
 <div class="loading-overlay"></div>
+
+
 {% endblock %}
 
 {% block extra_js %}
@@ -361,10 +435,9 @@
     <script>
         const searchPersonsUrl = '{{ search_persons_url }}';
         const searchPlacesUrl = '{{ search_places_url }}';
-        const submitUrl = '{{ submit_url }}';
+        const submitUrl = '/wamtram2/api/observations/save/';
         {% if initial_data %}
             const initialData = {{ initial_data|safe }};
-            console.log(initialData);
         {% else %}
             const initialData = null;
         {% endif %}
@@ -378,6 +451,7 @@
         const identificationTypeChoices = {{ identification_type_choices|safe }};
         const dateConventionChoices = {{ date_convention_choices|safe }}; 
 
+        const turtleDetailUrlTemplate = "{% url 'wamtram2:turtle_detail' 0 %}".replace('/0/', '/'); 
     </script>
     <script src="{% static 'js/observation_management.js' %}"></script>
 {% endblock %} 

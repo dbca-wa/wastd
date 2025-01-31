@@ -915,6 +915,24 @@
   <div id="advancedDataCard" class="card border-dark mt-3" style="display: none;">
     <div class="card-header"><strong>Advanced Data</strong></div>
     <div class="card-body">
+      <!-- Alive Status -->
+      <div class="row">
+        <div class="col-md-12">
+          <label><strong>Alive Status</strong></label>
+        </div>
+        <div class="col-md-6">
+          {% bootstrap_field form.alive show_label=False %}
+        </div>
+      </div>
+      <!-- Datum Code -->
+      <div class="row">
+        <div class="col-md-12">
+          <label><strong>Datum Code</strong></label>
+        </div>
+        <div class="col-md-6">
+          {% bootstrap_field form.datum_code show_label=False %}
+        </div>
+      </div>
       <!-- Egg -->
       <div class="row">
         <div class="col-md-12">
@@ -1404,65 +1422,9 @@
         });
     }
   });
-  document.addEventListener('DOMContentLoaded', function() {
-      var flipperBodyParts = ['B', 'C', 'D', 'E'];
-  
-      function updateDamageCodeOptions(bodyPartSelect, damageCodeSelect) {
-          var selectedBodyPart = bodyPartSelect.value;
-          var options = damageCodeSelect.options;
-  
-          for (var i = 0; i < options.length; i++) {
-              var option = options[i];
-              if (flipperBodyParts.includes(selectedBodyPart)) {
-                  option.style.display = ''; // Show all options
-              } else {
-                  if (['0', '5', '6', '7'].includes(option.value)) {
-                      option.style.display = ''; // Show all options
-                  } else {
-                      option.style.display = 'none'; // Hide other options
-                  }
-              }
-          }
-          damageCodeSelect.value = ''; // Reset the damage code
-      }
-  
-      for (var i = 1; i <= 6; i++) {
-          var bodyPartSelect = document.getElementById(`id_body_part_${i}`);
-          var damageCodeSelect = document.getElementById(`id_damage_code_${i}`);
-  
-          if (bodyPartSelect && damageCodeSelect) {
-              bodyPartSelect.addEventListener('change', function() {
-                  var index = this.id.split('_').pop();
-                  var correspondingDamageCodeSelect = document.getElementById(`id_damage_code_${index}`);
-                  updateDamageCodeOptions(this, correspondingDamageCodeSelect);
-              });
-              updateDamageCodeOptions(bodyPartSelect, damageCodeSelect);
-          }
-      }
-  });
-  document.addEventListener('DOMContentLoaded', function() {
-    var injuryCheckField = document.querySelector('[name="injury_check"]');
-    var bodyPartField = document.querySelector('[name="body_part_1"]');
-    var damageCodeField = document.querySelector('[name="damage_code_1"]');
 
-    injuryCheckField.addEventListener('change', function() {
-        if (this.value === 'N') {  
-            // Set body_part_1 to "Whole animal"
-            bodyPartField.value = 'W';
-            bodyPartField.dispatchEvent(new Event('change'));
-            
-            // Set damage_code_1 to "None signification"
-            damageCodeField.value = '0';
-            damageCodeField.dispatchEvent(new Event('change'));
-        } else {
-          bodyPartField.value = '';
-          bodyPartField.dispatchEvent(new Event('change'));
-          
-          damageCodeField.value = '';
-          damageCodeField.dispatchEvent(new Event('change'));
-      }
-    });
-  });
+
+  
   document.addEventListener('DOMContentLoaded', function() {
     const turtleIdField = document.getElementById('id_turtle_id');
     const flipperTagCheckField = document.getElementById('id_flipper_tag_check');

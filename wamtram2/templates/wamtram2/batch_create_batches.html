@@ -1,0 +1,358 @@
+{% extends "base_wastd.html" %}
+{% load static bootstrap4 %}
+
+{% block extra_style %}
+    {{ block.super }}
+    {{ form.media.css }}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/search_styles.css' %}">
+{% endblock %}
+
+{% block page_content_inner %}
+<div class="container mt-4">
+    <h1 class="page-title"> {{ page_title }} </h1>
+    
+    <form id="batchCreateForm" class="mt-4">
+        {% csrf_token %}
+        
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="location">Location (required)</label>
+                    <select class="form-control" id="location" name="location_code" required>
+                        <option value="">Select Location</option>
+                        {% for location in locations %}
+                            <option value="{{ location.location_code }}">{{ location.location_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="place">Place (optional)</label>
+                    <select class="form-control" id="place" name="place_code">
+                        <option value="">Select Place</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="year">Year (required)</label>
+                    <select class="form-control" id="year" name="year" required>
+                        <option value="">Select Year</option>
+                        {% for year in years %}
+                            <option value="{{ year }}">{{ year }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="nightStart">Night Number Start</label>
+                    <input type="number" class="form-control" id="nightStart" name="night_start" min="1" value="1" required>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="nightEnd">Night Number End</label>
+                    <input type="number" class="form-control" id="nightEnd" name="night_end" min="1" value="1" required>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="startDate">Start Date (optional)</label>
+                    <input type="text" class="form-control" id="startDate" name="start_date">
+                    <small class="form-text text-muted">
+                        If provided, dates will increment for each night automatically
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="teamLeader">Team Leader Name</label>
+                    <div class="search-container">
+                        <input type="text" id="teamLeader" class="search-field" placeholder="Search Person" autocomplete="off">
+                        <input type="hidden" id="teamLeaderId" name="entered_person_id">
+                        <div id="searchResults" class="search-results"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="template">Template (optional)</label>
+                    <div class="search-container">
+                        <input type="text" id="template" class="search-field" placeholder="Search Template" autocomplete="off">
+                        <input type="hidden" id="templateId" name="template_id">
+                        <div id="templateSearchResults" class="search-results"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col">
+                <button type="submit" class="btn btn-primary" id="createBatchesBtn">
+                    Create Batches
+                </button>
+                <a href="{% url 'wamtram2:batches_curation' %}" class="btn btn-secondary ml-2">Cancel</a>
+            </div>
+        </div>
+    </form>
+
+    <div id="previewSection" class="mt-4" style="display: none;">
+        <h4>Preview of Batches to be Created:</h4>
+        <div id="previewContent" class="table-responsive">
+            <!-- Preview content will be inserted here -->
+        </div>
+    </div>
+</div>
+
+<!-- Loading spinner -->
+<div class="loading-spinner" style="display: none;">
+    <div class="spinner-border text-primary" role="status">
+        <span class="sr-only">Loading...</span>
+    </div>
+</div>
+
+<!-- Loading overlay -->
+<div class="loading-overlay" style="display: none;"></div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+    $(document).ready(function() {
+        // Initialize flatpickr for date input
+        flatpickr("#startDate", {
+            dateFormat: "Y-m-d",
+            allowInput: true
+        });
+
+        // Handle location change
+        var placesData = {{ places_json|safe }};
+        
+        $('#location').change(function() {
+            var locationCode = $(this).val();
+            var placeSelect = $('#place');
+            placeSelect.empty().append('<option value="">Select Place</option>');
+            
+            if (locationCode) {
+                var filteredPlaces = placesData.filter(place => 
+                    place.place_code.startsWith(locationCode)
+                );
+                filteredPlaces.forEach(place => {
+                    placeSelect.append($('<option>', {
+                        value: place.place_code,
+                        text: place.place_name
+                    }));
+                });
+            }
+        });
+
+        // Preview functionality
+        function updatePreview() {
+            var locationCode = $('#location').val();
+            var placeCode = $('#place').val();
+            var year = $('#year').val();
+            var nightStart = parseInt($('#nightStart').val()) || 1;
+            var nightEnd = parseInt($('#nightEnd').val()) || 1;
+            var startDate = $('#startDate').val();
+
+            if (!locationCode || !year || nightEnd < nightStart) {
+                $('#previewSection').hide();
+                return;
+            }
+
+            var previewHtml = '<table class="table table-striped">';
+            previewHtml += '<thead><tr><th>Night</th><th>Batch Code</th><th>Date</th></tr></thead><tbody>';
+
+            var currentDate = startDate ? new Date(startDate) : null;
+
+            for (var night = nightStart; night <= nightEnd; night++) {
+                var batchCode = placeCode ? 
+                    `N${night}${placeCode}${year.toString().slice(-2)}` : 
+                    `N${night}${locationCode}${year.toString().slice(-2)}`;
+                
+                var dateStr = currentDate ? 
+                    currentDate.toISOString().split('T')[0] : 
+                    '-';
+
+                previewHtml += `<tr><td>${night}</td><td>${batchCode}</td><td>${dateStr}</td></tr>`;
+
+                if (currentDate) {
+                    currentDate.setDate(currentDate.getDate() + 1);
+                }
+            }
+
+            previewHtml += '</tbody></table>';
+            $('#previewContent').html(previewHtml);
+            $('#previewSection').show();
+        }
+
+        // Update preview when form fields change
+        $('#location, #place, #year, #nightStart, #nightEnd, #startDate').on('change input', updatePreview);
+
+        // Form submission
+        $('#batchCreateForm').submit(function(e) {
+            e.preventDefault();
+            
+            // 检查必填字段
+            if (!$('#location').val() || !$('#year').val()) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            var formData = {
+                location_code: $('#location').val(),
+                place_code: $('#place').val() || null,
+                year: $('#year').val(),
+                night_start: $('#nightStart').val(),
+                night_end: $('#nightEnd').val(),
+                start_date: $('#startDate').val() || null,
+                entered_person_id: $('#teamLeaderId').val() || null, 
+                template_id: $('#templateId').val() || null
+            };
+
+            $('.loading-spinner, .loading-overlay').show();
+            $('#createBatchesBtn').prop('disabled', true);
+
+            fetch("{% url 'wamtram2:batch_create_batches' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Batches created successfully!');
+                    window.location.href = "{% url 'wamtram2:batches_curation' %}";
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while creating batches.');
+            })
+            .finally(() => {
+                $('.loading-spinner, .loading-overlay').hide();
+                $('#createBatchesBtn').prop('disabled', false);
+            });
+        });
+
+        // Team Leader search functionality
+        var teamLeaderInput = document.getElementById('teamLeader');
+        var teamLeaderIdInput = document.getElementById('teamLeaderId');
+        var searchResults = document.getElementById('searchResults');
+    
+        let isSelecting = false;
+
+        teamLeaderInput.addEventListener('input', function() {
+            if (isSelecting) return;
+
+            var searchTerm = this.value;
+            if (searchTerm.length >= 2) {
+                fetch(`{% url 'wamtram2:search-persons' %}?q=${searchTerm}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        searchResults.innerHTML = '';
+                        if (data.length > 0) {
+                            searchResults.style.display = 'block';
+                            data.forEach(person => {
+                                var div = document.createElement('div');
+                                div.className = 'search-result';
+                                div.textContent = `${person.first_name} ${person.surname}`;
+                                div.addEventListener('click', function() {
+                                    isSelecting = true;
+                                    teamLeaderInput.value = `${person.first_name} ${person.surname}`;
+                                    teamLeaderIdInput.value = parseInt(person.person_id); // 确保是数字
+                                    searchResults.style.display = 'none';
+                                    isSelecting = false;
+                                });
+                                searchResults.appendChild(div);
+                            });
+                        } else {
+                            searchResults.style.display = 'none';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        searchResults.style.display = 'none';
+                    });
+            } else {
+                searchResults.style.display = 'none';
+            }
+        });
+
+        // Template search functionality
+        var templateInput = document.getElementById('template');
+        var templateIdInput = document.getElementById('templateId');
+        var templateSearchResults = document.getElementById('templateSearchResults');
+    
+        let isSelectingTemplate = false;
+
+        templateInput.addEventListener('input', function() {
+            if (isSelectingTemplate) return;
+        
+            var searchTerm = this.value;
+            if (searchTerm.length >= 2) {
+                fetch(`{% url 'wamtram2:search_templates' %}?q=${searchTerm}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        templateSearchResults.innerHTML = '';
+                        if (data.length > 0) {
+                            templateSearchResults.style.display = 'block';
+                            data.forEach(template => {
+                                var div = document.createElement('div');
+                                div.className = 'search-result';
+                                div.textContent = template.name;
+                                div.addEventListener('click', function() {
+                                    isSelectingTemplate = true;
+                                    templateInput.value = template.name;
+                                    templateIdInput.value = template.template_id;
+                                    templateSearchResults.style.display = 'none';
+                                    isSelectingTemplate = false;
+                                });
+                                templateSearchResults.appendChild(div);
+                            });
+                        } else {
+                            templateSearchResults.style.display = 'none';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        templateSearchResults.style.display = 'none';
+                    });
+            } else {
+                templateSearchResults.style.display = 'none';
+            }
+        });
+
+        // Hide search results when clicking outside
+        document.addEventListener('click', function(e) {
+            if (e.target !== teamLeaderInput && !searchResults.contains(e.target)) {
+                searchResults.style.display = 'none';
+            }
+            if (e.target !== templateInput && !templateSearchResults.contains(e.target)) {
+                templateSearchResults.style.display = 'none';
+            }
+        });
+    });
+</script>
+{% endblock %} 

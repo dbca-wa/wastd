@@ -8,4 +8,5 @@ urlpatterns = [
     path('export/', views.export_form, name='export_form'),
     path('export/data/', views.export_data, name='export_data'),
     path('get-locations/', views.get_locations, name='get_locations'),
+    path('import/', views.import_incidents, name='import_incidents'),
 ]

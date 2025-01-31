@@ -1,5 +1,5 @@
 {% extends "base_wastd.html" %}
-{% load static bootstrap4 %}
+{% load static bootstrap4 dud_filter %}
 
 {% block extra_style %}
     {{ block.super }}
@@ -27,7 +27,7 @@
     <div class="container">
         <div class="step-container mt-5">
             <div class="page-header">
-                <h1 class="page-title">Dud Tag Management</h1>
+                <h1 class="page-title"> {{ page_title }}</h1>
             </div>
             {% include "includes/messages.html" %}
             {% if error_message %}
@@ -38,245 +38,91 @@
             
             <div class="table-container">
                 <!-- Dud Tag Management Form -->
-                <form method="post" id="dudTagForm">
+                <form method="post" action="{% url 'wamtram2:dud_tag_manage' %}">
                     {% csrf_token %}
                     <table class="table table-striped table-hover">
                         <thead>
                             <tr>
-                                <th>Entry ID</th>
-                                <th>Observation ID</th>
-                                <th>Turtle ID</th>
-                                <th>DUD Tag Type</th>
-                                <th>DUD Tag ID</th>
-                                <th>DUD Tag Status</th>
+                                <th>Entry ID <span class="sort-icon none" data-field="data_entry_id"></span></th>
+                                <th>Observation ID <span class="sort-icon none" data-field="observation_id"></span></th>
+                                <th>Turtle ID <span class="sort-icon none" data-field="turtle_id"></span></th>
+                                <th>DUD Tag Type <span class="sort-icon none" data-field="tag_type"></span></th>
+                                <th>DUD Tag ID <span class="sort-icon none" data-field="tag_id"></span></th>
+                                <th>Current Status</th>
+                                <th>New Status</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for entry in entries %}
-                            <!-- Flipper Tag -->
-                            {% if entry.dud_flipper_tag %}
-                            <tr>
-                                <td>
-                                    {% if entry.data_entry_id %}
-                                        <a href="{% url 'wamtram2:trtdataentry' entry.data_entry_id %}">{{ entry.data_entry_id }}</a>
-                                    {% else %}
-                                        N/A
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if entry.observation_id %}
-                                        <a href="{% url 'wamtram2:observationdetail' entry.observation_id.id %}">{{ entry.observation_id.id }}</a>
-                                    {% else %}
-                                        N/A
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if entry.turtle_id %}
-                                        {{ entry.turtle_id }}
-                                    {% else %}
-                                        N/A
-                                    {% endif %}
-                                </td>
-                                <td>Flipper</td>
-                                <td>
-                                    <input type="text" 
-                                           name="tag_id" 
-                                           value="{{ entry.dud_flipper_tag }}" 
-                                           class="form-control form-control-sm" />
-                                </td>
-                                <td>
-                                    <select name="tag_status" class="form-control form-control-sm">
-                                        {% for state in tag_states %}
-                                            <option value="{{ state.tag_state }}" 
-                                                    {% if state.tag_state == entry.dud_flipper_tag_state %}selected{% endif %}>
-                                                {{ state.description }}
-                                            </option>
-                                        {% endfor %}
-                                    </select>
-                                </td>
-                                <td>
-                                    {% if entry.observation_id %}
-                                        <button type="submit" 
-                                                name="entry_id" 
-                                                value="{{ entry.data_entry_id }}" 
-                                                class="btn btn-primary btn-sm btn-block">Save</button>
-                                    {% else %}
-                                        <button type="button" 
-                                                class="btn btn-secondary btn-sm btn-block" 
-                                                disabled>No Observation</button>
-                                    {% endif %}
-                                </td>
-                            </tr>
-                            {% endif %}
-                    
-                            <!-- Flipper Tag 2 -->
-                            {% if entry.dud_flipper_tag_2 %}
-                            <tr>
-                                <td>
-                                    {% if entry.data_entry_id %}
-                                        <a href="{% url 'wamtram2:trtdataentry' entry.data_entry_id %}">{{ entry.data_entry_id }}</a>
-                                    {% else %}
-                                        N/A
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if entry.observation_id %}
-                                        <a href="{% url 'wamtram2:observationdetail' entry.observation_id.id %}">{{ entry.observation_id.id }}</a>
-                                    {% else %}
-                                        N/A
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if entry.turtle_id %}
-                                        {{ entry.turtle_id.id }}
-                                    {% else %}
-                                        N/A
-                                    {% endif %}
-                                </td>
-                                <td>Flipper 2</td>
-                                <td>
-                                    <input type="text" 
-                                           name="tag_id" 
-                                           value="{{ entry.dud_flipper_tag_2 }}" 
-                                           class="form-control form-control-sm" />
-                                </td>
-                                <td>
-                                    <select name="tag_status" class="form-control form-control-sm">
-                                        {% for state in tag_states %}
-                                            <option value="{{ state.tag_state }}" 
-                                                    {% if state.tag_state == entry.dud_flipper_tag_state_2 %}selected{% endif %}>
-                                                {{ state.description }}
-                                            </option>
-                                        {% endfor %}
-                                    </select>
-                                </td>
-                                <td>
-                                    {% if entry.observation_id %}
-                                        <button type="submit" 
-                                                name="entry_id" 
-                                                value="{{ entry.data_entry_id }}" 
-                                                class="btn btn-primary btn-sm btn-block">Save</button>
-                                    {% else %}
-                                        <button type="button" 
-                                                class="btn btn-secondary btn-sm btn-block" 
-                                                disabled>No Observation</button>
-                                    {% endif %}
-                                </td>
-                            </tr>
-                            {% endif %}
-                    
-                            <!-- PIT Tag -->
-                            {% if entry.dud_pit_tag %}
-                            <tr>
-                                <td>
-                                    {% if entry.data_entry_id %}
-                                        <a href="{% url 'wamtram2:trtdataentry' entry.data_entry_id %}">{{ entry.data_entry_id }}</a>
-                                    {% else %}
-                                        N/A
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if entry.observation_id %}
-                                        <a href="{% url 'wamtram2:observationdetail' entry.observation_id.id %}">{{ entry.observation_id.id }}</a>
-                                    {% else %}
-                                        N/A
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if entry.turtle_id %}
-                                        {{ entry.turtle_id.id }}
-                                    {% else %}
-                                        N/A
-                                    {% endif %}
-                                </td>
-                                <td>PIT</td>
-                                <td>
-                                    <input type="text" 
-                                           name="tag_id" 
-                                           value="{{ entry.dud_pit_tag }}" 
-                                           class="form-control form-control-sm" />
-                                </td>
-                                <td>
-                                    <select name="tag_status" class="form-control form-control-sm">
-                                        {% for state in tag_states %}
-                                            <option value="{{ state.tag_state }}" 
-                                                    {% if state.tag_state == entry.dud_pit_tag_state %}selected{% endif %}>
-                                                {{ state.description }}
-                                            </option>
-                                        {% endfor %}
-                                    </select>
-                                </td>
-                                <td>
-                                    {% if entry.observation_id %}
-                                        <button type="submit" 
-                                                name="entry_id" 
-                                                value="{{ entry.data_entry_id }}" 
-                                                class="btn btn-primary btn-sm btn-block">Save</button>
-                                    {% else %}
-                                        <button type="button" 
-                                                class="btn btn-secondary btn-sm btn-block" 
-                                                disabled>No Observation</button>
-                                    {% endif %}
-                                </td>
-                            </tr>
-                            {% endif %}
-                    
-                            <!-- PIT Tag 2 -->
-                            {% if entry.dud_pit_tag_2 %}
-                            <tr>
-                                <td>
-                                    {% if entry.data_entry_id %}
-                                        <a href="{% url 'wamtram2:trtdataentry' entry.data_entry_id %}">{{ entry.data_entry_id }}</a>
-                                    {% else %}
-                                        N/A
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if entry.observation_id %}
-                                        <a href="{% url 'wamtram2:observationdetail' entry.observation_id.id %}">{{ entry.observation_id.id }}</a>
-                                    {% else %}
-                                        N/A
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if entry.turtle_id %}
-                                        {{ entry.turtle_id.id }}
-                                    {% else %}
-                                        N/A
-                                    {% endif %}
-                                </td>
-                                <td>PIT 2</td>
-                                <td>
-                                    <input type="text" 
-                                           name="tag_id" 
-                                           value="{{ entry.dud_pit_tag_2 }}" 
-                                           class="form-control form-control-sm" />
-                                </td>
-                                <td>
-                                    <select name="tag_status" class="form-control form-control-sm">
-                                        {% for state in tag_states %}
-                                            <option value="{{ state.tag_state }}" 
-                                                    {% if state.tag_state == entry.dud_pit_tag_state_2 %}selected{% endif %}>
-                                                {{ state.description }}
-                                            </option>
-                                        {% endfor %}
-                                    </select>
-                                </td>
-                                <td>
-                                    {% if entry.observation_id %}
-                                        <button type="submit" 
-                                                name="entry_id" 
-                                                value="{{ entry.data_entry_id }}" 
-                                                class="btn btn-primary btn-sm btn-block">Save</button>
-                                    {% else %}
-                                        <button type="button" 
-                                                class="btn btn-secondary btn-sm btn-block" 
-                                                disabled>No Observation</button>
-                                    {% endif %}
-                                </td>
-                            </tr>
-                            {% endif %}
+                            {% for entry_data in entries %}
+                                <tr>
+                                    <form method="post" action="{% url 'wamtram2:dud_tag_manage' %}">
+                                        {% csrf_token %}
+                                        <td>
+                                            {% if entry_data.entry.data_entry_id %}
+                                                <a href="{% url 'wamtram2:trtdataentry' entry_data.entry.data_entry_id %}">{{ entry_data.entry.data_entry_id }}</a>
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if entry_data.entry.observation_id.id %}
+                                                <a href="{% url 'wamtram2:observationdetail' entry_data.entry.observation_id.id %}">{{ entry_data.entry.observation_id.id }}</a>
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if entry_data.entry.turtle_id %}
+                                                {{ entry_data.entry.turtle_id }}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ entry_data.tag_type|title }}</td>
+                                        <td>
+                                            {% if entry_data.tag_type|startswith:'flipper' %}
+                                                <a href="{% url 'admin:wamtram2_trttags_change' entry_data.tag_id %}">{{ entry_data.tag_id }}</a>
+                                            {% elif entry_data.tag_type|startswith:'pit' %}
+                                                <a href="{% url 'admin:wamtram2_trtpittags_change' entry_data.tag_id %}">{{ entry_data.tag_id }}</a>
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ entry_data.current_status }}</td>
+                                        <td>
+                                            <select name="tag_status" class="form-control form-control-sm">
+                                                {% if entry_data.tag_type|startswith:'flipper' %}
+                                                    {% for state in entry_data.available_states %}
+                                                        <option value="{{ state.tag_status }}">
+                                                            {{ state.description }}
+                                                        </option>
+                                                    {% endfor %}
+                                                {% else %}
+                                                    {% for state in entry_data.available_states %}
+                                                        <option value="{{ state.pit_tag_status }}">
+                                                            {{ state.description }}
+                                                        </option>
+                                                    {% endfor %}
+                                                {% endif %}
+                                            </select>
+                                        </td>
+                                        <td>
+                                            {% if entry_data.entry.observation_id %}
+                                                <input type="hidden" name="tag_type" value="{{ entry_data.tag_type }}">
+                                                <input type="hidden" name="tag_id" value="{{ entry_data.tag_id }}">
+                                                <input type="hidden" name="entry_id" value="{{ entry_data.entry.data_entry_id }}">
+                                                <button type="submit" class="btn btn-primary btn-sm btn-block">
+                                                    Save
+                                                </button>
+                                            {% else %}
+                                                <button type="button" 
+                                                        class="btn btn-secondary btn-sm btn-block" 
+                                                        disabled>No Observation</button>
+                                            {% endif %}
+                                        </td>
+                                    </form>
+                                </tr>
                             {% endfor %}
                         </tbody>
                     </table>
@@ -353,6 +199,50 @@
                 alert.slideUp();
             }, 3000);
         }
-    });    
+
+        // Sorting function
+        $('.sort-icon').click(function() {
+            const field = $(this).data('field');
+            const currentState = $(this).attr('class').includes('none') ? 'none' : 
+                $(this).attr('class').includes('asc') ? 'asc' : 'desc';
+            
+            $('.sort-icon').removeClass('active asc desc').addClass('none');
+            
+            let newState;
+            if (currentState === 'none') {
+                newState = 'asc';
+            } else if (currentState === 'asc') {
+                newState = 'desc';
+            } else {
+                newState = 'none';
+            }
+            
+            if (newState !== 'none') {
+                $(this).removeClass('none').addClass(`active ${newState}`);
+            }
+            
+            const tbody = $('table tbody');
+            const rows = tbody.find('tr').get();
+            
+            if (newState === 'none') {
+                rows.sort((a, b) => {
+                    return $(a).find('td:first').text().localeCompare($(b).find('td:first').text());
+                });
+            } else {
+                rows.sort((a, b) => {
+                    let aValue = $(a).find(`td:nth-child(${$(this).closest('th').index() + 1})`).text().trim();
+                    let bValue = $(b).find(`td:nth-child(${$(this).closest('th').index() + 1})`).text().trim();
+                    if (newState === 'asc') {
+                        return aValue.localeCompare(bValue);
+                    } else {
+                        return bValue.localeCompare(aValue);
+                    }
+                });
+            }
+            
+            tbody.empty();
+            tbody.append(rows);
+        });
+    });
 </script>
 {% endblock %}

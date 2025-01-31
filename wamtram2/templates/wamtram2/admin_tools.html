@@ -53,9 +53,57 @@
 
 {% block page_content_inner %}
 <div class="container admin-tools">
-    <h2 class="section-title">Administration Tools</h2>
+    <h1 class="section-title"> {{ page_title }} </h1>
     
     <div class="row">
+        <!-- Nesting Season Statistics -->
+        <div class="col-md-4 mb-4">
+            <a href="{% url 'wamtram2:nesting_season_stats' %}" class="text-decoration-none">
+                <div class="tool-card p-4 text-center">
+                    <div class="tool-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h3 class="tool-title">Nesting Season Statistics</h3>
+                    <p class="tool-description">View and analyze nesting season data statistics.</p>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-arrow-right mr-2"></i>Access Tool
+                    </button>
+                </div>
+            </a>
+        </div>
+
+        <!-- Batch Curation -->
+        <div class="col-md-4 mb-4">
+            <a href="{% url 'wamtram2:batch_curation' %}" class="text-decoration-none">
+                <div class="tool-card p-4 text-center">
+                    <div class="tool-icon">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <h3 class="tool-title">Batch Curation</h3>
+                    <p class="tool-description">Review and manage data entry batches for curation.</p>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-arrow-right mr-2"></i>Access Tool
+                    </button>
+                </div>
+            </a>
+        </div>
+
+        <!-- Review Entries -->
+        <div class="col-md-4 mb-4">
+            <a href="{% url 'wamtram2:batches_review' %}" class="text-decoration-none">
+                <div class="tool-card p-4 text-center">
+                    <div class="tool-icon">
+                        <i class="fas fa-clipboard-check"></i>
+                    </div>
+                    <h3 class="tool-title">Review Entries</h3>
+                    <p class="tool-description">Review entries that need attention or have system messages.</p>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-arrow-right mr-2"></i>Access Tool
+                    </button>
+                </div>
+            </a>
+        </div>
+
         <!-- Turtle Management -->
         <div class="col-md-4 mb-4">
             <a href="{% url 'wamtram2:turtle_management' %}" class="text-decoration-none">
@@ -119,17 +167,33 @@
                 </div>
             </a>
         </div>
-        
 
-        <!-- Person Management -->
+        <!-- Dud Tags Management -->
         <div class="col-md-4 mb-4">
-            <a href="{% url 'wamtram2:manage_person' %}" class="text-decoration-none">
+            <a href="{% url 'wamtram2:dud_tag_manage' %}" class="text-decoration-none">
                 <div class="tool-card p-4 text-center">
                     <div class="tool-icon">
-                        <i class="fas fa-users"></i>
+                        <i class="fas fa-exclamation-triangle"></i>
                     </div>
-                    <h3 class="tool-title">Person Management</h3>
-                    <p class="tool-description">Manage personnel records and permissions.</p>
+                    <h3 class="tool-title">Dud Tags</h3>
+                    <p class="tool-description">Manage and track problematic tags.</p>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-arrow-right mr-2"></i>Access Tool
+                    </button>
+                </div>
+            </a>
+        </div>
+
+
+        <!-- Batch Create Batches -->
+        <div class="col-md-4 mb-4">
+            <a href="{% url 'wamtram2:batch_create_batches' %}" class="text-decoration-none">
+                <div class="tool-card p-4 text-center">
+                    <div class="tool-icon">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                    <h3 class="tool-title">Batch Create Batches</h3>
+                    <p class="tool-description">Create multiple batches at once with sequential night numbers.</p>
                     <button class="btn btn-primary">
                         <i class="fas fa-arrow-right mr-2"></i>Access Tool
                     </button>
@@ -169,38 +233,6 @@
             </a>
         </div>
 
-        <!-- Batch Curation -->
-        <div class="col-md-4 mb-4">
-            <a href="{% url 'wamtram2:batch_curation' %}" class="text-decoration-none">
-                <div class="tool-card p-4 text-center">
-                    <div class="tool-icon">
-                        <i class="fas fa-tasks"></i>
-                    </div>
-                    <h3 class="tool-title">Batch Curation</h3>
-                    <p class="tool-description">Review and manage data entry batches for curation.</p>
-                    <button class="btn btn-primary">
-                        <i class="fas fa-arrow-right mr-2"></i>Access Tool
-                    </button>
-                </div>
-            </a>
-        </div>
-
-        <!-- Dud Tags Management -->
-        <div class="col-md-4 mb-4">
-            <a href="{% url 'wamtram2:dud_tag_manage' %}" class="text-decoration-none">
-                <div class="tool-card p-4 text-center">
-                    <div class="tool-icon">
-                        <i class="fas fa-exclamation-triangle"></i>
-                    </div>
-                    <h3 class="tool-title">Dud Tags</h3>
-                    <p class="tool-description">Manage and track problematic tags.</p>
-                    <button class="btn btn-primary">
-                        <i class="fas fa-arrow-right mr-2"></i>Access Tool
-                    </button>
-                </div>
-            </a>
-        </div>
-
         <!-- Observation Transfer -->
         <div class="col-md-4 mb-4">
             <a href="{% url 'wamtram2:transfer_observations_by_tag' %}" class="text-decoration-none">
@@ -233,6 +265,25 @@
                 </div>
             </a>
         </div>
+
+        <!-- Person Management -->
+        <div class="col-md-4 mb-4">
+            <a href="{% url 'wamtram2:manage_person' %}" class="text-decoration-none">
+                <div class="tool-card p-4 text-center">
+                    <div class="tool-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3 class="tool-title">Person Management</h3>
+                    <p class="tool-description">Manage personnel records and permissions.</p>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-arrow-right mr-2"></i>Access Tool
+                    </button>
+                </div>
+            </a>
+        </div>
+        
+
+
 
     </div>
 </div>

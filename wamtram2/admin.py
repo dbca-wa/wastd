@@ -19,7 +19,7 @@ from import_export.admin import ImportExportModelAdmin
 from .forms import EnterUserModelForm, TrtObservationsForm, TrtPersonsForm, TrtNestingSeasonForm
 from django.urls import reverse
 from django.utils.html import format_html
-from django.db.models import Prefetch
+
 
 
 class TrtMeasurementsInline(nested_admin.NestedTabularInline):

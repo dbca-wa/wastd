@@ -81,4 +81,5 @@ taxonomy/fixtures/test_tax_*
 *.csv
 *.pgdump
 compose.yaml
+backup/
 *.bacpac

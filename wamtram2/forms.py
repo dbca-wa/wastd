@@ -5,7 +5,7 @@ from .models import (
     TrtEntryBatches, TrtPlaces, TrtPitTags, 
     Template, TrtObservations,TrtTagStates, 
     TrtMeasurementTypes,TrtYesNo,SEX_CHOICES,
-    TrtNestingSeason
+    TrtNestingSeason, TrtDamageCodes, TrtDatumCodes
     )
 from django_select2.forms import ModelSelect2Widget
 from django.core.validators import RegexValidator
@@ -13,10 +13,6 @@ from django.db.models import Case, When, IntegerField
 from datetime import timedelta
 from django.conf import settings
 from django.core.exceptions import ValidationError
-from django.contrib.admin import widgets
- 
-
-
 
 tagWidget = ModelSelect2Widget(
     queryset=TrtTags.objects.all(),
@@ -113,7 +109,6 @@ class TrtEntryBatchesForm(forms.ModelForm):
 
 
 class TrtDataEntryForm(forms.ModelForm):
-    
     class Meta:
         model = TrtDataEntry
         fields = [
@@ -253,9 +248,8 @@ class TrtDataEntryForm(forms.ModelForm):
             "damage_code_5",
             "body_part_6",
             "damage_code_6",
-
+            "datum_code",
         ]  # "__all__"
-
         widgets = {
             "turtle_id": forms.HiddenInput(),
             "entry_batch": forms.HiddenInput(),
@@ -277,6 +271,42 @@ class TrtDataEntryForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.batch_id = kwargs.pop("batch_id", None)
         super().__init__(*args, **kwargs)
+        
+        if not self.instance.pk: 
+            self.fields['alive'].initial = TrtYesNo.objects.get(code='Y')
+            self.fields['datum_code'].initial = 'WGS84'
+        
+        self.fields['alive'].queryset = TrtYesNo.objects.all()
+        
+        self.fields['datum_code'] = forms.ModelChoiceField(
+            queryset=TrtDatumCodes.objects.all(),
+            initial='WGS84',
+            required=False
+        )
+
+        damage_codes = TrtDamageCodes.objects.all()
+        
+        # Set damage code field
+        for i in range(1, 7):
+            damage_code_field = f'damage_code_{i}'
+            if damage_code_field in self.fields:
+                self.fields[damage_code_field] = forms.ModelChoiceField(
+                    queryset=damage_codes,
+                    required=False,
+                    to_field_name='damage_code',
+                    widget=forms.Select(attrs={
+                        'class': 'form-control',
+                        'data-initial': getattr(self.instance, damage_code_field).damage_code if self.instance and getattr(self.instance, damage_code_field) else ''
+                    }),
+                    empty_label='---------'
+                )
+                
+                # Set initial value
+                if self.instance and getattr(self.instance, damage_code_field):
+                    self.initial[damage_code_field] = getattr(self.instance, damage_code_field)
+        
+        
+        
         self.fields['entered_by'].widget = forms.TextInput(attrs={
             'class': 'form-control', 
             'placeholder': 'Enter name',
@@ -289,17 +319,16 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields['sex'].choices = ordered_choices
         
         
-        clutch_completed_choices = list(TrtYesNo.objects.filter(code__in=['D', 'N', 'P', 'U', 'Y']).values_list('code', 'description'))
+        clutch_completed_choices = list(TrtYesNo.objects.filter(code__in=['D', 'N', 'P', 'U', 'Y', 'O']).values_list('code', 'description'))
         clutch_completed_choices = [
             ('', '---------'),
+            ('O', 'NA'),
             ('Y', 'Yes, saw eggs'),
             ('N', 'No nest'),
             ('P', "Possible nest, didn't see eggs"),
         ] + [(code, desc) for code, desc in clutch_completed_choices if code not in ['Y', 'N', 'P']]
         
         self.fields['clutch_completed'].choices = clutch_completed_choices
-        self.fields['clutch_completed'].initial = ''
-        
                         
         interrupted_choices = TrtYesNo.objects.filter(code__in=['N', 'P', 'Y'])
         self.fields['interrupted'].queryset = interrupted_choices
@@ -349,7 +378,6 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields['recapture_left_tag_state_2'].queryset = old_tag_states
         self.fields['recapture_right_tag_state_2'].queryset = old_tag_states
         
-
         self.fields["observation_date"].required = True
         self.fields["species_code"].required = True
         self.fields["place_code"].required = True
@@ -361,8 +389,8 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["injury_check"].label = "Injury present?"
         self.fields["scar_check"].label = "Tag scar present?"
         
-        self.fields["latitude"].label = "Latitude - (xx.xxxxxx)"
-        self.fields["longitude"].label = "Longitude (xxx.xxxxxx)"
+        self.fields["latitude"].label = "Latitude(WGS84) - (xx.xxxxxx)"
+        self.fields["longitude"].label = "Longitude(WGS84) - (xxx.xxxxxx)"
         self.fields["interrupted"].label = "Was nesting interrupted by tagging team?"
         self.fields["entered_by_id"].label = "Entered by"
         self.fields["place_code"].label = "Location/Beach"
@@ -561,31 +589,29 @@ class TrtDataEntryForm(forms.ModelForm):
         if instance.observation_date:
             instance.observation_date += timedelta(hours=8)
             instance.observation_time = instance.observation_date
-
         # Save the instance to the database
         if commit:
             instance.save()
-
         return instance
-                
+    
+    
     def clean(self):
         cleaned_data = super().clean()
         do_not_process = cleaned_data.get("do_not_process")
         
-        # tag_fields = [
-        #     'recapture_left_tag_id', 'recapture_left_tag_id_2', 'recapture_left_tag_id_3',
-        #     'recapture_right_tag_id', 'recapture_right_tag_id_2', 'recapture_right_tag_id_3',
-        #     'new_left_tag_id', 'new_left_tag_id_2', 'new_right_tag_id', 'new_right_tag_id_2',
-        #     'dud_flipper_tag', 'dud_flipper_tag_2'
-        # ]
-        
-        # for field in tag_fields:
-        #     if cleaned_data.get(field):
-        #         cleaned_data[field] = cleaned_data[field].upper()
+        clutch_completed_value = cleaned_data.get('clutch_completed')
+                
+        try:
+            if clutch_completed_value == 'O':
+                cleaned_data['nesting'] = TrtYesNo.objects.get(code='N')
+            else:
+                cleaned_data['nesting'] = TrtYesNo.objects.get(code='Y')
+        except TrtYesNo.DoesNotExist:
+            raise forms.ValidationError("Cannot find the corresponding nesting value")
         
         if do_not_process:
             return cleaned_data
-        
+            
         place_code = cleaned_data.get("place_code")
         if not place_code:
             raise forms.ValidationError("The place code is required.")
@@ -598,7 +624,6 @@ class TrtDataEntryForm(forms.ModelForm):
             else:
                 cleaned_data['latitude'] = latitude_str
                 
-        
         return cleaned_data
 
 
@@ -607,16 +632,6 @@ class DataEntryUserModelForm(forms.ModelForm):
     user_entry_id = forms.ModelChoiceField(
         queryset=qs, widget=apply_select2(forms.Select)
     )
-
-    # def clean(self):
-    #     cleaned_data = super().clean()
-    #     ch = cleaned_data.get("user_entry_id")
-    #     try:
-    #         cleaned_data["user_entry_id"] = int(ch.person_id)
-    #     except ValueError:
-    #         raise forms.ValidationError("Choice must be an integer.")
-
-    #     return cleaned_data
 
 
 class EnterUserModelForm(forms.ModelForm):
