@@ -6,7 +6,7 @@ apt-get install -y unzip curl libicu70
 
 curl -sSL -o sqlpackage.zip https://aka.ms/sqlpackage-linux
 mkdir -p /opt/sqlpackage
-unzip -q sqlpackage.zip -d /opt/sqlpackage
+unzip -q -o sqlpackage.zip -d /opt/sqlpackage
 chmod +x /opt/sqlpackage/sqlpackage
 
 /opt/sqlpackage/sqlpackage \
