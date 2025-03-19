@@ -1,9 +1,10 @@
 from django.urls import path
-from . import views
 
+from . import views
 
 urlpatterns = [
     path("", views.UserListView.as_view(), name="user-list"),
+    path("profile/", views.UserDetailView.as_view(), name="user-profile"),
     path("<int:pk>/", views.UserDetailView.as_view(), name="user-detail"),
     path("<int:old_pk>/merge/<int:new_pk>/", views.UserMergeView.as_view(), name="user-merge-both"),
     path("<int:old_pk>/merge/", views.UserMergeView.as_view(), name="user-merge-old"),
