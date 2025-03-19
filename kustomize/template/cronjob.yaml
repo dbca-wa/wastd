@@ -5,7 +5,7 @@ metadata:
   labels:
     app: turtles-cronjob
 spec:
-  schedule: ""
+  schedule: ''
   concurrencyPolicy: Forbid
   jobTemplate:
     spec:
@@ -14,25 +14,26 @@ spec:
         spec:
           restartPolicy: Never
           containers:
-          - name: turtles-cronjob
-            image: ghcr.io/dbca-wa/wastd
-            command: ["python"]
-            args: ["--version"]
-            env:
-            - name: TZ
-              value: "Australia/Perth"
-            securityContext:
-              runAsNonRoot: true
-              privileged: false
-              allowPrivilegeEscalation: false
-              capabilities:
-                drop:
-                  - ALL
-              readOnlyRootFilesystem: true
-            volumeMounts:
-              - mountPath: /tmp
-                name: tmpfs-ram
+            - name: turtles-cronjob
+              image: ghcr.io/dbca-wa/wastd
+              command: ['python']
+              args: ['--version']
+              env:
+                - name: TZ
+                  value: 'Australia/Perth'
+              securityContext:
+                runAsNonRoot: true
+                privileged: false
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop:
+                    - ALL
+                readOnlyRootFilesystem: true
+              volumeMounts:
+                - mountPath: /tmp
+                  name: tmpfs-ram
           volumes:
             - name: tmpfs-ram
               emptyDir:
-                medium: "Memory"
+                medium: 'Memory'
+          automountServiceAccountToken: false
