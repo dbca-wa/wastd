@@ -1152,8 +1152,8 @@ class FindTurtleView(LoginRequiredMixin, View):
             })
 
         return self.set_cookie(response, batch_id, tag_id, tag_type, tag_side)
-    
-    
+
+
 class ObservationDetailView(LoginRequiredMixin, DetailView):
     model = TrtObservations
     template_name = "wamtram2/observation_detail.html"
@@ -1490,8 +1490,8 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
         
         doc.save(response)
         return response
-    
-    
+
+
 SEX_CHOICES = [
     ("F", "Female"),
     ("M", "Male"),
@@ -2613,8 +2613,8 @@ class BatchesCurationView(LoginRequiredMixin, PaginateMixin, ListView):
         location_code = request.GET.get('location_code')
         places = TrtPlaces.objects.filter(location_code=location_code).values('place_code', 'place_name')
         return JsonResponse(list(places), safe=False)
-    
-    
+
+
 class CreateNewEntryView(LoginRequiredMixin, ListView):
     model = TrtEntryBatches
     template_name = 'wamtram2/create_new_entry.html'
@@ -2744,7 +2744,7 @@ class CreateNewEntryView(LoginRequiredMixin, ListView):
                 'current_page': context['page_obj'].number if 'page_obj' in context else 1,
             })
         return super().get(request, *args, **kwargs)
-    
+
 
 @login_required
 @require_POST
@@ -2932,6 +2932,7 @@ class BatchCreateBatchesView(LoginRequiredMixin, View):
                 'error': str(e)
             })
 
+
 def search_templates(request):
     query = request.GET.get('q', '')
     if len(query) >= 2:
@@ -2941,8 +2942,8 @@ def search_templates(request):
         data = [{'template_id': t.template_id, 'name': t.name} for t in templates]
         return JsonResponse(data, safe=False)
     return JsonResponse([], safe=False)
-    
-    
+
+
 class BatchCodeManageView(View):
     template_name = 'wamtram2/batch_detail_manage.html'
     
@@ -3052,7 +3053,7 @@ class BatchCodeManageView(View):
             is_unique = not TrtEntryBatches.objects.filter(batches_code=code).exists()
         return JsonResponse({'is_unique': is_unique})
 
-    
+
 @require_GET
 def get_places(request):
     location_code = request.GET.get('location_code')
@@ -3607,7 +3608,6 @@ class FlipperTagsListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMixin
             queryset = queryset.filter(tag_status_id=status)
             
         return queryset
-        
 
 
 
@@ -5120,7 +5120,6 @@ class RecordedScarsUpdateView(LoginRequiredMixin, SuperUserRequiredMixin, View):
             }, status=500)
 
 
-
 class TurtleManagementView(LoginRequiredMixin,SuperUserRequiredMixin, TemplateView):
     template_name = 'wamtram2/turtle_management.html'
     
@@ -5816,8 +5815,8 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
         """Handle GET request"""
         context = self.get_context_data()
         return render(request, self.template_name, context)
-    
-    
+
+
 class BatchesReviewView(LoginRequiredMixin, SuperUserRequiredMixin,PaginateMixin, ListView):
     model = TrtDataEntry
     template_name = 'wamtram2/batches_review.html'
@@ -5871,5 +5870,4 @@ class BatchesReviewView(LoginRequiredMixin, SuperUserRequiredMixin,PaginateMixin
         context['selected_year'] = self.request.GET.get('year', '')
         
         return context
-    
-    
+
