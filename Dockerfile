@@ -95,4 +95,4 @@ ENV PYTHONUNBUFFERED=1 \
 
 ENTRYPOINT ["/app/entrypoint.sh"]
 
-CMD ["gunicorn", "wastd.wsgi:application", "--bind", "0.0.0.0:8080", "--timeout", "120", "--log-level", "debug"]
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8080"]

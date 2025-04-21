@@ -233,6 +233,8 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
             queryset = queryset.filter(entry_batch_id=batch_id, observation_id__isnull=True)
         elif filter_value == "needs_review_no_message":
             queryset = queryset.filter(entry_batch_id=batch_id, do_not_process=True, error_message__isnull=True)
+        elif filter_value == "system_message":
+            queryset = queryset.filter(entry_batch_id=batch_id, error_message__isnull=False).exclude(error_message__in=['None', 'Observation added to database'])
         else:
             queryset = queryset.filter(entry_batch_id=batch_id)
             
@@ -3960,6 +3962,10 @@ class EntryCurationView(LoginRequiredMixin, SuperUserRequiredMixin, PaginateMixi
             queryset = queryset.filter(observation_id__isnull=True)
         elif filter_value == "needs_review_no_message":
             queryset = queryset.filter(do_not_process=True, error_message__isnull=True)
+        elif filter_value == "system_message":
+            queryset = queryset.filter(error_message__isnull=False).exclude(error_message__in=['None', 'Observation added to database'])
+        else:
+            queryset = queryset.filter(entry_batch_id=batch_id)
 
         search = self.request.GET.get('search')
         if search:
