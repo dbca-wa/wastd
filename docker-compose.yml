@@ -47,6 +47,21 @@ services:
       - .env
     entrypoint: ["/bin/bash", "/init-sqlserver.sh"]
 
+  dbeaver:
+    image: dbeaver/cloudbeaver:latest
+    platform: linux/amd64
+    ports:
+      - "8978:8978"
+    environment:
+      - CB_DATABASE_DRIVERS=postgresql,mssql
+    volumes:
+      - dbeaver_data:/opt/cloudbeaver/workspace
+    depends_on:
+      - db
+      - sqlserver
+
+
 volumes:
   postgres_data:
   sqlserver_data:
+  dbeaver_data:
