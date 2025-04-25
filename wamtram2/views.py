@@ -5176,46 +5176,78 @@ class TurtleManagementView(LoginRequiredMixin,SuperUserRequiredMixin, TemplateVi
             try:
                 data = json.loads(request.body)
                 
-                turtle = TrtTurtles.objects.get(turtle_id=data['turtle_id'])
+                if not data.get('turtle_id'):
+                    return JsonResponse({
+                        'status': 'error',
+                        'message': 'Turtle ID is required'
+                    }, status=400)
                 
-                if data.get('species'):
-                    species = TrtSpecies.objects.get(species_code=data['species'])
-                    turtle.species_code = species
-                
-                if data.get('location'):
-                    location = TrtLocations.objects.get(location_code=data['location'])
-                    turtle.location = location
+                with transaction.atomic():
+                    try:
+                        turtle = TrtTurtles.objects.get(turtle_id=data['turtle_id'])
+                    except TrtTurtles.DoesNotExist:
+                        return JsonResponse({
+                            'status': 'error',
+                            'message': 'Turtle not found'
+                        }, status=404)
                     
-                if data.get('turtle_status'):
-                    status = TrtTurtleStatus.objects.get(turtle_status=data['turtle_status'])
-                    turtle.turtle_status = status
-                    
-                if data.get('cause_of_death'):
-                    cod = TrtCauseOfDeath.objects.get(cause_of_death=data['cause_of_death'])
-                    turtle.cause_of_death = cod
-                    
-                turtle.turtle_name = data.get('turtle_name', '')
-                turtle.sex = data.get('sex', '')
-                turtle.comments = data.get('comments', '')
-                
-                turtle.save()
-                
-                return JsonResponse({
-                    'status': 'success',
-                    'message': 'Turtle information updated successfully'
-                })
-            except json.JSONDecodeError as e:
+                    if 'basic' in data:
+                        basic_data = data['basic']
+                        
+                        try:
+                            if basic_data.get('species'):
+                                species = TrtSpecies.objects.get(species_code=basic_data['species'])
+                                turtle.species_code = species
+                            
+                            if basic_data.get('location'):
+                                location = TrtLocations.objects.get(location_code=basic_data['location'])
+                                turtle.location_code = location
+                                
+                            if basic_data.get('turtle_status'):
+                                status = TrtTurtleStatus.objects.get(turtle_status=basic_data['turtle_status'])
+                                turtle.turtle_status = status
+                                
+                            if basic_data.get('cause_of_death'):
+                                cod = TrtCauseOfDeath.objects.get(cause_of_death=basic_data['cause_of_death'])
+                                turtle.cause_of_death = cod
+                                
+                            if 'sex' in basic_data:
+                                sex = basic_data['sex']
+                                if sex not in [choice[0] for choice in SEX_CHOICES]:
+                                    return JsonResponse({
+                                        'status': 'error',
+                                        'message': f'Invalid sex value. Must be one of: {", ".join([choice[0] for choice in SEX_CHOICES])}'
+                                    }, status=400)
+                                turtle.sex = sex
+                            
+                            turtle.turtle_name = basic_data.get('turtle_name', '')
+                            turtle.comments = basic_data.get('comments', '')
+                            
+                            turtle.save()
+                            
+                            return JsonResponse({
+                                'status': 'success',
+                                'message': 'Turtle information updated successfully'
+                            })
+                            
+                        except (TrtSpecies.DoesNotExist, TrtLocations.DoesNotExist, 
+                                TrtTurtleStatus.DoesNotExist, TrtCauseOfDeath.DoesNotExist):
+                            return JsonResponse({
+                                'status': 'error',
+                                'message': 'Invalid reference data'
+                            }, status=400)
+                            
+            except json.JSONDecodeError:
                 return JsonResponse({
                     'status': 'error',
                     'message': 'Invalid JSON data'
                 }, status=400)
-            except Exception as e:
+            except Exception:
                 return JsonResponse({
                     'status': 'error',
-                    'message': str(e)
+                    'message': 'An unexpected error occurred'
                 }, status=500)
         return super().post(request, *args, **kwargs)
-
 
 
     def handle_ajax_request(self, request):
@@ -5227,22 +5259,42 @@ class TurtleManagementView(LoginRequiredMixin,SuperUserRequiredMixin, TemplateVi
         queryset = None
 
         if turtle_id:
-            queryset = TrtTurtles.objects.filter(turtle_id=turtle_id)
+            queryset = TrtTurtles.objects.select_related(
+                'species_code',
+                'location_code',
+                'turtle_status',
+                'cause_of_death'
+            ).filter(turtle_id=turtle_id)
         elif tag_id:
             turtle_ids = TrtTags.objects.filter(
                 tag_id__icontains=tag_id
             ).values_list('turtle_id', flat=True)
-            queryset = TrtTurtles.objects.filter(turtle_id__in=turtle_ids)
+            queryset = TrtTurtles.objects.select_related(
+                'species_code',
+                'location_code',
+                'turtle_status',
+                'cause_of_death'
+            ).filter(turtle_id__in=turtle_ids)
         elif pit_tag_id:
             turtle_ids = TrtPitTags.objects.filter(
                 pittag_id__icontains=pit_tag_id
             ).values_list('turtle_id', flat=True)
-            queryset = TrtTurtles.objects.filter(turtle_id__in=turtle_ids)
+            queryset = TrtTurtles.objects.select_related(
+                'species_code',
+                'location_code',
+                'turtle_status',
+                'cause_of_death'
+            ).filter(turtle_id__in=turtle_ids)
         elif other_id:
             turtle_ids = TrtIdentification.objects.filter(
                 identifier__icontains=other_id
             ).values_list('turtle_id', flat=True)
-            queryset = TrtTurtles.objects.filter(turtle_id__in=turtle_ids)
+            queryset = TrtTurtles.objects.select_related(
+                'species_code',
+                'location_code',
+                'turtle_status',
+                'cause_of_death'
+            ).filter(turtle_id__in=turtle_ids)
 
         if queryset is None:
             return JsonResponse({
@@ -5252,7 +5304,7 @@ class TurtleManagementView(LoginRequiredMixin,SuperUserRequiredMixin, TemplateVi
 
         turtle_data = []
         for turtle in queryset:
-            tags = TrtTags.objects.filter(turtle=turtle.turtle_id)
+            tags = TrtTags.objects.select_related('tag_status', 'custodian_person').filter(turtle=turtle.turtle_id)
             tag_data = [{
                 'tag_id': tag.tag_id,
                 'side': tag.side,
@@ -5265,8 +5317,7 @@ class TurtleManagementView(LoginRequiredMixin,SuperUserRequiredMixin, TemplateVi
                 'field_person_id': tag.field_person_id
             } for tag in tags]
         
-            
-            pit_tags = TrtPitTags.objects.filter(turtle=turtle.turtle_id)
+            pit_tags = TrtPitTags.objects.select_related('pit_tag_status', 'custodian_person').filter(turtle=turtle.turtle_id)
             pit_tag_data = [{
                 'pit_tag_id': tag.pittag_id,
                 'issue_location': tag.issue_location,
@@ -5281,14 +5332,14 @@ class TurtleManagementView(LoginRequiredMixin,SuperUserRequiredMixin, TemplateVi
                 'box_number': tag.box_number
             } for tag in pit_tags]
         
-            identifications = TrtIdentification.objects.filter(turtle=turtle.turtle_id)
+            identifications = TrtIdentification.objects.select_related('identification_type').filter(turtle=turtle.turtle_id)
             identification_data = [{
                 'identification_type': ident.identification_type.identification_type,
                 'identifier': ident.identifier,
                 'comments': ident.comments
             } for ident in identifications]
             
-            observations = turtle.trtobservations_set.all()
+            observations = turtle.trtobservations_set.select_related('place_code', 'activity_code').all()
             observation_data = [{
                 'observation_id': obs.pk,
                 'date_time': obs.observation_date.strftime('%Y-%m-%dT%H:%M'),

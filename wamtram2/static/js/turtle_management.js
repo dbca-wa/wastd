@@ -543,6 +543,7 @@ document.addEventListener('DOMContentLoaded', function() {
             loadingOverlay.style.display = 'block';
 
             const formData = {
+                turtle_id: document.querySelector('[name="turtle_id"]').value,
                 basic: {},
                 flipperTags: [],
                 pitTags: [],
