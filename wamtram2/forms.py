@@ -325,6 +325,7 @@ class TrtDataEntryForm(forms.ModelForm):
             ('Y', 'Yes, saw eggs'),
             ('N', 'No nest'),
             ('P', "Possible nest, didn't see eggs"),
+            ('O', 'NA'),
         ] + [(code, desc) for code, desc in clutch_completed_choices if code not in ['Y', 'N', 'P', 'O']]
         
         self.fields['clutch_completed'].choices = clutch_completed_choices
@@ -564,9 +565,6 @@ class TrtDataEntryForm(forms.ModelForm):
         elif instance.injury_check in ['Y', 'P']:
             instance.didnotcheckforinjury = False
             
-        if instance.clutch_completed == 'Y':
-            instance.nesting = 'Y'
-            
         if instance.measured_by_id:
             person = TrtPersons.objects.get(person_id=instance.measured_by_id.person_id)
             instance.measured_by = "{} {}".format(person.first_name, person.surname)
@@ -601,7 +599,7 @@ class TrtDataEntryForm(forms.ModelForm):
         clutch_completed_value = cleaned_data.get('clutch_completed')
                 
         try:
-            if clutch_completed_value == 'O':
+            if clutch_completed_value in ['O','N']:
                 cleaned_data['nesting'] = TrtYesNo.objects.get(code='N')
             else:
                 cleaned_data['nesting'] = TrtYesNo.objects.get(code='Y')
