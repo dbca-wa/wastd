@@ -4721,9 +4721,7 @@ class SaveObservationView(LoginRequiredMixin, SuperUserRequiredMixin, View):
 
     def _update_basic_info(self, observation, basic_info):
         try:
-            
             for field, value in basic_info.items():
-                
                 if field in self.FOREIGN_KEY_FIELDS:
                     if value is not None:
                         try:
@@ -4749,6 +4747,14 @@ class SaveObservationView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                     else:
                         setattr(observation, field, None)
                 else:
+                    if field == 'observation_date' and value:
+                        try:
+                            dt = datetime.fromisoformat(value.replace('Z', '+00:00'))
+                            dt = dt + timedelta(hours=8)
+                            value = dt
+                            setattr(observation, 'observation_time', dt)
+                        except (ValueError, TypeError) as e:
+                            raise ValidationError(f"Invalid date format for observation_date: {str(e)}")
                     setattr(observation, field, value)
                     
         except Exception as e:
