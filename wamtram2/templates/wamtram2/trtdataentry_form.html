@@ -1067,6 +1067,76 @@
 <script>
   document.addEventListener('DOMContentLoaded', function() {
 
+    document.querySelectorAll('input[type="datetime-local"]').forEach(function(input) {
+      // Create a new input with desire format
+      const newInput = document.createElement('input');
+      newInput.type = 'text';
+      newInput.className = input.className;
+      newInput.name = input.name;
+      newInput.id = input.id;
+      newInput.placeholder = 'DD/MM/YYYY HH:mm';
+      
+      input.parentNode.replaceChild(newInput, input);
+
+      newInput.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        let formattedValue = '';
+        
+        if (value.length > 0) {
+          // day
+          formattedValue = value.substring(0, 2);
+          if (parseInt(formattedValue) > 31) formattedValue = '31';
+          if (parseInt(formattedValue) < 1) formattedValue = '01';
+          
+          // month
+          if (value.length > 2) {
+            let month = value.substring(2, 4);
+            if (parseInt(month) > 12) month = '12';
+            if (parseInt(month) < 1) month = '01';
+            formattedValue += '/' + month;
+          }
+          
+          // year
+          if (value.length > 4) {
+            let year = value.substring(4, 8);
+            if (parseInt(year) < 2000) year = '2000';
+            formattedValue += '/' + year;
+          }
+          
+          // hours
+          if (value.length > 8) {
+            let hours = value.substring(8, 10);
+            if (parseInt(hours) > 23) hours = '23';
+            formattedValue += ' ' + hours;
+          }
+          
+          // minutes
+          if (value.length > 10) {
+            let minutes = value.substring(10, 12);
+            if (parseInt(minutes) > 59) minutes = '59';
+            formattedValue += ':' + minutes;
+          }
+        }
+        
+        e.target.value = formattedValue;
+        validateDate(e.target);
+      });
+    });
+
+    function validateDate() {
+      const selectedDate = new Date(observationDateInput.value);
+      const currentDate = new Date();
+
+      if (selectedDate > currentDate) {
+        dateErrorMessage.textContent = "Date in the future";
+        dateErrorMessage.style.display = 'block';
+        observationDateInput.classList.add('is-invalid');
+      } else {
+        dateErrorMessage.style.display = 'none';
+        observationDateInput.classList.remove('is-invalid');
+      }
+    }
+
     let isSubmitting = false;
     
     const form = document.getElementById('dataEntryForm');
@@ -1291,45 +1361,6 @@
         }
     }
 
-    var datetimeInputs = document.querySelectorAll('input[type="datetime-local"]');
-    datetimeInputs.forEach(function(input) {
-      flatpickr(input, {
-            enableTime: true,
-            dateFormat: "Y-m-d H:i",
-            time_24hr: true,
-            allowInput: true,
-            altInput: true,
-            altFormat: "d/m/Y H:i",
-            onReady: function(selectedDates, dateStr, instance) {
-                var altInput = instance.altInput;
-                altInput.addEventListener('input', function(e) {
-                    let value = e.target.value.replace(/\D/g, '');
-                    let formattedValue = '';
-                    if (value.length > 0) {
-                        formattedValue += value.substring(0, 2);
-                        if (value.length > 2) {
-                            formattedValue += '/' + value.substring(2, 4);
-                            if (value.length > 4) {
-                                formattedValue += '/' + value.substring(4, 8);
-                                if (value.length > 8) {
-                                    formattedValue += ' ' + value.substring(8, 10);
-                                    if (value.length > 10) {
-                                        formattedValue += ':' + value.substring(10, 12);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    e.target.value = formattedValue;
-                });
-                altInput.addEventListener('input', validateDate);
-            },
-            onChange: function(selectedDates, dateStr, instance) {
-                validateDate();
-            }
-        });
-    });
-
     if (reviewButton) {
       reviewButton.addEventListener('click', function(event) {
           event.preventDefault();
@@ -1424,7 +1455,6 @@
   });
 
 
-  
   document.addEventListener('DOMContentLoaded', function() {
     const turtleIdField = document.getElementById('id_turtle_id');
     const flipperTagCheckField = document.getElementById('id_flipper_tag_check');

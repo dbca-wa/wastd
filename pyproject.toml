@@ -63,7 +63,7 @@ coverage = "^7.5.3"
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
-[tool.ruff.lint]
+[tool.ruff]
 # Enable Pyflakes `E` and `F` codes.
 lint.select = ["E", "F"]
 # Never enforce `E501` (line length violations).

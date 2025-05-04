@@ -82,3 +82,4 @@ taxonomy/fixtures/test_tax_*
 *.pgdump
 compose.yaml
 /backup/
+*.bacpac

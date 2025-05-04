@@ -333,7 +333,7 @@ class TrtDataEntry(models.Model):
         blank=True,
         null=True,
         related_name="alive",
-        default= 'Y'
+        default='Y'
     )  # fake foreign key #models.CharField(db_column='ALIVE', max_length=1, blank=True, null=True)  # Field name made lowercase.
     place_code = models.ForeignKey(
         "TrtPlaces", models.SET_NULL, db_column="PLACE_CODE", blank=True, null=True
