@@ -218,8 +218,8 @@
               <label for="{{ form.observation_date.id_for_label }}">{{ form.observation_date.label }}</label>
               {% bootstrap_field form.observation_date show_label=False%}
             </div>
-            <div class="col-md-3 mt-4">
-              <div id="date-error-message" class="text-danger" style="display: none; font-weight: bold;"></div>
+            <div class="col-md-6 mt-4">
+              <div id="date-error-message" class="text-danger" style="display: none; font-weight: bold; color: red !important;"></div>
             </div>
           </div>
           <div class="row">
@@ -1085,14 +1085,10 @@
         if (value.length > 0) {
           // day
           formattedValue = value.substring(0, 2);
-          if (parseInt(formattedValue) > 31) formattedValue = '31';
-          if (parseInt(formattedValue) < 1) formattedValue = '01';
           
           // month
           if (value.length > 2) {
             let month = value.substring(2, 4);
-            if (parseInt(month) > 12) month = '12';
-            if (parseInt(month) < 1) month = '01';
             formattedValue += '/' + month;
           }
           
@@ -1105,36 +1101,69 @@
           // hours
           if (value.length > 8) {
             let hours = value.substring(8, 10);
-            if (parseInt(hours) > 23) hours = '23';
             formattedValue += ' ' + hours;
           }
           
           // minutes
           if (value.length > 10) {
             let minutes = value.substring(10, 12);
-            if (parseInt(minutes) > 59) minutes = '59';
             formattedValue += ':' + minutes;
           }
         }
         
         e.target.value = formattedValue;
-        validateDate(e.target);
       });
-    });
 
-    function validateDate() {
-      const selectedDate = new Date(observationDateInput.value);
-      const currentDate = new Date();
+      newInput.addEventListener('blur', function(e) {
+        if (e.target.value.trim()) { 
+          validateDate(e.target);
+        }
+      });
 
-      if (selectedDate > currentDate) {
-        dateErrorMessage.textContent = "Date in the future";
-        dateErrorMessage.style.display = 'block';
-        observationDateInput.classList.add('is-invalid');
-      } else {
-        dateErrorMessage.style.display = 'none';
-        observationDateInput.classList.remove('is-invalid');
+      function validateDate(input) {
+        const dateStr = input.value;
+        const dateParts = dateStr.split(/[\/\s:]/);
+        const dateErrorMessage = document.getElementById('date-error-message');
+        
+        if (dateParts.length >= 3) {
+          const day = parseInt(dateParts[0]);
+          const month = parseInt(dateParts[1]);
+          const year = parseInt(dateParts[2]);
+          
+          const date = new Date(year, month - 1, day);
+          const isValid = date.getDate() === day && 
+            date.getMonth() === month - 1 && 
+            date.getFullYear() === year;
+          
+          if (!isValid) {
+            input.classList.add('is-invalid');
+            dateErrorMessage.textContent = "Invalid date format.";
+            dateErrorMessage.style.display = 'block';
+            return;
+          }
+
+          const currentDate = new Date();
+          const minYear = 1950;
+          const maxYear = currentDate.getFullYear();
+          if (year < minYear || year > maxYear) {
+            input.classList.add('is-invalid');
+            dateErrorMessage.textContent = `Year must be between ${minYear} and ${maxYear}.`;
+            dateErrorMessage.style.display = 'block';
+            return;
+          }
+
+          if (date > currentDate) {
+            input.classList.add('is-invalid');
+            dateErrorMessage.textContent = "Date cannot be in the future.";
+            dateErrorMessage.style.display = 'block';
+            return;
+          }
+
+          input.classList.remove('is-invalid');
+          dateErrorMessage.style.display = 'none';
+        }
       }
-    }
+    });
 
     let isSubmitting = false;
     
@@ -1563,4 +1592,3 @@
 </script>
 
 {% endblock %}
-
