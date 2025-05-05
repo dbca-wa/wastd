@@ -1125,7 +1125,6 @@
         const month = parseInt(dateParts[1]);
         const year = parseInt(dateParts[2]);
         
-        // 验证日期是否有效
         const date = new Date(year, month - 1, day);
         const isValid = date.getDate() === day && 
             date.getMonth() === month - 1 && 
@@ -1135,10 +1134,31 @@
           input.classList.add('is-invalid');
           dateErrorMessage.textContent = "Invalid date format.";
           dateErrorMessage.style.display = 'block';
-        } else {
-          input.classList.remove('is-invalid');
-          dateErrorMessage.style.display = 'none';
+          return;
         }
+
+        // 检查日期范围
+        const minYear = 1950;
+        const maxYear = currentDate.getFullYear();
+        if (year < minYear || year > maxYear) {
+          input.classList.add('is-invalid');
+          dateErrorMessage.textContent = `Year must be between ${minYear} and ${maxYear}.`;
+          dateErrorMessage.style.display = 'block';
+          return;
+        }
+
+        // 检查是否是未来日期
+        const currentDate = new Date();
+        if (date > currentDate) {
+          input.classList.add('is-invalid');
+          dateErrorMessage.textContent = "Date cannot be in the future.";
+          dateErrorMessage.style.display = 'block';
+          return;
+        }
+
+        // 如果所有检查都通过
+        input.classList.remove('is-invalid');
+        dateErrorMessage.style.display = 'none';
       }
     }
 
