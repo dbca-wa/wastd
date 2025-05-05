@@ -1085,13 +1085,10 @@
         if (value.length > 0) {
           // day
           formattedValue = value.substring(0, 2);
-          if (parseInt(formattedValue) > 31) formattedValue = '31';
-          if (parseInt(formattedValue) < 1) formattedValue = '01';
           
           // month
           if (value.length > 2) {
             let month = value.substring(2, 4);
-
             formattedValue += '/' + month;
           }
           
@@ -1104,14 +1101,12 @@
           // hours
           if (value.length > 8) {
             let hours = value.substring(8, 10);
-            if (parseInt(hours) > 23) hours = '23';
             formattedValue += ' ' + hours;
           }
           
           // minutes
           if (value.length > 10) {
             let minutes = value.substring(10, 12);
-            if (parseInt(minutes) > 59) minutes = '59';
             formattedValue += ':' + minutes;
           }
         }
@@ -1121,17 +1116,29 @@
       });
     });
 
-    function validateDate() {
-      const selectedDate = new Date(observationDateInput.value);
-      const currentDate = new Date();
-
-      if (selectedDate > currentDate) {
-        dateErrorMessage.textContent = "Date in the future";
-        dateErrorMessage.style.display = 'block';
-        observationDateInput.classList.add('is-invalid');
-      } else {
-        dateErrorMessage.style.display = 'none';
-        observationDateInput.classList.remove('is-invalid');
+    function validateDate(input) {
+      const dateStr = input.value;
+      const dateParts = dateStr.split(/[\/\s:]/);
+      
+      if (dateParts.length >= 3) {
+        const day = parseInt(dateParts[0]);
+        const month = parseInt(dateParts[1]);
+        const year = parseInt(dateParts[2]);
+        
+        // 验证日期是否有效
+        const date = new Date(year, month - 1, day);
+        const isValid = date.getDate() === day && 
+            date.getMonth() === month - 1 && 
+            date.getFullYear() === year;
+        
+        if (!isValid) {
+          input.classList.add('is-invalid');
+          dateErrorMessage.textContent = "Invalid date format.";
+          dateErrorMessage.style.display = 'block';
+        } else {
+          input.classList.remove('is-invalid');
+          dateErrorMessage.style.display = 'none';
+        }
       }
     }
 
