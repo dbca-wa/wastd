@@ -1099,9 +1099,6 @@
           // year
           if (value.length > 4) {
             let year = value.substring(4, 8);
-            const currentYear = new Date().getFullYear();
-            if (parseInt(year) < 1900) year = currentYear.toString();
-            if (parseInt(year) > 2100) year = currentYear.toString();
             formattedValue += '/' + year;
           }
           
