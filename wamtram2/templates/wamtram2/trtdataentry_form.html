@@ -1099,7 +1099,8 @@
           // year
           if (value.length > 4) {
             let year = value.substring(4, 8);
-            if (parseInt(year) < 2000) year = '2000';
+            if (parseInt(year) < 1900) year = '1900';
+            if (parseInt(year) > 2100) year = '2100';
             formattedValue += '/' + year;
           }
           
