@@ -1115,7 +1115,9 @@
       });
 
       newInput.addEventListener('blur', function(e) {
-        validateDate(e.target);
+        if (e.target.value.trim()) {  // 只在输入框有值时才验证
+          validateDate(e.target);
+        }
       });
 
       function validateDate(input) {
