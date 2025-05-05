@@ -322,7 +322,6 @@ class TrtDataEntryForm(forms.ModelForm):
         clutch_completed_choices = list(TrtYesNo.objects.filter(code__in=['D', 'N', 'P', 'U', 'Y', 'O']).values_list('code', 'description'))
         clutch_completed_choices = [
             ('', '---------'),
-            ('O', 'NA'),
             ('Y', 'Yes, saw eggs'),
             ('N', 'No nest'),
             ('P', "Possible nest, didn't see eggs"),
