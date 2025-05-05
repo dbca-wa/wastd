@@ -1112,54 +1112,56 @@
         }
         
         e.target.value = formattedValue;
+      });
+
+      newInput.addEventListener('blur', function(e) {
         validateDate(e.target);
       });
-    });
 
-    function validateDate(input) {
-      const dateStr = input.value;
-      const dateParts = dateStr.split(/[\/\s:]/);
-      const dateErrorMessage = document.getElementById('date-error-message');
-      
-      if (dateParts.length >= 3) {
-        const day = parseInt(dateParts[0]);
-        const month = parseInt(dateParts[1]);
-        const year = parseInt(dateParts[2]);
+      function validateDate(input) {
+        const dateStr = input.value;
+        const dateParts = dateStr.split(/[\/\s:]/);
+        const dateErrorMessage = document.getElementById('date-error-message');
         
-        const date = new Date(year, month - 1, day);
-        const isValid = date.getDate() === day && 
-                       date.getMonth() === month - 1 && 
-                       date.getFullYear() === year;
-        
-        if (!isValid) {
-          input.classList.add('is-invalid');
-          dateErrorMessage.textContent = "Invalid date format.";
-          dateErrorMessage.style.display = 'block';
-          return;
-        }
+        if (dateParts.length >= 3) {
+          const day = parseInt(dateParts[0]);
+          const month = parseInt(dateParts[1]);
+          const year = parseInt(dateParts[2]);
+          
+          const date = new Date(year, month - 1, day);
+          const isValid = date.getDate() === day && 
+                         date.getMonth() === month - 1 && 
+                         date.getFullYear() === year;
+          
+          if (!isValid) {
+            input.classList.add('is-invalid');
+            dateErrorMessage.textContent = "Invalid date format.";
+            dateErrorMessage.style.display = 'block';
+            return;
+          }
 
-        const currentDate = new Date();
-        const minYear = 1950;
-        const maxYear = currentDate.getFullYear();
-        if (year < minYear || year > maxYear) {
-          input.classList.add('is-invalid');
-          dateErrorMessage.textContent = `Year must be between ${minYear} and ${maxYear}.`;
-          dateErrorMessage.style.display = 'block';
-          return;
-        }
+          const currentDate = new Date();
+          const minYear = 1950;
+          const maxYear = currentDate.getFullYear();
+          if (year < minYear || year > maxYear) {
+            input.classList.add('is-invalid');
+            dateErrorMessage.textContent = `Year must be between ${minYear} and ${maxYear}.`;
+            dateErrorMessage.style.display = 'block';
+            return;
+          }
 
-        if (date > currentDate) {
-          input.classList.add('is-invalid');
-          dateErrorMessage.textContent = "Date cannot be in the future.";
-          dateErrorMessage.style.display = 'block';
-          return;
-        }
+          if (date > currentDate) {
+            input.classList.add('is-invalid');
+            dateErrorMessage.textContent = "Date cannot be in the future.";
+            dateErrorMessage.style.display = 'block';
+            return;
+          }
 
-        // 如果所有检查都通过
-        input.classList.remove('is-invalid');
-        dateErrorMessage.style.display = 'none';
+          input.classList.remove('is-invalid');
+          dateErrorMessage.style.display = 'none';
+        }
       }
-    }
+    });
 
     let isSubmitting = false;
     
