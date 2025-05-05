@@ -3613,12 +3613,13 @@ class FlipperTagsListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMixin
 
 class TransferObservationsByTagView(LoginRequiredMixin, View):
     template_name = 'wamtram2/transfer_observation.html'
-
+    
     def dispatch(self, request, *args, **kwargs):
         if not (request.user.is_superuser or
                 request.user.groups.filter(name="WAMTRAM2_STAFF").exists()):
             raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
+    
     def get_context_data(self):
         """Return the context data for template rendering"""
         return {
@@ -3702,6 +3703,9 @@ class TransferObservationsByTagView(LoginRequiredMixin, View):
             # Convert observation_ids list to comma-separated string
             observation_ids_str = ','.join(observation_ids)
 
+            # Debug output
+            print(f"Calling SP with tag_id={tag_id}, turtle_id={turtle_id}, obs_ids={observation_ids_str}")
+
             # Execute stored procedure
             with connections['wamtram2'].cursor() as cursor:
                 cursor.execute(
@@ -3709,7 +3713,7 @@ class TransferObservationsByTagView(LoginRequiredMixin, View):
                     [tag_id, turtle_id, observation_ids_str]
                 )
                 
-                # Get the results
+                
                 row = cursor.fetchone()
                 return_value = row[0]
                 error_message = row[1]
@@ -3730,6 +3734,7 @@ class TransferObservationsByTagView(LoginRequiredMixin, View):
                 'success': False,
                 'error': str(e)
             }, status=500)
+
 
 
 class NestingSeasonListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMixin, ListView):

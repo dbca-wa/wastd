@@ -326,8 +326,7 @@ class TrtDataEntryForm(forms.ModelForm):
             ('Y', 'Yes, saw eggs'),
             ('N', 'No nest'),
             ('P', "Possible nest, didn't see eggs"),
-            ('O', 'NA'),
-        ] + [(code, desc) for code, desc in clutch_completed_choices if code not in ['Y', 'N', 'P', 'O']]
+        ] + [(code, desc) for code, desc in clutch_completed_choices if code not in ['Y', 'N', 'P']]
         
         self.fields['clutch_completed'].choices = clutch_completed_choices
                         
