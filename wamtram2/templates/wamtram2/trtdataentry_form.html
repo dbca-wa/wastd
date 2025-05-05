@@ -1091,8 +1091,7 @@
           // month
           if (value.length > 2) {
             let month = value.substring(2, 4);
-            if (parseInt(month) > 12) month = '12';
-            if (parseInt(month) < 1) month = '01';
+
             formattedValue += '/' + month;
           }
           
