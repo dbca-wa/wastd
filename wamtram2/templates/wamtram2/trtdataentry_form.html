@@ -1115,7 +1115,7 @@
       });
 
       newInput.addEventListener('blur', function(e) {
-        if (e.target.value.trim()) {  // 只在输入框有值时才验证
+        if (e.target.value.trim()) { 
           validateDate(e.target);
         }
       });
@@ -1132,8 +1132,8 @@
           
           const date = new Date(year, month - 1, day);
           const isValid = date.getDate() === day && 
-                         date.getMonth() === month - 1 && 
-                         date.getFullYear() === year;
+            date.getMonth() === month - 1 && 
+            date.getFullYear() === year;
           
           if (!isValid) {
             input.classList.add('is-invalid');
