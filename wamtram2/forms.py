@@ -559,7 +559,7 @@ class TrtDataEntryForm(forms.ModelForm):
                     from datetime import datetime
                     # Try to parse ddmmyyyy HH:mm format
                     try:
-                        return datetime.strptime(observation_date, '%d%m%Y %H:%M')
+                        return datetime.strptime(observation_date, '%d/%m/%Y %H:%M')
                     except ValueError:
                         try:
                             return datetime.strptime(observation_date, '%Y-%m-%d %H:%M')
