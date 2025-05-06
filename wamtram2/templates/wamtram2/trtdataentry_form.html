@@ -1277,17 +1277,10 @@
     });
 
     // Handle form submission
-    form.addEventListener('submit', function(event) { 
-        if (form.checkValidity()) {
-          isSubmitting = true;
-          isFormDirty = false;
-          showLoadingOverlay();
-
-        } else {
-          event.preventDefault();
-          showLoadingOverlay();
-          scrollToErrors();
-        }
+    form.addEventListener('submit', function(event) {
+      isSubmitting = true;
+      isFormDirty = false;
+      showLoadingOverlay();
     });
 
 

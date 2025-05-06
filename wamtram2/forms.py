@@ -253,13 +253,19 @@ class TrtDataEntryForm(forms.ModelForm):
         widgets = {
             "turtle_id": forms.HiddenInput(),
             "entry_batch": forms.HiddenInput(),
-            "observation_date": forms.DateTimeInput(attrs={"type": "datetime-local"}),
+            "observation_date": forms.DateTimeInput(
+                attrs={
+                    "type": "datetime-local",
+                    "class": "form-control",
+                    "data-date-format": "ddmmyyyy HH:mm",
+                    "placeholder": "DDMMYYYY HH:mm"
+                }
+            ),
             "measured_by_id": forms.HiddenInput(),
             "recorded_by_id": forms.HiddenInput(),
             "tagged_by_id": forms.HiddenInput(),
             "entered_by_id": forms.HiddenInput(),
-            # "measured_recorded_by_id": personWidget,
-            "place_code": forms.HiddenInput(),
+            "place_code": forms.HiddenInput(attrs={'data-place-code': ''}),
             "comments": forms.Textarea(attrs={"rows": 3, "class": "form-control"}),
             "clutch_completed": forms.Select(attrs={"class": "form-control"}),
             "egg_count": forms.NumberInput(attrs={"class": "form-control"}),
@@ -305,8 +311,6 @@ class TrtDataEntryForm(forms.ModelForm):
                 if self.instance and getattr(self.instance, damage_code_field):
                     self.initial[damage_code_field] = getattr(self.instance, damage_code_field)
         
-        
-        
         self.fields['entered_by'].widget = forms.TextInput(attrs={
             'class': 'form-control', 
             'placeholder': 'Enter name',
@@ -317,7 +321,6 @@ class TrtDataEntryForm(forms.ModelForm):
         ordered_choices = [('', '---------')] + [(s, sex_dict[s]) for s in custom_sex_order if s in sex_dict]
         
         self.fields['sex'].choices = ordered_choices
-        
         
         clutch_completed_choices = list(TrtYesNo.objects.filter(code__in=['D', 'N', 'P', 'U', 'Y', 'O']).values_list('code', 'description'))
         clutch_completed_choices = [
@@ -340,7 +343,6 @@ class TrtDataEntryForm(forms.ModelForm):
             field_name = f'measurement_type_{i}'
             self.fields[field_name].queryset = filtered_measurement_types
 
-        
         tag_state_order = ["A1", "AE", "#"]
         
         tag_state_order_case = Case(
@@ -548,12 +550,47 @@ class TrtDataEntryForm(forms.ModelForm):
             if field.required:
                 field.widget.attrs['class'] = field.widget.attrs.get('class', '') + ' required-field'
 
+    def clean_observation_date(self):
+        observation_date = self.cleaned_data.get('observation_date')
+        if observation_date:
+            try:
+                # If input is string format
+                if isinstance(observation_date, str):
+                    from datetime import datetime
+                    # Try to parse ddmmyyyy HH:mm format
+                    try:
+                        return datetime.strptime(observation_date, '%d%m%Y %H:%M')
+                    except ValueError:
+                        try:
+                            return datetime.strptime(observation_date, '%Y-%m-%d %H:%M')
+                        except ValueError:
+                            raise forms.ValidationError("Please enter a valid date/time format (DDMMYYYY HH:mm)")
+                return observation_date
+            except Exception as e:
+                raise forms.ValidationError(f"Date format error: {str(e)}")
+        return observation_date
+
     # saves the people names as well as the person_id for use in MS Access front end
     def save(self, commit=True):
-        # Call the parent class's save method to get the instance
         instance = super().save(commit=False)
         
-        
+        # Handle date time
+        if instance.observation_date:
+            # If the observation date is a string, try to parse it
+            if isinstance(instance.observation_date, str):
+                from datetime import datetime
+                try:
+                    instance.observation_date = datetime.strptime(instance.observation_date, '%d%m%Y %H:%M')
+                except ValueError:
+                    try:
+                        instance.observation_date = datetime.strptime(instance.observation_date, '%Y-%m-%d %H:%M')
+                    except ValueError:
+                        pass
+            
+            # Add 8 hours to the observation date
+            instance.observation_date += timedelta(hours=8)
+            instance.observation_time = instance.observation_date
+
         if instance.scar_check == 'N':
             instance.tagscarnotchecked = True
         elif instance.scar_check in ['Y', 'P']:
@@ -576,15 +613,7 @@ class TrtDataEntryForm(forms.ModelForm):
         if instance.entered_by_id:
             person = TrtPersons.objects.get(person_id=instance.entered_by_id.person_id)
             instance.entered_by = "{} {}".format(person.first_name, person.surname)
-        # if instance.measured_recorded_by_id:
-        #     person = TrtPersons.objects.get(person_id=instance.measured_recorded_by_id.person_id)
-        #     instance.measured_recorded_by = "{} {}".format(person.first_name, person.surname)
 
-        # Set the observation_time to the same value as the observation_date
-        
-        if instance.observation_date:
-            instance.observation_date += timedelta(hours=8)
-            instance.observation_time = instance.observation_date
         # Save the instance to the database
         if commit:
             instance.save()
@@ -598,10 +627,14 @@ class TrtDataEntryForm(forms.ModelForm):
         clutch_completed_value = cleaned_data.get('clutch_completed')
                 
         try:
-            if clutch_completed_value in ['O','N']:
+            if clutch_completed_value and clutch_completed_value.code in ['O', 'N']:
                 cleaned_data['nesting'] = TrtYesNo.objects.get(code='N')
-            else:
+            elif clutch_completed_value and clutch_completed_value.code == 'Y':
                 cleaned_data['nesting'] = TrtYesNo.objects.get(code='Y')
+            elif clutch_completed_value and clutch_completed_value.code == 'P':
+                cleaned_data['nesting'] = TrtYesNo.objects.get(code='Y')
+            else:
+                cleaned_data['nesting'] = None
         except TrtYesNo.DoesNotExist:
             raise forms.ValidationError("Cannot find the corresponding nesting value")
         
