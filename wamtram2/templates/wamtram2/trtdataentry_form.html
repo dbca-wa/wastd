@@ -1066,104 +1066,67 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-
-    document.querySelectorAll('input[type="datetime-local"]').forEach(function(input) {
-      // Create a new input with desire format
-      const newInput = document.createElement('input');
-      newInput.type = 'text';
-      newInput.className = input.className;
-      newInput.name = input.name;
-      newInput.id = input.id;
-      newInput.placeholder = 'DD/MM/YYYY HH:mm';
-      
-      input.parentNode.replaceChild(newInput, input);
-
-      newInput.addEventListener('input', function(e) {
-        let value = e.target.value.replace(/\D/g, '');
-        let formattedValue = '';
-        
-        if (value.length > 0) {
-          // day
-          formattedValue = value.substring(0, 2);
-          
-          // month
-          if (value.length > 2) {
-            let month = value.substring(2, 4);
-            formattedValue += '/' + month;
-          }
-          
-          // year
-          if (value.length > 4) {
-            let year = value.substring(4, 8);
-            formattedValue += '/' + year;
-          }
-          
-          // hours
-          if (value.length > 8) {
-            let hours = value.substring(8, 10);
-            formattedValue += ' ' + hours;
-          }
-          
-          // minutes
-          if (value.length > 10) {
-            let minutes = value.substring(10, 12);
-            formattedValue += ':' + minutes;
-          }
-        }
-        
-        e.target.value = formattedValue;
-      });
-
-      newInput.addEventListener('blur', function(e) {
-        if (e.target.value.trim()) { 
-          validateDate(e.target);
-        }
-      });
-
-      function validateDate(input) {
-        const dateStr = input.value;
-        const dateParts = dateStr.split(/[\/\s:]/);
-        const dateErrorMessage = document.getElementById('date-error-message');
-        
-        if (dateParts.length >= 3) {
-          const day = parseInt(dateParts[0]);
-          const month = parseInt(dateParts[1]);
-          const year = parseInt(dateParts[2]);
-          
-          const date = new Date(year, month - 1, day);
-          const isValid = date.getDate() === day && 
-            date.getMonth() === month - 1 && 
-            date.getFullYear() === year;
-          
-          if (!isValid) {
-            input.classList.add('is-invalid');
-            dateErrorMessage.textContent = "Invalid date format.";
-            dateErrorMessage.style.display = 'block';
-            return;
-          }
-
-          const currentDate = new Date();
-          const minYear = 1950;
-          const maxYear = currentDate.getFullYear();
-          if (year < minYear || year > maxYear) {
-            input.classList.add('is-invalid');
-            dateErrorMessage.textContent = `Year must be between ${minYear} and ${maxYear}.`;
-            dateErrorMessage.style.display = 'block';
-            return;
-          }
-
-          if (date > currentDate) {
-            input.classList.add('is-invalid');
-            dateErrorMessage.textContent = "Date cannot be in the future.";
-            dateErrorMessage.style.display = 'block';
-            return;
-          }
-
-          input.classList.remove('is-invalid');
-          dateErrorMessage.style.display = 'none';
-        }
+    const observationDateInput = document.querySelector('input[name="observation_date"]');
+    const dateErrorMessage = document.getElementById('date-error-message');
+  
+    if (!observationDateInput) return;
+  
+    observationDateInput.addEventListener('input', function(e) {
+      let value = e.target.value.replace(/\D/g, '');
+      let formattedValue = '';
+      if (value.length > 0) {
+        formattedValue = value.substring(0, 2);
+        if (value.length > 2) formattedValue += '/' + value.substring(2, 4);
+        if (value.length > 4) formattedValue += '/' + value.substring(4, 8);
+        if (value.length > 8) formattedValue += ' ' + value.substring(8, 10);
+        if (value.length > 10) formattedValue += ':' + value.substring(10, 12);
+      }
+      e.target.value = formattedValue;
+    });
+  
+    observationDateInput.addEventListener('blur', function(e) {
+      if (e.target.value.trim()) {
+        validateDate(e.target);
       }
     });
+  
+    function validateDate(input) {
+      const dateStr = input.value;
+      const dateParts = dateStr.split(/[\/\s:]/);
+      if (dateParts.length >= 3) {
+        const day = parseInt(dateParts[0]);
+        const month = parseInt(dateParts[1]);
+        const year = parseInt(dateParts[2]);
+        const date = new Date(year, month - 1, day);
+        const isValid = date.getDate() === day && date.getMonth() === month - 1 && date.getFullYear() === year;
+        if (!isValid) {
+          input.classList.add('is-invalid');
+          dateErrorMessage.textContent = "Invalid date format.";
+          dateErrorMessage.style.display = 'block';
+          return;
+        }
+        const currentDate = new Date();
+        const minYear = 1950;
+        const maxYear = currentDate.getFullYear();
+        if (year < minYear || year > maxYear) {
+          input.classList.add('is-invalid');
+          dateErrorMessage.textContent = `Year must be between ${minYear} and ${maxYear}.`;
+          dateErrorMessage.style.display = 'block';
+          return;
+        }
+        if (date > currentDate) {
+          input.classList.add('is-invalid');
+          dateErrorMessage.textContent = "Date cannot be in the future.";
+          dateErrorMessage.style.display = 'block';
+          return;
+        }
+        input.classList.remove('is-invalid');
+        dateErrorMessage.style.display = 'none';
+      }
+    }
+  });
+
+  document.addEventListener('DOMContentLoaded', function() {
 
     let isSubmitting = false;
     
@@ -1367,20 +1330,6 @@
         "id_longitude": "Longitude",
         "id_observation_date": "Observation Date & Time",
     };
-
-    function validateDate() {
-        const selectedDate = new Date(observationDateInput.value);
-        const currentDate = new Date();
-
-        if (selectedDate > currentDate) {
-            dateErrorMessage.textContent = "Date in the future";
-            dateErrorMessage.style.display = 'block';
-            observationDateInput.classList.add('is-invalid');
-        } else {
-            dateErrorMessage.style.display = 'none';
-            observationDateInput.classList.remove('is-invalid');
-        }
-    }
 
     if (reviewButton) {
       reviewButton.addEventListener('click', function(event) {

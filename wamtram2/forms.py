@@ -255,7 +255,7 @@ class TrtDataEntryForm(forms.ModelForm):
             "entry_batch": forms.HiddenInput(),
             "observation_date": forms.DateTimeInput(
                 attrs={
-                    "type": "datetime-local",
+                    "type": "text",
                     "class": "form-control",
                     "data-date-format": "ddmmyyyy HH:mm",
                     "placeholder": "DDMMYYYY HH:mm"
@@ -281,6 +281,14 @@ class TrtDataEntryForm(forms.ModelForm):
         if not self.instance.pk: 
             self.fields['alive'].initial = TrtYesNo.objects.get(code='Y')
             self.fields['datum_code'].initial = 'WGS84'
+            
+        self.fields['observation_date'].input_formats = ['%d/%m/%Y %H:%M']
+        self.fields['observation_date'].widget = forms.TextInput(
+            attrs={
+                "class": "form-control",
+                "placeholder": "DD/MM/YYYY HH:mm"
+            }
+        )
         
         self.fields['alive'].queryset = TrtYesNo.objects.all()
         
@@ -550,44 +558,12 @@ class TrtDataEntryForm(forms.ModelForm):
             if field.required:
                 field.widget.attrs['class'] = field.widget.attrs.get('class', '') + ' required-field'
 
-    def clean_observation_date(self):
-        observation_date = self.cleaned_data.get('observation_date')
-        if observation_date:
-            try:
-                # If input is string format
-                if isinstance(observation_date, str):
-                    from datetime import datetime
-                    # Try to parse ddmmyyyy HH:mm format
-                    try:
-                        return datetime.strptime(observation_date, '%d/%m/%Y %H:%M')
-                    except ValueError:
-                        try:
-                            return datetime.strptime(observation_date, '%Y-%m-%d %H:%M')
-                        except ValueError:
-                            raise forms.ValidationError("Please enter a valid date/time format (DDMMYYYY HH:mm)")
-                return observation_date
-            except Exception as e:
-                raise forms.ValidationError(f"Date format error: {str(e)}")
-        return observation_date
-
     # saves the people names as well as the person_id for use in MS Access front end
     def save(self, commit=True):
         instance = super().save(commit=False)
         
         # Handle date time
-        if instance.observation_date:
-            # If the observation date is a string, try to parse it
-            if isinstance(instance.observation_date, str):
-                from datetime import datetime
-                try:
-                    instance.observation_date = datetime.strptime(instance.observation_date, '%d%m%Y %H:%M')
-                except ValueError:
-                    try:
-                        instance.observation_date = datetime.strptime(instance.observation_date, '%Y-%m-%d %H:%M')
-                    except ValueError:
-                        pass
-            
-            # Add 8 hours to the observation date
+        if instance.observation_date and instance.observation_time is None:
             instance.observation_date += timedelta(hours=8)
             instance.observation_time = instance.observation_date
 
