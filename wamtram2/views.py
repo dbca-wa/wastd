@@ -848,10 +848,12 @@ class ProcessDataEntryBatchView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         try:
             with connections["wamtram2"].cursor() as cursor:
+                # Process the entry batch
                 cursor.execute(
                     "EXEC dbo.EntryBatchProcessWEB @ENTRY_BATCH_ID = %s;",
                     [self.kwargs["batch_id"]],
                 )
+                
                 messages.add_message(request, messages.INFO, "Processing finished.")
                 
         except DatabaseError as e:
@@ -1168,7 +1170,6 @@ class ObservationDetailView(LoginRequiredMixin, DetailView):
             return HttpResponseForbidden("You do not have permission to view this record")
         return super().dispatch(request, *args, **kwargs)
 
-
     def get_object(self, queryset=None):
         if queryset is None:
             queryset = self.get_queryset()
@@ -1192,6 +1193,10 @@ class ObservationDetailView(LoginRequiredMixin, DetailView):
             context["place_full_name"] = obj.place_code.get_full_name()
         else:
             context["place_full_name"] = ""
+            
+        # Add observation status to context
+        context["observation_status"] = obj.observation_status
+        
         return context
 
 
@@ -2184,7 +2189,8 @@ class ExportDataView(LoginRequiredMixin, View):
             queryset = queryset.select_related(
                 'entry_batch',
                 'place_code',
-                'place_code__location_code'
+                'place_code__location_code',
+                'observation_id'
             )
 
             # Check if there's any data to export
@@ -2200,6 +2206,7 @@ class ExportDataView(LoginRequiredMixin, View):
                     # Write headers
                     headers = [field.name for field in TrtDataEntry._meta.fields]
                     headers.append('organisations')
+                    headers.append('observation_status')
                     writer.writerow(headers)
                 
                     # Write data
@@ -2208,6 +2215,14 @@ class ExportDataView(LoginRequiredMixin, View):
                             trtentrybatch=entry.entry_batch
                         ).values_list('organisation', flat=True)
                         org_str = ', '.join(organisations)
+                        
+                        # Get observation status from TrtObservations table
+                        observation_status = ''
+                        if entry.observation_id_id is not None:  # Use observation_id_id to get the actual ID
+                            observation = TrtObservations.objects.filter(
+                                observation_id=entry.observation_id_id
+                            ).values_list('observation_status', flat=True).first()
+                            observation_status = observation if observation else ''
                         
                         row = []
                         for field in TrtDataEntry._meta.fields:
@@ -2218,6 +2233,7 @@ class ExportDataView(LoginRequiredMixin, View):
                                 value = ''
                             row.append(str(value))
                         row.append(org_str)
+                        row.append(observation_status)
                         writer.writerow(row)
                         
                 else:  # xlsx format
@@ -2232,6 +2248,7 @@ class ExportDataView(LoginRequiredMixin, View):
                     # Write headers
                     headers = [field.name for field in TrtDataEntry._meta.fields]
                     headers.append('organisations')
+                    headers.append('observation_status')
                     ws.append(headers)
                     
                     # Write data
@@ -2240,6 +2257,14 @@ class ExportDataView(LoginRequiredMixin, View):
                             trtentrybatch=entry.entry_batch
                         ).values_list('organisation', flat=True)
                         org_str = ', '.join(organisations)
+                        
+                        # Get observation status from TrtObservations table
+                        observation_status = ''
+                        if entry.observation_id_id is not None:  # Use observation_id_id to get the actual ID
+                            observation = TrtObservations.objects.filter(
+                                observation_id=entry.observation_id_id
+                            ).values_list('observation_status', flat=True).first()
+                            observation_status = observation if observation else ''
                         
                         row = []
                         for field in TrtDataEntry._meta.fields:
@@ -2252,6 +2277,7 @@ class ExportDataView(LoginRequiredMixin, View):
                                 value = str(value)
                             row.append(value)
                         row.append(org_str)
+                        row.append(observation_status)
                         ws.append(row)
                     
                     wb.save(response)

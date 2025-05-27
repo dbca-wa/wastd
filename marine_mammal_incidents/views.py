@@ -257,6 +257,7 @@ def export_data(request):
 
     return response
 
+
 @require_GET
 def get_locations(request):
     start_date = request.GET.get('start_date')
