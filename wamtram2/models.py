@@ -1393,7 +1393,7 @@ class TrtIdentificationTypes(models.Model):
         db_table = "TRT_IDENTIFICATION_TYPES"
     def __str__(self):
         return f"{self.description}"
-    
+
 
 class TrtLocations(models.Model):
     location_code = models.CharField(

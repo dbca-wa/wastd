@@ -57,6 +57,11 @@
               <td>{{ object.activity_code }}</td>
             </tr>
             <tr>
+              <th>Observation Status</th
+                >
+              <td>{{ observation_status|default_if_none:"Unknown" }}</td>
+            </tr>
+            <tr>
               <th>Measurer Person</th>
               <td>{{ object.measurer_person|default_if_none:"" }}</td>
             </tr>
