@@ -1,16 +1,16 @@
 document.addEventListener('DOMContentLoaded', function() {
     const entryId = document.body.dataset.entryId;
- 
     if (entryId) {
         expandAllFields();
     }
- 
+
     function expandAllFields() {
         const fieldsToExpand = [
             'injuryAdditionalFields',
             'additionalRecaptureLeftTag',
             'advancedDataCard',
             'moreMeasurement',
+            'moreSamples',
             'additionalNewPITTags',
             'additionalRecapturePITTags',
             'additionalNewRightTag',
@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
             'scarsDetails',
             'scarsDetailsRight'
         ];
- 
+
         fieldsToExpand.forEach(id => {
             const element = document.getElementById(id);
             if (element) {
@@ -30,16 +30,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 element.style.display = displayStyle;
             }
         });
- 
+
         removeToggleButtons();
     }
- 
+
     function removeToggleButtons() {
         const buttonsToRemove = [
             'toggleInjuryFieldsButton',
             'toggleRecaptureTagsBtn',
             'toggleNewTagsBtn',
             'toggleMeasurementButton',
+            'toggleSampleButton',
             'toggleRecapturePITTagsBtn',
             'toggleNewPITTagsBtn',
             'advancedDataButton'

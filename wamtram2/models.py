@@ -705,6 +705,28 @@ class TrtDataEntry(models.Model):
     sample_label_2 = models.CharField(
         db_column="SAMPLE_LABEL_2", max_length=50, blank=True, null=True
     )  # Field name made lowercase.
+    tissue_type_3 = models.ForeignKey(
+        "TrtTissueTypes",
+        models.SET_NULL,
+        db_column="TISSUE_TYPE_3",
+        blank=True,
+        null=True,
+        related_name="tt3",
+    )
+    sample_label_3 = models.CharField(
+        db_column="SAMPLE_LABEL_3", max_length=50, blank=True, null=True
+    )  # Field name made lowercase.
+    tissue_type_4 = models.ForeignKey(
+        "TrtTissueTypes",
+        models.SET_NULL,
+        db_column="TISSUE_TYPE_4",
+        blank=True,
+        null=True,
+        related_name="tt4",
+    )
+    sample_label_4 = models.CharField(
+        db_column="SAMPLE_LABEL_4", max_length=50, blank=True, null=True
+    )  # Field name made lowercase.
     turtle_comments = models.CharField(
         db_column="TURTLE_COMMENTS", max_length=255, blank=True, null=True
     )  # Field name made lowercase.

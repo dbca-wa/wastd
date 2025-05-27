@@ -181,6 +181,10 @@ class TrtDataEntryForm(forms.ModelForm):
             "tissue_type_1",
             "sample_label_2",
             "tissue_type_2",
+            "sample_label_3",
+            "tissue_type_3",
+            "sample_label_4",
+            "tissue_type_4",
             "comments",
             "clutch_completed",
             "egg_count",
@@ -281,6 +285,7 @@ class TrtDataEntryForm(forms.ModelForm):
         if not self.instance.pk: 
             self.fields['alive'].initial = TrtYesNo.objects.get(code='Y')
             self.fields['datum_code'].initial = 'WGS84'
+            self.fields['activity_code'].initial = 'P'
             
         self.fields['observation_date'].input_formats = ['%d/%m/%Y %H:%M']
         self.fields['observation_date'].widget = forms.TextInput(
@@ -482,6 +487,9 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["dud_pit_tag"].label = "Dud PIT Tag 1"
         self.fields["dud_pit_tag_2"].label = "Dud PIT Tag 2"
         
+        self.fields["activity_code"].label = "Activity"
+        self.fields["activity_code"].required = False
+        
         self.fields["recapture_left_tag_state"].required = False
         self.fields["recapture_left_tag_state_2"].required = False
         self.fields["recapture_right_tag_state"].required = False
@@ -557,6 +565,13 @@ class TrtDataEntryForm(forms.ModelForm):
             field = self.fields[field_name]
             if field.required:
                 field.widget.attrs['class'] = field.widget.attrs.get('class', '') + ' required-field'
+
+        self.fields["sample_label_1"].label = "Sample Label 1"
+        self.fields["tissue_type_1"].label = "Tissue Type 1"
+        self.fields["sample_label_2"].label = "Sample Label 2"
+        self.fields["tissue_type_2"].label = "Tissue Type 2"
+        self.fields["sample_label_3"].label = "Sample Label 3"
+        self.fields["tissue_type_3"].label = "Tissue Type 3"
 
     # saves the people names as well as the person_id for use in MS Access front end
     def save(self, commit=True):
