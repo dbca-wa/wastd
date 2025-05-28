@@ -57,6 +57,10 @@
               <td>{{ object.activity_code }}</td>
             </tr>
             <tr>
+              <th>Nesting</th>
+              <td>{{ object.nesting|default_if_none:"" }}</td>
+            </tr>
+            <tr>
               <th>Observation Status</th
                 >
               <td>{{ observation_status|default_if_none:"Unknown" }}</td>
