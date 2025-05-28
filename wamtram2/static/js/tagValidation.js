@@ -135,7 +135,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         setValidationStatus(tagInput, validationMessage, detailedMessage, 'valid', '✓ Tag found in previous unprocessed entry');
                     } else if (data.wrong_side) {
                         setValidationStatus(tagInput, validationMessage, detailedMessage, 'warning', '! Tag may be on the wrong side');
-                        doNotProcessField.checked = true;
+                        //doNotProcessField.checked = true;
                     } else if (data.other_turtle_id) {
                         setValidationStatus(tagInput, validationMessage, detailedMessage, 'invalid', '✗ Invalid tag:', `Tag belongs to another turtle (ID: <a href="/wamtram2/turtles/${data.other_turtle_id}/" target="_blank">${data.other_turtle_id}</a>)`);
                         doNotProcessField.checked = true;
