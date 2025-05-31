@@ -115,9 +115,13 @@
                     <button type="button" class="btn btn-outline-primary" id="editMode">
                         <i class="fas fa-edit"></i> Edit Mode
                     </button>
+                    <button type="button" class="btn btn-outline-primary" id="batchEditBtn" style="display: none;">
+                        <i class="fas fa-edit"></i> Batch Edit
+                    </button>
                     <button id="saveChanges" class="btn btn-success me-2" style="display: none;">
                         <i class="fas fa-save"></i> Save Changes
                     </button>
+
                 </div>
             </div>
             <div class="col-auto">
@@ -750,12 +754,199 @@
         <div class="loading-overlay" style="display: none;"></div>
         
     </div>
+
+    <!-- Add batch edit modal at the bottom of the page -->
+    <div class="modal fade" id="batchEditModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Batch Edit Records</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="batchEditField">Select Field to Edit:</label>
+                        <select class="form-control" id="batchEditField">
+                            <option value="">Select a field...</option>
+                            {% for column in all_columns %}
+                                {% if column.field != 'data_entry_id' and column.field != 'observation_id' %}
+                                    <option value="{{ column.field }}">{{ column.title }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div id="batchEditValueContainer" style="display: none;">
+                        <div class="form-group">
+                            <label for="batchEditValue">New Value:</label>
+                            <div id="batchEditValueInput">
+                                <!-- Dynamically generated input controls will be displayed here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info mt-3">
+                        <i class="fas fa-info-circle"></i> This will update all selected records with the new value.
+                    </div>
+
+                    <div class="form-group mt-3">
+                        <label>Preview Changes:</label>
+                        <div id="batchEditPreview" class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Entry ID</th>
+                                        <th>Current Value</th>
+                                        <th>New Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="batchEditPreviewBody">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="applyBatchEdit">Apply Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock page_content_inner %}
 
 {% block extra_js %}
 {{ block.super }}
 <script>
     let editableFields = {}; 
+
+    // Show/hide batch edit button based on edit mode
+    $('#editMode').click(function() {
+        $('#batchEditBtn').show();
+    });
+
+    $('#viewMode').click(function() {
+        $('#batchEditBtn').hide();
+    });
+
+    // Handle batch edit button click
+    $('#batchEditBtn').click(function() {
+        $('#batchEditModal').modal('show');
+    });
+
+    // Handle field selection change
+    $('#batchEditField').change(function() {
+        const selectedField = $(this).val();
+        const valueContainer = $('#batchEditValueContainer');
+        const valueInput = $('#batchEditValueInput');
+        
+        if (!selectedField) {
+            valueContainer.hide();
+            return;
+        }
+
+        // Clear previous input
+        valueInput.empty();
+        
+        // Get field type from the table cell
+        const fieldType = $(`td[data-field="${selectedField}"]`).data('field-type');
+        
+        // Create appropriate input based on field type
+        if (fieldType === 'number') {
+            valueInput.append('<input type="number" class="form-control" id="batchEditValue">');
+        } else if (fieldType === 'date') {
+            valueInput.append('<input type="date" class="form-control" id="batchEditValue">');
+        } else if (fieldType === 'time') {
+            valueInput.append('<input type="time" class="form-control" id="batchEditValue">');
+        } else if (fieldType === 'select') {
+            // Create select element based on the field
+            const select = $('<select class="form-control" id="batchEditValue"></select>');
+            const options = $(`td[data-field="${selectedField}"] select option`).clone();
+            select.append(options);
+            valueInput.append(select);
+        } else {
+            valueInput.append('<input type="text" class="form-control" id="batchEditValue">');
+        }
+
+        valueContainer.show();
+        updatePreview();
+    });
+
+    // Update preview when value changes
+    $('#batchEditValueInput').on('change input', 'input, select', function() {
+        updatePreview();
+    });
+
+    // Function to update preview table
+    function updatePreview() {
+        const selectedField = $('#batchEditField').val();
+        const newValue = $('#batchEditValue').val();
+        const previewBody = $('#batchEditPreviewBody');
+        
+        previewBody.empty();
+        
+        if (!selectedField || !newValue) {
+            return;
+        }
+
+        // Get all editable rows
+        $('tr.grid-row').each(function() {
+            const row = $(this);
+            if (row.hasClass('has-observation')) {
+                return; // Skip rows with observations
+            }
+
+            const entryId = row.data('entry-id');
+            const currentValue = row.find(`td[data-field="${selectedField}"] .view-mode`).text().trim();
+            
+            previewBody.append(`
+                <tr>
+                    <td>${entryId}</td>
+                    <td>${currentValue || '-'}</td>
+                    <td>${newValue}</td>
+                </tr>
+            `);
+        });
+    }
+
+    // Handle apply changes button click
+    $('#applyBatchEdit').click(function() {
+        const selectedField = $('#batchEditField').val();
+        const newValue = $('#batchEditValue').val();
+        
+        if (!selectedField || !newValue) {
+            alert('Please select a field and enter a new value');
+            return;
+        }
+
+        if (confirm('Are you sure you want to apply these changes to all selected records?')) {
+            // Update all editable rows
+            $('tr.grid-row').each(function() {
+                const row = $(this);
+                if (row.hasClass('has-observation')) {
+                    return; // Skip rows with observations
+                }
+
+                const entryId = row.data('entry-id');
+                const cell = row.find(`td[data-field="${selectedField}"]`);
+                
+                // Update the cell's value
+                cell.find('.view-mode').text(newValue);
+                cell.find('.edit-mode input, .edit-mode select').val(newValue);
+                cell.addClass('modified');
+
+                // Add to editableFields for saving
+                if (!editableFields[entryId]) {
+                    editableFields[entryId] = {};
+                }
+                editableFields[entryId][selectedField] = newValue;
+            });
+
+            $('#batchEditModal').modal('hide');
+        }
+    });
 
     function saveChanges() {
         if(Object.keys(editableFields).length === 0) {
