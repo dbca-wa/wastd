@@ -128,13 +128,3 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('toggleInjuryFieldsButton').addEventListener('click', toggleInjuryFields);
 });
-
-// static/js/advancedDataHandler.js
-
-document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('advancedDataButton').addEventListener('click', function() {
-        const advancedDataCard = document.getElementById('advancedDataCard');
-        advancedDataCard.style.display = 'block';
-        this.style.display = 'none';
-    });
-});

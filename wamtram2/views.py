@@ -4228,9 +4228,45 @@ class EntryCurationView(LoginRequiredMixin, SuperUserRequiredMixin, PaginateMixi
     
     def post(self, request, *args, **kwargs):
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            visible_columns = request.POST.getlist('columns[]')
-            request.session['entry_grid_columns'] = visible_columns
-            return JsonResponse({'status': 'success'})
+            # Handle column visibility settings
+            if 'columns[]' in request.POST:
+                visible_columns = request.POST.getlist('columns[]')
+                request.session['entry_grid_columns'] = visible_columns
+                return JsonResponse({'status': 'success'})
+            
+            # Handle batch edit
+            elif 'batch_edit' in request.POST:
+                try:
+                    field = request.POST.get('field')
+                    value = request.POST.get('value')
+                    entry_ids = request.POST.getlist('entry_ids[]')
+                    
+                    if not all([field, value, entry_ids]):
+                        return JsonResponse({
+                            'status': 'error',
+                            'message': 'Missing required parameters'
+                        }, status=400)
+
+                    # Get entries to update
+                    entries = TrtDataEntry.objects.filter(
+                        data_entry_id__in=entry_ids,
+                        observation_id__isnull=True  # Only update entries without observations
+                    )
+
+                    # Update the field for all entries
+                    entries.update(**{field: value})
+
+                    return JsonResponse({
+                        'status': 'success',
+                        'message': f'Successfully updated {entries.count()} entries'
+                    })
+
+                except Exception as e:
+                    return JsonResponse({
+                        'status': 'error',
+                        'message': str(e)
+                    }, status=500)
+
         return HttpResponseBadRequest()
 
 
