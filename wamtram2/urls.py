@@ -14,6 +14,7 @@ urlpatterns = [
     path("find-tagged-turtle/<int:batch_id>/", views.FindTurtleView.as_view(), name="find_turtle"),
     # path("entry-batches/", views.EntryBatchesListView.as_view(), name="entry_batches"),
     path("entry-batches/<int:batch_id>/", views.EntryBatchDetailView.as_view(), name="entry_batch_detail"),
+    path('multi-entries-management/', views.MultiBatchEntryListView.as_view(), name='multi_entries_management'),
     path("delete-entry/<int:pk>/<int:batch_id>/", views.DeleteEntryView.as_view(), name="delete_entry"),
     path("new-entry-batch/", views.EntryBatchDetailView.as_view(), name="new_batch_detail"),
     path("delete-batch/<int:batch_id>/", views.DeleteBatchView.as_view(), name="delete_batch"),

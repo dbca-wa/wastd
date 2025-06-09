@@ -80,8 +80,6 @@ class TrtCauseOfDeath(models.Model):
         return f"{self.description}"
 
 
-
-
 class TrtConditionCodes(models.Model):
     condition_code = models.CharField(
         db_column="CONDITION_CODE", primary_key=True, max_length=1
@@ -1350,7 +1348,28 @@ class TrtEntryBatches(models.Model):
         blank=True, 
         null=True
     )
-
+    location = models.ForeignKey(
+        "TrtLocations",
+        db_column="LOCATION",
+        blank=True,
+        null=True, 
+        on_delete=models.SET_NULL,
+        related_name="entry_batches"
+    )
+    place = models.ForeignKey(
+        "TrtPlaces",
+        db_column="PLACE",
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="entry_batches"
+    )
+    year = models.IntegerField(
+        db_column="YEAR",
+        blank=True,
+        null=True,
+        help_text="Year"
+    )
     class Meta:
         managed = False
         db_table = "TRT_ENTRY_BATCHES"

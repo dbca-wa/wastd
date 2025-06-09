@@ -138,6 +138,7 @@
                 <button type="submit" class="btn btn-primary">Search</button>
                 <button type="button" id="clearFilter" class="btn btn-secondary ml-4">Clear Filter</button>
                 <button type="button" id="showAllBatches" class="btn btn-info ml-4">Show All Batches</button>
+                <button type="button" id="showAllEntriesForFilter" class="btn btn-warning ml-4">Show All Entries for Filter</button>
             </div>
         </div>
     </form>
@@ -736,6 +737,17 @@
                 }
             });
         }
+
+        $('#showAllEntriesForFilter').click(function() {
+            var location = $('#location').val();
+            var place = $('#place').val();
+            var year = $('#year').val();
+            var url = "{% url 'wamtram2:multi_entries_management' %}?";
+            if (location) url += "location=" + encodeURIComponent(location) + "&";
+            if (place) url += "place=" + encodeURIComponent(place) + "&";
+            if (year) url += "year=" + encodeURIComponent(year) + "&";
+            window.location.href = url;
+        });
     });
 
     document.addEventListener('DOMContentLoaded', function() {
