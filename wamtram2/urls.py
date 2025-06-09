@@ -54,6 +54,7 @@ urlpatterns = [
     path('curation/batches/', views.BatchCurationView.as_view(), name='batch_curation'),
     path('curation/batch/<int:batch_id>/entries/', views.EntryCurationView.as_view(), name='entries_curation'),
     path('curation/batch/multi-entries/', views.EntryCurationView.as_view(), name='multi_entries_curation'),
+    path('curation/merge-turtles/', views.MergeTurtlesView.as_view(), name='merge_turtles'),
     path('save-entry-changes/', views.SaveEntryChangesView.as_view(), name='save_entry_changes'),
     path('api/observations/<int:observation_id>/', views.ObservationDataView.as_view(), name='observation_detail'),
     path('curation/turtle-management/', views.TurtleManagementView.as_view(), name='turtle_management'),

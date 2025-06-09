@@ -233,7 +233,7 @@
             </a>
         </div>
 
-        <!-- Observation Transfer -->
+        {% comment %} <!-- Observation Transfer -->
         <div class="col-md-4 mb-4">
             <a href="{% url 'wamtram2:transfer_observations_by_tag' %}" class="text-decoration-none">
                 <div class="tool-card p-4 text-center">
@@ -247,7 +247,24 @@
                     </button>
                 </div>
             </a>
+        </div> {% endcomment %}
+
+        <!-- Merge Turtle -->
+        <div class="col-md-4 mb-4">
+            <a href="{% url 'wamtram2:merge_turtles' %}" class="text-decoration-none">
+                <div class="tool-card p-4 text-center">
+                    <div class="tool-icon">
+                        <i class="fas fa-exchange-alt"></i>
+                    </div>
+                    <h3 class="tool-title">Merge Turtles</h3>
+                    <p class="tool-description">Merge turtles by Turtle ID.</p>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-arrow-right mr-2"></i>Access Tool
+                    </button>
+                </div>
+            </a>
         </div>
+
 
 
         <!-- Nesting Season Management -->

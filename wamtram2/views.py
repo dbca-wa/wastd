@@ -6055,3 +6055,117 @@ class BatchesReviewView(LoginRequiredMixin, SuperUserRequiredMixin,PaginateMixin
         
         return context
 
+
+class MergeTurtlesView(LoginRequiredMixin, View):
+    template_name = 'wamtram2/merge_turtles.html'
+    
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or
+                request.user.groups.filter(name="WAMTRAM2_STAFF").exists()):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+    
+    def get_context_data(self):
+        """Return the context data for template rendering"""
+        return {
+            'page_title': 'Merge Turtles - ' + settings.SITE_TITLE
+        }
+
+    def get(self, request):
+        context = self.get_context_data()
+        return render(request, self.template_name, context)
+
+    def get_turtle_info(self, turtle_id):
+        """Get turtle information"""
+        try:
+            turtle = TrtTurtles.objects.get(turtle_id=turtle_id)
+            return {
+                'success': True,
+                'data': {
+                    'species': turtle.species_code.common_name,
+                    'sex': turtle.sex,
+                    'turtle_status': turtle.turtle_status.description,
+                    'location_code': turtle.location_code.location_name,
+                    'comments': turtle.comments,
+                    'tags': turtle.get_tags_description()
+                }
+            }
+        except TrtTurtles.DoesNotExist:
+            return {
+                'success': False,
+                'error': f'Turtle {turtle_id} not found'
+            }
+
+    def get_observations(self, turtle_id):
+        """Get observations data for a specific turtle"""
+        observations = TrtObservations.objects.filter(
+            turtle_id=turtle_id
+        ).select_related('turtle', 'place_code').values(
+            'observation_id',
+            'observation_date',
+            'turtle_id',
+            'place_code',
+            'comments'
+        ).order_by('-observation_date')
+        return list(observations)
+
+    def post(self, request):
+        # Handle AJAX request for turtle info
+        if request.headers.get('X-Requested-With') == 'FetchTurtleInfo':
+            turtle_id = request.POST.get('turtle_id')
+            return JsonResponse(self.get_turtle_info(turtle_id))
+
+        # Handle AJAX request for observations
+        if request.headers.get('X-Requested-With') == 'FetchObservations':
+            turtle_id = request.POST.get('turtle_id')
+            if not turtle_id:
+                return JsonResponse({
+                    'success': False,
+                    'error': 'Turtle ID is required'
+                })
+
+            observations = self.get_observations(turtle_id)
+            return JsonResponse({
+                'success': True,
+                'observations': observations
+            })
+
+        # Handle merge request
+        try:
+            source_turtle_id = request.POST.get('source_turtle_id')
+            target_turtle_id = request.POST.get('target_turtle_id')
+            
+            # Basic validation
+            if not all([source_turtle_id, target_turtle_id]):
+                return JsonResponse({
+                    'success': False,
+                    'error': 'Missing required parameters'
+                }, status=400)
+
+            # Execute stored procedure
+            with connections['wamtram2'].cursor() as cursor:
+                cursor.execute(
+                    "EXEC dbo.MergeTurtlesWEB @SOURCE_TURTLE_ID = %s, @TARGET_TURTLE_ID = %s;",
+                    [source_turtle_id, target_turtle_id]
+                )
+                
+                row = cursor.fetchone()
+                return_value = row[0]
+                error_message = row[1]
+
+                if return_value == 0:
+                    return JsonResponse({
+                        'success': True,
+                        'message': error_message
+                    })
+                else:
+                    return JsonResponse({
+                        'success': False,
+                        'error': error_message
+                    }, status=500)
+
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'error': str(e)
+            }, status=500)
