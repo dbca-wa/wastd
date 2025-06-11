@@ -2257,7 +2257,7 @@ class TrtSighting(models.Model):
     class Meta:
         managed = False
         db_table = "TRT_SIGHTING"
-        
+
 
 class TrtSpeciesManager(models.Manager):
     def get_queryset(self):
@@ -2272,7 +2272,6 @@ class TrtSpeciesManager(models.Manager):
         return super().get_queryset().exclude(species_code='0').annotate(
             custom_order=custom_order
         ).order_by('custom_order', 'species_code')
-
 
 
 class TrtSpecies(models.Model):
@@ -2300,7 +2299,7 @@ class TrtSpecies(models.Model):
 
     def __str__(self):
         return f"{self.common_name}"
-    
+
 
 class TrtTags(models.Model):
     tag_id = models.CharField(
