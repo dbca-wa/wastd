@@ -67,6 +67,7 @@ spec:
             timeoutSeconds: 10
           securityContext:
             runAsNonRoot: true
+            runAsUser: 1000
             privileged: false
             allowPrivilegeEscalation: false
             capabilities:
