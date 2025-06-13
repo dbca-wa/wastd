@@ -146,6 +146,7 @@
       <div class="col-md-6">
         <div class="d-flex align-items-center">
           <h5 class="mb-0">Entry Batch ID: {{ form.entry_batch.value }}</h5>
+          {% bootstrap_field form.entry_batch %}
           <button type="button" id="saveFormStateBtn" class="btn btn-info btn-sm ml-3">
             <i class="fas fa-save"></i> Save filled data
           </button>
