@@ -96,7 +96,7 @@ INSTALLED_APPS = [
     "users",
     "observations",
     "marine_mammal_incidents",
-    "wamtram2"
+    "wamtram2",
 ]
 MIDDLEWARE = [
     "wastd.middleware.HealthCheckMiddleware",
