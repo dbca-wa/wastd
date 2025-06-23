@@ -6,128 +6,128 @@ spec:
   template:
     spec:
       containers:
-      - name: turtles
-        env:
-        - name: SITE_CODE
-          value: "Turtles UAT"
-        - name: SITE_NAME
-          value: "Turtles Database UAT"
-        - name: SITE_TITLE
-          value: "Turtles Database UAT"
-        - name: DATABASE_URL
-          valueFrom:
-            secretKeyRef:
-              name: turtles-env-uat
-              key: DATABASE_URL
-        - name: ADMIN_EMAILS
-          valueFrom:
-            secretKeyRef:
-              name: turtles-env-uat
-              key: ADMIN_EMAILS
-        - name: SECRET_KEY
-          valueFrom:
-            secretKeyRef:
-              name: turtles-env-uat
-              key: SECRET_KEY
-        - name: GEOSERVER_URL
-          valueFrom:
-            secretKeyRef:
-              name: turtles-env-uat
-              key: GEOSERVER_URL
-        - name: MAPBOX_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: turtles-env-uat
-              key: MAPBOX_TOKEN
-        - name: AZURE_ACCOUNT_NAME
-          valueFrom:
-            secretKeyRef:
-              name: turtles-env-uat
-              key: AZURE_ACCOUNT_NAME
-        - name: AZURE_ACCOUNT_KEY
-          valueFrom:
-            secretKeyRef:
-              name: turtles-env-uat
-              key: AZURE_ACCOUNT_KEY
-        - name: AZURE_CONTAINER
-          valueFrom:
-            secretKeyRef:
-              name: turtles-env-uat
-              key: AZURE_CONTAINER
-        - name: ODK_API_PROJECTID
-          valueFrom:
-            secretKeyRef:
-              name: turtles-env-uat
-              key: ODK_API_PROJECTID
-        - name: ODK_API_URL
-          valueFrom:
-            secretKeyRef:
-              name: turtles-env-uat
-              key: ODK_API_URL
-        - name: ODK_API_EMAIL
-          valueFrom:
-            secretKeyRef:
-              name: turtles-env-uat
-              key: ODK_API_EMAIL
-        - name: ODK_API_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: turtles-env-uat
-              key: ODK_API_PASSWORD
-        - name: DB_HOST
-          valueFrom:
-            secretKeyRef:
-              name: turtles-env-uat
-              key: DB_HOST
-        - name: DB_NAME
-          valueFrom:
-            secretKeyRef:
-              name: turtles-env-uat
-              key: DB_NAME
-        - name: DB_PORT
-          valueFrom:
-            secretKeyRef:
-              name: turtles-env-uat
-              key: DB_PORT
-        - name: DB_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: turtles-env-uat
-              key: DB_USERNAME
-        - name: DB_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: turtles-env-uat
-              key: DB_PASSWORD
-        - name: DB_DRIVER
-          valueFrom:
-            secretKeyRef:
-              name: turtles-env-uat
-              key: DB_DRIVER
-        - name: DB_EXTRA_PARAMS
-          valueFrom:
-            secretKeyRef:
-              name: turtles-env-uat
-              key: DB_EXTRA_PARAMS
-        - name: SENTRY_DSN
-          valueFrom:
-            secretKeyRef:
-              name: turtles-env-uat
-              key: SENTRY_DSN
-        - name: SENTRY_SAMPLE_RATE
-          valueFrom:
-            secretKeyRef:
-              name: turtles-env-uat
-              key: SENTRY_SAMPLE_RATE
-        - name: SENTRY_TRANSACTION_SAMPLE_RATE
-          valueFrom:
-            secretKeyRef:
-              name: turtles-env-uat
-              key: SENTRY_TRANSACTION_SAMPLE_RATE
-        - name: SENTRY_PROFILES_SAMPLE_RATE
-          valueFrom:
-            secretKeyRef:
-              name: turtles-env-uat
-              key: SENTRY_PROFILES_SAMPLE_RATE
-        - name: SENTRY_ENVIRONMENT
-          value: "uat"
+        - name: turtles
+          env:
+            - name: SITE_CODE
+              value: 'Turtles UAT'
+            - name: SITE_NAME
+              value: 'Turtles Database UAT'
+            - name: SITE_TITLE
+              value: 'Turtles Database UAT'
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: turtles-env-uat
+                  key: DATABASE_URL
+            - name: ADMIN_EMAILS
+              valueFrom:
+                secretKeyRef:
+                  name: turtles-env-uat
+                  key: ADMIN_EMAILS
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: turtles-env-uat
+                  key: SECRET_KEY
+            - name: GEOSERVER_URL
+              valueFrom:
+                secretKeyRef:
+                  name: turtles-env-uat
+                  key: GEOSERVER_URL
+            - name: MAPBOX_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: turtles-env-uat
+                  key: MAPBOX_TOKEN
+            - name: AZURE_ACCOUNT_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: turtles-env-uat
+                  key: AZURE_ACCOUNT_NAME
+            - name: AZURE_ACCOUNT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: turtles-env-uat
+                  key: AZURE_ACCOUNT_KEY
+            - name: AZURE_CONTAINER
+              valueFrom:
+                secretKeyRef:
+                  name: turtles-env-uat
+                  key: AZURE_CONTAINER
+            - name: ODK_API_PROJECTID
+              valueFrom:
+                secretKeyRef:
+                  name: turtles-env-uat
+                  key: ODK_API_PROJECTID
+            - name: ODK_API_URL
+              valueFrom:
+                secretKeyRef:
+                  name: turtles-env-uat
+                  key: ODK_API_URL
+            - name: ODK_API_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: turtles-env-uat
+                  key: ODK_API_EMAIL
+            - name: ODK_API_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: turtles-env-uat
+                  key: ODK_API_PASSWORD
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: turtles-env-uat
+                  key: DB_HOST
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: turtles-env-uat
+                  key: DB_NAME
+            - name: DB_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: turtles-env-uat
+                  key: DB_PORT
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: turtles-env-uat
+                  key: DB_USERNAME
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: turtles-env-uat
+                  key: DB_PASSWORD
+            - name: DB_DRIVER
+              valueFrom:
+                secretKeyRef:
+                  name: turtles-env-uat
+                  key: DB_DRIVER
+            - name: DB_EXTRA_PARAMS
+              valueFrom:
+                secretKeyRef:
+                  name: turtles-env-uat
+                  key: DB_EXTRA_PARAMS
+            - name: SENTRY_DSN
+              valueFrom:
+                secretKeyRef:
+                  name: turtles-env-uat
+                  key: SENTRY_DSN
+            - name: SENTRY_SAMPLE_RATE
+              valueFrom:
+                secretKeyRef:
+                  name: turtles-env-uat
+                  key: SENTRY_SAMPLE_RATE
+            - name: SENTRY_TRANSACTION_SAMPLE_RATE
+              valueFrom:
+                secretKeyRef:
+                  name: turtles-env-uat
+                  key: SENTRY_TRANSACTION_SAMPLE_RATE
+            - name: SENTRY_PROFILES_SAMPLE_RATE
+              valueFrom:
+                secretKeyRef:
+                  name: turtles-env-uat
+                  key: SENTRY_PROFILES_SAMPLE_RATE
+            - name: SENTRY_ENVIRONMENT
+              value: 'uat'

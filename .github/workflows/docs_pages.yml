@@ -1,4 +1,4 @@
-name: "Build docs pages"
+name: 'Build docs pages'
 on:
   push:
     branches: [master]

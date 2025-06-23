@@ -1,160 +1,110 @@
 {% extends "base_wastd.html" %}
 {% load static %}
-
 {% block breadcrumbs %}
-<nav aria-label="breadcrumb">
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item active">
-            <a href="/">Home</a>
-        </li>
-    </ol>
-</nav>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item active">
+                <a href="/">Home</a>
+            </li>
+        </ol>
+    </nav>
 {% endblock breadcrumbs %}
-
 {% block page_content_inner %}
-<div class="row">
-
-{% comment %}
-<!-- Data Dashboard column -->
-<div class="col-lg-3 col-md-6 col-12">
-  <img class="rounded-circle mx-auto d-block"
-    src="{% static 'images/gh.png' %}"
-    alt="Green turtle hatchling at Thevenard Island. Photo: Florian Mayer, DBCA."
-    width="140" height="140">
-  <h2 class="text-center">Data Dashboard</h2>
-  <p>
-    A live dashboard of Turtle Monitoring data.
-    Browse the data in interactive maps, figures, and tables,
-    or download the data ready to go.
-  </p>
-  <p>
-    <a class="btn btn-primary btn-block"
-       href="https://turtledata.dbca.wa.gov.au/"
-       target="_" rel="nofollow"
-       title="Turtle Data Dashboard">
-      Dive in »
-    </a>
-  </p>
-</div>
-{% endcomment %}
-
-<!-- Turtle Nests and Tracks column -->
-<div class="col-sm">
-  <img class="rounded-circle mx-auto d-block"
-    src="{% static 'images/turtle_track.jpg' %}"
-    alt="Green turtle track at Thevenard Island. Photo: Florian Mayer, DBCA."
-    width="140" height="140">
-  <h2 class="text-center">Turtle Tracks and Nests</h2>
-  <p>
-    Browse and search turtle tracks and nests
-    including disturbance, predation, nest excavations,
-    hatchling morphometrics, fan angles, and light disturbance.
-  </p>
-  <p>
-    <a class="btn btn-primary btn-block" href="{% url 'observations:turtlenestencounter-list' %}"
-        title="Browse, filter and search Turtle Nest Encounters">
-      Browse track & nest encounters »
-    </a>
-  </p>
-  {% if request.user.is_staff %}
-  <p>
-    <a class="btn btn-success btn-block"
-       href="{% url 'admin:observations_turtlenestencounter_changelist' %}"
-       title="Curate and QA animal encounters">
-      Curate »
-    </a>
-  </p>
-  {% endif %}
-</div>
-
-<!-- Turtle Tagging column -->
-<div class="col-sm">
-  <img class="rounded-circle mx-auto d-block"
-    src="{% static 'images/flatback_red.jpg' %}"
-    alt="Flatback turtle at Thevenard Island. Photo: Florian Mayer, DBCA."
-    width="140" height="140">
-  <h2 class="text-center">Turtle Tagging</h2>
-  <p>
-    Browse and filter records of tagged turtles.
-  </p>
-  <p>
-    <a class="btn btn-primary btn-block"
-      href="{% url 'wamtram2:turtle_list' %}"
-      title="Browse, filter and search turtle tagging data">
-      Browse tagged turtles »
-    </a>
-  </p>
-  {% comment %}
-  <p>
-    <a class="btn btn-primary btn-block"
-      href="{% url 'tagging:turtleobservation_list' %}"
-      title="Browse, filter and search turtle tagging data">
-      Browse turtle tag observations »
-    </a>
-  <p>
-  {% endcomment %}
-  {% if perms.wamtram2.add_trtentrybatches %}
-  <p>
-    <a class="btn btn-primary btn-block"
-      href="{% url 'wamtram2:batches_curation'%}"
-      title="Browse entry batches">
-      Manage batches »
-    </a>
-  </p>
-  {% endif %}
-  {% if perms.wamtram2.add_trtdataentry %}
-  <p>
-    <a class="btn btn-success btn-block"
-      href="{% url 'wamtram2:create_new_entry'%}"
-      title="Create a new entry">
-      Create new entries »
-    </a>
-  </p>
-  {% endif %}
-
-</div>
-
-<!-- Marine Wildlife Incidents column -->
-<div class="col-sm">
-  <img class="rounded-circle mx-auto d-block"
-    src="{% static 'images/map_wa_square.png' %}"
-    alt="Map of Western Australia showing marine wildlife incidents data"
-    width="140" height="140">
-  <h2 class="text-center">Marine Wildlife Incidents</h2>
-  <p>
-    View, report, list incidents (mortalities, entanglements, injuries) involving
-    threatened marine megafauna: Turtles, Dugong, Sea snakes, including Pinnipeds and Cetaceans.
-  </p>
-  <p>
-    <a class="btn btn-primary btn-block" href="{% url 'map' %}"
-        title="Map Marine Wildlife Incidents">
-      Map »
-    </a>
-  </p>
-  <p>
-    <a class="btn btn-primary btn-block" href="{% url 'observations:animalencounter-list' %}"
-        title="List, filter, export Marine Wildlife Incidents">
-      Browse marine wildlife incidents »
-    </a>
-  </p>
-  <p>
-    <a class="btn btn-primary btn-block"
-      href="{% url 'marine_mammal_incidents:incident_list' %}"
-      title="Curate and QA marine wildlife incidents">
-      Browse marine mammal incidents»
-    </a>
-  </p>
-  {% if request.user.is_staff %}
-  <p>
-    <a class="btn btn-success btn-block"
-      href="{% url 'admin:observations_animalencounter_changelist' %}"
-      title="Curate and QA marine wildlife incidents">
-      Curate marine wildlife incidents»
-    </a>
-  </p>
-  {% endif %}
-</div>
-
-</div><!-- .row -->
-
+    <div class="row">
+        <div class="col-sm">
+            <img class="rounded-circle mx-auto d-block"
+                 src="{% static 'images/turtle_track.jpg' %}"
+                 alt="Green turtle track at Thevenard Island. Photo: Florian Mayer, DBCA."
+                 width="140"
+                 height="140">
+            <h2 class="text-center">Turtle Tracks and Nests</h2>
+            <p>
+                Browse and search turtle tracks and nests
+                including disturbance, predation, nest excavations,
+                hatchling morphometrics, fan angles, and light disturbance.
+            </p>
+        </div>
+        <div class="col-sm">
+            <img class="rounded-circle mx-auto d-block"
+                 src="{% static 'images/flatback_red.jpg' %}"
+                 alt="Flatback turtle at Thevenard Island. Photo: Florian Mayer, DBCA."
+                 width="140"
+                 height="140">
+            <h2 class="text-center">Turtle Tagging</h2>
+            <p>Browse and filter records of tagged turtles.</p>
+        </div>
+        <div class="col-sm">
+            <img class="rounded-circle mx-auto d-block"
+                 src="{% static 'images/map_wa_square.png' %}"
+                 alt="Map of Western Australia showing marine wildlife incidents data"
+                 width="140"
+                 height="140">
+            <h2 class="text-center">Marine Wildlife Incidents</h2>
+            <p>
+                View, report, list incidents (mortalities, entanglements, injuries) involving
+                threatened marine megafauna: Turtles, Dugong, Sea snakes, including Pinnipeds and Cetaceans.
+            </p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm">
+            <p>
+                <a class="btn btn-primary btn-block"
+                   href="{% url 'observations:turtlenestencounter-list' %}"
+                   title="Browse, filter and search Turtle Nest Encounters">Browse track & nest encounters »</a>
+            </p>
+            {% if request.user.is_staff %}
+                <p>
+                    <a class="btn btn-success btn-block"
+                       href="{% url 'admin:observations_turtlenestencounter_changelist' %}"
+                       title="Curate and QA animal encounters">Curate »</a>
+                </p>
+            {% endif %}
+        </div>
+        <div class="col-sm">
+            <p>
+                <a class="btn btn-primary btn-block"
+                   href="{% url 'wamtram2:turtle_list' %}"
+                   title="Browse, filter and search turtle tagging data">Browse tagged turtles »</a>
+            </p>
+            {% if perms.wamtram2.add_trtentrybatches %}
+                <p>
+                    <a class="btn btn-primary btn-block"
+                       href="{% url 'wamtram2:batches_curation' %}"
+                       title="Browse entry batches">Manage batches »</a>
+                </p>
+            {% endif %}
+            {% if perms.wamtram2.add_trtdataentry %}
+                <p>
+                    <a class="btn btn-success btn-block"
+                       href="{% url 'wamtram2:create_new_entry' %}"
+                       title="Create a new entry">Create new entries »</a>
+                </p>
+            {% endif %}
+        </div>
+        <div class="col-sm">
+            <p>
+                <a class="btn btn-primary btn-block"
+                   href="{% url 'map' %}"
+                   title="Map Marine Wildlife Incidents">Map »</a>
+            </p>
+            <p>
+                <a class="btn btn-primary btn-block"
+                   href="{% url 'observations:animalencounter-list' %}"
+                   title="List, filter, export Marine Wildlife Incidents">Browse marine wildlife incidents »</a>
+            </p>
+            <p>
+                <a class="btn btn-primary btn-block"
+                   href="{% url 'marine_mammal_incidents:incident_list' %}"
+                   title="Curate and QA marine wildlife incidents">Browse marine mammal incidents»</a>
+            </p>
+            {% if request.user.is_staff %}
+                <p>
+                    <a class="btn btn-success btn-block"
+                       href="{% url 'admin:observations_animalencounter_changelist' %}"
+                       title="Curate and QA marine wildlife incidents">Curate marine wildlife incidents»</a>
+                </p>
+            {% endif %}
+        </div>
+    </div>
 {% endblock page_content_inner %}

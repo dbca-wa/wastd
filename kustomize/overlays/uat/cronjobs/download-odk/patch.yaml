@@ -4,74 +4,74 @@ metadata:
   name: turtles-cronjob
 spec:
   # 12:00 daily (AWST -> UTC)
-  schedule: "0 4 * * *"
+  schedule: '0 4 * * *'
   jobTemplate:
     spec:
       template:
         spec:
           containers:
-          - name: turtles-cronjob
-            args: ["manage.py", "odk_download_turtle_forms"]
-            env:
-            - name: DATABASE_URL
-              valueFrom:
-                secretKeyRef:
-                  name: turtles-env-uat
-                  key: DATABASE_URL
-            - name: ADMIN_EMAILS
-              valueFrom:
-                secretKeyRef:
-                  name: turtles-env-uat
-                  key: ADMIN_EMAILS
-            - name: AZURE_ACCOUNT_NAME
-              valueFrom:
-                secretKeyRef:
-                  name: turtles-env-uat
-                  key: AZURE_ACCOUNT_NAME
-            - name: AZURE_ACCOUNT_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: turtles-env-uat
-                  key: AZURE_ACCOUNT_KEY
-            - name: AZURE_CONTAINER
-              valueFrom:
-                secretKeyRef:
-                  name: turtles-env-uat
-                  key: AZURE_CONTAINER
-            - name: ODK_API_PROJECTID
-              valueFrom:
-                secretKeyRef:
-                  name: turtles-env-uat
-                  key: ODK_API_PROJECTID
-            - name: ODK_API_URL
-              valueFrom:
-                secretKeyRef:
-                  name: turtles-env-uat
-                  key: ODK_API_URL
-            - name: ODK_API_EMAIL
-              valueFrom:
-                secretKeyRef:
-                  name: turtles-env-uat
-                  key: ODK_API_EMAIL
-            - name: ODK_API_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: turtles-env-uat
-                  key: ODK_API_PASSWORD
-            - name: SENTRY_DSN
-              valueFrom:
-                secretKeyRef:
-                  name: turtles-env-uat
-                  key: SENTRY_DSN
-            - name: SENTRY_SAMPLE_RATE
-              valueFrom:
-                secretKeyRef:
-                  name: turtles-env-uat
-                  key: SENTRY_SAMPLE_RATE
-            - name: SENTRY_TRANSACTION_SAMPLE_RATE
-              valueFrom:
-                secretKeyRef:
-                  name: turtles-env-uat
-                  key: SENTRY_TRANSACTION_SAMPLE_RATE
-            - name: SENTRY_ENVIRONMENT
-              value: "uat"
+            - name: turtles-cronjob
+              args: ['manage.py', 'odk_download_turtle_forms']
+              env:
+                - name: DATABASE_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: turtles-env-uat
+                      key: DATABASE_URL
+                - name: ADMIN_EMAILS
+                  valueFrom:
+                    secretKeyRef:
+                      name: turtles-env-uat
+                      key: ADMIN_EMAILS
+                - name: AZURE_ACCOUNT_NAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: turtles-env-uat
+                      key: AZURE_ACCOUNT_NAME
+                - name: AZURE_ACCOUNT_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: turtles-env-uat
+                      key: AZURE_ACCOUNT_KEY
+                - name: AZURE_CONTAINER
+                  valueFrom:
+                    secretKeyRef:
+                      name: turtles-env-uat
+                      key: AZURE_CONTAINER
+                - name: ODK_API_PROJECTID
+                  valueFrom:
+                    secretKeyRef:
+                      name: turtles-env-uat
+                      key: ODK_API_PROJECTID
+                - name: ODK_API_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: turtles-env-uat
+                      key: ODK_API_URL
+                - name: ODK_API_EMAIL
+                  valueFrom:
+                    secretKeyRef:
+                      name: turtles-env-uat
+                      key: ODK_API_EMAIL
+                - name: ODK_API_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: turtles-env-uat
+                      key: ODK_API_PASSWORD
+                - name: SENTRY_DSN
+                  valueFrom:
+                    secretKeyRef:
+                      name: turtles-env-uat
+                      key: SENTRY_DSN
+                - name: SENTRY_SAMPLE_RATE
+                  valueFrom:
+                    secretKeyRef:
+                      name: turtles-env-uat
+                      key: SENTRY_SAMPLE_RATE
+                - name: SENTRY_TRANSACTION_SAMPLE_RATE
+                  valueFrom:
+                    secretKeyRef:
+                      name: turtles-env-uat
+                      key: SENTRY_TRANSACTION_SAMPLE_RATE
+                - name: SENTRY_ENVIRONMENT
+                  value: 'uat'
