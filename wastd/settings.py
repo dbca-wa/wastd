@@ -152,7 +152,6 @@ MAP_WIDGETS = {
             "center": (-31.996226, 115.883947),
             "scrollZoom": True,
             "style": "mapbox://styles/dpawasi/ckigwmxrx606g19msw0g882gj",
-            #"style": "mapbox://styles/mapbox/streets-v11",
         },
         "geocoderOptions": {
             "zoom": 7,
@@ -228,7 +227,6 @@ DATETIME_INPUT_FORMATS = (
 TIME_ZONE = "Australia/Perth"
 TZ = ZoneInfo(TIME_ZONE)
 UTC = ZoneInfo("UTC")
-# USE_TZ = False
 
 
 # Email settings.
@@ -256,7 +254,10 @@ LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "formatters": {
-        "verbose": {"format": "%(asctime)s %(levelname)-10s %(name)-10s %(message)s"},
+        "verbose": {
+            "format": "{asctime} {levelname} {name} {message}",
+            "style": "{",
+        },
     },
     "handlers": {
         "console": {
