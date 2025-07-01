@@ -148,6 +148,7 @@
             <tr>
             <th>Tag type</th>
             <th>Serial</th>
+            <th>Tag State</th>
             <th>Side</th>
             <th>Comments</th>
             </tr>
@@ -157,6 +158,7 @@
             <tr>
             <td>Flipper</td>
             <td>{{ tag.tag_id }}</td>
+            <td>{{ tag.tag_state|default_if_none:"" }}</td>
             <td>{{ tag.side|default_if_none:"" }}</td>
             <td>{{ tag.comments|default_if_none:"" }}</td>
             </tr>
@@ -165,6 +167,7 @@
             <tr>
             <td>Pit</td>
             <td>{{ tag.pittag_id }}</td>
+            <td>{{ tag.pit_tag_state|default_if_none:"" }}</td>
             <td>{{ tag.pit_tag_position|default_if_none:"" }}</td> 
             <td>{{ tag.comments|default_if_none:"" }}</td>
             </tr>
@@ -229,12 +232,14 @@
         </tr>
       </thead>
       <tbody>
+        {% for damage in damages %}
         <tr>
-          <td>{{ damages.body_part }}</td>
-          <td>{{ damages.damage_code }}</td>
-          <td>{{ damages.damage_cause_code|default_if_none:"" }}</td>
-          <td>{{ damages.comments|default_if_none:"" }}</td>
+          <td>{{ damage.body_part }}</td>
+          <td>{{ damage.damage_code }}</td>
+          <td>{{ damage.damage_cause_code|default_if_none:"" }}</td>
+          <td>{{ damage.comments|default_if_none:"" }}</td>
         </tr>
+      {% endfor %}
       </tbody>
     </table>
   </div>

@@ -202,8 +202,8 @@ def export_data(request):
     for incident in incidents:
         data.append([
             str(incident.species) if incident.species is not None else '',
-            incident.latitude if incident.latitude is not None else '',
-            incident.longitude if incident.longitude is not None else '',
+            incident.geo_location.y if incident.geo_location else '',
+            incident.geo_location.x if incident.geo_location else '',
             incident.id if incident.id is not None else '',
             incident.incident_date if incident.incident_date is not None else '',
             incident.incident_time if incident.incident_time is not None else '',

@@ -1984,6 +1984,8 @@ class TrtPitTagStates(models.Model):
         db_column="NEW_TAG_LIST"
     )  # Field name made lowercase.
 
+    def __str__(self):
+        return self.description
     class Meta:
         managed = False
         db_table = "TRT_PIT_TAG_STATES"
