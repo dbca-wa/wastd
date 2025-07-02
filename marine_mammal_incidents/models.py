@@ -67,7 +67,7 @@ class Incident(models.Model):
     weight = models.DecimalField(max_digits=10,decimal_places=2,help_text="in kilograms",null=True,blank=True)
     weight_is_estimated = models.BooleanField(default=False)
 
-    carcass_location_fate = models.CharField(blank=True,max_length=100,help_text='Carcass transported to or disposed of site')
+    carcass_location_fate = models.CharField(blank=True,max_length=500,help_text='Carcass transported to or disposed of site')
 
     ENTANGLEMENT_GEAR_CHOICES = [
         ('Fishing net','Fishing net'),
@@ -106,7 +106,7 @@ class Incident(models.Model):
     ]
     outcome = models.CharField(max_length=30, choices=OUTCOME_CHOICES)
 
-    cause_of_death = models.CharField(max_length=100, blank=True)
+    cause_of_death = models.CharField(max_length=500, blank=True)
     photos_taken = models.BooleanField(default=False)
 
     samples_taken = models.BooleanField(default=False)
