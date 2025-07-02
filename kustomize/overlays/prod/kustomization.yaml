@@ -25,4 +25,4 @@ patches:
   - path: service_patch.yaml
 images:
   - name: ghcr.io/dbca-wa/wastd
-    newTag: 2.2.1
+    newTag: 2.2.2
