@@ -152,7 +152,6 @@ MAP_WIDGETS = {
             "center": (-31.996226, 115.883947),
             "scrollZoom": True,
             "style": "mapbox://styles/dpawasi/ckigwmxrx606g19msw0g882gj",
-            #"style": "mapbox://styles/mapbox/streets-v11",
         },
         "geocoderOptions": {
             "zoom": 7,
@@ -181,7 +180,9 @@ LOGIN_REDIRECT_URL = "/"
 SITE_NAME = os.environ.get("SITE_NAME", "Turtles Database")
 SITE_TITLE = os.environ.get("SITE_TITLE", "Turtles Database")
 SITE_CODE = os.environ.get("SITE_CODE", "Turtles")
-project = tomllib.load(open(os.path.join(BASE_DIR, "pyproject.toml"), "rb"))
+pyproject = open(os.path.join(BASE_DIR, "pyproject.toml"), "rb")
+project = tomllib.load(pyproject)
+pyproject.close()
 VERSION_NO = project["tool"]["poetry"]["version"]
 
 
@@ -228,7 +229,6 @@ DATETIME_INPUT_FORMATS = (
 TIME_ZONE = "Australia/Perth"
 TZ = ZoneInfo(TIME_ZONE)
 UTC = ZoneInfo("UTC")
-# USE_TZ = False
 
 
 # Email settings.
@@ -256,7 +256,10 @@ LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "formatters": {
-        "verbose": {"format": "%(asctime)s %(levelname)-10s %(name)-10s %(message)s"},
+        "verbose": {
+            "format": "{asctime} {levelname} {name} {message}",
+            "style": "{",
+        },
     },
     "handlers": {
         "console": {
