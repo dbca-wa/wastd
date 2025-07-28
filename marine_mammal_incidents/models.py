@@ -81,6 +81,7 @@ class Incident(models.Model):
         ('Aquaculture infrastructure','Aquaculture infrastructure'),
         ('Tackle','Tackle'),
         ('Plastic debris','Plastic debris'),
+        ('Octopus gear','Octopus gear'),
         ('Other (see comments)','Other (add in comments)')
     ]
     entanglement_gear = models.CharField(max_length=50, blank=True, choices=ENTANGLEMENT_GEAR_CHOICES)
