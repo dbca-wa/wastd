@@ -41,7 +41,7 @@ class IncidentForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         
         required_fields = [
-            'incident_date', 'species', 'location_name', 'number_of_animals',
+            'incident_date', 'species', 'number_of_animals',
             'incident_type', 'sex', 'age_class', 'condition_when_found', 'outcome'
         ]
         
