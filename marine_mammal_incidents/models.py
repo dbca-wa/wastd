@@ -14,7 +14,7 @@ class Incident(models.Model):
         'Species',
         on_delete=models.PROTECT)
     species_confirmed_genetically = models.BooleanField(default=False)
-    location_name = models.CharField(max_length=100)
+    location_name = models.CharField(max_length=100,null=True,blank=True)
     geo_location = models.PointField(null=True, blank=True)
     number_of_animals = models.IntegerField()
     mass_incident = models.BooleanField(default=False)
@@ -82,7 +82,7 @@ class Incident(models.Model):
         ('Tackle','Tackle'),
         ('Plastic debris','Plastic debris'),
         ('Octopus gear','Octopus gear'),
-        ('Other (see comments)','Other (add in comments)')
+        ('Other','Other'),
     ]
     entanglement_gear = models.CharField(max_length=50, blank=True, choices=ENTANGLEMENT_GEAR_CHOICES)
 
