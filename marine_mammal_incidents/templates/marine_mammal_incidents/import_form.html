@@ -19,11 +19,29 @@
                                 Please upload an .xlsx file. If there are failed records, the system will automatically generate an error report file for you to download and correct.
                             </small>
                         </div>
-                        <button type="submit" class="btn btn-primary">Import Data</button>
+                        <button type="submit" class="btn btn-primary" id="import-btn">Import Data</button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
+{% endblock %} 
+
+
+{% block extra_js %}
+{{ block.super }}
+    <script>
+        // When the form is submitted, show the loading state
+        document.querySelector('form').addEventListener('submit', function (e) {
+            const submitBtn = document.getElementById('import-btn');
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Importing...';
+            submitBtn.disabled = true;
+            
+            // After 3 seconds, reload the page
+            setTimeout(() => {
+                location.reload();
+            }, 3000);
+        });
+    </script>
 {% endblock %} 
