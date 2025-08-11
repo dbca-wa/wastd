@@ -1,0 +1,69 @@
+services:
+  db:
+    image: postgis/postgis
+    platform: linux/amd64
+    env_file:
+      - .env
+    ports:
+      - "5431:5432"
+    volumes:
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+      - postgres_data:/var/lib/postgresql/data 
+
+  web:
+    build: .
+    env_file:
+      - .env
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+      - sqlserver
+      - sqlserver-init
+    volumes:
+      - .:/app
+    restart: always
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    platform: linux/amd64
+    env_file:
+      - .env
+    ports:
+      - "1433:1433"
+    volumes:
+      - ./backup:/backup
+
+  sqlserver-init:
+    image: ubuntu:22.04
+    platform: linux/amd64
+    depends_on:
+      - sqlserver
+    volumes:
+      - ./backup:/backup
+      - ./init-sqlserver.sh:/init-sqlserver.sh
+      - sqlserver_data:/var/opt/mssql
+    env_file:
+      - .env
+    entrypoint: ["/bin/bash", "/init-sqlserver.sh"]
+
+  dbeaver:
+    image: dbeaver/cloudbeaver:latest
+    platform: linux/amd64
+    ports:
+      - "8978:8978"
+    env_file:
+      - .env
+    environment:
+      - 
+    volumes:
+      - dbeaver_data:/opt/cloudbeaver/workspace
+    depends_on:
+      - db
+      - sqlserver
+
+
+volumes:
+  postgres_data:
+  sqlserver_data:
+  dbeaver_data:

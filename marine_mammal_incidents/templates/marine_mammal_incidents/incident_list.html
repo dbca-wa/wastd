@@ -67,57 +67,63 @@
 
 
         {% if is_paginated %}
-        <div class="pagination-container"> 
+        <div class="mb-2">
+            Total {{ incidents.paginator.count }} records
+        </div>
+        <div class="pagination-container">
             <ul class="pagination mb-0">
+                {# first page ⇤ #}
                 {% if incidents.number == 1 %}
-                <li class="page-item disabled">
-                    <span class="page-link">⇤</span>
-                </li>  
+                    <li class="page-item disabled"><span class="page-link">⇤</span></li>
                 {% else %}
-                <li class="page-item">
-                    <a class="page-link" href="?page=1">⇤</a>
-                </li> 
-                {% endif %} 
+                    <li class="page-item"><a class="page-link" href="?page=1">⇤</a></li>
+                {% endif %}
+
+                {# previous page #}
                 {% if incidents.has_previous %}
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ incidents.previous_page_number }}">&laquo;</a>
-                </li>
+                    <li class="page-item"><a class="page-link" href="?page={{ incidents.previous_page_number }}">&laquo;</a></li>
                 {% else %}
-                <li class="page-item disabled">
-                    <span class="page-link">&laquo;</span>
-                </li> 
-                {% endif %} 
+                    <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+                {% endif %}
+
+                {# page number + ellipsis #}
                 {% for i in incidents.paginator.page_range %}
-                    {% if incidents.number == i %}
-                    <li class="page-item active">
-                        <span class="page-link">{{ i }}<span class="sr-only">(current page)</span></span>
-                    </li>
-                    {% else %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ i }}">{{ i }}</a>
-                    </li> 
+                    {% if i == 1 or i == incidents.paginator.num_pages %}
+                        {% if i == incidents.number %}
+                            <li class="page-item active"><span class="page-link">{{ i }}</span></li>
+                        {% else %}
+                            <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                        {% endif %}
+                    {% elif i >= incidents.number|add:"-2" and i <= incidents.number|add:"2" %}
+                        {% if i == incidents.number %}
+                            <li class="page-item active"><span class="page-link">{{ i }}</span></li>
+                        {% else %}
+                            <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                        {% endif %}
+                    {% elif i == 2 and incidents.number > 4 %}
+                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                    {% elif i == incidents.paginator.num_pages|add:"-1" and incidents.number < incidents.paginator.num_pages|add:"-3" %}
+                        <li class="page-item disabled"><span class="page-link">...</span></li>
                     {% endif %}
                 {% endfor %}
+
+                {# next page #}
                 {% if incidents.has_next %}
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ incidents.next_page_number }}">&raquo;</a>
-                </li>
+                    <li class="page-item"><a class="page-link" href="?page={{ incidents.next_page_number }}">&raquo;</a></li>
                 {% else %}
-                <li class="page-item disabled">
-                    <span class="page-link">&raquo;</span>
-                </li> 
+                    <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
                 {% endif %}
+
+                {# last page ⇥ #}
                 {% if incidents.number == incidents.paginator.num_pages %}
-                <li class="page-item disabled">
-                    <span class="page-link">⇥</span>
-                </li>
+                    <li class="page-item disabled"><span class="page-link">⇥</span></li>
                 {% else %}
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ incidents.paginator.num_pages }}">⇥</a>
-                </li>
-                {% endif %}  
-            </ul> 
+                    <li class="page-item"><a class="page-link" href="?page={{ incidents.paginator.num_pages }}">⇥</a></li>
+                {% endif %}
+            </ul>
         </div>
+
+
         {% endif %}
 
 
