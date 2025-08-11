@@ -324,35 +324,22 @@ def import_incidents(request):
                             except ValueError:
                                 pass
                     
-                    # Check for duplicate incidents based on ID first
-                    incident_id = row[3].value
-                    if incident_id:
-                        # Check if incident with this ID already exists
-                        if Incident.objects.filter(id=incident_id).exists():
-                            row_data = [cell.value for cell in row]
-                            failed_rows.append({
-                                'row_number': row[0].row,
-                                'data': row_data,
-                                'error': 'Duplicate ID - incident with this ID already exists in database'
-                            })
-                            error_messages.append(f"Row {row[0].row}: duplicate ID - incident with this ID already exists in database")
-                            continue
+                    incident_id = row[3].value if row[3].value else None
                     
-                    # Check for duplicate incidents based on other fields
                     geo_location = Point(row[2].value, row[1].value) if row[1].value and row[2].value else None
                     incident_type = INCIDENT_TYPE_MAP.get(str(row[11].value).lower(), 'Stranding')
                     
-                    # Check if this incident already exists based on other criteria
-                    duplicate_query = Incident.objects.filter(
-                        species=species,
-                        incident_date=incident_date,
-                        incident_time=incident_time,
-                        incident_type=incident_type
-                    )
-                    
-                    # If geo_location exists, add it to the duplicate check
-                    if geo_location:
-                        duplicate_query = duplicate_query.filter(geo_location=geo_location)
+                    duplicate_query = Incident.objects.none()
+                    if incident_id is not None:
+                        duplicate_query = Incident.objects.filter(
+                            id=incident_id,
+                            species=species,
+                            incident_date=incident_date,
+                            incident_time=incident_time,
+                            incident_type=incident_type
+                        )
+                        if geo_location:
+                            duplicate_query = duplicate_query.filter(geo_location=geo_location)
                     
                     if duplicate_query.exists():
                         # This is a duplicate, skip it
@@ -366,6 +353,7 @@ def import_incidents(request):
                         continue
                     
                     incident = Incident(
+                        id=incident_id if incident_id is not None else None,
                         species=species,
                         geo_location=geo_location,
                         incident_date=incident_date,
@@ -427,7 +415,7 @@ def import_incidents(request):
                 timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
                 filename = f'failed_imports_{timestamp}.xlsx'
                 
-                # 保存并返回错误报告文件
+                # Save and return error report file
                 response = HttpResponse(
                     content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                 )

@@ -32,13 +32,13 @@
 {% block extra_js %}
 {{ block.super }}
     <script>
-        // 表单提交时显示加载状态
+        // When the form is submitted, show the loading state
         document.querySelector('form').addEventListener('submit', function (e) {
             const submitBtn = document.getElementById('import-btn');
             submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Importing...';
             submitBtn.disabled = true;
             
-            // 强制刷新页面 - 简单直接的方法
+            // After 3 seconds, reload the page
             setTimeout(() => {
                 location.reload();
             }, 3000);
