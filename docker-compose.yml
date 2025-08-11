@@ -52,8 +52,10 @@ services:
     platform: linux/amd64
     ports:
       - "8978:8978"
+    env_file:
+      - .env
     environment:
-      - CB_DATABASE_DRIVERS=postgresql,mssql
+      - 
     volumes:
       - dbeaver_data:/opt/cloudbeaver/workspace
     depends_on:
