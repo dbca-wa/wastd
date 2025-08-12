@@ -239,13 +239,13 @@ To re-run the process with fresher data:
 Accessing the data in GIS
 -------------------------
 Selected tables and views of WAStD are published through a GeoServer run by the Office for Information Management, DBCA.
-The KMI GeoServer's website `https://kmi.dbca.wa.gov.au/geoserver/web/ <https://kmi.dbca.wa.gov.au/geoserver/web/>`_
-sits behind DBCA's SSO, the endpoints support basicauth (username / password).
+The Kaartdijin Boodja (KB) website `https://kb.dbca.wa.gov.au/geoserver/web/ <https://kb.dbca.wa.gov.au/geoserver/web/>`_
+sits behind DBCA's SSO, the endpoints support basic auth (username / password).
 
-You can open the endpoints as listed on the KMI's website in any standard-compliant GIS like `Quantum GIS <https://qgis.org/en/site/>`_
+You can open the endpoints as listed on the KB website in any standard-compliant GIS like `Quantum GIS <https://qgis.org/en/site/>`_
 or vendor-locked GIS like ESRI ArcGIS.
 
-KMI offers in addition to WAStD's layers a range of all spatial DBCA datasets (CDDP and others) as well as datasets from other agencies (BOM, Landgate and others).
+KB offers in addition to WAStD's layers a range of all spatial DBCA datasets (CDDP and others) as well as datasets from other agencies (BOM, Landgate and others).
 
 To view WAStD's data offline, the spatial API endpoints offer GeoJSON FeatureCollections (format "json") which can be viewed
 directly in standard-compliant GIS like Quantum GIS, and can be exported into vendor-specific formats (e.g. shapefile for ESRI products).
@@ -254,12 +254,12 @@ Open WAStD/TSC data in QGIS 3.0.1
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 * Layer > Add Layer > WFS
 * Create a new connection with settings:
-  * Name KMI (or as you please)
-  * URL ``https://kmi.dbca.wa.gov.au/geoserver/ows``
+  * Name KB (or as you please)
+  * URL ``https://kb.dbca.wa.gov.au/geoserver/ows``
   * Authentication: Create configuration with your DBCA username and password, protect with master password
   * WFS options: Version 2 is buggy, use version 1
 * Connect
-* Search for ``wastd`` to finc WAStD/TSC data layers
+* Search for ``wastd`` to find WAStD data layers
 * Select and Add layers
 * Adjust layer style and save style to file
 * Save project (contains layers and styles)
