@@ -4,35 +4,35 @@ metadata:
   name: turtles-cronjob
 spec:
   # 23:00 daily (AWST -> UTC)
-  schedule: "0 14 * * *"
+  schedule: '0 14 * * *'
   jobTemplate:
     spec:
       activeDeadlineSeconds: 300
       template:
         spec:
           containers:
-          - name: turtles-cronjob
-            args: ["manage.py", "reconstruct_missing_surveys"]
-            env:
-            - name: DATABASE_URL
-              valueFrom:
-                secretKeyRef:
-                  name: turtles-env-uat
-                  key: DATABASE_URL
-            - name: SENTRY_DSN
-              valueFrom:
-                secretKeyRef:
-                  name: turtles-env-uat
-                  key: SENTRY_DSN
-            - name: SENTRY_SAMPLE_RATE
-              valueFrom:
-                secretKeyRef:
-                  name: turtles-env-uat
-                  key: SENTRY_SAMPLE_RATE
-            - name: SENTRY_TRANSACTION_SAMPLE_RATE
-              valueFrom:
-                secretKeyRef:
-                  name: turtles-env-uat
-                  key: SENTRY_TRANSACTION_SAMPLE_RATE
-            - name: SENTRY_ENVIRONMENT
-              value: "uat"
+            - name: turtles-cronjob
+              args: ['manage.py', 'reconstruct_missing_surveys']
+              env:
+                - name: DATABASE_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: turtles-env-uat
+                      key: DATABASE_URL
+                - name: SENTRY_DSN
+                  valueFrom:
+                    secretKeyRef:
+                      name: turtles-env-uat
+                      key: SENTRY_DSN
+                - name: SENTRY_SAMPLE_RATE
+                  valueFrom:
+                    secretKeyRef:
+                      name: turtles-env-uat
+                      key: SENTRY_SAMPLE_RATE
+                - name: SENTRY_TRANSACTION_SAMPLE_RATE
+                  valueFrom:
+                    secretKeyRef:
+                      name: turtles-env-uat
+                      key: SENTRY_TRANSACTION_SAMPLE_RATE
+                - name: SENTRY_ENVIRONMENT
+                  value: 'uat'
