@@ -38,10 +38,10 @@
             submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Importing...';
             submitBtn.disabled = true;
             
-            // After 3 seconds, reload the page
+            // After 10 seconds, reload the page
             setTimeout(() => {
                 location.reload();
-            }, 3000);
+            }, 10000);
         });
     </script>
 {% endblock %} 
