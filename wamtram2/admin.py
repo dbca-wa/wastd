@@ -13,7 +13,10 @@ from .models import (
     TrtDataEntry,
     TrtEntryBatches,
     TrtTagOrders,
-    TrtNestingSeason
+    TrtNestingSeason,
+    TrtDamageCauseCodes,
+    TrtDamageCodes,
+    TrtLocations
 )
 from import_export.admin import ImportExportModelAdmin
 from .forms import EnterUserModelForm, TrtObservationsForm, TrtPersonsForm, TrtNestingSeasonForm
@@ -117,6 +120,7 @@ class TrtEntryBatchesAdmin(admin.ModelAdmin):
         qs = super().get_queryset(request)
         return qs.prefetch_related('trtdataentry_set')
 
+
 @admin.register(TrtDataEntry)
 class TrtDataEntryAdmin(admin.ModelAdmin):
     def get_model_perms(self, request):
@@ -159,7 +163,7 @@ class TrtDataEntryAdmin(admin.ModelAdmin):
         except (ValueError, TrtDataEntry.DoesNotExist):
             return None
 
-        
+
 @admin.register(TrtTurtles)
 class TrtTurtlesAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
 
@@ -239,6 +243,7 @@ class TrtTagOrdersAdmin(ImportExportModelAdmin):
     verbose_name = "Tag Order"  # Singular name for one object
     verbose_name_plural = "Tag Orders"
 
+
 class TrtPersonsResource(resources.ModelResource):
     recorder = Field(attribute='recorder', column_name='Recorder')
 
@@ -251,6 +256,7 @@ class TrtPersonsResource(resources.ModelResource):
         import_id_fields = ('email',)
         fields = ('first_name', 'surname', 'email', 'recorder')
         export_order = fields
+
 
 @admin.register(TrtPersons)
 class TrtPersonsAdmin(ImportExportModelAdmin):
@@ -272,7 +278,8 @@ class TrtPersonsAdmin(ImportExportModelAdmin):
         css = {
             'all': ('admin/css/custom_admin.css',)
         }
-    
+
+
 @admin.register(TrtNestingSeason)
 class TrtNestingSeasonAdmin(admin.ModelAdmin):
     form = TrtNestingSeasonForm
@@ -287,3 +294,24 @@ class TrtNestingSeasonAdmin(admin.ModelAdmin):
             'https://cdn.jsdelivr.net/npm/flatpickr',
             'js/admin/custom_flatpickr.js',
         )
+        
+
+@admin.register(TrtDamageCauseCodes)
+class TrtDamageCauseCodesAdmin(admin.ModelAdmin):
+    list_display = ('damage_cause_code', 'description')
+    search_fields = ('damage_cause_code', 'description')
+
+
+@admin.register(TrtDamageCodes)
+class TrtDamageCodesAdmin(admin.ModelAdmin):
+    list_display = ('damage_code', 'description', 'flipper')
+    search_fields = ('damage_code', 'description')
+    
+
+@admin.register(TrtLocations)
+class TrtLocationsAdmin(admin.ModelAdmin):
+    list_display = ('location_code', 'location_name')
+    search_fields = ('location_code', 'location_name')
+    
+    
+    

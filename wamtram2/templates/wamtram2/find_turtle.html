@@ -177,7 +177,7 @@
               <div class="mt-3 row justify-content-md-center">
                 <div class="col-md-auto"><strong>Tag ID:</strong> {{ tag_id }}</div>
                 <div class="col-md-auto"><strong>Entry ID:</strong> {{ new_tag_entry.data_entry_id }}</div>
-                <div class="col-md-auto"><strong>Observation Date:</strong> {{ new_tag_entry.entry_batch.entry_date|date:"Y-m-d" }}</div>
+                <div class="col-md-auto"><strong>Observation Date:</strong> {{ new_tag_entry.observation_date|date:"Y-m-d" }}</div>
                 <div class="col-md-auto"><strong>Place:</strong> {{ new_tag_entry.place_code.place_name }}</div>
                 <div class="col-md-auto"><strong>Species:</strong> {{ new_tag_entry.species_code.common_name }}</div>
                 <div class="col-md-auto"><strong>Sex:</strong> {{ new_tag_entry.sex }}</div>

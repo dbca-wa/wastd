@@ -394,31 +394,31 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div class="col-md-2">
                                 <div class="form-group">
                                     <label>Date/Time</label>
-                                    <input type="datetime-local" class="form-control" name="observation_datetime" value="${obs.date_time}" >
+                                    <input type="datetime-local" class="form-control" name="observation_datetime" value="${obs.date_time}" readonly>
                                 </div>
                             </div>
                             <div class="col-md-2">
                                 <div class="form-group">
                                     <label>Status</label>
-                                    <input type="text" class="form-control" name="observation_status" value="${obs.observation_status || ''}" >
+                                    <input type="text" class="form-control" name="observation_status" value="${obs.observation_status || ''}"  readonly>
                                 </div>
                             </div>
                             <div class="col-md-2">
                                 <div class="form-group">
                                     <label>Alive</label>
-                                    <input type="text" class="form-control" name="alive" value="${obs.alive || ''}" >
+                                    <input type="text" class="form-control" name="alive" value="${obs.alive || ''}"  readonly>
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label>Place</label>
-                                    <input type="text" class="form-control" name="place" value="${obs.place || ''}" >
+                                    <input type="text" class="form-control" name="place" value="${obs.place || ''}"  readonly>
                                 </div>
                             </div>
                             <div class="col-md-2">
                                 <div class="form-group">
                                     <label>Activity</label>
-                                    <input type="text" class="form-control" name="activity" value="${obs.activity || ''}" >
+                                    <input type="text" class="form-control" name="activity" value="${obs.activity || ''}"  readonly>
                                 </div>
                             </div>
                         </div>
@@ -543,6 +543,7 @@ document.addEventListener('DOMContentLoaded', function() {
             loadingOverlay.style.display = 'block';
 
             const formData = {
+                turtle_id: document.querySelector('[name="turtle_id"]').value,
                 basic: {},
                 flipperTags: [],
                 pitTags: [],

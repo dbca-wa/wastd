@@ -181,6 +181,10 @@ class TrtDataEntryForm(forms.ModelForm):
             "tissue_type_1",
             "sample_label_2",
             "tissue_type_2",
+            "sample_label_3",
+            "tissue_type_3",
+            "sample_label_4",
+            "tissue_type_4",
             "comments",
             "clutch_completed",
             "egg_count",
@@ -253,13 +257,19 @@ class TrtDataEntryForm(forms.ModelForm):
         widgets = {
             "turtle_id": forms.HiddenInput(),
             "entry_batch": forms.HiddenInput(),
-            "observation_date": forms.DateTimeInput(attrs={"type": "datetime-local"}),
+            "observation_date": forms.DateTimeInput(
+                attrs={
+                    "type": "text",
+                    "class": "form-control",
+                    "data-date-format": "ddmmyyyy HH:mm",
+                    "placeholder": "DDMMYYYY HH:mm"
+                }
+            ),
             "measured_by_id": forms.HiddenInput(),
             "recorded_by_id": forms.HiddenInput(),
             "tagged_by_id": forms.HiddenInput(),
             "entered_by_id": forms.HiddenInput(),
-            # "measured_recorded_by_id": personWidget,
-            "place_code": forms.HiddenInput(),
+            "place_code": forms.HiddenInput(attrs={'data-place-code': ''}),
             "comments": forms.Textarea(attrs={"rows": 3, "class": "form-control"}),
             "clutch_completed": forms.Select(attrs={"class": "form-control"}),
             "egg_count": forms.NumberInput(attrs={"class": "form-control"}),
@@ -275,6 +285,15 @@ class TrtDataEntryForm(forms.ModelForm):
         if not self.instance.pk: 
             self.fields['alive'].initial = TrtYesNo.objects.get(code='Y')
             self.fields['datum_code'].initial = 'WGS84'
+            self.fields['activity_code'].initial = 'P'
+            
+        self.fields['observation_date'].input_formats = ['%d/%m/%Y %H:%M']
+        self.fields['observation_date'].widget = forms.TextInput(
+            attrs={
+                "class": "form-control",
+                "placeholder": "DD/MM/YYYY HH:mm"
+            }
+        )
         
         self.fields['alive'].queryset = TrtYesNo.objects.all()
         
@@ -305,8 +324,6 @@ class TrtDataEntryForm(forms.ModelForm):
                 if self.instance and getattr(self.instance, damage_code_field):
                     self.initial[damage_code_field] = getattr(self.instance, damage_code_field)
         
-        
-        
         self.fields['entered_by'].widget = forms.TextInput(attrs={
             'class': 'form-control', 
             'placeholder': 'Enter name',
@@ -318,11 +335,9 @@ class TrtDataEntryForm(forms.ModelForm):
         
         self.fields['sex'].choices = ordered_choices
         
-        
         clutch_completed_choices = list(TrtYesNo.objects.filter(code__in=['D', 'N', 'P', 'U', 'Y', 'O']).values_list('code', 'description'))
         clutch_completed_choices = [
             ('', '---------'),
-            ('O', 'NA'),
             ('Y', 'Yes, saw eggs'),
             ('N', 'No nest'),
             ('P', "Possible nest, didn't see eggs"),
@@ -341,7 +356,6 @@ class TrtDataEntryForm(forms.ModelForm):
             field_name = f'measurement_type_{i}'
             self.fields[field_name].queryset = filtered_measurement_types
 
-        
         tag_state_order = ["A1", "AE", "#"]
         
         tag_state_order_case = Case(
@@ -473,6 +487,9 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["dud_pit_tag"].label = "Dud PIT Tag 1"
         self.fields["dud_pit_tag_2"].label = "Dud PIT Tag 2"
         
+        self.fields["activity_code"].label = "Activity"
+        self.fields["activity_code"].required = False
+        
         self.fields["recapture_left_tag_state"].required = False
         self.fields["recapture_left_tag_state_2"].required = False
         self.fields["recapture_right_tag_state"].required = False
@@ -549,12 +566,22 @@ class TrtDataEntryForm(forms.ModelForm):
             if field.required:
                 field.widget.attrs['class'] = field.widget.attrs.get('class', '') + ' required-field'
 
+        self.fields["sample_label_1"].label = "Sample Label 1"
+        self.fields["tissue_type_1"].label = "Tissue Type 1"
+        self.fields["sample_label_2"].label = "Sample Label 2"
+        self.fields["tissue_type_2"].label = "Tissue Type 2"
+        self.fields["sample_label_3"].label = "Sample Label 3"
+        self.fields["tissue_type_3"].label = "Tissue Type 3"
+
     # saves the people names as well as the person_id for use in MS Access front end
     def save(self, commit=True):
-        # Call the parent class's save method to get the instance
         instance = super().save(commit=False)
         
-        
+        # Handle date time
+        if instance.observation_date and instance.observation_time is None:
+            instance.observation_date += timedelta(hours=8)
+            instance.observation_time = instance.observation_date
+
         if instance.scar_check == 'N':
             instance.tagscarnotchecked = True
         elif instance.scar_check in ['Y', 'P']:
@@ -564,9 +591,6 @@ class TrtDataEntryForm(forms.ModelForm):
             instance.didnotcheckforinjury = True
         elif instance.injury_check in ['Y', 'P']:
             instance.didnotcheckforinjury = False
-            
-        if instance.clutch_completed == 'Y':
-            instance.nesting = 'Y'
             
         if instance.measured_by_id:
             person = TrtPersons.objects.get(person_id=instance.measured_by_id.person_id)
@@ -580,15 +604,7 @@ class TrtDataEntryForm(forms.ModelForm):
         if instance.entered_by_id:
             person = TrtPersons.objects.get(person_id=instance.entered_by_id.person_id)
             instance.entered_by = "{} {}".format(person.first_name, person.surname)
-        # if instance.measured_recorded_by_id:
-        #     person = TrtPersons.objects.get(person_id=instance.measured_recorded_by_id.person_id)
-        #     instance.measured_recorded_by = "{} {}".format(person.first_name, person.surname)
 
-        # Set the observation_time to the same value as the observation_date
-        
-        if instance.observation_date:
-            instance.observation_date += timedelta(hours=8)
-            instance.observation_time = instance.observation_date
         # Save the instance to the database
         if commit:
             instance.save()
@@ -602,10 +618,14 @@ class TrtDataEntryForm(forms.ModelForm):
         clutch_completed_value = cleaned_data.get('clutch_completed')
                 
         try:
-            if clutch_completed_value == 'O':
+            if clutch_completed_value and clutch_completed_value.code in ['O', 'N']:
                 cleaned_data['nesting'] = TrtYesNo.objects.get(code='N')
-            else:
+            elif clutch_completed_value and clutch_completed_value.code == 'Y':
                 cleaned_data['nesting'] = TrtYesNo.objects.get(code='Y')
+            elif clutch_completed_value and clutch_completed_value.code == 'P':
+                cleaned_data['nesting'] = TrtYesNo.objects.get(code='Y')
+            else:
+                cleaned_data['nesting'] = None
         except TrtYesNo.DoesNotExist:
             raise forms.ValidationError("Cannot find the corresponding nesting value")
         

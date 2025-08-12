@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function() {
     updateBackgroundColor();
 
     // Get the do_not_process cookie value and set the field
-    const batchId = form.querySelector('[name="entry_batch"]').value;
+    const batchId = window.BATCH_ID;
     const cookieName = `${batchId}_do_not_process`;
     const doNotProcessCookie = document.cookie.split('; ').find(row => row.startsWith(cookieName));
 

@@ -178,6 +178,7 @@
                             <option value="needs_review" {% if request.GET.filter == "needs_review" %}selected{% endif %}>Needs Review</option>
                             <option value="not_saved" {% if request.GET.filter == "not_saved" %}selected{% endif %}>Haven't Processed</option>
                             <option value="needs_review_no_message" {% if request.GET.filter == "needs_review_no_message" %}selected{% endif %}>Needs Review (No System Message)</option>
+                            <option value="system_message" {% if request.GET.filter == "system_message" %}selected{% endif %}>System Messages</option>
                         </select>
                     </div>
                 </form>
