@@ -53,8 +53,11 @@
                 <div class="form-group">
                     <label>Alive?</label>
                     <select class="form-control" name="alive">
+                        <option value="">Select...</option>
                         {% for option in yes_no_choices %}
-                            <option value="{{ option.code }}">{{ option.description }}</option>
+                            <option value="{{ option.code }}" {% if initial_data.basic_info.alive == option.code %}selected{% endif %}>
+                                {{ option.description }}
+                            </option>
                         {% endfor %}
                     </select>
                 </div>
@@ -84,6 +87,7 @@
                 <div class="form-group">
                     <label>Nesting?</label>
                     <select class="form-control select2" name="nesting">
+                        <option value="">Select...</option>
                         {% for option in yes_no_choices %}
                             <option value="{{ option.code }}" {% if initial_data.basic_info.nesting == option.code %}selected{% endif %}>
                                 {{ option.description }}
@@ -96,6 +100,7 @@
                 <div class="form-group">
                     <label>Clutch Completed?</label>
                     <select class="form-control select2" name="clutch_completed">
+                        <option value="">Select...</option>
                         {% for option in yes_no_choices %}
                             <option value="{{ option.code }}" {% if initial_data.basic_info.clutch_completed == option.code %}selected{% endif %}>
                                 {{ option.description }}
@@ -147,8 +152,11 @@
                 <div class="form-group">
                     <label>Egg Count Method</label>
                     <select class="form-control" name="egg_count_method">
+                        <option value="">Select...</option>
                         {% for option in egg_count_method_choices %}
-                            <option value="{{ option.egg_count_method }}">{{ option.description }}</option>
+                            <option value="{{ option.egg_count_method }}" {% if initial_data.basic_info.egg_count_method == option.egg_count_method %}selected{% endif %}>
+                                {{ option.description }}
+                            </option>
                         {% endfor %}
                     </select>
                 </div>
@@ -157,8 +165,11 @@
                 <div class="form-group">
                     <label>Datum</label>
                     <select class="form-control" name="datum_code">
+                        <option value="">Select...</option>
                         {% for option in datum_code_choices %}
-                            <option value="{{ option.datum_code }}">{{ option.datum_description }}</option>
+                            <option value="{{ option.datum_code }}" {% if initial_data.basic_info.datum_code == option.datum_code %}selected{% endif %}>
+                                {{ option.datum_description }}
+                            </option>
                         {% endfor %}
                     </select>
                 </div>
@@ -201,8 +212,11 @@
                 <div class="form-group">
                     <label>Activity</label>
                     <select class="form-control" name="activity_code">
+                        <option value="">Select...</option>
                         {% for option in activity_code_choices %}
-                            <option value="{{ option.activity_code }}">{{ option.description }}</option>
+                            <option value="{{ option.activity_code }}" {% if initial_data.basic_info.activity_code == option.activity_code %}selected{% endif %}>
+                                {{ option.description }}
+                            </option>
                         {% endfor %}
                     </select>
                 </div>
@@ -227,8 +241,11 @@
                 <div class="form-group">
                     <label>Beach Position</label>
                     <select class="form-control" name="beach_position_code">
+                        <option value="">Select...</option>
                         {% for option in beach_position_code_choices %}
-                            <option value="{{ option.beach_position_code }}">{{ option.description }}</option>
+                            <option value="{{ option.beach_position_code }}" {% if initial_data.basic_info.beach_position_code == option.beach_position_code %}selected{% endif %}>
+                                {{ option.description }}
+                            </option>
                         {% endfor %}
                     </select>
                 </div>
@@ -247,8 +264,11 @@
                 <div class="form-group">
                     <label>Condition</label>
                     <select class="form-control" name="condition_code">
+                        <option value="">Select...</option>
                         {% for option in condition_code_choices %}
-                            <option value="{{ option.condition_code }}">{{ option.description }}</option>
+                            <option value="{{ option.condition_code }}" {% if initial_data.basic_info.condition_code == option.condition_code %}selected{% endif %}>
+                                {{ option.description }}
+                            </option>
                         {% endfor %}
                     </select>
                 </div>

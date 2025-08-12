@@ -14,7 +14,7 @@ class Incident(models.Model):
         'Species',
         on_delete=models.PROTECT)
     species_confirmed_genetically = models.BooleanField(default=False)
-    location_name = models.CharField(max_length=100)
+    location_name = models.CharField(max_length=100,null=True,blank=True)
     geo_location = models.PointField(null=True, blank=True)
     number_of_animals = models.IntegerField()
     mass_incident = models.BooleanField(default=False)
@@ -67,7 +67,7 @@ class Incident(models.Model):
     weight = models.DecimalField(max_digits=10,decimal_places=2,help_text="in kilograms",null=True,blank=True)
     weight_is_estimated = models.BooleanField(default=False)
 
-    carcass_location_fate = models.CharField(blank=True,max_length=100,help_text='Carcass transported to or disposed of site')
+    carcass_location_fate = models.CharField(blank=True,max_length=500,help_text='Carcass transported to or disposed of site')
 
     ENTANGLEMENT_GEAR_CHOICES = [
         ('Fishing net','Fishing net'),
@@ -81,7 +81,8 @@ class Incident(models.Model):
         ('Aquaculture infrastructure','Aquaculture infrastructure'),
         ('Tackle','Tackle'),
         ('Plastic debris','Plastic debris'),
-        ('Other (see comments)','Other (add in comments)')
+        ('Octopus gear','Octopus gear'),
+        ('Other','Other'),
     ]
     entanglement_gear = models.CharField(max_length=50, blank=True, choices=ENTANGLEMENT_GEAR_CHOICES)
 
@@ -106,7 +107,7 @@ class Incident(models.Model):
     ]
     outcome = models.CharField(max_length=30, choices=OUTCOME_CHOICES)
 
-    cause_of_death = models.CharField(max_length=100, blank=True)
+    cause_of_death = models.CharField(max_length=500, blank=True)
     photos_taken = models.BooleanField(default=False)
 
     samples_taken = models.BooleanField(default=False)

@@ -144,8 +144,13 @@
 
 <div class="row g-3">
       <div class="col-md-6">
-      <h5>Entry Batch ID: {{ form.entry_batch.value }}</h5>
-      {% bootstrap_field form.entry_batch %}
+        <div class="d-flex align-items-center">
+          <h5 class="mb-0">Entry Batch ID: {{ form.entry_batch.value }}</h5>
+          {% bootstrap_field form.entry_batch %}
+          <button type="button" id="saveFormStateBtn" class="btn btn-info btn-sm ml-3">
+            <i class="fas fa-save"></i> Save filled data
+          </button>
+        </div>
       </div>
       <div class="col-md-6">
         <h5>
@@ -218,8 +223,8 @@
               <label for="{{ form.observation_date.id_for_label }}">{{ form.observation_date.label }}</label>
               {% bootstrap_field form.observation_date show_label=False%}
             </div>
-            <div class="col-md-3 mt-4">
-              <div id="date-error-message" class="text-danger" style="display: none; font-weight: bold;"></div>
+            <div class="col-md-6 mt-4">
+              <div id="date-error-message" class="text-danger" style="display: none; font-weight: bold; color: red !important;"></div>
             </div>
           </div>
           <div class="row">
@@ -881,20 +886,43 @@
     <div class="card-header"><strong>Samples</strong></div>
     <div class="card-body">
       <div class="row">
-        <div class="col-md-12">
-          <div class="row">
-            <div class="col-md-6">
-              {% bootstrap_field form.sample_label_1 %}
-            </div>
-            <div class="col-md-6">
-              {% bootstrap_field form.tissue_type_1 %}
-            </div>
-            <div class="col-md-6">
-              {% bootstrap_field form.sample_label_2 %}
-            </div>
-            <div class="col-md-6">
-              {% bootstrap_field form.tissue_type_2 %}
-            </div>
+        <div class="col-md-6">
+          {% bootstrap_field form.sample_label_1 %}
+        </div>
+        <div class="col-md-6">
+          {% bootstrap_field form.tissue_type_1 %}
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          {% bootstrap_field form.sample_label_2 %}
+        </div>
+        <div class="col-md-6">
+          {% bootstrap_field form.tissue_type_2 %}
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-2 pt-3 d-flex align-items-center">
+          <button id="toggleSampleButton" type="button" class="btn btn-outline-primary">
+            <i class="fas fa-plus" id="toggleSampleIcon"></i>
+          </button>
+        </div>
+      </div>
+      <div id="moreSamples" style="display: none;">
+        <div class="row">
+          <div class="col-md-6">
+            {% bootstrap_field form.sample_label_3 %}
+          </div>
+          <div class="col-md-6">
+            {% bootstrap_field form.tissue_type_3 %}
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            {% bootstrap_field form.sample_label_4 %}
+          </div>
+          <div class="col-md-6">
+            {% bootstrap_field form.tissue_type_4 %}
           </div>
         </div>
       </div>
@@ -915,6 +943,15 @@
   <div id="advancedDataCard" class="card border-dark mt-3" style="display: none;">
     <div class="card-header"><strong>Advanced Data</strong></div>
     <div class="card-body">
+      <!-- Datum Code -->
+      <div class="row">
+        <div class="col-md-12">
+          <label><strong>Datum Code</strong></label>
+        </div>
+        <div class="col-md-6">
+          {% bootstrap_field form.datum_code show_label=False %}
+        </div>
+      </div>
       <!-- Alive Status -->
       <div class="row">
         <div class="col-md-12">
@@ -924,13 +961,14 @@
           {% bootstrap_field form.alive show_label=False %}
         </div>
       </div>
-      <!-- Datum Code -->
+
+      <!-- Activity -->
       <div class="row">
         <div class="col-md-12">
-          <label><strong>Datum Code</strong></label>
+          <label><strong>Activity</strong></label>
         </div>
         <div class="col-md-6">
-          {% bootstrap_field form.datum_code show_label=False %}
+          {% bootstrap_field form.activity_code show_label=False %}
         </div>
       </div>
       <!-- Egg -->
@@ -1054,8 +1092,10 @@
 {% block extra_js %}
 {{ form.media.js }}
 {{ block.super }}
+<script>
+  window.BATCH_ID = "{{ batch_id }}";
+</script>
 <script src="{% static 'js/tagToggleHandler.js' %}"></script>
-<script src="{% static 'js/scarHandler.js' %}"></script>
 <script src="{% static 'js/measurementHandler.js' %}"></script>
 <script src="{% static 'js/injuryHandler.js' %}"></script>
 <script src="{% static 'js/advancedDataHandler.js' %}"></script>
@@ -1063,8 +1103,73 @@
 <script src="{% static 'js/tagValidation.js' %}"></script>
 <script src="{% static 'js/searchHandler.js' %}"></script>
 <script src="{% static 'js/expandFields.js' %}"></script>
+<script src="{% static 'js/sampleHandler.js' %}"></script>
+<script src="{% static 'js/oldTagClearHandler.js' %}"></script>
+<script src="{% static 'js/formStateHandler.js' %}"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
 <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const observationDateInput = document.querySelector('input[name="observation_date"]');
+    const dateErrorMessage = document.getElementById('date-error-message');
+  
+    if (!observationDateInput) return;
+  
+    observationDateInput.addEventListener('input', function(e) {
+      let value = e.target.value.replace(/\D/g, '');
+      let formattedValue = '';
+      if (value.length > 0) {
+        formattedValue = value.substring(0, 2);
+        if (value.length > 2) formattedValue += '/' + value.substring(2, 4);
+        if (value.length > 4) formattedValue += '/' + value.substring(4, 8);
+        if (value.length > 8) formattedValue += ' ' + value.substring(8, 10);
+        if (value.length > 10) formattedValue += ':' + value.substring(10, 12);
+      }
+      e.target.value = formattedValue;
+    });
+  
+    observationDateInput.addEventListener('blur', function(e) {
+      if (e.target.value.trim()) {
+        validateDate(e.target);
+      }
+    });
+  
+    function validateDate(input) {
+      const dateStr = input.value;
+      const dateParts = dateStr.split(/[\/\s:]/);
+      if (dateParts.length >= 3) {
+        const day = parseInt(dateParts[0]);
+        const month = parseInt(dateParts[1]);
+        const year = parseInt(dateParts[2]);
+        const date = new Date(year, month - 1, day);
+        const isValid = date.getDate() === day && date.getMonth() === month - 1 && date.getFullYear() === year;
+        if (!isValid) {
+          input.classList.add('is-invalid');
+          dateErrorMessage.textContent = "Invalid date format.";
+          dateErrorMessage.style.display = 'block';
+          return;
+        }
+        const currentDate = new Date();
+        const minYear = 1950;
+        const maxYear = currentDate.getFullYear();
+        if (year < minYear || year > maxYear) {
+          input.classList.add('is-invalid');
+          dateErrorMessage.textContent = `Year must be between ${minYear} and ${maxYear}.`;
+          dateErrorMessage.style.display = 'block';
+          return;
+        }
+        if (date > currentDate) {
+          input.classList.add('is-invalid');
+          dateErrorMessage.textContent = "Date cannot be in the future.";
+          dateErrorMessage.style.display = 'block';
+          return;
+        }
+        input.classList.remove('is-invalid');
+        dateErrorMessage.style.display = 'none';
+      }
+    }
+  });
+
   document.addEventListener('DOMContentLoaded', function() {
 
     let isSubmitting = false;
@@ -1179,17 +1284,10 @@
     });
 
     // Handle form submission
-    form.addEventListener('submit', function(event) { 
-        if (form.checkValidity()) {
-          isSubmitting = true;
-          isFormDirty = false;
-          showLoadingOverlay();
-
-        } else {
-          event.preventDefault();
-          showLoadingOverlay();
-          scrollToErrors();
-        }
+    form.addEventListener('submit', function(event) {
+      isSubmitting = true;
+      isFormDirty = false;
+      showLoadingOverlay();
     });
 
 
@@ -1276,59 +1374,6 @@
         "id_longitude": "Longitude",
         "id_observation_date": "Observation Date & Time",
     };
-
-    function validateDate() {
-        const selectedDate = new Date(observationDateInput.value);
-        const currentDate = new Date();
-
-        if (selectedDate > currentDate) {
-            dateErrorMessage.textContent = "Date in the future";
-            dateErrorMessage.style.display = 'block';
-            observationDateInput.classList.add('is-invalid');
-        } else {
-            dateErrorMessage.style.display = 'none';
-            observationDateInput.classList.remove('is-invalid');
-        }
-    }
-
-    var datetimeInputs = document.querySelectorAll('input[type="datetime-local"]');
-    datetimeInputs.forEach(function(input) {
-      flatpickr(input, {
-            enableTime: true,
-            dateFormat: "Y-m-d H:i",
-            time_24hr: true,
-            allowInput: true,
-            altInput: true,
-            altFormat: "d/m/Y H:i",
-            onReady: function(selectedDates, dateStr, instance) {
-                var altInput = instance.altInput;
-                altInput.addEventListener('input', function(e) {
-                    let value = e.target.value.replace(/\D/g, '');
-                    let formattedValue = '';
-                    if (value.length > 0) {
-                        formattedValue += value.substring(0, 2);
-                        if (value.length > 2) {
-                            formattedValue += '/' + value.substring(2, 4);
-                            if (value.length > 4) {
-                                formattedValue += '/' + value.substring(4, 8);
-                                if (value.length > 8) {
-                                    formattedValue += ' ' + value.substring(8, 10);
-                                    if (value.length > 10) {
-                                        formattedValue += ':' + value.substring(10, 12);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    e.target.value = formattedValue;
-                });
-                altInput.addEventListener('input', validateDate);
-            },
-            onChange: function(selectedDates, dateStr, instance) {
-                validateDate();
-            }
-        });
-    });
 
     if (reviewButton) {
       reviewButton.addEventListener('click', function(event) {
@@ -1424,7 +1469,6 @@
   });
 
 
-  
   document.addEventListener('DOMContentLoaded', function() {
     const turtleIdField = document.getElementById('id_turtle_id');
     const flipperTagCheckField = document.getElementById('id_flipper_tag_check');
@@ -1534,4 +1578,3 @@
 </script>
 
 {% endblock %}
-

@@ -178,7 +178,6 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
     model = TrtDataEntry
     template_name = "wamtram2/trtentrybatch_detail.html"
     context_object_name = "object_list"
-    paginate_by = 30
     form_class = TrtEntryBatchesForm
     
     def get_initial(self):
@@ -233,6 +232,8 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
             queryset = queryset.filter(entry_batch_id=batch_id, observation_id__isnull=True)
         elif filter_value == "needs_review_no_message":
             queryset = queryset.filter(entry_batch_id=batch_id, do_not_process=True, error_message__isnull=True)
+        elif filter_value == "system_message":
+            queryset = queryset.filter(entry_batch_id=batch_id, error_message__isnull=False).exclude(error_message__in=['None', 'Observation added to database'])
         else:
             queryset = queryset.filter(entry_batch_id=batch_id)
             
@@ -414,6 +415,49 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
     def get_success_url(self):
         batch_id = self.kwargs.get("batch_id")
         return reverse("wamtram2:entry_batch_detail", args=[batch_id])
+
+
+from django.views.generic import ListView
+
+class MultiBatchEntryListView(LoginRequiredMixin, ListView):
+    model = TrtDataEntry
+    template_name = "wamtram2/multi_batch_entry_list.html"
+    context_object_name = "object_list"
+
+    def get_queryset(self):
+        queryset = TrtDataEntry.objects.all()
+        location = self.request.GET.get('location')
+        place = self.request.GET.get('place')
+        year = self.request.GET.get('year')
+
+        if location:
+            queryset = queryset.filter(entry_batch__location__location_code=location)
+        if place:
+            queryset = queryset.filter(entry_batch__place__place_code=place)
+        if year:
+            queryset = queryset.filter(entry_batch__year=year)
+
+        search = self.request.GET.get('search')
+        if search:
+            queryset = queryset.filter(
+                Q(data_entry_id__icontains=search) |
+                Q(error_message__icontains=search)
+            )
+        
+        return queryset.select_related('entry_batch').order_by('-data_entry_id')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_title'] = 'Batch Entry Management'
+        context['filter_params'] = {
+            'location': self.request.GET.get('location'),
+            'place': self.request.GET.get('place'),
+            'year': self.request.GET.get('year'),
+        }
+        context["persons"] = {
+            person.person_id: person for person in TrtPersons.objects.all()
+        }
+        return context
 
 
 class TrtDataEntryFormView(LoginRequiredMixin, FormView):
@@ -846,10 +890,12 @@ class ProcessDataEntryBatchView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         try:
             with connections["wamtram2"].cursor() as cursor:
+                # Process the entry batch
                 cursor.execute(
                     "EXEC dbo.EntryBatchProcessWEB @ENTRY_BATCH_ID = %s;",
                     [self.kwargs["batch_id"]],
                 )
+                
                 messages.add_message(request, messages.INFO, "Processing finished.")
                 
         except DatabaseError as e:
@@ -1150,8 +1196,8 @@ class FindTurtleView(LoginRequiredMixin, View):
             })
 
         return self.set_cookie(response, batch_id, tag_id, tag_type, tag_side)
-    
-    
+
+
 class ObservationDetailView(LoginRequiredMixin, DetailView):
     model = TrtObservations
     template_name = "wamtram2/observation_detail.html"
@@ -1165,7 +1211,6 @@ class ObservationDetailView(LoginRequiredMixin, DetailView):
         ):
             return HttpResponseForbidden("You do not have permission to view this record")
         return super().dispatch(request, *args, **kwargs)
-
 
     def get_object(self, queryset=None):
         if queryset is None:
@@ -1181,15 +1226,17 @@ class ObservationDetailView(LoginRequiredMixin, DetailView):
         context["pittags"] = obj.trtrecordedpittags_set.all()
         context["measurements"] = obj.trtmeasurements_set.all()
         context["page_title"] = 'Observation Detail - ' + settings.SITE_TITLE
-        try:
-            context["damages"] = obj.damages
-        except TrtDamage.DoesNotExist:
-            context["damages"] = None
+        context["damages"] = TrtDamage.objects.filter(observation=obj)
+
         
         if obj.place_code:
             context["place_full_name"] = obj.place_code.get_full_name()
         else:
             context["place_full_name"] = ""
+            
+        # Add observation status to context
+        context["observation_status"] = obj.observation_status
+        
         return context
 
 
@@ -1488,8 +1535,8 @@ class TurtleDetailView(LoginRequiredMixin, DetailView):
         
         doc.save(response)
         return response
-    
-    
+
+
 SEX_CHOICES = [
     ("F", "Female"),
     ("M", "Male"),
@@ -2182,7 +2229,8 @@ class ExportDataView(LoginRequiredMixin, View):
             queryset = queryset.select_related(
                 'entry_batch',
                 'place_code',
-                'place_code__location_code'
+                'place_code__location_code',
+                'observation_id'
             )
 
             # Check if there's any data to export
@@ -2198,6 +2246,7 @@ class ExportDataView(LoginRequiredMixin, View):
                     # Write headers
                     headers = [field.name for field in TrtDataEntry._meta.fields]
                     headers.append('organisations')
+                    headers.append('observation_status')
                     writer.writerow(headers)
                 
                     # Write data
@@ -2206,6 +2255,14 @@ class ExportDataView(LoginRequiredMixin, View):
                             trtentrybatch=entry.entry_batch
                         ).values_list('organisation', flat=True)
                         org_str = ', '.join(organisations)
+                        
+                        # Get observation status from TrtObservations table
+                        observation_status = ''
+                        if entry.observation_id_id is not None:  # Use observation_id_id to get the actual ID
+                            observation = TrtObservations.objects.filter(
+                                observation_id=entry.observation_id_id
+                            ).values_list('observation_status', flat=True).first()
+                            observation_status = observation if observation else ''
                         
                         row = []
                         for field in TrtDataEntry._meta.fields:
@@ -2216,6 +2273,7 @@ class ExportDataView(LoginRequiredMixin, View):
                                 value = ''
                             row.append(str(value))
                         row.append(org_str)
+                        row.append(observation_status)
                         writer.writerow(row)
                         
                 else:  # xlsx format
@@ -2230,6 +2288,7 @@ class ExportDataView(LoginRequiredMixin, View):
                     # Write headers
                     headers = [field.name for field in TrtDataEntry._meta.fields]
                     headers.append('organisations')
+                    headers.append('observation_status')
                     ws.append(headers)
                     
                     # Write data
@@ -2238,6 +2297,14 @@ class ExportDataView(LoginRequiredMixin, View):
                             trtentrybatch=entry.entry_batch
                         ).values_list('organisation', flat=True)
                         org_str = ', '.join(organisations)
+                        
+                        # Get observation status from TrtObservations table
+                        observation_status = ''
+                        if entry.observation_id_id is not None:  # Use observation_id_id to get the actual ID
+                            observation = TrtObservations.objects.filter(
+                                observation_id=entry.observation_id_id
+                            ).values_list('observation_status', flat=True).first()
+                            observation_status = observation if observation else ''
                         
                         row = []
                         for field in TrtDataEntry._meta.fields:
@@ -2250,6 +2317,7 @@ class ExportDataView(LoginRequiredMixin, View):
                                 value = str(value)
                             row.append(value)
                         row.append(org_str)
+                        row.append(observation_status)
                         ws.append(row)
                     
                     wb.save(response)
@@ -2478,22 +2546,23 @@ class BatchesCurationView(LoginRequiredMixin, PaginateMixin, ListView):
         if not (location or year):
             return TrtEntryBatches.objects.none()
 
-        query = Q()
-
         if location and place and year:
-            year_code = str(year)[-2:]
-            query = Q(batches_code__contains=place) & Q(batches_code__endswith=year_code)
+            queryset = queryset.filter(
+                location__location_code=location,
+                place__place_code=place,
+                year=year
+            )
         elif location and year:
-            year_code = str(year)[-2:]
-            query = Q(batches_code__contains=location) & Q(batches_code__endswith=year_code)
+            queryset = queryset.filter(
+                location__location_code=location,
+                year=year
+            )
         elif location:
-            query = Q(batches_code__contains=location)
+            queryset = queryset.filter(location__location_code=location)
         elif year:
-            year_code = str(year)[-2:]
-            query = Q(batches_code__endswith=year_code)
-
-        result = queryset.filter(query).order_by('-entry_batch_id') if query else queryset.order_by('-entry_batch_id')
-        return result
+            queryset = queryset.filter(year=year)
+        return queryset
+    
     
     
     def get_user_role(self, user):
@@ -2611,8 +2680,8 @@ class BatchesCurationView(LoginRequiredMixin, PaginateMixin, ListView):
         location_code = request.GET.get('location_code')
         places = TrtPlaces.objects.filter(location_code=location_code).values('place_code', 'place_name')
         return JsonResponse(list(places), safe=False)
-    
-    
+
+
 class CreateNewEntryView(LoginRequiredMixin, ListView):
     model = TrtEntryBatches
     template_name = 'wamtram2/create_new_entry.html'
@@ -2742,7 +2811,7 @@ class CreateNewEntryView(LoginRequiredMixin, ListView):
                 'current_page': context['page_obj'].number if 'page_obj' in context else 1,
             })
         return super().get(request, *args, **kwargs)
-    
+
 
 @login_required
 @require_POST
@@ -2751,6 +2820,11 @@ def quick_add_batch(request):
     comments = request.POST.get('comments', '')
     template_id = request.POST.get('template')
     entered_person_id = request.POST.get('entered_person_id')
+
+    # Add: Get location, place, year
+    location_code = request.POST.get('location_code')
+    place_code = request.POST.get('place_code')
+    year = request.POST.get('year')
 
     entered_person = None
     if entered_person_id:
@@ -2765,7 +2839,21 @@ def quick_add_batch(request):
             template = Template.objects.get(pk=template_id)
         except Template.DoesNotExist:
             return JsonResponse({'success': False, 'error': 'Invalid template ID.'})
-    
+
+    location = None
+    if location_code:
+        try:
+            location = TrtLocations.objects.get(location_code=location_code)
+        except TrtLocations.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Invalid location code.'})
+
+    place = None
+    if place_code:
+        try:
+            place = TrtPlaces.objects.get(place_code=place_code)
+        except TrtPlaces.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Invalid place code.'})
+
     try:
         batch = TrtEntryBatches.objects.create(
             batches_code=batches_code,
@@ -2773,11 +2861,13 @@ def quick_add_batch(request):
             entry_date=timezone.now(),
             pr_date_convention=False,
             entered_person_id=entered_person,
-            template=template
+            template=template,
+            location=location,
+            place=place,
+                year=year
         )
         
         user_organisations = request.user.organisations.all()
-        
         for org in user_organisations:
             TrtEntryBatchOrganisation.objects.create(
                 trtentrybatch=batch,
@@ -2789,8 +2879,6 @@ def quick_add_batch(request):
         return JsonResponse({'success': False, 'error': str(e)})
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
-
-
 class BatchCreateBatchesView(LoginRequiredMixin, View):
     template_name = 'wamtram2/batch_create_batches.html'
     
@@ -2930,6 +3018,7 @@ class BatchCreateBatchesView(LoginRequiredMixin, View):
                 'error': str(e)
             })
 
+
 def search_templates(request):
     query = request.GET.get('q', '')
     if len(query) >= 2:
@@ -2939,8 +3028,8 @@ def search_templates(request):
         data = [{'template_id': t.template_id, 'name': t.name} for t in templates]
         return JsonResponse(data, safe=False)
     return JsonResponse([], safe=False)
-    
-    
+
+
 class BatchCodeManageView(View):
     template_name = 'wamtram2/batch_detail_manage.html'
     
@@ -3050,7 +3139,7 @@ class BatchCodeManageView(View):
             is_unique = not TrtEntryBatches.objects.filter(batches_code=code).exists()
         return JsonResponse({'is_unique': is_unique})
 
-    
+
 @require_GET
 def get_places(request):
     location_code = request.GET.get('location_code')
@@ -3605,18 +3694,17 @@ class FlipperTagsListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMixin
             queryset = queryset.filter(tag_status_id=status)
             
         return queryset
-        
-
 
 
 class TransferObservationsByTagView(LoginRequiredMixin, View):
     template_name = 'wamtram2/transfer_observation.html'
-
+    
     def dispatch(self, request, *args, **kwargs):
         if not (request.user.is_superuser or
                 request.user.groups.filter(name="WAMTRAM2_STAFF").exists()):
             raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
+    
     def get_context_data(self):
         """Return the context data for template rendering"""
         return {
@@ -3700,6 +3788,9 @@ class TransferObservationsByTagView(LoginRequiredMixin, View):
             # Convert observation_ids list to comma-separated string
             observation_ids_str = ','.join(observation_ids)
 
+            # Debug output
+            print(f"Calling SP with tag_id={tag_id}, turtle_id={turtle_id}, obs_ids={observation_ids_str}")
+
             # Execute stored procedure
             with connections['wamtram2'].cursor() as cursor:
                 cursor.execute(
@@ -3707,7 +3798,7 @@ class TransferObservationsByTagView(LoginRequiredMixin, View):
                     [tag_id, turtle_id, observation_ids_str]
                 )
                 
-                # Get the results
+                
                 row = cursor.fetchone()
                 return_value = row[0]
                 error_message = row[1]
@@ -3799,22 +3890,20 @@ class BatchCurationView(LoginRequiredMixin, SuperUserRequiredMixin, PaginateMixi
         
         if location or place or year:
             if location and place and year:
-                year_code = str(year)[-2:]
                 queryset = queryset.filter(
-                    batches_code__contains=place,
-                    batches_code__endswith=year_code
+                    location__location_code=location,
+                    place__place_code=place,
+                    year=year
                 )
             elif location and year:
-                year_code = str(year)[-2:]
                 queryset = queryset.filter(
-                    batches_code__contains=location,
-                    batches_code__endswith=year_code
-                )
-            elif location:
-                queryset = queryset.filter(batches_code__contains=location)
-            elif year:
-                year_code = str(year)[-2:]
-                queryset = queryset.filter(batches_code__endswith=year_code)
+                    location__location_code=location,
+                    year=year
+            )
+        elif location:
+                queryset = queryset.filter(location__location_code=location)
+        elif year:
+                queryset = queryset.filter(year=year)
         
         search = self.request.GET.get('search')
         if search:
@@ -3875,7 +3964,6 @@ class EntryCurationView(LoginRequiredMixin, SuperUserRequiredMixin, PaginateMixi
     model = TrtDataEntry
     template_name = 'wamtram2/entry_curation_list.html'
     context_object_name = 'entries'
-    paginate_by = 10
 
     def get_queryset(self):
         # Get batch_ids
@@ -3960,6 +4048,10 @@ class EntryCurationView(LoginRequiredMixin, SuperUserRequiredMixin, PaginateMixi
             queryset = queryset.filter(observation_id__isnull=True)
         elif filter_value == "needs_review_no_message":
             queryset = queryset.filter(do_not_process=True, error_message__isnull=True)
+        elif filter_value == "system_message":
+            queryset = queryset.filter(error_message__isnull=False).exclude(error_message__in=['None', 'Observation added to database'])
+        else:
+            queryset = queryset.filter(entry_batch_id=batch_id)
 
         search = self.request.GET.get('search')
         if search:
@@ -4191,9 +4283,45 @@ class EntryCurationView(LoginRequiredMixin, SuperUserRequiredMixin, PaginateMixi
     
     def post(self, request, *args, **kwargs):
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            visible_columns = request.POST.getlist('columns[]')
-            request.session['entry_grid_columns'] = visible_columns
-            return JsonResponse({'status': 'success'})
+            # Handle column visibility settings
+            if 'columns[]' in request.POST:
+                visible_columns = request.POST.getlist('columns[]')
+                request.session['entry_grid_columns'] = visible_columns
+                return JsonResponse({'status': 'success'})
+            
+            # Handle batch edit
+            elif 'batch_edit' in request.POST:
+                try:
+                    field = request.POST.get('field')
+                    value = request.POST.get('value')
+                    entry_ids = request.POST.getlist('entry_ids[]')
+                    
+                    if not all([field, value, entry_ids]):
+                        return JsonResponse({
+                            'status': 'error',
+                            'message': 'Missing required parameters'
+                        }, status=400)
+
+                    # Get entries to update
+                    entries = TrtDataEntry.objects.filter(
+                        data_entry_id__in=entry_ids,
+                        observation_id__isnull=True  # Only update entries without observations
+                    )
+
+                    # Update the field for all entries
+                    entries.update(**{field: value})
+
+                    return JsonResponse({
+                        'status': 'success',
+                        'message': f'Successfully updated {entries.count()} entries'
+                    })
+
+                except Exception as e:
+                    return JsonResponse({
+                        'status': 'error',
+                        'message': str(e)
+                    }, status=500)
+
         return HttpResponseBadRequest()
 
 
@@ -4715,9 +4843,7 @@ class SaveObservationView(LoginRequiredMixin, SuperUserRequiredMixin, View):
 
     def _update_basic_info(self, observation, basic_info):
         try:
-            
             for field, value in basic_info.items():
-                
                 if field in self.FOREIGN_KEY_FIELDS:
                     if value is not None:
                         try:
@@ -4743,6 +4869,14 @@ class SaveObservationView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                     else:
                         setattr(observation, field, None)
                 else:
+                    if field == 'observation_date' and value:
+                        try:
+                            dt = datetime.fromisoformat(value.replace('Z', '+00:00'))
+                            dt = dt + timedelta(hours=8)
+                            value = dt
+                            setattr(observation, 'observation_time', dt)
+                        except (ValueError, TypeError) as e:
+                            raise ValidationError(f"Invalid date format for observation_date: {str(e)}")
                     setattr(observation, field, value)
                     
         except Exception as e:
@@ -5114,7 +5248,6 @@ class RecordedScarsUpdateView(LoginRequiredMixin, SuperUserRequiredMixin, View):
             }, status=500)
 
 
-
 class TurtleManagementView(LoginRequiredMixin,SuperUserRequiredMixin, TemplateView):
     template_name = 'wamtram2/turtle_management.html'
     
@@ -5171,46 +5304,78 @@ class TurtleManagementView(LoginRequiredMixin,SuperUserRequiredMixin, TemplateVi
             try:
                 data = json.loads(request.body)
                 
-                turtle = TrtTurtles.objects.get(turtle_id=data['turtle_id'])
+                if not data.get('turtle_id'):
+                    return JsonResponse({
+                        'status': 'error',
+                        'message': 'Turtle ID is required'
+                    }, status=400)
                 
-                if data.get('species'):
-                    species = TrtSpecies.objects.get(species_code=data['species'])
-                    turtle.species_code = species
-                
-                if data.get('location'):
-                    location = TrtLocations.objects.get(location_code=data['location'])
-                    turtle.location = location
+                with transaction.atomic():
+                    try:
+                        turtle = TrtTurtles.objects.get(turtle_id=data['turtle_id'])
+                    except TrtTurtles.DoesNotExist:
+                        return JsonResponse({
+                            'status': 'error',
+                            'message': 'Turtle not found'
+                        }, status=404)
                     
-                if data.get('turtle_status'):
-                    status = TrtTurtleStatus.objects.get(turtle_status=data['turtle_status'])
-                    turtle.turtle_status = status
-                    
-                if data.get('cause_of_death'):
-                    cod = TrtCauseOfDeath.objects.get(cause_of_death=data['cause_of_death'])
-                    turtle.cause_of_death = cod
-                    
-                turtle.turtle_name = data.get('turtle_name', '')
-                turtle.sex = data.get('sex', '')
-                turtle.comments = data.get('comments', '')
-                
-                turtle.save()
-                
-                return JsonResponse({
-                    'status': 'success',
-                    'message': 'Turtle information updated successfully'
-                })
-            except json.JSONDecodeError as e:
+                    if 'basic' in data:
+                        basic_data = data['basic']
+                        
+                        try:
+                            if basic_data.get('species'):
+                                species = TrtSpecies.objects.get(species_code=basic_data['species'])
+                                turtle.species_code = species
+                            
+                            if basic_data.get('location'):
+                                location = TrtLocations.objects.get(location_code=basic_data['location'])
+                                turtle.location_code = location
+                                
+                            if basic_data.get('turtle_status'):
+                                status = TrtTurtleStatus.objects.get(turtle_status=basic_data['turtle_status'])
+                                turtle.turtle_status = status
+                                
+                            if basic_data.get('cause_of_death'):
+                                cod = TrtCauseOfDeath.objects.get(cause_of_death=basic_data['cause_of_death'])
+                                turtle.cause_of_death = cod
+                                
+                            if 'sex' in basic_data:
+                                sex = basic_data['sex']
+                                if sex not in [choice[0] for choice in SEX_CHOICES]:
+                                    return JsonResponse({
+                                        'status': 'error',
+                                        'message': f'Invalid sex value. Must be one of: {", ".join([choice[0] for choice in SEX_CHOICES])}'
+                                    }, status=400)
+                                turtle.sex = sex
+                            
+                            turtle.turtle_name = basic_data.get('turtle_name', '')
+                            turtle.comments = basic_data.get('comments', '')
+                            
+                            turtle.save()
+                            
+                            return JsonResponse({
+                                'status': 'success',
+                                'message': 'Turtle information updated successfully'
+                            })
+                            
+                        except (TrtSpecies.DoesNotExist, TrtLocations.DoesNotExist, 
+                                TrtTurtleStatus.DoesNotExist, TrtCauseOfDeath.DoesNotExist):
+                            return JsonResponse({
+                                'status': 'error',
+                                'message': 'Invalid reference data'
+                            }, status=400)
+                            
+            except json.JSONDecodeError:
                 return JsonResponse({
                     'status': 'error',
                     'message': 'Invalid JSON data'
                 }, status=400)
-            except Exception as e:
+            except Exception:
                 return JsonResponse({
                     'status': 'error',
-                    'message': str(e)
+                    'message': 'An unexpected error occurred'
                 }, status=500)
         return super().post(request, *args, **kwargs)
-
 
 
     def handle_ajax_request(self, request):
@@ -5222,22 +5387,42 @@ class TurtleManagementView(LoginRequiredMixin,SuperUserRequiredMixin, TemplateVi
         queryset = None
 
         if turtle_id:
-            queryset = TrtTurtles.objects.filter(turtle_id=turtle_id)
+            queryset = TrtTurtles.objects.select_related(
+                'species_code',
+                'location_code',
+                'turtle_status',
+                'cause_of_death'
+            ).filter(turtle_id=turtle_id)
         elif tag_id:
             turtle_ids = TrtTags.objects.filter(
                 tag_id__icontains=tag_id
             ).values_list('turtle_id', flat=True)
-            queryset = TrtTurtles.objects.filter(turtle_id__in=turtle_ids)
+            queryset = TrtTurtles.objects.select_related(
+                'species_code',
+                'location_code',
+                'turtle_status',
+                'cause_of_death'
+            ).filter(turtle_id__in=turtle_ids)
         elif pit_tag_id:
             turtle_ids = TrtPitTags.objects.filter(
                 pittag_id__icontains=pit_tag_id
             ).values_list('turtle_id', flat=True)
-            queryset = TrtTurtles.objects.filter(turtle_id__in=turtle_ids)
+            queryset = TrtTurtles.objects.select_related(
+                'species_code',
+                'location_code',
+                'turtle_status',
+                'cause_of_death'
+            ).filter(turtle_id__in=turtle_ids)
         elif other_id:
             turtle_ids = TrtIdentification.objects.filter(
                 identifier__icontains=other_id
             ).values_list('turtle_id', flat=True)
-            queryset = TrtTurtles.objects.filter(turtle_id__in=turtle_ids)
+            queryset = TrtTurtles.objects.select_related(
+                'species_code',
+                'location_code',
+                'turtle_status',
+                'cause_of_death'
+            ).filter(turtle_id__in=turtle_ids)
 
         if queryset is None:
             return JsonResponse({
@@ -5247,7 +5432,7 @@ class TurtleManagementView(LoginRequiredMixin,SuperUserRequiredMixin, TemplateVi
 
         turtle_data = []
         for turtle in queryset:
-            tags = TrtTags.objects.filter(turtle=turtle.turtle_id)
+            tags = TrtTags.objects.select_related('tag_status', 'custodian_person').filter(turtle=turtle.turtle_id)
             tag_data = [{
                 'tag_id': tag.tag_id,
                 'side': tag.side,
@@ -5260,8 +5445,7 @@ class TurtleManagementView(LoginRequiredMixin,SuperUserRequiredMixin, TemplateVi
                 'field_person_id': tag.field_person_id
             } for tag in tags]
         
-            
-            pit_tags = TrtPitTags.objects.filter(turtle=turtle.turtle_id)
+            pit_tags = TrtPitTags.objects.select_related('pit_tag_status', 'custodian_person').filter(turtle=turtle.turtle_id)
             pit_tag_data = [{
                 'pit_tag_id': tag.pittag_id,
                 'issue_location': tag.issue_location,
@@ -5276,14 +5460,14 @@ class TurtleManagementView(LoginRequiredMixin,SuperUserRequiredMixin, TemplateVi
                 'box_number': tag.box_number
             } for tag in pit_tags]
         
-            identifications = TrtIdentification.objects.filter(turtle=turtle.turtle_id)
+            identifications = TrtIdentification.objects.select_related('identification_type').filter(turtle=turtle.turtle_id)
             identification_data = [{
                 'identification_type': ident.identification_type.identification_type,
                 'identifier': ident.identifier,
                 'comments': ident.comments
             } for ident in identifications]
             
-            observations = turtle.trtobservations_set.all()
+            observations = turtle.trtobservations_set.select_related('place_code', 'activity_code').all()
             observation_data = [{
                 'observation_id': obs.pk,
                 'date_time': obs.observation_date.strftime('%Y-%m-%dT%H:%M'),
@@ -5810,8 +5994,8 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
         """Handle GET request"""
         context = self.get_context_data()
         return render(request, self.template_name, context)
-    
-    
+
+
 class BatchesReviewView(LoginRequiredMixin, SuperUserRequiredMixin,PaginateMixin, ListView):
     model = TrtDataEntry
     template_name = 'wamtram2/batches_review.html'
@@ -5832,20 +6016,24 @@ class BatchesReviewView(LoginRequiredMixin, SuperUserRequiredMixin,PaginateMixin
         location = self.request.GET.get('location')
         place = self.request.GET.get('place')
         year = self.request.GET.get('year')
-        
+                
         if location or place or year:
             batch_query = Q()
             if location and place and year:
-                year_code = str(year)[-2:]
-                batch_query = Q(entry_batch__batches_code__contains=place) & Q(entry_batch__batches_code__endswith=year_code)
+                queryset = queryset.filter(
+                    location__location_code=location,
+                    place__place_code=place,
+                    year=year
+                )
             elif location and year:
-                year_code = str(year)[-2:]
-                batch_query = Q(entry_batch__batches_code__contains=location) & Q(entry_batch__batches_code__endswith=year_code)
+                queryset = queryset.filter(
+                    location__location_code=location,
+                    year=year
+                )
             elif location:
-                batch_query = Q(entry_batch__batches_code__contains=location)
+                queryset = queryset.filter(location__location_code=location)
             elif year:
-                year_code = str(year)[-2:]
-                batch_query = Q(entry_batch__batches_code__endswith=year_code)
+                queryset = queryset.filter(year=year)
                 
             queryset = queryset.filter(batch_query)
         
@@ -5865,5 +6053,118 @@ class BatchesReviewView(LoginRequiredMixin, SuperUserRequiredMixin,PaginateMixin
         context['selected_year'] = self.request.GET.get('year', '')
         
         return context
+
+
+class MergeTurtlesView(LoginRequiredMixin, View):
+    template_name = 'wamtram2/merge_turtles.html'
     
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or
+                request.user.groups.filter(name="WAMTRAM2_STAFF").exists()):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
     
+    def get_context_data(self):
+        """Return the context data for template rendering"""
+        return {
+            'page_title': 'Merge Turtles - ' + settings.SITE_TITLE
+        }
+
+    def get(self, request):
+        context = self.get_context_data()
+        return render(request, self.template_name, context)
+
+    def get_turtle_info(self, turtle_id):
+        """Get turtle information"""
+        try:
+            turtle = TrtTurtles.objects.get(turtle_id=turtle_id)
+            return {
+                'success': True,
+                'data': {
+                    'species': turtle.species_code.common_name,
+                    'sex': turtle.sex,
+                    'turtle_status': turtle.turtle_status.description,
+                    'location_code': turtle.location_code.location_name,
+                    'comments': turtle.comments,
+                    'tags': turtle.get_tags_description()
+                }
+            }
+        except TrtTurtles.DoesNotExist:
+            return {
+                'success': False,
+                'error': f'Turtle {turtle_id} not found'
+            }
+
+    def get_observations(self, turtle_id):
+        """Get observations data for a specific turtle"""
+        observations = TrtObservations.objects.filter(
+            turtle_id=turtle_id
+        ).select_related('turtle', 'place_code').values(
+            'observation_id',
+            'observation_date',
+            'turtle_id',
+            'place_code',
+            'comments'
+        ).order_by('-observation_date')
+        return list(observations)
+
+    def post(self, request):
+        # Handle AJAX request for turtle info
+        if request.headers.get('X-Requested-With') == 'FetchTurtleInfo':
+            turtle_id = request.POST.get('turtle_id')
+            return JsonResponse(self.get_turtle_info(turtle_id))
+
+        # Handle AJAX request for observations
+        if request.headers.get('X-Requested-With') == 'FetchObservations':
+            turtle_id = request.POST.get('turtle_id')
+            if not turtle_id:
+                return JsonResponse({
+                    'success': False,
+                    'error': 'Turtle ID is required'
+                })
+
+            observations = self.get_observations(turtle_id)
+            return JsonResponse({
+                'success': True,
+                'observations': observations
+            })
+
+        # Handle merge request
+        try:
+            source_turtle_id = request.POST.get('source_turtle_id')
+            target_turtle_id = request.POST.get('target_turtle_id')
+            
+            # Basic validation
+            if not all([source_turtle_id, target_turtle_id]):
+                return JsonResponse({
+                    'success': False,
+                    'error': 'Missing required parameters'
+                }, status=400)
+
+            # Execute stored procedure
+            with connections['wamtram2'].cursor() as cursor:
+                cursor.execute(
+                    "EXEC dbo.MergeTurtlesWEB @SOURCE_TURTLE_ID = %s, @TARGET_TURTLE_ID = %s;",
+                    [source_turtle_id, target_turtle_id]
+                )
+                
+                row = cursor.fetchone()
+                return_value = row[0]
+                error_message = row[1]
+
+                if return_value == 0:
+                    return JsonResponse({
+                        'success': True,
+                        'message': error_message
+                    })
+                else:
+                    return JsonResponse({
+                        'success': False,
+                        'error': error_message
+                    }, status=500)
+
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'error': str(e)
+            }, status=500)

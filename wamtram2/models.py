@@ -80,8 +80,6 @@ class TrtCauseOfDeath(models.Model):
         return f"{self.description}"
 
 
-
-
 class TrtConditionCodes(models.Model):
     condition_code = models.CharField(
         db_column="CONDITION_CODE", primary_key=True, max_length=1
@@ -333,7 +331,7 @@ class TrtDataEntry(models.Model):
         blank=True,
         null=True,
         related_name="alive",
-        default= 'Y'
+        default='Y'
     )  # fake foreign key #models.CharField(db_column='ALIVE', max_length=1, blank=True, null=True)  # Field name made lowercase.
     place_code = models.ForeignKey(
         "TrtPlaces", models.SET_NULL, db_column="PLACE_CODE", blank=True, null=True
@@ -704,6 +702,28 @@ class TrtDataEntry(models.Model):
     )  # fake foreign key #models.CharField(db_column='TISSUE_TYPE_2', max_length=5, blank=True, null=True)  # Field name made lowercase.
     sample_label_2 = models.CharField(
         db_column="SAMPLE_LABEL_2", max_length=50, blank=True, null=True
+    )  # Field name made lowercase.
+    tissue_type_3 = models.ForeignKey(
+        "TrtTissueTypes",
+        models.SET_NULL,
+        db_column="TISSUE_TYPE_3",
+        blank=True,
+        null=True,
+        related_name="tt3",
+    )
+    sample_label_3 = models.CharField(
+        db_column="SAMPLE_LABEL_3", max_length=50, blank=True, null=True
+    )  # Field name made lowercase.
+    tissue_type_4 = models.ForeignKey(
+        "TrtTissueTypes",
+        models.SET_NULL,
+        db_column="TISSUE_TYPE_4",
+        blank=True,
+        null=True,
+        related_name="tt4",
+    )
+    sample_label_4 = models.CharField(
+        db_column="SAMPLE_LABEL_4", max_length=50, blank=True, null=True
     )  # Field name made lowercase.
     turtle_comments = models.CharField(
         db_column="TURTLE_COMMENTS", max_length=255, blank=True, null=True
@@ -1328,7 +1348,28 @@ class TrtEntryBatches(models.Model):
         blank=True, 
         null=True
     )
-
+    location = models.ForeignKey(
+        "TrtLocations",
+        db_column="LOCATION",
+        blank=True,
+        null=True, 
+        on_delete=models.SET_NULL,
+        related_name="entry_batches"
+    )
+    place = models.ForeignKey(
+        "TrtPlaces",
+        db_column="PLACE",
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="entry_batches"
+    )
+    year = models.IntegerField(
+        db_column="YEAR",
+        blank=True,
+        null=True,
+        help_text="Year"
+    )
     class Meta:
         managed = False
         db_table = "TRT_ENTRY_BATCHES"
@@ -1393,7 +1434,7 @@ class TrtIdentificationTypes(models.Model):
         db_table = "TRT_IDENTIFICATION_TYPES"
     def __str__(self):
         return f"{self.description}"
-    
+
 
 class TrtLocations(models.Model):
     location_code = models.CharField(
@@ -1943,6 +1984,8 @@ class TrtPitTagStates(models.Model):
         db_column="NEW_TAG_LIST"
     )  # Field name made lowercase.
 
+    def __str__(self):
+        return self.description
     class Meta:
         managed = False
         db_table = "TRT_PIT_TAG_STATES"
@@ -2216,7 +2259,7 @@ class TrtSighting(models.Model):
     class Meta:
         managed = False
         db_table = "TRT_SIGHTING"
-        
+
 
 class TrtSpeciesManager(models.Manager):
     def get_queryset(self):
@@ -2231,7 +2274,6 @@ class TrtSpeciesManager(models.Manager):
         return super().get_queryset().exclude(species_code='0').annotate(
             custom_order=custom_order
         ).order_by('custom_order', 'species_code')
-
 
 
 class TrtSpecies(models.Model):
@@ -2259,7 +2301,7 @@ class TrtSpecies(models.Model):
 
     def __str__(self):
         return f"{self.common_name}"
-    
+
 
 class TrtTags(models.Model):
     tag_id = models.CharField(
