@@ -324,16 +324,45 @@ def import_incidents(request):
                             except ValueError:
                                 pass
                     
+                    incident_id = row[3].value if row[3].value else None
+                    
+                    geo_location = Point(row[2].value, row[1].value) if row[1].value and row[2].value else None
+                    incident_type = INCIDENT_TYPE_MAP.get(str(row[11].value).lower(), 'Stranding')
+                    
+                    duplicate_query = Incident.objects.none()
+                    if incident_id is not None:
+                        duplicate_query = Incident.objects.filter(
+                            id=incident_id,
+                            species=species,
+                            incident_date=incident_date,
+                            incident_time=incident_time,
+                            incident_type=incident_type
+                        )
+                        if geo_location:
+                            duplicate_query = duplicate_query.filter(geo_location=geo_location)
+                    
+                    if duplicate_query.exists():
+                        # This is a duplicate, skip it
+                        row_data = [cell.value for cell in row]
+                        failed_rows.append({
+                            'row_number': row[0].row,
+                            'data': row_data,
+                            'error': 'Duplicate incident - already exists in database'
+                        })
+                        error_messages.append(f"Row {row[0].row}: duplicate incident - already exists in database")
+                        continue
+                    
                     incident = Incident(
+                        id=incident_id if incident_id is not None else None,
                         species=species,
-                        geo_location=Point(row[2].value, row[1].value) if row[1].value and row[2].value else None,
+                        geo_location=geo_location,
                         incident_date=incident_date,
                         incident_time=incident_time,
                         species_confirmed_genetically=row[6].value == 'Y' if row[6].value else False,
                         location_name=row[7].value if row[7].value else '',
                         number_of_animals=int(row[9].value) if row[9].value else 1,
                         mass_incident=row[10].value == 'Y' if row[10].value else False,
-                        incident_type=INCIDENT_TYPE_MAP.get(str(row[11].value).lower(), 'Stranding'),
+                        incident_type=incident_type,
                         sex=SEX_MAP.get(str(row[12].value).strip(), 'Unknown'),
                         age_class=row[13].value if row[13].value else 'Unknown',
                         length=round_decimal(row[14].value),
@@ -386,7 +415,7 @@ def import_incidents(request):
                 timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
                 filename = f'failed_imports_{timestamp}.xlsx'
                 
-                # 保存并返回错误报告文件
+                # Save and return error report file
                 response = HttpResponse(
                     content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                 )
@@ -406,3 +435,4 @@ def import_incidents(request):
             messages.error(request, f'Import failed: {str(e)}')
             
     return render(request, 'marine_mammal_incidents/import_form.html')
+
