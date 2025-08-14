@@ -2,7 +2,7 @@ from django.core.management import call_command
 from django.test import TestCase
 from unittest.mock import patch, MagicMock
 from observations.models import TurtleNestEncounter, TurtleNestDisturbanceObservation, TurtleNestDisturbanceTallyObservation, AnimalEncounter, Area, User, Encounter
-from observations.lookups import TURTLE_SPECIES_DEFAULT, NEST_TYPE_TRACK_UNSURE, NEST_AGE_DEFAULT
+from observations.lookups import TURTLE_SPECIES_DEFAULT, NEST_TYPE_TRACK_UNSURE
 from django.contrib.gis.geos import Polygon, Point
 from datetime import datetime
 import pytz
