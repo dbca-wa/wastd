@@ -32,7 +32,7 @@ django-select2 = "8.4.1"
 django-geojson = "4.0.0"
 django-import-export = "3.3.7"
 django-export-download = "0.2.3"
-pillow = "11.2.1"
+pillow = "11.3.0"
 whitenoise = {version = "6.8.2", extras = ["brotli"]}
 phonenumbers = "8.13.32"
 django-phonenumber-field = "7.3.0"
@@ -69,7 +69,7 @@ build-backend = "poetry.core.masonry.api"
 # Enable Pyflakes `E` and `F` codes.
 lint.select = ["E", "F"]
 # Never enforce `E501` (line length violations).
-lint.ignore = ["E501"]
+lint.ignore = ["E265", "E501", "E722"]
 # Always autofix.
 fix = true
 exclude = ["__pycache__", "migrations"]

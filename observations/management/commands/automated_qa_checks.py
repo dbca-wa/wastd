@@ -5,7 +5,6 @@ import logging
 from observations.lookups import (
     TURTLE_SPECIES_DEFAULT,
     NEST_TYPE_TRACK_UNSURE,
-    NEST_AGE_DEFAULT,
 )
 from observations.models import (
     Area,
@@ -198,7 +197,7 @@ class Command(BaseCommand):
         if nest_encounters:
             logger.info(f'Marking {nest_encounters.count()} imported turtle nest encounters as curated (passed QA/QC checks)')
         for enc in nest_encounters:
-            enc.curate(by=system_user, description=f'Curated by automated QA/QC (passed all checks)')
+            enc.curate(by=system_user, description='Curated by automated QA/QC (passed all checks)')
             enc.save()
 
         # Check: imported Animal Encounters with 'Unknown user' as the reporter.
