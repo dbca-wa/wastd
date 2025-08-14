@@ -318,6 +318,12 @@ BOOTSTRAP4 = {
     'success_css_class': '',  # Don't add `is-valid` to every form field by default.
 }
 
+# django-easy-select2
+SELECT2_JS = "admin/js/vendor/select2/select2.full.min.js"
+SELECT2_CSS = "admin/css/vendor/select2/select2.min.css"
+SELECT2_USE_BUNDLED_JQUERY = False
+SELECT2_USE_BUNDLED_SELECT2 = False
+
 
 def sentry_excluded_exceptions(event, hint):
     """Exclude defined class(es) of Exception from being reported to Sentry.
