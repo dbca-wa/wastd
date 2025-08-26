@@ -44,7 +44,7 @@ django-nested-admin = "^4.0.2"
 django-grappelli = "3.0.8"
 django-bootstrap4 = "24.1"
 django-easy-select2 = "1.5.8"
-sentry-sdk = {version = "2.29.1", extras = ["django"]}
+sentry-sdk = {version = "2.35.0", extras = ["django"]}
 django-debug-toolbar = "^4.2.2"
 python-docx = "^1.1.2"
 psycopg = {version = "3.2.9", extras = ["binary", "pool"]}
