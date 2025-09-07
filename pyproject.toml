@@ -36,7 +36,7 @@ pillow = "11.3.0"
 whitenoise = {version = "6.8.2", extras = ["brotli"]}
 phonenumbers = "8.13.32"
 django-phonenumber-field = "7.3.0"
-mssql-django = "1.4.1"
+mssql-django = "1.6"
 webtemplate-dbca = "1.5.1"
 django-storages = {version = "1.14.2", extras = ["azure"]}
 django-map-widgets = "0.4.2"
