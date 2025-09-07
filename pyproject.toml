@@ -39,7 +39,7 @@ django-phonenumber-field = "7.3.0"
 mssql-django = "1.4.1"
 webtemplate-dbca = "1.5.1"
 django-storages = {version = "1.14.2", extras = ["azure"]}
-django-map-widgets = "0.4.2"
+django-map-widgets = "0.5.1"
 django-nested-admin = "^4.0.2"
 django-grappelli = "3.0.8"
 django-bootstrap4 = "24.1"
