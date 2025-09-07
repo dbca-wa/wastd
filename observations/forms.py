@@ -29,7 +29,7 @@ class SurveyMergeForm(forms.Form):
             Div(
                 Fieldset(
                     f"{instance.label_short()} - merge duplicate survey",
-                    HTML(f"<div>Merge the selected survey below into this one and adopt any encounters from the duplicate.</div>"),
+                    HTML("<div>Merge the selected survey below into this one and adopt any encounters from the duplicate.</div>"),
                     Field("survey_duplicates"),
                 ),
                 Div(

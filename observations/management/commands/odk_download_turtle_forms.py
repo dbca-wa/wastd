@@ -43,40 +43,40 @@ class Command(BaseCommand):
         try:
             import_turtle_track_or_nest(auth_headers=auth_headers)
         except:
-            logger.error(f"An error occurred during import of Turtle Track or Nest")
+            logger.exception("An error occurred during import of Turtle Track or Nest")
 
         logger.info("Downloading data from Simple Turtle Track or Nest form")
         try:
             import_turtle_track_or_nest_simple(auth_headers=auth_headers)
         except:
-            logger.error(f"An error occurred during import of Simple Turtle Track or Nest")
+            logger.exception("An error occurred during import of Simple Turtle Track or Nest")
 
         logger.info("Downloading data from Site Visit Start form")
         try:
             import_site_visit_start(initial_duration_hr=options["initial_duration"], auth_headers=auth_headers)
         except:
-            logger.error(f"An error occurred during import of Site Visit Start")
+            logger.exception("An error occurred during import of Site Visit Start")
 
         logger.info("Downloading data from Site Visit End form, linking encounters")
         try:
             import_site_visit_end(duration_hr=options["duration"], auth_headers=auth_headers)
         except:
-            logger.error(f"An error occurred during import of Site Visit End")
+            logger.exception("An error occurred during import of Site Visit End")
 
         logger.info("Downloading data from Marine Wildlife Incident form")
         try:
             import_marine_wildlife_incident(auth_headers=auth_headers)
         except:
-            logger.error(f"An error occurred during import of Marine Wildlife Incident")
+            logger.exception("An error occurred during import of Marine Wildlife Incident")
 
         logger.info("Downloading data from Turtle Sighting form")
         try:
             import_turtle_sighting(auth_headers=auth_headers)
         except:
-            logger.error(f"An error occurred during import of Turtle Sighting")
+            logger.exception("An error occurred during import of Turtle Sighting")
 
         logger.info("Downloading data from Predator or Disturbance form")
         try:
             import_predator_or_disturbance(auth_headers=auth_headers)
         except:
-            logger.error(f"An error occurred during import of Predator or Disturbance")
+            logger.exception("An error occurred during import of Predator or Disturbance")

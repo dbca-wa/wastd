@@ -1,7 +1,6 @@
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.gis.db.models import ForeignObject
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.views.generic import (DetailView, FormView, ListView, RedirectView,
