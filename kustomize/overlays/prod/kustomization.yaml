@@ -6,6 +6,8 @@ secretGenerator:
     type: Opaque
     envs:
       - .env
+generatorOptions:
+  disableNameSuffixHash: true
 resources:
   - ../../base
   - cronjobs/automated-qa
@@ -23,5 +25,4 @@ patches:
   - path: service_patch.yaml
 images:
   - name: ghcr.io/dbca-wa/wastd
-    newTag: 2.2.0
-
+    newTag: 2.2.4

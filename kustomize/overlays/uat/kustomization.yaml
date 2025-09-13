@@ -6,6 +6,8 @@ secretGenerator:
     type: Opaque
     envs:
       - .env
+generatorOptions:
+  disableNameSuffixHash: true
 resources:
   - ../../base
   - cronjobs/automated-qa

@@ -1,4 +1,4 @@
-name: "Build docs pages"
+name: 'Build docs pages'
 on:
   push:
     branches: [master]
@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - name: Set up Python

@@ -1227,6 +1227,7 @@ class ObservationDetailView(LoginRequiredMixin, DetailView):
         context["measurements"] = obj.trtmeasurements_set.all()
         context["page_title"] = 'Observation Detail - ' + settings.SITE_TITLE
         context["damages"] = TrtDamage.objects.filter(observation=obj)
+
         
         if obj.place_code:
             context["place_full_name"] = obj.place_code.get_full_name()
@@ -2561,6 +2562,7 @@ class BatchesCurationView(LoginRequiredMixin, PaginateMixin, ListView):
         elif year:
             queryset = queryset.filter(year=year)
         return queryset
+    
     
     
     def get_user_role(self, user):

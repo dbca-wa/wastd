@@ -496,7 +496,7 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=Non
                         photo.save()
                         LOGGER.info(f"Created MediaAttachment {photo}")
         except:
-            LOGGER.error(f"Exception during import of ODK {form_id} submission {instance_id}")
+            LOGGER.exception(f"Exception during import of ODK {form_id} submission {instance_id}")
 
 
 def import_turtle_track_or_nest_simple(form_id="beach_tracks_nest_simple", auth_headers=None):
@@ -614,7 +614,7 @@ def import_turtle_track_or_nest_simple(form_id="beach_tracks_nest_simple", auth_
                     disturbance.save()
                     LOGGER.info(f'Created TurtleNestDisturbanceObservation: {disturbance}')
         except:
-            LOGGER.error(f"Exception during import of ODK {form_id} submission {instance_id}")
+            LOGGER.exception(f"Exception during import of ODK {form_id} submission {instance_id}")
 
 
 def import_site_visit_start(form_id="site_visit_start", initial_duration_hr=8, auth_headers=None):
@@ -698,7 +698,7 @@ def import_site_visit_start(form_id="site_visit_start", initial_duration_hr=8, a
                 photo.save()
                 LOGGER.info(f'Created SurveyMediaAttachment {photo}')
         except:
-            LOGGER.error(f"Exception during import of ODK {form_id} submission {instance_id}")
+            LOGGER.exception(f"Exception during import of ODK {form_id} submission {instance_id}")
 
 
 def import_site_visit_end(form_id="site_visit_end", duration_hr=8, auth_headers=None):
@@ -772,7 +772,7 @@ def import_site_visit_end(form_id="site_visit_end", duration_hr=8, auth_headers=
                 photo.save()
                 LOGGER.info(f"Created SurveyMediaAttachment {photo}")
         except:
-            LOGGER.error(f"Exception during import of ODK {form_id} submission {instance_id}")
+            LOGGER.exception(f"Exception during import of ODK {form_id} submission {instance_id}")
 
 
 def import_marine_wildlife_incident(form_id="marine_wildlife_incident", auth_headers=None):
@@ -1050,7 +1050,7 @@ def import_marine_wildlife_incident(form_id="marine_wildlife_incident", auth_hea
                 morphometric_obs.save()
                 LOGGER.info(f'Created TurtleMorphometricObservation: {morphometric_obs}')
         except:
-            LOGGER.error(f"Exception during import of ODK {form_id} submission {instance_id}")
+            LOGGER.exception(f"Exception during import of ODK {form_id} submission {instance_id}")
 
 
 def import_turtle_sighting(form_id="turtle_sighting", auth_headers=None):
@@ -1098,7 +1098,7 @@ def import_turtle_sighting(form_id="turtle_sighting", auth_headers=None):
 
             LOGGER.info(f"Created AnimalEncounter {encounter}")
         except:
-            LOGGER.error(f"Exception during import of ODK {form_id} submission {instance_id}")
+            LOGGER.exception(f"Exception during import of ODK {form_id} submission {instance_id}")
 
 
 def import_predator_or_disturbance(form_id="predator_or_disturbance", auth_headers=None):
@@ -1167,4 +1167,4 @@ def import_predator_or_disturbance(form_id="predator_or_disturbance", auth_heade
             disturbance_observation.save()
             LOGGER.info(f"Created DisturbanceObservation {disturbance_observation}")
         except:
-            LOGGER.error(f"Exception during import of ODK {form_id} submission {instance_id}")
+            LOGGER.exception(f"Exception during import of ODK {form_id} submission {instance_id}")

@@ -1,12 +1,13 @@
+import os
+import sys
+import tomllib
+from pathlib import Path
+from zoneinfo import ZoneInfo
+
+import dj_database_url
 from dbca_utils.utils import env
 from django.core.exceptions import DisallowedHost
 from django.db.utils import OperationalError
-import dj_database_url
-import os
-from pathlib import Path
-import sys
-import tomllib
-from zoneinfo import ZoneInfo
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, "subdir")
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -34,17 +35,31 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 STATIC_CONTEXT_VARS = {}
 FIXTURE_DIRS = [os.path.join(BASE_DIR, "wastd", "fixtures")]
 
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        # Use whitenoise to add compression and caching support for static files.
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
+
 # Assume Azure blob storage is used for media uploads, unless explicitly set as local storage.
-LOCAL_MEDIA_STORAGE = os.environ.get("LOCAL_MEDIA_STORAGE", False)
+LOCAL_MEDIA_STORAGE = env("LOCAL_MEDIA_STORAGE", False)
 if LOCAL_MEDIA_STORAGE:
-    DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
     MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+    # Ensure that the local media directory exists.
+    if not os.path.exists(MEDIA_ROOT):
+        os.makedirs(MEDIA_ROOT)
 else:
-    DEFAULT_FILE_STORAGE = "storages.backends.azure_storage.AzureStorage"
-    AZURE_ACCOUNT_NAME = os.environ.get("AZURE_ACCOUNT_NAME", "name")
-    AZURE_ACCOUNT_KEY = os.environ.get("AZURE_ACCOUNT_KEY", "key")
-    AZURE_CONTAINER = os.environ.get("AZURE_CONTAINER", "container")
-    AZURE_URL_EXPIRATION_SECS = os.environ.get("AZURE_URL_EXPIRATION_SECS", 3600)  # Default one hour.
+    STORAGES["default"] = {
+        "BACKEND": "storages.backends.azure_storage.AzureStorage",
+    }
+    AZURE_ACCOUNT_NAME = env("AZURE_ACCOUNT_NAME", "name")
+    AZURE_ACCOUNT_KEY = env("AZURE_ACCOUNT_KEY", "key")
+    AZURE_CONTAINER = env("AZURE_CONTAINER", "container")
+    AZURE_URL_EXPIRATION_SECS = env("AZURE_URL_EXPIRATION_SECS", 3600)  # Default one hour.
 
 # Application settings
 INSTALLED_APPS = [
@@ -81,7 +96,7 @@ INSTALLED_APPS = [
     "users",
     "observations",
     "marine_mammal_incidents",
-    "wamtram2"
+    "wamtram2",
 ]
 MIDDLEWARE = [
     "wastd.middleware.HealthCheckMiddleware",
@@ -137,7 +152,6 @@ MAP_WIDGETS = {
             "center": (-31.996226, 115.883947),
             "scrollZoom": True,
             "style": "mapbox://styles/dpawasi/ckigwmxrx606g19msw0g882gj",
-            #"style": "mapbox://styles/mapbox/streets-v11",
         },
         "geocoderOptions": {
             "zoom": 7,
@@ -166,7 +180,9 @@ LOGIN_REDIRECT_URL = "/"
 SITE_NAME = os.environ.get("SITE_NAME", "Turtles Database")
 SITE_TITLE = os.environ.get("SITE_TITLE", "Turtles Database")
 SITE_CODE = os.environ.get("SITE_CODE", "Turtles")
-project = tomllib.load(open(os.path.join(BASE_DIR, "pyproject.toml"), "rb"))
+pyproject = open(os.path.join(BASE_DIR, "pyproject.toml"), "rb")
+project = tomllib.load(pyproject)
+pyproject.close()
 VERSION_NO = project["tool"]["poetry"]["version"]
 
 
@@ -192,7 +208,6 @@ DATABASE_ROUTERS = ["wamtram2.routers.Wamtram2Router"]
 
 # Internationalisation.
 USE_I18N = False
-USE_L10N = True
 USE_TZ = True
 LANGUAGE_CODE = "en-us"
 DATE_INPUT_FORMATS = (
@@ -214,7 +229,6 @@ DATETIME_INPUT_FORMATS = (
 TIME_ZONE = "Australia/Perth"
 TZ = ZoneInfo(TIME_ZONE)
 UTC = ZoneInfo("UTC")
-# USE_TZ = False
 
 
 # Email settings.
@@ -230,7 +244,6 @@ ADMIN_EMAILS = os.environ.get("ADMIN_EMAILS", "").split(",")
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 STATIC_URL = "/static/"
 STATICFILES_DIRS = (os.path.join(BASE_DIR, "wastd", "static"),)
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 WHITENOISE_ROOT = STATIC_ROOT
 WHITENOISE_MANIFEST_STRICT = False
 
@@ -243,7 +256,10 @@ LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "formatters": {
-        "verbose": {"format": "%(asctime)s %(levelname)-10s %(name)-10s %(message)s"},
+        "verbose": {
+            "format": "{asctime} {levelname} {name} {message}",
+            "style": "{",
+        },
     },
     "handlers": {
         "console": {
@@ -301,6 +317,12 @@ PHONENUMBER_DB_FORMAT = "INTERNATIONAL"
 BOOTSTRAP4 = {
     'success_css_class': '',  # Don't add `is-valid` to every form field by default.
 }
+
+# django-easy-select2
+SELECT2_JS = "admin/js/vendor/select2/select2.full.min.js"
+SELECT2_CSS = "admin/css/vendor/select2/select2.min.css"
+SELECT2_USE_BUNDLED_JQUERY = False
+SELECT2_USE_BUNDLED_SELECT2 = False
 
 
 def sentry_excluded_exceptions(event, hint):

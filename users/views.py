@@ -1,28 +1,20 @@
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.urls import reverse
-from django.views.generic import (
-    DetailView,
-    ListView,
-    RedirectView,
-    UpdateView,
-    FormView,
-)
 from django.http import HttpResponseRedirect
-from observations.models import Area
-from wastd.utils import (
-    Breadcrumb,
-    BreadcrumbContextMixin,
-    ListViewBreadcrumbMixin,
-    DetailViewBreadcrumbMixin,
-    ResourceDownloadMixin,
-)
+from django.urls import reverse
+from django.views.generic import (DetailView, FormView, ListView, RedirectView,
+                                  UpdateView)
 
-from .models import User
-from .forms import UserMergeForm, TransferForm
+from observations.models import Area
+from wastd.utils import (Breadcrumb, BreadcrumbContextMixin,
+                         DetailViewBreadcrumbMixin, ListViewBreadcrumbMixin,
+                         ResourceDownloadMixin)
+
 from .filters import UserFilter
-from .utils import transfer_user, change_user_for_area
+from .forms import TransferForm, UserMergeForm
+from .models import User
+from .utils import change_user_for_area, transfer_user
 
 
 class UserListView(ListViewBreadcrumbMixin, ResourceDownloadMixin, LoginRequiredMixin, ListView):
@@ -50,18 +42,34 @@ class UserDetailView(DetailViewBreadcrumbMixin, LoginRequiredMixin, DetailView):
 
     model = User
 
+    def get_object(self, queryset=None):
+        """Only get the User record for the user making the request."""
+        if "pk" not in self.kwargs:
+            return self.request.user
+
+        return super().get_object(queryset)
+
     def get_context_data(self, **kwargs):
-        from observations.models import Survey, Encounter
+        from observations.models import Encounter, Survey
 
         context = super().get_context_data(**kwargs)
         context["collapse_details"] = False
         context["page_title"] = f"{settings.SITE_CODE} | User profile"
-        context["surveys"] = Survey.objects.filter(
-            reporter_id=self.kwargs["pk"]
-        ).prefetch_related("encounter_set", "reporter", "area", "site", "encounter_set__observations")[0:100]
-        context["encounters"] = Encounter.objects.filter(
-            reporter_id=self.kwargs["pk"]
-        ).prefetch_related("observer", "reporter", "area", "site", "observations")[0:100]
+        if "pk" not in self.kwargs:
+            context["surveys"] = Survey.objects.filter(
+                reporter=self.request.user
+            ).prefetch_related("encounter_set", "reporter", "area", "site", "encounter_set__observations")[0:100]
+            context["encounters"] = Encounter.objects.filter(
+                reporter=self.request.user
+            ).prefetch_related("observer", "reporter", "area", "site", "observations")[0:100]
+        else:
+            context["surveys"] = Survey.objects.filter(
+                reporter_id=self.kwargs["pk"]
+            ).prefetch_related("encounter_set", "reporter", "area", "site", "encounter_set__observations")[0:100]
+            context["encounters"] = Encounter.objects.filter(
+                reporter_id=self.kwargs["pk"]
+            ).prefetch_related("observer", "reporter", "area", "site", "observations")[0:100]
+
         return context
 
 

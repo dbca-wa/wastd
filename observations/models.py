@@ -1754,7 +1754,7 @@ class AnimalEncounter(Encounter):
             self.get_species_display(),
         )
         if self.sighting_status != "na":
-            title += " {self.get_sighting_status_display()}"
+            title += " {}".format(self.get_sighting_status_display())
         return title
 
     def card_template(self):
