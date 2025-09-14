@@ -54,8 +54,6 @@ services:
       - "8978:8978"
     env_file:
       - .env
-    environment:
-      - 
     volumes:
       - dbeaver_data:/opt/cloudbeaver/workspace
     depends_on:
