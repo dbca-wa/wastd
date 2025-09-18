@@ -1198,7 +1198,7 @@ class AreaAdmin(ModelAdmin):
                                 errors += 1
                                 messages.error(request, f"Row {idx}: empty MultiPolygon")
                                 continue
-                            geom = Polygon(largest)
+                            geom = largest
                         elif geom.geom_type != "Polygon":
                             errors += 1
                             messages.error(request, f"Row {idx}: only support Polygon/MultiPolygon, actual is {geom.geom_type}")
