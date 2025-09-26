@@ -83,6 +83,7 @@ class Incident(models.Model):
         ('Plastic debris','Plastic debris'),
         ('Octopus gear','Octopus gear'),
         ('Other','Other'),
+        ('Other (see comments)','Other (add in comments)')
     ]
     entanglement_gear = models.CharField(max_length=50, blank=True, choices=ENTANGLEMENT_GEAR_CHOICES)
 

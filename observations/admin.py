@@ -20,6 +20,11 @@ from fsm_admin.mixins import FSMTransitionMixin
 from import_export.admin import ExportActionMixin
 from reversion.admin import VersionAdmin
 
+from django.urls import path
+from django.shortcuts import render, redirect
+import json
+from django.contrib.gis.geos import GEOSGeometry, Polygon, MultiPolygon
+
 from wastd.utils import FORMFIELD_OVERRIDES, S2ATTRS, CustomStateLogInline
 from users.widgets import UserWidget
 from .models import (
@@ -1065,6 +1070,24 @@ class SurveyAdmin(ExportActionMixin, FSMTransitionMixin, VersionAdmin):
     owner.short_description = "Data Owner"
 
 
+class AreaGeoJSONImportForm(forms.Form):
+    file = forms.FileField(help_text="Only support GeoJSON (.geojson/.json)")
+    update_on_duplicate = forms.BooleanField(
+        required=False, initial=False,
+        help_text="If (area_type + name) already exists, update, otherwise skip" 
+    )
+    default_area_type = forms.ChoiceField(
+        required=False, choices=Area.AREATYPE_CHOICES,
+        help_text="If GeoJSON property has no type field, use this type (can be left empty)",
+    )
+    name_field = forms.CharField(
+        required=False, initial="name",
+        help_text="Field name in property as name (default name)",
+    )
+    type_field = forms.CharField(
+        required=False, initial="type",
+        help_text="Field name in property as area_type (default type)",
+    )
 @register(Area)
 class AreaAdmin(ModelAdmin):
 
@@ -1109,6 +1132,125 @@ class AreaAdmin(ModelAdmin):
         else:
             return False
 
+    def get_urls(self):
+        urls = super().get_urls()
+        geojson_urls = [
+            path("import-geojson/", self.admin_site.admin_view(self.import_geojson_view),
+                name="observations_area_import_geojson"),
+        ]
+        return geojson_urls + urls
+
+
+    def import_geojson_view(self, request):
+        if not request.user.is_superuser:
+            self.message_user(request, "Only superusers can import areas.", level=messages.ERROR)
+            return redirect("..")
+
+        if request.method == "POST":
+            form = AreaGeoJSONImportForm(request.POST, request.FILES)
+            if form.is_valid():
+                f = form.cleaned_data["file"]
+                update_on_duplicate = form.cleaned_data["update_on_duplicate"]
+                default_area_type = form.cleaned_data["default_area_type"] or None
+                name_field = form.cleaned_data["name_field"] or "name"
+                type_field = form.cleaned_data["type_field"] or "type"
+
+                try:
+                    text = f.read().decode("utf-8")
+                    gj = json.loads(text)
+                except Exception as e:
+                    self.message_user(request, f"Cannot parse GeoJSON: {e}", level=messages.ERROR)
+                    return redirect("..")
+
+                # Unify to features list
+                features = []
+                if gj.get("type") == "FeatureCollection":
+                    features = gj.get("features", [])
+                elif gj.get("type") == "Feature":
+                    features = [gj]
+                else:
+                    self.message_user(request, "Unsupported GeoJSON structure (needs Feature/FeatureCollection)", level=messages.ERROR)
+                    return redirect("..")
+
+                created = updated = skipped = 0
+                errors = 0
+
+                for idx, feat in enumerate(features, start=1):
+                    props = feat.get("properties") or {}
+                    geom_js = feat.get("geometry")
+
+                    name = (props.get(name_field) or "").strip()
+                    area_type = (props.get(type_field) or default_area_type or Area.AREATYPE_SITE).strip()
+
+                    if not name or not geom_js:
+                        errors += 1
+                        messages.error(request, f"Row {idx}: missing name or geometry")
+                        continue
+
+                    try:
+                        # Assume GeoJSON uses EPSG:4326 (WGS84); if not, the file needs to be converted first
+                        geom = GEOSGeometry(json.dumps(geom_js), srid=4326)
+
+                        # Your model is PolygonField: MultiPolygon takes the largest face (simple strategy)
+                        if geom.geom_type == "MultiPolygon":
+                            largest = max(geom, key=lambda g: g.area) if len(geom) else None
+                            if not largest:
+                                errors += 1
+                                messages.error(request, f"Row {idx}: empty MultiPolygon")
+                                continue
+                            geom = largest
+                        elif geom.geom_type != "Polygon":
+                            errors += 1
+                            messages.error(request, f"Row {idx}: only support Polygon/MultiPolygon, actual is {geom.geom_type}")
+                            continue
+
+                        # Not automatic repair: skip if invalid
+                        if not geom.valid:
+                            errors += 1
+                            messages.error(request, f"Row {idx}: invalid geometry (not imported)")
+                            continue
+
+                        qs = Area.objects.filter(area_type=area_type, name=name)
+                        if qs.exists():
+                            if update_on_duplicate:
+                                obj = qs.first()
+                                obj.geom = geom
+                                obj.save()
+                                updated += 1
+                                messages.info(request, f"Row {idx}: updated {obj}")
+                            else:
+                                skipped += 1
+                                messages.info(request, f"Row {idx}: skipped existing {area_type}:{name}")
+                        else:
+                            obj = Area(area_type=area_type, name=name, geom=geom)
+                            obj.save()
+                            created += 1
+                            messages.info(request, f"Row {idx}: created {obj}")
+
+                    except Exception as e:
+                        errors += 1
+                        messages.error(request, f"Row {idx}: {e}")
+
+                level = messages.SUCCESS if errors == 0 else messages.WARNING
+                self.message_user(
+                    request,
+                    f"Import completed: created={created}, updated={updated}, skipped={skipped}, errors={errors}",
+                    level=level,
+                )
+                return redirect("..")
+
+        else:
+            form = AreaGeoJSONImportForm()
+
+        context = dict(
+            self.admin_site.each_context(request),
+            title="Import Areas (GeoJSON)",
+            form=form,
+            opts=self.model._meta,
+        )
+        return render(request, "admin/observations/area/import_geojson.html", context)
+    
+    change_form_template = "admin/observations/area/change_form.html"
 
 @register(Campaign)
 class CampaignAdmin(ModelAdmin):

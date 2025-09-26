@@ -1,0 +1,47 @@
+{% extends "admin/change_form.html" %}
+{% load i18n static %}
+
+{% block extrahead %}
+{{ block.super }}
+<style>
+/* Ensure admin buttons are visible and properly aligned */
+.submit-row {
+    display: block !important;
+    text-align: right;
+}
+.submit-row input[type="submit"] {
+    display: inline-block !important;
+    margin-right: 10px;
+    margin-left: 10px;
+}
+.import-geojson-btn {
+    background-color: #28a745;
+    border-color: #28a745;
+    color: white;
+    padding: 8px 16px;
+    text-decoration: none;
+    border-radius: 4px;
+    display: inline-block;
+    margin-left: 10px;
+    font-size: 13px;
+    line-height: 1.4;
+    vertical-align: middle;
+}
+.import-geojson-btn:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+    color: white;
+    text-decoration: none;
+}
+.import-geojson-btn i {
+    margin-right: 5px;
+}
+</style>
+{% endblock %}
+
+{% block submit_buttons_bottom %}
+  {{ block.super }}
+  <a href="{% url 'admin:observations_area_import_geojson' %}" class="import-geojson-btn">
+    <i class="fas fa-upload"></i> {% trans "Import from GeoJSON" %}
+  </a>
+{% endblock %}
