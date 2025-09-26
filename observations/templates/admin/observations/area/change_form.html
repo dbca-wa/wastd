@@ -41,6 +41,11 @@
 
 {% block submit_buttons_bottom %}
   {{ block.super }}
+  {% if original %}
+  <a href="{% url 'observations:area-satellite' original.pk %}" class="import-geojson-btn" target="_blank" rel="noopener noreferrer">
+    <i class="fas fa-satellite"></i> {% trans "Satellite view" %}
+  </a>
+  {% endif %}
   <a href="{% url 'admin:observations_area_import_geojson' %}" class="import-geojson-btn">
     <i class="fas fa-upload"></i> {% trans "Import from GeoJSON" %}
   </a>
