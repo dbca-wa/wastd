@@ -7,6 +7,7 @@ from django.contrib.admin import (
     TabularInline,
     StackedInline,
 )
+from django.contrib.gis.admin import OSMGeoAdmin
 from django.contrib.admin.filters import (
     RelatedFieldListFilter,
     SimpleListFilter,
@@ -1089,7 +1090,7 @@ class AreaGeoJSONImportForm(forms.Form):
         help_text="Field name in property as area_type (default type)",
     )
 @register(Area)
-class AreaAdmin(ModelAdmin):
+class AreaAdmin(OSMGeoAdmin):
 
     list_display = (
         "name",
@@ -1107,6 +1108,11 @@ class AreaAdmin(ModelAdmin):
     )
     form = s2form(Area, attrs=S2ATTRS)
     formfield_overrides = FORMFIELD_OVERRIDES
+
+    # Improve map quality/size in admin form
+    default_zoom = 8
+    map_width = 1000
+    map_height = 600
 
     def has_add_permission(self, request):
         """Basic authorisation model: only superusers can create these objects.
