@@ -771,18 +771,18 @@ typing_extensions = ">=4.0.0"
 
 [[package]]
 name = "django"
-version = "4.2.23"
+version = "5.0.14"
 description = "A high-level Python web framework that encourages rapid development and clean, pragmatic design."
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.10"
 groups = ["main", "dev"]
 files = [
-    {file = "django-4.2.23-py3-none-any.whl", hash = "sha256:dafbfaf52c2f289bd65f4ab935791cb4fb9a198f2a5ba9faf35d7338a77e9803"},
-    {file = "django-4.2.23.tar.gz", hash = "sha256:42fdeaba6e6449d88d4f66de47871015097dc6f1b87910db00a91946295cfae4"},
+    {file = "Django-5.0.14-py3-none-any.whl", hash = "sha256:e762bef8629ee704de215ebbd32062b84f4e56327eed412e5544f6f6eb1dfd74"},
+    {file = "Django-5.0.14.tar.gz", hash = "sha256:29019a5763dbd48da1720d687c3522ef40d1c61be6fb2fad27ed79e9f655bc11"},
 ]
 
 [package.dependencies]
-asgiref = ">=3.6.0,<4"
+asgiref = ">=3.7.0,<4"
 sqlparse = ">=0.3.1"
 tzdata = {version = "*", markers = "sys_platform == \"win32\""}
 
@@ -2960,4 +2960,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.11"
-content-hash = "182fcd0a2bde691875b859126a49d189fba7d09330e65301b4e54a805262bba8"
+content-hash = "30b145a87a9ad4d0635f515b848f136c9bb3ca8774c788b1cdd23cafb62323a8"
