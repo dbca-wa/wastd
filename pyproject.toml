@@ -10,7 +10,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
-django = "4.2.24"
+django = "4.2.25"
 django-extensions = "3.2.3"
 dj-database-url = "3.0.0"
 gunicorn = "23.0.0"
