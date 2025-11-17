@@ -48,7 +48,7 @@ django-storages = { version = "1.14.2", extras = ["azure"] }
 django-map-widgets = "0.4.2"
 django-nested-admin = "^4.0.2"
 django-grappelli = "3.0.8"
-django-bootstrap4 = "24.1"
+django-bootstrap4 = "25.3"
 django-easy-select2 = "1.5.8"
 sentry-sdk = { version = "2.44.0", extras = ["django"] }
 django-debug-toolbar = "^4.2.2"
