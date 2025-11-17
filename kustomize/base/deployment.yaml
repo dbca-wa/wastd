@@ -20,12 +20,6 @@ spec:
           image: ghcr.io/dbca-wa/wastd
           imagePullPolicy: Always
           env:
-            - name: ALLOWED_HOSTS
-              value: '.dbca.wa.gov.au'
-            - name: CSRF_TRUSTED_ORIGINS
-              value: 'https://*.dbca.wa.gov.au'
-            - name: EMAIL_HOST
-              value: 'smtp.lan.fyi'
             - name: TZ
               value: 'Australia/Perth'
           resources:
@@ -73,7 +67,19 @@ spec:
             capabilities:
               drop:
                 - ALL
-            readOnlyRootFilesystem: false
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - mountPath: /tmp
+              name: tmpfs-ram
+      volumes:
+        - name: tmpfs-ram
+          emptyDir:
+            medium: 'Memory'
       restartPolicy: Always
       terminationGracePeriodSeconds: 180
       automountServiceAccountToken: false
+      tolerations:
+        - key: arch
+          operator: Equal
+          value: arm64
+          effect: NoSchedule
