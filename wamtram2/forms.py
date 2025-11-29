@@ -577,8 +577,8 @@ class TrtDataEntryForm(forms.ModelForm):
     def save(self, commit=True):
         instance = super().save(commit=False)
         
-        # Handle date time
-        if instance.observation_date and instance.observation_time is None:
+        # Handle date time: always convert entered Perth time (UTC+8) to UTC before saving
+        if instance.observation_date:
             instance.observation_date += timedelta(hours=8)
             instance.observation_time = instance.observation_date
 

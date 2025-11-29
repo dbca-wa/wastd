@@ -13,7 +13,7 @@ chmod +x /opt/sqlpackage/sqlpackage
     /Action:Import \
     /SourceFile:/backup/turtle_tagging_prod-20250122.bacpac \
     /TargetServerName:sqlserver \
-    /TargetDatabaseName:turtle_tagging_uat \
+    /TargetDatabaseName:turtle_tagging_prod \
     /TargetUser:sa \
     /TargetPassword:"$SA_PASSWORD" \
     /TargetTrustServerCertificate:true
