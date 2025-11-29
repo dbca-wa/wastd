@@ -1,7 +1,7 @@
 
 # syntax=docker/dockerfile:1
 # Prepare the base environment.
-FROM python:3.11.13-slim AS builder_base_wastd
+FROM python:3.11.14-slim AS builder_base_wastd
 # NOTE: we're constrained to using the version(s) of Debian which the Microsoft ODBC driver supports.
 LABEL org.opencontainers.image.authors=asi@dbca.wa.gov.au
 LABEL org.opencontainers.image.source=https://github.com/dbca-wa/wastd
@@ -26,9 +26,9 @@ RUN curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor
 # Install Python libs using Poetry.
 FROM builder_base_wastd AS python_libs_wastd
 WORKDIR /app
-ENV POETRY_VERSION=1.7.1
+ENV POETRY_VERSION=2.2.1
 RUN pip install poetry=="${POETRY_VERSION}"
-COPY poetry.lock pyproject.toml ./
+COPY poetry.lock pyproject.toml README.md ./
 RUN poetry config virtualenvs.create false \
   && poetry install --no-interaction --no-ansi --only main
 

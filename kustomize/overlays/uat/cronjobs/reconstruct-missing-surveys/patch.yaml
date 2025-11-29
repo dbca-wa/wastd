@@ -36,8 +36,3 @@ spec:
                       key: SENTRY_TRANSACTION_SAMPLE_RATE
                 - name: SENTRY_ENVIRONMENT
                   value: 'uat'
-          tolerations:
-            - effect: NoSchedule
-              key: kubernetes.azure.com/scalesetpriority
-              operator: Equal
-              value: spot
