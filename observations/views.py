@@ -50,6 +50,7 @@ from .models import (
     AnimalEncounter,
     TurtleNestEncounter,
     LineTransectEncounter,
+    Area,
     TagObservation,
     TurtleNestDisturbanceObservation,
     DisturbanceObservation,
@@ -73,6 +74,32 @@ class MapView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["page_title"] = f"{settings.SITE_CODE} | Map"
+        return context
+
+
+class AreaSatelliteView(DetailView):
+    model = Area
+    template_name = "observations/area_satellite.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        area = self.get_object()
+        # Provide geometry and bounds for the template map
+        context["area_name"] = area.__str__()
+        try:
+            context["geom_geojson"] = area.geom.geojson
+        except Exception:
+            context["geom_geojson"] = None
+        try:
+            xmin, ymin, xmax, ymax = area.geom.extent
+            context["bounds"] = {
+                "south": ymin,
+                "west": xmin,
+                "north": ymax,
+                "east": xmax,
+            }
+        except Exception:
+            context["bounds"] = None
         return context
 
 

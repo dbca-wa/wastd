@@ -1,0 +1,57 @@
+{% extends "base_wastd.html" %}
+{% load static %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<style>
+#map { height: 85vh; width: 100%; }
+</style>
+{% endblock %}
+
+{% block page_content_inner %}
+<div class="container-fluid">
+  <div class="row mb-2">
+    <div class="col-12 d-flex justify-content-between align-items-center">
+      <h4 class="mb-0">Satellite view: {{ area_name }}</h4>
+      <a class="btn btn-secondary" href="{% url 'admin:observations_area_change' object.pk %}" target="_self">Back to Area</a>
+    </div>
+  </div>
+  <div id="map"></div>
+</div>
+
+<script>
+  const bounds = {{ bounds|default:'null'|safe }};
+  const geom = {{ geom_geojson|default:'null'|safe }};
+  const map = L.map('map', {
+    zoomControl: true,
+  });
+
+  // ESRI World Imagery (satellite)
+  const esri = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    maxZoom: 20,
+    attribution: 'Tiles &copy; Esri &mdash; Source: Esri, Maxar, Earthstar Geographics, and the GIS User Community'
+  }).addTo(map);
+
+  // Optional labels (roads/places) overlay
+  const labels = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png', {
+    maxZoom: 20,
+    subdomains: 'abcd',
+    attribution: '&copy; OpenStreetMap contributors & CARTO'
+  }).addTo(map);
+
+  if (bounds) {
+    map.fitBounds([[bounds.south, bounds.west], [bounds.north, bounds.east]], { padding: [20, 20] });
+  } else {
+    map.setView([ -25.0, 121.0 ], 5);
+  }
+
+  if (geom) {
+    const layer = L.geoJSON(geom, { style: { color: '#ffcc00', weight: 2, fillOpacity: 0.15 } }).addTo(map);
+    map.fitBounds(layer.getBounds(), { padding: [20, 20] });
+  }
+</script>
+{% endblock %}
+
+

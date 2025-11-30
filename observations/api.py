@@ -3,6 +3,9 @@ from django.db import connection
 from django.http import HttpResponseBadRequest, StreamingHttpResponse, JsonResponse
 from django.urls import reverse
 from django.views.generic.base import View
+from django.http import JsonResponse
+from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.gis.geos import Point
 import json
 from wastd.utils import ListResourceView, DetailResourceView
 
@@ -76,6 +79,60 @@ class ObservationsResourceSummary(View):
                 {"resource": resource[0], "endpoint_url": request.build_absolute_uri(reverse(f"api:{resource[1]}"))}
             )
         return JsonResponse(endpoints, safe=False)
+
+
+class AreaDiagnostics(View):
+    """Return geometry diagnostics for an Area, for troubleshooting ODK mismatches.
+
+    Query params:
+      - id: Area PK (optional)
+      - name: Area name (optional; used if id missing)
+      - lon, lat: optional coordinate in EPSG:4326 to test ST_Covers
+    """
+    http_method_names = ["get"]
+
+    def get(self, request, *args, **kwargs):
+        area_obj = None
+        area_id = request.GET.get("id")
+        area_name = request.GET.get("name")
+        try:
+            if area_id:
+                area_obj = Area.objects.get(pk=int(area_id))
+            elif area_name:
+                area_obj = Area.objects.get(name=area_name)
+            else:
+                return JsonResponse({"error": "Provide id or name"}, status=400)
+        except (ObjectDoesNotExist, ValueError):
+            return JsonResponse({"error": "Area not found"}, status=404)
+
+        # Optional covers test
+        covers = None
+        lon = request.GET.get("lon")
+        lat = request.GET.get("lat")
+        if lon is not None and lat is not None:
+            try:
+                pt = Point(float(lon), float(lat), srid=4326)
+                covers = area_obj.geom.covers(pt)
+            except Exception as e:
+                covers = f"error: {e}"
+
+        try:
+            xmin, ymin, xmax, ymax = area_obj.geom.extent
+        except Exception:
+            xmin = ymin = xmax = ymax = None
+
+        data = {
+            "id": area_obj.pk,
+            "name": area_obj.name,
+            "area_type": area_obj.area_type,
+            "srid": area_obj.geom.srid,
+            "geom_type": area_obj.geom.geom_type,
+            "valid": area_obj.geom.valid,
+            "centroid": area_obj.geom.centroid.wkt if area_obj.geom else None,
+            "extent": {"xmin": xmin, "ymin": ymin, "xmax": xmax, "ymax": ymax},
+            "covers_test": covers,
+        }
+        return JsonResponse(data, safe=False)
 
 
 class AreaListResource(ListResourceView):

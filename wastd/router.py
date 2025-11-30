@@ -2,6 +2,7 @@ from django.urls import path
 
 from observations.api import (
     ObservationsResourceSummary,
+    AreaDiagnostics,
     AreaListResource,
     AreaDetailResource,
     SurveyListResource,
@@ -50,6 +51,7 @@ urlpatterns = [
     #path('nestAndTracks/', nests_tracks_streaming_json, name='nestAndTracks'),
     #path('taggedTurtles/', tagviews.taggedTurtles, name='taggedTurtles'),
     path("", ObservationsResourceSummary.as_view(), name="observations_resource_summary"),
+    path("area-diagnostics/", AreaDiagnostics.as_view(), name="area_diagnostics"),
     path("user/", UserListResource.as_view(), name="user_list_resource"),
     path("user/<int:pk>/", UserDetailResource.as_view(), name="user_detail_resource"),
     path("area/", AreaListResource.as_view(), name="area_list_resource"),
