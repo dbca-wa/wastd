@@ -27,4 +27,6 @@ urlpatterns = [
     path("turtle-nest-disturbance-observations/", views.TurtleNestDisturbanceObservationList.as_view(), name="turtlenestdisturbanceobservation-list"),
     path("disturbance-observations/", views.DisturbanceObservationList.as_view(), name="disturbanceobservation-list"),
     path("track-tally-observations/", views.TrackTallyObservationList.as_view(), name="tracktallyobservation-list"),
+    # Satellite view for Area
+    path("area/<int:pk>/satellite/", views.AreaSatelliteView.as_view(), name="area-satellite"),
 ]
