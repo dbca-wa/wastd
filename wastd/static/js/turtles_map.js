@@ -123,59 +123,41 @@ function oef_rel(feature, layer) {
 // NOTE: some global variables are set in the base template:
 // geoserver_url
 const geoserver_wms_url = `${geoserver_url}/ows`;
+const geoserver_wmts_url = `${geoserver_url}/gwc/service/wmts?service=WMTS&request=GetTile&version=1.0.0&format=image/png&tilematrixset=mercator&tilematrix=mercator:{z}&tilecol={x}&tilerow={y}`;
 
 // Define baselayer tile layers.
-const virtualMosaic = L.tileLayer.wms(geoserver_wms_url, {
-  layers: 'kaartdijin-boodja-private:virtual_mosaic',
-});
-const mapboxStreets = L.tileLayer.wms(geoserver_wms_url, {
-  layers: 'kaartdijin-boodja-public:mapbox-streets-public',
-});
-const waCoast = L.tileLayer.wms(geoserver_wms_url, {
-  layers: 'kaartdijin-boodja-private:WA_COAST_SMOOTHED',
-});
+const virtualMosaic = L.tileLayer(`${geoserver_wmts_url}&layer=kaartdijin-boodja-private:virtual_mosaic`);
+const mapboxStreets = L.tileLayer(`${geoserver_wmts_url}&layer=kaartdijin-boodja-public:mapbox-streets-public`);
+const waCoast = L.tileLayer(`${geoserver_wmts_url}&layer=kaartdijin-boodja-private:WA_COAST_SMOOTHED`);
 
 // Define overlay tile layers.
-const dbcaRegions = L.tileLayer.wms(geoserver_wms_url, {
-  layers: 'kaartdijin-boodja-public:CPT_DBCA_REGIONS',
-  format: 'image/png',
+const dbcaRegions = L.tileLayer(`${geoserver_wmts_url}&layer=kaartdijin-boodja-public:CPT_DBCA_REGIONS`, {
   transparent: true,
   opacity: 0.75,
 });
-const dbcaDistricts = L.tileLayer.wms(geoserver_wms_url, {
-  layers: 'kaartdijin-boodja-public:CPT_DBCA_DISTRICTS',
-  format: 'image/png',
+const dbcaDistricts = L.tileLayer(`${geoserver_wmts_url}&layer=kaartdijin-boodja-public:CPT_DBCA_DISTRICTS`, {
   transparent: true,
   opacity: 0.75,
 });
-const dbcaTenure = L.tileLayer.wms(geoserver_wms_url, {
-  layers: 'kaartdijin-boodja-public:CPT_DBCA_LEGISLATED_TENURE',
-  format: 'image/png',
+const dbcaTenure = L.tileLayer(`${geoserver_wmts_url}&layer=kaartdijin-boodja-public:CPT_DBCA_LEGISLATED_TENURE`, {
   transparent: true,
   opacity: 0.75,
 });
-const ucl = L.tileLayer.wms(geoserver_wms_url, {
-  layers: 'kaartdijin-boodja-private:CPT_CADASTRE_UCL_1PL',
-  format: 'image/png',
+const ucl = L.tileLayer(`${geoserver_wmts_url}&layer=kaartdijin-boodja-private:CPT_CADASTRE_UCL_1PL`, {
   transparent: true,
   opacity: 0.75,
 });
-const ibra = L.tileLayer.wms(geoserver_wms_url, {
-  layers: 'kaartdijin-boodja-private:CPT_IBRA7_WA',
-  format: 'image/png',
+const ibra = L.tileLayer(`${geoserver_wmts_url}&layer=kaartdijin-boodja-private:CPT_IBRA7_WA`, {
   transparent: true,
   opacity: 0.75,
 });
-const lgaBoundaries = L.tileLayer.wms(geoserver_wms_url, {
-  layers: 'kaartdijin-boodja-public:CPT_LOCAL_GOVT_AREAS',
-  format: 'image/png',
+const lgaBoundaries = L.tileLayer(`${geoserver_wmts_url}&layer=kaartdijin-boodja-public:CPT_LOCAL_GOVT_AREAS`, {
   transparent: true,
   opacity: 0.75,
 });
 
 // Define map.
 var map = L.map('map', {
-  crs: L.CRS.EPSG4326,
   center: [-31.96, 115.87],
   minZoom: 4,
   maxZoom: 18,
