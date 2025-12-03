@@ -211,8 +211,38 @@ class TrtTagsAdmin(ImportExportModelAdmin):
     search_fields = ["tag_id"]
 
 
+class TrtPitTagsResource(resources.ModelResource):
+    # 允许 CSV 用单数的 "comment" 作为列名，映射到模型的 comments 字段
+    comment = Field(attribute="comments", column_name="comment")
+
+    class Meta:
+        model = TrtPitTags
+        import_id_fields = ("pittag_id",)
+        fields = (
+            "box_number",
+            "pittag_id",
+            "batch_number",
+            "comments",
+            "issue_location",
+            "field_person_id",
+            "tag_order_id",
+            "pit_tag_status",
+        )
+        export_order = (
+            "box_number",
+            "pittag_id",
+            "batch_number",
+            "comments",
+            "issue_location",
+            "field_person_id",
+            "tag_order_id",
+            "pit_tag_status",
+        )
+
+
 @admin.register(TrtPitTags)
 class TrtPitTagsAdmin(ImportExportModelAdmin):
+    resource_class = TrtPitTagsResource
     list_display = ("pittag_id", "linked_turtle", "issue_location", "linked_custodian_person", "pit_tag_status", "comments")
     list_filter = ["pit_tag_status"]
     search_fields = ["pittag_id"]
