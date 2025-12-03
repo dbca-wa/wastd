@@ -2266,11 +2266,17 @@ class ExportDataView(LoginRequiredMixin, View):
                         
                         row = []
                         for field in TrtDataEntry._meta.fields:
-                            value = getattr(entry, field.name)
+                            # Ensure observation_id column导出真实ID，而不是 Observation 对象的 __str__（日期时间）
+                            if field.name == "observation_id":
+                                value = entry.observation_id_id or ""
+                            else:
+                                value = getattr(entry, field.name)
+
                             if isinstance(value, (datetime, date)):
-                                value = value.isoformat() if value else ''
+                                value = value.isoformat() if value else ""
                             elif value is None:
-                                value = ''
+                                value = ""
+
                             row.append(str(value))
                         row.append(org_str)
                         row.append(observation_status)
@@ -2308,13 +2314,18 @@ class ExportDataView(LoginRequiredMixin, View):
                         
                         row = []
                         for field in TrtDataEntry._meta.fields:
-                            value = getattr(entry, field.name)
+                            if field.name == "observation_id":
+                                value = entry.observation_id_id or ""
+                            else:
+                                value = getattr(entry, field.name)
+
                             if isinstance(value, (datetime, date)):
-                                value = value.isoformat() if value else ''
+                                value = value.isoformat() if value else ""
                             elif value is None:
-                                value = ''
+                                value = ""
                             else:
                                 value = str(value)
+
                             row.append(value)
                         row.append(org_str)
                         row.append(observation_status)
