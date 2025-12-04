@@ -212,7 +212,6 @@ class TrtTagsAdmin(ImportExportModelAdmin):
 
 
 class TrtPitTagsResource(resources.ModelResource):
-    # 允许 CSV 用单数的 "comment" 作为列名，映射到模型的 comments 字段
     comment = Field(attribute="comments", column_name="comment")
 
     class Meta:
