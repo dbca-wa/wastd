@@ -834,9 +834,10 @@ def import_marine_wildlife_incident(form_id="marine_wildlife_incident", auth_hea
             encounter.activity = status['activity']
             encounter.behaviour = status['behaviour']
 
-            death = submission['death'] if submission['death'] else 'Unknown health'
-            encounter.cause_of_death = death['cause_of_death'] if death else 'Not applicable'
-            encounter.cause_of_death_confidence = death['cause_of_death_confidence'] if death else 'Not applicable'
+            # Death details are only present for dead animals; default to NA when absent.
+            death = submission.get("death") or {}
+            encounter.cause_of_death = death.get("cause_of_death", NA_VALUE)
+            encounter.cause_of_death_confidence = death.get("cause_of_death_confidence", NA_VALUE)
 
             checks = submission['checks']
             encounter.checked_for_injuries = checks['checked_for_injuries']
