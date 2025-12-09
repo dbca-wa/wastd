@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "wastd"
-version = "2.2.8"
+version = "2.2.9"
 
 description = "Western Australian Sea Turtles Database"
 authors = [
