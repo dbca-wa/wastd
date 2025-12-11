@@ -2266,11 +2266,24 @@ class ExportDataView(LoginRequiredMixin, View):
                         
                         row = []
                         for field in TrtDataEntry._meta.fields:
-                            value = getattr(entry, field.name)
-                            if isinstance(value, (datetime, date)):
-                                value = value.isoformat() if value else ''
+                            name = field.name
+
+                            # Ensure observation_id column exports the raw FK ID
+                            if name == "observation_id":
+                                value = entry.observation_id_id or ""
+                            else:
+                                value = getattr(entry, name)
+
+                            # Custom formatting for observation_date / observation_time
+                            if name == "observation_date" and isinstance(value, (datetime, date)):
+                                value = value.strftime("%Y-%m-%d") if value else ""
+                            elif name == "observation_time" and isinstance(value, datetime):
+                                value = value.strftime("%H:%M:%S") if value else ""
+                            elif isinstance(value, (datetime, date)):
+                                value = value.isoformat() if value else ""
                             elif value is None:
-                                value = ''
+                                value = ""
+
                             row.append(str(value))
                         row.append(org_str)
                         row.append(observation_status)
@@ -2308,13 +2321,24 @@ class ExportDataView(LoginRequiredMixin, View):
                         
                         row = []
                         for field in TrtDataEntry._meta.fields:
-                            value = getattr(entry, field.name)
-                            if isinstance(value, (datetime, date)):
-                                value = value.isoformat() if value else ''
+                            name = field.name
+
+                            if name == "observation_id":
+                                value = entry.observation_id_id or ""
+                            else:
+                                value = getattr(entry, name)
+
+                            if name == "observation_date" and isinstance(value, (datetime, date)):
+                                value = value.strftime("%Y-%m-%d") if value else ""
+                            elif name == "observation_time" and isinstance(value, datetime):
+                                value = value.strftime("%H:%M:%S") if value else ""
+                            elif isinstance(value, (datetime, date)):
+                                value = value.isoformat() if value else ""
                             elif value is None:
-                                value = ''
+                                value = ""
                             else:
                                 value = str(value)
+
                             row.append(value)
                         row.append(org_str)
                         row.append(observation_status)
