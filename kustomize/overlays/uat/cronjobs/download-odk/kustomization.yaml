@@ -5,3 +5,13 @@ resources:
 nameSuffix: -download-odk
 patches:
   - path: patch.yaml
+  # Patch the CronJob container name
+  - target:
+      kind: CronJob
+      name: turtles-cronjob
+    options:
+      allowNameChange: true
+    patch: |-
+      - op: replace
+        path: /spec/jobTemplate/spec/template/spec/containers/0/name
+        value: turtles-cronjob-download-odk
