@@ -204,16 +204,35 @@ class TrtMeasurementsdmin(admin.ModelAdmin):
         return {}
 
 
+class TrtTagsResource(resources.ModelResource):
+    class Meta:
+        model = TrtTags
+        import_id_fields = ("tag_id",)
+        fields = (
+            "tag_id",
+            "tag_order_id",
+            "issue_location",
+            "custodian_person",
+            "turtle",
+            "side",
+            "tag_status",
+            "return_date",
+            "return_condition",
+            "comments",
+            "field_person_id",
+        )
+        export_order = fields
+
+
 @admin.register(TrtTags)
 class TrtTagsAdmin(ImportExportModelAdmin):
+    resource_class = TrtTagsResource
     list_display = ("tag_id", "turtle", "tag_status")
     list_filter = ["tag_status"]
     search_fields = ["tag_id"]
 
 
 class TrtPitTagsResource(resources.ModelResource):
-    comment = Field(attribute="comments", column_name="comment")
-
     class Meta:
         model = TrtPitTags
         import_id_fields = ("pittag_id",)
