@@ -13,26 +13,6 @@ spec:
           containers:
             - name: turtles-cronjob
               args: ['manage.py', 'automated_qa_checks']
-              env:
-                - name: DATABASE_URL
-                  valueFrom:
-                    secretKeyRef:
-                      name: turtles-env-uat
-                      key: DATABASE_URL
-                - name: SENTRY_DSN
-                  valueFrom:
-                    secretKeyRef:
-                      name: turtles-env-uat
-                      key: SENTRY_DSN
-                - name: SENTRY_SAMPLE_RATE
-                  valueFrom:
-                    secretKeyRef:
-                      name: turtles-env-uat
-                      key: SENTRY_SAMPLE_RATE
-                - name: SENTRY_TRANSACTION_SAMPLE_RATE
-                  valueFrom:
-                    secretKeyRef:
-                      name: turtles-env-uat
-                      key: SENTRY_TRANSACTION_SAMPLE_RATE
-                - name: SENTRY_ENVIRONMENT
-                  value: 'uat'
+              envFrom:
+                - secretRef:
+                    name: turtles-env-uat
