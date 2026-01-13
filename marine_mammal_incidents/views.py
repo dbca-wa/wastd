@@ -14,6 +14,8 @@ from .decorators import superuser_or_data_curator_required
 from django.contrib.auth.decorators import user_passes_test
 from django.core.exceptions import PermissionDenied
 from django.core.exceptions import ValidationError
+from django.core.management.color import no_style
+from django.db import connection
 from openpyxl import load_workbook
 from datetime import datetime
 from datetime import time
@@ -67,6 +69,12 @@ def round_decimal(value, places=2):
 
 def user_in_marine_animal_incidents_group(user):
     return user.is_superuser or user.groups.filter(name='MARINE_ANIMAL_INCIDENTS') or user.groups.filter(name='data curator').exists()
+
+def reset_incident_sequence():
+    sql_statements = connection.ops.sequence_reset_sql(no_style(), [Incident])
+    with connection.cursor() as cursor:
+        for sql in sql_statements:
+            cursor.execute(sql)
 
 @user_passes_test(user_in_marine_animal_incidents_group, login_url=None, redirect_field_name=None)
 def incident_form(request, pk=None):
@@ -324,23 +332,18 @@ def import_incidents(request):
                             except ValueError:
                                 pass
                     
-                    incident_id = row[3].value if row[3].value else None
-                    
                     geo_location = Point(row[2].value, row[1].value) if row[1].value and row[2].value else None
                     incident_type = INCIDENT_TYPE_MAP.get(str(row[11].value).lower(), 'Stranding')
                     
-                    duplicate_query = Incident.objects.none()
-                    if incident_id is not None:
-                        duplicate_query = Incident.objects.filter(
-                            id=incident_id,
-                            species=species,
-                            incident_date=incident_date,
-                            incident_time=incident_time,
-                            incident_type=incident_type
-                        )
-                        if geo_location:
-                            duplicate_query = duplicate_query.filter(geo_location=geo_location)
-                    
+                    duplicate_query = Incident.objects.filter(
+                        species=species,
+                        incident_date=incident_date,
+                        incident_time=incident_time,
+                        incident_type=incident_type
+                    )
+                    if geo_location:
+                        duplicate_query = duplicate_query.filter(geo_location=geo_location)
+
                     if duplicate_query.exists():
                         # This is a duplicate, skip it
                         row_data = [cell.value for cell in row]
@@ -353,7 +356,6 @@ def import_incidents(request):
                         continue
                     
                     incident = Incident(
-                        id=incident_id if incident_id is not None else None,
                         species=species,
                         geo_location=geo_location,
                         incident_date=incident_date,
@@ -395,6 +397,8 @@ def import_incidents(request):
                     error_messages.append(f"行 {row[0].row}: {str(e)}")
                     continue
             
+            reset_incident_sequence()
+
             # If there are failed rows, create an error report Excel file
             if failed_rows:
                 wb_error = Workbook()
@@ -435,4 +439,3 @@ def import_incidents(request):
             messages.error(request, f'Import failed: {str(e)}')
             
     return render(request, 'marine_mammal_incidents/import_form.html')
-
