@@ -852,19 +852,19 @@ django = "*"
 
 [[package]]
 name = "django-bootstrap4"
-version = "24.1"
-description = "Django extensions by Zostera"
+version = "26.1"
+description = "Bootstrap 4 for Django"
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "django-bootstrap4-24.1.tar.gz", hash = "sha256:948a620a10efc3e091e55571341ae1749a3f6f521f1f031889242b65767b4c04"},
-    {file = "django_bootstrap4-24.1-py3-none-any.whl", hash = "sha256:accc64255af7bb45df6b518673facbbaf572418c26e3c3579a0cf4e9c4ef1183"},
+    {file = "django_bootstrap4-26.1-py3-none-any.whl", hash = "sha256:e0fa98c9e613e3f3f2fe3c394486899f62c1a11c77f5bf11653c6bcc8c0a4267"},
+    {file = "django_bootstrap4-26.1.tar.gz", hash = "sha256:164ff10d7f21c627301bca9b5186f0b0478a2c5647d35147283f3a125bc98018"},
 ]
 
 [package.dependencies]
-beautifulsoup4 = ">=4.8.0"
-Django = ">=3.2"
+beautifulsoup4 = ">=4.10.0"
+django = ">=4.2,<7.0"
 
 [[package]]
 name = "django-crispy-forms"
@@ -3121,4 +3121,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.11"
-content-hash = "1da8468e6603bc9cc05807cbaaded919e193a64614e1b1f82995b4a0a62be085"
+content-hash = "530a630124d7cf0ae17a2a57e5c92a8ee188524cc7a567c2af15e8b73853d2b1"
