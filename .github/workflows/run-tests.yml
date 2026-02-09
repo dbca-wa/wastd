@@ -14,6 +14,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DATABASE_URL: postgis://postgres:postgres@localhost:5432/postgres
+    permissions:
+      contents: read
     services:
       postgres:
         image: postgis/postgis:15-3.4-alpine
