@@ -3,6 +3,9 @@
 name: Build multi-architecture Docker Image with separate GitHub Runners and run vulnerability scan
 
 on:
+  schedule:
+    # 0523 AWST, Mon-Fri
+    - cron: '23 21 * * 1-5'
   push:
     branches:
       - master
