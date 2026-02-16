@@ -1,3 +1,4 @@
+from pathlib import PurePath
 from django.contrib.gis.db import models
 
 
@@ -52,12 +53,14 @@ class Incident(models.Model):
     CALF = 'Calf'
     NEWBORN = 'Newborn'
     UNKNOWN = 'Unknown'
+    PUP = 'Pup'
     AGE_CLASS_CHOICES = [
         (ADULT,'Adult'),
         (JUVENILE,'Juvenile'),
         (SUBADULT,'Sub-adult'),
         (CALF,'Calf'),
         (NEWBORN,'Newborn'),
+        (PUP,'Pup'),
         (UNKNOWN,'Unknown')
     ]
     age_class = models.CharField(max_length=10,choices=AGE_CLASS_CHOICES)
@@ -104,6 +107,9 @@ class Incident(models.Model):
         ('Restranded and euthanased','Restranded and euthanased'),
         ('Refloated, fate unknown','Refloated, fate unknown'),
         ('Died','Died'),
+        ('Recovered','Recovered'),
+        ('Released','Released'),
+        ('Alive','Alive'),
         ('Unknown','Unknown')
     ]
     outcome = models.CharField(max_length=30, choices=OUTCOME_CHOICES)
