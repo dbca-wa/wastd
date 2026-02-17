@@ -4640,21 +4640,34 @@ class ObservationDataView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                 'text': observation.place_code.get_full_name() if observation.place_code else None
             }
     
-        tag_info = {
-            'recorded_tags': [{
+        # Get recorded tags directly from the table using observation_id
+        recorded_tags = []
+        tag_records = TrtRecordedTags.objects.filter(observation_id=observation.observation_id)
+        for tag in tag_records:
+            recorded_tags.append({
                 'tag_id': str(tag.tag_id.tag_id) if tag.tag_id else str(tag.other_tag_id), 
                 'tag_side': tag.side,
                 'tag_position': tag.tag_position,
                 'tag_state': tag.tag_state.tag_state if tag.tag_state else None,
                 'barnacles': tag.barnacles,
                 'comments': tag.comments
-            } for tag in observation.trtrecordedtags_set.all()],
-            'recorded_pit_tags': [{
-                'tag_id': str(tag.pittag_id),
-                'tag_position': tag.pit_tag_position,
-                'tag_state': tag.pit_tag_state.pit_tag_state if tag.pit_tag_state else None,
-                'comments': tag.comments
-            } for tag in observation.trtrecordedpittags_set.all()]
+            })
+        
+        # Get recorded pit tags directly from the table using observation_id
+        recorded_pit_tags = []
+        pit_tag_records = TrtRecordedPitTags.objects.filter(observation_id=observation.observation_id)
+        for tag in pit_tag_records:
+            if tag.pittag_id:  # Only include records with a valid pittag_id
+                recorded_pit_tags.append({
+                    'tag_id': str(tag.pittag_id.pittag_id),
+                    'tag_position': tag.pit_tag_position,
+                    'tag_state': tag.pit_tag_state.pit_tag_state if tag.pit_tag_state else None,
+                    'comments': tag.comments
+                })
+        
+        tag_info = {
+            'recorded_tags': recorded_tags,
+            'recorded_pit_tags': recorded_pit_tags
         }
     
         measurements = [{
