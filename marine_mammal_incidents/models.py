@@ -1,4 +1,3 @@
-from pathlib import PurePath
 from django.contrib.gis.db import models
 
 
