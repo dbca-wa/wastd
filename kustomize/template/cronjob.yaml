@@ -23,7 +23,7 @@ spec:
                   value: 'Australia/Perth'
               securityContext:
                 runAsNonRoot: true
-                runAsUser: 1000
+                runAsUser: 10001
                 privileged: false
                 allowPrivilegeEscalation: false
                 capabilities:
