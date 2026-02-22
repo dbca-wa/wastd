@@ -963,7 +963,7 @@ let deletedTags = new Set();
 function addFlipperTag() {
     const tagContainer = document.getElementById('tagContainer');
     
-    if (tagContainer.innerHTML.includes('No flipper tags found')) {
+    if (tagContainer.innerHTML.includes('No recorded flipper tags found')) {
         tagContainer.innerHTML = '';
     }
     
