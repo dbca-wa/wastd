@@ -768,27 +768,25 @@ function setTagInfo() {
     tagContainer.innerHTML = '';
     
     if (initialData.tag_info.recorded_tags.length === 0) {
-        tagContainer.innerHTML = '<p class="text-muted">No flipper tags found</p>';
-        return;
+        tagContainer.innerHTML = '<p class="text-muted">No recorded flipper tags found</p>';
+    } else {
+        initialData.tag_info.recorded_tags.forEach(tag => {
+            tagContainer.insertAdjacentHTML('beforeend', generateTagHtml(tag));
+        });
     }
-
-    initialData.tag_info.recorded_tags.forEach(tag => {
-        tagContainer.insertAdjacentHTML('beforeend', generateTagHtml(tag));
-    });
 
     // PIT tags
     const pitTagContainer = document.getElementById('pitTagContainer');
-    if (pitTagContainer && initialData.tag_info?.recorded_pit_tags) {
+    if (pitTagContainer) {
+        const recordedPitTags = initialData.tag_info?.recorded_pit_tags ?? [];
         pitTagContainer.innerHTML = '';
-        
-        if (initialData.tag_info.recorded_pit_tags.length === 0) {
-            pitTagContainer.innerHTML = '<p class="text-muted">No PIT tags found</p>';
-            return;
+        if (recordedPitTags.length === 0) {
+            pitTagContainer.innerHTML = '<p class="text-muted">No recorded PIT tags found</p>';
+        } else {
+            recordedPitTags.forEach(pitTag => {
+                pitTagContainer.insertAdjacentHTML('beforeend', generatePitTagHtml(pitTag));
+            });
         }
-
-        initialData.tag_info.recorded_pit_tags.forEach(pitTag => {
-            pitTagContainer.insertAdjacentHTML('beforeend', generatePitTagHtml(pitTag));
-        });
     }
 
 }
@@ -965,7 +963,7 @@ let deletedTags = new Set();
 function addFlipperTag() {
     const tagContainer = document.getElementById('tagContainer');
     
-    if (tagContainer.innerHTML.includes('No flipper tags found')) {
+    if (tagContainer.innerHTML.includes('No recorded flipper tags found')) {
         tagContainer.innerHTML = '';
     }
     
@@ -1125,7 +1123,7 @@ async function saveTagChanges() {
 function addPitTag() {
     const pitTagContainer = document.getElementById('pitTagContainer');
     
-    if (pitTagContainer.innerHTML.includes('No PIT tags found')) {
+    if (pitTagContainer.innerHTML.includes('No recorded PIT tags found')) {
         pitTagContainer.innerHTML = '';
     }
     
