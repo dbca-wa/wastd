@@ -73,8 +73,8 @@ RUN apt-get update -y && apt-get install -y postgresql-client dos2unix
 
 COPY entrypoint.sh /app/entrypoint.sh
 COPY wait-for-db.sh /app/wait-for-db.sh
-COPY createsuperuser.sh /app/createsuperuser.sh
-COPY createentereruser.sh /app/createentereruser.sh
+# COPY createsuperuser.sh /app/createsuperuser.sh
+# COPY createentereruser.sh /app/createentereruser.sh
 COPY gunicorn.py manage.py ./
 COPY observations ./observations
 COPY users ./users
@@ -84,7 +84,8 @@ COPY marine_mammal_incidents ./marine_mammal_incidents
 
 # Convert line endings from CRLF to LF
 # RUN dos2unix /app/entrypoint.sh /app/wait-for-db.sh /app/createsuperuser.sh
-RUN chmod +x /app/entrypoint.sh /app/wait-for-db.sh /app/createsuperuser.sh /app/createentereruser.sh
+# RUN chmod +x /app/entrypoint.sh /app/wait-for-db.sh /app/createsuperuser.sh /app/createentereruser.sh
+RUN chmod +x /app/entrypoint.sh /app/wait-for-db.sh
 
 USER ${UID}
 EXPOSE 8080
