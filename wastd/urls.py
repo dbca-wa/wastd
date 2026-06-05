@@ -1,31 +1,37 @@
+from django.conf import settings
 from django.contrib import admin
 from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import include, path
-from django.views.generic import TemplateView
 from django.views import defaults
+from django.views.generic import TemplateView
 from djgeojson.views import GeoJSONLayerView
 
-from wastd.router import urlpatterns as api_urlpatterns
 from observations import views as observations_views
-from observations.models import Area, AnimalEncounter
-from django.conf import settings
-
+from observations.models import AnimalEncounter, Area
+from wastd.router import urlpatterns as api_urlpatterns
 
 urlpatterns = [
     path("", TemplateView.as_view(template_name="index.html"), name="home"),
     path("login/", LoginView.as_view(template_name="login.html"), name="login"),
     path("logout/", LogoutView.as_view(template_name="logged_out.html"), name="logout"),
     path("grappelli/", include("grappelli.urls")),
-    path('_nested_admin/', include('nested_admin.urls')),
+    path("_nested_admin/", include("nested_admin.urls")),
     path("admin/", admin.site.urls),
     path("select2/", include("django_select2.urls")),
     path("users/", include(("users.urls", "users"), namespace="users")),
     path("observations/", include(("observations.urls"), namespace="observations")),
     path("wamtram2/", include(("wamtram2.urls"), namespace="wamtram2")),
-    path("marine-mammal-incidents/", include(("marine_mammal_incidents.urls", "marine_mammal_incidents"), namespace="marine_mammal_incidents")),
+    path(
+        "marine-mammal-incidents/",
+        include(
+            ("marine_mammal_incidents.urls", "marine_mammal_incidents"),
+            namespace="marine_mammal_incidents",
+        ),
+    ),
     path("map/", observations_views.MapView.as_view(), name="map"),
+    path("privacy/", observations_views.PrivacyNotice.as_view(), name="privacy_notice"),
     # API
-    path('api/1/', include((api_urlpatterns, "wastd"), namespace="api")),
+    path("api/1/", include((api_urlpatterns, "wastd"), namespace="api")),
     # Spatial data layers
     path(
         "areas.geojson",
@@ -54,7 +60,7 @@ urlpatterns = [
         "strandings.geojson",
         GeoJSONLayerView.as_view(
             model=AnimalEncounter,
-            queryset=AnimalEncounter.objects.filter(encounter_type='stranding'),
+            queryset=AnimalEncounter.objects.filter(encounter_type="stranding"),
             geometry_field="where",
             properties=["as_html", "leaflet_title", "leaflet_icon", "leaflet_colour"],
         ),
@@ -62,8 +68,16 @@ urlpatterns = [
     ),
     # Error pages
     path("400/", defaults.bad_request, kwargs={"exception": Exception("Bad request")}),
-    path("403/", defaults.permission_denied, kwargs={"exception": Exception("Permission denied")}),
-    path("404/", defaults.page_not_found, kwargs={"exception": Exception("Page not found")}),
+    path(
+        "403/",
+        defaults.permission_denied,
+        kwargs={"exception": Exception("Permission denied")},
+    ),
+    path(
+        "404/",
+        defaults.page_not_found,
+        kwargs={"exception": Exception("Page not found")},
+    ),
     path("500/", defaults.server_error),
 ]
 
