@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "wastd"
-version = "2.2.16"
+version = "2.2.17"
 description = "Western Australian Sea Turtles Database"
 authors = [
   "Florian Mayer <florian.mayer@dbca.wa.gov.au>",
@@ -14,7 +14,7 @@ package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.11"
-django = "4.2.28"
+django = "4.2.29"
 django-extensions = "3.2.3"
 dj-database-url = "3.0.1"
 gunicorn = "23.0.0"

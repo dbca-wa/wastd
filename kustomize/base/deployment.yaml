@@ -94,6 +94,12 @@ spec:
                     operator: In
                     values:
                       - arm64
+          # Pointless/no-op selector to deal with Rancher GUI issue.
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: Exists
         # Set a pod anti-affinity to spread workload pods between nodes (preference only).
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:

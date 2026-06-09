@@ -1,0 +1,39 @@
+{% extends "base_wastd.html" %}
+{% block breadcrumbs %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{% url 'home' %}">Home</a>
+            </li>
+            <li class="breadcrumb-item active">Privacy</li>
+        </ol>
+    </nav>
+{% endblock breadcrumbs %}
+{% block page_content_inner %}
+    <div class="row">
+        <div class="column px-2">
+            <h1>Privacy notice</h1>
+            <p>
+                This privacy statement sets out how we collect, use and disclose information collected through the Turtles Database website.
+            </p>
+            <p>
+                The Department of Biodiversity, Conservation and Attractions (DBCA) collects this personal information to have a record of:
+            </p>
+            <ul>
+                <li>Who processes marine turtles in the field.</li>
+                <li>Who reports stranded marine turtles in the field.</li>
+            </ul>
+            <p>
+                We may share this information with other organisations involved in turtle conservation to clarify data recorded, or, in the case of stranded turtles, seek the best animal welfare outcome.
+            </p>
+            <p>The only information we are collecting is First Name, Last Name and email address.</p>
+            <p>
+                If you choose not to provide first name, last name and email address, we will replace with the details of DBCA staff in charge of data collection or leave anonymous.
+            </p>
+            <p>
+                For further details on how DBCA manages your personal information, you can read our <a href="https://www.dbca.wa.gov.au/about-us/legislation/corporate-policies"
+    target="_blank">Privacy Policy</a>. If you have any questions about how your personal information will be handled, or if you would like to access your personal information, please contact <a href="mailto:privacy@dbca.wa.gov.au">privacy@dbca.wa.gov.au</a>.
+            </p>
+        </div>
+    </div>
+{% endblock page_content_inner %}
