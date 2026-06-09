@@ -108,3 +108,4 @@ wait-for-db.sh
 .env.dev
 .env.dev.*
 
+.vscode/

@@ -3,9 +3,11 @@ name: 'Run unit tests'
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
-    branches: [master]
+    branches:
+      - master
   pull_request:
-    branches: [master]
+    branches:
+      - master
   workflow_dispatch:
 
 jobs:
@@ -14,11 +16,12 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DATABASE_URL: postgis://postgres:postgres@localhost:5432/postgres
+      LOCAL_MEDIA_STORAGE: true
     permissions:
       contents: read
     services:
       postgres:
-        image: postgis/postgis:15-3.4-alpine
+        image: postgis/postgis:16-3.5-alpine
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
@@ -26,18 +29,6 @@ jobs:
           - 5432:5432
         options: --mount type=tmpfs,destination=/var/lib/postgresql/data --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
-      #----------------------------------------------
-      # Checkout repo and set up Python
-      #----------------------------------------------
-      - name: Checkout repository
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        id: setup-python
-        with:
-          python-version: '3.11'
       #----------------------------------------------
       # Install GDAL into the environment
       #----------------------------------------------
@@ -47,42 +38,32 @@ jobs:
           sudo apt-get update
           sudo apt-get install --no-install-recommends --yes gdal-bin libgdal-dev
       #----------------------------------------------
-      # Install & configure Poetry
+      # Checkout repo
       #----------------------------------------------
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
+      - name: Checkout repo
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        id: checkout-repo
         with:
-          virtualenvs-create: true
-          virtualenvs-in-project: true
-          installer-parallel: true
+          fetch-depth: 0
       #----------------------------------------------
-      # Load cached venv if cache exists
+      # Install & configure uv
       #----------------------------------------------
-      - name: Load cached venv
-        id: cached-poetry-dependencies
-        uses: actions/cache@v5
+      - name: Install uv
+        uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39 # v8.2.0
         with:
-          path: .venv
-          key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+          python-version: '3.13'
+          enable-cache: true
       #----------------------------------------------
-      # Install project dependencies if cache does not exist
+      # Install project dependencies
       #----------------------------------------------
-      - name: Install cached dependencies
-        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-        run: poetry install --no-interaction --no-root
-      #----------------------------------------------
-      # Run DB migrations
-      #----------------------------------------------
-      - name: Run DB migrations
-        run: |
-          source .venv/bin/activate
-          python manage.py migrate
+      - name: Install dependencies
+        run: uv sync
       #----------------------------------------------
       # Run unit tests
       #----------------------------------------------
       - name: Run tests
         run: |
-          source .venv/bin/activate
-          python manage.py collectstatic --noinput
+          uv run python manage.py collectstatic
+          uv run python manage.py migrate
           # NOTE: we can't run tests in parallel, because setup() may break DB constraints.
-          python manage.py test --noinput --failfast --verbosity 0 --settings wastd.test-settings
+          uv run python manage.py test --noinput --failfast --verbosity 0 --settings wastd.test-settings
