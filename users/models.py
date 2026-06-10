@@ -43,8 +43,7 @@ class Organisation(models.Model):
 
 
 class User(AbstractUser):
-    """Customised User class.
-    """
+    """Customised User class."""
 
     # First Name and Last Name do not cover name patterns around the globe.
     name = models.CharField("Name of User", blank=True, max_length=255)
@@ -54,9 +53,7 @@ class User(AbstractUser):
         blank=True,
         help_text="Any names this user is known as in other databases and data collection forms. Separate names by comma.",
     )
-    role = models.TextField(
-        "Role of User", blank=True, null=True, help_text="The role of the user."
-    )
+    role = models.TextField("Role of User", blank=True, null=True, help_text="The role of the user.")
     affiliation = models.TextField(
         "Affiliation",
         blank=True,
@@ -122,9 +119,7 @@ class User(AbstractUser):
     @classmethod
     def create_url(cls):
         """Create url. Default: app:model-create."""
-        return reverse(
-            "admin:{}_{}_add".format(cls._meta.app_label, cls._meta.model_name)
-        )
+        return reverse("admin:{}_{}_add".format(cls._meta.app_label, cls._meta.model_name))
 
     @property
     def update_url(self):

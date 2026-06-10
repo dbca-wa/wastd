@@ -48,8 +48,8 @@ from .serializers import (
 
 
 class ObservationsResourceSummary(View):
-    """A custom view to return a list of resource API endpoints.
-    """
+    """A custom view to return a list of resource API endpoints."""
+
     http_method_names = ["get"]
 
     def get(self, request, *args, **kwargs):
@@ -75,9 +75,7 @@ class ObservationsResourceSummary(View):
         endpoints = []
 
         for resource in resources:
-            endpoints.append(
-                {"resource": resource[0], "endpoint_url": request.build_absolute_uri(reverse(f"api:{resource[1]}"))}
-            )
+            endpoints.append({"resource": resource[0], "endpoint_url": request.build_absolute_uri(reverse(f"api:{resource[1]}"))})
         return JsonResponse(endpoints, safe=False)
 
 
@@ -89,6 +87,7 @@ class AreaDiagnostics(View):
       - name: Area name (optional; used if id missing)
       - lon, lat: optional coordinate in EPSG:4326 to test ST_Covers
     """
+
     http_method_names = ["get"]
 
     def get(self, request, *args, **kwargs):
@@ -171,13 +170,12 @@ class EncounterListResource(ListResourceView):
 
     def get_queryset(self):
         # FIXME: permissions checking per object.
-        return self.model.objects.all(
-        ).prefetch_related(
-            'observer',
-            'reporter',
-            'area',
-            'site',
-            'survey',
+        return self.model.objects.all().prefetch_related(
+            "observer",
+            "reporter",
+            "area",
+            "site",
+            "survey",
         )
 
 
@@ -203,10 +201,10 @@ class TurtleNestEncounterListResource(EncounterListResource):
     def get_queryset(self):
         # Filtering options.
         queryset = super().get_queryset()
-        if 'nest_type' in self.request.GET and self.request.GET['nest_type']:
-            queryset = queryset.filter(nest_type=self.request.GET['nest_type'])
-        if 'species' in self.request.GET and self.request.GET['species']:
-            queryset = queryset.filter(nest_type=self.request.GET['species'])
+        if "nest_type" in self.request.GET and self.request.GET["nest_type"]:
+            queryset = queryset.filter(nest_type=self.request.GET["nest_type"])
+        if "species" in self.request.GET and self.request.GET["species"]:
+            queryset = queryset.filter(nest_type=self.request.GET["species"])
 
         return queryset
 
@@ -217,11 +215,10 @@ class TurtleNestEncounterDetailResource(EncounterDetailResource):
 
 
 class ObservationListResource(ListResourceView):
-
     def dispatch(self, request, *args, **kwargs):
-        if 'encounter_id' in request.GET and request.GET['encounter_id']:
+        if "encounter_id" in request.GET and request.GET["encounter_id"]:
             try:
-                int(request.GET['encounter_id'])
+                int(request.GET["encounter_id"])
             except:
                 return HttpResponseBadRequest()
         return super().dispatch(request, *args, **kwargs)
@@ -229,8 +226,8 @@ class ObservationListResource(ListResourceView):
     def get_queryset(self):
         queryset = super().get_queryset()
 
-        if 'encounter_id' in self.request.GET and self.request.GET['encounter_id']:
-            queryset = queryset.filter(encounter__pk=int(self.request.GET['encounter_id']))
+        if "encounter_id" in self.request.GET and self.request.GET["encounter_id"]:
+            queryset = queryset.filter(encounter__pk=int(self.request.GET["encounter_id"]))
 
         return queryset
 
@@ -349,12 +346,12 @@ def stream_data(query):
         # Get column names from cursor.description
         columns = [col[0] for col in cursor.description]
 
-        yield '['  # Start of JSON array
+        yield "["  # Start of JSON array
         first_row = True
         row = cursor.fetchone()
         while row:
             if not first_row:
-                yield ','
+                yield ","
             else:
                 first_row = False
 
@@ -365,13 +362,12 @@ def stream_data(query):
             yield json.dumps(row_dict, cls=DateTimeEncoder)
 
             row = cursor.fetchone()
-        yield ']'  # End of JSON array
+        yield "]"  # End of JSON array
 
 
 def nests_tracks_streaming_json(request):
-    """This view streams the database query as JSON for use by external tools such as PowerBI.
-    """
-    query = '''
+    """This view streams the database query as JSON for use by external tools such as PowerBI."""
+    query = """
 SELECT
     e."id" as encounter_id,
     e."status",
@@ -468,7 +464,7 @@ LEFT JOIN
   "users_organisation" org ON (c."owner_id" = org."id")
 ORDER BY
     e."when" DESC
-    '''
+    """
 
     response = StreamingHttpResponse(stream_data(query), content_type="application/json")
     return response

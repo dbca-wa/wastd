@@ -35,8 +35,9 @@ from observations.api import (
     LightSourceObservationDetailResource,
     DisturbanceObservationListResource,
     DisturbanceObservationDetailResource,
-    #nests_tracks_streaming_json,
+    # nests_tracks_streaming_json,
 )
+
 # from turtle_tags.api import (
 #     TurtleListResource,
 #     TurtleDetailResource,
@@ -44,12 +45,12 @@ from observations.api import (
 #     TurtleTagDetailResource,
 # )
 from users.api import UserListResource, UserDetailResource
-#from turtle_tags import views as tagviews
+# from turtle_tags import views as tagviews
 
 urlpatterns = [
     # observations
-    #path('nestAndTracks/', nests_tracks_streaming_json, name='nestAndTracks'),
-    #path('taggedTurtles/', tagviews.taggedTurtles, name='taggedTurtles'),
+    # path('nestAndTracks/', nests_tracks_streaming_json, name='nestAndTracks'),
+    # path('taggedTurtles/', tagviews.taggedTurtles, name='taggedTurtles'),
     path("", ObservationsResourceSummary.as_view(), name="observations_resource_summary"),
     path("area-diagnostics/", AreaDiagnostics.as_view(), name="area_diagnostics"),
     path("user/", UserListResource.as_view(), name="user_list_resource"),
@@ -59,7 +60,9 @@ urlpatterns = [
     path("survey/", SurveyListResource.as_view(), name="survey_list_resource"),
     path("survey/<int:pk>/", SurveyDetailResource.as_view(), name="survey_detail_resource"),
     path("survey-media-attachment/", SurveyMediaAttachmentListResource.as_view(), name="survey_media_attachment_list_resource"),
-    path("survey-media-attachment/<int:pk>/", SurveyMediaAttachmentDetailResource.as_view(), name="survey_media_attachment_detail_resource"),
+    path(
+        "survey-media-attachment/<int:pk>/", SurveyMediaAttachmentDetailResource.as_view(), name="survey_media_attachment_detail_resource"
+    ),
     path("encounter/", EncounterListResource.as_view(), name="encounter_list_resource"),
     path("encounter/<int:pk>/", EncounterDetailResource.as_view(), name="encounter_detail_resource"),
     path("animal-encounter/", AnimalEncounterListResource.as_view(), name="animal_encounter_list_resource"),
@@ -69,19 +72,53 @@ urlpatterns = [
     path("media-attachment/", MediaAttachmentListResource.as_view(), name="media_attachment_list_resource"),
     path("media-attachment/<int:pk>/", MediaAttachmentDetailResource.as_view(), name="media_attachment_detail_resource"),
     path("turtle-nest-observation/", TurtleNestObservationListResource.as_view(), name="turtle_nest_observation_list_resource"),
-    path("turtle-nest-observation/<int:pk>/", TurtleNestObservationDetailResource.as_view(), name="turtle_nest_observation_detail_resource"),
-    path("turtle-hatchling-emergence-observation/", TurtleHatchlingEmergenceObservationListResource.as_view(), name="turtle_hatchling_emergence_observation_list_resource"),
-    path("turtle-hatchling-emergence-observation/<int:pk>/", TurtleHatchlingEmergenceObservationDetailResource.as_view(), name="turtle_hatchling_emergence_observation_detail_resource"),
+    path(
+        "turtle-nest-observation/<int:pk>/", TurtleNestObservationDetailResource.as_view(), name="turtle_nest_observation_detail_resource"
+    ),
+    path(
+        "turtle-hatchling-emergence-observation/",
+        TurtleHatchlingEmergenceObservationListResource.as_view(),
+        name="turtle_hatchling_emergence_observation_list_resource",
+    ),
+    path(
+        "turtle-hatchling-emergence-observation/<int:pk>/",
+        TurtleHatchlingEmergenceObservationDetailResource.as_view(),
+        name="turtle_hatchling_emergence_observation_detail_resource",
+    ),
     path("nest-tag-observation/", NestTagObservationListResource.as_view(), name="nest_tag_observation_list_resource"),
     path("nest-tag-observation/<int:pk>/", NestTagObservationDetailResource.as_view(), name="nest_tag_observation_detail_resource"),
-    path("turtle-nest-disturbance-observation/", TurtleNestDisturbanceObservationListResource.as_view(), name="turtle_nest_disturbance_observation_list_resource"),
-    path("turtle-nest-disturbance-observation/<int:pk>/", TurtleNestDisturbanceObservationDetailResource.as_view(), name="turtle_nest_disturbance_observation_detail_resource"),
+    path(
+        "turtle-nest-disturbance-observation/",
+        TurtleNestDisturbanceObservationListResource.as_view(),
+        name="turtle_nest_disturbance_observation_list_resource",
+    ),
+    path(
+        "turtle-nest-disturbance-observation/<int:pk>/",
+        TurtleNestDisturbanceObservationDetailResource.as_view(),
+        name="turtle_nest_disturbance_observation_detail_resource",
+    ),
     path("logger-observation/", LoggerObservationListResource.as_view(), name="logger_observation_list_resource"),
     path("logger-observation/<int:pk>/", LoggerObservationDetailResource.as_view(), name="logger_observation_detail_resource"),
-    path("hatchling-morphometric-observation/", HatchlingMorphometricObservationListResource.as_view(), name="hatchling_morphometric_observation_list_resource"),
-    path("hatchling-morphometric-observation/<int:pk>/", HatchlingMorphometricObservationDetailResource.as_view(), name="hatchling_morphometric_observation_detail_resource"),
-    path("turtle-hatchling-emergence-outlier-observation/", TurtleHatchlingEmergenceOutlierObservationListResource.as_view(), name="turtle_hatchling_emergence_outlier_observation_list_resource"),
-    path("turtle-hatchling-emergence-outlier-observation/<int:pk>/", TurtleHatchlingEmergenceOutlierObservationDetailResource.as_view(), name="turtle_hatchling_emergence_outlier_observation_detail_resource"),
+    path(
+        "hatchling-morphometric-observation/",
+        HatchlingMorphometricObservationListResource.as_view(),
+        name="hatchling_morphometric_observation_list_resource",
+    ),
+    path(
+        "hatchling-morphometric-observation/<int:pk>/",
+        HatchlingMorphometricObservationDetailResource.as_view(),
+        name="hatchling_morphometric_observation_detail_resource",
+    ),
+    path(
+        "turtle-hatchling-emergence-outlier-observation/",
+        TurtleHatchlingEmergenceOutlierObservationListResource.as_view(),
+        name="turtle_hatchling_emergence_outlier_observation_list_resource",
+    ),
+    path(
+        "turtle-hatchling-emergence-outlier-observation/<int:pk>/",
+        TurtleHatchlingEmergenceOutlierObservationDetailResource.as_view(),
+        name="turtle_hatchling_emergence_outlier_observation_detail_resource",
+    ),
     path("light-source-observation/", LightSourceObservationListResource.as_view(), name="light_source_observation_list_resource"),
     path("light-source-observation/<int:pk>/", LightSourceObservationDetailResource.as_view(), name="light_source_detail_resource"),
     path("disturbance-observation/", DisturbanceObservationListResource.as_view(), name="disturbance_observation_list_resource"),

@@ -3,13 +3,10 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.urls import reverse
-from django.views.generic import (DetailView, FormView, ListView, RedirectView,
-                                  UpdateView)
+from django.views.generic import DetailView, FormView, ListView, RedirectView, UpdateView
 
 from observations.models import Area
-from wastd.utils import (Breadcrumb, BreadcrumbContextMixin,
-                         DetailViewBreadcrumbMixin, ListViewBreadcrumbMixin,
-                         ResourceDownloadMixin)
+from wastd.utils import Breadcrumb, BreadcrumbContextMixin, DetailViewBreadcrumbMixin, ListViewBreadcrumbMixin, ResourceDownloadMixin
 
 from .filters import UserFilter
 from .forms import TransferForm, UserMergeForm
@@ -56,19 +53,19 @@ class UserDetailView(DetailViewBreadcrumbMixin, LoginRequiredMixin, DetailView):
         context["collapse_details"] = False
         context["page_title"] = f"{settings.SITE_CODE} | User profile"
         if "pk" not in self.kwargs:
-            context["surveys"] = Survey.objects.filter(
-                reporter=self.request.user
-            ).prefetch_related("encounter_set", "reporter", "area", "site", "encounter_set__observations")[0:100]
-            context["encounters"] = Encounter.objects.filter(
-                reporter=self.request.user
-            ).prefetch_related("observer", "reporter", "area", "site", "observations")[0:100]
+            context["surveys"] = Survey.objects.filter(reporter=self.request.user).prefetch_related(
+                "encounter_set", "reporter", "area", "site", "encounter_set__observations"
+            )[0:100]
+            context["encounters"] = Encounter.objects.filter(reporter=self.request.user).prefetch_related(
+                "observer", "reporter", "area", "site", "observations"
+            )[0:100]
         else:
-            context["surveys"] = Survey.objects.filter(
-                reporter_id=self.kwargs["pk"]
-            ).prefetch_related("encounter_set", "reporter", "area", "site", "encounter_set__observations")[0:100]
-            context["encounters"] = Encounter.objects.filter(
-                reporter_id=self.kwargs["pk"]
-            ).prefetch_related("observer", "reporter", "area", "site", "observations")[0:100]
+            context["surveys"] = Survey.objects.filter(reporter_id=self.kwargs["pk"]).prefetch_related(
+                "encounter_set", "reporter", "area", "site", "encounter_set__observations"
+            )[0:100]
+            context["encounters"] = Encounter.objects.filter(reporter_id=self.kwargs["pk"]).prefetch_related(
+                "observer", "reporter", "area", "site", "observations"
+            )[0:100]
 
         return context
 
@@ -102,8 +99,8 @@ class UserUpdateView(LoginRequiredMixin, UpdateView):
 
 
 class UserMergeView(BreadcrumbContextMixin, FormView):
-    """Merge any two User profiles.
-    """
+    """Merge any two User profiles."""
+
     template_name = "users/user_form.html"
     form_class = UserMergeForm
 
@@ -129,8 +126,7 @@ class UserMergeView(BreadcrumbContextMixin, FormView):
         )
 
     def form_valid(self, form):
-        """Transfer user, show result as success message, return to new user's detail.
-        """
+        """Transfer user, show result as success message, return to new user's detail."""
         old = form.cleaned_data["user_old"]
         new = form.cleaned_data["user_new"]
         msg = transfer_user(old, new)
@@ -140,8 +136,8 @@ class UserMergeView(BreadcrumbContextMixin, FormView):
 
 
 class TransferView(BreadcrumbContextMixin, FormView):
-    """Transfer data between two User profiles for a given Area.
-    """
+    """Transfer data between two User profiles for a given Area."""
+
     template_name = "users/user_form.html"
     form_class = TransferForm
 

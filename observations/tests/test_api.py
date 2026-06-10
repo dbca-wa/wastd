@@ -3,7 +3,6 @@ from .test_views import ViewsTestCase
 
 
 class ApiTests(ViewsTestCase):
-
     def setUp(self):
         super().setUp()
         self.client.force_login(self.user)

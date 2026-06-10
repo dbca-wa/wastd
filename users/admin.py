@@ -8,7 +8,6 @@ from .models import User, Organisation
 
 @admin.register(Organisation)
 class OrganisationAdmin(admin.ModelAdmin):
-
     list_display = ("code", "label", "description")
     search_fields = (
         "label__icontains",
@@ -17,16 +16,12 @@ class OrganisationAdmin(admin.ModelAdmin):
 
 
 class UserChangeForm(UserChangeForm):
-
     class Meta(UserChangeForm.Meta):
         model = User
 
 
 class UserCreationForm(UserCreationForm):
-
-    error_message = UserCreationForm.error_messages.update(
-        {"duplicate_username": "This username has already been taken."}
-    )
+    error_message = UserCreationForm.error_messages.update({"duplicate_username": "This username has already been taken."})
 
     class Meta(UserCreationForm.Meta):
         model = User
@@ -42,7 +37,6 @@ class UserCreationForm(UserCreationForm):
 
 @admin.register(User)
 class UserAdmin(AuthUserAdmin):
-
     form = UserChangeForm
     add_form = UserCreationForm
     fieldsets = (

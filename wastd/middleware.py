@@ -1,6 +1,7 @@
 from django.http import HttpResponse, HttpResponseServerError
 import logging
 from django.conf import settings
+
 if settings.DEBUG:
     from debug_toolbar.panels import Panel
 
@@ -9,7 +10,6 @@ LOGGER = logging.getLogger("turtles")
 
 
 class HealthCheckMiddleware(object):
-
     def __init__(self, get_response):
         self.get_response = get_response
 
@@ -22,8 +22,7 @@ class HealthCheckMiddleware(object):
         return self.get_response(request)
 
     def liveness(self, request):
-        """Returns that the server is alive.
-        """
+        """Returns that the server is alive."""
         return HttpResponse("OK")
 
     def readiness(self, request):
@@ -33,6 +32,7 @@ class HealthCheckMiddleware(object):
         """
         try:
             from django.db import connections
+
             cursor = connections["default"].cursor()
             cursor.execute("SELECT 1;")
             row = cursor.fetchone()
@@ -45,17 +45,18 @@ class HealthCheckMiddleware(object):
 
         return HttpResponse("OK")
 
+
 if settings.DEBUG:
-    #Create a debug panel to catch file downloads, allows profiling
-    #from https://stackoverflow.com/a/74223126
+    # Create a debug panel to catch file downloads, allows profiling
+    # from https://stackoverflow.com/a/74223126
     class FileInterceptsPanel(Panel):
         has_content = False
-        title = 'Intercept files'
+        title = "Intercept files"
 
         def process_request(self, request):
             """If the response contains a file, replace it by a dummy response"""
             response = super().process_request(request)
             response_is_file = ...  # use whatever test suits your case
             if response_is_file:
-                response = HttpResponse('<body>debug file response</body>')
+                response = HttpResponse("<body>debug file response</body>")
             return response

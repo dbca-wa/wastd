@@ -45,7 +45,7 @@ class SurveyFilter(FilterSet):
         label="Reported by",
         queryset=User.objects.filter(is_active=True).order_by("name"),
         # NOTE: we can't filter the queryset here due to a circular dependency that breaks Django migrations.
-        #queryset = User.objects.filter(pk__in=set(Survey.objects.values_list("reporter", flat=True))).order_by("name")
+        # queryset = User.objects.filter(pk__in=set(Survey.objects.values_list("reporter", flat=True))).order_by("name")
     )
     area = ModelChoiceFilter(
         label="Locality",
@@ -129,11 +129,11 @@ class AnimalEncounterFilter(FilterSet):
         field_name="encounter_type",
         choices=(
             (Encounter.ENCOUNTER_INWATER, "In water"),
-            #(Encounter.ENCOUNTER_LOGGER, "Logger"),
-            #(Encounter.ENCOUNTER_OTHER, "Other"),
+            # (Encounter.ENCOUNTER_LOGGER, "Logger"),
+            # (Encounter.ENCOUNTER_OTHER, "Other"),
             (Encounter.ENCOUNTER_STRANDING, "Stranding"),
             (Encounter.ENCOUNTER_TAGGING, "Tagging"),
-            #(Encounter.ENCOUNTER_TAG, "Tag Management"),
+            # (Encounter.ENCOUNTER_TAG, "Tag Management"),
         ),
     )
     species = ChoiceFilter(field_name="species", choices=sorted(SPECIES_CHOICES))
@@ -176,7 +176,6 @@ class AnimalEncounterFilter(FilterSet):
 
 
 class TurtleNestEncounterFilter(FilterSet):
-
     date_from = DateFilter(
         field_name="when",
         lookup_expr="date__gte",
@@ -196,9 +195,7 @@ class TurtleNestEncounterFilter(FilterSet):
     )
     survey = ChoiceFilter(
         field_name="survey",
-        choices=(
-            ("null","<No survey>"),
-        ),
+        choices=(("null", "<No survey>"),),
         label="Survey",
     )
     encounter_type = ChoiceFilter(
@@ -250,7 +247,7 @@ class TurtleNestEncounterFilter(FilterSet):
             "date_from",
             "date_to",
             "user_observer",
-            #"user_reporter",
+            # "user_reporter",
             "encounter_type",
             "nest_type",
             "nest_age",
@@ -267,7 +264,6 @@ class TurtleNestEncounterFilter(FilterSet):
 
 
 class LineTransectEncounterFilter(EncounterFilter):
-
     class Meta(EncounterFilter.Meta):
         model = LineTransectEncounter
         fields = EncounterFilter._meta.fields + [
@@ -323,7 +319,6 @@ class ObservationFilter(FilterSet):
 
 
 class TurtleNestDisturbanceObservationFilter(ObservationFilter):
-
     class Meta:
         model = TurtleNestDisturbanceObservation
         fields = [
@@ -339,7 +334,6 @@ class TurtleNestDisturbanceObservationFilter(ObservationFilter):
 
 
 class DisturbanceObservationFilter(ObservationFilter):
-
     class Meta:
         model = DisturbanceObservation
         fields = [
@@ -354,7 +348,6 @@ class DisturbanceObservationFilter(ObservationFilter):
 
 
 class TrackTallyObservationFilter(ObservationFilter):
-
     class Meta:
         model = TrackTallyObservation
         fields = [

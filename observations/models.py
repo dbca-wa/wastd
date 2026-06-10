@@ -13,6 +13,7 @@ An Encounter can have zero or more Observations associated with it. An Observati
 event (e.g. one encounter with a nesting turtle might result in observations about
 the turtle's morphometrics, physical damage, and nesting success).
 """
+
 from datetime import timedelta
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
@@ -38,8 +39,7 @@ LOGGER = logging.getLogger("turtles")
 
 
 def encounter_media(instance, filename):
-    """Return an upload file path for an encounter media attachment.
-    """
+    """Return an upload file path for an encounter media attachment."""
     return "encounter/{}/{}".format(instance.encounter.source_id, filename)
 
 
@@ -51,8 +51,7 @@ def campaign_media(instance, filename):
 
 
 def survey_media(instance, filename):
-    """Return an upload path for survey media.
-    """
+    """Return an upload path for survey media."""
     if not instance.survey.id:
         instance.survey.save()
     return "survey/{}/{}".format(instance.survey.id, filename)
@@ -74,6 +73,7 @@ class Area(models.Model):
     * northern extent: useful to sort by latitude
     * as html: an HTML map popup
     """
+
     AREATYPE_MPA = "MPA"
     AREATYPE_LOCALITY = "Locality"
     AREATYPE_SITE = "Site"
@@ -159,8 +159,7 @@ class Area(models.Model):
         unique_together = ("area_type", "name")
 
     def save(self, *args, **kwargs):
-        """Cache centroid and northern extent.
-        """
+        """Cache centroid and northern extent."""
         if not self.northern_extent:
             self.northern_extent = self.derived_northern_extent
         if not self.centroid:
@@ -181,8 +180,7 @@ class Area(models.Model):
         return self.geom.extent[3] or None
 
     def get_popup(self):
-        """Generate HTML popup content.
-        """
+        """Generate HTML popup content."""
         t = loader.get_template("popup/{}.html".format(self._meta.model_name))
         c = dict(original=self)
         return mark_safe(t.render(c))
@@ -194,8 +192,7 @@ class Area(models.Model):
 
     @property
     def absolute_admin_url(self):
-        """Return the absolute admin change URL.
-        """
+        """Return the absolute admin change URL."""
         return reverse("admin:{}_{}_change".format(self._meta.app_label, self._meta.model_name), args=[self.pk])
 
     @property
@@ -222,6 +219,7 @@ class Campaign(models.Model):
     * Campaign own all Surveys and Encounters within its area and time range.
     * Campaign can nominate other Organisations as viewers of their data.
     """
+
     destination = models.ForeignKey(
         Area,
         on_delete=models.SET_NULL,
@@ -271,12 +269,8 @@ class Campaign(models.Model):
         return "{} {} {} to {}".format(
             "-" if not self.owner else self.owner.label,
             "-" if not self.destination else self.destination.name,
-            "na"
-            if not self.start_time
-            else self.start_time.astimezone(settings.TZ).strftime("%Y-%m-%d"),
-            "na"
-            if not self.end_time
-            else self.end_time.astimezone(settings.TZ).strftime("%Y-%m-%d"),
+            "na" if not self.start_time else self.start_time.astimezone(settings.TZ).strftime("%Y-%m-%d"),
+            "na" if not self.end_time else self.end_time.astimezone(settings.TZ).strftime("%Y-%m-%d"),
         )
 
     @property
@@ -351,8 +345,8 @@ class Campaign(models.Model):
 
 
 class Survey(QualityControlMixin, UrlsMixin, models.Model):
-    """A visit to one site by a team of field workers collecting data.
-    """
+    """A visit to one site by a team of field workers collecting data."""
+
     campaign = models.ForeignKey(
         Campaign,
         null=True,
@@ -545,8 +539,7 @@ class Survey(QualityControlMixin, UrlsMixin, models.Model):
 
     @property
     def absolute_admin_url(self):
-        """Return the absolute admin change URL.
-        """
+        """Return the absolute admin change URL."""
         return reverse("admin:{}_{}_change".format(self._meta.app_label, self._meta.model_name), args=[self.pk])
 
     def card_template(self):
@@ -578,8 +571,7 @@ class Survey(QualityControlMixin, UrlsMixin, models.Model):
         return self.duplicate_surveys.exists()
 
     def has_production_duplicates(self):
-        """Whether there are duplicate production surveys.
-        """
+        """Whether there are duplicate production surveys."""
         return (
             Survey.objects.filter(site=self.site, start_time__date=self.start_date, production=True)
             .exclude(pk=self.pk)
@@ -614,9 +606,7 @@ class Survey(QualityControlMixin, UrlsMixin, models.Model):
         survey_pks = [survey.pk for survey in self.duplicate_surveys.all()] + [self.pk]
         all_encounters = Encounter.objects.filter(survey_id__in=survey_pks)
         curator = actor if actor else User.objects.get(pk=1)
-        msg = "Closing {0} duplicate(s) of Survey {1} as {2}.".format(
-            len(survey_pks) - 1, self.pk, curator
-        )
+        msg = "Closing {0} duplicate(s) of Survey {1} as {2}.".format(len(survey_pks) - 1, self.pk, curator)
 
         # All duplicate Surveys shall be closed (not production) and own no Encounters
         for duplicate in self.duplicate_surveys.all():
@@ -634,7 +624,6 @@ class Survey(QualityControlMixin, UrlsMixin, models.Model):
 
         # From all Encounters (if any), adjust Survey duration
         if all_encounters.exists():
-
             # Merge any Encounters on the old survey.
             for encounter in all_encounters:
                 encounter.survey = self
@@ -652,22 +641,14 @@ class Survey(QualityControlMixin, UrlsMixin, models.Model):
             )
             if earliest_enc < self.start_time:
                 msg += " Adjusted Survey start time from {0} to 30 mins before earliest Encounter, {1}.".format(
-                    self.start_time.astimezone(settings.TZ).strftime(
-                        "%Y-%m-%d %H:%M %Z"
-                    ),
-                    earliest_buffered.astimezone(settings.TZ).strftime(
-                        "%Y-%m-%d %H:%M %Z"
-                    ),
+                    self.start_time.astimezone(settings.TZ).strftime("%Y-%m-%d %H:%M %Z"),
+                    earliest_buffered.astimezone(settings.TZ).strftime("%Y-%m-%d %H:%M %Z"),
                 )
                 self.start_time = earliest_buffered
             if latest_enc > self.end_time:
                 msg += " Adjusted Survey end time from {0} to 30 mins after latest Encounter, {1}.".format(
-                    self.end_time.astimezone(settings.TZ).strftime(
-                        "%Y-%m-%d %H:%M %Z"
-                    ),
-                    latest_buffered.astimezone(settings.TZ).strftime(
-                        "%Y-%m-%d %H:%M %Z"
-                    ),
+                    self.end_time.astimezone(settings.TZ).strftime("%Y-%m-%d %H:%M %Z"),
+                    latest_buffered.astimezone(settings.TZ).strftime("%Y-%m-%d %H:%M %Z"),
                 )
                 self.end_time = latest_buffered
 
@@ -685,9 +666,7 @@ class Survey(QualityControlMixin, UrlsMixin, models.Model):
                 e.site = None
                 e.survey = None
                 e.save()
-            msg += " Evicted {0} cuckoo Encounters observed outside the survey site.".format(
-                cuckoo_encounters.count()
-            )
+            msg += " Evicted {0} cuckoo Encounters observed outside the survey site.".format(cuckoo_encounters.count())
 
         # Post-save runs claim_encounters in signals.
         self.save()
@@ -700,15 +679,13 @@ class Survey(QualityControlMixin, UrlsMixin, models.Model):
 
     @property
     def guess_site(self):
-        """Return the first site containing the start_location or None.
-        """
+        """Return the first site containing the start_location or None."""
         candidates = Area.objects.filter(area_type=Area.AREATYPE_SITE, geom__covers=self.start_location)
         return candidates.first() or None
 
     @property
     def guess_area(self):
-        """Return the first locality containing the start_location or None.
-        """
+        """Return the first locality containing the start_location or None."""
         candidates = Area.objects.filter(area_type=Area.AREATYPE_LOCALITY, geom__covers=self.start_location)
         return candidates.first() or None
 
@@ -717,6 +694,7 @@ class SurveyEnd(models.Model):
     """A visit to one site by a team of field workers collecting data.
     TODO: deprecate this model (consolidate into Survey).
     """
+
     source = models.CharField(
         max_length=300,
         verbose_name="Data source",
@@ -794,8 +772,8 @@ class SurveyEnd(models.Model):
 
 
 class SurveyMediaAttachment(LegacySourceMixin, models.Model):
-    """A media attachment to a Survey, e.g. start or end photos.
-    """
+    """A media attachment to a Survey, e.g. start or end photos."""
+
     MEDIA_TYPE_CHOICES = (
         ("data_sheet", "Data sheet"),
         ("communication", "Communication record"),
@@ -851,9 +829,7 @@ class SurveyMediaAttachment(LegacySourceMixin, models.Model):
                 '<a href="{0}" target="_" rel="nofollow" '
                 'title="Click to view full screen in new browser tab">'
                 '<img src="{0}" alt="{1} {2}" style="height:100px;"></img>'
-                "</a>".format(
-                    self.attachment.url, self.get_media_type_display(), self.title
-                )
+                "</a>".format(self.attachment.url, self.get_media_type_display(), self.title)
             )
         else:
             return ""
@@ -887,6 +863,7 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
     Changes to the QA status, as wells as versions of the data are logged to
     preserve the data lineage.
     """
+
     LOCATION_DEFAULT = "1000"
     LOCATION_ACCURACY_CHOICES = (
         ("10", "GPS reading at exact location (10 m)"),
@@ -1165,23 +1142,18 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         # permission=lambda instance, user: user in instance.all_permitted,
         custom=dict(
             verbose="Flag as not trustworthy",
-            explanation=(
-                "This record cannot be true. This record requires"
-                " review by a subject matter expert."
-            ),
+            explanation=("This record cannot be true. This record requires review by a subject matter expert."),
             notify=True,
             url_path="flag/",
             badge="badge-warning",
         ),
     )
     def flag(self, by=None, description=None):
-        """Flag as requiring review by a subject matter expert.
-        """
+        """Flag as requiring review by a subject matter expert."""
         return
 
     def can_reject(self):
-        """Return true if the record can be rejected as entirely wrong.
-        """
+        """Return true if the record can be rejected as entirely wrong."""
         return True
 
     # New|Imported|Manual input|Flagged -> Rejected
@@ -1202,17 +1174,14 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         ),
     )
     def reject(self, by=None, description=None):
-        """Confirm that a record is confirmed wrong and not usable.
-        """
+        """Confirm that a record is confirmed wrong and not usable."""
         return
 
     # Override create and update until we have front end forms
     @classmethod
     def create_url(cls):
         """Create url. Default: app:model-create."""
-        return reverse(
-            "admin:{}_{}_add".format(cls._meta.app_label, cls._meta.model_name)
-        )
+        return reverse("admin:{}_{}_add".format(cls._meta.app_label, cls._meta.model_name))
 
     @property
     def update_url(self):
@@ -1221,8 +1190,7 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
 
     @property
     def absolute_admin_url(self):
-        """Return the absolute admin change URL.
-        """
+        """Return the absolute admin change URL."""
         return reverse("admin:{}_{}_change".format(self._meta.app_label, self._meta.model_name), args=[self.pk])
 
     def get_curate_url(self):
@@ -1278,8 +1246,7 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
         ]
 
     def get_encounter_type(self):
-        """Placeholder function. Subclasses will include logic to set the encounter type.
-        """
+        """Placeholder function. Subclasses will include logic to set the encounter type."""
         return self.encounter_type
 
     @property
@@ -1318,15 +1285,13 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
 
     @property
     def guess_site(self):
-        """Return the first site containing `where`, or None.
-        """
+        """Return the first site containing `where`, or None."""
         candidates = Area.objects.filter(area_type=Area.AREATYPE_SITE, geom__covers=self.where)
         return candidates.first() or None
 
     @property
     def guess_area(self):
-        """Return the first locality containing `where`, or None.
-        """
+        """Return the first locality containing `where`, or None."""
         candidates = Area.objects.filter(area_type=Area.AREATYPE_LOCALITY, geom__covers=self.where)
         return candidates.first() or None
 
@@ -1337,8 +1302,7 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
 
     @property
     def inferred_name(self):
-        """Return the inferred name from related new capture if existing.
-        """
+        """Return the inferred name from related new capture if existing."""
         return None
 
     def set_name_in_related_encounters(self, name):
@@ -1400,9 +1364,7 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
     @property
     def flipper_tags(self):
         """Return a queryset of Flipper and PIT Tag Observations."""
-        return self.observation_set.instance_of(TagObservation).filter(
-            tagobservation__tag_type__in=["flipper-tag", "pit-tag"]
-        )
+        return self.observation_set.instance_of(TagObservation).filter(tagobservation__tag_type__in=["flipper-tag", "pit-tag"])
 
     @property
     def primary_flipper_tag(self):
@@ -1415,9 +1377,7 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
 
         TODO double-check performance
         """
-        return list(
-            set(itertools.chain.from_iterable([e.tags for e in encounter_list]))
-        )
+        return list(set(itertools.chain.from_iterable([e.tags for e in encounter_list])))
 
     @property
     def is_new_capture(self):
@@ -1460,23 +1420,21 @@ class Encounter(PolymorphicModel, UrlsMixin, models.Model):
 
     @property
     def photographs(self):
-        """Return a queryset of all attached photographs.
-        """
+        """Return a queryset of all attached photographs."""
         return MediaAttachment.objects.filter(encounter=self, media_type="photograph")
 
     @property
     def as_html(self):
-        """An HTML representation.
-        """
+        """An HTML representation."""
         t = loader.get_template("popup/{}.html".format(self._meta.model_name))
         return mark_safe(t.render({"original": self}))
 
     def get_survey_candidates(self):
         """Return the queryset of surveys that this encounter might belong to. Rules:
-            - Production survey
-            - Same area (locality)
-            - Survey start time >= 8h before encounter.when
-            - Survey end time <= 8h after encounter.when
+        - Production survey
+        - Same area (locality)
+        - Survey start time >= 8h before encounter.when
+        - Survey end time <= 8h after encounter.when
         """
         if not self.area:
             return Survey.objects.none()
@@ -1505,6 +1463,7 @@ class AnimalEncounter(Encounter):
     * behaviour (free text)
     * habitat (choices)
     """
+
     taxon = models.CharField(
         max_length=300,
         verbose_name="Taxonomic group",
@@ -1761,13 +1720,11 @@ class AnimalEncounter(Encounter):
         return "observations/animalencounter_card.html"
 
     def get_tag_observations(self):
-        """Return a queryset of TagObservations.
-        """
+        """Return a queryset of TagObservations."""
         return self.observation_set.instance_of(TagObservation)
 
     def get_tag_serials(self):
-        """Return a comma-separated list of tag serials observed during this encounter.
-        """
+        """Return a comma-separated list of tag serials observed during this encounter."""
         tag_observations = self.get_tag_observations()
         if tag_observations:
             return ", ".join([tag.name for tag in tag_observations])
@@ -1791,6 +1748,7 @@ class TurtleNestEncounter(Encounter):
     * predated (nest and eggs destroyed by predator)
     * hatched (eggs hatched)
     """
+
     nest_age = models.CharField(
         max_length=300,
         verbose_name="Age",
@@ -1908,9 +1866,7 @@ class TurtleNestEncounter(Encounter):
             return None
 
     def get_absolute_url(self):
-        return reverse(
-            "observations:turtlenestencounter-detail", kwargs={"pk": self.pk}
-        )
+        return reverse("observations:turtlenestencounter-detail", kwargs={"pk": self.pk})
 
     def get_curate_url(self):
         return reverse("observations:turtlenestencounter-curate", kwargs={"pk": self.pk})
@@ -2000,8 +1956,7 @@ class Observation(PolymorphicModel, LegacySourceMixin, models.Model):
 
     @property
     def absolute_admin_url(self):
-        """Return the absolute admin change URL.
-        """
+        """Return the absolute admin change URL."""
         return reverse("admin:{}_{}_change".format(self._meta.app_label, self._meta.model_name), args=[self.pk])
 
     def can_change(self):
@@ -2018,8 +1973,8 @@ class Observation(PolymorphicModel, LegacySourceMixin, models.Model):
 
 
 class MediaAttachment(Observation):
-    """A media attachment to an Encounter.
-    """
+    """A media attachment to an Encounter."""
+
     MEDIA_TYPE_CHOICES = (
         ("data_sheet", "Data sheet"),
         ("communication", "Communication record"),
@@ -2069,9 +2024,7 @@ class MediaAttachment(Observation):
                 '<a href="{0}" target="_" rel="nofollow" '
                 'title="Click to view full screen in new browser tab">'
                 '<img src="{0}" alt="{1} {2}" style="height:100px;"></img>'
-                "</a>".format(
-                    self.attachment.url, self.get_media_type_display(), self.title
-                )
+                "</a>".format(self.attachment.url, self.get_media_type_display(), self.title)
             )
         else:
             return ""
@@ -2121,6 +2074,7 @@ class TagObservation(Observation):
     shared tag names. The earliest associated flipper tag name is used as the
     animal's name, and transferred onto all related TagObservations.
     """
+
     tag_type = models.CharField(
         max_length=300,
         choices=lookups.TAG_TYPE_CHOICES,
@@ -2187,24 +2141,16 @@ class TagObservation(Observation):
 
     @classmethod
     def encounter_histories(cls, tagname_list, without=[]):
-        """Return the related encounters of all tag names.
-        """
+        """Return the related encounters of all tag names."""
         return [
             encounter
-            for encounter in list(
-                set(
-                    itertools.chain.from_iterable(
-                        [TagObservation.encounter_history(t.name) for t in tagname_list]
-                    )
-                )
-            )
+            for encounter in list(set(itertools.chain.from_iterable([TagObservation.encounter_history(t.name) for t in tagname_list])))
             if encounter not in without
         ]
 
     @property
     def is_new(self):
-        """Return whether the TagObservation is the first association with the animal.
-        """
+        """Return whether the TagObservation is the first association with the animal."""
         return self.status == lookups.TAG_STATUS_APPLIED_NEW
 
     @property
@@ -2237,6 +2183,7 @@ class NestTagObservation(Observation):
 
     E.g.: WA1234_2017-12-31_M1
     """
+
     status = models.CharField(
         max_length=300,
         verbose_name="Tag status",
@@ -2285,9 +2232,7 @@ class NestTagObservation(Observation):
         """Return the nest tag name according to the naming scheme."""
         return "_".join(
             [
-                ("" if not self.flipper_tag_id else self.flipper_tag_id)
-                .upper()
-                .replace(" ", ""),
+                ("" if not self.flipper_tag_id else self.flipper_tag_id).upper().replace(" ", ""),
                 "" if not self.date_nest_laid else str(self.date_nest_laid),
                 "" if not self.tag_label else self.tag_label.upper().replace(" ", ""),
             ]
@@ -2317,8 +2262,8 @@ class ManagementAction(Observation):
 
 
 class TurtleMorphometricObservation(Observation):
-    """Morphometric measurements of a turtle.
-    """
+    """Morphometric measurements of a turtle."""
+
     curved_carapace_length_mm = models.PositiveIntegerField(
         verbose_name="Curved carapace length max (mm)",
         blank=True,
@@ -2502,8 +2447,8 @@ class TurtleMorphometricObservation(Observation):
 
 
 class HatchlingMorphometricObservation(Observation):
-    """Morphometric measurements of a hatchling at a TurtleNestEncounter.
-    """
+    """Morphometric measurements of a hatchling at a TurtleNestEncounter."""
+
     straight_carapace_length_mm = models.PositiveIntegerField(
         blank=True,
         null=True,
@@ -2528,8 +2473,8 @@ class HatchlingMorphometricObservation(Observation):
 
 
 class TurtleDamageObservation(Observation):
-    """Observations of turtle damage or injuries.
-    """
+    """Observations of turtle damage or injuries."""
+
     body_part = models.CharField(
         max_length=300,
         default="whole-turtle",
@@ -2576,6 +2521,7 @@ class TurtleNestObservation(Observation):
     Research and Management Techniques for the Conservation of Sea Turtles,
     IUCN Marine Turtle Specialist Group, 1999.
     """
+
     eggs_laid = models.BooleanField(
         verbose_name="Did the turtle lay eggs?",
         default=False,
@@ -2608,7 +2554,7 @@ class TurtleNestObservation(Observation):
         verbose_name="Dead hatchlings (D)",
         blank=True,
         null=True,
-        help_text="The number of dead hatchlings that have left" " their shells.",
+        help_text="The number of dead hatchlings that have left their shells.",
     )
     no_undeveloped_eggs = models.PositiveIntegerField(
         verbose_name="Undeveloped eggs (UD)",
@@ -2682,11 +2628,7 @@ class TurtleNestObservation(Observation):
     @property
     def no_emerged(self):
         """The number of hatchlings leaving or departed from nest is S-(L+D)."""
-        return (
-            (self.no_egg_shells or 0)
-            - (self.no_live_hatchlings or 0)
-            - (self.no_dead_hatchlings or 0)
-        )
+        return (self.no_egg_shells or 0) - (self.no_live_hatchlings or 0) - (self.no_dead_hatchlings or 0)
 
     @property
     def egg_count_calculated(self):
@@ -2736,11 +2678,7 @@ class TurtleNestObservation(Observation):
         else:
             return round(
                 100
-                * (
-                    (self.no_egg_shells or 0)
-                    - (self.no_live_hatchlings or 0)
-                    - (self.no_dead_hatchlings or 0)
-                )
+                * ((self.no_egg_shells or 0) - (self.no_live_hatchlings or 0) - (self.no_dead_hatchlings or 0))
                 / self.egg_count_calculated,
                 1,
             )
@@ -2803,6 +2741,7 @@ class TurtleTrackObservation(Observation):
     """Observation measurements for measurements of the track of a (normally) unidentified
     turtle species.
     """
+
     max_track_width_front = models.PositiveIntegerField(
         blank=True,
         null=True,
@@ -2846,6 +2785,7 @@ class TurtleHatchlingEmergenceObservation(Observation):
     * Outliers present (if yes: TurtleHatchlingEmergenceOutlierObservation)
     * Light sources known and present (if yes: LightSourceObservation).
     """
+
     bearing_to_water_degrees = models.FloatField(
         verbose_name="Bearing to water",
         blank=True,
@@ -2948,8 +2888,8 @@ class TurtleHatchlingEmergenceObservation(Observation):
 
 
 class LightSourceObservation(Observation):
-    """The observation of a light source during the emergence of hatchlings from a turtle nest.
-    """
+    """The observation of a light source during the emergence of hatchlings from a turtle nest."""
+
     bearing_light_degrees = models.FloatField(
         verbose_name="Bearing",
         blank=True,
@@ -2981,8 +2921,8 @@ class LightSourceObservation(Observation):
 
 
 class TurtleHatchlingEmergenceOutlierObservation(Observation):
-    """The observation of a hatchling emergence track outlier.
-    """
+    """The observation of a hatchling emergence track outlier."""
+
     bearing_outlier_track_degrees = models.FloatField(
         verbose_name="Bearing",
         blank=True,
@@ -3006,8 +2946,8 @@ class TurtleHatchlingEmergenceOutlierObservation(Observation):
 
 
 class LoggerObservation(Observation):
-    """A logger is observed during an Encounter.
-    """
+    """A logger is observed during an Encounter."""
+
     LOGGER_TYPE_DEFAULT = "temperature-logger"
     LOGGER_TYPE_CHOICES = (
         (LOGGER_TYPE_DEFAULT, "Temperature Logger"),
@@ -3061,8 +3001,8 @@ class LoggerObservation(Observation):
 
 
 class TissueSampleObservation(Observation):
-    """A tissue sample extracted from an animal during an AnimalEncounter.
-    """
+    """A tissue sample extracted from an animal during an AnimalEncounter."""
+
     sample_type = models.CharField(
         max_length=128,
         default=lookups.TISSUE_SAMPLE_TYPE_DEFAULT,
@@ -3174,8 +3114,8 @@ class LineTransectEncounter(Encounter):
 
 
 class TrackTallyObservation(Observation):
-    """Observation of turtle track tallies and signs of predation.
-    """
+    """Observation of turtle track tallies and signs of predation."""
+
     species = models.CharField(
         max_length=300,
         choices=lookups.TURTLE_SPECIES_CHOICES,
@@ -3210,8 +3150,8 @@ class TrackTallyObservation(Observation):
 
 
 class TurtleNestDisturbanceTallyObservation(Observation):
-    """Observation of turtle track tallies and signs of predation.
-    """
+    """Observation of turtle track tallies and signs of predation."""
+
     species = models.CharField(
         max_length=300,
         choices=lookups.TURTLE_SPECIES_CHOICES,
@@ -3247,8 +3187,7 @@ class TurtleNestDisturbanceTallyObservation(Observation):
 
 
 class DisturbanceObservation(Observation):
-    """Disturbance/predator observation, unrelated to a turtle nest.
-    """
+    """Disturbance/predator observation, unrelated to a turtle nest."""
 
     disturbance_cause = models.CharField(
         max_length=300,

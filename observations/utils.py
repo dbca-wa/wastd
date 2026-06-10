@@ -49,9 +49,7 @@ def reconstruct_missing_surveys(buffer_mins=30):
         values=["datetime", "reporter"],
         aggfunc={"datetime": [min, max], "reporter": "first"},
     )
-    LOGGER.info(
-        "Creating {} missing surveys...".format(len(missing_surveys))
-    )
+    LOGGER.info("Creating {} missing surveys...".format(len(missing_surveys)))
 
     buffer = timedelta(minutes=buffer_mins)
     for idx, row in missing_surveys.iterrows():

@@ -3,7 +3,6 @@ from django_select2.forms import ModelSelect2Widget, ModelSelect2MultipleWidget
 
 
 class UserWidget(ModelSelect2Widget):
-
     queryset = get_user_model().objects.filter(is_active=True)
     search_fields = [
         "pk__icontains",
@@ -17,7 +16,6 @@ class UserWidget(ModelSelect2Widget):
 
 
 class UserMultipleWidget(ModelSelect2MultipleWidget):
-
     queryset = get_user_model().objects.filter(is_active=True)
     search_fields = [
         "pk__icontains",

@@ -17,9 +17,10 @@ class UserListResource(ListResourceView):
     def get_queryset(self):
         queryset = super().get_queryset()
         # General-purpose filtering uses the `q` request parameter.
-        if 'q' in self.request.GET and self.request.GET['q']:
+        if "q" in self.request.GET and self.request.GET["q"]:
             from .admin import UserAdmin
-            q = search_filter(UserAdmin.search_fields, self.request.GET['q'])
+
+            q = search_filter(UserAdmin.search_fields, self.request.GET["q"])
             queryset = queryset.filter(q).distinct()
         return queryset
 

@@ -1,86 +1,73 @@
+import json
+
 from django import forms
 from django.contrib import messages
+from django.contrib.admin import ModelAdmin, StackedInline, TabularInline, register
+from django.contrib.admin.filters import DateFieldListFilter, RelatedFieldListFilter, SimpleListFilter
 from django.contrib.auth import get_user_model
-from django.contrib.admin import (
-    register,
-    ModelAdmin,
-    TabularInline,
-    StackedInline,
-)
-from django.contrib.gis.admin import OSMGeoAdmin
-from django.contrib.admin.filters import (
-    RelatedFieldListFilter,
-    SimpleListFilter,
-    DateFieldListFilter,
-)
+from django.contrib.gis.admin import GISModelAdmin
+from django.contrib.gis.geos import GEOSGeometry
+from django.shortcuts import redirect, render
+from django.urls import path, reverse
 from django.utils.safestring import mark_safe
-from django.urls import reverse
 from django_select2.forms import ModelSelect2Widget
 from easy_select2 import select2_modelform as s2form
 from fsm_admin.mixins import FSMTransitionMixin
 from import_export.admin import ExportActionMixin
 from reversion.admin import VersionAdmin
 
-from django.urls import path
-from django.shortcuts import render, redirect
-import json
-from django.contrib.gis.geos import GEOSGeometry, Polygon, MultiPolygon
-
-from wastd.utils import FORMFIELD_OVERRIDES, S2ATTRS, CustomStateLogInline
 from users.widgets import UserWidget
+from wastd.utils import FORMFIELD_OVERRIDES, S2ATTRS, CustomStateLogInline
+
 from .models import (
-    Campaign,
     AnimalEncounter,
     Area,
+    Campaign,
+    DisturbanceObservation,
     Encounter,
     HatchlingMorphometricObservation,
+    LightSourceObservation,
     LineTransectEncounter,
+    LoggerObservation,
     ManagementAction,
     MediaAttachment,
     NestTagObservation,
     Survey,
     SurveyMediaAttachment,
     TagObservation,
+    TissueSampleObservation,
     TrackTallyObservation,
     TurtleDamageObservation,
+    TurtleHatchlingEmergenceObservation,
+    TurtleHatchlingEmergenceOutlierObservation,
     TurtleMorphometricObservation,
     TurtleNestDisturbanceObservation,
     TurtleNestDisturbanceTallyObservation,
     TurtleNestEncounter,
     TurtleNestObservation,
     TurtleTrackObservation,
-    TurtleHatchlingEmergenceObservation,
-    TurtleHatchlingEmergenceOutlierObservation,
-    LightSourceObservation,
-    LoggerObservation,
-    TissueSampleObservation,
-    DisturbanceObservation,
 )
 from .resources import (
-    SurveyResource,
     AnimalEncounterResource,
-    TurtleNestEncounterResource,
-    LineTransectEncounterResource,
-    TurtleNestDisturbanceObservationResource,
-    TurtleTrackObservationResource,
     DisturbanceObservationResource,
+    LineTransectEncounterResource,
+    SurveyResource,
+    TurtleNestDisturbanceObservationResource,
+    TurtleNestEncounterResource,
+    TurtleTrackObservationResource,
 )
 
 
 class AreaFilter(RelatedFieldListFilter):
     def field_choices(self, field, request, model_admin):
         ordering = self.field_admin_ordering(field, request, model_admin)
-        return field.get_choices(
-            include_blank=False, limit_choices_to={"area_type": Area.AREATYPE_LOCALITY}, ordering=ordering
-        )
+        return field.get_choices(include_blank=False, limit_choices_to={"area_type": Area.AREATYPE_LOCALITY}, ordering=ordering)
 
 
 class SiteFilter(RelatedFieldListFilter):
     def field_choices(self, field, request, model_admin):
         ordering = self.field_admin_ordering(field, request, model_admin)
-        return field.get_choices(
-            include_blank=False, limit_choices_to={"area_type": Area.AREATYPE_SITE}, ordering=ordering
-        )
+        return field.get_choices(include_blank=False, limit_choices_to={"area_type": Area.AREATYPE_SITE}, ordering=ordering)
 
 
 class MediaAttachmentInline(TabularInline):
@@ -214,7 +201,6 @@ class SurveyMediaAttachmentInline(TabularInline):
 
 
 class ObservationAdminMixin(VersionAdmin, ModelAdmin):
-
     save_on_top = True
     date_hierarchy = "encounter__when"
     LIST_FIRST = (
@@ -256,16 +242,14 @@ class ObservationAdminMixin(VersionAdmin, ModelAdmin):
     formfield_overrides = FORMFIELD_OVERRIDES
 
     def has_change_permission(self, request, obj=None):
-        """Basic authorisation model: only staff can update/change these objects.
-        """
+        """Basic authorisation model: only staff can update/change these objects."""
         if request.user.is_staff:
             return True
         else:
             return False
 
     def has_delete_permission(self, request, obj=None):
-        """Basic authorisation model: only superusers can delete these objects.
-        """
+        """Basic authorisation model: only superusers can delete these objects."""
         if request.user.is_superuser:
             return True
         else:
@@ -302,11 +286,7 @@ class ObservationAdminMixin(VersionAdmin, ModelAdmin):
     date.short_description = "Date"
 
     def encounter_link(self, obj):
-        return mark_safe(
-            '<a href="{0}">{1}</a>'.format(
-                obj.encounter.absolute_admin_url, obj.encounter.__str__()
-            )
-        )
+        return mark_safe('<a href="{0}">{1}</a>'.format(obj.encounter.absolute_admin_url, obj.encounter.__str__()))
 
     encounter_link.short_description = "Encounter"
     encounter_link.allow_tags = True
@@ -319,7 +299,6 @@ class ObservationAdminMixin(VersionAdmin, ModelAdmin):
 
 @register(ManagementAction)
 class ManagementActionAdmin(ObservationAdminMixin):
-
     list_display = (
         ObservationAdminMixin.LIST_FIRST
         + (
@@ -351,7 +330,6 @@ class ManagementActionAdmin(ObservationAdminMixin):
 
 @register(MediaAttachment)
 class MediaAttachmentAdmin(ObservationAdminMixin):
-
     list_display = (
         ObservationAdminMixin.LIST_FIRST
         + (
@@ -387,7 +365,6 @@ class MediaAttachmentAdmin(ObservationAdminMixin):
 
 @register(TurtleMorphometricObservation)
 class TurtleMorphometricObservationAdmin(ObservationAdminMixin):
-
     list_display = (
         ObservationAdminMixin.LIST_FIRST
         + (
@@ -431,7 +408,6 @@ class TurtleMorphometricObservationAdmin(ObservationAdminMixin):
 
 @register(TagObservation)
 class TagObservationAdmin(ObservationAdminMixin):
-
     list_display = (
         ObservationAdminMixin.LIST_FIRST
         + (
@@ -466,7 +442,6 @@ class TagObservationAdmin(ObservationAdminMixin):
 
 @register(TurtleDamageObservation)
 class TurtleDamageObservationAdmin(ObservationAdminMixin):
-
     list_display = (
         ObservationAdminMixin.LIST_FIRST
         + (
@@ -528,7 +503,6 @@ class TurtleTrackObservationAdmin(ExportActionMixin, ObservationAdminMixin):
 
 @register(TurtleNestDisturbanceObservation)
 class TurtleNestDisturbanceObservationAdmin(ExportActionMixin, ObservationAdminMixin):
-
     list_display = (
         ObservationAdminMixin.LIST_FIRST
         + (
@@ -562,7 +536,6 @@ class TurtleNestDisturbanceObservationAdmin(ExportActionMixin, ObservationAdminM
 
 @register(DisturbanceObservation)
 class DisturbanceObservationAdmin(ExportActionMixin, ObservationAdminMixin):
-
     list_display = (
         ObservationAdminMixin.LIST_FIRST
         + (
@@ -594,7 +567,6 @@ class DisturbanceObservationAdmin(ExportActionMixin, ObservationAdminMixin):
 
 @register(TurtleNestObservation)
 class TurtleNestObservationAdmin(ObservationAdminMixin):
-
     list_display = (
         ObservationAdminMixin.LIST_FIRST
         + (
@@ -634,7 +606,6 @@ class TurtleNestObservationAdmin(ObservationAdminMixin):
 
 @register(NestTagObservation)
 class NestTagObservationAdmin(ObservationAdminMixin):
-
     list_display = (
         ObservationAdminMixin.LIST_FIRST
         + (
@@ -673,7 +644,6 @@ class NestTagObservationAdmin(ObservationAdminMixin):
 
 @register(HatchlingMorphometricObservation)
 class HatchlingMorphometricObservationAdmin(ObservationAdminMixin):
-
     list_display = (
         ObservationAdminMixin.LIST_FIRST
         + ("straight_carapace_length_mm", "straight_carapace_width_mm", "body_weight_g")
@@ -698,7 +668,6 @@ class HatchlingMorphometricObservationAdmin(ObservationAdminMixin):
 
 @register(TurtleHatchlingEmergenceObservation)
 class TurtleHatchlingEmergenceObservationAdmin(ObservationAdminMixin):
-
     list_display = (
         ObservationAdminMixin.LIST_FIRST
         + (
@@ -738,7 +707,6 @@ class TurtleHatchlingEmergenceObservationAdmin(ObservationAdminMixin):
 
 @register(TurtleHatchlingEmergenceOutlierObservation)
 class TurtleHatchlingEmergenceOutlierObservationAdmin(ObservationAdminMixin):
-
     list_display = (
         ObservationAdminMixin.LIST_FIRST
         + (
@@ -767,7 +735,6 @@ class TurtleHatchlingEmergenceOutlierObservationAdmin(ObservationAdminMixin):
 
 @register(LightSourceObservation)
 class LightSourceObservationAdmin(ObservationAdminMixin):
-
     list_display = (
         ObservationAdminMixin.LIST_FIRST
         + (
@@ -796,7 +763,6 @@ class LightSourceObservationAdmin(ObservationAdminMixin):
 
 @register(TrackTallyObservation)
 class TrackTallyObservationAdmin(ObservationAdminMixin):
-
     list_display = (
         ObservationAdminMixin.LIST_FIRST
         + (
@@ -830,7 +796,6 @@ class TrackTallyObservationAdmin(ObservationAdminMixin):
 
 @register(TurtleNestDisturbanceTallyObservation)
 class TurtleNestDisturbanceTallyObservationAdmin(ObservationAdminMixin):
-
     list_display = (
         ObservationAdminMixin.LIST_FIRST
         + (
@@ -864,12 +829,7 @@ class TurtleNestDisturbanceTallyObservationAdmin(ObservationAdminMixin):
 
 @register(LoggerObservation)
 class LoggerObservationAdmin(ObservationAdminMixin):
-
-    list_display = (
-        ObservationAdminMixin.LIST_FIRST
-        + ("logger_type", "deployment_status", "logger_id")
-        + ObservationAdminMixin.LIST_LAST
-    )
+    list_display = ObservationAdminMixin.LIST_FIRST + ("logger_type", "deployment_status", "logger_id") + ObservationAdminMixin.LIST_LAST
     list_filter = ObservationAdminMixin.LIST_FILTER + (
         "logger_type",
         "deployment_status",
@@ -895,15 +855,8 @@ class LoggerObservationAdmin(ObservationAdminMixin):
 
 @register(TissueSampleObservation)
 class TissueSampleObservationAdmin(ObservationAdminMixin):
-
-    list_display = (
-        ObservationAdminMixin.LIST_FIRST
-        + ("sample_type", "serial")
-        + ObservationAdminMixin.LIST_LAST
-    )
-    list_filter = ObservationAdminMixin.LIST_FILTER + (
-        "sample_type",
-    )
+    list_display = ObservationAdminMixin.LIST_FIRST + ("sample_type", "serial") + ObservationAdminMixin.LIST_LAST
+    list_filter = ObservationAdminMixin.LIST_FILTER + ("sample_type",)
     search_fields = (
         "serial",
         "description",
@@ -925,7 +878,6 @@ class TissueSampleObservationAdmin(ObservationAdminMixin):
 
 @register(Survey)
 class SurveyAdmin(ExportActionMixin, FSMTransitionMixin, VersionAdmin):
-
     date_hierarchy = "start_time"
     list_select_related = (
         "area",
@@ -1037,16 +989,14 @@ class SurveyAdmin(ExportActionMixin, FSMTransitionMixin, VersionAdmin):
     ]
 
     def has_change_permission(self, request, obj=None):
-        """Basic authorisation model: only staff can update/change these objects.
-        """
+        """Basic authorisation model: only staff can update/change these objects."""
         if request.user.is_staff:
             return True
         else:
             return False
 
     def has_delete_permission(self, request, obj=None):
-        """Basic authorisation model: only superusers can delete these objects.
-        """
+        """Basic authorisation model: only superusers can delete these objects."""
         if request.user.is_superuser:
             return True
         else:
@@ -1074,24 +1024,27 @@ class SurveyAdmin(ExportActionMixin, FSMTransitionMixin, VersionAdmin):
 class AreaGeoJSONImportForm(forms.Form):
     file = forms.FileField(help_text="Only support GeoJSON (.geojson/.json)")
     update_on_duplicate = forms.BooleanField(
-        required=False, initial=False,
-        help_text="If (area_type + name) already exists, update, otherwise skip" 
+        required=False, initial=False, help_text="If (area_type + name) already exists, update, otherwise skip"
     )
     default_area_type = forms.ChoiceField(
-        required=False, choices=Area.AREATYPE_CHOICES,
+        required=False,
+        choices=Area.AREATYPE_CHOICES,
         help_text="If GeoJSON property has no type field, use this type (can be left empty)",
     )
     name_field = forms.CharField(
-        required=False, initial="name",
+        required=False,
+        initial="name",
         help_text="Field name in property as name (default name)",
     )
     type_field = forms.CharField(
-        required=False, initial="type",
+        required=False,
+        initial="type",
         help_text="Field name in property as area_type (default type)",
     )
-@register(Area)
-class AreaAdmin(OSMGeoAdmin):
 
+
+@register(Area)
+class AreaAdmin(GISModelAdmin):
     list_display = (
         "name",
         "area_type",
@@ -1120,24 +1073,21 @@ class AreaAdmin(OSMGeoAdmin):
     default_lat = -3700000  # meters
 
     def has_add_permission(self, request):
-        """Basic authorisation model: only superusers can create these objects.
-        """
+        """Basic authorisation model: only superusers can create these objects."""
         if request.user.is_superuser:
             return True
         else:
             return False
 
     def has_change_permission(self, request, obj=None):
-        """Basic authorisation model: only superusers can update/change these objects.
-        """
+        """Basic authorisation model: only superusers can update/change these objects."""
         if request.user.is_superuser:
             return True
         else:
             return False
 
     def has_delete_permission(self, request, obj=None):
-        """Basic authorisation model: only superusers can delete these objects.
-        """
+        """Basic authorisation model: only superusers can delete these objects."""
         if request.user.is_superuser:
             return True
         else:
@@ -1146,11 +1096,9 @@ class AreaAdmin(OSMGeoAdmin):
     def get_urls(self):
         urls = super().get_urls()
         geojson_urls = [
-            path("import-geojson/", self.admin_site.admin_view(self.import_geojson_view),
-                name="observations_area_import_geojson"),
+            path("import-geojson/", self.admin_site.admin_view(self.import_geojson_view), name="observations_area_import_geojson"),
         ]
         return geojson_urls + urls
-
 
     def import_geojson_view(self, request):
         if not request.user.is_superuser:
@@ -1260,12 +1208,12 @@ class AreaAdmin(OSMGeoAdmin):
             opts=self.model._meta,
         )
         return render(request, "admin/observations/area/import_geojson.html", context)
-    
+
     change_form_template = "admin/observations/area/change_form.html"
+
 
 @register(Campaign)
 class CampaignAdmin(ModelAdmin):
-
     list_display = (
         "destination",
         "start_time",
@@ -1313,24 +1261,21 @@ class CampaignAdmin(ModelAdmin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def has_add_permission(self, request):
-        """Basic authorisation model: only superusers can create these objects.
-        """
+        """Basic authorisation model: only superusers can create these objects."""
         if request.user.is_superuser:
             return True
         else:
             return False
 
     def has_change_permission(self, request, obj=None):
-        """Basic authorisation model: only superusers can update/change these objects.
-        """
+        """Basic authorisation model: only superusers can update/change these objects."""
         if request.user.is_superuser:
             return True
         else:
             return False
 
     def has_delete_permission(self, request, obj=None):
-        """Basic authorisation model: only superusers can delete these objects.
-        """
+        """Basic authorisation model: only superusers can delete these objects."""
         if request.user.is_superuser:
             return True
         else:
@@ -1342,9 +1287,10 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
     """Admin for Encounter with inlines for all Observations.
     This admin can be extended by other Encounter Admin classes.
     """
+
     class QAStatusFilter(SimpleListFilter):
-        title = 'QA status'
-        parameter_name = 'qa_status'
+        title = "QA status"
+        parameter_name = "qa_status"
 
         def lookups(self, request, model_admin):
             return (
@@ -1362,7 +1308,7 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
 
     date_hierarchy = "when"
     list_filter = (
-        #"campaign__owner",
+        # "campaign__owner",
         ("area", AreaFilter),
         ("site", SiteFilter),
         QAStatusFilter,
@@ -1456,35 +1402,26 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
     ]
 
     def has_change_permission(self, request, obj=None):
-        """Basic authorisation model: only staff can update/change these objects.
-        """
+        """Basic authorisation model: only staff can update/change these objects."""
         if request.user.is_staff:
             return True
         else:
             return False
 
     def has_delete_permission(self, request, obj=None):
-        """Basic authorisation model: only superusers can delete these objects.
-        """
+        """Basic authorisation model: only superusers can delete these objects."""
         if request.user.is_superuser:
             return True
         else:
             return False
 
     def get_queryset(self, request):
-        return (
-            super()
-            .get_queryset(request)
-            .prefetch_related(
-                "observer", "reporter", "area", "site", "campaign"
-            )
-        )
+        return super().get_queryset(request).prefetch_related("observer", "reporter", "area", "site", "campaign")
 
     def name_link(self, obj):
         """List other encounters with the same subject."""
         return mark_safe(
-            '<a href="{0}?name={1}" target="_" rel="nofollow" '
-            'title="List all encounters with the same subject">{1}</a>'.format(
+            '<a href="{0}?name={1}" target="_" rel="nofollow" title="List all encounters with the same subject">{1}</a>'.format(
                 reverse("admin:observations_encounter_changelist"), obj.name
             )
         )
@@ -1540,36 +1477,33 @@ class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
 
 
 def curate_encounter(modeladmin, request, queryset):
-    """A custom action to allow record status to be marked as curated.
-    """
+    """A custom action to allow record status to be marked as curated."""
     for obj in queryset:
         obj.curate(by=request.user, description="Curated record as trustworthy")
         obj.save()
-    messages.success(request, f"Curated selected encounter(s) as trustworthy")
+    messages.success(request, "Curated selected encounter(s) as trustworthy")
 
 
 curate_encounter.short_description = "Curate selected encounter records as trustworthy"
 
 
 def flag_encounter(modeladmin, request, queryset):
-    """A custom action to allow record status to be marked as flagged.
-    """
+    """A custom action to allow record status to be marked as flagged."""
     for obj in queryset:
         obj.flag(by=request.user, description="Flagged record as untrustworthy")
         obj.save()
-    messages.warning(request, f"Flagged selected encounter(s) as untrustworthy")
+    messages.warning(request, "Flagged selected encounter(s) as untrustworthy")
 
 
 flag_encounter.short_description = "Flag selected encounter records as untrustworthy"
 
 
 def reject_encounter(modeladmin, request, queryset):
-    """A custom action to allow record status to be marked as rejected.
-    """
+    """A custom action to allow record status to be marked as rejected."""
     for obj in queryset:
         obj.reject(by=request.user, description="Reject record as unusable")
         obj.save()
-    messages.warning(request, f"Rejected selected encounter(s) as unusable")
+    messages.warning(request, "Rejected selected encounter(s) as unusable")
 
 
 reject_encounter.short_description = "Reject selected encounter records as unusable"
@@ -1752,10 +1686,9 @@ class AnimalEncounterAdmin(ExportActionMixin, EncounterAdmin):
 
 @register(TurtleNestEncounter)
 class TurtleNestEncounterAdmin(ExportActionMixin, EncounterAdmin):
-
     class TurtleNestEncounterTypeFilter(SimpleListFilter):
-        title = 'Encounter type'
-        parameter_name = 'encounter_type'
+        title = "Encounter type"
+        parameter_name = "encounter_type"
 
         def lookups(self, request, model_admin):
             return (
@@ -1783,14 +1716,14 @@ class TurtleNestEncounterAdmin(ExportActionMixin, EncounterAdmin):
     )
     list_select_related = True
     list_filter = (
-        ('when', DateFieldListFilter),
+        ("when", DateFieldListFilter),
         "campaign__owner",
         ("area", AreaFilter),
         ("site", SiteFilter),
         EncounterAdmin.QAStatusFilter,
         "observer",
         "reporter",
-        #"location_accuracy",
+        # "location_accuracy",
         TurtleNestEncounterTypeFilter,
         "source",
         "nest_age",
@@ -1864,7 +1797,6 @@ class TurtleNestEncounterAdmin(ExportActionMixin, EncounterAdmin):
 
 @register(LineTransectEncounter)
 class LineTransectEncounterAdmin(ExportActionMixin, EncounterAdmin):
-
     form = s2form(LineTransectEncounter, attrs=S2ATTRS)
     list_display = EncounterAdmin.FIRST_COLS + ("transect",) + EncounterAdmin.LAST_COLS
     list_select_related = (
