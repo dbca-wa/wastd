@@ -205,8 +205,13 @@ jobs:
           images: ${{ env.GHCR_IMAGE }}
           annotations: |
             type=org.opencontainers.image.description,value=${{ github.event.repository.description || 'No description provided' }}
+          # Image tags
+          # latest → default branch (main)
+          # dev → dev branch
+          # Semantic versions from Git tags (v1.2.3)
           tags: |
-            type=raw,value=latest,enable=${{ github.ref_name == 'main' }}
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=dev,event=branch,branch=dev
             type=semver,pattern={{version}}
 
       - name: Set up Docker Buildx
