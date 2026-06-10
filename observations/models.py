@@ -14,7 +14,11 @@ event (e.g. one encounter with a nesting turtle might result in observations abo
 the turtle's morphometrics, physical damage, and nesting success).
 """
 
+import itertools
+import logging
+import urllib
 from datetime import timedelta
+
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.contrib.gis.db import models
@@ -25,14 +29,12 @@ from django.utils.safestring import mark_safe
 from django_fsm import FSMField, transition
 from django_fsm_log.decorators import fsm_log_by, fsm_log_description
 from django_fsm_log.models import StateLog
-import itertools
-import logging
 from polymorphic.models import PolymorphicModel
 from slugify import slugify
-import urllib
 
+from users.models import Organisation, User
 from wastd.utils import LegacySourceMixin, QualityControlMixin, UrlsMixin
-from users.models import User, Organisation
+
 from . import lookups
 
 LOGGER = logging.getLogger("turtles")

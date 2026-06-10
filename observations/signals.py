@@ -1,20 +1,21 @@
-from django.db.models.signals import post_save, pre_delete, pre_save
-from django.dispatch import receiver
 import logging
 
+from django.db.models.signals import post_save, pre_delete, pre_save
+from django.dispatch import receiver
+
 from wastd.utils import sanitize_tag_label
+
 from .models import (
-    Campaign,
-    Survey,
-    Encounter,
     AnimalEncounter,
-    TurtleNestEncounter,
+    Campaign,
+    Encounter,
     LineTransectEncounter,
-    TagObservation,
     NestTagObservation,
+    Survey,
+    TagObservation,
+    TurtleNestEncounter,
 )
 from .utils import claim_encounters
-
 
 LOGGER = logging.getLogger("turtles")
 
@@ -68,7 +69,7 @@ def encounter_pre_save(sender, instance, *args, **kwargs):
     if not instance.source_id:
         instance.source_id = instance.short_name
     # This is slow, use set_name() instead in bulk
-    if not instance.name and instance.inferred_name:
+    if not instance.name and instance.pk and instance.inferred_name:
         instance.name = instance.inferred_name
     if not instance.site:
         instance.site = instance.guess_site

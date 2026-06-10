@@ -1,22 +1,23 @@
+from uuid import uuid4
+
 from django.contrib.auth import get_user_model
-from django.contrib.gis.geos import GEOSGeometry
+from django.contrib.gis.geos import Point
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
-from uuid import uuid4
 
 from observations.models import (
-    Encounter,
     AnimalEncounter,
+    Encounter,
+    HatchlingMorphometricObservation,
+    LightSourceObservation,
+    LoggerObservation,
+    NestTagObservation,
+    TurtleHatchlingEmergenceObservation,
+    TurtleHatchlingEmergenceOutlierObservation,
+    TurtleNestDisturbanceObservation,
     TurtleNestEncounter,
     TurtleNestObservation,
-    TurtleHatchlingEmergenceObservation,
-    NestTagObservation,
-    TurtleNestDisturbanceObservation,
-    LoggerObservation,
-    HatchlingMorphometricObservation,
-    TurtleHatchlingEmergenceOutlierObservation,
-    LightSourceObservation,
 )
 
 
@@ -45,14 +46,15 @@ class ViewsTestCase(TestCase):
         )
         self.user.save()
         self.enc = Encounter.objects.create(
-            where=GEOSGeometry("POINT (115 -32)", srid=4326),
+            where=Point((115, -32)),
             when=timezone.now(),
             source_id=uuid4(),
             observer=self.staff,
             reporter=self.user,
         )
+        self.enc.save()
         self.stranding = AnimalEncounter.objects.create(
-            where=GEOSGeometry("POINT (115 -32)", srid=4326),
+            where=Point((115, -32)),
             when=timezone.now(),
             source_id=uuid4(),
             observer=self.staff,
@@ -60,7 +62,7 @@ class ViewsTestCase(TestCase):
             species="cheloniidae-fam",
         )
         self.nest = TurtleNestEncounter.objects.create(
-            where=GEOSGeometry("POINT (115 -32)", srid=4326),
+            where=Point((115, -32)),
             when=timezone.now(),
             observer=self.staff,
             reporter=self.user,
@@ -68,7 +70,7 @@ class ViewsTestCase(TestCase):
             nest_type="nest",
         )
         self.track = TurtleNestEncounter.objects.create(
-            where=GEOSGeometry("POINT (115 -32)", srid=4326),
+            where=Point((115, -32)),
             when=timezone.now(),
             observer=self.staff,
             reporter=self.user,
