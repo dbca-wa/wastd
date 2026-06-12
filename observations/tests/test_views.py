@@ -118,14 +118,14 @@ class HomeViewTests(ViewsTestCase):
             self.client.force_login(user)
             response = self.client.get(self.home_url)
             self.assertEqual(response.status_code, 200)
-            self.assertContains(response, "Curation portal")
+            self.assertContains(response, "Curation")
 
     def test_home_user(self):
         """The home view will load for a normal user and contain no link to the curation portal"""
         self.client.force_login(self.user)
         response = self.client.get(self.home_url)
         self.assertEqual(response.status_code, 200)
-        self.assertNotContains(response, "Curation portal")
+        self.assertNotContains(response, "Curation")
 
 
 class EncounterViewTests(ViewsTestCase):

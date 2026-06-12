@@ -1,20 +1,22 @@
+import uuid
+from datetime import datetime
+from unittest.mock import MagicMock, patch
+
+import pytz
+from django.contrib.gis.geos import Point, Polygon
 from django.core.management import call_command
 from django.test import TestCase
-from unittest.mock import patch, MagicMock
+
+from observations.lookups import NEST_TYPE_TRACK_UNSURE, TURTLE_SPECIES_DEFAULT
 from observations.models import (
-    TurtleNestEncounter,
-    TurtleNestDisturbanceObservation,
-    TurtleNestDisturbanceTallyObservation,
     AnimalEncounter,
     Area,
-    User,
     Encounter,
+    TurtleNestDisturbanceObservation,
+    TurtleNestDisturbanceTallyObservation,
+    TurtleNestEncounter,
+    User,
 )
-from observations.lookups import TURTLE_SPECIES_DEFAULT, NEST_TYPE_TRACK_UNSURE
-from django.contrib.gis.geos import Polygon, Point
-from datetime import datetime
-import pytz
-import uuid
 
 """
 Unit Test Suite for Automated QA Checks Management Command
@@ -309,5 +311,4 @@ class AutomatedQAChecksCommandTests(TestCase):
         )
 
         call_command("automated_qa_checks")
-        print(mock_logger.info.call_args_list)
         mock_logger.info.assert_any_call("Flagging 1 animal encounters for curation due to unknown reporter")

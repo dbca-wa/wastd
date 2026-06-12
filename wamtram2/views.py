@@ -1,80 +1,80 @@
+import csv
+import json
+import operator
+from datetime import date, datetime, time, timedelta
+from functools import reduce
+
+import pandas as pd
+from django.apps import apps
 from django.conf import settings
 from django.contrib import messages
-from django.utils import timezone
-from django.db import connections, DatabaseError
-from django.db.models import Q, Exists, OuterRef, Count, Subquery, ExpressionWrapper, BooleanField
-from django.http import HttpResponseForbidden, HttpResponseRedirect, HttpResponse, HttpResponseBadRequest, JsonResponse
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.shortcuts import render, redirect, get_object_or_404
-from django.urls import reverse, reverse_lazy
-from django.views import View
-from django.views.generic.edit import FormMixin
-from django.views.generic import TemplateView, ListView, DetailView, FormView, DeleteView
-from .models import TrtPlaces, TrtSpecies, TrtLocations, TrtEntryBatchOrganisation
-from django.core.paginator import Paginator
-from openpyxl import Workbook
 from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
-from django.views.decorators.http import require_GET, require_POST, require_http_methods
-from django.template.loader import render_to_string
-from django.core.serializers.json import DjangoJSONEncoder
-from django.views.generic import ListView
-import json
-import csv
-from datetime import timedelta
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import PermissionDenied, ValidationError
-import pandas as pd
-from datetime import datetime, date, time
-from django.db import transaction
-from django.apps import apps
+from django.core.paginator import Paginator
+from django.core.serializers.json import DjangoJSONEncoder
+from django.db import DatabaseError, connections, transaction
+from django.db.models import Count, Exists, OuterRef, Q, Subquery
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseForbidden, HttpResponseRedirect, JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.template.loader import render_to_string
+from django.urls import reverse, reverse_lazy
+from django.utils import timezone
+from django.utils.decorators import method_decorator
+from django.views import View
+from django.views.decorators.http import require_GET, require_http_methods, require_POST
+from django.views.generic import DeleteView, DetailView, FormView, ListView, TemplateView
+from django.views.generic.edit import FormMixin
 from docx import Document
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.shared import Inches, Pt, RGBColor
-from functools import reduce
-import operator
-import traceback
-from django.db import IntegrityError
+from openpyxl import Workbook
 
 from wastd.utils import Breadcrumb, PaginateMixin
+
+from .forms import BatchesCodeForm, SearchForm, TagRegisterForm, TemplateForm, TrtDataEntryForm, TrtEntryBatchesForm, TrtPersonsForm
 from .models import (
-    TrtTurtles,
-    TrtTags,
-    TrtPitTags,
-    TrtEntryBatches,
-    TrtDataEntry,
-    TrtPersons,
-    TrtBeachPositions,
-    TrtObservations,
     Template,
-    TrtTagStates,
-    TrtIdentification,
-    TrtPitTagStatus,
-    TrtTagStatus,
-    TrtNestingSeason,
-    TrtTissueTypes,
     TrtActivities,
-    TrtIdentificationTypes,
-    TrtEggCountMethods,
-    TrtMeasurementTypes,
+    TrtBeachPositions,
     TrtBodyParts,
-    TrtDamageCodes,
-    TrtYesNo,
-    TrtRecordedTags,
-    TrtRecordedPitTags,
-    TrtMeasurements,
-    TrtDamage,
     TrtCauseOfDeath,
-    TrtTurtleStatus,
-    TrtDocuments,
-    TrtRecordedIdentification,
-    TrtPitTagStates,
-    TrtDatumCodes,
     TrtConditionCodes,
+    TrtDamage,
     TrtDamageCauseCodes,
-    TrtSamples,
+    TrtDamageCodes,
+    TrtDataEntry,
+    TrtDatumCodes,
+    TrtDocuments,
     TrtDocumentTypes,
+    TrtEggCountMethods,
+    TrtEntryBatches,
+    TrtEntryBatchOrganisation,
+    TrtIdentification,
+    TrtIdentificationTypes,
+    TrtLocations,
+    TrtMeasurements,
+    TrtMeasurementTypes,
+    TrtNestingSeason,
+    TrtObservations,
+    TrtPersons,
+    TrtPitTags,
+    TrtPitTagStates,
+    TrtPitTagStatus,
+    TrtPlaces,
+    TrtRecordedIdentification,
+    TrtRecordedPitTags,
+    TrtRecordedTags,
+    TrtSamples,
+    TrtSpecies,
+    TrtTags,
+    TrtTagStates,
+    TrtTagStatus,
+    TrtTissueTypes,
+    TrtTurtles,
+    TrtTurtleStatus,
+    TrtYesNo,
 )
-from .forms import TrtDataEntryForm, SearchForm, TrtEntryBatchesForm, TemplateForm, BatchesCodeForm, TrtPersonsForm, TagRegisterForm
 
 
 class HomePageView(LoginRequiredMixin, TemplateView):
@@ -3839,9 +3839,6 @@ class TransferObservationsByTagView(LoginRequiredMixin, View):
             # Convert observation_ids list to comma-separated string
             observation_ids_str = ",".join(observation_ids)
 
-            # Debug output
-            print(f"Calling SP with tag_id={tag_id}, turtle_id={turtle_id}, obs_ids={observation_ids_str}")
-
             # Execute stored procedure
             with connections["wamtram2"].cursor() as cursor:
                 cursor.execute(
@@ -4471,7 +4468,7 @@ class ObservationManagementView(LoginRequiredMixin, SuperUserRequiredMixin, Temp
                     data = json.loads(response.content)
                     if data["status"] == "success":
                         context["initial_data"] = json.dumps(data["data"])
-            except Exception as e:
+            except Exception:
                 context["initial_data"] = "null"
 
         try:
@@ -4517,7 +4514,7 @@ class ObservationManagementView(LoginRequiredMixin, SuperUserRequiredMixin, Temp
                     "search_places_url": reverse("wamtram2:search-places"),
                 }
             )
-        except Exception as e:
+        except Exception:
             for key in [
                 "tag_states_choices",
                 "pit_tag_state_choices",
@@ -4633,7 +4630,7 @@ class ObservationDataView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                         "comments": record.comments,
                     }
                 )
-            except Exception as e:
+            except Exception:
                 continue
 
         persons_data = {
@@ -4904,7 +4901,7 @@ class SaveObservationView(LoginRequiredMixin, SuperUserRequiredMixin, View):
 
                         except model_class.DoesNotExist:
                             setattr(observation, field, None)
-                        except Exception as e:
+                        except Exception:
                             setattr(observation, field, None)
                     else:
                         setattr(observation, field, None)
@@ -4985,7 +4982,7 @@ class RecordedTagsUpdateView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                             "barnacles": barnacles,
                         },
                     )
-                except Exception as e:
+                except Exception:
                     raise
 
             return JsonResponse({"status": "success", "message": "Tags updated successfully"})

@@ -1,15 +1,15 @@
 """Utilities and functions related to ODK."""
 
+import logging
+from tempfile import TemporaryFile
+
+import requests
+import xmltodict
 from django.conf import settings
 from django.contrib.gis.geos import Point
 from django.core.files import File
-import requests
-import xmltodict
-from tempfile import TemporaryFile
-import logging
 
 from observations.models import Encounter
-
 
 ODK_API_URL = settings.ODK_API_URL
 logger = logging.getLogger("turtles")
@@ -68,8 +68,7 @@ def get_submission(auth_headers, project_id, form_id, instance_id):
 
     try:
         data = xmltodict.parse(resp.content, xml_attribs=False)["data"]
-    except Exception as e:
-        print(str(e))
+    except Exception:
         return []
 
     return data
