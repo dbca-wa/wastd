@@ -1,28 +1,28 @@
+import re
+import uuid
 from collections import namedtuple
 from datetime import date, datetime
+from functools import reduce
+from urllib import parse
+
 from django.contrib.admin import site
 from django.contrib.admin.widgets import AdminFileWidget
 from django.contrib.gis.db import models
 from django.db.models import Q
-from django.http import JsonResponse, HttpResponseBadRequest, HttpResponseNotAllowed, Http404, HttpResponse
+from django.http import Http404, HttpResponse, HttpResponseBadRequest, HttpResponseNotAllowed, JsonResponse
 from django.urls import reverse
 from django.utils.encoding import force_str
 from django.utils.safestring import mark_safe
 from django.utils.text import smart_split
-from django.views.generic import ListView, DetailView
+from django.views.generic import DetailView, ListView
 from django.views.generic.base import ContextMixin, View
+from django_filters import CharFilter
 from django_fsm import FSMField, transition
 from django_fsm_log.admin import StateLogInline
 from django_fsm_log.decorators import fsm_log_by, fsm_log_description
-from django_filters import CharFilter
-from functools import reduce
 from import_export.formats import base_formats
 from import_export.resources import Resource
 from mapwidgets.widgets import MapboxPointFieldWidget
-import re
-from urllib import parse
-import uuid
-
 
 Breadcrumb = namedtuple("Breadcrumb", ["name", "url"])
 

@@ -579,6 +579,18 @@ wheels = [
 ]
 
 [[package]]
+name = "django-leaflet"
+version = "0.33.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/71/35/be356129d89c98c8f4884e946abec7f7d21ddcce159bcde4970e754ea3ab/django_leaflet-0.33.0.tar.gz", hash = "sha256:b51c71e7179eed9961484dfd57b87bd1ece3b1ff7bee4dfb7f4d5702206b2eca", size = 562259, upload-time = "2025-12-01T13:00:41.525Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/d5/9b/b323a5ea711961e77e9e362f55ea6d229d75daa6c1eaa37aec3ddaba1017/django_leaflet-0.33.0-py3-none-any.whl", hash = "sha256:bf30526daf7710f9afc35f0221284fe3b0558f3d9f259344ac3b82e23d28ec98", size = 577199, upload-time = "2025-12-01T13:00:39.069Z" },
+]
+
+[[package]]
 name = "django-map-widgets"
 version = "0.5.2"
 source = { registry = "https://pypi.org/simple" }
@@ -1638,6 +1650,7 @@ dependencies = [
     { name = "django-geojson" },
     { name = "django-grappelli" },
     { name = "django-import-export" },
+    { name = "django-leaflet" },
     { name = "django-map-widgets" },
     { name = "django-nested-admin" },
     { name = "django-phonenumber-field" },
@@ -1691,6 +1704,7 @@ requires-dist = [
     { name = "django-geojson", specifier = "==4.2.0" },
     { name = "django-grappelli", specifier = "==4.0.4" },
     { name = "django-import-export", specifier = "==4.4.1" },
+    { name = "django-leaflet", specifier = "==0.33.0" },
     { name = "django-map-widgets", specifier = "==0.5.2" },
     { name = "django-nested-admin", specifier = "==4.1.6" },
     { name = "django-phonenumber-field", specifier = "==8.4.0" },
