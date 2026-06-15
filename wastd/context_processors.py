@@ -2,8 +2,7 @@ from django.conf import settings
 
 
 def template_context(request):
-    """Pass extra context variables to every template. Used by webtemplate-dbca base template.
-    """
+    """Pass extra context variables to every template. Used by webtemplate-dbca base template."""
     context = {
         "page_title": settings.SITE_TITLE,
         "site_title": settings.SITE_TITLE,

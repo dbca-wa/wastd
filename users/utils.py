@@ -25,10 +25,7 @@ def transfer_user(old, new):
     """
     # Gate checks ------------------------------------------------------------#
     if old == new:
-        msg = (
-            "Same user, nothing to do. "
-            "Only two different user profiles can be merged."
-        )
+        msg = "Same user, nothing to do. Only two different user profiles can be merged."
         LOGGER.info(msg)
         return msg
 
@@ -125,12 +122,8 @@ def transfer_user(old, new):
     # ------------------------------------------------------------------------#
     # Transfer old user details to new user
     # Old username, name, aliases merged with new aliases and deduplicated
-    new_aliases = (
-        list(map(str.strip, new.aliases.split(","))) if new.aliases != "" else list()
-    )
-    old_aliases = (
-        list(map(str.strip, old.aliases.split(","))) if old.aliases != "" else list()
-    )
+    new_aliases = list(map(str.strip, new.aliases.split(","))) if new.aliases != "" else list()
+    old_aliases = list(map(str.strip, old.aliases.split(","))) if old.aliases != "" else list()
     old_details = [old.username, old.name]
     combined_aliases = list(set(new_aliases + old_aliases + old_details))
     new.aliases = ", ".join([x for x in combined_aliases if x != ""])
@@ -214,16 +207,12 @@ def change_user_for_area(old, new, area):
 
     # Gate checks ------------------------------------------------------------#
     if old == new:
-        msg = (
-            "Same user, nothing to do. "
-            "If you wanted to transfer data from one to another user, "
-            "choose two different users."
-        )
+        msg = "Same user, nothing to do. If you wanted to transfer data from one to another user, choose two different users."
         LOGGER.info(msg)
         return msg
 
     if not area:
-        msg = "No area selected, nothing to do. " "A locality is required."
+        msg = "No area selected, nothing to do. A locality is required."
         LOGGER.info(msg)
         return msg
 

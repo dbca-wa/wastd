@@ -222,12 +222,7 @@ SEASNAKE_SPECIES_CHOICES = (
 SIRENIA_CHOICES = (("dugong-dugon", "Dugong dugon (Dugong)"),)
 
 SPECIES_CHOICES = (
-    NA
-    + TURTLE_SPECIES_CHOICES
-    + CETACEAN_SPECIES_CHOICES
-    + SIRENIA_CHOICES
-    + PINNIPED_SPECIES_CHOICES
-    + SEASNAKE_SPECIES_CHOICES
+    NA + TURTLE_SPECIES_CHOICES + CETACEAN_SPECIES_CHOICES + SIRENIA_CHOICES + PINNIPED_SPECIES_CHOICES + SEASNAKE_SPECIES_CHOICES
 )
 
 UNKNOWN_VALUE = "unknown"
@@ -255,12 +250,7 @@ MAMMAL_MATURITY_CHOICES = (
     ("weaned", "Weaned immature"),
 )
 
-MATURITY_CHOICES = (
-    ((NA_VALUE, "Unknown maturity"),)
-    + TURTLE_MATURITY_CHOICES
-    + MAMMAL_MATURITY_CHOICES
-    + (("adult", "Adult"),)
-)
+MATURITY_CHOICES = ((NA_VALUE, "Unknown maturity"),) + TURTLE_MATURITY_CHOICES + MAMMAL_MATURITY_CHOICES + (("adult", "Adult"),)
 
 HEALTH_D1 = "alive-then-died"
 HEALTH_D2 = "dead-edible"
@@ -426,8 +416,8 @@ NEST_TYPE_CHOICES = (
 )
 
 OBSERVATION_CHOICES = (
-    #("absent", "Absent"),
-    #("present", "Present"),
+    # ("absent", "Absent"),
+    # ("present", "Present"),
     ("yes", "Yes"),
     ("no", "No"),
     (NA_VALUE, "NA (not applicable)"),

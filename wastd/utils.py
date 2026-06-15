@@ -29,19 +29,16 @@ Breadcrumb = namedtuple("Breadcrumb", ["name", "url"])
 
 def sanitize_tag_label(label_string):
     """Return string slugified, uppercased and without dashes."""
-    return re.sub(
-        r"[-\s]+", "-", (re.sub(r"[^\w\s]", "", label_string).strip().upper())
-    )
+    return re.sub(r"[-\s]+", "-", (re.sub(r"[^\w\s]", "", label_string).strip().upper()))
 
 
 def split_text_query(query):
-    """Filter stopwords, but only if there are also other words.
-    """
-    stopwords = '''a,am,an,and,as,at,be,by,can,did,do,for,get,got,
+    """Filter stopwords, but only if there are also other words."""
+    stopwords = """a,am,an,and,as,at,be,by,can,did,do,for,get,got,
         had,has,he,her,him,his,how,i,if,in,is,it,its,let,may,me,
         my,no,nor,not,of,off,on,or,our,own,say,says,she,so,than,
         that,the,them,then,they,this,to,too,us,was,we,were,what,
-        when,who,whom,why,will,yet,you,your'''.split(',')
+        when,who,whom,why,will,yet,you,your""".split(",")
     split_query = list(smart_split(query))
     filtered_query = [word for word in split_query if word not in stopwords]
 
@@ -57,7 +54,7 @@ def search_filter(search_fields, query_string):
     null_filter = Q(pk=None)
 
     for word in split_text_query(query_string):
-        queries = [Q(**{'{}__icontains'.format(field_name): word}) for field_name in search_fields]
+        queries = [Q(**{"{}__icontains".format(field_name): word}) for field_name in search_fields]
         filters.append(reduce(Q.__or__, queries))
 
     return reduce(Q.__and__, filters) if len(filters) else null_filter
@@ -133,35 +130,39 @@ class ResourceDownloadMixin:
 
     TODO: add an R resource format download (i.e. .rds).
     """
+
     resource_class = None
-    resource_formats = ['csv', 'xlsx']
-    resource_class_parameter = 'resource_class'
-    resource_format_parameter = 'resource_format'
+    resource_formats = ["csv", "xlsx"]
+    resource_class_parameter = "resource_class"
+    resource_format_parameter = "resource_format"
     _resource_format_map = {
-        'csv': base_formats.CSV,
-        'xlsx': base_formats.XLSX,
-        'xls': base_formats.XLS,
-        'json': base_formats.JSON,
-        'yaml': base_formats.YAML,
-        'tsv': base_formats.TSV,
+        "csv": base_formats.CSV,
+        "xlsx": base_formats.XLSX,
+        "xls": base_formats.XLS,
+        "json": base_formats.JSON,
+        "yaml": base_formats.YAML,
+        "tsv": base_formats.TSV,
     }
-    _download_parameter = 'download'
+    _download_parameter = "download"
 
     def _sanity_check(self):
         cn = self.__class__.__name__
-        assert issubclass(self.__class__, ListView), 'You can only use the ExportDownloadMixin in a ListView'
-        assert self._get_resource_classes(), 'Object {}.resource_class must be defined.'.format(cn)
+        assert issubclass(self.__class__, ListView), "You can only use the ExportDownloadMixin in a ListView"
+        assert self._get_resource_classes(), "Object {}.resource_class must be defined.".format(cn)
         for k in self._get_resource_classes():
-            assert issubclass(k, Resource), 'Object {} in {}.resource_class is not a instance of import_export.resources.Resource'.format(k, cn)
+            assert issubclass(k, Resource), "Object {} in {}.resource_class is not a instance of import_export.resources.Resource".format(
+                k, cn
+            )
 
-        assert type(self.resource_formats) is list, 'Format {} in {}.resource_formats is not a valid resource_format'.format(self.resource_formats, cn)
-        assert len(self.resource_formats) > 0, 'Format {} in {}.resource_formats must not be empty'.format(self.resource_formats, cn)
+        assert type(self.resource_formats) is list, "Format {} in {}.resource_formats is not a valid resource_format".format(
+            self.resource_formats, cn
+        )
+        assert len(self.resource_formats) > 0, "Format {} in {}.resource_formats must not be empty".format(self.resource_formats, cn)
         for f in self.resource_formats:
-            assert f in self._resource_format_map, 'Format {} in {}.resource_class is not a valid resource_formats'.format(f, cn)
+            assert f in self._resource_format_map, "Format {} in {}.resource_class is not a valid resource_formats".format(f, cn)
 
     def _get_resource_classes(self):
-        """Format the resource classes.
-        """
+        """Format the resource classes."""
         if self.resource_class is None:
             return []
         elif isinstance(self.resource_class, list):
@@ -191,14 +192,13 @@ class ResourceDownloadMixin:
                 link = "?" + self._to_url_params(params)
                 # if there is a description field in the resource class
                 # we use it to display it as a description
-                description = getattr(resource_class, 'description', resource_class.__name__)
+                description = getattr(resource_class, "description", resource_class.__name__)
                 resource_links[f.lower()].append([link, description])
         return resource_links
 
     def _to_url_params(self, d):
-        """Return a kwarg in GET parameter format
-        """
-        return self._download_parameter + "&" + "&".join('{}={}'.format(k, v) for k, v in d.items())
+        """Return a kwarg in GET parameter format"""
+        return self._download_parameter + "&" + "&".join("{}={}".format(k, v) for k, v in d.items())
 
     def render_to_response(self, *args, **kwargs):
         if self._download_parameter in self.request.GET:
@@ -207,29 +207,29 @@ class ResourceDownloadMixin:
 
     def render_to_download_response(self, *args, **kwargs):
         self._sanity_check()
-        if self.request.method != 'GET':
-            return HttpResponseNotAllowed(['GET'])
+        if self.request.method != "GET":
+            return HttpResponseNotAllowed(["GET"])
         # We use the first resource class and first resource format as a default when there are no parameters.
         resource_class = self.request.GET.get(self.resource_class_parameter, 0)
         resource_format = self.request.GET.get(self.resource_format_parameter, self.resource_formats[0])
         if not resource_format:
-            raise Http404('You have to pass {} as GET parameter'.format(self.resource_format_parameter))
+            raise Http404("You have to pass {} as GET parameter".format(self.resource_format_parameter))
 
         selected_format = self._resource_format_map.get(resource_format, None)
         if not selected_format:
-            raise Http404('Export format {} not found'.format(resource_format))
+            raise Http404("Export format {} not found".format(resource_format))
 
         try:
             resource_class_number = int(resource_class)
         except:
-            raise Http404('Parameter {} must be an integer'.format(self.resource_class_parameter))
+            raise Http404("Parameter {} must be an integer".format(self.resource_class_parameter))
         if resource_class_number >= len(self._get_resource_classes()):
-            raise Http404('Parameter {}.{} does not exist'.format(self.__class__.__name__, self.resource_class_parameter))
+            raise Http404("Parameter {}.{} does not exist".format(self.__class__.__name__, self.resource_class_parameter))
 
         qs = self.model.objects.all()
         # If filter_class is defined try to filter against it.
         # You need django-filter to use this feature.
-        if hasattr(self, 'filter_class'):
+        if hasattr(self, "filter_class"):
             if self.filter_class:
                 qs = self.filter_class(self.request.GET, queryset=qs).qs
         resource_class = self._get_resource_classes()[resource_class_number]
@@ -237,10 +237,10 @@ class ResourceDownloadMixin:
         res = getattr(export, selected_format.__name__.lower())
         response = HttpResponse(res, content_type=selected_format.CONTENT_TYPE)
         # Give the response attachment a sane filename.
-        response['Content-Disposition'] = 'attachment; filename={}_{}_{}.{}'.format(
+        response["Content-Disposition"] = "attachment; filename={}_{}_{}.{}".format(
             resource_class._meta.model._meta.model_name,
             date.today().isoformat(),
-            datetime.now().strftime('%H%M'),
+            datetime.now().strftime("%H%M"),
             selected_format.__name__.lower(),
         )
         return response
@@ -250,6 +250,7 @@ class ListResourceView(ListView):
     """Generic API list view, having filtering and pagination options as request params.
     Extend with a `model` and `serializer` class.
     """
+
     http_method_names = ["get", "options", "trace"]
     model = None
     serializer = None
@@ -317,7 +318,7 @@ class ListResourceView(ListView):
             else:
                 prev_url = replace_query_param(prev_url, "offset", offset - limit)
 
-        queryset = queryset[offset:offset + limit]
+        queryset = queryset[offset : offset + limit]
 
         objects = {
             "type": "FeatureCollection",
@@ -337,6 +338,7 @@ class DetailResourceView(DetailView):
     """Generic API detail (single object) view.
     Extend with a `model` and `serializer` class.
     """
+
     http_method_names = ["get", "options", "trace"]
     model = None
     serializer = None
@@ -370,7 +372,6 @@ class AdminImageWidget(AdminFileWidget):
 
 
 class CustomStateLogInline(StateLogInline):
-
     classes = (
         "grp-collapse",
         "wide",
@@ -385,6 +386,7 @@ class LegacySourceMixin(models.Model):
     This is useful to make a data import repeatable by identifying which records
     to overwrite.
     """
+
     SOURCE_MANUAL_ENTRY = 0
     SOURCE_PAPER_DATASHEET = 1
     SOURCE_DIGITAL_CAPTURE_ODK = 2
@@ -495,9 +497,7 @@ class UrlsMixin(models.Model):
     @classmethod
     def create_url(cls):
         """Create url. Default: app:model-create."""
-        return reverse(
-            "{0}:{1}-create".format(cls._meta.app_label, cls._meta.model_name)
-        )
+        return reverse("{0}:{1}-create".format(cls._meta.app_label, cls._meta.model_name))
 
     @property
     def update_url(self):
@@ -571,10 +571,7 @@ class QualityControlMixin(models.Model):
         # permission=lambda instance, user: user in instance.all_permitted,
         custom=dict(
             verbose="Submit for QA",
-            explanation=(
-                "Submit this record as a faithful representation of the "
-                "data source for QA to become an accepted record."
-            ),
+            explanation=("Submit this record as a faithful representation of the data source for QA to become an accepted record."),
             notify=True,
         ),
     )
@@ -602,10 +599,7 @@ class QualityControlMixin(models.Model):
         # permission=lambda instance, user: user in instance.all_permitted,
         custom=dict(
             verbose="Require proofreading",
-            explanation=(
-                "This record deviates from the data source and "
-                "requires proofreading."
-            ),
+            explanation=("This record deviates from the data source and requires proofreading."),
             notify=True,
         ),
     )
@@ -657,10 +651,7 @@ class QualityControlMixin(models.Model):
         # permission=lambda instance, user: user in instance.all_permitted,
         custom=dict(
             verbose="Flag as not trustworthy",
-            explanation=(
-                "This record cannot be true. This record requires"
-                " review by a subject matter expert."
-            ),
+            explanation=("This record cannot be true. This record requires review by a subject matter expert."),
             notify=True,
         ),
     )
@@ -773,6 +764,7 @@ class CurationMixin(models.Model):
     """Mixin class for curation status levels with django-fsm transitions.
     NOTE: this is a close-duplicate of QualityControlMixin, future task is to consolidate these.
     """
+
     CURATION_STATUS_NEW = "new"
     CURATION_STATUS_IMPORTED = "imported"
     CURATION_STATUS_MANUAL_INPUT = "manual input"
@@ -846,22 +838,18 @@ class CurationMixin(models.Model):
         conditions=[can_flag],
         custom=dict(
             verbose="Flag as not trustworthy",
-            explanation=(
-                "This record cannot be true. This record requires review by a subject matter expert."
-            ),
+            explanation=("This record cannot be true. This record requires review by a subject matter expert."),
             notify=True,
             url_path="flag/",
             badge="badge-warning",
         ),
     )
     def flag(self, by=None, description=None):
-        """Flag as requiring review by a subject matter expert.
-        """
+        """Flag as requiring review by a subject matter expert."""
         return
 
     def can_reject(self):
-        """Return true if the record can be rejected as entirely wrong.
-        """
+        """Return true if the record can be rejected as entirely wrong."""
         return True
 
     # New|Imported|Manual input|Flagged -> Rejected
@@ -881,8 +869,7 @@ class CurationMixin(models.Model):
         ),
     )
     def reject(self, by=None, description=None):
-        """Confirm that a record is confirmed wrong and not usable.
-        """
+        """Confirm that a record is confirmed wrong and not usable."""
         return
 
 
@@ -994,7 +981,6 @@ def get_next_pages(page_num, count=5):
 
 
 class PaginateMixin(ListView):
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["object_count"] = self.get_queryset().count()

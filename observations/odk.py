@@ -40,8 +40,7 @@ LOGGER = logging.getLogger("turtles")
 
 
 def create_new_user(name):
-    """Creates and returns a new User based on the passed-in name value.
-    """
+    """Creates and returns a new User based on the passed-in name value."""
     username = name.lower().replace(" ", "_")
     # Guarantee a unique username value by appending an underscore to the string.
     while User.objects.filter(username=username).exists():
@@ -52,8 +51,7 @@ def create_new_user(name):
 
 
 def get_user(reporter):
-    """Try to match the reporter to an existing user. If not, return 'Unknown user'.
-    """
+    """Try to match the reporter to an existing user. If not, return 'Unknown user'."""
     if reporter:
         reporter = reporter.strip()
         if User.objects.filter(is_active=True, name=reporter).exists():
@@ -62,7 +60,7 @@ def get_user(reporter):
             user = create_new_user(reporter)
             LOGGER.info(f"Created new user {user}")
     else:  # The form has been submitted without a user name recorded.
-        user = User.objects.get_or_create(name='Unknown user', username='unknown_user')[0]
+        user = User.objects.get_or_create(name="Unknown user", username="unknown_user")[0]
         LOGGER.warning(f"No reporter recorded, returning {user}")
 
     return user
@@ -99,9 +97,11 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=Non
             reporter = submission["reporter"]
             user = get_user(reporter)
 
-            #check for new forms
+            # check for new forms
             if "survey_start_time" in submission["details"]:
-                start_time = parser.isoparse(submission["details"]["survey_start_time"])  # New forms allow editing of time in case submitted after the fact
+                start_time = parser.isoparse(
+                    submission["details"]["survey_start_time"]
+                )  # New forms allow editing of time in case submitted after the fact
             else:
                 start_time = parser.isoparse(submission["start_time"])  # Old forms
 
@@ -136,50 +136,50 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=Non
             encounter.save()
             LOGGER.info(f"Created TurtleNestEncounter: {encounter}")
 
-            #get any nest photos
+            # get any nest photos
             if "nest_photos" in submission:
                 nest_photos = submission["nest_photos"]
                 if nest_photos["photo_nest_1"]:
-                        filename = nest_photos["photo_nest_1"]
-                        LOGGER.info(f"Downloading {filename}")
-                        attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
-                        photo = MediaAttachment(
-                            encounter=encounter,
-                            source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
-                            media_type="photograph",
-                            title=f"Photo of nest {filename}",
-                            attachment=attachment,
-                        )
-                        photo.save()
-                        LOGGER.info(f"Created MediaAttachment {photo}")
+                    filename = nest_photos["photo_nest_1"]
+                    LOGGER.info(f"Downloading {filename}")
+                    attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
+                    photo = MediaAttachment(
+                        encounter=encounter,
+                        source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
+                        media_type="photograph",
+                        title=f"Photo of nest {filename}",
+                        attachment=attachment,
+                    )
+                    photo.save()
+                    LOGGER.info(f"Created MediaAttachment {photo}")
 
                 if nest_photos["photo_nest_2"]:
-                        filename = nest_photos["photo_nest_2"]
-                        LOGGER.info(f"Downloading {filename}")
-                        attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
-                        photo = MediaAttachment(
-                            encounter=encounter,
-                            source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
-                            media_type="photograph",
-                            title=f"Photo of nest {filename}",
-                            attachment=attachment,
-                        )
-                        photo.save()
-                        LOGGER.info(f"Created MediaAttachment {photo}")
+                    filename = nest_photos["photo_nest_2"]
+                    LOGGER.info(f"Downloading {filename}")
+                    attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
+                    photo = MediaAttachment(
+                        encounter=encounter,
+                        source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
+                        media_type="photograph",
+                        title=f"Photo of nest {filename}",
+                        attachment=attachment,
+                    )
+                    photo.save()
+                    LOGGER.info(f"Created MediaAttachment {photo}")
 
                 if nest_photos["photo_nest_3"]:
-                        filename = nest_photos["photo_nest_3"]
-                        LOGGER.info(f"Downloading {filename}")
-                        attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
-                        photo = MediaAttachment(
-                            encounter=encounter,
-                            source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
-                            media_type="photograph",
-                            title=f"Photo of nest {filename}",
-                            attachment=attachment,
-                        )
-                        photo.save()
-                        LOGGER.info(f"Created MediaAttachment {photo}")
+                    filename = nest_photos["photo_nest_3"]
+                    LOGGER.info(f"Downloading {filename}")
+                    attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
+                    photo = MediaAttachment(
+                        encounter=encounter,
+                        source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
+                        media_type="photograph",
+                        title=f"Photo of nest {filename}",
+                        attachment=attachment,
+                    )
+                    photo.save()
+                    LOGGER.info(f"Created MediaAttachment {photo}")
 
             # TurtleNestObservation object
             if "egg_count" in submission:
@@ -198,7 +198,12 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=Non
                     nest_depth_bottom=int(observation["nest_depth_bottom"]) if observation["nest_depth_bottom"] else None,
                     comments=observation["nest_excavation_comments"],
                 )
-                nest_observation.egg_count = nest_observation.no_egg_shells + nest_observation.no_undeveloped_eggs + nest_observation.no_unhatched_eggs + nest_observation.no_unhatched_term
+                nest_observation.egg_count = (
+                    nest_observation.no_egg_shells
+                    + nest_observation.no_undeveloped_eggs
+                    + nest_observation.no_unhatched_eggs
+                    + nest_observation.no_unhatched_term
+                )
                 nest_observation.eggs_laid = nest_observation.egg_count and nest_observation.egg_count > 0
                 nest_observation.save()
                 LOGGER.info(f"Created TurtleNestObservation {nest_observation}")
@@ -280,19 +285,27 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=Non
                     )
                     photo.save()
                     LOGGER.info(f"Created MediaAttachment {photo}")
-                if any([
-                    track_observation["max_track_width_front"],
-                    track_observation["max_track_width_rear"],
-                    track_observation["carapace_drag_width"],
-                    track_observation["step_length"],
-                    track_observation["tail_pokes"],
-                ]):
+                if any(
+                    [
+                        track_observation["max_track_width_front"],
+                        track_observation["max_track_width_rear"],
+                        track_observation["carapace_drag_width"],
+                        track_observation["step_length"],
+                        track_observation["tail_pokes"],
+                    ]
+                ):
                     track_observation = TurtleTrackObservation(
                         encounter=encounter,
                         source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
-                        max_track_width_front=int(track_observation["max_track_width_front"]) if track_observation["max_track_width_front"] else None,
-                        max_track_width_rear=int(track_observation["max_track_width_rear"]) if track_observation["max_track_width_rear"] else None,
-                        carapace_drag_width=int(track_observation["carapace_drag_width"]) if track_observation["carapace_drag_width"] else None,
+                        max_track_width_front=int(track_observation["max_track_width_front"])
+                        if track_observation["max_track_width_front"]
+                        else None,
+                        max_track_width_rear=int(track_observation["max_track_width_rear"])
+                        if track_observation["max_track_width_rear"]
+                        else None,
+                        carapace_drag_width=int(track_observation["carapace_drag_width"])
+                        if track_observation["carapace_drag_width"]
+                        else None,
                         step_length=int(track_observation["step_length"]) if track_observation["step_length"] else None,
                         tail_pokes=track_observation["tail_pokes"],
                     )
@@ -306,7 +319,9 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=Non
                     source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
                     status=submission["nest_tag"]["tag_status"],
                     flipper_tag_id=submission["nest_tag"]["flipper_tag_id"],
-                    date_nest_laid=datetime.strptime(submission["nest_tag"]["date_nest_laid"], "%Y-%m-%d").date() if submission["nest_tag"]["date_nest_laid"] else None,
+                    date_nest_laid=datetime.strptime(submission["nest_tag"]["date_nest_laid"], "%Y-%m-%d").date()
+                    if submission["nest_tag"]["date_nest_laid"]
+                    else None,
                     tag_label=submission["nest_tag"]["tag_label"],
                     comments=submission["nest_tag"]["tag_comments"],
                 )
@@ -371,8 +386,12 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=Non
                     hatchling_measurement = HatchlingMorphometricObservation(
                         encounter=encounter,
                         source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
-                        straight_carapace_length_mm=int(hatchling["straight_carapace_length_mm"]) if hatchling["straight_carapace_length_mm"] else None,
-                        straight_carapace_width_mm=int(hatchling["straight_carapace_width_mm"]) if hatchling["straight_carapace_width_mm"] else None,
+                        straight_carapace_length_mm=int(hatchling["straight_carapace_length_mm"])
+                        if hatchling["straight_carapace_length_mm"]
+                        else None,
+                        straight_carapace_width_mm=int(hatchling["straight_carapace_width_mm"])
+                        if hatchling["straight_carapace_width_mm"]
+                        else None,
                         body_weight_g=int(hatchling["body_weight_g"]) if hatchling["body_weight_g"] else None,
                     )
                     hatchling_measurement.save()
@@ -445,7 +464,9 @@ def import_turtle_track_or_nest(form_id="turtle_track_or_nest", auth_headers=Non
                         outlier_obs = TurtleHatchlingEmergenceOutlierObservation(
                             encounter=encounter,
                             source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
-                            bearing_outlier_track_degrees=float(outlier["outlier_track_bearing_manual"]) if outlier["outlier_track_bearing_manual"] else None,
+                            bearing_outlier_track_degrees=float(outlier["outlier_track_bearing_manual"])
+                            if outlier["outlier_track_bearing_manual"]
+                            else None,
                             outlier_group_size=int(outlier["outlier_group_size"]) if outlier["outlier_group_size"] else None,
                             outlier_track_comment=outlier["outlier_track_comment"],
                         )
@@ -515,40 +536,42 @@ def import_turtle_track_or_nest_simple(form_id="beach_tracks_nest_simple", auth_
 
     for submission in submissions:
         try:
-            instance_id = submission['meta']['instanceID']
-            if TurtleNestEncounter.objects.filter(source='odk', source_id=instance_id):
+            instance_id = submission["meta"]["instanceID"]
+            if TurtleNestEncounter.objects.filter(source="odk", source_id=instance_id):
                 continue  # Skip records already imported.
 
             # Try to match the reporter to an existing user. If not, create a new one.
-            reporter = submission['reporter']
+            reporter = submission["reporter"]
             user = get_user(reporter)
 
-            #check for new forms
-            if 'survey_start_time' in submission['details']:
-                start_time = parser.isoparse(submission['details']['survey_start_time'])  # New forms allow editing of time in case submitted after the fact
+            # check for new forms
+            if "survey_start_time" in submission["details"]:
+                start_time = parser.isoparse(
+                    submission["details"]["survey_start_time"]
+                )  # New forms allow editing of time in case submitted after the fact
             else:
-                start_time = parser.isoparse(submission['start_time'])  # Old forms
+                start_time = parser.isoparse(submission["start_time"])  # Old forms
 
             # Confusingly, TurtleNestEncounter objects cover nest, track and nest & track encounters.
             encounter = TurtleNestEncounter(
-                status='imported',
-                source='odk',
+                status="imported",
+                source="odk",
                 source_id=instance_id,
-                where=parse_geopoint(submission['details']['observed_at']),
+                where=parse_geopoint(submission["details"]["observed_at"]),
                 when=start_time,
                 observer=user,
                 reporter=user,
-                comments=f'{submission["details"]["comments"]} (Device ID {submission["device_id"]})',
-                #nest_age=submission['details']['nest_age'],
-                nest_type=submission['details']['nest_type'],
-                species=submission['details']['species'],
+                comments=f"{submission['details']['comments']} (Device ID {submission['device_id']})",
+                # nest_age=submission['details']['nest_age'],
+                nest_type=submission["details"]["nest_type"],
+                species=submission["details"]["species"],
             )
 
             encounter.encounter_type = encounter.get_encounter_type()
 
-            if 'details' in submission:
-                encounter.habitat = submission['details']['habitat']
-                if submission['details']['disturbance_cause']:
+            if "details" in submission:
+                encounter.habitat = submission["details"]["habitat"]
+                if submission["details"]["disturbance_cause"]:
                     encounter.disturbance = "yes"
                 else:
                     encounter.disturbance = "no"
@@ -558,53 +581,57 @@ def import_turtle_track_or_nest_simple(form_id="beach_tracks_nest_simple", auth_
             encounter.site = encounter.guess_site
 
             encounter.save()
-            LOGGER.info(f'Created TurtleNestEncounter: {encounter}')
+            LOGGER.info(f"Created TurtleNestEncounter: {encounter}")
             # TurtleTrackObservation object.
-            if 'track_photos' in submission['details']:
-                track_observation = submission['details']['track_photos']
-                if track_observation['photo_track_1']:
-                    filename = track_observation['photo_track_1']
+            if "track_photos" in submission["details"]:
+                track_observation = submission["details"]["track_photos"]
+                if track_observation["photo_track_1"]:
+                    filename = track_observation["photo_track_1"]
                     LOGGER.info(f"Downloading {filename}")
                     attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
                     photo = MediaAttachment(
                         encounter=encounter,
                         source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
-                        media_type='photograph',
-                        title=f'Photo of track {filename}',
+                        media_type="photograph",
+                        title=f"Photo of track {filename}",
                         attachment=attachment,
                     )
                     photo.save()
-                    LOGGER.info(f'Created MediaAttachment {photo}')
-                if track_observation['photo_track_2']:
-                    filename = track_observation['photo_track_2']
+                    LOGGER.info(f"Created MediaAttachment {photo}")
+                if track_observation["photo_track_2"]:
+                    filename = track_observation["photo_track_2"]
                     LOGGER.info(f"Downloading {filename}")
                     attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
                     photo = MediaAttachment(
                         encounter=encounter,
                         source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
-                        media_type='photograph',
-                        title=f'Photo of track {filename}',
+                        media_type="photograph",
+                        title=f"Photo of track {filename}",
                         attachment=attachment,
                     )
                     photo.save()
-                    LOGGER.info(f'Created MediaAttachment {photo}')
-                if any([
-                    track_observation['max_track_width_front'],
-                    track_observation['tail_pokes'],
-                ]):
+                    LOGGER.info(f"Created MediaAttachment {photo}")
+                if any(
+                    [
+                        track_observation["max_track_width_front"],
+                        track_observation["tail_pokes"],
+                    ]
+                ):
                     track_observation = TurtleTrackObservation(
                         encounter=encounter,
                         source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
-                        max_track_width_front=int(track_observation['max_track_width_front']) if track_observation['max_track_width_front'] else None,
-                        tail_pokes=track_observation['tail_pokes'],
+                        max_track_width_front=int(track_observation["max_track_width_front"])
+                        if track_observation["max_track_width_front"]
+                        else None,
+                        tail_pokes=track_observation["tail_pokes"],
                     )
                     track_observation.save()
-                    LOGGER.info(f'Created TurtleTrackObservation {track_observation}')
+                    LOGGER.info(f"Created TurtleTrackObservation {track_observation}")
 
             # For this simple form we are just assuming tracks are a low disturbance event, with no other information collected
             # these are retrieved as a space delimited string "fox cat dog"
-            if submission['details']['disturbance_cause']:
-                disturbances = submission['details']['disturbance_cause'].split()
+            if submission["details"]["disturbance_cause"]:
+                disturbances = submission["details"]["disturbance_cause"].split()
                 for disturbance in disturbances:
                     disturbance = TurtleNestDisturbanceObservation(
                         encounter=encounter,
@@ -612,7 +639,7 @@ def import_turtle_track_or_nest_simple(form_id="beach_tracks_nest_simple", auth_
                         disturbance_cause=disturbance,
                     )
                     disturbance.save()
-                    LOGGER.info(f'Created TurtleNestDisturbanceObservation: {disturbance}')
+                    LOGGER.info(f"Created TurtleNestDisturbanceObservation: {disturbance}")
         except:
             LOGGER.exception(f"Exception during import of ODK {form_id} submission {instance_id}")
 
@@ -630,29 +657,29 @@ def import_site_visit_start(form_id="site_visit_start", initial_duration_hr=8, a
 
     for submission in submissions:
         try:
-            instance_id = submission['meta']['instanceID']
-            if Survey.objects.filter(source='odk', source_id=instance_id):
+            instance_id = submission["meta"]["instanceID"]
+            if Survey.objects.filter(source="odk", source_id=instance_id):
                 continue  # Skip records already imported.
 
             # Try to match the reporter to an existing User. If not, create a new one.
-            reporter = submission['reporter']
+            reporter = submission["reporter"]
             user = get_user(reporter)
 
-            visit = submission['site_visit']
+            visit = submission["site_visit"]
             # Check for new forms
-            if 'survey_start_time' in visit:
-                start_time = parser.isoparse(visit['survey_start_time'])  # New forms allow editing of time in case submitted after the fact
+            if "survey_start_time" in visit:
+                start_time = parser.isoparse(visit["survey_start_time"])  # New forms allow editing of time in case submitted after the fact
             else:
-                start_time = parser.isoparse(submission['start_time'])  # Old forms
+                start_time = parser.isoparse(submission["start_time"])  # Old forms
 
             survey = Survey(
-                status='imported',
-                source='odk',
+                status="imported",
+                source="odk",
                 source_id=instance_id,
-                device_id=submission['device_id'],
+                device_id=submission["device_id"],
                 reporter=user,
-                start_location=parse_geopoint(visit['location']),
-                start_location_accuracy_m=parse_geopoint_accuracy(visit['location']),
+                start_location=parse_geopoint(visit["location"]),
+                start_location_accuracy_m=parse_geopoint_accuracy(visit["location"]),
                 start_time=start_time,
             )
 
@@ -664,15 +691,15 @@ def import_site_visit_start(form_id="site_visit_start", initial_duration_hr=8, a
 
             # Set training surveys to non production
             if survey.site is not None:
-                if 'training' in survey.site.name.lower() or 'testing' in survey.site.name.lower():
+                if "training" in survey.site.name.lower() or "testing" in survey.site.name.lower():
                     survey.production = False
                     LOGGER.info(survey.site.name + " set as not production.")
 
             # We need to save before we can modify the M2M field or set the label.
             survey.save()
             survey.label = survey.make_label()
-            if visit['team']:
-                team = visit['team'].split(',')
+            if visit["team"]:
+                team = visit["team"].split(",")
                 for name in team:
                     name = name.strip()
                     if User.objects.filter(is_active=True, name__icontains=name).exists():
@@ -682,21 +709,21 @@ def import_site_visit_start(form_id="site_visit_start", initial_duration_hr=8, a
                         LOGGER.info(f"Created new user {user}")
                     survey.team.add(user)
 
-            LOGGER.info(f'Created Survey {survey}')
+            LOGGER.info(f"Created Survey {survey}")
 
-            if visit['site_conditions']:
-                filename = visit['site_conditions']
+            if visit["site_conditions"]:
+                filename = visit["site_conditions"]
                 LOGGER.info(f"Downloading {filename}")
                 attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
                 photo = SurveyMediaAttachment(
                     source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
                     survey=survey,
-                    media_type='photograph',
-                    title=f'Photo of site visit start {filename}',
+                    media_type="photograph",
+                    title=f"Photo of site visit start {filename}",
                     attachment=attachment,
                 )
                 photo.save()
-                LOGGER.info(f'Created SurveyMediaAttachment {photo}')
+                LOGGER.info(f"Created SurveyMediaAttachment {photo}")
         except:
             LOGGER.exception(f"Exception during import of ODK {form_id} submission {instance_id}")
 
@@ -726,7 +753,7 @@ def import_site_visit_end(form_id="site_visit_end", duration_hr=8, auth_headers=
 
             if not site:
                 # Send a warning to the admins to investigate & address.
-                log = (f"Site Visit End form: unable to match a site for survey end at {location.wkt}")
+                log = f"Site Visit End form: unable to match a site for survey end at {location.wkt}"
                 LOGGER.warning(log)
                 continue
 
@@ -740,10 +767,12 @@ def import_site_visit_end(form_id="site_visit_end", duration_hr=8, auth_headers=
 
             start_time_earliest = end_time - timedelta(hours=duration_hr)
             surveys = Survey.objects.filter(
-                site=site, start_time__lt=end_time, start_time__gte=start_time_earliest,
+                site=site,
+                start_time__lt=end_time,
+                start_time__gte=start_time_earliest,
             )
             if surveys.count() != 1:
-                log = (f"Site Visit End form: unable to match a single Survey (matched {surveys.count()})")
+                log = f"Site Visit End form: unable to match a single Survey (matched {surveys.count()})"
                 LOGGER.warning(log)
                 continue
             else:
@@ -777,11 +806,11 @@ def import_site_visit_end(form_id="site_visit_end", duration_hr=8, auth_headers=
 
 def import_marine_wildlife_incident(form_id="marine_wildlife_incident", auth_headers=None):
     """Import submissions to the Marine Wildlife Incident ODK form.
-        Each submission should create:
-            1 AnimalEncounter
-            0-1 TurtleMorphometricObservation
-            0+ TurtleDamageObservation
-            0+ TagObservation
+    Each submission should create:
+        1 AnimalEncounter
+        0-1 TurtleMorphometricObservation
+        0+ TurtleDamageObservation
+        0+ TagObservation
     """
     if not auth_headers:
         LOGGER.info("Downloading auth headers")
@@ -792,177 +821,177 @@ def import_marine_wildlife_incident(form_id="marine_wildlife_incident", auth_hea
 
     for submission in submissions:
         try:
-            instance_id = submission['meta']['instanceID']
-            if AnimalEncounter.objects.filter(source='odk', source_id=instance_id):
+            instance_id = submission["meta"]["instanceID"]
+            if AnimalEncounter.objects.filter(source="odk", source_id=instance_id):
                 continue  # Skip records already imported.
 
             # Try to match the reporter to an existing User. If not, create a new one.
-            reporter = submission['reporter']
+            reporter = submission["reporter"]
             user = get_user(reporter)
 
-            site_visit = submission['site_visit']
-            if site_visit['habitat']:
-                habitat = site_visit['habitat']
+            site_visit = submission["site_visit"]
+            if site_visit["habitat"]:
+                habitat = site_visit["habitat"]
             else:
                 habitat = NA_VALUE
             encounter = AnimalEncounter(
-                status='imported',
-                source='odk',
+                status="imported",
+                source="odk",
                 source_id=instance_id,
-                where=parse_geopoint(site_visit['observed_at']),
-                when=parser.isoparse(site_visit['incident_time']),
+                where=parse_geopoint(site_visit["observed_at"]),
+                when=parser.isoparse(site_visit["incident_time"]),
                 observer=user,
                 reporter=user,
-                comments='',
+                comments="",
                 habitat=habitat,
             )
-            if site_visit['observed_at_manual']:
-                encounter.where = parse_geopoint(site_visit['observed_at_manual'])
-            if site_visit['location_comment']:
-                encounter.comments += site_visit['location_comment'] + '\n'
-            if submission['animal_fate']['animal_fate_comment']:
-                encounter.comments += submission['animal_fate']['animal_fate_comment']
+            if site_visit["observed_at_manual"]:
+                encounter.where = parse_geopoint(site_visit["observed_at_manual"])
+            if site_visit["location_comment"]:
+                encounter.comments += site_visit["location_comment"] + "\n"
+            if submission["animal_fate"]["animal_fate_comment"]:
+                encounter.comments += submission["animal_fate"]["animal_fate_comment"]
 
-            details = submission['details']
-            encounter.taxon = details['taxon']
-            encounter.species = details['species']
-            encounter.sex = details['sex']
-            encounter.maturity = details['maturity']
+            details = submission["details"]
+            encounter.taxon = details["taxon"]
+            encounter.species = details["species"]
+            encounter.sex = details["sex"]
+            encounter.maturity = details["maturity"]
 
-            status = submission['status']
-            encounter.health = status['health']
-            encounter.activity = status['activity']
-            encounter.behaviour = status['behaviour']
+            status = submission["status"]
+            encounter.health = status["health"]
+            encounter.activity = status["activity"]
+            encounter.behaviour = status["behaviour"]
 
             # Death details are only present for dead animals; default to NA when absent.
             death = submission.get("death") or {}
             encounter.cause_of_death = death.get("cause_of_death", NA_VALUE)
             encounter.cause_of_death_confidence = death.get("cause_of_death_confidence", NA_VALUE)
 
-            checks = submission['checks']
-            encounter.checked_for_injuries = checks['checked_for_injuries']
-            encounter.scanned_for_pit_tags = checks['scanned_for_pit_tags']
-            encounter.checked_for_flipper_tags = checks['checked_for_flipper_tags']
+            checks = submission["checks"]
+            encounter.checked_for_injuries = checks["checked_for_injuries"]
+            encounter.scanned_for_pit_tags = checks["scanned_for_pit_tags"]
+            encounter.checked_for_flipper_tags = checks["checked_for_flipper_tags"]
 
             encounter.save()
-            LOGGER.info(f'Created AnimalEncounter: {encounter}')
+            LOGGER.info(f"Created AnimalEncounter: {encounter}")
 
             # All photo uploads.
-            if submission['site_visit']['photo_habitat']:
-                filename = submission['site_visit']['photo_habitat']
-                LOGGER.info(f'Downloading {filename}')
+            if submission["site_visit"]["photo_habitat"]:
+                filename = submission["site_visit"]["photo_habitat"]
+                LOGGER.info(f"Downloading {filename}")
                 attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
                 photo = MediaAttachment(
                     encounter=encounter,
                     source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
-                    media_type='photograph',
-                    title=f'Habitate photo {filename}',
+                    media_type="photograph",
+                    title=f"Habitate photo {filename}",
                     attachment=attachment,
                 )
                 photo.save()
-                LOGGER.info(f'Created MediaAttachment {photo}')
+                LOGGER.info(f"Created MediaAttachment {photo}")
 
-            if submission['photos_turtle']['photo_carapace_top']:
-                filename = submission['photos_turtle']['photo_carapace_top']
-                LOGGER.info(f'Downloading {filename}')
+            if submission["photos_turtle"]["photo_carapace_top"]:
+                filename = submission["photos_turtle"]["photo_carapace_top"]
+                LOGGER.info(f"Downloading {filename}")
                 attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
                 photo = MediaAttachment(
                     encounter=encounter,
                     source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
-                    media_type='photograph',
-                    title=f'Carapace photo {filename}',
+                    media_type="photograph",
+                    title=f"Carapace photo {filename}",
                     attachment=attachment,
                 )
                 photo.save()
-                LOGGER.info(f'Created MediaAttachment {photo}')
+                LOGGER.info(f"Created MediaAttachment {photo}")
 
-            if submission['photos_turtle']['photo_head_top']:
-                filename = submission['photos_turtle']['photo_head_top']
-                LOGGER.info(f'Downloading {filename}')
+            if submission["photos_turtle"]["photo_head_top"]:
+                filename = submission["photos_turtle"]["photo_head_top"]
+                LOGGER.info(f"Downloading {filename}")
                 attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
                 photo = MediaAttachment(
                     encounter=encounter,
                     source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
-                    media_type='photograph',
-                    title=f'Head top photo {filename}',
+                    media_type="photograph",
+                    title=f"Head top photo {filename}",
                     attachment=attachment,
                 )
                 photo.save()
-                LOGGER.info(f'Created MediaAttachment {photo}')
+                LOGGER.info(f"Created MediaAttachment {photo}")
 
-            if submission['photos_turtle']['photo_head_side']:
-                filename = submission['photos_turtle']['photo_head_side']
-                LOGGER.info(f'Downloading {filename}')
+            if submission["photos_turtle"]["photo_head_side"]:
+                filename = submission["photos_turtle"]["photo_head_side"]
+                LOGGER.info(f"Downloading {filename}")
                 attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
                 photo = MediaAttachment(
                     encounter=encounter,
                     source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
-                    media_type='photograph',
-                    title=f'Head side photo {filename}',
+                    media_type="photograph",
+                    title=f"Head side photo {filename}",
                     attachment=attachment,
                 )
                 photo.save()
-                LOGGER.info(f'Created MediaAttachment {photo}')
+                LOGGER.info(f"Created MediaAttachment {photo}")
 
-            if submission['photos_turtle']['photo_head_front']:
-                filename = submission['photos_turtle']['photo_head_front']
-                LOGGER.info(f'Downloading {filename}')
+            if submission["photos_turtle"]["photo_head_front"]:
+                filename = submission["photos_turtle"]["photo_head_front"]
+                LOGGER.info(f"Downloading {filename}")
                 attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
                 photo = MediaAttachment(
                     encounter=encounter,
                     source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
-                    media_type='photograph',
-                    title=f'Head front photo {filename}',
+                    media_type="photograph",
+                    title=f"Head front photo {filename}",
                     attachment=attachment,
                 )
                 photo.save()
-                LOGGER.info(f'Created MediaAttachment {photo}')
+                LOGGER.info(f"Created MediaAttachment {photo}")
 
-            if submission['habitat_photos']['photo_habitat_1']:
-                filename = submission['habitat_photos']['photo_habitat_1']
-                LOGGER.info(f'Downloading {filename}')
+            if submission["habitat_photos"]["photo_habitat_1"]:
+                filename = submission["habitat_photos"]["photo_habitat_1"]
+                LOGGER.info(f"Downloading {filename}")
                 attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
                 photo = MediaAttachment(
                     encounter=encounter,
                     source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
-                    media_type='photograph',
-                    title=f'Scene photo {filename}',
+                    media_type="photograph",
+                    title=f"Scene photo {filename}",
                     attachment=attachment,
                 )
                 photo.save()
-                LOGGER.info(f'Created MediaAttachment {photo}')
+                LOGGER.info(f"Created MediaAttachment {photo}")
 
-            if submission['habitat_photos']['photo_habitat_2']:
-                filename = submission['habitat_photos']['photo_habitat_2']
-                LOGGER.info(f'Downloading {filename}')
+            if submission["habitat_photos"]["photo_habitat_2"]:
+                filename = submission["habitat_photos"]["photo_habitat_2"]
+                LOGGER.info(f"Downloading {filename}")
                 attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
                 photo = MediaAttachment(
                     encounter=encounter,
                     source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
-                    media_type='photograph',
-                    title=f'Scene photo {filename}',
+                    media_type="photograph",
+                    title=f"Scene photo {filename}",
                     attachment=attachment,
                 )
                 photo.save()
-                LOGGER.info(f'Created MediaAttachment {photo}')
+                LOGGER.info(f"Created MediaAttachment {photo}")
 
-            if submission['habitat_photos']['photo_habitat_3']:
-                filename = submission['habitat_photos']['photo_habitat_3']
-                LOGGER.info(f'Downloading {filename}')
+            if submission["habitat_photos"]["photo_habitat_3"]:
+                filename = submission["habitat_photos"]["photo_habitat_3"]
+                LOGGER.info(f"Downloading {filename}")
                 attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
                 photo = MediaAttachment(
                     encounter=encounter,
                     source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
-                    media_type='photograph',
-                    title=f'Scene photo {filename}',
+                    media_type="photograph",
+                    title=f"Scene photo {filename}",
                     attachment=attachment,
                 )
                 photo.save()
-                LOGGER.info(f'Created MediaAttachment {photo}')
+                LOGGER.info(f"Created MediaAttachment {photo}")
 
             # TurtleDamageObservation
-            if 'damage_observations' in submission:
-                damage_observations = submission['damage_observations']['damage_observation']
+            if "damage_observations" in submission:
+                damage_observations = submission["damage_observations"]["damage_observation"]
                 # Might be a list or a single object :|
                 if not isinstance(damage_observations, list):
                     damage_observations = [damage_observations]
@@ -971,31 +1000,31 @@ def import_marine_wildlife_incident(form_id="marine_wildlife_incident", auth_hea
                     damage_observation = TurtleDamageObservation(
                         encounter=encounter,
                         source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
-                        body_part=obs['body_part'],
-                        damage_type=obs['damage_type'],
-                        damage_age=obs['damage_age'],
-                        description=obs['description'],
+                        body_part=obs["body_part"],
+                        damage_type=obs["damage_type"],
+                        damage_age=obs["damage_age"],
+                        description=obs["description"],
                     )
                     damage_observation.save()
-                    LOGGER.info(f'Created TurtleDamageObservation: {damage_observation}')
+                    LOGGER.info(f"Created TurtleDamageObservation: {damage_observation}")
 
-                    if obs['photo_damage']:
-                        filename = obs['photo_damage']
-                        LOGGER.info(f'Downloading {filename}')
+                    if obs["photo_damage"]:
+                        filename = obs["photo_damage"]
+                        LOGGER.info(f"Downloading {filename}")
                         attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
                         photo = MediaAttachment(
                             encounter=encounter,
                             source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
-                            media_type='photograph',
-                            title=f'Animal damage photo {filename}',
+                            media_type="photograph",
+                            title=f"Animal damage photo {filename}",
                             attachment=attachment,
                         )
                         photo.save()
-                        LOGGER.info(f'Created MediaAttachment {photo}')
+                        LOGGER.info(f"Created MediaAttachment {photo}")
 
             # TagObservation
-            if 'tag_observations' in submission:
-                tag_observations = submission['tag_observations']['tag_observation']
+            if "tag_observations" in submission:
+                tag_observations = submission["tag_observations"]["tag_observation"]
                 # Might be a list or a single object :|
                 if not isinstance(tag_observations, list):
                     tag_observations = [tag_observations]
@@ -1004,52 +1033,54 @@ def import_marine_wildlife_incident(form_id="marine_wildlife_incident", auth_hea
                     tag_observation = TagObservation(
                         encounter=encounter,
                         source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
-                        tag_type=obs['tag_type'],
-                        tag_location=obs['tag_location'],
-                        name=obs['tag_id'],
-                        status=obs['tag_status'] if obs['tag_status'] else 'resighted',
+                        tag_type=obs["tag_type"],
+                        tag_location=obs["tag_location"],
+                        name=obs["tag_id"],
+                        status=obs["tag_status"] if obs["tag_status"] else "resighted",
                         recorder=user,
-                        comments=obs['tag_comment'],
+                        comments=obs["tag_comment"],
                     )
                     tag_observation.save()
-                    LOGGER.info(f'Created TagObservation: {tag_observation}')
+                    LOGGER.info(f"Created TagObservation: {tag_observation}")
 
-                    if obs['tag_photo']:
-                        filename = obs['tag_photo']
-                        LOGGER.info(f'Downloading {filename}')
+                    if obs["tag_photo"]:
+                        filename = obs["tag_photo"]
+                        LOGGER.info(f"Downloading {filename}")
                         attachment = get_submission_attachment(auth_headers, project_id, form_id, instance_id, filename)
                         photo = MediaAttachment(
                             encounter=encounter,
                             source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
-                            media_type='photograph',
-                            title=f'Tag photo {filename}',
+                            media_type="photograph",
+                            title=f"Tag photo {filename}",
                             attachment=attachment,
                         )
                         photo.save()
-                        LOGGER.info(f'Created MediaAttachment {photo}')
+                        LOGGER.info(f"Created MediaAttachment {photo}")
 
             # TurtleMorphometricObservation
-            morph = submission['morphometrics']
-            if any([
-                morph['curved_carapace_length_mm'],
-                morph['curved_carapace_width_mm'],
-                morph['tail_length_carapace_mm'],
-                morph['maximum_head_width_mm'],
-            ]):
+            morph = submission["morphometrics"]
+            if any(
+                [
+                    morph["curved_carapace_length_mm"],
+                    morph["curved_carapace_width_mm"],
+                    morph["tail_length_carapace_mm"],
+                    morph["maximum_head_width_mm"],
+                ]
+            ):
                 morphometric_obs = TurtleMorphometricObservation(
                     encounter=encounter,
                     source=LegacySourceMixin.SOURCE_DIGITAL_CAPTURE_ODK,
-                    curved_carapace_length_mm=morph['curved_carapace_length_mm'],
-                    curved_carapace_length_accuracy=morph['curved_carapace_length_accuracy'],
-                    curved_carapace_width_mm=morph['curved_carapace_width_mm'],
-                    curved_carapace_width_accuracy=morph['curved_carapace_width_accuracy'],
-                    tail_length_carapace_mm=morph['tail_length_carapace_mm'],
-                    tail_length_carapace_accuracy=morph['tail_length_carapace_accuracy'],
-                    maximum_head_width_mm=morph['maximum_head_width_mm'],
-                    maximum_head_width_accuracy=morph['maximum_head_width_accuracy'],
+                    curved_carapace_length_mm=morph["curved_carapace_length_mm"],
+                    curved_carapace_length_accuracy=morph["curved_carapace_length_accuracy"],
+                    curved_carapace_width_mm=morph["curved_carapace_width_mm"],
+                    curved_carapace_width_accuracy=morph["curved_carapace_width_accuracy"],
+                    tail_length_carapace_mm=morph["tail_length_carapace_mm"],
+                    tail_length_carapace_accuracy=morph["tail_length_carapace_accuracy"],
+                    maximum_head_width_mm=morph["maximum_head_width_mm"],
+                    maximum_head_width_accuracy=morph["maximum_head_width_accuracy"],
                 )
                 morphometric_obs.save()
-                LOGGER.info(f'Created TurtleMorphometricObservation: {morphometric_obs}')
+                LOGGER.info(f"Created TurtleMorphometricObservation: {morphometric_obs}")
         except:
             LOGGER.exception(f"Exception during import of ODK {form_id} submission {instance_id}")
 
@@ -1067,33 +1098,33 @@ def import_turtle_sighting(form_id="turtle_sighting", auth_headers=None):
 
     for submission in submissions:
         try:
-            instance_id = submission['meta']['instanceID']
+            instance_id = submission["meta"]["instanceID"]
 
-            if AnimalEncounter.objects.filter(source='odk', source_id=instance_id):
+            if AnimalEncounter.objects.filter(source="odk", source_id=instance_id):
                 continue  # Skip records already imported.
 
             # Try to match the reporter to an existing User. If not, create a new one.
-            reporter = submission['reporter']
+            reporter = submission["reporter"]
             user = get_user(reporter)
 
-            sighting = submission['encounter']
+            sighting = submission["encounter"]
             encounter = AnimalEncounter(
-                status='imported',
-                source='odk',
+                status="imported",
+                source="odk",
                 source_id=instance_id,
-                where=parse_geopoint(sighting['observed_at']),
-                when=parser.isoparse(submission['start_time']),
+                where=parse_geopoint(sighting["observed_at"]),
+                when=parser.isoparse(submission["start_time"]),
                 observer=user,
                 reporter=user,
-                taxon='Cheloniidae',
-                species=sighting['species'],
-                maturity=sighting['maturity'],
-                comments=sighting['comments'],
-                encounter_type='other',
+                taxon="Cheloniidae",
+                species=sighting["species"],
+                maturity=sighting["maturity"],
+                comments=sighting["comments"],
+                encounter_type="other",
             )
-            if sighting['interaction']:
+            if sighting["interaction"]:
                 interaction_choices = dict(TURTLE_INTERACTION_CHOICES)
-                encounter.behaviour = interaction_choices.get(sighting['interaction'], None)
+                encounter.behaviour = interaction_choices.get(sighting["interaction"], None)
 
             encounter.save()
 

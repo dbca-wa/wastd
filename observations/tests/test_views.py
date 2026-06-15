@@ -1,27 +1,27 @@
+from uuid import uuid4
+
 from django.contrib.auth import get_user_model
-from django.contrib.gis.geos import GEOSGeometry
+from django.contrib.gis.geos import Point
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
-from uuid import uuid4
 
 from observations.models import (
-    Encounter,
     AnimalEncounter,
+    Encounter,
+    HatchlingMorphometricObservation,
+    LightSourceObservation,
+    LoggerObservation,
+    NestTagObservation,
+    TurtleHatchlingEmergenceObservation,
+    TurtleHatchlingEmergenceOutlierObservation,
+    TurtleNestDisturbanceObservation,
     TurtleNestEncounter,
     TurtleNestObservation,
-    TurtleHatchlingEmergenceObservation,
-    NestTagObservation,
-    TurtleNestDisturbanceObservation,
-    LoggerObservation,
-    HatchlingMorphometricObservation,
-    TurtleHatchlingEmergenceOutlierObservation,
-    LightSourceObservation,
 )
 
 
 class ViewsTestCase(TestCase):
-
     def setUp(self):
         User = get_user_model()
         self.superuser = User.objects.create_superuser(
@@ -46,14 +46,15 @@ class ViewsTestCase(TestCase):
         )
         self.user.save()
         self.enc = Encounter.objects.create(
-            where=GEOSGeometry("POINT (115 -32)", srid=4326),
+            where=Point((115, -32)),
             when=timezone.now(),
             source_id=uuid4(),
             observer=self.staff,
             reporter=self.user,
         )
+        self.enc.save()
         self.stranding = AnimalEncounter.objects.create(
-            where=GEOSGeometry("POINT (115 -32)", srid=4326),
+            where=Point((115, -32)),
             when=timezone.now(),
             source_id=uuid4(),
             observer=self.staff,
@@ -61,7 +62,7 @@ class ViewsTestCase(TestCase):
             species="cheloniidae-fam",
         )
         self.nest = TurtleNestEncounter.objects.create(
-            where=GEOSGeometry("POINT (115 -32)", srid=4326),
+            where=Point((115, -32)),
             when=timezone.now(),
             observer=self.staff,
             reporter=self.user,
@@ -69,7 +70,7 @@ class ViewsTestCase(TestCase):
             nest_type="nest",
         )
         self.track = TurtleNestEncounter.objects.create(
-            where=GEOSGeometry("POINT (115 -32)", srid=4326),
+            where=Point((115, -32)),
             when=timezone.now(),
             observer=self.staff,
             reporter=self.user,
@@ -107,31 +108,27 @@ class ViewsTestCase(TestCase):
 
 
 class HomeViewTests(ViewsTestCase):
-
     def setUp(self):
         super().setUp()
         self.home_url = reverse("home")
 
     def test_home_staff(self):
-        """The home view will load for a staff/superuser and contain a link to the curation portal
-        """
+        """The home view will load for a staff/superuser and contain a link to the curation portal"""
         for user in [self.staff, self.superuser]:
             self.client.force_login(user)
             response = self.client.get(self.home_url)
             self.assertEqual(response.status_code, 200)
-            self.assertContains(response, "Curation portal")
+            self.assertContains(response, "Curation")
 
     def test_home_user(self):
-        """The home view will load for a normal user and contain no link to the curation portal
-        """
+        """The home view will load for a normal user and contain no link to the curation portal"""
         self.client.force_login(self.user)
         response = self.client.get(self.home_url)
         self.assertEqual(response.status_code, 200)
-        self.assertNotContains(response, "Curation portal")
+        self.assertNotContains(response, "Curation")
 
 
 class EncounterViewTests(ViewsTestCase):
-
     def setUp(self):
         super().setUp()
         self.list_url = reverse("observations:encounter-list")
@@ -140,8 +137,7 @@ class EncounterViewTests(ViewsTestCase):
         self.detail_url_stranding = reverse("observations:animalencounter-detail", kwargs={"pk": self.stranding.pk})
 
     def test_encounter_list(self):
-        """The encounter list view will load for all users and contain common elements
-        """
+        """The encounter list view will load for all users and contain common elements"""
         for user in [self.staff, self.superuser, self.user]:
             self.client.force_login(user)
             # Encounter list
@@ -156,8 +152,7 @@ class EncounterViewTests(ViewsTestCase):
             self.assertContains(response, f"QA status: {self.stranding.get_status_display()}")
 
     def test_encounter_list_staff(self):
-        """The encounter list view will contain edit/curation links for authorised users
-        """
+        """The encounter list view will contain edit/curation links for authorised users"""
         for user in [self.staff, self.superuser]:
             self.client.force_login(user)
             # Encounter list
@@ -175,8 +170,7 @@ class EncounterViewTests(ViewsTestCase):
                 self.assertContains(response, curate_url)
 
     def test_encounter_list_user(self):
-        """The encounter list view will not contain edit/curation links for normal users
-        """
+        """The encounter list view will not contain edit/curation links for normal users"""
         self.client.force_login(self.user)
         # Encounter list
         response = self.client.get(self.list_url)
@@ -193,8 +187,7 @@ class EncounterViewTests(ViewsTestCase):
             self.assertNotContains(response, curate_url)
 
     def test_encounter_detail(self):
-        """The encounter detail view will load for all users and contain common elements
-        """
+        """The encounter detail view will load for all users and contain common elements"""
         for user in [self.staff, self.superuser, self.user]:
             self.client.force_login(user)
             # Encounter detail
@@ -210,8 +203,7 @@ class EncounterViewTests(ViewsTestCase):
             self.assertContains(response, f"QA status: {self.stranding.get_status_display()}")
 
     def test_encounter_detail_staff(self):
-        """The encounter detail view will contain edit/curation links for authorised users
-        """
+        """The encounter detail view will contain edit/curation links for authorised users"""
         for user in [self.staff, self.superuser]:
             self.client.force_login(user)
             # Encounter detail
@@ -228,8 +220,7 @@ class EncounterViewTests(ViewsTestCase):
                 self.assertContains(response, curate_url)
 
     def test_encounter_detail_user(self):
-        """The encounter detail view will not contain edit/curation links for normal users
-        """
+        """The encounter detail view will not contain edit/curation links for normal users"""
         self.client.force_login(self.user)
         # Encounter detail
         response = self.client.get(self.detail_url)

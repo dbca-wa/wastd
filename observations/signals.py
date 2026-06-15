@@ -1,20 +1,21 @@
-from django.db.models.signals import post_save, pre_delete, pre_save
-from django.dispatch import receiver
 import logging
 
+from django.db.models.signals import post_save, pre_delete, pre_save
+from django.dispatch import receiver
+
 from wastd.utils import sanitize_tag_label
+
 from .models import (
-    Campaign,
-    Survey,
-    Encounter,
     AnimalEncounter,
-    TurtleNestEncounter,
+    Campaign,
+    Encounter,
     LineTransectEncounter,
-    TagObservation,
     NestTagObservation,
+    Survey,
+    TagObservation,
+    TurtleNestEncounter,
 )
 from .utils import claim_encounters
-
 
 LOGGER = logging.getLogger("turtles")
 
@@ -23,9 +24,7 @@ LOGGER = logging.getLogger("turtles")
 def campaign_post_save(sender, instance, *args, **kwargs):
     """Campaign: Claim Surveys and Encounters."""
     instance.adopt_all_surveys_and_encounters()
-    msg = "Campaign {} has adopted {} surveys and {} encounters.".format(
-        instance, instance.surveys.count(), instance.encounters.count()
-    )
+    msg = "Campaign {} has adopted {} surveys and {} encounters.".format(instance, instance.surveys.count(), instance.encounters.count())
     LOGGER.info(msg)
 
 
@@ -39,8 +38,7 @@ def survey_pre_save(sender, instance, *args, **kwargs):
 
 @receiver(post_save, sender=Survey)
 def survey_post_save(sender, instance, *args, **kwargs):
-    """Survey: claim encounters if not a training survey.
-    """
+    """Survey: claim encounters if not a training survey."""
     if instance.production and instance.start_time and instance.end_time and instance.site:
         claim_encounters(instance)
 
@@ -71,7 +69,7 @@ def encounter_pre_save(sender, instance, *args, **kwargs):
     if not instance.source_id:
         instance.source_id = instance.short_name
     # This is slow, use set_name() instead in bulk
-    if not instance.name and instance.inferred_name:
+    if not instance.name and instance.pk and instance.inferred_name:
         instance.name = instance.inferred_name
     if not instance.site:
         instance.site = instance.guess_site
@@ -83,16 +81,14 @@ def encounter_pre_save(sender, instance, *args, **kwargs):
 
 @receiver(pre_save, sender=TagObservation)
 def tagobservation_pre_save(sender, instance, *args, **kwargs):
-    """TagObservation pre_save: sanitise tag_label, name Encounter after tag.
-    """
+    """TagObservation pre_save: sanitise tag_label, name Encounter after tag."""
     if instance.encounter.status == Encounter.STATUS_NEW and instance.name:
         instance.name = sanitize_tag_label(instance.name)
 
 
 @receiver(pre_save, sender=NestTagObservation)
 def nesttagobservation_pre_save(sender, instance, *args, **kwargs):
-    """NestTagObservation pre_save: sanitise tag_label, name unnamed Encounter after tag.
-    """
+    """NestTagObservation pre_save: sanitise tag_label, name unnamed Encounter after tag."""
     if instance.encounter.status == Encounter.STATUS_NEW and instance.tag_label:
         instance.tag_label = sanitize_tag_label(instance.tag_label)
     if instance.encounter.status == Encounter.STATUS_NEW and instance.flipper_tag_id:

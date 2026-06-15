@@ -1,12 +1,22 @@
 from django import forms
 from easy_select2 import apply_select2
 from .models import (
-    TrtPersons, TrtDataEntry, TrtTags, 
-    TrtEntryBatches, TrtPlaces, TrtPitTags, 
-    Template, TrtObservations,TrtTagStates, 
-    TrtMeasurementTypes,TrtYesNo,SEX_CHOICES,
-    TrtNestingSeason, TrtDamageCodes, TrtDatumCodes
-    )
+    TrtPersons,
+    TrtDataEntry,
+    TrtTags,
+    TrtEntryBatches,
+    TrtPlaces,
+    TrtPitTags,
+    Template,
+    TrtObservations,
+    TrtTagStates,
+    TrtMeasurementTypes,
+    TrtYesNo,
+    SEX_CHOICES,
+    TrtNestingSeason,
+    TrtDamageCodes,
+    TrtDatumCodes,
+)
 from django_select2.forms import ModelSelect2Widget
 from django.core.validators import RegexValidator
 from django.db.models import Case, When, IntegerField
@@ -47,7 +57,7 @@ unassignedPitTagWidget = ModelSelect2Widget(
 )
 
 personWidget = ModelSelect2Widget(
-    queryset=TrtPersons.objects.all().only('person_id', 'first_name', 'surname'),
+    queryset=TrtPersons.objects.all().only("person_id", "first_name", "surname"),
     model=TrtPersons,
     search_fields=["first_name__icontains"],
 )
@@ -56,7 +66,7 @@ placeWidget = ModelSelect2Widget(
     queryset=TrtPlaces.objects.all(),
     model=TrtPlaces,
     search_fields=["place_name__icontains", "location_code__location_name__icontains"],
-    attrs={'data-required': 'true'} 
+    attrs={"data-required": "true"},
 )
 
 
@@ -86,14 +96,15 @@ class SearchForm(forms.Form):
 class TrtEntryBatchesForm(forms.ModelForm):
     curved_carapace_length_notch = forms.IntegerField(
         required=False,
-        validators=[RegexValidator(r'^\d+$', 'Enter a valid integer.')],
-        widget=forms.NumberInput(attrs={'class': 'form-control', 'step': '1', 'min': '0'})
+        validators=[RegexValidator(r"^\d+$", "Enter a valid integer.")],
+        widget=forms.NumberInput(attrs={"class": "form-control", "step": "1", "min": "0"}),
     )
     curved_carapace_width = forms.IntegerField(
         required=False,
-        validators=[RegexValidator(r'^\d+$', 'Enter a valid integer.')],
-        widget=forms.NumberInput(attrs={'class': 'form-control', 'step': '1', 'min': '0'})
+        validators=[RegexValidator(r"^\d+$", "Enter a valid integer.")],
+        widget=forms.NumberInput(attrs={"class": "form-control", "step": "1", "min": "0"}),
     )
+
     class Meta:
         model = TrtEntryBatches
         fields = ["entered_person_id", "comments", "entry_date"]
@@ -102,10 +113,10 @@ class TrtEntryBatchesForm(forms.ModelForm):
             "comments": forms.Textarea(attrs={"rows": 1, "class": "form-control"}),
             "entry_date": forms.HiddenInput(),
         }
-        
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['entered_person_id'].label = "Enterer Name"
+        self.fields["entered_person_id"].label = "Enterer Name"
 
 
 class TrtDataEntryForm(forms.ModelForm):
@@ -188,7 +199,6 @@ class TrtDataEntryForm(forms.ModelForm):
             "clutch_completed",
             "egg_count",
             "egg_count_method",
-            
             # v2.0 added columns
             "recapture_left_tag_state",
             "recapture_left_tag_state_2",
@@ -212,8 +222,6 @@ class TrtDataEntryForm(forms.ModelForm):
             "recapture_right_tag_barnacles_2",
             "identifier",
             "identification_type",
-            
-
             "curved_carapace_length_notch",
             "measurement_type_3",
             "measurement_value_3",
@@ -224,27 +232,22 @@ class TrtDataEntryForm(forms.ModelForm):
             "measurement_type_6",
             "measurement_value_6",
             "cc_notch_length_not_measured",
-            
             "flipper_tag_check",
             "pit_tag_check",
             "injury_check",
             "scar_check",
-            
             "recapture_pittag_id_3",
             "recapture_pittag_id_4",
             "new_pittag_id_3",
             "new_pittag_id_4",
-            
             "new_pit_tag_sticker_present",
             "new_pit_tag_2_sticker_present",
             "new_pit_tag_3_sticker_present",
             "new_pit_tag_4_sticker_present",
-
             "dud_flipper_tag",
             "dud_flipper_tag_2",
             "dud_pit_tag",
             "dud_pit_tag_2",
-            
             "body_part_4",
             "damage_code_4",
             "body_part_5",
@@ -257,18 +260,13 @@ class TrtDataEntryForm(forms.ModelForm):
             "turtle_id": forms.HiddenInput(),
             "entry_batch": forms.HiddenInput(),
             "observation_date": forms.DateTimeInput(
-                attrs={
-                    "type": "text",
-                    "class": "form-control",
-                    "data-date-format": "ddmmyyyy HH:mm",
-                    "placeholder": "DDMMYYYY HH:mm"
-                }
+                attrs={"type": "text", "class": "form-control", "data-date-format": "ddmmyyyy HH:mm", "placeholder": "DDMMYYYY HH:mm"}
             ),
             "measured_by_id": forms.HiddenInput(),
             "recorded_by_id": forms.HiddenInput(),
             "tagged_by_id": forms.HiddenInput(),
             "entered_by_id": forms.HiddenInput(),
-            "place_code": forms.HiddenInput(attrs={'data-place-code': ''}),
+            "place_code": forms.HiddenInput(attrs={"data-place-code": ""}),
             "comments": forms.Textarea(attrs={"rows": 3, "class": "form-control"}),
             "clutch_completed": forms.Select(attrs={"class": "form-control"}),
             "egg_count": forms.NumberInput(attrs={"class": "form-control"}),
@@ -280,128 +278,119 @@ class TrtDataEntryForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.batch_id = kwargs.pop("batch_id", None)
         super().__init__(*args, **kwargs)
-        
-        if not self.instance.pk: 
-            self.fields['alive'].initial = TrtYesNo.objects.get(code='Y')
-            self.fields['datum_code'].initial = 'WGS84'
-            self.fields['activity_code'].initial = 'P'
-            
-        self.fields['observation_date'].input_formats = ['%d/%m/%Y %H:%M']
-        self.fields['observation_date'].widget = forms.TextInput(
-            attrs={
-                "class": "form-control",
-                "placeholder": "DD/MM/YYYY HH:mm"
-            }
-        )
-        
-        self.fields['alive'].queryset = TrtYesNo.objects.all()
 
-        self.fields['datum_code'] = forms.ModelChoiceField(
-            queryset=TrtDatumCodes.objects.all(),
-            initial='WGS84',
-            required=False
-        )
+        if not self.instance.pk:
+            self.fields["alive"].initial = TrtYesNo.objects.get(code="Y")
+            self.fields["datum_code"].initial = "WGS84"
+            self.fields["activity_code"].initial = "P"
+
+        self.fields["observation_date"].input_formats = ["%d/%m/%Y %H:%M"]
+        self.fields["observation_date"].widget = forms.TextInput(attrs={"class": "form-control", "placeholder": "DD/MM/YYYY HH:mm"})
+
+        self.fields["alive"].queryset = TrtYesNo.objects.all()
+
+        self.fields["datum_code"] = forms.ModelChoiceField(queryset=TrtDatumCodes.objects.all(), initial="WGS84", required=False)
 
         damage_codes = TrtDamageCodes.objects.all()
-        
+
         # Set damage code field
         for i in range(1, 7):
-            damage_code_field = f'damage_code_{i}'
+            damage_code_field = f"damage_code_{i}"
             if damage_code_field in self.fields:
                 self.fields[damage_code_field] = forms.ModelChoiceField(
                     queryset=damage_codes,
                     required=False,
-                    to_field_name='damage_code',
-                    widget=forms.Select(attrs={
-                        'class': 'form-control',
-                        'data-initial': getattr(self.instance, damage_code_field).damage_code if self.instance and getattr(self.instance, damage_code_field) else ''
-                    }),
-                    empty_label='---------'
+                    to_field_name="damage_code",
+                    widget=forms.Select(
+                        attrs={
+                            "class": "form-control",
+                            "data-initial": getattr(self.instance, damage_code_field).damage_code
+                            if self.instance and getattr(self.instance, damage_code_field)
+                            else "",
+                        }
+                    ),
+                    empty_label="---------",
                 )
-                
+
                 # Set initial value
                 if self.instance and getattr(self.instance, damage_code_field):
                     self.initial[damage_code_field] = getattr(self.instance, damage_code_field)
-        
-        self.fields['entered_by'].widget = forms.TextInput(attrs={
-            'class': 'form-control', 
-            'placeholder': 'Enter name',
-        })
-        
-        custom_sex_order = ['F', 'M', 'I']
+
+        self.fields["entered_by"].widget = forms.TextInput(
+            attrs={
+                "class": "form-control",
+                "placeholder": "Enter name",
+            }
+        )
+
+        custom_sex_order = ["F", "M", "I"]
         sex_dict = dict(SEX_CHOICES)
-        ordered_choices = [('', '---------')] + [(s, sex_dict[s]) for s in custom_sex_order if s in sex_dict]
-        
-        self.fields['sex'].choices = ordered_choices
-        
-        clutch_completed_choices = list(TrtYesNo.objects.filter(code__in=['D', 'N', 'P', 'U', 'Y', 'O']).values_list('code', 'description'))
+        ordered_choices = [("", "---------")] + [(s, sex_dict[s]) for s in custom_sex_order if s in sex_dict]
+
+        self.fields["sex"].choices = ordered_choices
+
+        clutch_completed_choices = list(TrtYesNo.objects.filter(code__in=["D", "N", "P", "U", "Y", "O"]).values_list("code", "description"))
         clutch_completed_choices = [
-            ('', '---------'),
-            ('Y', 'Yes, saw eggs'),
-            ('N', 'No nest'),
-            ('P', "Possible nest, didn't see eggs"),
-        ] + [(code, desc) for code, desc in clutch_completed_choices if code not in ['Y', 'N', 'P']]
-        
-        self.fields['clutch_completed'].choices = clutch_completed_choices
-                        
-        interrupted_choices = TrtYesNo.objects.filter(code__in=['N', 'P', 'Y'])
-        self.fields['interrupted'].queryset = interrupted_choices
+            ("", "---------"),
+            ("Y", "Yes, saw eggs"),
+            ("N", "No nest"),
+            ("P", "Possible nest, didn't see eggs"),
+        ] + [(code, desc) for code, desc in clutch_completed_choices if code not in ["Y", "N", "P"]]
+
+        self.fields["clutch_completed"].choices = clutch_completed_choices
+
+        interrupted_choices = TrtYesNo.objects.filter(code__in=["N", "P", "Y"])
+        self.fields["interrupted"].queryset = interrupted_choices
 
         # Filter the queryset for measurement types
-        filtered_measurement_types = TrtMeasurementTypes.objects.exclude(
-            measurement_type__in=['CCW', 'CCL NOTCH']
-        )
+        filtered_measurement_types = TrtMeasurementTypes.objects.exclude(measurement_type__in=["CCW", "CCL NOTCH"])
         for i in range(1, 7):
-            field_name = f'measurement_type_{i}'
+            field_name = f"measurement_type_{i}"
             self.fields[field_name].queryset = filtered_measurement_types
 
         tag_state_order = ["A1", "AE", "#"]
-        
+
         tag_state_order_case = Case(
             *[When(tag_state=state, then=pos) for pos, state in enumerate(tag_state_order)],
             default=len(tag_state_order),
-            output_field=IntegerField()
+            output_field=IntegerField(),
         )
-        
+
         # Filter the queryset for new tag fields
-        new_tag_states = TrtTagStates.objects.filter(
-            tag_state__in=tag_state_order
-        ).order_by(tag_state_order_case)
-        
-        self.fields['new_left_tag_state'].queryset = new_tag_states
-        self.fields['new_right_tag_state'].queryset = new_tag_states
-        self.fields['new_left_tag_state_2'].queryset = new_tag_states
-        self.fields['new_right_tag_state_2'].queryset = new_tag_states
+        new_tag_states = TrtTagStates.objects.filter(tag_state__in=tag_state_order).order_by(tag_state_order_case)
+
+        self.fields["new_left_tag_state"].queryset = new_tag_states
+        self.fields["new_right_tag_state"].queryset = new_tag_states
+        self.fields["new_left_tag_state_2"].queryset = new_tag_states
+        self.fields["new_right_tag_state_2"].queryset = new_tag_states
 
         # Filter the queryset for recapture (old) tag fields
-        old_tag_state_order = ["P_OK","P", "RC", "RN", "OO", "R", "#"]
-        
+        old_tag_state_order = ["P_OK", "P", "RC", "RN", "OO", "R", "#"]
+
         old_tag_state_order_case = Case(
             *[When(tag_state=state, then=pos) for pos, state in enumerate(old_tag_state_order)],
             default=len(old_tag_state_order),
-            output_field=IntegerField()
+            output_field=IntegerField(),
         )
-        
-        old_tag_states = TrtTagStates.objects.filter(
-            tag_state__in=old_tag_state_order
-        ).order_by(old_tag_state_order_case)
-        
-        self.fields['recapture_left_tag_state'].queryset = old_tag_states
-        self.fields['recapture_right_tag_state'].queryset = old_tag_states
-        self.fields['recapture_left_tag_state_2'].queryset = old_tag_states
-        self.fields['recapture_right_tag_state_2'].queryset = old_tag_states
-        
+
+        old_tag_states = TrtTagStates.objects.filter(tag_state__in=old_tag_state_order).order_by(old_tag_state_order_case)
+
+        self.fields["recapture_left_tag_state"].queryset = old_tag_states
+        self.fields["recapture_right_tag_state"].queryset = old_tag_states
+        self.fields["recapture_left_tag_state_2"].queryset = old_tag_states
+        self.fields["recapture_right_tag_state_2"].queryset = old_tag_states
+
         self.fields["observation_date"].required = True
         self.fields["species_code"].required = True
         self.fields["place_code"].required = True
         self.fields["sex"].required = True
         self.fields["clutch_completed"].required = True
-        
+
         self.fields["flipper_tag_check"].label = "Flipper tags present?"
         self.fields["pit_tag_check"].label = "PIT tags present?"
         self.fields["injury_check"].label = "Injury present?"
         self.fields["scar_check"].label = "Tag scar present?"
-        
+
         self.fields["latitude"].label = "Latitude(WGS84) - (xx.xxxxxx)"
         self.fields["longitude"].label = "Longitude(WGS84) - (xxx.xxxxxx)"
         self.fields["interrupted"].label = "Was nesting interrupted by tagging team?"
@@ -449,7 +438,7 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["damage_rff"].label = "Right front flipper"
         self.fields["damage_lhf"].label = "Left hind flipper"
         self.fields["damage_rhf"].label = "Right hind flipper"
-        
+
         # v2.0 added columns
         self.fields["recapture_left_tag_state"].label = "Recapture Left Tag State"
         self.fields["recapture_left_tag_state_2"].label = "Recapture Left Tag Status 2"
@@ -471,24 +460,24 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["recapture_left_tag_barnacles_2"].label = ""
         self.fields["recapture_right_tag_barnacles"].label = ""
         self.fields["recapture_right_tag_barnacles_2"].label = ""
-        
+
         self.fields["cc_notch_length_not_measured"].label = "CCL min not measured"
-        
+
         self.fields["new_pit_tag_sticker_present"].label = "Sticker?"
         self.fields["new_pit_tag_2_sticker_present"].label = "Sticker?"
         self.fields["new_pit_tag_3_sticker_present"].label = "Sticker?"
         self.fields["new_pit_tag_4_sticker_present"].label = "Sticker?"
-        
+
         self.fields["do_not_process"].label = "Needs Review"
-        
+
         self.fields["dud_flipper_tag"].label = "Dud Flipper Tag 1"
         self.fields["dud_flipper_tag_2"].label = "Dud Flipper Tag 2"
         self.fields["dud_pit_tag"].label = "Dud PIT Tag 1"
         self.fields["dud_pit_tag_2"].label = "Dud PIT Tag 2"
-        
+
         self.fields["activity_code"].label = "Activity"
         self.fields["activity_code"].required = False
-        
+
         self.fields["recapture_left_tag_state"].required = False
         self.fields["recapture_left_tag_state_2"].required = False
         self.fields["recapture_right_tag_state"].required = False
@@ -511,7 +500,6 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["recapture_right_tag_barnacles_2"].required = False
         self.fields["identifier"].required = False
         self.fields["identification_type"].required = False
-        
 
         self.fields["curved_carapace_length_notch"].required = False
         self.fields["measurement_type_3"].required = False
@@ -522,9 +510,9 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["measurement_value_4"].required = False
         self.fields["measurement_value_5"].required = False
         self.fields["measurement_value_6"].required = False
-        
+
         self.fields["cc_notch_length_not_measured"].required = False
-        
+
         optional_fields = [
             "recapture_left_tag_id",
             "recapture_left_tag_id_2",
@@ -552,18 +540,18 @@ class TrtDataEntryForm(forms.ModelForm):
 
         for field in optional_fields:
             self.fields[field].required = False
-            self.fields[field].widget = forms.TextInput(attrs={'class': 'form-control'})
+            self.fields[field].widget = forms.TextInput(attrs={"class": "form-control"})
 
         # Disable all fields if there is an observation_id as it already in the database
         if self.instance.observation_id:
             for field in self.fields:
                 self.fields[field].disabled = True
-                
+
         # Set the required fields to have a class of 'required-field'
         for field_name in self.fields:
             field = self.fields[field_name]
             if field.required:
-                field.widget.attrs['class'] = field.widget.attrs.get('class', '') + ' required-field'
+                field.widget.attrs["class"] = field.widget.attrs.get("class", "") + " required-field"
 
         self.fields["sample_label_1"].label = "Sample Label 1"
         self.fields["tissue_type_1"].label = "Tissue Type 1"
@@ -581,16 +569,16 @@ class TrtDataEntryForm(forms.ModelForm):
             instance.observation_date += timedelta(hours=8)
             instance.observation_time = instance.observation_date
 
-        if instance.scar_check == 'N':
+        if instance.scar_check == "N":
             instance.tagscarnotchecked = True
-        elif instance.scar_check in ['Y', 'P']:
+        elif instance.scar_check in ["Y", "P"]:
             instance.tagscarnotchecked = False
 
-        if instance.injury_check == 'N':
+        if instance.injury_check == "N":
             instance.didnotcheckforinjury = True
-        elif instance.injury_check in ['Y', 'P']:
+        elif instance.injury_check in ["Y", "P"]:
             instance.didnotcheckforinjury = False
-            
+
         if instance.measured_by_id:
             person = TrtPersons.objects.get(person_id=instance.measured_by_id.person_id)
             instance.measured_by = "{} {}".format(person.first_name, person.surname)
@@ -636,18 +624,15 @@ class TrtDataEntryForm(forms.ModelForm):
             raise forms.ValidationError("Longitude must be between -180 and 180.")
         return lon
 
+
 class DataEntryUserModelForm(forms.ModelForm):
     qs = TrtPersons.objects.all()
-    user_entry_id = forms.ModelChoiceField(
-        queryset=qs, widget=apply_select2(forms.Select)
-    )
+    user_entry_id = forms.ModelChoiceField(queryset=qs, widget=apply_select2(forms.Select))
 
 
 class EnterUserModelForm(forms.ModelForm):
     qs = TrtPersons.objects.all()
-    entered_person_id = forms.ModelChoiceField(
-        queryset=qs, widget=apply_select2(forms.Select)
-    )
+    entered_person_id = forms.ModelChoiceField(queryset=qs, widget=apply_select2(forms.Select))
 
     # def clean(self):
     #     cleaned_data = super().clean()
@@ -658,37 +643,38 @@ class EnterUserModelForm(forms.ModelForm):
     #         raise forms.ValidationError("Choice must be an integer.")
 
     #     return cleaned_data
-    
+
+
 class TemplateForm(forms.ModelForm):
     class Meta:
         model = Template
-        fields = ['name', 'location_code', 'place_code', 'species_code', 'sex']
-        
+        fields = ["name", "location_code", "place_code", "species_code", "sex"]
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        
-        custom_sex_order = ['F', 'M', 'I']
+
+        custom_sex_order = ["F", "M", "I"]
         sex_dict = dict(SEX_CHOICES)
-        ordered_choices = [('', '---------')] + [(s, sex_dict[s]) for s in custom_sex_order if s in sex_dict]
-        
-        self.fields['sex'].choices = ordered_choices
-        self.fields['sex'].widget = forms.Select(attrs={'class': 'form-control'})
-    
+        ordered_choices = [("", "---------")] + [(s, sex_dict[s]) for s in custom_sex_order if s in sex_dict]
+
+        self.fields["sex"].choices = ordered_choices
+        self.fields["sex"].widget = forms.Select(attrs={"class": "form-control"})
+
     def clean(self):
         cleaned_data = super().clean()
-        species_code = cleaned_data.get('species_code')
-        sex = cleaned_data.get('sex')
-        location_code = cleaned_data.get('location_code')
-        place_code = cleaned_data.get('place_code')
+        species_code = cleaned_data.get("species_code")
+        sex = cleaned_data.get("sex")
+        location_code = cleaned_data.get("location_code")
+        place_code = cleaned_data.get("place_code")
 
         if not species_code:
-            cleaned_data['species_code'] = None
+            cleaned_data["species_code"] = None
         if not sex:
-            cleaned_data['sex'] = None
+            cleaned_data["sex"] = None
         if not location_code:
-            cleaned_data['location_code'] = None
+            cleaned_data["location_code"] = None
         if not place_code:
-            cleaned_data['place_code'] = None
+            cleaned_data["place_code"] = None
 
         return cleaned_data
 
@@ -696,105 +682,104 @@ class TemplateForm(forms.ModelForm):
 class TrtObservationsForm(forms.ModelForm):
     class Meta:
         model = TrtObservations
-        fields = '__all__'
+        fields = "__all__"
 
     def clean(self):
         cleaned_data = super().clean()
-        if 'observation_status' in cleaned_data:
-            cleaned_data.pop('observation_status')
-        if 'corrected_date' in cleaned_data:
-            cleaned_data.pop('corrected_date')
+        if "observation_status" in cleaned_data:
+            cleaned_data.pop("observation_status")
+        if "corrected_date" in cleaned_data:
+            cleaned_data.pop("corrected_date")
         return cleaned_data
 
 
 class BatchesCodeForm(forms.ModelForm):
     class Meta:
         model = TrtEntryBatches
-        fields = ['batches_code', 'comments', 'template', 'entered_person_id']
+        fields = ["batches_code", "comments", "template", "entered_person_id"]
         labels = {
-            'batches_code': 'Batches Code',
-            'comments': 'Comments',
-            'template': 'Template',
-            'entered_person_id': 'Team Leader Name',
+            "batches_code": "Batches Code",
+            "comments": "Comments",
+            "template": "Template",
+            "entered_person_id": "Team Leader Name",
         }
         widgets = {
-            'batches_code': forms.TextInput(attrs={'class': 'form-control'}),
-            'comments': forms.Textarea(attrs={'class': 'form-control'}),
-            'template': forms.Select(attrs={'class': 'form-control'}),
-            'entered_person_id': forms.HiddenInput(), 
+            "batches_code": forms.TextInput(attrs={"class": "form-control"}),
+            "comments": forms.Textarea(attrs={"class": "form-control"}),
+            "template": forms.Select(attrs={"class": "form-control"}),
+            "entered_person_id": forms.HiddenInput(),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['entered_person_id'].queryset = TrtPersons.objects.all()
-        self.fields['template'].queryset = Template.objects.all()
+        self.fields["entered_person_id"].queryset = TrtPersons.objects.all()
+        self.fields["template"].queryset = Template.objects.all()
 
 
 class BatchesSearchForm(forms.Form):
     batches_code = forms.CharField(
-        max_length=255, 
-        required=False, 
-        widget=forms.TextInput(attrs={'class': 'form-control'}),
-        label='Batch Code'
+        max_length=255, required=False, widget=forms.TextInput(attrs={"class": "form-control"}), label="Batch Code"
     )
 
+
 class TrtPersonsForm(forms.ModelForm):
-    specialty = forms.CharField(widget=forms.Textarea(attrs={'rows': 3}), required=False)
-    comments = forms.CharField(widget=forms.Textarea(attrs={'rows': 3}), required=False)
+    specialty = forms.CharField(widget=forms.Textarea(attrs={"rows": 3}), required=False)
+    comments = forms.CharField(widget=forms.Textarea(attrs={"rows": 3}), required=False)
+
     class Meta:
         model = TrtPersons
-        fields = '__all__'
-        required_fields = ['first_name', 'surname', 'email']
+        fields = "__all__"
+        required_fields = ["first_name", "surname", "email"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field_name in self.Meta.required_fields:
             self.fields[field_name].required = True
-            self.fields[field_name].widget.attrs['class'] = 'form-control required'
-            
-            self.fields['recorder'].required = False
-            self.fields['recorder'].initial = False
-            self.fields['recorder'].widget.attrs['class'] = 'form-control'
-        
+            self.fields[field_name].widget.attrs["class"] = "form-control required"
+
+            self.fields["recorder"].required = False
+            self.fields["recorder"].initial = False
+            self.fields["recorder"].widget.attrs["class"] = "form-control"
+
         for field_name, field in self.fields.items():
             if field_name not in self.Meta.required_fields:
                 field.required = False
-                field.widget.attrs['class'] = 'form-control'
+                field.widget.attrs["class"] = "form-control"
 
     def clean_first_name(self):
-        first_name = self.cleaned_data.get('first_name')
-        return first_name.replace(' ', '-')
+        first_name = self.cleaned_data.get("first_name")
+        return first_name.replace(" ", "-")
 
     def clean_surname(self):
-        surname = self.cleaned_data.get('surname')
-        return surname.replace(' ', '-')
-    
+        surname = self.cleaned_data.get("surname")
+        return surname.replace(" ", "-")
+
     def clean_email(self):
-        email = self.cleaned_data.get('email')
-        if not self.instance.pk:  
+        email = self.cleaned_data.get("email")
+        if not self.instance.pk:
             if TrtPersons.objects.filter(email=email).exists():
                 raise ValidationError("This email is already in use.")
-        else: 
+        else:
             if TrtPersons.objects.filter(email=email).exclude(pk=self.instance.pk).exists():
                 raise ValidationError("This email is already in use for another person.")
         return email
-    
+
     def clean_recorder(self):
-        recorder = self.cleaned_data.get('recorder', False)
+        recorder = self.cleaned_data.get("recorder", False)
         return bool(recorder)
-    
+
 
 class TagRegisterForm(forms.Form):
     TAG_TYPE_CHOICES = [
-        ('flipper', 'Flipper Tags'),
-        ('pit', 'PIT Tags'),
+        ("flipper", "Flipper Tags"),
+        ("pit", "PIT Tags"),
     ]
-    
+
     tag_type = forms.ChoiceField(choices=TAG_TYPE_CHOICES, label="Tag Type")
     tag_prefix = forms.CharField(max_length=5, label="Tag Prefix", required=False)
     start_number = forms.CharField(max_length=15, label="Start Tag Number")
     end_number = forms.CharField(max_length=15, label="End Tag Number")
-    tag_order_id = forms.IntegerField( label="Tag Order ID")
+    tag_order_id = forms.IntegerField(label="Tag Order ID")
     issue_location = forms.CharField(max_length=50, required=True, label="Issue Location")
     comments = forms.CharField(widget=forms.Textarea, required=False)
 
@@ -805,21 +790,17 @@ class TagRegisterForm(forms.Form):
 class TrtNestingSeasonForm(forms.ModelForm):
     class Meta:
         model = TrtNestingSeason
-        fields = '__all__'
+        fields = "__all__"
         widgets = {
-            'startdate': forms.DateTimeInput(
+            "startdate": forms.DateTimeInput(
                 attrs={
-                    'class': 'form-control flatpickr-datetime',
+                    "class": "form-control flatpickr-datetime",
                 }
             ),
-            'enddate': forms.DateTimeInput(
+            "enddate": forms.DateTimeInput(
                 attrs={
-                    'class': 'form-control flatpickr-datetime',
+                    "class": "form-control flatpickr-datetime",
                 }
             ),
-            'nesting_season': forms.TextInput(
-                attrs={
-                    'class': 'form-control'
-                }
-            ),
+            "nesting_season": forms.TextInput(attrs={"class": "form-control"}),
         }

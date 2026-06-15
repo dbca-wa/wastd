@@ -35,14 +35,13 @@ class SurveyMergeForm(forms.Form):
                 Div(
                     self.save_button,
                     self.cancel_button,
-                    css_class='pb-2',
+                    css_class="pb-2",
                 ),
             ),
         )
 
 
 class SurveyCloseDuplicatesForm(forms.ModelForm):
-
     confirm_button = Submit("confirm", "Confirm", css_class="btn-lg")
     cancel_button = Submit("cancel", "Cancel", css_class="btn-secondary")
 
@@ -58,12 +57,14 @@ class SurveyCloseDuplicatesForm(forms.ModelForm):
             Div(
                 Fieldset(
                     f"Survey {instance.pk} - close {instance.no_duplicates} duplicates",
-                    HTML(f"<div>Mark {instance.label_short()} as production, {instance.no_duplicates} duplicates as merged, and adopt all their encounters?</div>"),
+                    HTML(
+                        f"<div>Mark {instance.label_short()} as production, {instance.no_duplicates} duplicates as merged, and adopt all their encounters?</div>"
+                    ),
                 ),
                 Div(
                     self.confirm_button,
                     self.cancel_button,
-                    css_class='py-2',
+                    css_class="py-2",
                 ),
             ),
         )
@@ -74,7 +75,6 @@ class SurveyCloseDuplicatesForm(forms.ModelForm):
 
 
 class SurveyMakeProductionForm(SurveyCloseDuplicatesForm):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         instance = kwargs["instance"]
@@ -88,7 +88,7 @@ class SurveyMakeProductionForm(SurveyCloseDuplicatesForm):
                 Div(
                     self.confirm_button,
                     self.cancel_button,
-                    css_class='py-2',
+                    css_class="py-2",
                 ),
             ),
         )
@@ -116,13 +116,13 @@ class EncounterUpdateSurveyForm(forms.ModelForm):
             Div(
                 Fieldset(
                     f"Encounter {instance.pk} - update survey",
-                    HTML(f"<div>{ instance } at { instance.when.astimezone(settings.TZ).strftime('%d-%b-%Y %H:%M %Z') }</div>"),
+                    HTML(f"<div>{instance} at {instance.when.astimezone(settings.TZ).strftime('%d-%b-%Y %H:%M %Z')}</div>"),
                     Field("survey"),
                 ),
                 Div(
                     self.save_button,
                     self.cancel_button,
-                    css_class='pb-2',
+                    css_class="pb-2",
                 ),
             ),
         )

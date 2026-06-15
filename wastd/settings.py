@@ -153,10 +153,7 @@ MAP_WIDGETS = {
             "scrollZoom": True,
             "style": "mapbox://styles/dpawasi/ckigwmxrx606g19msw0g882gj",
         },
-        "geocoderOptions": {
-            "zoom": 7,
-            "countries": "au"
-        }
+        "geocoderOptions": {"zoom": 7, "countries": "au"},
     }
 }
 GEOSERVER_URL = os.environ.get("GEOSERVER_URL", "")
@@ -183,13 +180,13 @@ SITE_CODE = os.environ.get("SITE_CODE", "Turtles")
 pyproject = open(os.path.join(BASE_DIR, "pyproject.toml"), "rb")
 project = tomllib.load(pyproject)
 pyproject.close()
-VERSION_NO = project["tool"]["poetry"]["version"]
+VERSION_NO = project["project"]["version"]
 
 
 # Database configuration
 DATABASES = {
     # Defined in DATABASE_URL env variable.
-    'default': dj_database_url.config(default=os.getenv('DATABASE_URL')),
+    "default": dj_database_url.config(default=os.getenv("DATABASE_URL")),
     "wamtram2": {
         "ENGINE": "mssql",
         "HOST": os.environ.get("DB_HOST", "host"),
@@ -315,7 +312,7 @@ PHONENUMBER_DB_FORMAT = "INTERNATIONAL"
 # django-bootstrap4 preconfigured settings.
 # Reference: https://django-bootstrap4.readthedocs.io/en/latest/settings.html
 BOOTSTRAP4 = {
-    'success_css_class': '',  # Don't add `is-valid` to every form field by default.
+    "success_css_class": "",  # Don't add `is-valid` to every form field by default.
 }
 
 # django-easy-select2
@@ -331,13 +328,18 @@ def sentry_excluded_exceptions(event, hint):
     and they are not errors that we want to capture.
     https://docs.sentry.io/platforms/python/configuration/filtering/#filtering-error-events
     """
-    if "exc_info" in hint and hint["exc_info"]:
-        # Exclude database-related errors (connection error, timeout, DNS failure, etc.)
-        if hint["exc_info"][0] is OperationalError:
-            return None
-        # Exclude exceptions related to host requests not in ALLOWED_HOSTS.
-        elif hint["exc_info"][0] is DisallowedHost:
-            return None
+    exc_info = hint.get("exc_info")
+    if not exc_info:
+        return event
+
+    exc_type, _, _ = exc_info
+
+    # Ignored exception classes:
+    # Ignore normal client disconnects
+    # Exclude exceptions related to host requests not in ALLOWED_HOSTS.
+    # Exclude database-related errors (connection error, timeout, DNS failure, etc.)
+    if issubclass(exc_type, (ConnectionError, TimeoutError, DisallowedHost, OperationalError)):
+        return None
 
     return event
 

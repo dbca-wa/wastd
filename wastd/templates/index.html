@@ -85,19 +85,20 @@
         <div class="col-sm">
             <p>
                 <a class="btn btn-primary btn-block"
-                   href="{% url 'map' %}"
-                   title="Map Marine Wildlife Incidents">Map »</a>
+                   href="{% url 'marine_mammal_incidents:incident_list' %}"
+                   title="Curate and QA marine wildlife incidents">Browse marine mammal incidents »</a>
             </p>
             <p>
                 <a class="btn btn-primary btn-block"
-                   href="{% url 'marine_mammal_incidents:incident_list' %}"
-                   title="Curate and QA marine wildlife incidents">Browse marine mammal incidents»</a>
+                   href="{% url 'map' %}"
+                   title="Map Marine Wildlife Incidents">Marine mammal incidents map »</a>
             </p>
             {% if request.user.is_staff %}
                 <p>
                     <a class="btn btn-success btn-block"
                        href="{% url 'admin:observations_animalencounter_changelist' %}"
-                       title="Curate and QA marine wildlife incidents">Curate marine wildlife incidents»</a>
+                       target="_blank"
+                       title="Curate and QA marine wildlife incidents">Curate marine wildlife incidents »</a>
                 </p>
             {% endif %}
         </div>

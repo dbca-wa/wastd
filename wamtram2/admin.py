@@ -16,13 +16,12 @@ from .models import (
     TrtNestingSeason,
     TrtDamageCauseCodes,
     TrtDamageCodes,
-    TrtLocations
+    TrtLocations,
 )
 from import_export.admin import ImportExportModelAdmin
 from .forms import EnterUserModelForm, TrtObservationsForm, TrtPersonsForm, TrtNestingSeasonForm
 from django.urls import reverse
 from django.utils.html import format_html
-
 
 
 class TrtMeasurementsInline(nested_admin.NestedTabularInline):
@@ -60,18 +59,41 @@ class TrtDamageInline(nested_admin.NestedStackedInline):
 class TrtDataEntryInline(admin.TabularInline):
     model = TrtDataEntry
     extra = 0
-    fields = ('linked_data_entry_id','saved_observation', 'observation_date', 'turtle', 'recapture_tags', 'new_tags', 'lay', 'enterer', 'needs_review', 'comments')
-    readonly_fields = ('linked_data_entry_id','saved_observation', 'observation_date', 'turtle', 'recapture_tags', 'new_tags', 'lay', 'enterer', 'needs_review', 'comments')
+    fields = (
+        "linked_data_entry_id",
+        "saved_observation",
+        "observation_date",
+        "turtle",
+        "recapture_tags",
+        "new_tags",
+        "lay",
+        "enterer",
+        "needs_review",
+        "comments",
+    )
+    readonly_fields = (
+        "linked_data_entry_id",
+        "saved_observation",
+        "observation_date",
+        "turtle",
+        "recapture_tags",
+        "new_tags",
+        "lay",
+        "enterer",
+        "needs_review",
+        "comments",
+    )
     can_delete = False
     max_num = 0
 
     def has_add_permission(self, request, obj=None):
         return False
-    
+
     def linked_data_entry_id(self, obj):
-        url = reverse('admin:wamtram2_trtdataentry_change', args=[obj.data_entry_id])
+        url = reverse("admin:wamtram2_trtdataentry_change", args=[obj.data_entry_id])
         return format_html('<a href="{}">{}</a>', url, obj.data_entry_id)
-    linked_data_entry_id.short_description = 'Data Entry ID'
+
+    linked_data_entry_id.short_description = "Data Entry ID"
 
     def saved_observation(self, obj):
         return obj.observation_id
@@ -81,28 +103,29 @@ class TrtDataEntryInline(admin.TabularInline):
 
     def recapture_tags(self, obj):
         tags = []
-        for field in ['recapture_left_tag_id', 'recapture_right_tag_id', 'recapture_pittag_id']:
+        for field in ["recapture_left_tag_id", "recapture_right_tag_id", "recapture_pittag_id"]:
             tag = getattr(obj, field)
             if tag:
                 tags.append(str(tag))
-        return ', '.join(tags)
+        return ", ".join(tags)
 
     def new_tags(self, obj):
         tags = []
-        for field in ['new_left_tag_id', 'new_right_tag_id', 'new_pittag_id']:
+        for field in ["new_left_tag_id", "new_right_tag_id", "new_pittag_id"]:
             tag = getattr(obj, field)
             if tag:
                 tags.append(str(tag))
-        return ', '.join(tags)
+        return ", ".join(tags)
 
     def lay(self, obj):
-        return 'Yes' if obj.nesting and obj.nesting.code == 'Y' else 'No'
+        return "Yes" if obj.nesting and obj.nesting.code == "Y" else "No"
 
     def enterer(self, obj):
         return obj.entered_by_id
 
     def needs_review(self, obj):
-        return 'Yes' if obj.do_not_process else 'No'
+        return "Yes" if obj.do_not_process else "No"
+
 
 @admin.register(TrtEntryBatches)
 class TrtEntryBatchesAdmin(admin.ModelAdmin):
@@ -112,13 +135,14 @@ class TrtEntryBatchesAdmin(admin.ModelAdmin):
     form = EnterUserModelForm
 
     def linked_entry_batch_id(self, obj):
-        url = reverse('admin:wamtram2_trtentrybatches_change', args=[obj.pk])
+        url = reverse("admin:wamtram2_trtentrybatches_change", args=[obj.pk])
         return format_html('<a href="{}">{}</a>', url, obj.entry_batch_id)
-    linked_entry_batch_id.short_description = 'Entry batch id'
+
+    linked_entry_batch_id.short_description = "Entry batch id"
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        return qs.prefetch_related('trtdataentry_set')
+        return qs.prefetch_related("trtdataentry_set")
 
 
 @admin.register(TrtDataEntry)
@@ -130,30 +154,53 @@ class TrtDataEntryAdmin(admin.ModelAdmin):
         return False
 
     fields = (
-        'entry_batch', 'user_entry_id', 'turtle_id', 'observation_id', 'do_not_process',
-        'recapture_left_tag_id', 'recapture_right_tag_id', 'recapture_pittag_id',
-        'new_left_tag_id', 'new_right_tag_id', 'new_pittag_id',
-        'place_code', 'observation_date', 'observation_time',
-        'nesting', 'species_code', 'identification_confidence', 'sex',
-        'curved_carapace_length', 'curved_carapace_width',
-        'activity_code', 'beach_position_code',
-        'damage_carapace', 'damage_lff', 'damage_rff', 'damage_lhf', 'damage_rhf',
-        'comments', 'error_number', 'error_message'
+        "entry_batch",
+        "user_entry_id",
+        "turtle_id",
+        "observation_id",
+        "do_not_process",
+        "recapture_left_tag_id",
+        "recapture_right_tag_id",
+        "recapture_pittag_id",
+        "new_left_tag_id",
+        "new_right_tag_id",
+        "new_pittag_id",
+        "place_code",
+        "observation_date",
+        "observation_time",
+        "nesting",
+        "species_code",
+        "identification_confidence",
+        "sex",
+        "curved_carapace_length",
+        "curved_carapace_width",
+        "activity_code",
+        "beach_position_code",
+        "damage_carapace",
+        "damage_lff",
+        "damage_rff",
+        "damage_lhf",
+        "damage_rhf",
+        "comments",
+        "error_number",
+        "error_message",
     )
-    readonly_fields = ('entry_batch', 'user_entry_id')
+    readonly_fields = ("entry_batch", "user_entry_id")
 
-    list_display = ('data_entry_id', 'entry_batch', 'observation_date', 'turtle_id', 'do_not_process')
-    list_filter = ('do_not_process', 'species_code', 'nesting')
-    search_fields = ('data_entry_id', 'turtle_id__turtle_id', 'observation_id__observation_id')
+    list_display = ("data_entry_id", "entry_batch", "observation_date", "turtle_id", "do_not_process")
+    list_filter = ("do_not_process", "species_code", "nesting")
+    search_fields = ("data_entry_id", "turtle_id__turtle_id", "observation_id__observation_id")
 
     def needs_review(self, obj):
-        return 'Yes' if obj.do_not_process else 'No'
-    needs_review.short_description = 'Needs Review'
+        return "Yes" if obj.do_not_process else "No"
+
+    needs_review.short_description = "Needs Review"
 
     def get_queryset(self, request):
-        return super().get_queryset(request).select_related(
-            'entry_batch', 'turtle_id', 'observation_id', 'place_code', 'species_code',
-            'activity_code'
+        return (
+            super()
+            .get_queryset(request)
+            .select_related("entry_batch", "turtle_id", "observation_id", "place_code", "species_code", "activity_code")
         )
 
     def get_object(self, request, object_id, from_field=None):
@@ -166,7 +213,6 @@ class TrtDataEntryAdmin(admin.ModelAdmin):
 
 @admin.register(TrtTurtles)
 class TrtTurtlesAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
-
     list_display = ("turtle_id", "species_code", "sex", "turtle_status", "date_entered", "comments")
     date_hierarchy = "date_entered"
     ordering = ["date_entered"]
@@ -178,20 +224,23 @@ class TrtTurtlesAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
 @admin.register(TrtObservations)
 class TrtObservationsAdmin(nested_admin.NestedModelAdmin):
     form = TrtObservationsForm
-    readonly_fields = ('observation_status','corrected_date',)
-    
+    readonly_fields = (
+        "observation_status",
+        "corrected_date",
+    )
+
     autocomplete_fields = ["turtle"]
     list_display = ("observation_id", "turtle", "observation_date", "entry_batch")
     date_hierarchy = "observation_date"
     list_filter = ["turtle__species_code", "place_code"]
     search_fields = ["observation_id", "entry_batch__entry_batch_id"]
     inlines = [TrtMeasurementsInline, TrtDamageInline]
-    
+
     def save_model(self, request, obj, form, change):
-        if 'observation_status' in form.cleaned_data:
-            form.cleaned_data.pop('observation_status')
-        if 'corrected_date' in form.cleaned_data:
-            form.cleaned_data.pop('corrected_date')
+        if "observation_status" in form.cleaned_data:
+            form.cleaned_data.pop("observation_status")
+        if "corrected_date" in form.cleaned_data:
+            form.cleaned_data.pop("corrected_date")
         super().save_model(request, obj, form, change)
 
 
@@ -264,23 +313,25 @@ class TrtPitTagsAdmin(ImportExportModelAdmin):
     list_display = ("pittag_id", "linked_turtle", "issue_location", "linked_custodian_person", "pit_tag_status", "comments")
     list_filter = ["pit_tag_status"]
     search_fields = ["pittag_id"]
-    
+
     def get_queryset(self, request):
-        return super().get_queryset(request).select_related('turtle', 'custodian_person')
+        return super().get_queryset(request).select_related("turtle", "custodian_person")
 
     def linked_turtle(self, obj):
         if obj.turtle:
-            url = reverse('admin:wamtram2_trtturtles_change', args=[obj.turtle.pk])
+            url = reverse("admin:wamtram2_trtturtles_change", args=[obj.turtle.pk])
             return format_html('<a href="{}">{}</a>', url, obj.turtle)
         return "-"
-    linked_turtle.short_description = 'Turtle'
-    
+
+    linked_turtle.short_description = "Turtle"
+
     def linked_custodian_person(self, obj):
         if obj.custodian_person:
-            url = reverse('admin:wamtram2_trtpersons_change', args=[obj.custodian_person.pk])
+            url = reverse("admin:wamtram2_trtpersons_change", args=[obj.custodian_person.pk])
             return format_html('<a href="{}">{}</a>', url, obj.custodian_person)
         return "-"
-    linked_custodian_person.short_description = 'Custodian Person'
+
+    linked_custodian_person.short_description = "Custodian Person"
 
 
 @admin.register(TrtTagOrders)
@@ -293,16 +344,16 @@ class TrtTagOrdersAdmin(ImportExportModelAdmin):
 
 
 class TrtPersonsResource(resources.ModelResource):
-    recorder = Field(attribute='recorder', column_name='Recorder')
+    recorder = Field(attribute="recorder", column_name="Recorder")
 
     def before_import_row(self, row, **kwargs):
-        if 'Recorder' not in row or row['Recorder'] == '':
-            row['Recorder'] = False
+        if "Recorder" not in row or row["Recorder"] == "":
+            row["Recorder"] = False
 
     class Meta:
         model = TrtPersons
-        import_id_fields = ('email',)
-        fields = ('first_name', 'surname', 'email', 'recorder')
+        import_id_fields = ("email",)
+        fields = ("first_name", "surname", "email", "recorder")
         export_order = fields
 
 
@@ -310,56 +361,64 @@ class TrtPersonsResource(resources.ModelResource):
 class TrtPersonsAdmin(ImportExportModelAdmin):
     resource_class = TrtPersonsResource
     form = TrtPersonsForm
-    list_display = ('first_name', 'surname', 'email', 'recorder')
-    search_fields = ['first_name', 'surname', 'email']
+    list_display = ("first_name", "surname", "email", "recorder")
+    search_fields = ["first_name", "surname", "email"]
     fieldsets = (
-        ('Required Information', {
-            'fields': ('first_name', 'surname', 'email', 'recorder'),
-            'description': 'These fields are required.'
-        }),
-        ('Additional Information', {
-            'fields': ('middle_name', 'specialty', 'address_line_1', 'address_line_2', 'town', 'state', 'post_code', 'country', 'telephone', 'fax', 'mobile', 'comments', 'transfer'),
-        }),
+        ("Required Information", {"fields": ("first_name", "surname", "email", "recorder"), "description": "These fields are required."}),
+        (
+            "Additional Information",
+            {
+                "fields": (
+                    "middle_name",
+                    "specialty",
+                    "address_line_1",
+                    "address_line_2",
+                    "town",
+                    "state",
+                    "post_code",
+                    "country",
+                    "telephone",
+                    "fax",
+                    "mobile",
+                    "comments",
+                    "transfer",
+                ),
+            },
+        ),
     )
-    
+
     class Media:
-        css = {
-            'all': ('admin/css/custom_admin.css',)
-        }
+        css = {"all": ("admin/css/custom_admin.css",)}
 
 
 @admin.register(TrtNestingSeason)
 class TrtNestingSeasonAdmin(admin.ModelAdmin):
     form = TrtNestingSeasonForm
-    list_display = ['nesting_season', 'startdate', 'enddate']
-    search_fields = ['nesting_season']
-    list_filter = ['startdate', 'enddate']
+    list_display = ["nesting_season", "startdate", "enddate"]
+    search_fields = ["nesting_season"]
+    list_filter = ["startdate", "enddate"]
+
     class Media:
-        css = {
-            'all': ('https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css',)
-        }
+        css = {"all": ("https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css",)}
         js = (
-            'https://cdn.jsdelivr.net/npm/flatpickr',
-            'js/admin/custom_flatpickr.js',
+            "https://cdn.jsdelivr.net/npm/flatpickr",
+            "js/admin/custom_flatpickr.js",
         )
-        
+
 
 @admin.register(TrtDamageCauseCodes)
 class TrtDamageCauseCodesAdmin(admin.ModelAdmin):
-    list_display = ('damage_cause_code', 'description')
-    search_fields = ('damage_cause_code', 'description')
+    list_display = ("damage_cause_code", "description")
+    search_fields = ("damage_cause_code", "description")
 
 
 @admin.register(TrtDamageCodes)
 class TrtDamageCodesAdmin(admin.ModelAdmin):
-    list_display = ('damage_code', 'description', 'flipper')
-    search_fields = ('damage_code', 'description')
-    
+    list_display = ("damage_code", "description", "flipper")
+    search_fields = ("damage_code", "description")
+
 
 @admin.register(TrtLocations)
 class TrtLocationsAdmin(admin.ModelAdmin):
-    list_display = ('location_code', 'location_name')
-    search_fields = ('location_code', 'location_name')
-    
-    
-    
+    list_display = ("location_code", "location_name")
+    search_fields = ("location_code", "location_name")

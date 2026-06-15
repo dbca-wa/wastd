@@ -2,7 +2,6 @@ from grappelli.dashboard import modules, Dashboard
 
 
 class AdminDashboard(Dashboard):
-
     def init_with_context(self, context):
         self.children.append(
             modules.Group(
@@ -66,7 +65,7 @@ class AdminDashboard(Dashboard):
                         models=(
                             "marine_mammal_incidents.models.Incident",
                             "marine_mammal_incidents.models.Species",
-                            "marine_mammal_incidents.models.Uploaded_file"
+                            "marine_mammal_incidents.models.Uploaded_file",
                         ),
                     ),
                 ],

@@ -24,7 +24,11 @@ urlpatterns = [
     path("turtle-nest-encounters/<int:pk>/reject/", views.TurtleNestEncounterReject.as_view(), name="turtlenestencounter-reject"),
     path("line-transect-encounters/", views.LineTransectEncounterList.as_view(), name="linetransectencounter-list"),
     path("line-transect-encounters/<int:pk>/", views.LineTransectEncounterDetail.as_view(), name="linetransectencounter-detail"),
-    path("turtle-nest-disturbance-observations/", views.TurtleNestDisturbanceObservationList.as_view(), name="turtlenestdisturbanceobservation-list"),
+    path(
+        "turtle-nest-disturbance-observations/",
+        views.TurtleNestDisturbanceObservationList.as_view(),
+        name="turtlenestdisturbanceobservation-list",
+    ),
     path("disturbance-observations/", views.DisturbanceObservationList.as_view(), name="disturbanceobservation-list"),
     path("track-tally-observations/", views.TrackTallyObservationList.as_view(), name="tracktallyobservation-list"),
     # Satellite view for Area

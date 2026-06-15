@@ -1,12 +1,11 @@
 class Wamtram2Router:
-
     def db_for_read(self, model, **hints):
         if model._meta.app_label == "wamtram2":
             return "wamtram2"
         if model._meta.app_label == "users":
             return "default"
         return None
- 
+
     def db_for_write(self, model, **hints):
         if model._meta.app_label == "wamtram2":
             return "wamtram2"

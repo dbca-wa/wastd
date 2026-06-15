@@ -17,15 +17,16 @@ from observations.models import (
 )
 from users.models import User
 
+
 class Command(BaseCommand):
-    help = 'Runs automated QA/QC checks to flag records for manual curation as needed'
+    help = "Runs automated QA/QC checks to flag records for manual curation as needed"
 
     def handle(self, *args, **options):
-        logger = logging.getLogger('turtles')
-        logger.info('Running automated QA/QC checks and flagging records for curation')
-        
+        logger = logging.getLogger("turtles")
+        logger.info("Running automated QA/QC checks and flagging records for curation")
+
         system_user = User.objects.get(pk=1)
-        unknown_user = User.objects.get_or_create(name='Unknown user', username='unknown_user')[0]
+        unknown_user = User.objects.get_or_create(name="Unknown user", username="unknown_user")[0]
 
         # Check: Any TurtleNestEncounter with a site label containing the term "training".
         nest_encounters = TurtleNestEncounter.objects.filter(site__name__icontains="training", status=Encounter.STATUS_IMPORTED)
@@ -46,34 +47,34 @@ class Command(BaseCommand):
         # Check: Any turtle nest encounter with uncertain species.
         nest_encounters = TurtleNestEncounter.objects.filter(species=TURTLE_SPECIES_DEFAULT, status=Encounter.STATUS_IMPORTED)
         if nest_encounters:
-            logger.info(f'Flagging {nest_encounters.count()} turtle nest encounters for curation due to uncertain species')
+            logger.info(f"Flagging {nest_encounters.count()} turtle nest encounters for curation due to uncertain species")
         for enc in nest_encounters:
-            enc.flag(by=system_user, description='Flagged for curation by automated checks due to uncertain species')
+            enc.flag(by=system_user, description="Flagged for curation by automated checks due to uncertain species")
             enc.save()
 
         # Check: Any turtle nest encounter using 'test' species.
         for species in ["corolla-corolla", "test-turtle"]:
             nest_encounters = TurtleNestEncounter.objects.filter(species=species, status=Encounter.STATUS_IMPORTED)
             if nest_encounters:
-                logger.info(f'Flagging {nest_encounters.count()} turtle nest encounters for curation due to test species type')
+                logger.info(f"Flagging {nest_encounters.count()} turtle nest encounters for curation due to test species type")
             for enc in nest_encounters:
-                enc.flag(by=system_user, description='Flagged for curation by automated checks due to test species type')
+                enc.flag(by=system_user, description="Flagged for curation by automated checks due to test species type")
                 enc.save()
 
         # Check: Any turtle nest encounter with uncertain nesting outcome.
         nest_encounters = TurtleNestEncounter.objects.filter(nest_type=NEST_TYPE_TRACK_UNSURE, status=Encounter.STATUS_IMPORTED)
         if nest_encounters:
-            logger.info(f'Flagging {nest_encounters.count()} turtle nest encounters for curation due to uncertain nesting outcome')
+            logger.info(f"Flagging {nest_encounters.count()} turtle nest encounters for curation due to uncertain nesting outcome")
         for enc in nest_encounters:
-            enc.flag(by=system_user, description='Flagged for curation by automated checks due to uncertain nesting outcome')
+            enc.flag(by=system_user, description="Flagged for curation by automated checks due to uncertain nesting outcome")
             enc.save()
 
         # Check: Any turtle nest encounter with uncertain nest age.
         nest_encounters = TurtleNestEncounter.objects.filter(nest_age="unknown", status=Encounter.STATUS_IMPORTED)
         if nest_encounters:
-            logger.info(f'Flagging {nest_encounters.count()} turtle nest encounters for curation due to uncertain nest age')
+            logger.info(f"Flagging {nest_encounters.count()} turtle nest encounters for curation due to uncertain nest age")
         for enc in nest_encounters:
-            enc.flag(by=system_user, description='Flagged for curation by automated checks due to uncertain nest age')
+            enc.flag(by=system_user, description="Flagged for curation by automated checks due to uncertain nest age")
             enc.save()
 
         # Check: Any turtle nest encounter marked as uncertain for predation.
@@ -88,9 +89,9 @@ class Command(BaseCommand):
         # Convert back to a queryset
         nest_encounters = TurtleNestEncounter.objects.filter(pk__in=pks, status=Encounter.STATUS_IMPORTED)
         if nest_encounters:
-            logger.info(f'Flagging {nest_encounters.count()} turtle nest encounters for curation due to uncertain predation')
+            logger.info(f"Flagging {nest_encounters.count()} turtle nest encounters for curation due to uncertain predation")
         for enc in nest_encounters:
-            enc.flag(by=system_user, description='Flagged for curation by automated checks due to uncertain predation')
+            enc.flag(by=system_user, description="Flagged for curation by automated checks due to uncertain predation")
             enc.save()
 
         # Check: Any records with the following species at any of the following areas.
@@ -120,9 +121,9 @@ class Command(BaseCommand):
             for area in areas:
                 nest_encounters = TurtleNestEncounter.objects.filter(area=area, species=species, status=Encounter.STATUS_IMPORTED)
                 if nest_encounters:
-                    logger.info(f'Flagging {nest_encounters.count()} turtle nest encounters for curation: {species_name} at {area.name}')
+                    logger.info(f"Flagging {nest_encounters.count()} turtle nest encounters for curation: {species_name} at {area.name}")
                 for enc in nest_encounters:
-                    enc.flag(by=system_user, description=f'Flagged for curation by automated checks: {species_name} at {area.name}')
+                    enc.flag(by=system_user, description=f"Flagged for curation by automated checks: {species_name} at {area.name}")
                     enc.save()
 
                 nest_encounters = set()
@@ -136,9 +137,9 @@ class Command(BaseCommand):
                 # Convert back to a queryset
                 nest_encounters = TurtleNestEncounter.objects.filter(pk__in=pks, status=Encounter.STATUS_IMPORTED)
                 if nest_encounters:
-                    logger.info(f'Flagging {nest_encounters.count()} turtle nest encounters for curation: {species_name} at {area.name}')
+                    logger.info(f"Flagging {nest_encounters.count()} turtle nest encounters for curation: {species_name} at {area.name}")
                 for enc in nest_encounters:
-                    enc.flag(by=system_user, description=f'Flagged for curation by automated checks: {species_name} at {area.name}')
+                    enc.flag(by=system_user, description=f"Flagged for curation by automated checks: {species_name} at {area.name}")
                     enc.save()
 
         # Check: Any records with the following species at any of the following areas.
@@ -162,9 +163,9 @@ class Command(BaseCommand):
                 # TurtleNestEncounter objects
                 nest_encounters = TurtleNestEncounter.objects.filter(area=area, species=species, status=Encounter.STATUS_IMPORTED)
                 if nest_encounters:
-                    logger.info(f'Flagging {nest_encounters.count()} turtle nest encounters for curation: {species_name} at {area.name}')
+                    logger.info(f"Flagging {nest_encounters.count()} turtle nest encounters for curation: {species_name} at {area.name}")
                 for enc in nest_encounters:
-                    enc.flag(by=system_user, description=f'Flagged for curation by automated checks: {species_name} at {area.name}')
+                    enc.flag(by=system_user, description=f"Flagged for curation by automated checks: {species_name} at {area.name}")
                     enc.save()
 
                 # Observations linked to TurtleNestEncounter objects.
@@ -179,33 +180,33 @@ class Command(BaseCommand):
                 # Convert back to a queryset
                 nest_encounters = TurtleNestEncounter.objects.filter(pk__in=pks, status=Encounter.STATUS_IMPORTED)
                 if nest_encounters:
-                    logger.info(f'Flagging {nest_encounters.count()} turtle nest encounters for curation: {species_name} at {area.name}')
+                    logger.info(f"Flagging {nest_encounters.count()} turtle nest encounters for curation: {species_name} at {area.name}")
                 for enc in nest_encounters:
-                    enc.flag(by=system_user, description=f'Flagged for curation by automated checks: {species_name} at {area.name}')
+                    enc.flag(by=system_user, description=f"Flagged for curation by automated checks: {species_name} at {area.name}")
                     enc.save()
 
         # Check: imported Turtle Nest Encounters with 'Unknown user' as the reporter.
         nest_encounters = TurtleNestEncounter.objects.filter(status=Encounter.STATUS_IMPORTED, reporter=unknown_user)
         if nest_encounters:
-            logger.info(f'Flagging {nest_encounters.count()} turtle nest encounters for curation due to unknown reporter')
+            logger.info(f"Flagging {nest_encounters.count()} turtle nest encounters for curation due to unknown reporter")
         for enc in nest_encounters:
-            enc.flag(by=system_user, description='Flagged for curation by automated checks due to unknown reporter')
+            enc.flag(by=system_user, description="Flagged for curation by automated checks due to unknown reporter")
             enc.save()
 
         # Mark remaining TurtleNestEncounter objects with status == Imported as imported (passed QA/QC checks).
         nest_encounters = TurtleNestEncounter.objects.filter(status=Encounter.STATUS_IMPORTED)
         if nest_encounters:
-            logger.info(f'Marking {nest_encounters.count()} imported turtle nest encounters as curated (passed QA/QC checks)')
+            logger.info(f"Marking {nest_encounters.count()} imported turtle nest encounters as curated (passed QA/QC checks)")
         for enc in nest_encounters:
-            enc.curate(by=system_user, description='Curated by automated QA/QC (passed all checks)')
+            enc.curate(by=system_user, description="Curated by automated QA/QC (passed all checks)")
             enc.save()
 
         # Check: imported Animal Encounters with 'Unknown user' as the reporter.
         animal_encounters = AnimalEncounter.objects.filter(status=Encounter.STATUS_IMPORTED, reporter=unknown_user)
         if animal_encounters:
-            logger.info(f'Flagging {animal_encounters.count()} animal encounters for curation due to unknown reporter')
+            logger.info(f"Flagging {animal_encounters.count()} animal encounters for curation due to unknown reporter")
         for enc in animal_encounters:
-            enc.flag(by=system_user, description='Flagged for curation by automated checks due to unknown reporter')
+            enc.flag(by=system_user, description="Flagged for curation by automated checks due to unknown reporter")
             enc.save()
 
-        logger.info('Automated QA/QC checks completed')
+        logger.info("Automated QA/QC checks completed")
