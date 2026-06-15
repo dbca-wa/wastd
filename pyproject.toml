@@ -37,7 +37,7 @@ dependencies = [
   "django-export-download==0.2.3",
   "pillow==12.2.0",
   "whitenoise[brotli]==6.12.0",
-  "phonenumbers==9.0.14",
+  "phonenumbers==9.0.32",
   "django-phonenumber-field==7.3.0",
   "mssql-django==1.7.2",
   "webtemplate-dbca==1.8.3",
