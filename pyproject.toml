@@ -58,7 +58,7 @@ dependencies = [
 dev = [
   "ipython>=9.14.0",
   "ipdb>=0.13.13",
-  "django-debug-toolbar>=4.2.2,<5",
+  "django-debug-toolbar>=6.3.0,<7",
   "pre-commit>=4.6.0",
   "coverage>=7.14.1",
 ]
