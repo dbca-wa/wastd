@@ -4,13 +4,13 @@
 
 ## Overview
 
-**WAMTRAM2** is a read-only Django ORM bridge to the **WAMTRAM** legacy database—an old MSSQL system that predates WAStD. The models are auto-generated from the existing MSSQL schema and represent ~30+ years of accumulated turtle tagging and observation data.
+**WAMTRAM2** is a Django ORM bridge to the **WAMTRAM** legacy database — a legacy MSSQL system that predates WAStD. The models are auto-generated from the existing MSSQL schema and represent ~30+ years of accumulated turtle tagging and observation data.
 
 ### Key Characteristics
 
-- **Read-only access** via `Wamtram2Router` database router (segregated database connection)
-- **Auto-generated models** from existing MSSQL database schema (migrations not managed by Django)
-- **Unmanaged Django models** (`managed = False`)—no `makemigrations` or `migrate` applies to these
+- Database access via `Wamtram2Router` database router (segregated database connection)
+- **Auto-generated models** from existing MSSQL database schema (migrations **not** managed by Django)
+- **Unmanaged Django models** (`managed = False`) — no `makemigrations` or `migrate` applies to these
 - **Legacy naming conventions**—all-uppercase column names (e.g., `TURTLE_ID`, `OBSERVATION_ID`)
 - **Batch data import model** supporting complex entry workflows
 - **Tag lifecycle tracking**—flipper tags and PIT tags with full status history
@@ -597,12 +597,6 @@ Enables recording sightings of unidentified animals.
 - Maintains tag name consistency (e.g., WAMTRAM tag IDs used as `TagObservation.name`)
 - Supports historical queries ("When was this tag last recaptured?") joining across databases
 
-### **Read-Only Philosophy**
-
-- WAMTRAM2 is never written to from WAStD (except legacy data import scripts)
-- All new data enters via WAStD's own models (`observations.*`)
-- Prevents accidental data corruption in legacy system
-
 ---
 
 ## Common Queries
@@ -650,4 +644,4 @@ WAMTRAM2 implements a **normalized, multi-table design** suitable for:
 - ✅ Denormalized views for reporting (e.g., `TrtSighting`)
 - ✅ Audit trails and change tracking
 
-**Critical Design Note:** This is a **read-only bridge** to a legacy system. All new data collection uses WAStD's modern `observations` app models. WAMTRAM2 serves as a historical reference and data source for migration workflows only.
+**Critical design note:** This is a **bridge application** to a legacy system. The WAMTRAM2 database is a physically separate one from the rest of the WAStD applications, and its models are not managed by Django.
