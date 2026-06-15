@@ -22,7 +22,7 @@ dependencies = [
   "django-fsm==2.8.1",
   "django-fsm-log==3.1.0",
   "django-fsm-admin-maintained==1.2.6",
-  "python-dateutil==2.9.0",
+  "python-dateutil==2.9.0.post0",
   "python-slugify==8.0.4",
   "django-filter==25.2",
   "django-polymorphic==4.11.5",
