@@ -92,12 +92,16 @@ INSTALLED_APPS = [
     "easy_select2",
     "djgeojson",
     "import_export",
+    "leaflet",
     # Local apps
     "users",
     "observations",
     "marine_mammal_incidents",
     "wamtram2",
 ]
+if DEBUG:
+    INSTALLED_APPS = INSTALLED_APPS + ["debug_toolbar"]
+
 MIDDLEWARE = [
     "wastd.middleware.HealthCheckMiddleware",
     "django.middleware.security.SecurityMiddleware",
@@ -111,6 +115,8 @@ MIDDLEWARE = [
     "reversion.middleware.RevisionMiddleware",
     "dbca_utils.middleware.SSOLoginMiddleware",
 ]
+if DEBUG:
+    MIDDLEWARE = ["debug_toolbar.middleware.DebugToolbarMiddleware"] + MIDDLEWARE
 
 TEMPLATES = [
     {
@@ -143,21 +149,34 @@ TEMPLATES = [
 ]
 
 MAP_WIDGETS = {
-    "MapboxPointFieldWidget": {
-        "access_token": os.environ.get("MAPBOX_TOKEN", ""),
-        "markerFitZoom": 12,
-        "mapOptions": {
-            "animate": True,
-            "zoom": 10,
-            "center": (-31.996226, 115.883947),
-            "scrollZoom": True,
-            "style": "mapbox://styles/dpawasi/ckigwmxrx606g19msw0g882gj",
+    "Mapbox": {
+        "accessToken": os.environ.get("MAPBOX_TOKEN", ""),
+        "PointField": {
+            "interactive": {
+                "mapOptions": {
+                    "animate": True,
+                    "zoom": 10,
+                    "center": (-31.996226, 115.883947),
+                    "scrollZoom": True,
+                    "style": "mapbox://styles/dpawasi/ckigwmxrx606g19msw0g882gj",
+                },
+                "markerFitZoom": 12,
+                "geocoderOptions": {"zoom": 7, "country": "AU"},
+            },
         },
-        "geocoderOptions": {"zoom": 7, "countries": "au"},
     }
 }
 GEOSERVER_URL = os.environ.get("GEOSERVER_URL", "")
 IMPORT_EXPORT_SKIP_ADMIN_CONFIRM = True
+
+# django-leaflet
+LEAFLET_CONFIG = {
+    "DEFAULT_CENTER": (-31.996226, 115.883947),
+    "DEFAULT_ZOOM": 10,
+    "MIN_ZOOM": 3,
+    "MAX_ZOOM": 16,
+    "ATTRIBUTION_PREFIX": "",
+}
 
 # Use the customised User model
 AUTH_USER_MODEL = "users.User"

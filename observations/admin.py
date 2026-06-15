@@ -1043,8 +1043,11 @@ class AreaGeoJSONImportForm(forms.Form):
     )
 
 
+from leaflet.admin import LeafletGeoAdminMixin
+
+
 @register(Area)
-class AreaAdmin(GISModelAdmin):
+class AreaAdmin(LeafletGeoAdminMixin, GISModelAdmin):
     list_display = (
         "name",
         "area_type",
@@ -1061,16 +1064,6 @@ class AreaAdmin(GISModelAdmin):
     )
     form = s2form(Area, attrs=S2ATTRS)
     formfield_overrides = FORMFIELD_OVERRIDES
-
-    # Improve map quality/size in admin form
-    default_zoom = 8
-    map_width = 1000
-    map_height = 600
-    # Use Web Mercator for OSM map and set center to Perth (projected meters)
-    map_srid = 3857
-    # Perth approx in EPSG:3857
-    default_lon = 12800000  # meters
-    default_lat = -3700000  # meters
 
     def has_add_permission(self, request):
         """Basic authorisation model: only superusers can create these objects."""
