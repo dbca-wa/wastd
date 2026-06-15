@@ -1091,11 +1091,11 @@ wheels = [
 
 [[package]]
 name = "phonenumbers"
-version = "9.0.14"
+version = "9.0.32"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/e6/ef/1e213640c1943094f001daaa48c2d9ff12c137466fd4be36802f6ea7ece3/phonenumbers-9.0.14.tar.gz", hash = "sha256:98afb3e86bf9ae02cc7c98ca44fa8827babb72842f90da9884c5d998937572ae", size = 2298072, upload-time = "2025-09-16T06:04:54.845Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/ef/11/ba7611cadc8c99b797416d0dada535c02890dc21b759dfef60a3751d2e20/phonenumbers-9.0.32.tar.gz", hash = "sha256:108ad0237202d2f6cf4b342fac411f22808d85187c3a366152a2af7ed3202a8e", size = 2306598, upload-time = "2026-06-05T05:48:38.909Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/04/36/bd4ef88378beb8303fd3d7be28a4847d14fb977210544a3567821a1d79e9/phonenumbers-9.0.14-py2.py3-none-any.whl", hash = "sha256:6bdf5c46dbfefa1d941d122432d1958418d1dfe3f8c8c81d4c8e80f5442ea41f", size = 2583932, upload-time = "2025-09-16T06:04:47.046Z" },
+    { url = "https://files.pythonhosted.org/packages/c6/e9/1ca526105e792b7ed752fd0ff5732ab01185f2deb719ae6f30183fb21143/phonenumbers-9.0.32-py2.py3-none-any.whl", hash = "sha256:fbcd40d3b11920ee77b1d34a54c3b64c6648a90b8e37222eb62e7fafb87db3e7", size = 2595438, upload-time = "2026-06-05T05:48:36.066Z" },
 ]
 
 [[package]]
@@ -1703,7 +1703,7 @@ requires-dist = [
     { name = "mssql-django", specifier = "==1.7.2" },
     { name = "openpyxl", specifier = "==3.1.5" },
     { name = "pandas", specifier = "==3.0.3" },
-    { name = "phonenumbers", specifier = "==9.0.14" },
+    { name = "phonenumbers", specifier = "==9.0.32" },
     { name = "pillow", specifier = "==12.2.0" },
     { name = "psycopg", extras = ["binary", "pool"], specifier = "==3.3.4" },
     { name = "python-dateutil", specifier = "==2.9.0" },
