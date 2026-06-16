@@ -80,7 +80,6 @@ INSTALLED_APPS = [
     "django_fsm_log",
     "fsm_admin",
     "reversion",
-    "mapwidgets",
     "phonenumber_field",
     "crispy_forms",
     "bootstrap4",
@@ -148,24 +147,6 @@ TEMPLATES = [
     },
 ]
 
-MAP_WIDGETS = {
-    "Mapbox": {
-        "accessToken": os.environ.get("MAPBOX_TOKEN", ""),
-        "PointField": {
-            "interactive": {
-                "mapOptions": {
-                    "animate": True,
-                    "zoom": 10,
-                    "center": (-31.996226, 115.883947),
-                    "scrollZoom": True,
-                    "style": "mapbox://styles/dpawasi/ckigwmxrx606g19msw0g882gj",
-                },
-                "markerFitZoom": 12,
-                "geocoderOptions": {"zoom": 7, "country": "AU"},
-            },
-        },
-    }
-}
 GEOSERVER_URL = os.environ.get("GEOSERVER_URL", "")
 IMPORT_EXPORT_SKIP_ADMIN_CONFIRM = True
 
@@ -176,6 +157,25 @@ LEAFLET_CONFIG = {
     "MIN_ZOOM": 3,
     "MAX_ZOOM": 16,
     "ATTRIBUTION_PREFIX": "",
+    "TILES": [
+        (
+            "Place names",
+            f"{GEOSERVER_URL}/gwc/service/wmts?service=WMTS&request=GetTile&version=1.0.0&format=image/png&tilematrixset=mercator&tilematrix=mercator:{{z}}&tilecol={{x}}&tilerow={{y}}&layer=kaartdijin-boodja-public:mapbox-streets-public",
+            {},
+        ),
+        (
+            "Aerial imagery",
+            f"{GEOSERVER_URL}/gwc/service/wmts?service=WMTS&request=GetTile&version=1.0.0&format=image/png&tilematrixset=mercator&tilematrix=mercator:{{z}}&tilecol={{x}}&tilerow={{y}}&layer=kaartdijin-boodja-private:virtual_mosaic",
+            {},
+        ),
+    ],
+    "OVERLAYS": [
+        (
+            "DBCA Regions",
+            f"{GEOSERVER_URL}/gwc/service/wmts?service=WMTS&request=GetTile&version=1.0.0&format=image/png&tilematrixset=mercator&tilematrix=mercator:{{z}}&tilecol={{x}}&tilerow={{y}}&layer=kaartdijin-boodja-public:CPT_DBCA_REGIONS",
+            {},
+        ),
+    ],
 }
 
 # Use the customised User model

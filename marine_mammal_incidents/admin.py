@@ -1,12 +1,10 @@
-# from datetime import datetime
 from django.contrib import admin
-from django.contrib.gis.db import models
 from django.contrib.gis.geos import Point
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 from import_export.fields import Field
 from import_export.widgets import ForeignKeyWidget
-from mapwidgets.widgets import MapboxPointFieldWidget
+from leaflet.admin import LeafletGeoAdminMixin
 
 from marine_mammal_incidents.models import Incident, Species, Uploaded_file
 
@@ -44,7 +42,11 @@ class IncidentResource(resources.ModelResource):
 
 
 @admin.register(Incident)
-class IncidentAdmin(ImportExportModelAdmin):
+class IncidentAdmin(LeafletGeoAdminMixin, ImportExportModelAdmin):
+    class Media:
+        # Customise the Leaflet widget CSS
+        css = {"all": ("css/leaflet_widget.css",)}
+
     date_hierarchy = "incident_date"
     inlines = [UploadedFileInline]
     resource_class = IncidentResource  # Use the custom resource class
@@ -75,8 +77,6 @@ class IncidentAdmin(ImportExportModelAdmin):
         return obj.geo_location.x if obj.geo_location else None
 
     longitude.short_description = "Longitude"
-
-    formfield_overrides = {models.PointField: {"widget": MapboxPointFieldWidget}}
 
 
 @admin.register(Species)

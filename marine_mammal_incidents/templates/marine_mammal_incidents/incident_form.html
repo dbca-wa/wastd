@@ -1,13 +1,16 @@
 {% extends "base_wastd.html" %}
-{% load static bootstrap4 %}
-
-
+{% load static bootstrap4 leaflet_tags %}
 {% block extra_style %}
     {{ block.super }}
     {{ form.media.css }}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/loading_spinner.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/loading_overlay.css' %}">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet"
+          type="text/css"
+          href="{% static 'css/loading_spinner.css' %}">
+    <link rel="stylesheet"
+          type="text/css"
+          href="{% static 'css/loading_overlay.css' %}">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <style>
         .select2 {
             width: 100% !important;
@@ -54,40 +57,45 @@
             border-radius: 4px;
             display: none;
         }
+        .leaflet-container {
+          height: 600px !important;
+        }
     </style>
 {% endblock %}
-
+{% block extra_head %}
+    {{ block.super }}
+    {{ form.media }}
+    {% leaflet_js plugins="forms" %}
+    {% leaflet_css plugins="forms" %}
+{% endblock %}
 {% block breadcrumbs %}
     <nav aria-label="breadcrumb" class="d-none d-md-block">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-            <li class="breadcrumb-item"><a href="{% url 'marine_mammal_incidents:incident_list' %}">Incident List</a></li>
+            <li class="breadcrumb-item">
+                <a href="{% url 'home' %}">Home</a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="{% url 'marine_mammal_incidents:incident_list' %}">Incident List</a>
+            </li>
             <li class="breadcrumb-item active">Create Incident</li>
         </ol>
     </nav>
 {% endblock %}
-
-{% block extra_head %}
-    {{ block.super }}
-    {{ form.media }}
-{% endblock extra_head %}
-
 {% block page_content_inner %}
     <div class="container">
-        <div id="message-alert" class="alert mt-3" role="alert" style="display: none;"></div>
-
+        <div id="message-alert"
+             class="alert mt-3"
+             role="alert"
+             style="display: none"></div>
         {% if messages %}
             <div class="mt-3">
-                {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }}" role="alert">
-                        {{ message }}
-                    </div>
-                {% endfor %}
+                {% for message in messages %}<div class="alert alert-{{ message.tags }}" role="alert">{{ message }}</div>{% endfor %}
             </div>
         {% endif %}
-
-
-        <form id="incidentForm" method="post" enctype="multipart/form-data" action="{% if form.instance.pk %}{% url 'marine_mammal_incidents:update_incident' form.instance.pk %}{% else %}{% url 'marine_mammal_incidents:create_incident' %}{% endif %}">
+        <form id="incidentForm"
+              method="post"
+              enctype="multipart/form-data"
+              action="{% if form.instance.pk %}{% url 'marine_mammal_incidents:update_incident' form.instance.pk %}{% else %}{% url 'marine_mammal_incidents:create_incident' %}{% endif %}">
             {% csrf_token %}
             <div class="step-container">
                 <div class="step-header">{{ form_title }}</div>
@@ -105,7 +113,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <div class="form-group">
@@ -120,7 +127,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <div class="form-group">
@@ -129,7 +135,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="row">
                     <div class="col-md-12 mb-3">
                         <div class="form-group">
@@ -138,11 +143,11 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <div class="form-group">
-                            <label for="{{ form.number_of_animals.id_for_label }}" class="required-field">Number of Animals</label>
+                            <label for="{{ form.number_of_animals.id_for_label }}"
+                                   class="required-field">Number of Animals</label>
                             {{ form.number_of_animals }}
                         </div>
                     </div>
@@ -153,7 +158,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="row">
                     <div class="col-md-12 mb-3">
                         <div class="form-group">
@@ -162,7 +166,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <div class="form-group">
@@ -177,24 +180,19 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="row">
                     <div class="col-md-4 mb-3">
                         <div class="form-group">
                             <label for="{{ form.length.id_for_label }}">Length</label>
                             {{ form.length }}
-                            {% if form.length.help_text %}
-                                <small class="form-text text-muted">{{ form.length.help_text }}</small>
-                            {% endif %}
+                            {% if form.length.help_text %}<small class="form-text text-muted">{{ form.length.help_text }}</small>{% endif %}
                         </div>
                     </div>
                     <div class="col-md-4 mb-3">
                         <div class="form-group">
                             <label for="{{ form.weight.id_for_label }}">Weight</label>
                             {{ form.weight }}
-                            {% if form.weight.help_text %}
-                                <small class="form-text text-muted">{{ form.weight.help_text }}</small>
-                            {% endif %}
+                            {% if form.weight.help_text %}<small class="form-text text-muted">{{ form.weight.help_text }}</small>{% endif %}
                         </div>
                     </div>
                     <div class="col-md-4 mb-3">
@@ -204,7 +202,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="row">
                     <div class="col-md-12 mb-3">
                         <div class="form-group">
@@ -216,7 +213,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <div class="form-group">
@@ -231,11 +227,11 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <div class="form-group">
-                            <label for="{{ form.condition_when_found.id_for_label }}" class="required-field">Condition When Found</label>
+                            <label for="{{ form.condition_when_found.id_for_label }}"
+                                   class="required-field">Condition When Found</label>
                             {{ form.condition_when_found }}
                         </div>
                     </div>
@@ -246,7 +242,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="row">
                     <div class="col-md-12 mb-3">
                         <div class="form-group">
@@ -255,7 +250,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="row">
                     <div class="col-md-4 mb-3">
                         <div class="form-group">
@@ -276,7 +270,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="row">
                     <div class="col-md-12 mb-3">
                         <div class="form-group">
@@ -286,7 +279,6 @@
                     </div>
                 </div>
             </div>
-                    
             <div class="step-container mt-4">
                 <div class="step-header">Upload Files</div>
                 {{ formset.management_form }}
@@ -296,21 +288,23 @@
                             {% if form.instance.pk %}
                                 <div class="col-md-4">
                                     <strong>{{ form.instance.title }}</strong>
-                                    <input type="hidden" name="{{ form.title.html_name }}" value="{{ form.instance.title }}">
+                                    <input type="hidden"
+                                           name="{{ form.title.html_name }}"
+                                           value="{{ form.instance.title }}">
                                     {{ form.id }}
                                 </div>
                                 <div class="col-md-6">
                                     {% if form.instance.file %}
                                         <p class="mb-0">
-                                            Current file: 
-                                            <a href="{{ form.instance.file.url }}" target="_blank">
-                                                {{ form.instance.file.name }}
-                                            </a>
+                                            Current file:
+                                            <a href="{{ form.instance.file.url }}" target="_blank">{{ form.instance.file.name }}</a>
                                         </p>
                                         {% if form.instance.file.name|lower|slice:"-3:" in "jpg,png,gif,bmp,jpeg" %}
-                                            <img src="{{ form.instance.file.url }}" 
-                                                 class="image-preview" 
-                                                 style="display: block; max-width: 200px; margin-top: 10px;" 
+                                            <img src="{{ form.instance.file.url }}"
+                                                 class="image-preview"
+                                                 style="display: block;
+                                                        max-width: 200px;
+                                                        margin-top: 10px"
                                                  alt="preview">
                                         {% endif %}
                                     {% endif %}
@@ -323,21 +317,13 @@
                                 <div class="col-md-4">
                                     {{ form.title.label_tag }}
                                     {{ form.title }}
-                                    {% if form.title.errors %}
-                                        <div class="invalid-feedback d-block">
-                                            {{ form.title.errors }}
-                                        </div>
-                                    {% endif %}
+                                    {% if form.title.errors %}<div class="invalid-feedback d-block">{{ form.title.errors }}</div>{% endif %}
                                 </div>
                                 <div class="col-md-6">
                                     {{ form.file.label_tag }}
                                     {{ form.file }}
                                     <img class="image-preview" src="#" alt="Preview image">
-                                    {% if form.file.errors %}
-                                        <div class="invalid-feedback d-block">
-                                            {{ form.file.errors }}
-                                        </div>
-                                    {% endif %}
+                                    {% if form.file.errors %}<div class="invalid-feedback d-block">{{ form.file.errors }}</div>{% endif %}
                                 </div>
                                 <div class="col-md-2 text-right">
                                     <button type="button" class="btn btn-danger delete-file">Delete</button>
@@ -348,30 +334,26 @@
                 </div>
                 <button type="button" id="add-more-files" class="btn btn-secondary mt-2">Add Files</button>
             </div>
-                    
             <div class="row mt-4">
                 <div class="col-md-4">
-                    <button type="submit" class="btn btn-primary btn-block" id="submitIncidentButton">{{ submit_button_text }}</button>
+                    <button type="submit"
+                            class="btn btn-primary btn-block"
+                            id="submitIncidentButton">{{ submit_button_text }}</button>
                 </div>
             </div>
         </form>
-
-
         <div class="loading-spinner" style="display: none;">
             <div class="spinner-border text-primary" role="status">
                 <span class="sr-only">Loading...</span>
             </div>
         </div>
-
         <div class="loading-overlay" style="display: none;"></div>
     </div>
 {% endblock %}
-
 {% block extra_js %}
-{{ block.super }}
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script>
+    {{ block.super }}
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
     // Date and time picker initialization
     flatpickr("#{{ form.incident_date.id_for_label }}", {
         dateFormat: "Y-m-d",
@@ -439,15 +421,12 @@
             <div class="row file-form mb-3">
                 <div class="col-md-4">
                     <label>Attachment name:</label>
-                    <input type="text" name="uploaded_file_set-${form_idx}-title" 
-                           id="id_uploaded_file_set-${form_idx}-title" class="form-control">
+                    <input type="text" name="uploaded_file_set-${form_idx}-title" id="id_uploaded_file_set-${form_idx}-title" class="form-control">
                 </div>
                 <div class="col-md-6">
                     <label>File:</label>
-                    <input type="file" name="uploaded_file_set-${form_idx}-file" 
-                           id="id_uploaded_file_set-${form_idx}-file" class="form-control">
-                    <img class="image-preview" src="#" alt="Preview" 
-                         style="display: none; max-width: 200px; margin-top: 10px;">
+                    <input type="file" name="uploaded_file_set-${form_idx}-file" id="id_uploaded_file_set-${form_idx}-file" class="form-control">
+                    <img class="image-preview" src="#" alt="Preview" style="display: none; max-width: 200px; margin-top: 10px;">
                 </div>
                 <div class="col-md-2 text-right">
                     <button type="button" class="btn btn-danger delete-file">Delete</button>
@@ -534,5 +513,6 @@
             });
         });
     });
-</script>
+    </script>
 {% endblock %}
+

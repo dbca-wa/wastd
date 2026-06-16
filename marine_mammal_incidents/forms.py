@@ -1,6 +1,7 @@
 from django import forms
+from leaflet.forms.widgets import LeafletWidget
+
 from .models import Incident, Uploaded_file
-from mapwidgets.widgets import MapboxPointFieldWidget
 
 
 class IncidentForm(forms.ModelForm):
@@ -33,7 +34,7 @@ class IncidentForm(forms.ModelForm):
             "comments",
         ]
         widgets = {
-            "geo_location": MapboxPointFieldWidget(),
+            "geo_location": LeafletWidget(),
             "comments": forms.Textarea(attrs={"cols": "100", "rows": "10"}),
         }
 

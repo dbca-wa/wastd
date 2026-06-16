@@ -22,7 +22,6 @@ from django_fsm_log.admin import StateLogInline
 from django_fsm_log.decorators import fsm_log_by, fsm_log_description
 from import_export.formats import base_formats
 from import_export.resources import Resource
-from mapwidgets.widgets import MapboxPointFieldWidget
 
 Breadcrumb = namedtuple("Breadcrumb", ["name", "url"])
 
@@ -877,7 +876,6 @@ S2ATTRS = {"data-width": "50em"}
 FORMFIELD_OVERRIDES = {
     models.ImageField: {"widget": AdminImageWidget},
     models.FileField: {"widget": AdminImageWidget},
-    models.PointField: {"widget": MapboxPointFieldWidget},
 }
 FILTER_OVERRIDES = {
     models.CharField: {

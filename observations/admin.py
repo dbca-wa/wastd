@@ -14,6 +14,7 @@ from django_select2.forms import ModelSelect2Widget
 from easy_select2 import select2_modelform as s2form
 from fsm_admin.mixins import FSMTransitionMixin
 from import_export.admin import ExportActionMixin
+from leaflet.admin import LeafletGeoAdminMixin
 from reversion.admin import VersionAdmin
 
 from users.widgets import UserWidget
@@ -877,7 +878,11 @@ class TissueSampleObservationAdmin(ObservationAdminMixin):
 
 
 @register(Survey)
-class SurveyAdmin(ExportActionMixin, FSMTransitionMixin, VersionAdmin):
+class SurveyAdmin(LeafletGeoAdminMixin, ExportActionMixin, FSMTransitionMixin, VersionAdmin):
+    class Media:
+        # Customise the Leaflet widget CSS
+        css = {"all": ("css/leaflet_widget.css",)}
+
     date_hierarchy = "start_time"
     list_select_related = (
         "area",
@@ -1043,11 +1048,12 @@ class AreaGeoJSONImportForm(forms.Form):
     )
 
 
-from leaflet.admin import LeafletGeoAdminMixin
-
-
 @register(Area)
 class AreaAdmin(LeafletGeoAdminMixin, GISModelAdmin):
+    class Media:
+        # Customise the Leaflet widget CSS
+        css = {"all": ("css/leaflet_widget.css",)}
+
     list_display = (
         "name",
         "area_type",
