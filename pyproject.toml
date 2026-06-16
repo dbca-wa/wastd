@@ -42,7 +42,6 @@ dependencies = [
   "mssql-django==1.7.2",
   "webtemplate-dbca==1.8.3",
   "django-storages[azure]==1.14.6",
-  "django-map-widgets==0.5.2",
   "django-grappelli==4.0.4",
   "django-nested-admin==4.1.6",
   "django-bootstrap4==26.1",

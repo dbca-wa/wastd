@@ -161,7 +161,7 @@ var map = L.map('map', {
   center: [-31.96, 115.87],
   minZoom: 4,
   maxZoom: 18,
-  layers: [virtualMosaic], // Sets default selections.
+  layers: [mapboxStreets], // Sets default selections.
   attributionControl: false,
 });
 

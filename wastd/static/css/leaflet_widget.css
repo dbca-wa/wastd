@@ -1,0 +1,4 @@
+.leaflet-container {
+  width: 100% !important; /* fixed width */
+  max-width: 100% !important; /* responsive */
+}
