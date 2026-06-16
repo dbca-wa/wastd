@@ -1,5 +1,5 @@
 {% extends "base_wastd.html" %}
-{% load static bootstrap4 leaflet_tags %}
+{% load static bootstrap4 %}
 {% block extra_style %}
     {{ block.super }}
     {{ form.media.css }}
@@ -65,8 +65,6 @@
 {% block extra_head %}
     {{ block.super }}
     {{ form.media }}
-    {% leaflet_js plugins="forms" %}
-    {% leaflet_css plugins="forms" %}
 {% endblock %}
 {% block breadcrumbs %}
     <nav aria-label="breadcrumb" class="d-none d-md-block">
@@ -515,4 +513,3 @@
     });
     </script>
 {% endblock %}
-

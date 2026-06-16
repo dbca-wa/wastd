@@ -1,5 +1,5 @@
 {% extends "webtemplate_dbca/base_b4.html" %}
-{% load static observations bootstrap4 %}
+{% load static observations bootstrap4 leaflet_tags %}
 {# HEAD #}
 {% block extra_style %}
     {{ block.super }}
@@ -36,6 +36,8 @@
                 crossorigin="anonymous"
                 referrerpolicy="no-referrer"></script>
     {% endblock wastd_jquery %}
+    {% leaflet_js plugins="ALL" %}
+    {% leaflet_css plugins="ALL" %}
 {% endblock extra_head %}
 {# BODY #}
 {# Make the top navbar collapse at a larger width, because we have more menu items #}
@@ -91,5 +93,15 @@
     const geoserver_url = '{{ geoserver_url }}';
     const localitiesGeoJSONUrl = "{% url 'localities_geojson' %}";
     const sitesGeoJSONUrl = "{% url 'sites_geojson' %}";
+
+    // Fix for django-leaflet marker image path.
+    document.addEventListener("DOMContentLoaded", function () {
+      delete L.Icon.Default.prototype._getIconUrl;
+      L.Icon.Default.mergeOptions({
+        iconUrl: "{% static 'leaflet/images/marker-icon.png' %}",
+        iconRetinaUrl: "{% static 'leaflet/images/marker-icon-2x.png' %}",
+        shadowUrl: "{% static 'leaflet/images/marker-shadow.png' %}",
+      });
+    });
     </script>
 {% endblock extra_js %}
