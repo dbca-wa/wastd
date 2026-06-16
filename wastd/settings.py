@@ -152,10 +152,12 @@ IMPORT_EXPORT_SKIP_ADMIN_CONFIRM = True
 
 # django-leaflet
 LEAFLET_CONFIG = {
+    "FORCE_IMAGE_PATH": True,
+    "RESET_VIEW": False,
     "DEFAULT_CENTER": (-31.996226, 115.883947),
     "DEFAULT_ZOOM": 10,
-    "MIN_ZOOM": 3,
-    "MAX_ZOOM": 16,
+    "MIN_ZOOM": 4,
+    "MAX_ZOOM": 18,
     "ATTRIBUTION_PREFIX": "",
     "TILES": [
         (
