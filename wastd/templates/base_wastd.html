@@ -93,15 +93,6 @@
     const geoserver_url = '{{ geoserver_url }}';
     const localitiesGeoJSONUrl = "{% url 'localities_geojson' %}";
     const sitesGeoJSONUrl = "{% url 'sites_geojson' %}";
-
-    // Fix for django-leaflet marker image path.
-    document.addEventListener("DOMContentLoaded", function () {
-      delete L.Icon.Default.prototype._getIconUrl;
-      L.Icon.Default.mergeOptions({
-        iconUrl: "{% static 'leaflet/images/marker-icon.png' %}",
-        iconRetinaUrl: "{% static 'leaflet/images/marker-icon-2x.png' %}",
-        shadowUrl: "{% static 'leaflet/images/marker-shadow.png' %}",
-      });
-    });
+    window.STATIC_URL = "{% get_static_prefix %}";
     </script>
 {% endblock extra_js %}

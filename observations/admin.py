@@ -879,8 +879,8 @@ class TissueSampleObservationAdmin(ObservationAdminMixin):
 @register(Survey)
 class SurveyAdmin(ExportActionMixin, FSMTransitionMixin, LeafletGeoAdmin, VersionAdmin):
     class Media:
-        # Customise the Leaflet widget CSS
         css = {"all": ("css/leaflet_widget.css",)}
+        js = ("js/leaflet_fix.js",)
 
     date_hierarchy = "start_time"
     list_select_related = (
@@ -1050,8 +1050,8 @@ class AreaGeoJSONImportForm(forms.Form):
 @register(Area)
 class AreaAdmin(LeafletGeoAdmin):
     class Media:
-        # Customise the Leaflet widget CSS
         css = {"all": ("css/leaflet_widget.css",)}
+        js = ("js/leaflet_fix.js",)
 
     list_display = (
         "name",
@@ -1287,8 +1287,8 @@ class EncounterAdmin(FSMTransitionMixin, LeafletGeoAdmin, VersionAdmin):
     """
 
     class Media:
-        # Customise the Leaflet widget CSS
         css = {"all": ("css/leaflet_widget.css",)}
+        js = ("js/leaflet_fix.js",)
 
     class QAStatusFilter(SimpleListFilter):
         title = "QA status"

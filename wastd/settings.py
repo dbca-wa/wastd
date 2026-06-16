@@ -178,6 +178,12 @@ LEAFLET_CONFIG = {
             {},
         ),
     ],
+    "PLUGINS": {
+        "fix_leaflet_icons": {
+            "js": "js/leaflet_fix.js",
+            "auto-include": True,
+        },
+    },
 }
 
 # Use the customised User model

@@ -44,8 +44,8 @@ class IncidentResource(resources.ModelResource):
 @admin.register(Incident)
 class IncidentAdmin(LeafletGeoAdminMixin, ImportExportModelAdmin):
     class Media:
-        # Customise the Leaflet widget CSS
         css = {"all": ("css/leaflet_widget.css",)}
+        js = ("js/leaflet_fix.js",)
 
     date_hierarchy = "incident_date"
     inlines = [UploadedFileInline]
