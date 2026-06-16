@@ -5,7 +5,6 @@ from django.contrib import messages
 from django.contrib.admin import ModelAdmin, StackedInline, TabularInline, register
 from django.contrib.admin.filters import DateFieldListFilter, RelatedFieldListFilter, SimpleListFilter
 from django.contrib.auth import get_user_model
-from django.contrib.gis.admin import GISModelAdmin
 from django.contrib.gis.geos import GEOSGeometry
 from django.shortcuts import redirect, render
 from django.urls import path, reverse
@@ -14,7 +13,7 @@ from django_select2.forms import ModelSelect2Widget
 from easy_select2 import select2_modelform as s2form
 from fsm_admin.mixins import FSMTransitionMixin
 from import_export.admin import ExportActionMixin
-from leaflet.admin import LeafletGeoAdminMixin
+from leaflet.admin import LeafletGeoAdmin
 from reversion.admin import VersionAdmin
 
 from users.widgets import UserWidget
@@ -878,10 +877,10 @@ class TissueSampleObservationAdmin(ObservationAdminMixin):
 
 
 @register(Survey)
-class SurveyAdmin(LeafletGeoAdminMixin, ExportActionMixin, FSMTransitionMixin, VersionAdmin):
+class SurveyAdmin(ExportActionMixin, FSMTransitionMixin, LeafletGeoAdmin, VersionAdmin):
     class Media:
-        # Customise the Leaflet widget CSS
         css = {"all": ("css/leaflet_widget.css",)}
+        js = ("js/leaflet_fix.js",)
 
     date_hierarchy = "start_time"
     list_select_related = (
@@ -1049,10 +1048,10 @@ class AreaGeoJSONImportForm(forms.Form):
 
 
 @register(Area)
-class AreaAdmin(LeafletGeoAdminMixin, GISModelAdmin):
+class AreaAdmin(LeafletGeoAdmin):
     class Media:
-        # Customise the Leaflet widget CSS
         css = {"all": ("css/leaflet_widget.css",)}
+        js = ("js/leaflet_fix.js",)
 
     list_display = (
         "name",
@@ -1282,10 +1281,14 @@ class CampaignAdmin(ModelAdmin):
 
 
 @register(Encounter)
-class EncounterAdmin(FSMTransitionMixin, VersionAdmin):
+class EncounterAdmin(FSMTransitionMixin, LeafletGeoAdmin, VersionAdmin):
     """Admin for Encounter with inlines for all Observations.
     This admin can be extended by other Encounter Admin classes.
     """
+
+    class Media:
+        css = {"all": ("css/leaflet_widget.css",)}
+        js = ("js/leaflet_fix.js",)
 
     class QAStatusFilter(SimpleListFilter):
         title = "QA status"

@@ -152,10 +152,12 @@ IMPORT_EXPORT_SKIP_ADMIN_CONFIRM = True
 
 # django-leaflet
 LEAFLET_CONFIG = {
+    "FORCE_IMAGE_PATH": True,
+    "RESET_VIEW": False,
     "DEFAULT_CENTER": (-31.996226, 115.883947),
     "DEFAULT_ZOOM": 10,
-    "MIN_ZOOM": 3,
-    "MAX_ZOOM": 16,
+    "MIN_ZOOM": 4,
+    "MAX_ZOOM": 18,
     "ATTRIBUTION_PREFIX": "",
     "TILES": [
         (
@@ -176,6 +178,12 @@ LEAFLET_CONFIG = {
             {},
         ),
     ],
+    "PLUGINS": {
+        "fix_leaflet_icons": {
+            "js": "js/leaflet_fix.js",
+            "auto-include": True,
+        },
+    },
 }
 
 # Use the customised User model
@@ -261,7 +269,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 STATIC_URL = "/static/"
 STATICFILES_DIRS = (os.path.join(BASE_DIR, "wastd", "static"),)
 WHITENOISE_ROOT = STATIC_ROOT
-WHITENOISE_MANIFEST_STRICT = False
 
 # Media (user-uploaded files)
 MEDIA_URL = "/media/"

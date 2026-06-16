@@ -1,5 +1,5 @@
 {% extends "webtemplate_dbca/base_b4.html" %}
-{% load static observations bootstrap4 %}
+{% load static observations bootstrap4 leaflet_tags %}
 {# HEAD #}
 {% block extra_style %}
     {{ block.super }}
@@ -36,6 +36,8 @@
                 crossorigin="anonymous"
                 referrerpolicy="no-referrer"></script>
     {% endblock wastd_jquery %}
+    {% leaflet_js plugins="ALL" %}
+    {% leaflet_css plugins="ALL" %}
 {% endblock extra_head %}
 {# BODY #}
 {# Make the top navbar collapse at a larger width, because we have more menu items #}
@@ -91,5 +93,6 @@
     const geoserver_url = '{{ geoserver_url }}';
     const localitiesGeoJSONUrl = "{% url 'localities_geojson' %}";
     const sitesGeoJSONUrl = "{% url 'sites_geojson' %}";
+    window.STATIC_URL = "{% get_static_prefix %}";
     </script>
 {% endblock extra_js %}
