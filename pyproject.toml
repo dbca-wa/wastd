@@ -30,7 +30,7 @@ dependencies = [
   "django-crispy-forms==2.6",
   "xmltodict==1.0.4",
   "pandas==3.0.3",
-  "django-tables2==2.8.0",
+  "django-tables2==3.0.0",
   "django-select2==8.4.1",
   "django-geojson==4.2.0",
   "django-import-export==4.4.1",
