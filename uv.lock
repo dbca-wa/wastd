@@ -554,11 +554,11 @@ wheels = [
 
 [[package]]
 name = "django-grappelli"
-version = "4.0.4"
+version = "5.0.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/64/06/b350404c9d0bc26ac9cf98d6b12619f01b6e4ff18b99c90edd7c3e5d277c/django_grappelli-4.0.4.tar.gz", hash = "sha256:f332b833e0cbb8519b8ed495f9438fc293d2c0bf24199157f89d81fcf452d892", size = 1506930, upload-time = "2026-04-28T14:56:56.156Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/cb/bb/66bb27b016f46579ae6d735698bfb62ce408554cdb8dbedf2f02e7e6482b/django_grappelli-5.0.0.tar.gz", hash = "sha256:404c8480024758b537bed723070c64eef695de557ad470b43161dbff0aa4c642", size = 1507044, upload-time = "2026-04-29T09:29:39.341Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/38/76/8141092c06bcca42cf764287a896d3f651b396756a2941a2e4c5c3e1ef09/django_grappelli-4.0.4-py3-none-any.whl", hash = "sha256:6bd5b148384b453fffc4e48c0ff96d187ed284b8b340893b559b4e7a60bf13fd", size = 1820914, upload-time = "2026-04-28T14:56:53.893Z" },
+    { url = "https://files.pythonhosted.org/packages/37/17/26509594f6cce283c5a18c49f5335c0bce1d509aa74d0461d1ed68239f0c/django_grappelli-5.0.0-py3-none-any.whl", hash = "sha256:579e1e309ac1369d559dbe3f752ccf1cab0216ebfa6334cdba6922aab6cfa360", size = 1820928, upload-time = "2026-04-29T09:29:35.755Z" },
 ]
 
 [[package]]
@@ -1689,7 +1689,7 @@ requires-dist = [
     { name = "django-fsm-admin-maintained", specifier = "==1.2.6" },
     { name = "django-fsm-log", specifier = "==3.1.0" },
     { name = "django-geojson", specifier = "==4.2.0" },
-    { name = "django-grappelli", specifier = "==4.0.4" },
+    { name = "django-grappelli", specifier = "==5.0.0" },
     { name = "django-import-export", specifier = "==4.4.1" },
     { name = "django-leaflet", specifier = "==0.33.0" },
     { name = "django-nested-admin", specifier = "==4.1.6" },
