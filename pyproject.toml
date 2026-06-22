@@ -30,7 +30,8 @@ dependencies = [
   "django-crispy-forms==2.6",
   "xmltodict==1.0.4",
   "pandas==3.0.3",
-  "django-tables2==2.8.0",
+  "requests==2.34.2",
+  "pytz==2026.2",
   "django-select2==8.4.1",
   "django-geojson==4.2.0",
   "django-import-export==4.4.1",
@@ -62,6 +63,7 @@ dev = [
   "pre-commit>=4.6.0",
   "coverage>=7.14.1",
   "django-stubs>=6.0.5",
+  "deptry>=0.25.1",
 ]
 
 [tool.uv]
