@@ -481,7 +481,10 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
                 elif tag_side == "R":
                     initial["recapture_right_tag_id"] = tag_id
             elif tag_type == "recapture_pit_tag":
-                initial["recapture_pittag_id"] = tag_id
+                if tag_side == "L":
+                    initial["recapture_pittag_id"] = tag_id
+                elif tag_side == "R":
+                    initial["recapture_pittag_id_2"] = tag_id
 
         if batch_id:
             try:
@@ -998,6 +1001,23 @@ class FindTurtleView(LoginRequiredMixin, View):
                     if pit_tag:
                         turtle = pit_tag.turtle
                         tag_type = "recapture_pit_tag"
+                        
+                        latest_pit_record = (
+                            TrtRecordedPitTags.objects.filter(
+                                pittag_id=pit_tag
+                            )
+                            .exclude(pit_tag_position__isnull=True)
+                            .order_by("-recorded_pittag_id")
+                            .first()
+                        )
+
+                        if latest_pit_record:
+                            if latest_pit_record.pit_tag_position == "LF":
+                                tag_side = "L"
+                            elif latest_pit_record.pit_tag_position == "RF":
+                                tag_side = "R"
+
+
                     else:
                         tag_type = "unknown_tag"
 
