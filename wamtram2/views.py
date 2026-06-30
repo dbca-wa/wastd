@@ -1771,6 +1771,7 @@ class ValidateTagView(View):
         """
         turtle_id = request.GET.get("turtle_id")
         tag = request.GET.get("tag")
+        side = request.GET.get("side")
 
         if not tag:
             return JsonResponse({"valid": False, "message": "Missing parameters"})
@@ -1820,7 +1821,36 @@ class ValidateTagView(View):
                             }
                         )
                     else:
-                        return JsonResponse({"valid": True})
+                        
+                        actual_side = None
+
+                        latest_record = (
+                            TrtRecordedPitTags.objects.filter(
+                                pittag_id=pit_tag
+                            )
+                            .exclude(pit_tag_position__isnull=True)
+                            .order_by("-recorded_pittag_id")
+                            .first()
+                        )
+
+                        if latest_record:
+                            if latest_record.pit_tag_position == "LF":
+                                actual_side = "L"
+                            elif latest_record.pit_tag_position == "RF":
+                                actual_side = "R"
+
+                        wrong_side = False
+
+                        if actual_side and side:
+                            wrong_side = actual_side.lower() != side.lower()
+
+                        return JsonResponse(
+                            {
+                                "valid": True,
+                                "wrong_side": wrong_side,
+                            }
+                        )
+
                 else:
                     return JsonResponse({"valid": False, "message": "PIT tag not found", "tag_not_found": True})
             else:

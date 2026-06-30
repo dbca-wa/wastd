@@ -1263,7 +1263,13 @@
                 setTagAndValidate('id_recapture_right_tag_id', cookieTagId);
             }
         } else if (cookieTagType === 'recapture_pit_tag') {
-            setTagAndValidate('id_recapture_pittag_id', cookieTagId);
+            
+            if (cookieTagSide === 'L') {
+                    setTagAndValidate('id_recapture_pittag_id', cookieTagId);
+                } else if (cookieTagSide === 'R') {
+                    setTagAndValidate('id_recapture_pittag_id_2', cookieTagId);
+                }
+
         }
     }
 
