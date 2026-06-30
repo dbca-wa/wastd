@@ -524,7 +524,6 @@
           <div id="recapturePIT">
             <h5><span style="color: blue; font-weight: bold">OLD</span> PIT Tag(s)</h5>
             <p style="color: red; font-style: italic; margin-bottom: 15px;">
-              Note: If you searched using a <strong>RIGHT</strong> PIT tag, please manually copy it to the right PIT tag field.
             </p>
             <div class="row mt-2">
               <div class="col-md-6">
@@ -1263,7 +1262,13 @@
                 setTagAndValidate('id_recapture_right_tag_id', cookieTagId);
             }
         } else if (cookieTagType === 'recapture_pit_tag') {
-            setTagAndValidate('id_recapture_pittag_id', cookieTagId);
+            
+            if (cookieTagSide === 'L') {
+                    setTagAndValidate('id_recapture_pittag_id', cookieTagId);
+                } else if (cookieTagSide === 'R') {
+                    setTagAndValidate('id_recapture_pittag_id_2', cookieTagId);
+                }
+
         }
     }
 
