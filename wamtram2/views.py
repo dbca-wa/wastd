@@ -580,6 +580,20 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         return initial
 
     def form_valid(self, form):
+        
+        observation_date = form.cleaned_data.get("observation_date")
+
+        if (
+            self.request.user.groups.filter(name="WAMTRAM2_VOLUNTEER").exists()
+            and observation_date
+            and observation_date.year != timezone.now().year
+        ):
+            form.add_error(
+                "observation_date",
+                "Volunteers can only enter observations for the current year."
+            )
+            return self.form_invalid(form)
+
         batch_id = form.cleaned_data["entry_batch"].entry_batch_id
         do_not_process_cookie_name = f"{batch_id}_do_not_process"
         do_not_process_cookie_value = self.request.COOKIES.get(do_not_process_cookie_name)
