@@ -9,36 +9,41 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const findTurtleUrl = `/wamtram2/find-tagged-turtle/${batchId}/`;
 
-    // Save button event
-    const saveButton = document.getElementById('saveFormStateBtn');
-    if (saveButton) {
-        saveButton.addEventListener('click', function() {
-            const formData = new FormData(form);
-            const formState = {};
-            for (let [key, value] of formData.entries()) {
-                formState[key] = value;
-            }
-            // Also save all .search-field values by id
-            form.querySelectorAll('.search-field').forEach(input => {
-                formState[input.id] = input.value;
-            });
-            localStorage.setItem(`formState_${batchId}`, JSON.stringify(formState));
-            // Show success message
-            const alertDiv = document.createElement('div');
-            alertDiv.className = 'alert alert-success alert-dismissible fade show';
-            alertDiv.role = 'alert';
-            alertDiv.innerHTML = `
-                Form data saved successfully. 
-                <a href="${findTurtleUrl}" class="alert-link">Go to Find Turtle for this batch</a>.
-                You can now create a new entry and use this data.
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            `;
-            form.insertBefore(alertDiv, form.firstChild);
-            setTimeout(() => { alertDiv.remove(); }, 3000);
+    // Auto-save form state to localStorage
+    function saveFormState() {
+        const formData = new FormData(form);
+        const formState = {};
+
+        for (let [key, value] of formData.entries()) {
+            formState[key] = value;
+        }
+
+        // Also save all .search-field values by id
+        form.querySelectorAll('.search-field').forEach(input => {
+            formState[input.id] = input.value;
         });
+
+        localStorage.setItem(
+            `formState_${batchId}`,
+            JSON.stringify(formState)
+        );
     }
+
+    // Debounced auto-save while typing
+    let saveTimeout;
+
+    form.addEventListener('input', function () {
+        clearTimeout(saveTimeout);
+
+        saveTimeout = setTimeout(() => {
+            saveFormState();
+        }, 1000);
+    });
+
+    // Auto-save immediately for dropdowns, checkboxes, etc.
+    form.addEventListener('change', function () {
+        saveFormState();
+    });
 
     // Check if there's saved data and show confirmation dialog
     const savedState = localStorage.getItem(`formState_${batchId}`);
