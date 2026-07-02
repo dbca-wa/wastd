@@ -476,6 +476,7 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         # If a tag is selected, populate the form with the tag data
         if tag_id and tag_type:
             if tag_type == "recapture_tag":
+                initial["flipper_tag_check"] = TrtYesNo.objects.get(code="Y")
                 if tag_side == "L":
                     initial["recapture_left_tag_id"] = tag_id
                 elif tag_side == "R":
