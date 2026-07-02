@@ -476,12 +476,16 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         # If a tag is selected, populate the form with the tag data
         if tag_id and tag_type:
             if tag_type == "recapture_tag":
+                initial["flipper_tag_check"] = TrtYesNo.objects.get(code="Y")
                 if tag_side == "L":
                     initial["recapture_left_tag_id"] = tag_id
                 elif tag_side == "R":
                     initial["recapture_right_tag_id"] = tag_id
             elif tag_type == "recapture_pit_tag":
-                initial["recapture_pittag_id"] = tag_id
+                if tag_side == "L":
+                    initial["recapture_pittag_id"] = tag_id
+                elif tag_side == "R":
+                    initial["recapture_pittag_id_2"] = tag_id
 
         if batch_id:
             try:
@@ -998,6 +1002,23 @@ class FindTurtleView(LoginRequiredMixin, View):
                     if pit_tag:
                         turtle = pit_tag.turtle
                         tag_type = "recapture_pit_tag"
+                        
+                        latest_pit_record = (
+                            TrtRecordedPitTags.objects.filter(
+                                pittag_id=pit_tag
+                            )
+                            .exclude(pit_tag_position__isnull=True)
+                            .order_by("-recorded_pittag_id")
+                            .first()
+                        )
+
+                        if latest_pit_record:
+                            if latest_pit_record.pit_tag_position == "LF":
+                                tag_side = "L"
+                            elif latest_pit_record.pit_tag_position == "RF":
+                                tag_side = "R"
+
+
                     else:
                         tag_type = "unknown_tag"
 
@@ -1751,6 +1772,7 @@ class ValidateTagView(View):
         """
         turtle_id = request.GET.get("turtle_id")
         tag = request.GET.get("tag")
+        side = request.GET.get("side")
 
         if not tag:
             return JsonResponse({"valid": False, "message": "Missing parameters"})
@@ -1800,7 +1822,36 @@ class ValidateTagView(View):
                             }
                         )
                     else:
-                        return JsonResponse({"valid": True})
+                        
+                        actual_side = None
+
+                        latest_record = (
+                            TrtRecordedPitTags.objects.filter(
+                                pittag_id=pit_tag
+                            )
+                            .exclude(pit_tag_position__isnull=True)
+                            .order_by("-recorded_pittag_id")
+                            .first()
+                        )
+
+                        if latest_record:
+                            if latest_record.pit_tag_position == "LF":
+                                actual_side = "L"
+                            elif latest_record.pit_tag_position == "RF":
+                                actual_side = "R"
+
+                        wrong_side = False
+
+                        if actual_side and side:
+                            wrong_side = actual_side.lower() != side.lower()
+
+                        return JsonResponse(
+                            {
+                                "valid": True,
+                                "wrong_side": wrong_side,
+                            }
+                        )
+
                 else:
                     return JsonResponse({"valid": False, "message": "PIT tag not found", "tag_not_found": True})
             else:

@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (type === 'recaptured_tag' && turtleId) {
                 url += `&turtle_id=${turtleId}&side=${side}`;
             } else if (type === 'recaptured_pit_tag' && turtleId) {
-                url += `&turtle_id=${turtleId}`;
+                url += `&turtle_id=${turtleId}&side=${side}`;
             } else if (type === 'recaptured_tag' && !turtleId) {
                 url += `&side=${side}`;
             }
@@ -248,10 +248,10 @@ document.addEventListener('DOMContentLoaded', function() {
     addValidationListener(tagInputs.newRightTagInput2, validationMessages.newRightTagMessage2, detailedMessages.newRightTagDetailedMessage2, 'new_tag');
     addValidationListener(tagInputs.newPitTagInput, validationMessages.newPitTagMessage, detailedMessages.newPitTagDetailedMessage, 'new_pit_tag');
     addValidationListener(tagInputs.newPitTagInput2, validationMessages.newPitTagMessage2, detailedMessages.newPitTagDetailedMessage2, 'new_pit_tag');
-    addValidationListener(tagInputs.recapturePitTagInput, validationMessages.recapturePitTagMessage, detailedMessages.recapturePitTagDetailedMessage, 'recaptured_pit_tag');
-    addValidationListener(tagInputs.recapturePitTagInput2, validationMessages.recapturePitTagMessage2, detailedMessages.recapturePitTagDetailedMessage2, 'recaptured_pit_tag');
+    addValidationListener(tagInputs.recapturePitTagInput, validationMessages.recapturePitTagMessage, detailedMessages.recapturePitTagDetailedMessage, 'recaptured_pit_tag','L');
+    addValidationListener(tagInputs.recapturePitTagInput2, validationMessages.recapturePitTagMessage2, detailedMessages.recapturePitTagDetailedMessage2, 'recaptured_pit_tag','R');
     addValidationListener(tagInputs.newPitTagInput3, validationMessages.newPitTagMessage3, detailedMessages.newPitTagDetailedMessage3, 'new_pit_tag');
     addValidationListener(tagInputs.newPitTagInput4, validationMessages.newPitTagMessage4, detailedMessages.newPitTagDetailedMessage4, 'new_pit_tag');
-    addValidationListener(tagInputs.recapturePitTagInput3, validationMessages.recapturePitTagMessage3, detailedMessages.recapturePitTagDetailedMessage3, 'recaptured_pit_tag');
-    addValidationListener(tagInputs.recapturePitTagInput4, validationMessages.recapturePitTagMessage4, detailedMessages.recapturePitTagDetailedMessage4, 'recaptured_pit_tag');
+    addValidationListener(tagInputs.recapturePitTagInput3, validationMessages.recapturePitTagMessage3, detailedMessages.recapturePitTagDetailedMessage3, 'recaptured_pit_tag','L');
+    addValidationListener(tagInputs.recapturePitTagInput4, validationMessages.recapturePitTagMessage4, detailedMessages.recapturePitTagDetailedMessage4, 'recaptured_pit_tag','R');
 });
