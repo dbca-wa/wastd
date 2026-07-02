@@ -88,3 +88,22 @@ lint.ignore = ["E265", "E501", "E722"]
 # Always autofix.
 fix = true
 exclude = ["__pycache__", "migrations"]
+
+
+[tool.deptry]
+ignore = ["DEP004"]
+[tool.deptry.per_rule_ignores]
+DEP002 = [
+  "psycopg",
+  "django-extensions",
+  "gunicorn",
+  "django-export-download",
+  "pillow",
+  "whitenoise",
+  "phonenumbers",
+  "mssql-django",
+  "webtemplate-dbca",
+  "django-storages",
+  "django-bootstrap4",
+  "setuptools",
+]
