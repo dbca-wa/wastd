@@ -1,15 +1,17 @@
-from wastd.utils import ListResourceView, DetailResourceView, search_filter
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseNotFound
+
+from wastd.utils import DetailResourceView, ListResourceView, search_filter
+
 from .models import User
 from .serializers import UserSerializer
 
 
-class UserListResource(ListResourceView):
+class UserListResource(LoginRequiredMixin, ListResourceView):
     model = User
     serializer = UserSerializer
 
     def dispatch(self, request, *args, **kwargs):
-        # FIXME: proper permissions checking.
         if not request.user.is_superuser:
             return HttpResponseNotFound()
         return super().dispatch(request, *args, **kwargs)
@@ -25,12 +27,11 @@ class UserListResource(ListResourceView):
         return queryset
 
 
-class UserDetailResource(DetailResourceView):
+class UserDetailResource(LoginRequiredMixin, DetailResourceView):
     model = User
     serializer = UserSerializer
 
     def dispatch(self, request, *args, **kwargs):
-        # FIXME: proper permissions checking.
         if not request.user.is_superuser:
             return HttpResponseNotFound()
         return super().dispatch(request, *args, **kwargs)
