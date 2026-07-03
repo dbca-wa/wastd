@@ -255,6 +255,7 @@ class ListResourceView(ListView):
     serializer = None
 
     def dispatch(self, request, *args, **kwargs):
+        # NOTE: handle any required user access authorisation in this method.
         # Sanity-check request params.
         if "offset" in request.GET and request.GET["offset"]:
             try:
@@ -266,7 +267,7 @@ class ListResourceView(ListView):
                 int(request.GET["limit"])
             except:
                 return HttpResponseBadRequest()
-        # FIXME: handle user access authorisation in this method.
+
         return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
@@ -343,7 +344,7 @@ class DetailResourceView(DetailView):
     serializer = None
 
     def dispatch(self, request, *args, **kwargs):
-        # FIXME: handle user access authorisation in this method.
+        # NOTE: handle any required user access authorisation in this method.
         return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
