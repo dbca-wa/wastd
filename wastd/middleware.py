@@ -1,10 +1,7 @@
-from django.http import HttpResponse, HttpResponseServerError
 import logging
+
 from django.conf import settings
-
-if settings.DEBUG:
-    from debug_toolbar.panels import Panel
-
+from django.http import HttpResponse, HttpResponseServerError
 
 LOGGER = logging.getLogger("turtles")
 
@@ -47,6 +44,8 @@ class HealthCheckMiddleware(object):
 
 
 if settings.DEBUG:
+    from debug_toolbar.panels import Panel
+
     # Create a debug panel to catch file downloads, allows profiling
     # from https://stackoverflow.com/a/74223126
     class FileInterceptsPanel(Panel):
