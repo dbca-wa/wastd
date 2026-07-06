@@ -61,9 +61,13 @@
                     {% for tag in flipper_tags %}
                         <tr>
                             <td>
-                                <a href="{% url 'admin:wamtram2_trttags_change' tag.tag_id %}">
-                                    {{ tag.tag_id }}
-                                </a>
+                                {% if tag.tag_id %}
+                                    <a href="{% url 'admin:wamtram2_trttags_change' tag.tag_id %}">
+                                        {{ tag.tag_id }}
+                                    </a>
+                                {% else %}
+                                    -
+                                {% endif %}
                             </td>
                             <td>
                                 {% if tag.turtle %}
