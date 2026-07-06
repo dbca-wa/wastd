@@ -40,7 +40,7 @@ dependencies = [
   "whitenoise[brotli]==6.12.0",
   "phonenumbers==9.0.32",
   "django-phonenumber-field==8.4.0",
-  "mssql-django==1.7.2",
+  "mssql-django==1.7.3",
   "webtemplate-dbca==1.8.3",
   "django-storages[azure]==1.14.6",
   "django-grappelli==4.0.4",

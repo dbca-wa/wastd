@@ -983,16 +983,16 @@ wheels = [
 
 [[package]]
 name = "mssql-django"
-version = "1.7.2"
+version = "1.7.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "django" },
     { name = "pyodbc" },
     { name = "pytz" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/05/1f/e1489a674c656f5f2052f7512bfc504ff07453f49b1608dad0cc7b913807/mssql_django-1.7.2.tar.gz", hash = "sha256:8bb18ac2da4467eae683e26ece257decdd0a20394a40bf86c0cb07819a678497", size = 71769, upload-time = "2026-05-22T12:17:29.345Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/0f/5e/c748d6f979d40377deb66b66d573887a4367b57bd9169f76d28423d12988/mssql_django-1.7.3.tar.gz", hash = "sha256:00b22ea619bc146a15ffe33d5397a861cb7a9b9312c2e058dfd0781b8fe70007", size = 72950, upload-time = "2026-06-19T16:00:59.673Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/73/c1/61457e5a644618a4712d400312d9c86b311e61d0876d825b4c178ba77f18/mssql_django-1.7.2-py3-none-any.whl", hash = "sha256:12d84e6526276a35408d38a0c104909778298b970fb4a2399df5b3af805461ed", size = 73988, upload-time = "2026-05-22T12:17:30.976Z" },
+    { url = "https://files.pythonhosted.org/packages/bc/a5/cbb5380c25cb43125e097ec06c1515a94aa91d8cec852e2df0a607cc72e8/mssql_django-1.7.3-py3-none-any.whl", hash = "sha256:65391b87aaa68a2e16865094d71b5ff713403e9479174be1c2bba64031e149eb", size = 75240, upload-time = "2026-06-19T16:01:00.981Z" },
 ]
 
 [[package]]
@@ -1728,7 +1728,7 @@ wheels = [
 
 [[package]]
 name = "wastd"
-version = "2.3.0"
+version = "2.3.1"
 source = { virtual = "." }
 dependencies = [
     { name = "dbca-utils" },
@@ -1810,7 +1810,7 @@ requires-dist = [
     { name = "django-select2", specifier = "==8.4.1" },
     { name = "django-storages", extras = ["azure"], specifier = "==1.14.6" },
     { name = "gunicorn", specifier = "==26.0.0" },
-    { name = "mssql-django", specifier = "==1.7.2" },
+    { name = "mssql-django", specifier = "==1.7.3" },
     { name = "openpyxl", specifier = "==3.1.5" },
     { name = "pandas", specifier = "==3.0.3" },
     { name = "phonenumbers", specifier = "==9.0.32" },
