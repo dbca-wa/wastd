@@ -82,7 +82,13 @@
                                         <td>{{ entry_data.tag_type|title }}</td>
                                         <td>
                                             {% if entry_data.tag_type|startswith:'flipper' %}
-                                                <a href="{% url 'admin:wamtram2_trttags_change' entry_data.tag_id %}">{{ entry_data.tag_id }}</a>
+                                                {% if entry_data.tag_id %}
+                                                    <a href="{% url 'admin:wamtram2_trttags_change' entry_data.tag_id %}">
+                                                        {{ entry_data.tag_id }}
+                                                    </a>
+                                                {% else %}
+                                                    N/A
+                                                {% endif %}
                                             {% elif entry_data.tag_type|startswith:'pit' %}
                                                 <a href="{% url 'admin:wamtram2_trtpittags_change' entry_data.tag_id %}">{{ entry_data.tag_id }}</a>
                                             {% else %}
