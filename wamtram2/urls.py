@@ -79,4 +79,5 @@ urlpatterns = [
     path("curation/nesting-season-stats/", views.NestingSeasonStatsView.as_view(), name="nesting_season_stats"),
     path("batch-create-batches/", views.BatchCreateBatchesView.as_view(), name="batch_create_batches"),
     path("batches-review/", views.BatchesReviewView.as_view(), name="batches_review"),
-]
+    path( "search-issue-locations/", views.search_issue_locations, name="search-issue-locations"),
+]  
