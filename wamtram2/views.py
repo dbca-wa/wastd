@@ -3802,14 +3802,12 @@ class PitTagsListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMixin, Li
         status = self.request.GET.get("status")
         if status:
             queryset = queryset.filter(pit_tag_status=status)
-
+        
         issue_location = self.request.GET.get("issue_location")
-
         if issue_location:
             queryset = queryset.filter(
                 issue_location__icontains=issue_location
             )
-
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -3865,7 +3863,6 @@ class FlipperTagsListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMixin
             )
 
         status = self.request.GET.get("status")
-        
         if status:
             queryset = queryset.filter(tag_status_id=status)
 
