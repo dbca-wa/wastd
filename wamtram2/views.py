@@ -3228,6 +3228,39 @@ def search_templates(request):
         return JsonResponse(data, safe=False)
     return JsonResponse([], safe=False)
 
+def search_issue_locations(request):
+    query = request.GET.get("q", "").strip()
+
+    flipper_locations = TrtTags.objects.filter(
+        issue_location__istartswith=query
+    ).exclude(
+        issue_location__isnull=True
+    ).exclude(
+        issue_location=""
+    ).values_list(
+        "issue_location",
+        flat=True
+    )
+
+    pit_locations = TrtPitTags.objects.filter(
+        issue_location__istartswith=query
+    ).exclude(
+        issue_location__isnull=True
+    ).exclude(
+        issue_location=""
+    ).values_list(
+        "issue_location",
+        flat=True
+    )
+
+    locations = sorted(
+        set(list(flipper_locations) + list(pit_locations))
+    )[:20]
+
+    return JsonResponse(
+        [{"issue_location": location} for location in locations],
+        safe=False,
+    )
 
 class BatchCodeManageView(View):
     template_name = "wamtram2/batch_detail_manage.html"
@@ -3769,7 +3802,12 @@ class PitTagsListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMixin, Li
         status = self.request.GET.get("status")
         if status:
             queryset = queryset.filter(pit_tag_status=status)
-
+        
+        issue_location = self.request.GET.get("issue_location")
+        if issue_location:
+            queryset = queryset.filter(
+                issue_location__icontains=issue_location
+            )
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -3782,6 +3820,7 @@ class PitTagsListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMixin, Li
                 "search_term": self.request.GET.get("search", ""),
                 "current_status": self.request.GET.get("status", ""),
                 "status_choices": TrtPitTagStatus.objects.all(),
+                "current_issue_location": self.request.GET.get("issue_location", ""),
             }
         )
         return context
@@ -3803,6 +3842,7 @@ class FlipperTagsListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMixin
                 "current_status": self.request.GET.get("status", ""),
                 "status_choices": TrtTagStatus.objects.all(),
                 "page_title": "Flipper Tags - " + settings.SITE_TITLE,
+                "current_issue_location": self.request.GET.get("issue_location", ""),
             }
         )
         return context
@@ -3826,6 +3866,11 @@ class FlipperTagsListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMixin
         if status:
             queryset = queryset.filter(tag_status_id=status)
 
+        issue_location = self.request.GET.get("issue_location")
+        if issue_location:
+            queryset = queryset.filter(
+                issue_location__icontains=issue_location
+            )
         return queryset
 
 
