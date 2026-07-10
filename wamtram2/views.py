@@ -2631,6 +2631,7 @@ class DudTagManageView(LoginRequiredMixin, View):
 
         # Get tags and their status
         flipper_tags = TrtTags.objects.filter(tag_id__in=flipper_tag_ids).exclude(tag_status__tag_status__in=self.HIDE_STATUS_LIST)
+       
 
         pit_tags = TrtPitTags.objects.filter(pittag_id__in=pit_tag_ids).exclude(pit_tag_status__pit_tag_status__in=self.HIDE_STATUS_LIST)
 
@@ -2664,10 +2665,85 @@ class DudTagManageView(LoginRequiredMixin, View):
             if entry.dud_pit_tag_2:
                 entry_data = self._process_entry(entry, entry.dud_pit_tag_2, "pit_2", pit_tags)
                 entries.append(entry_data)
+        tag_type = request.GET.get("tag_type", "").strip()
+        
+        # Build complete status list BEFORE applying filters
+        available_statuses = sorted(
+            {
+                e["current_status"]
+                for e in entries
+                if e["current_status"]
+            }
+        )
+        # Entry ID filter
+        entry_id = request.GET.get(
+            "entry_id",
+            ""
+        ).strip()
+        
+        if entry_id:
+            entries = [
+                e
+                for e in entries
+                if str(e["entry"].data_entry_id) == entry_id
+            ]
+        # Turtle ID filter
+        turtle_id = request.GET.get(
+            "turtle_id",
+            ""
+        ).strip()
+
+        if turtle_id:
+            entries = [
+                e
+                for e in entries
+                if e["entry"].turtle_id
+                and str(e["entry"].turtle_id.turtle_id) == turtle_id
+            ]
+        # DUD Tag ID filter
+        tag_id = request.GET.get(
+            "tag_id",
+            ""
+        ).strip()
+
+        if tag_id:
+            entries = [
+                e
+                for e in entries
+                if tag_id.lower() in e["tag_id"].lower()
+            ]
+
+        # DUD tag type filter
+        tag_type = request.GET.get(
+            "tag_type",
+            ""
+        ).strip()
+
+        if tag_type:
+            entries = [
+                e
+                for e in entries
+                if e["tag_type"].startswith(tag_type)
+            ]
+
+        # Current status filter
+        current_status = request.GET.get(
+            "current_status",
+            ""
+        ).strip()
+
+        if current_status:
+            entries = [
+                e
+                for e in entries
+                if e["current_status"] == current_status
+            ]
+
 
         context = {
             "page_title": "DUD Tag Management - " + settings.SITE_TITLE,
             "entries": entries,
+            "available_statuses": available_statuses,
         }
 
         return render(request, self.template_name, context)
@@ -2703,6 +2779,7 @@ class DudTagManageView(LoginRequiredMixin, View):
         tag_type = request.POST.get("tag_type")
         tag_id = request.POST.get("tag_id")
         tag_status = request.POST.get("tag_status")
+        
 
         if not all([entry_id, tag_type, tag_id]):
             return redirect("wamtram2:dud_tag_manage")
