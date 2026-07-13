@@ -2,6 +2,7 @@ from grappelli.dashboard import modules, Dashboard
 
 
 class AdminDashboard(Dashboard):
+    columns = 3
     def init_with_context(self, context):
         self.children.append(
             modules.Group(

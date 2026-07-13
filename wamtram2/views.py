@@ -581,6 +581,20 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         return initial
 
     def form_valid(self, form):
+        
+        observation_date = form.cleaned_data.get("observation_date")
+
+        if (
+            self.request.user.groups.filter(name="WAMTRAM2_VOLUNTEER").exists()
+            and observation_date
+            and observation_date.year != timezone.now().year
+        ):
+            form.add_error(
+                "observation_date",
+                "Volunteers can only enter observations for the current year."
+            )
+            return self.form_invalid(form)
+
         batch_id = form.cleaned_data["entry_batch"].entry_batch_id
         do_not_process_cookie_name = f"{batch_id}_do_not_process"
         do_not_process_cookie_value = self.request.COOKIES.get(do_not_process_cookie_name)
@@ -2618,6 +2632,7 @@ class DudTagManageView(LoginRequiredMixin, View):
 
         # Get tags and their status
         flipper_tags = TrtTags.objects.filter(tag_id__in=flipper_tag_ids).exclude(tag_status__tag_status__in=self.HIDE_STATUS_LIST)
+       
 
         pit_tags = TrtPitTags.objects.filter(pittag_id__in=pit_tag_ids).exclude(pit_tag_status__pit_tag_status__in=self.HIDE_STATUS_LIST)
 
@@ -2651,10 +2666,85 @@ class DudTagManageView(LoginRequiredMixin, View):
             if entry.dud_pit_tag_2:
                 entry_data = self._process_entry(entry, entry.dud_pit_tag_2, "pit_2", pit_tags)
                 entries.append(entry_data)
+        tag_type = request.GET.get("tag_type", "").strip()
+        
+        # Build complete status list BEFORE applying filters
+        available_statuses = sorted(
+            {
+                e["current_status"]
+                for e in entries
+                if e["current_status"]
+            }
+        )
+        # Entry ID filter
+        entry_id = request.GET.get(
+            "entry_id",
+            ""
+        ).strip()
+        
+        if entry_id:
+            entries = [
+                e
+                for e in entries
+                if str(e["entry"].data_entry_id) == entry_id
+            ]
+        # Turtle ID filter
+        turtle_id = request.GET.get(
+            "turtle_id",
+            ""
+        ).strip()
+
+        if turtle_id:
+            entries = [
+                e
+                for e in entries
+                if e["entry"].turtle_id
+                and str(e["entry"].turtle_id.turtle_id) == turtle_id
+            ]
+        # DUD Tag ID filter
+        tag_id = request.GET.get(
+            "tag_id",
+            ""
+        ).strip()
+
+        if tag_id:
+            entries = [
+                e
+                for e in entries
+                if tag_id.lower() in e["tag_id"].lower()
+            ]
+
+        # DUD tag type filter
+        tag_type = request.GET.get(
+            "tag_type",
+            ""
+        ).strip()
+
+        if tag_type:
+            entries = [
+                e
+                for e in entries
+                if e["tag_type"].startswith(tag_type)
+            ]
+
+        # Current status filter
+        current_status = request.GET.get(
+            "current_status",
+            ""
+        ).strip()
+
+        if current_status:
+            entries = [
+                e
+                for e in entries
+                if e["current_status"] == current_status
+            ]
+
 
         context = {
             "page_title": "DUD Tag Management - " + settings.SITE_TITLE,
             "entries": entries,
+            "available_statuses": available_statuses,
         }
 
         return render(request, self.template_name, context)
@@ -2690,6 +2780,7 @@ class DudTagManageView(LoginRequiredMixin, View):
         tag_type = request.POST.get("tag_type")
         tag_id = request.POST.get("tag_id")
         tag_status = request.POST.get("tag_status")
+        
 
         if not all([entry_id, tag_type, tag_id]):
             return redirect("wamtram2:dud_tag_manage")
@@ -3215,6 +3306,39 @@ def search_templates(request):
         return JsonResponse(data, safe=False)
     return JsonResponse([], safe=False)
 
+def search_issue_locations(request):
+    query = request.GET.get("q", "").strip()
+
+    flipper_locations = TrtTags.objects.filter(
+        issue_location__istartswith=query
+    ).exclude(
+        issue_location__isnull=True
+    ).exclude(
+        issue_location=""
+    ).values_list(
+        "issue_location",
+        flat=True
+    )
+
+    pit_locations = TrtPitTags.objects.filter(
+        issue_location__istartswith=query
+    ).exclude(
+        issue_location__isnull=True
+    ).exclude(
+        issue_location=""
+    ).values_list(
+        "issue_location",
+        flat=True
+    )
+
+    locations = sorted(
+        set(list(flipper_locations) + list(pit_locations))
+    )[:20]
+
+    return JsonResponse(
+        [{"issue_location": location} for location in locations],
+        safe=False,
+    )
 
 class BatchCodeManageView(View):
     template_name = "wamtram2/batch_detail_manage.html"
@@ -3756,7 +3880,12 @@ class PitTagsListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMixin, Li
         status = self.request.GET.get("status")
         if status:
             queryset = queryset.filter(pit_tag_status=status)
-
+        
+        issue_location = self.request.GET.get("issue_location")
+        if issue_location:
+            queryset = queryset.filter(
+                issue_location__icontains=issue_location
+            )
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -3769,6 +3898,7 @@ class PitTagsListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMixin, Li
                 "search_term": self.request.GET.get("search", ""),
                 "current_status": self.request.GET.get("status", ""),
                 "status_choices": TrtPitTagStatus.objects.all(),
+                "current_issue_location": self.request.GET.get("issue_location", ""),
             }
         )
         return context
@@ -3790,6 +3920,7 @@ class FlipperTagsListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMixin
                 "current_status": self.request.GET.get("status", ""),
                 "status_choices": TrtTagStatus.objects.all(),
                 "page_title": "Flipper Tags - " + settings.SITE_TITLE,
+                "current_issue_location": self.request.GET.get("issue_location", ""),
             }
         )
         return context
@@ -3813,6 +3944,11 @@ class FlipperTagsListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMixin
         if status:
             queryset = queryset.filter(tag_status_id=status)
 
+        issue_location = self.request.GET.get("issue_location")
+        if issue_location:
+            queryset = queryset.filter(
+                issue_location__icontains=issue_location
+            )
         return queryset
 
 

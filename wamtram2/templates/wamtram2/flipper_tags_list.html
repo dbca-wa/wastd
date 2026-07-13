@@ -61,9 +61,13 @@
                     {% for tag in flipper_tags %}
                         <tr>
                             <td>
-                                <a href="{% url 'admin:wamtram2_trttags_change' tag.tag_id %}">
-                                    {{ tag.tag_id }}
-                                </a>
+                                {% if tag.tag_id %}
+                                    <a href="{% url 'admin:wamtram2_trttags_change' tag.tag_id %}">
+                                        {{ tag.tag_id }}
+                                    </a>
+                                {% else %}
+                                    -
+                                {% endif %}
                             </td>
                             <td>
                                 {% if tag.turtle %}
@@ -96,4 +100,94 @@
             </div>
         </div>
     </div>
+{% endblock %}
+
+
+{% block extra_script %}
+<script>
+ // Setup issue location search
+    function setupIssueLocationSearch(inputId, resultsId) {
+        const input = document.getElementById(inputId);
+        const searchResults = document.getElementById(resultsId);
+        
+        if (!input || !searchResults) {
+                return;
+            }
+
+        let isSelecting = false;
+        let debounceTimer;
+
+        function debounce(func, wait) {
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(debounceTimer);
+                    func(...args);
+                };
+
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(later, wait);
+            };
+        }
+
+        const performSearch = debounce(async (searchTerm) => {
+            if (searchTerm.length >= 2) {
+                try {
+                    const response = await fetch(
+                        `/wamtram2/search-issue-locations/?q=${encodeURIComponent(searchTerm)}`
+                    );
+
+                    const data = await response.json();
+
+                    searchResults.innerHTML = '';
+
+                    if (data.length > 0) {
+                        searchResults.style.display = 'block';
+
+                        data.forEach(location => {
+                            const div = document.createElement('div');
+
+                            div.className = 'search-result';
+                            div.textContent = location.issue_location;
+
+                            div.addEventListener('click', () => {
+                                isSelecting = true;
+                                input.value = location.issue_location;
+                                searchResults.style.display = 'none';
+                                isSelecting = false;
+                            });
+
+                            searchResults.appendChild(div);
+                        });
+                    } else {
+                        searchResults.style.display = 'none';
+                    }
+                } catch (error) {
+                    console.error('Search error:', error);
+                    showMessage('Error performing search', 'danger');
+                }
+            } else {
+                searchResults.style.display = 'none';
+            }
+        }, 300);
+
+        input.addEventListener('input', function() {
+            if (isSelecting) return;
+            performSearch(this.value);
+        });
+
+        document.addEventListener('click', function(e) {
+            if (e.target !== input && !searchResults.contains(e.target)) {
+                searchResults.style.display = 'none';
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        setupIssueLocationSearch(
+            'issueLocation',
+            'issueLocationSearchResults'
+        );
+    });
+
+</script>
 {% endblock %}
