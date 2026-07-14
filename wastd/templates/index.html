@@ -17,6 +17,7 @@
                  alt="Green turtle track at Thevenard Island. Photo: Florian Mayer, DBCA."
                  width="140"
                  height="140">
+        
             <h2 class="text-center">Turtle Tracks and Nests</h2>
             <p>
                 Browse and search turtle tracks and nests
@@ -45,14 +46,24 @@
                 threatened marine megafauna: Turtles, Dugong, Sea snakes, including Pinnipeds and Cetaceans.
             </p>
         </div>
+        {% if request.user.is_authenticated and not request.user.is_staff and not request.user.is_superuser and not request.user.can_access_tracks_nests and not request.user.can_access_tagging and not request.user.can_access_marine_wildlife %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                Your account is active, but no operational module access has been assigned yet. Please contact an administrator to request access.
+            </div>
+        </div>
+        {% endif %}
     </div>
     <div class="row">
         <div class="col-sm">
-            <p>
-                <a class="btn btn-primary btn-block"
-                   href="{% url 'observations:turtlenestencounter-list' %}"
-                   title="Browse, filter and search Turtle Nest Encounters">Browse track & nest encounters »</a>
-            </p>
+            {% if request.user.is_staff or request.user.is_superuser or request.user.can_access_tracks_nests %}
+                <p>
+                    <a class="btn btn-primary btn-block"
+                    href="{% url 'observations:turtlenestencounter-list' %}"
+                    title="Browse, filter and search Turtle Nest Encounters">Browse track & nest encounters »</a>
+                </p>
+            
+            
             {% if request.user.is_staff %}
                 <p>
                     <a class="btn btn-success btn-block"
@@ -60,13 +71,26 @@
                        title="Curate and QA animal encounters">Curate »</a>
                 </p>
             {% endif %}
+            {% else %}
+                <p>            
+                    <button class="btn btn-secondary btn-block" disabled>                
+                        Access not assigned           
+                    </button>        
+                </p>
+                <small class="text-muted">
+                    You do not currently have access to the Turtle Tracks and Nests module.
+                </small>
+            {% endif %}
         </div>
+        
+          
         <div class="col-sm">
-            <p>
-                <a class="btn btn-primary btn-block"
-                   href="{% url 'wamtram2:turtle_list' %}"
-                   title="Browse, filter and search turtle tagging data">Browse tagged turtles »</a>
-            </p>
+            {% if request.user.is_staff or request.user.is_superuser or request.user.can_access_tagging %}
+                <p>
+                    <a class="btn btn-primary btn-block"
+                    href="{% url 'wamtram2:turtle_list' %}"
+                    title="Browse, filter and search turtle tagging data">Browse tagged turtles »</a>
+                </p>
             {% if perms.wamtram2.add_trtentrybatches %}
                 <p>
                     <a class="btn btn-primary btn-block"
@@ -81,18 +105,31 @@
                        title="Create a new entry">Create new entries »</a>
                 </p>
             {% endif %}
+            {% else %}
+                <p>            
+                    <button class="btn btn-secondary btn-block" disabled>                
+                        Access not assigned           
+                    </button>        
+                </p>
+                <small class="text-muted">
+                    You do not currently have access to the Turtle Tagging module.
+                </small>
+            {% endif %}
         </div>
+        
+        
         <div class="col-sm">
-            <p>
-                <a class="btn btn-primary btn-block"
-                   href="{% url 'marine_mammal_incidents:incident_list' %}"
-                   title="Curate and QA marine wildlife incidents">Browse marine mammal incidents »</a>
-            </p>
-            <p>
-                <a class="btn btn-primary btn-block"
-                   href="{% url 'map' %}"
-                   title="Map Marine Wildlife Incidents">Marine mammal incidents map »</a>
-            </p>
+            {% if request.user.is_staff or request.user.is_superuser or request.user.can_access_marine_wildlife %}
+                <p>
+                    <a class="btn btn-primary btn-block"
+                    href="{% url 'marine_mammal_incidents:incident_list' %}"
+                    title="Curate and QA marine wildlife incidents">Browse marine mammal incidents »</a>
+                </p>
+                <p>
+                    <a class="btn btn-primary btn-block"
+                    href="{% url 'map' %}"
+                    title="Map Marine Wildlife Incidents">Marine mammal incidents map »</a>
+                </p>
             {% if request.user.is_staff %}
                 <p>
                     <a class="btn btn-success btn-block"
@@ -100,6 +137,16 @@
                        target="_blank"
                        title="Curate and QA marine wildlife incidents">Curate marine wildlife incidents »</a>
                 </p>
+            {% endif %}
+            {% else %}
+                <p>            
+                    <button class="btn btn-secondary btn-block" disabled>                
+                        Access not assigned           
+                    </button>        
+                </p>
+                <small class="text-muted">
+                    You do not currently have access to the Marine Wildlife Incidents module.
+                </small>
             {% endif %}
         </div>
     </div>
