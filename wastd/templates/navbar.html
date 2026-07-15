@@ -201,7 +201,7 @@
             </div>
         </li>
         {% endif %}
-        {% if request.user.is_staff or request.user.is_superuser or request.user.can_access_marine_wildlife %}
+        {% if request.user.is_staff or request.user.is_superuser or request.user.can_access_tracks_nests or request.user.can_access_marine_wildlife %}
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle"
                href="/"
