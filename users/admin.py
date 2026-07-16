@@ -52,6 +52,9 @@ class UserAdmin(AuthUserAdmin):
                     "organisations",
                     "phone",
                     "alive",
+                    "can_access_tracks_nests",
+                    "can_access_tagging",
+                    "can_access_marine_wildlife",
                 )
             },
         ),
@@ -74,6 +77,9 @@ class UserAdmin(AuthUserAdmin):
         "is_staff",
         "is_active",
         "alive",
+        "can_access_tracks_nests",
+        "can_access_tagging",
+        "can_access_marine_wildlife",
     )
     search_fields = [
         "email",
