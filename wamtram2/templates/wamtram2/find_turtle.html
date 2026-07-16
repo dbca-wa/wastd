@@ -78,10 +78,6 @@
             {% csrf_token %}
             <div class="form-group">
               <label for="tag_id">Flipper/ PIT tag ID:</label>
-              <p style="color: red; font-size: 0.9em; margin-top: 5px;">
-                <strong> Note: </strong> For <strong> PIT tag </strong> search, please use the <strong> LEFT </strong> one.
-                If you have to use the <strong> RIGHT </strong> one, please <strong> change the auto filled PIT tag to right </strong> in the form manually.
-              </p>
               <input type="text" class="form-control" id="tag_id" name="tag_id" required>
             </div>
             <input type="hidden" id="tag_type" name="tag_type" value="{{ tag_type }}">
