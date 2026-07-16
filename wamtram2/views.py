@@ -31,7 +31,7 @@ from docx.shared import Inches, Pt, RGBColor
 from openpyxl import Workbook
 
 from wastd.utils import Breadcrumb, PaginateMixin
-
+from wamtram2.models import TrvObservationSummary
 from .forms import BatchesCodeForm, SearchForm, TagRegisterForm, TemplateForm, TrtDataEntryForm, TrtEntryBatchesForm, TrtPersonsForm
 from .models import (
     Template,
@@ -2321,10 +2321,22 @@ class ExportDataView(LoginRequiredMixin, View):
                 org_dict.setdefault(bo["trtentrybatch_id"], []).append(bo["organisation"])
 
             # Pre-fetch Tags and PIT Tags for Processed Entries
+            summary_dict = {}
             tags_dict = {}
             pit_tags_dict = {}
+
+            
+
             if entry_type == "processed":
                 obs_ids = set(queryset.values_list("observation_id", flat=True))
+
+                summary_dict = {
+                    s.observation_id: s
+                    for s in TrvObservationSummary.objects.filter(
+                        observation_id__in=obs_ids
+                    )
+                }
+            
                 # 1. Tags
                 recorded_tags = (
                     TrtRecordedTags.objects.filter(observation_id__in=obs_ids).select_related("tag_id").order_by("tag_position", "side")
@@ -2351,17 +2363,51 @@ class ExportDataView(LoginRequiredMixin, View):
 
                 # 3. Measurements
                 measurements_dict = {}
+                measurements_summary_dict = {}
                 measurements = TrtMeasurements.objects.filter(observation_id__in=obs_ids).select_related("measurement_type").order_by("id")
 
                 for m in measurements:
                     o_id = m.observation_id
+
+                    m_type = m.measurement_type_id or ""
+                    m_val = str(m.measurement_value) if m.measurement_value is not None else ""
+
                     m_list = measurements_dict.setdefault(o_id, [])
                     if len(m_list) < 2:
-                        m_type = m.measurement_type_id or ""
-                        m_val = str(m.measurement_value) if m.measurement_value is not None else ""
                         m_list.append((str(m_type), m_val))
 
-                # 4. Damages
+                    summary_list = measurements_summary_dict.setdefault(o_id, [])
+                    summary_list.append(f"{m_type}={m_val}")
+        
+                # 4. Samples
+                samples_summary_dict = {}
+
+                samples = (
+                    TrtSamples.objects
+                    .filter(observation_id__in=obs_ids)
+                    .select_related("tissue_type")
+                )
+
+                for s in samples:
+                    o_id = s.observation_id
+
+                    tissue = (
+                        s.tissue_type.description
+                        if s.tissue_type
+                        else ""
+                    )
+
+                    label = s.sample_label or ""
+
+                    summary_list = samples_summary_dict.setdefault(o_id, [])
+
+                    if label:
+                        summary_list.append(f"{tissue}({label})")
+                    else:
+                        summary_list.append(tissue)
+
+
+                # 5. Damages
                 damages_dict = {}
                 damages = TrtDamage.objects.filter(observation_id__in=obs_ids).select_related("body_part", "damage_code")
 
@@ -2395,10 +2441,16 @@ class ExportDataView(LoginRequiredMixin, View):
                                 "measurement_1_value",
                                 "measurement_2_type",
                                 "measurement_2_value",
+                                "all_measurements",
+                                "all_samples",
                                 "damage_1_body_part",
                                 "damage_1_code",
                                 "damage_2_body_part",
                                 "damage_2_code",
+                                "all_flipper_tags",
+                                "all_pit_tags",
+                                "all_damage",
+                                "observation_status",
                                 "turtle_species_code",
                                 "turtle_sex",
                                 "turtle_status",
@@ -2459,12 +2511,38 @@ class ExportDataView(LoginRequiredMixin, View):
                             m_list = measurements_dict.get(obs_id, [])
                             m1_t, m1_v = m_list[0] if len(m_list) > 0 else ("", "")
                             m2_t, m2_v = m_list[1] if len(m_list) > 1 else ("", "")
+                            
+                            all_measurements = "; ".join(
+                                    measurements_summary_dict.get(obs_id, [])
+                            )
+                            all_samples = "; ".join(
+                                    samples_summary_dict.get(obs_id, [])
+                            )
 
                             d_list = damages_dict.get(obs_id, [])
                             d1_b, d1_c = d_list[0] if len(d_list) > 0 else ("", "")
                             d2_b, d2_c = d_list[1] if len(d_list) > 1 else ("", "")
-
-                            row.extend([t1, t2, pt1, pt2, m1_t, m1_v, m2_t, m2_v, d1_b, d1_c, d2_b, d2_c])
+                            
+                            summary = summary_dict.get(obs_id)
+                            row.extend([
+                                t1, 
+                                t2, 
+                                pt1, 
+                                pt2, 
+                                m1_t, 
+                                m1_v, 
+                                m2_t, 
+                                m2_v,
+                                all_measurements,
+                                d1_b, 
+                                d1_c, 
+                                d2_b, 
+                                d2_c, 
+                                summary.flipper_tags if summary else "", 
+                                summary.pit_tags if summary else "", 
+                                summary.damage if summary else "", 
+                                summary.observation_status if summary else "",
+                                all_samples])
 
                             # Append specific turtle info
                             turtle = getattr(entry, "turtle", None)
@@ -2504,10 +2582,16 @@ class ExportDataView(LoginRequiredMixin, View):
                                 "measurement_1_value",
                                 "measurement_2_type",
                                 "measurement_2_value",
+                                "all_measurements",
+                                "all_samples",
                                 "damage_1_body_part",
                                 "damage_1_code",
                                 "damage_2_body_part",
                                 "damage_2_code",
+                                "all_flipper_tags",
+                                "all_pit_tags",
+                                "all_damage",
+                                "observation_status",
                                 "turtle_species_code",
                                 "turtle_sex",
                                 "turtle_status",
@@ -2569,11 +2653,36 @@ class ExportDataView(LoginRequiredMixin, View):
                             m1_t, m1_v = m_list[0] if len(m_list) > 0 else ("", "")
                             m2_t, m2_v = m_list[1] if len(m_list) > 1 else ("", "")
 
+                            all_measurements = "; ".join(
+                                    measurements_summary_dict.get(obs_id, [])
+                            )
+                            all_samples = "; ".join(
+                                    samples_summary_dict.get(obs_id, [])
+                            )
+
                             d_list = damages_dict.get(obs_id, [])
                             d1_b, d1_c = d_list[0] if len(d_list) > 0 else ("", "")
                             d2_b, d2_c = d_list[1] if len(d_list) > 1 else ("", "")
-
-                            row.extend([t1, t2, pt1, pt2, m1_t, m1_v, m2_t, m2_v, d1_b, d1_c, d2_b, d2_c])
+                            
+                            summary = summary_dict.get(obs_id)
+                            row.extend([t1, 
+                                        t2, 
+                                        pt1, 
+                                        pt2, 
+                                        m1_t, 
+                                        m1_v, 
+                                        m2_t, 
+                                        m2_v, 
+                                        all_measurements, 
+                                        d1_b, 
+                                        d1_c, 
+                                        d2_b, 
+                                        d2_c, 
+                                        summary.flipper_tags if summary else "", 
+                                        summary.pit_tags if summary else "", 
+                                        summary.damage if summary else "", 
+                                        summary.observation_status if summary else "",]
+                                        )
 
                             # Append specific turtle info
                             turtle = getattr(entry, "turtle", None)
