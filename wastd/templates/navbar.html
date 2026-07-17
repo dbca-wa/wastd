@@ -1,5 +1,6 @@
 <div class="collapse navbar-collapse" id="navbarCollapse">
     <ul class="navbar-nav mr-auto">
+    {% if request.user.is_staff or request.user.is_superuser or request.user.can_access_tracks_nests %}  
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle"
                href="/"
@@ -115,6 +116,8 @@
                 </a>
             </div>
         </li>
+        {% endif %}
+        {% if request.user.is_staff or request.user.is_superuser or request.user.can_access_tagging %}
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle"
                href="/"
@@ -159,6 +162,8 @@
                 {% endif %}
             </div>
         </li>
+        {% endif %}
+        {% if request.user.is_staff or request.user.is_superuser or request.user.can_access_marine_wildlife %}
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle"
                href="/"
@@ -195,6 +200,8 @@
                 {% endif %}
             </div>
         </li>
+        {% endif %}
+        {% if request.user.is_staff or request.user.is_superuser or request.user.can_access_tracks_nests or request.user.can_access_marine_wildlife %}
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle"
                href="/"
@@ -229,6 +236,7 @@
                 </a>
             </div>
         </li>
+        {% endif %}
         <!-- Users menu -->
         {% if request.user.is_staff %}
             <li class="nav-item dropdown">

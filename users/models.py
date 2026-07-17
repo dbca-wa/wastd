@@ -76,6 +76,20 @@ class User(AbstractUser):
         default=True,
         help_text="Deceased users should not be attempted to be contacted.",
     )
+    can_access_tracks_nests = models.BooleanField(
+    "Tracks and Nests module access",
+    default=False,
+    )
+
+    can_access_tagging = models.BooleanField(
+        "Turtle Tagging module access",
+        default=False,
+    )
+
+    can_access_marine_wildlife = models.BooleanField(
+        "Marine Wildlife module access",
+        default=False,
+    )
 
     class Meta:
         ordering = ["name", "username"]
@@ -112,7 +126,18 @@ class User(AbstractUser):
             "aliases__icontains",
             "affiliation__icontains",
         )
+    def has_module_access(self, module):
+        if not self.is_authenticated:
+            return False
 
+        if self.is_staff or self.is_superuser:
+            return True
+
+        return {
+            "tracks_nests": self.can_access_tracks_nests,
+            "tagging": self.can_access_tagging,
+            "marine_wildlife": self.can_access_marine_wildlife,
+        }.get(module, False)
     # -------------------------------------------------------------------------
     # URLs
     # Override create and update until we have front end forms
