@@ -779,11 +779,12 @@ class TagRegisterForm(forms.Form):
     tag_prefix = forms.CharField(max_length=5, label="Tag Prefix", required=False)
     start_number = forms.CharField(max_length=15, label="Start Tag Number")
     end_number = forms.CharField(max_length=15, label="End Tag Number")
-    tag_order_id = forms.IntegerField(label="Tag Order ID")
+    tag_order_id = forms.IntegerField(label="Tag Order ID", required=False)
     issue_location = forms.CharField(max_length=50, required=True, label="Issue Location")
     comments = forms.CharField(widget=forms.Textarea, required=False)
 
     custodian_person_id = forms.CharField(widget=forms.HiddenInput(), required=False)
+    # Removed from UI but retained for backwards compatibility.
     field_person_id = forms.CharField(widget=forms.HiddenInput(), required=False)
 
 
