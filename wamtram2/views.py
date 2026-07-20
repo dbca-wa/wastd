@@ -3810,7 +3810,7 @@ class TagRegisterView(LoginRequiredMixin, FormView):
                             issue_location=form.cleaned_data["issue_location"],
                             custodian_person_id=form.cleaned_data["custodian_person_id"],
                             # Retained for backwards compatibility (T062).
-                            field_person_id=form.cleaned_data["field_person_id"],
+                            field_person_id=None,
                             comments=form.cleaned_data["comments"],
                             tag_status=tag_status,
                         )
@@ -3826,7 +3826,7 @@ class TagRegisterView(LoginRequiredMixin, FormView):
                             issue_location=form.cleaned_data["issue_location"],
                             custodian_person_id=form.cleaned_data["custodian_person_id"],
                             # Retained for backwards compatibility (T062).
-                            field_person_id=form.cleaned_data["field_person_id"],
+                            field_person_id=None,
                             comments=form.cleaned_data["comments"],
                             pit_tag_status=pit_tag_status,
                         )
