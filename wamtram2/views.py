@@ -3788,10 +3788,9 @@ class TagRegisterView(LoginRequiredMixin, FormView):
             prefix = form.cleaned_data["tag_prefix"]
             start = int(form.cleaned_data["start_number"])
             end = int(form.cleaned_data["end_number"])
-
-            if end - start > 1000:
-                return JsonResponse({"success": False, "error": "Cannot create more than 1000 tags at once"})
-
+            
+            # T062 removed tag registration batch size limit
+            
             with transaction.atomic():
                 for num in range(start, end + 1):
                     if tag_type == "flipper":
@@ -3810,7 +3809,8 @@ class TagRegisterView(LoginRequiredMixin, FormView):
                             tag_order_id=form.cleaned_data["tag_order_id"],
                             issue_location=form.cleaned_data["issue_location"],
                             custodian_person_id=form.cleaned_data["custodian_person_id"],
-                            field_person_id=form.cleaned_data["field_person_id"],
+                            # Retained for backwards compatibility (T062).
+                            field_person_id=None,
                             comments=form.cleaned_data["comments"],
                             tag_status=tag_status,
                         )
@@ -3825,7 +3825,8 @@ class TagRegisterView(LoginRequiredMixin, FormView):
                             tag_order_id=form.cleaned_data["tag_order_id"],
                             issue_location=form.cleaned_data["issue_location"],
                             custodian_person_id=form.cleaned_data["custodian_person_id"],
-                            field_person_id=form.cleaned_data["field_person_id"],
+                            # Retained for backwards compatibility (T062).
+                            field_person_id=None,
                             comments=form.cleaned_data["comments"],
                             pit_tag_status=pit_tag_status,
                         )

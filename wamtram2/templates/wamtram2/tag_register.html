@@ -111,20 +111,6 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="fieldPerson">Field Person</label>
-                            <div class="search-container">
-                                <input type="text" 
-                                    id="fieldPerson" 
-                                    class="search-field form-control-sm" 
-                                    placeholder="Search for field person..." 
-                                    autocomplete="off">
-                                <input type="hidden" id="fieldPersonId" name="field_person_id">
-                                <div id="fieldSearchResults" class="search-results"></div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
                 <!-- Comments -->
@@ -362,7 +348,6 @@
     // Initialize person search
     document.addEventListener('DOMContentLoaded', function() {
         setupPersonSearch('custodianPerson', 'custodianPersonId', 'custodianSearchResults');
-        setupPersonSearch('fieldPerson', 'fieldPersonId', 'fieldSearchResults');
     });
 
     document.addEventListener('DOMContentLoaded', function() {
