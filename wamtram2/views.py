@@ -2534,6 +2534,7 @@ class ExportDataView(LoginRequiredMixin, View):
                                 m2_t, 
                                 m2_v,
                                 all_measurements,
+                                all_samples,
                                 d1_b, 
                                 d1_c, 
                                 d2_b, 
@@ -2542,7 +2543,7 @@ class ExportDataView(LoginRequiredMixin, View):
                                 summary.pit_tags if summary else "", 
                                 summary.damage if summary else "", 
                                 summary.observation_status if summary else "",
-                                all_samples])
+                                ])
 
                             # Append specific turtle info
                             turtle = getattr(entry, "turtle", None)
@@ -2674,6 +2675,7 @@ class ExportDataView(LoginRequiredMixin, View):
                                         m2_t, 
                                         m2_v, 
                                         all_measurements, 
+                                        all_samples,
                                         d1_b, 
                                         d1_c, 
                                         d2_b, 
