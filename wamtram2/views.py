@@ -580,7 +580,7 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         return initial
 
     def form_valid(self, form):
-        
+
         observation_date = form.cleaned_data.get("observation_date")
 
         if (
@@ -1015,7 +1015,7 @@ class FindTurtleView(LoginRequiredMixin, View):
                     if pit_tag:
                         turtle = pit_tag.turtle
                         tag_type = "recapture_pit_tag"
-                        
+
                         latest_pit_record = (
                             TrtRecordedPitTags.objects.filter(
                                 pittag_id=pit_tag
@@ -1835,7 +1835,7 @@ class ValidateTagView(View):
                             }
                         )
                     else:
-                        
+
                         actual_side = None
 
                         latest_record = (
@@ -2325,7 +2325,7 @@ class ExportDataView(LoginRequiredMixin, View):
             tags_dict = {}
             pit_tags_dict = {}
 
-            
+
 
             if entry_type == "processed":
                 obs_ids = set(queryset.values_list("observation_id", flat=True))
@@ -2336,7 +2336,7 @@ class ExportDataView(LoginRequiredMixin, View):
                         observation_id__in=obs_ids
                     )
                 }
-            
+
                 # 1. Tags
                 recorded_tags = (
                     TrtRecordedTags.objects.filter(observation_id__in=obs_ids).select_related("tag_id").order_by("tag_position", "side")
@@ -2378,7 +2378,7 @@ class ExportDataView(LoginRequiredMixin, View):
 
                     summary_list = measurements_summary_dict.setdefault(o_id, [])
                     summary_list.append(f"{m_type}={m_val}")
-        
+
                 # 4. Samples
                 samples_summary_dict = {}
 
@@ -2435,8 +2435,10 @@ class ExportDataView(LoginRequiredMixin, View):
                             [
                                 "tag_1_id",
                                 "tag_2_id",
+                                "all_flipper_tags",
                                 "pit_tag_1_id",
                                 "pit_tag_2_id",
+                                "all_pit_tags",
                                 "measurement_1_type",
                                 "measurement_1_value",
                                 "measurement_2_type",
@@ -2447,10 +2449,7 @@ class ExportDataView(LoginRequiredMixin, View):
                                 "damage_1_code",
                                 "damage_2_body_part",
                                 "damage_2_code",
-                                "all_flipper_tags",
-                                "all_pit_tags",
                                 "all_damage",
-                                "observation_status",
                                 "turtle_species_code",
                                 "turtle_sex",
                                 "turtle_status",
@@ -2511,7 +2510,7 @@ class ExportDataView(LoginRequiredMixin, View):
                             m_list = measurements_dict.get(obs_id, [])
                             m1_t, m1_v = m_list[0] if len(m_list) > 0 else ("", "")
                             m2_t, m2_v = m_list[1] if len(m_list) > 1 else ("", "")
-                            
+
                             all_measurements = "; ".join(
                                     measurements_summary_dict.get(obs_id, [])
                             )
@@ -2522,28 +2521,27 @@ class ExportDataView(LoginRequiredMixin, View):
                             d_list = damages_dict.get(obs_id, [])
                             d1_b, d1_c = d_list[0] if len(d_list) > 0 else ("", "")
                             d2_b, d2_c = d_list[1] if len(d_list) > 1 else ("", "")
-                            
+
                             summary = summary_dict.get(obs_id)
                             row.extend([
-                                t1, 
-                                t2, 
-                                pt1, 
-                                pt2, 
-                                m1_t, 
-                                m1_v, 
-                                m2_t, 
+                                t1,
+                                t2,
+                                summary.flipper_tags if summary else "",
+                                pt1,
+                                pt2,
+                                summary.pit_tags if summary else "",
+                                m1_t,
+                                m1_v,
+                                m2_t,
                                 m2_v,
                                 all_measurements,
                                 all_samples,
-                                d1_b, 
-                                d1_c, 
-                                d2_b, 
-                                d2_c, 
-                                summary.flipper_tags if summary else "", 
-                                summary.pit_tags if summary else "", 
-                                summary.damage if summary else "", 
-                                summary.observation_status if summary else "",
-                                ])
+                                d1_b,
+                                d1_c,
+                                d2_b,
+                                d2_c,
+                                summary.damage if summary else "",]
+                                )
 
                             # Append specific turtle info
                             turtle = getattr(entry, "turtle", None)
@@ -2577,8 +2575,10 @@ class ExportDataView(LoginRequiredMixin, View):
                             [
                                 "tag_1_id",
                                 "tag_2_id",
+                                "all_flipper_tags",
                                 "pit_tag_1_id",
                                 "pit_tag_2_id",
+                                "all_pit_tags",
                                 "measurement_1_type",
                                 "measurement_1_value",
                                 "measurement_2_type",
@@ -2589,10 +2589,7 @@ class ExportDataView(LoginRequiredMixin, View):
                                 "damage_1_code",
                                 "damage_2_body_part",
                                 "damage_2_code",
-                                "all_flipper_tags",
-                                "all_pit_tags",
                                 "all_damage",
-                                "observation_status",
                                 "turtle_species_code",
                                 "turtle_sex",
                                 "turtle_status",
@@ -2664,26 +2661,25 @@ class ExportDataView(LoginRequiredMixin, View):
                             d_list = damages_dict.get(obs_id, [])
                             d1_b, d1_c = d_list[0] if len(d_list) > 0 else ("", "")
                             d2_b, d2_c = d_list[1] if len(d_list) > 1 else ("", "")
-                            
+
                             summary = summary_dict.get(obs_id)
-                            row.extend([t1, 
-                                        t2, 
-                                        pt1, 
-                                        pt2, 
-                                        m1_t, 
-                                        m1_v, 
-                                        m2_t, 
-                                        m2_v, 
-                                        all_measurements, 
+                            row.extend([t1,
+                                        t2,
+                                        summary.flipper_tags if summary else "",
+                                        pt1,
+                                        pt2,
+                                        summary.pit_tags if summary else "",
+                                        m1_t,
+                                        m1_v,
+                                        m2_t,
+                                        m2_v,
+                                        all_measurements,
                                         all_samples,
-                                        d1_b, 
-                                        d1_c, 
-                                        d2_b, 
-                                        d2_c, 
-                                        summary.flipper_tags if summary else "", 
-                                        summary.pit_tags if summary else "", 
-                                        summary.damage if summary else "", 
-                                        summary.observation_status if summary else "",]
+                                        d1_b,
+                                        d1_c,
+                                        d2_b,
+                                        d2_c,
+                                        summary.damage if summary else "",]
                                         )
 
                             # Append specific turtle info
@@ -2742,7 +2738,7 @@ class DudTagManageView(LoginRequiredMixin, View):
 
         # Get tags and their status
         flipper_tags = TrtTags.objects.filter(tag_id__in=flipper_tag_ids).exclude(tag_status__tag_status__in=self.HIDE_STATUS_LIST)
-       
+
 
         pit_tags = TrtPitTags.objects.filter(pittag_id__in=pit_tag_ids).exclude(pit_tag_status__pit_tag_status__in=self.HIDE_STATUS_LIST)
 
@@ -2777,7 +2773,7 @@ class DudTagManageView(LoginRequiredMixin, View):
                 entry_data = self._process_entry(entry, entry.dud_pit_tag_2, "pit_2", pit_tags)
                 entries.append(entry_data)
         tag_type = request.GET.get("tag_type", "").strip()
-        
+
         # Build complete status list BEFORE applying filters
         available_statuses = sorted(
             {
@@ -2791,7 +2787,7 @@ class DudTagManageView(LoginRequiredMixin, View):
             "entry_id",
             ""
         ).strip()
-        
+
         if entry_id:
             entries = [
                 e
@@ -2890,7 +2886,7 @@ class DudTagManageView(LoginRequiredMixin, View):
         tag_type = request.POST.get("tag_type")
         tag_id = request.POST.get("tag_id")
         tag_status = request.POST.get("tag_status")
-        
+
 
         if not all([entry_id, tag_type, tag_id]):
             return redirect("wamtram2:dud_tag_manage")
@@ -3990,7 +3986,7 @@ class PitTagsListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMixin, Li
         status = self.request.GET.get("status")
         if status:
             queryset = queryset.filter(pit_tag_status=status)
-        
+
         issue_location = self.request.GET.get("issue_location")
         if issue_location:
             queryset = queryset.filter(
