@@ -255,7 +255,7 @@ class EntryBatchDetailView(LoginRequiredMixin, FormMixin, ListView):
         )
 
         entries = TrtDataEntry.objects.filter(entry_batch_id=batch.entry_batch_id)
-        all_entries_processed = all(entry.observation_id is not None for entry in entries)
+        all_entries_processed = all(entry.observation_id_id is not None for entry in entries)
         context["all_entries_processed"] = all_entries_processed
 
         return context
