@@ -31,7 +31,7 @@ from docx.shared import Inches, Pt, RGBColor
 from openpyxl import Workbook
 
 from wastd.utils import Breadcrumb, PaginateMixin
-
+from wamtram2.models import TrvObservationSummary
 from .forms import BatchesCodeForm, SearchForm, TagRegisterForm, TemplateForm, TrtDataEntryForm, TrtEntryBatchesForm, TrtPersonsForm
 from .models import (
     Template,
@@ -580,7 +580,7 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         return initial
 
     def form_valid(self, form):
-        
+
         observation_date = form.cleaned_data.get("observation_date")
 
         if (
@@ -1015,7 +1015,7 @@ class FindTurtleView(LoginRequiredMixin, View):
                     if pit_tag:
                         turtle = pit_tag.turtle
                         tag_type = "recapture_pit_tag"
-                        
+
                         latest_pit_record = (
                             TrtRecordedPitTags.objects.filter(
                                 pittag_id=pit_tag
@@ -1835,7 +1835,7 @@ class ValidateTagView(View):
                             }
                         )
                     else:
-                        
+
                         actual_side = None
 
                         latest_record = (
@@ -2321,10 +2321,26 @@ class ExportDataView(LoginRequiredMixin, View):
                 org_dict.setdefault(bo["trtentrybatch_id"], []).append(bo["organisation"])
 
             # Pre-fetch Tags and PIT Tags for Processed Entries
-            tags_dict = {}
-            pit_tags_dict = {}
+            summary_dict = {}
+            left_tags_dict = {}
+            right_tags_dict = {}
+            unknown_tags_dict = {}
+            left_pit_tags_dict = {}
+            right_pit_tags_dict = {}
+            unknown_pit_tags_dict = {}
+
+
+
             if entry_type == "processed":
                 obs_ids = set(queryset.values_list("observation_id", flat=True))
+
+                summary_dict = {
+                    s.observation_id: s
+                    for s in TrvObservationSummary.objects.filter(
+                        observation_id__in=obs_ids
+                    )
+                }
+
                 # 1. Tags
                 recorded_tags = (
                     TrtRecordedTags.objects.filter(observation_id__in=obs_ids).select_related("tag_id").order_by("tag_position", "side")
@@ -2332,10 +2348,14 @@ class ExportDataView(LoginRequiredMixin, View):
 
                 for rt in recorded_tags:
                     o_id = rt.observation_id_id
-                    t_list = tags_dict.setdefault(o_id, [])
-                    if len(t_list) < 2:
-                        tag_val = rt.tag_id_id or rt.other_tag_id or ""
-                        t_list.append(str(tag_val))
+                    tag_val = str(rt.tag_id_id or rt.other_tag_id or "")
+                    if rt.side == "L":
+                        left_tags_dict.setdefault(o_id, []).append(tag_val)
+
+                    elif rt.side == "R":
+                        right_tags_dict.setdefault(o_id, []).append(tag_val)
+                    else:      
+                        unknown_tags_dict.setdefault(o_id, []).append(tag_val)
 
                 # 2. PIT Tags
                 recorded_pit_tags = (
@@ -2344,24 +2364,64 @@ class ExportDataView(LoginRequiredMixin, View):
 
                 for rpt in recorded_pit_tags:
                     o_id = rpt.observation_id_id
-                    pt_list = pit_tags_dict.setdefault(o_id, [])
-                    if len(pt_list) < 2:
-                        pt_val = rpt.pittag_id_id or ""
-                        pt_list.append(str(pt_val))
+                    pt_val = str(rpt.pittag_id_id or "")
+
+                    if rpt.pit_tag_position == "LF":
+                        left_pit_tags_dict.setdefault(o_id, []).append(pt_val)
+
+                    elif rpt.pit_tag_position == "RF":
+                        right_pit_tags_dict.setdefault(o_id, []).append(pt_val)
+
+                    else:
+                        unknown_pit_tags_dict.setdefault(o_id, []).append(pt_val)
 
                 # 3. Measurements
                 measurements_dict = {}
+                measurements_summary_dict = {}
                 measurements = TrtMeasurements.objects.filter(observation_id__in=obs_ids).select_related("measurement_type").order_by("id")
 
                 for m in measurements:
                     o_id = m.observation_id
+
+                    m_type = m.measurement_type_id or ""
+                    m_val = str(m.measurement_value) if m.measurement_value is not None else ""
+
                     m_list = measurements_dict.setdefault(o_id, [])
                     if len(m_list) < 2:
-                        m_type = m.measurement_type_id or ""
-                        m_val = str(m.measurement_value) if m.measurement_value is not None else ""
                         m_list.append((str(m_type), m_val))
 
-                # 4. Damages
+                    summary_list = measurements_summary_dict.setdefault(o_id, [])
+                    summary_list.append(f"{m_type}={m_val}")
+
+                # 4. Samples
+                samples_summary_dict = {}
+
+                samples = (
+                    TrtSamples.objects
+                    .filter(observation_id__in=obs_ids)
+                    .select_related("tissue_type")
+                )
+
+                for s in samples:
+                    o_id = s.observation_id
+
+                    tissue = (
+                        s.tissue_type.description
+                        if s.tissue_type
+                        else ""
+                    )
+
+                    label = s.sample_label or ""
+
+                    summary_list = samples_summary_dict.setdefault(o_id, [])
+
+                    if label:
+                        summary_list.append(f"{tissue}({label})")
+                    else:
+                        summary_list.append(tissue)
+
+
+                # 5. Damages
                 damages_dict = {}
                 damages = TrtDamage.objects.filter(observation_id__in=obs_ids).select_related("body_part", "damage_code")
 
@@ -2387,18 +2447,25 @@ class ExportDataView(LoginRequiredMixin, View):
                     elif entry_type == "processed":
                         headers.extend(
                             [
-                                "tag_1_id",
-                                "tag_2_id",
-                                "pit_tag_1_id",
-                                "pit_tag_2_id",
+                                "left_flipper_tags",
+                                "right_flipper_tags",
+                                "unknown_flipper_tags",
+                                "all_flipper_tags",
+                                "left_pit_tags",
+                                "right_pit_tags",
+                                "unknown_pit_tags",
+                                "all_pit_tags",
                                 "measurement_1_type",
                                 "measurement_1_value",
                                 "measurement_2_type",
                                 "measurement_2_value",
+                                "all_measurements",
+                                "all_samples",
                                 "damage_1_body_part",
                                 "damage_1_code",
                                 "damage_2_body_part",
                                 "damage_2_code",
+                                "all_damage",
                                 "turtle_species_code",
                                 "turtle_sex",
                                 "turtle_status",
@@ -2448,23 +2515,68 @@ class ExportDataView(LoginRequiredMixin, View):
                         elif entry_type == "processed":
                             # Extract Tags up to 2
                             obs_id = entry.observation_id
-                            t_list = tags_dict.get(obs_id, [])
-                            pt_list = pit_tags_dict.get(obs_id, [])
 
-                            t1 = t_list[0] if len(t_list) > 0 else ""
-                            t2 = t_list[1] if len(t_list) > 1 else ""
-                            pt1 = pt_list[0] if len(pt_list) > 0 else ""
-                            pt2 = pt_list[1] if len(pt_list) > 1 else ""
+                            left_flipper_tags = "; ".join(
+                                left_tags_dict.get(obs_id, [])
+                            )
+
+                            right_flipper_tags = "; ".join(
+                                right_tags_dict.get(obs_id, [])
+                            )
+
+                            unknown_flipper_tags = "; ".join(
+                                unknown_tags_dict.get(obs_id, [])
+                            )
+
+                            left_pit_tags = "; ".join(
+                                left_pit_tags_dict.get(obs_id, [])
+                            )
+
+                            right_pit_tags = "; ".join(
+                                right_pit_tags_dict.get(obs_id, [])
+                            )
+
+                            unknown_pit_tags = "; ".join(
+                                unknown_pit_tags_dict.get(obs_id, [])
+                            )
 
                             m_list = measurements_dict.get(obs_id, [])
                             m1_t, m1_v = m_list[0] if len(m_list) > 0 else ("", "")
                             m2_t, m2_v = m_list[1] if len(m_list) > 1 else ("", "")
 
+                            all_measurements = "; ".join(
+                                    measurements_summary_dict.get(obs_id, [])
+                            )
+                            all_samples = "; ".join(
+                                    samples_summary_dict.get(obs_id, [])
+                            )
+
                             d_list = damages_dict.get(obs_id, [])
                             d1_b, d1_c = d_list[0] if len(d_list) > 0 else ("", "")
                             d2_b, d2_c = d_list[1] if len(d_list) > 1 else ("", "")
 
-                            row.extend([t1, t2, pt1, pt2, m1_t, m1_v, m2_t, m2_v, d1_b, d1_c, d2_b, d2_c])
+                            summary = summary_dict.get(obs_id)
+                            row.extend([
+                                left_flipper_tags,
+                                right_flipper_tags,
+                                unknown_flipper_tags,
+                                summary.flipper_tags if summary else "",
+                                left_pit_tags,
+                                right_pit_tags,
+                                unknown_pit_tags,
+                                summary.pit_tags if summary else "",
+                                m1_t,
+                                m1_v,
+                                m2_t,
+                                m2_v,
+                                all_measurements,
+                                all_samples,
+                                d1_b,
+                                d1_c,
+                                d2_b,
+                                d2_c,
+                                summary.damage if summary else "",]
+                                )
 
                             # Append specific turtle info
                             turtle = getattr(entry, "turtle", None)
@@ -2496,18 +2608,25 @@ class ExportDataView(LoginRequiredMixin, View):
                     elif entry_type == "processed":
                         headers.extend(
                             [
-                                "tag_1_id",
-                                "tag_2_id",
-                                "pit_tag_1_id",
-                                "pit_tag_2_id",
+                                "left_flipper_tags",
+                                "right_flipper_tags",
+                                "unknown_flipper_tags",
+                                "all_flipper_tags",
+                                "left_pit_tags",
+                                "right_pit_tags",
+                                "unknown_pit_tags",
+                                "all_pit_tags",
                                 "measurement_1_type",
                                 "measurement_1_value",
                                 "measurement_2_type",
                                 "measurement_2_value",
+                                "all_measurements",
+                                "all_samples",
                                 "damage_1_body_part",
                                 "damage_1_code",
                                 "damage_2_body_part",
                                 "damage_2_code",
+                                "all_damage",
                                 "turtle_species_code",
                                 "turtle_sex",
                                 "turtle_status",
@@ -2557,23 +2676,67 @@ class ExportDataView(LoginRequiredMixin, View):
                         elif entry_type == "processed":
                             # Extract Tags up to 2
                             obs_id = entry.observation_id
-                            t_list = tags_dict.get(obs_id, [])
-                            pt_list = pit_tags_dict.get(obs_id, [])
+                            left_flipper_tags = "; ".join(
+                                left_tags_dict.get(obs_id, [])
+                            )
 
-                            t1 = t_list[0] if len(t_list) > 0 else ""
-                            t2 = t_list[1] if len(t_list) > 1 else ""
-                            pt1 = pt_list[0] if len(pt_list) > 0 else ""
-                            pt2 = pt_list[1] if len(pt_list) > 1 else ""
+                            right_flipper_tags = "; ".join(
+                                right_tags_dict.get(obs_id, [])
+                            )
+
+                            unknown_flipper_tags = "; ".join(
+                                unknown_tags_dict.get(obs_id, [])
+                            )
+
+                            left_pit_tags = "; ".join(
+                                left_pit_tags_dict.get(obs_id, [])
+                            )
+
+                            right_pit_tags = "; ".join(
+                                right_pit_tags_dict.get(obs_id, [])
+                            )
+
+                            unknown_pit_tags = "; ".join(
+                                unknown_pit_tags_dict.get(obs_id, [])
+                            )
 
                             m_list = measurements_dict.get(obs_id, [])
                             m1_t, m1_v = m_list[0] if len(m_list) > 0 else ("", "")
                             m2_t, m2_v = m_list[1] if len(m_list) > 1 else ("", "")
 
+                            all_measurements = "; ".join(
+                                    measurements_summary_dict.get(obs_id, [])
+                            )
+                            all_samples = "; ".join(
+                                    samples_summary_dict.get(obs_id, [])
+                            )
+
                             d_list = damages_dict.get(obs_id, [])
                             d1_b, d1_c = d_list[0] if len(d_list) > 0 else ("", "")
                             d2_b, d2_c = d_list[1] if len(d_list) > 1 else ("", "")
 
-                            row.extend([t1, t2, pt1, pt2, m1_t, m1_v, m2_t, m2_v, d1_b, d1_c, d2_b, d2_c])
+                            summary = summary_dict.get(obs_id)
+                            row.extend([ 
+                                        left_flipper_tags,
+                                        right_flipper_tags,
+                                        unknown_flipper_tags,
+                                        summary.flipper_tags if summary else "",
+                                        left_pit_tags,
+                                        right_pit_tags,
+                                        unknown_pit_tags,
+                                        summary.pit_tags if summary else "",
+                                        m1_t,
+                                        m1_v,
+                                        m2_t,
+                                        m2_v,
+                                        all_measurements,
+                                        all_samples,
+                                        d1_b,
+                                        d1_c,
+                                        d2_b,
+                                        d2_c,
+                                        summary.damage if summary else "",]
+                                        )
 
                             # Append specific turtle info
                             turtle = getattr(entry, "turtle", None)
@@ -2631,7 +2794,7 @@ class DudTagManageView(LoginRequiredMixin, View):
 
         # Get tags and their status
         flipper_tags = TrtTags.objects.filter(tag_id__in=flipper_tag_ids).exclude(tag_status__tag_status__in=self.HIDE_STATUS_LIST)
-       
+
 
         pit_tags = TrtPitTags.objects.filter(pittag_id__in=pit_tag_ids).exclude(pit_tag_status__pit_tag_status__in=self.HIDE_STATUS_LIST)
 
@@ -2666,7 +2829,7 @@ class DudTagManageView(LoginRequiredMixin, View):
                 entry_data = self._process_entry(entry, entry.dud_pit_tag_2, "pit_2", pit_tags)
                 entries.append(entry_data)
         tag_type = request.GET.get("tag_type", "").strip()
-        
+
         # Build complete status list BEFORE applying filters
         available_statuses = sorted(
             {
@@ -2680,7 +2843,7 @@ class DudTagManageView(LoginRequiredMixin, View):
             "entry_id",
             ""
         ).strip()
-        
+
         if entry_id:
             entries = [
                 e
@@ -2779,7 +2942,7 @@ class DudTagManageView(LoginRequiredMixin, View):
         tag_type = request.POST.get("tag_type")
         tag_id = request.POST.get("tag_id")
         tag_status = request.POST.get("tag_status")
-        
+
 
         if not all([entry_id, tag_type, tag_id]):
             return redirect("wamtram2:dud_tag_manage")
@@ -3880,7 +4043,7 @@ class PitTagsListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMixin, Li
         status = self.request.GET.get("status")
         if status:
             queryset = queryset.filter(pit_tag_status=status)
-        
+
         issue_location = self.request.GET.get("issue_location")
         if issue_location:
             queryset = queryset.filter(
