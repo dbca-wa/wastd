@@ -2322,8 +2322,12 @@ class ExportDataView(LoginRequiredMixin, View):
 
             # Pre-fetch Tags and PIT Tags for Processed Entries
             summary_dict = {}
-            tags_dict = {}
-            pit_tags_dict = {}
+            left_tags_dict = {}
+            right_tags_dict = {}
+            unknown_tags_dict = {}
+            left_pit_tags_dict = {}
+            right_pit_tags_dict = {}
+            unknown_pit_tags_dict = {}
 
 
 
@@ -2344,10 +2348,14 @@ class ExportDataView(LoginRequiredMixin, View):
 
                 for rt in recorded_tags:
                     o_id = rt.observation_id_id
-                    t_list = tags_dict.setdefault(o_id, [])
-                    if len(t_list) < 2:
-                        tag_val = rt.tag_id_id or rt.other_tag_id or ""
-                        t_list.append(str(tag_val))
+                    tag_val = str(rt.tag_id_id or rt.other_tag_id or "")
+                    if rt.side == "L":
+                        left_tags_dict.setdefault(o_id, []).append(tag_val)
+
+                    elif rt.side == "R":
+                        right_tags_dict.setdefault(o_id, []).append(tag_val)
+                    else:      
+                        unknown_tags_dict.setdefault(o_id, []).append(tag_val)
 
                 # 2. PIT Tags
                 recorded_pit_tags = (
@@ -2356,10 +2364,16 @@ class ExportDataView(LoginRequiredMixin, View):
 
                 for rpt in recorded_pit_tags:
                     o_id = rpt.observation_id_id
-                    pt_list = pit_tags_dict.setdefault(o_id, [])
-                    if len(pt_list) < 2:
-                        pt_val = rpt.pittag_id_id or ""
-                        pt_list.append(str(pt_val))
+                    pt_val = str(rpt.pittag_id_id or "")
+
+                    if rpt.pit_tag_position == "LF":
+                        left_pit_tags_dict.setdefault(o_id, []).append(pt_val)
+
+                    elif rpt.pit_tag_position == "RF":
+                        right_pit_tags_dict.setdefault(o_id, []).append(pt_val)
+
+                    else:
+                        unknown_pit_tags_dict.setdefault(o_id, []).append(pt_val)
 
                 # 3. Measurements
                 measurements_dict = {}
@@ -2433,11 +2447,13 @@ class ExportDataView(LoginRequiredMixin, View):
                     elif entry_type == "processed":
                         headers.extend(
                             [
-                                "tag_1_id",
-                                "tag_2_id",
+                                "left_flipper_tags",
+                                "right_flipper_tags",
+                                "unknown_flipper_tags",
                                 "all_flipper_tags",
-                                "pit_tag_1_id",
-                                "pit_tag_2_id",
+                                "left_pit_tags",
+                                "right_pit_tags",
+                                "unknown_pit_tags",
                                 "all_pit_tags",
                                 "measurement_1_type",
                                 "measurement_1_value",
@@ -2499,13 +2515,30 @@ class ExportDataView(LoginRequiredMixin, View):
                         elif entry_type == "processed":
                             # Extract Tags up to 2
                             obs_id = entry.observation_id
-                            t_list = tags_dict.get(obs_id, [])
-                            pt_list = pit_tags_dict.get(obs_id, [])
 
-                            t1 = t_list[0] if len(t_list) > 0 else ""
-                            t2 = t_list[1] if len(t_list) > 1 else ""
-                            pt1 = pt_list[0] if len(pt_list) > 0 else ""
-                            pt2 = pt_list[1] if len(pt_list) > 1 else ""
+                            left_flipper_tags = "; ".join(
+                                left_tags_dict.get(obs_id, [])
+                            )
+
+                            right_flipper_tags = "; ".join(
+                                right_tags_dict.get(obs_id, [])
+                            )
+
+                            unknown_flipper_tags = "; ".join(
+                                unknown_tags_dict.get(obs_id, [])
+                            )
+
+                            left_pit_tags = "; ".join(
+                                left_pit_tags_dict.get(obs_id, [])
+                            )
+
+                            right_pit_tags = "; ".join(
+                                right_pit_tags_dict.get(obs_id, [])
+                            )
+
+                            unknown_pit_tags = "; ".join(
+                                unknown_pit_tags_dict.get(obs_id, [])
+                            )
 
                             m_list = measurements_dict.get(obs_id, [])
                             m1_t, m1_v = m_list[0] if len(m_list) > 0 else ("", "")
@@ -2524,11 +2557,13 @@ class ExportDataView(LoginRequiredMixin, View):
 
                             summary = summary_dict.get(obs_id)
                             row.extend([
-                                t1,
-                                t2,
+                                left_flipper_tags,
+                                right_flipper_tags,
+                                unknown_flipper_tags,
                                 summary.flipper_tags if summary else "",
-                                pt1,
-                                pt2,
+                                left_pit_tags,
+                                right_pit_tags,
+                                unknown_pit_tags,
                                 summary.pit_tags if summary else "",
                                 m1_t,
                                 m1_v,
@@ -2573,11 +2608,13 @@ class ExportDataView(LoginRequiredMixin, View):
                     elif entry_type == "processed":
                         headers.extend(
                             [
-                                "tag_1_id",
-                                "tag_2_id",
+                                "left_flipper_tags",
+                                "right_flipper_tags",
+                                "unknown_flipper_tags",
                                 "all_flipper_tags",
-                                "pit_tag_1_id",
-                                "pit_tag_2_id",
+                                "left_pit_tags",
+                                "right_pit_tags",
+                                "unknown_pit_tags",
                                 "all_pit_tags",
                                 "measurement_1_type",
                                 "measurement_1_value",
@@ -2639,13 +2676,29 @@ class ExportDataView(LoginRequiredMixin, View):
                         elif entry_type == "processed":
                             # Extract Tags up to 2
                             obs_id = entry.observation_id
-                            t_list = tags_dict.get(obs_id, [])
-                            pt_list = pit_tags_dict.get(obs_id, [])
+                            left_flipper_tags = "; ".join(
+                                left_tags_dict.get(obs_id, [])
+                            )
 
-                            t1 = t_list[0] if len(t_list) > 0 else ""
-                            t2 = t_list[1] if len(t_list) > 1 else ""
-                            pt1 = pt_list[0] if len(pt_list) > 0 else ""
-                            pt2 = pt_list[1] if len(pt_list) > 1 else ""
+                            right_flipper_tags = "; ".join(
+                                right_tags_dict.get(obs_id, [])
+                            )
+
+                            unknown_flipper_tags = "; ".join(
+                                unknown_tags_dict.get(obs_id, [])
+                            )
+
+                            left_pit_tags = "; ".join(
+                                left_pit_tags_dict.get(obs_id, [])
+                            )
+
+                            right_pit_tags = "; ".join(
+                                right_pit_tags_dict.get(obs_id, [])
+                            )
+
+                            unknown_pit_tags = "; ".join(
+                                unknown_pit_tags_dict.get(obs_id, [])
+                            )
 
                             m_list = measurements_dict.get(obs_id, [])
                             m1_t, m1_v = m_list[0] if len(m_list) > 0 else ("", "")
@@ -2663,11 +2716,14 @@ class ExportDataView(LoginRequiredMixin, View):
                             d2_b, d2_c = d_list[1] if len(d_list) > 1 else ("", "")
 
                             summary = summary_dict.get(obs_id)
-                            row.extend([t1,
-                                        t2,
+                            row.extend([ 
+                                        left_flipper_tags,
+                                        right_flipper_tags,
+                                        unknown_flipper_tags,
                                         summary.flipper_tags if summary else "",
-                                        pt1,
-                                        pt2,
+                                        left_pit_tags,
+                                        right_pit_tags,
+                                        unknown_pit_tags,
                                         summary.pit_tags if summary else "",
                                         m1_t,
                                         m1_v,
