@@ -638,6 +638,29 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    const searchInputs = document.querySelectorAll(
+    '#turtleIDSearch, #flipperTagSearch, #pitTagSearch, #otherIdentificationSearch'
+    );
+
+    searchInputs.forEach(input => {
+    input.addEventListener('keydown', function(event) {
+        if (event.key !== 'Enter') {
+            return;
+        }
+
+        event.preventDefault();
+
+        let searchType = this.id.replace('Search', '').toLowerCase();
+        searchType = searchTypeMapping[searchType] || searchType;
+        const searchValue = this.value.trim();
+
+        if (searchValue) {
+            handleSearch(searchType, searchValue);
+        }
+    });
+    });
+
+
     if (saveButton) {
         saveButton.addEventListener('click', function() {
             const changes = getFormChanges();
