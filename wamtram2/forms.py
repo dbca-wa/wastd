@@ -423,7 +423,7 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["scars_right_scale_1"].label = "1"
         self.fields["scars_right_scale_2"].label = "2"
         self.fields["scars_right_scale_3"].label = "3"
-        self.fields["tagged_by_id"].label = "Tagged by"
+        self.fields["tagged_by_id"].label = "Tagged by and/or tags read by"
         self.fields["measured_by_id"].label = "Measured by"
         self.fields["tagscarnotchecked"].label = "Didn't check for tag scars"
         self.fields["didnotcheckforinjury"].label = "Didn't check for injury"

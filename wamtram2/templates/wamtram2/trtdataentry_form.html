@@ -274,17 +274,7 @@
         </div>
       </div>
       {% endif %}
-      <!-- Tagged By Section -->
-      <section class="container-fluid mt-5">
-        <div class="col-md-12">
-          <label for="{{ form.tagged_by_id.id_for_label }}">{{ form.tagged_by_id.label }}</label>
-        </div>
-        <div class="col-md-4">
-          <input type="text" id="search_tagged_by" class="search-field form-control" placeholder="Search tagged by" value="{{ tagged_by_name }}">
-          {{ form.tagged_by_id }}
-          <div class="search-results" style="display:none;"></div>
-        </div>
-      </section>
+
       <!-- Flipper Tags Section -->
       <section class="container-fluid mt-5">
           <div class="row">
@@ -304,24 +294,25 @@
           <!-- Table for Flipper Tags -->
           <table class="table table-borderless" id="oldFlipperTagSection">
             <thead>
-              <tr>
-                <th></th>
-                <th style="width: 40%;">Tag Number</th>
-                <th>Tag State</th>
-                <th>Tag Position</th>
-                <th>Barnacles?</th>
-              </tr>
-            </thead>
-            <tbody>
               <!-- Old Flipper Tag -->
               <tr>
                 <td colspan="4">
                   <h5><span style="color: blue; font-weight: bold">OLD</span> Flipper Tag(s)</h5>
                 </td>
               </tr>
+              <tr>
+                <th></th>
+                <th style="width: 40%;">OLD Tag Number</th>
+                <th>Tag State</th>
+                <th>Tag Position</th>
+                <th>Barnacles?</th>
+              </tr>
+            </thead>
+            <tbody>
+              
               <!-- Old Left Flipper Tag -->
               <tr>
-                <td><strong>L1</strong></td>
+                <td><strong>LEFT</strong></td>
                 <td>
                   {% bootstrap_field form.recapture_left_tag_id show_label=False %}
                   <span id="left-tag-validation-message"></span>
@@ -333,7 +324,7 @@
               </tr>
               <!-- Old Right Flipper Tag -->
               <tr>
-                <td><strong>R1</strong></td>
+                <td><strong>RIGHT</strong></td>
                 <td>
                   {% bootstrap_field form.recapture_right_tag_id show_label=False %}
                   <span id="right-tag-validation-message"></span>
@@ -345,7 +336,7 @@
               </tr>
               <!-- Additional Old Left Flipper Tag -->
               <tr id="additionalRecaptureLeftTag" style="display: none;">
-                <td><strong>L2</strong></td>
+                <td><strong>LEFT2</strong></td>
                 <td>
                   {% bootstrap_field form.recapture_left_tag_id_2 show_label=False %}
                   <span id="left-tag-validation-message-2"></span>
@@ -357,7 +348,7 @@
               </tr>
               <!-- Additional Old Right Flipper Tag -->
               <tr id="additionalRecaptureRightTag" style="display: none;">
-                <td><strong>R2</strong></td>
+                <td><strong>RIGHT2</strong></td>
                 <td>
                   {% bootstrap_field form.recapture_right_tag_id_2 show_label=False %}
                   <span id="right-tag-validation-message-2"></span>
@@ -428,9 +419,15 @@
           <!-- New Flipper Tag Section -->
           <table class="table table-borderless mt-5" id="newFlipperTagSection">
             <thead>
+              <!-- New Flipper Tag -->
+              <tr>
+                <td colspan="4">
+                  <h5><span style="color: red; font-weight: bold">NEW</span> Flipper Tag(s)</h5>
+                </td>
+              </tr>
               <tr>
                 <th></th>
-                <th style="width: 50%;">Tag Number</th>
+                <th style="width: 50%;">NEW Tag Number</th>
                 <th>Tag State</th>
                 <th>Tag Position</th>
                 <th>         </th>
@@ -438,15 +435,9 @@
               </tr>
             </thead>
             <tbody>
-              <!-- New Flipper Tag -->
-              <tr>
-                <td colspan="4">
-                  <h5><span style="color: red; font-weight: bold">NEW</span> Flipper Tag(s)</h5>
-                </td>
-              </tr>
               <!-- New Left Flipper Tag -->
               <tr>
-                <td><strong>L1</strong></td>
+                <td><strong>LEFT</strong></td>
                 <td>
                   {% bootstrap_field form.new_left_tag_id show_label=False %}
                   <span id="new-left-tag-validation-message"></span>
@@ -457,7 +448,7 @@
               </tr>
               <!-- New Right Flipper Tag -->
               <tr>
-                <td><strong>R1</strong></td>
+                <td><strong>RIGHT</strong></td>
                 <td>
                   {% bootstrap_field form.new_right_tag_id show_label=False %}
                   <span id="new-right-tag-validation-message"></span>
@@ -469,7 +460,7 @@
               </tr>
               <!-- Additional New Left Flipper Tag -->
               <tr id="additionalNewLeftTag" style="display: none;">
-                <td><strong>L2</strong></td>
+                <td><strong>LEFT2</strong></td>
                 <td>
                   {% bootstrap_field form.new_left_tag_id_2 show_label=False %}
                   <span id="new-left-tag-validation-message-2"></span>
@@ -480,7 +471,7 @@
               </tr>
               <!-- Additional New Right Flipper Tag -->
               <tr id="additionalNewRightTag" style="display: none;">
-                <td><strong>R2</strong></td>
+                <td><strong>RIGHT2</strong></td>
                 <td>
                   {% bootstrap_field form.new_right_tag_id_2 show_label=False %}
                   <span id="new-right-tag-validation-message-2"></span>
@@ -507,6 +498,27 @@
 
       </section> {% endcomment %}
 
+      <!-- Tagged By Section -->
+      <section class="container-fluid mt-5">
+        <div class="col-md-12">
+          <label for="{{ form.tagged_by_id.id_for_label }}">
+            {{ form.tagged_by_id.label }}
+          </label>
+        </div>
+
+        <div class="col-md-4">
+          <input
+            type="text"
+            id="search_tagged_by"
+            class="search-field form-control"
+            placeholder="Search tagged by and/or tags read by"
+            value="{{ tagged_by_name }}"
+          >
+          {{ form.tagged_by_id }}
+          <div class="search-results" style="display:none;"></div>
+        </div>
+      </section>
+      <hr class="my-5">
       <!-- PIT Tags Section -->
       <section class="container-fluid mt-5">
         <div class="col-md-12">
@@ -526,7 +538,7 @@
               <div class="col-md-6">
                 <div class="row">
                   <div class="col-md-2 d-flex align-items-center">
-                    <strong>L1</strong>
+                    <strong>LEFT</strong>
                   </div>
                   <div class="col-md-10 mt-4">
                     {% bootstrap_field form.recapture_pittag_id show_label=False %}
@@ -538,7 +550,7 @@
               <div class="col-md-6">
                 <div class="row">
                   <div class="col-md-2 d-flex align-items-center">
-                    <strong>R1</strong>
+                    <strong>RIGHT</strong>
                   </div>
                   <div class="col-md-10 mt-4">
                     {% bootstrap_field form.recapture_pittag_id_2 show_label=False %}
@@ -554,7 +566,7 @@
                 <div class="col-md-6">
                   <div class="row">
                     <div class="col-md-2 d-flex align-items-center">
-                      <strong>L2</strong>
+                      <strong>LEFT2</strong>
                     </div>
                     <div class="col-md-10 mt-4">
                       {% bootstrap_field form.recapture_pittag_id_3 show_label=False %}
@@ -566,7 +578,7 @@
                 <div class="col-md-6">
                   <div class="row">
                     <div class="col-md-2 d-flex align-items-center">
-                      <strong>R2</strong>
+                      <strong>RIGHT2</strong>
                     </div>
                     <div class="col-md-10 mt-4">
                       {% bootstrap_field form.recapture_pittag_id_4 show_label=False %}
@@ -592,7 +604,7 @@
               <div class="col-md-6">
                 <div class="row">
                   <div class="col-md-2 d-flex align-items-center">
-                    <strong>L1</strong>
+                    <strong>LEFT</strong>
                   </div>
                   <div class="col-md-7 mt-4">
                     {% bootstrap_field form.new_pittag_id show_label=False %}
@@ -609,7 +621,7 @@
               <div class="col-md-6">
                 <div class="row">
                   <div class="col-md-2 d-flex align-items-center">
-                    <strong>R1</strong>
+                    <strong>RIGHT</strong>
                   </div>
                   <div class="col-md-7 mt-4">
                     {% bootstrap_field form.new_pittag_id_2 show_label=False %}
@@ -629,7 +641,7 @@
                 <div class="col-md-6">
                   <div class="row">
                     <div class="col-md-2 d-flex align-items-center">
-                      <strong>L2</strong>
+                      <strong>LEFT2</strong>
                     </div>
                     <div class="col-md-7 mt-4">
                       {% bootstrap_field form.new_pittag_id_3 show_label=False %}
@@ -646,7 +658,7 @@
                 <div class="col-md-6">
                   <div class="row">
                     <div class="col-md-2 d-flex align-items-center">
-                      <strong>R2</strong>
+                      <strong>RIGHT2</strong>
                     </div>
                     <div class="col-md-7 mt-4">
                       {% bootstrap_field form.new_pittag_id_4 show_label=False %}
