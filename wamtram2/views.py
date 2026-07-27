@@ -2001,6 +2001,8 @@ class ExportDataView(LoginRequiredMixin, View):
                 return self.get_species(request)
             elif action == "get_sexes":
                 return self.get_sexes(request)
+            elif action == "get_alive_statuses":
+                return self.get_alive_statuses(request)
 
         # If no action or format, render the form
         return render(request, self.template_name, context)
@@ -2205,6 +2207,28 @@ class ExportDataView(LoginRequiredMixin, View):
         sex_list = [{"value": choice[0], "label": choice[1]} for choice in SEX_CHOICES if choice[0] in used_sexes]
 
         return JsonResponse({"sexes": sex_list})
+    
+    def get_alive_statuses(self, request):
+        preferred_order = ["Y", "N", "P", "U", "D", "O"]
+
+        statuses = list(TrtYesNo.objects.all())
+
+        statuses.sort(
+            key=lambda s: preferred_order.index(s.code)
+            if s.code in preferred_order
+            else 999
+        )
+
+        alive_list = [
+            {
+                "value": status.code,
+                "label": status.description,
+            }
+            for status in statuses
+        ]
+
+        return JsonResponse({"alive_statuses": alive_list})
+        
 
     def export_data(self, request):
         try:
@@ -2217,6 +2241,7 @@ class ExportDataView(LoginRequiredMixin, View):
             place_code = request.GET.get("place_code")
             species = request.GET.get("species")
             sex = request.GET.get("sex")
+            alive = request.GET.get("alive")
             file_format = request.GET.get("format", "csv")
             entry_type = request.GET.get("entry_type", "field")
 
@@ -2266,6 +2291,11 @@ class ExportDataView(LoginRequiredMixin, View):
                     queryset = queryset.filter(turtle__species_code=species)
                 if sex:
                     queryset = queryset.filter(turtle__sex=sex)
+                if alive:
+                    if alive == "NULL":
+                        queryset = queryset.filter(alive__isnull=True)
+                    else:
+                        queryset = queryset.filter(alive=alive)
 
                 # Optimize query with select_related
                 queryset = queryset.select_related("entry_batch", "place_code", "place_code__location_code", "turtle")
@@ -2301,6 +2331,11 @@ class ExportDataView(LoginRequiredMixin, View):
                     queryset = queryset.filter(species_code=species)
                 if sex:
                     queryset = queryset.filter(sex=sex)
+                if alive:
+                    if alive == "NULL":
+                        queryset = queryset.filter(alive__isnull=True)
+                    else:
+                        queryset = queryset.filter(alive=alive)
 
                 # Optimize query with select_related
                 queryset = queryset.select_related("entry_batch", "place_code", "place_code__location_code", "observation_id")
