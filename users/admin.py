@@ -39,6 +39,21 @@ class UserCreationForm(UserCreationForm):
 class UserAdmin(AuthUserAdmin):
     form = UserChangeForm
     add_form = UserCreationForm
+
+    add_fieldsets = (
+        (
+            None,
+            {
+                "classes": ("wide",),
+                "fields": (
+                    "username",
+                    "password1",
+                    "password2",
+                ),
+            },
+        ),
+    )
+
     fieldsets = (
         (
             "User Profile",
