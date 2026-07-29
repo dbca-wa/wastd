@@ -2246,20 +2246,20 @@ class ExportDataView(LoginRequiredMixin, View):
             entry_type = request.GET.get("entry_type", "field")
 
             # Build filename
-            filename_parts = []
-            if location_code:
-                filename_parts.append(location_code)
-            elif place_code:
-                filename_parts.append(place_code)
-            if species:
-                filename_parts.append(species)
-            if sex:
-                filename_parts.append(sex)
-            if entry_type == "processed":
-                filename_parts.append("processed")
+            export_type = "Observations" if entry_type == "processed" else "FieldEntries"
 
-            date_range = f"({from_date.strftime('%Y%m%d')}-{to_date.strftime('%Y%m%d')})"
-            filename = "_".join(filename_parts) + date_range if filename_parts else f"data_export{date_range}"
+            export_date = timezone.now().strftime("%d%m%Y")
+
+            location_label = location_code or place_code or "ALL"
+
+            filename = (
+                f"{export_type}_"
+                f"{location_label}_"
+                f"{from_date.strftime('%Y%m%d')}_"
+                f"{to_date.strftime('%Y%m%d')}_"
+                f"Export{export_date}"
+            )
+
 
             # Build queryset based on Entry Type
             if entry_type == "processed":
