@@ -119,6 +119,37 @@
                         </select>
                     </div>
                 </div>
+
+                <div class="col-md-4">
+                    <label>Nesting:</label>
+                    <select name="nesting" class="form-control select2">
+                        <option value="">All</option>
+                        <option value="Y"
+                            {% if selected_nesting == "Y" %}selected{% endif %}>
+                            Yes
+                        </option>
+
+                        <option value="N"
+                            {% if selected_nesting == "N" %}selected{% endif %}>
+                            No
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label>Alive:</label>
+                    <select name="alive" class="form-control select2">
+                        <option value="">All</option>
+
+                        {% for alive in alive_choices %}
+                            <option value="{{ alive.code }}"
+                                {% if selected_alive == alive.code %}selected{% endif %}>
+                                {{ alive.description }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
             </div>
 
             <div class="form-row">
