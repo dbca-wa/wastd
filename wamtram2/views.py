@@ -2475,10 +2475,40 @@ class ExportDataView(LoginRequiredMixin, View):
                     writer = csv.writer(response)
 
                     # Write headers
-                    headers = [field.name for field in model_meta.fields]
-                    headers.append("organisations")
+                    FIELD_HEADER_MAP = {
+                        # Legacy naming
+                        "entry_batch": "ENTRY_BATCH_ID",
+                        "egg_count": "NUMBER_OF_EGGS",
+
+                        # Person IDs
+                        "measured_by_id": "MEASURER_PERSON_ID",
+                        "measured_recorded_by_id": "MEASURER_REPORTER_PERSON_ID",
+                        "recorded_by_id": "REPORTER_PERSON_ID",
+                        "tagged_by_id": "TAGGER_PERSON_ID",
+                        "entered_by_id": "ENTERED_BY_PERSON_ID",
+
+                        # Existing exports use this naming
+                        "tagscarnotchecked": "TagScarNotChecked",
+                        "didnotcheckforinjury": "DidNotCheckForInjury",
+
+                        # Pit tag naming consistency
+                        "recapture_pittag_id": "RECAPTURE_PIT_TAG_ID",
+                        "recapture_pittag_id_2": "RECAPTURE_PIT_TAG_ID_2",
+                        "recapture_pittag_id_3": "RECAPTURE_PIT_TAG_ID_3",
+                        "recapture_pittag_id_4": "RECAPTURE_PIT_TAG_ID_4",
+
+                        "new_pittag_id": "NEW_PIT_TAG_ID",
+                        "new_pittag_id_2": "NEW_PIT_TAG_ID_2",
+                        "new_pittag_id_3": "NEW_PIT_TAG_ID_3",
+                        "new_pittag_id_4": "NEW_PIT_TAG_ID_4",
+                    }
+                    headers = [
+                        FIELD_HEADER_MAP.get(field.name, field.name.upper())
+                        for field in model_meta.fields
+                    ]
+                    headers.append("ORGANISATIONS")
                     if entry_type == "field":
-                        headers.append("observation_status")
+                        headers.append("OBSERVATION_STATUS")
                     elif entry_type == "processed":
                         headers.extend(
                             [
@@ -2636,10 +2666,40 @@ class ExportDataView(LoginRequiredMixin, View):
                     ws = wb.active
 
                     # Write headers
-                    headers = [field.name for field in model_meta.fields]
-                    headers.append("organisations")
+                    FIELD_HEADER_MAP = {
+                        # Legacy naming
+                        "entry_batch": "ENTRY_BATCH_ID",
+                        "egg_count": "NUMBER_OF_EGGS",
+
+                        # Person IDs
+                        "measured_by_id": "MEASURER_PERSON_ID",
+                        "measured_recorded_by_id": "MEASURER_REPORTER_PERSON_ID",
+                        "recorded_by_id": "REPORTER_PERSON_ID",
+                        "tagged_by_id": "TAGGER_PERSON_ID",
+                        "entered_by_id": "ENTERED_BY_PERSON_ID",
+
+                        # Existing exports use this naming
+                        "tagscarnotchecked": "TagScarNotChecked",
+                        "didnotcheckforinjury": "DidNotCheckForInjury",
+
+                        # Pit tag naming consistency
+                        "recapture_pittag_id": "RECAPTURE_PIT_TAG_ID",
+                        "recapture_pittag_id_2": "RECAPTURE_PIT_TAG_ID_2",
+                        "recapture_pittag_id_3": "RECAPTURE_PIT_TAG_ID_3",
+                        "recapture_pittag_id_4": "RECAPTURE_PIT_TAG_ID_4",
+
+                        "new_pittag_id": "NEW_PIT_TAG_ID",
+                        "new_pittag_id_2": "NEW_PIT_TAG_ID_2",
+                        "new_pittag_id_3": "NEW_PIT_TAG_ID_3",
+                        "new_pittag_id_4": "NEW_PIT_TAG_ID_4",
+                    }
+                    headers = [
+                        FIELD_HEADER_MAP.get(field.name, field.name.upper())
+                        for field in model_meta.fields
+                    ]
+                    headers.append("ORGANISATIONS")
                     if entry_type == "field":
-                        headers.append("observation_status")
+                        headers.append("OBSERVATION_STATUS")
                     elif entry_type == "processed":
                         headers.extend(
                             [
