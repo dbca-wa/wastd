@@ -2507,6 +2507,7 @@ class ExportDataView(LoginRequiredMixin, View):
                         for field in model_meta.fields
                     ]
                     headers.append("ORGANISATIONS")
+                    headers.extend([ "COMMON_NAME", "PLACE_NAME", "ACTIVITY_DESCRIPTION"])
                     if entry_type == "field":
                         headers.append("OBSERVATION_STATUS")
                     elif entry_type == "processed":
@@ -2570,7 +2571,11 @@ class ExportDataView(LoginRequiredMixin, View):
 
                             row.append(str(value))
                         row.append(org_str)
-
+                        row.extend([
+                                    getattr(entry.species_code, "common_name", ""),
+                                    getattr(entry.place_code, "place_name", ""),
+                                    getattr(entry.activity_code, "description", ""),
+                                ])
                         if entry_type == "field":
                             # Get observation status from pre-fetched related object
                             observation_status = ""
@@ -2698,6 +2703,7 @@ class ExportDataView(LoginRequiredMixin, View):
                         for field in model_meta.fields
                     ]
                     headers.append("ORGANISATIONS")
+                    headers.extend([ "COMMON_NAME", "PLACE_NAME", "ACTIVITY_DESCRIPTION"])
                     if entry_type == "field":
                         headers.append("OBSERVATION_STATUS")
                     elif entry_type == "processed":
@@ -2761,6 +2767,16 @@ class ExportDataView(LoginRequiredMixin, View):
 
                             row.append(value)
                         row.append(org_str)
+                        row.extend([
+                            entry.species_code.common_name
+                            if entry.species_code else "",
+
+                            entry.place_code.place_name
+                            if entry.place_code else "",
+
+                            entry.activity_code.description
+                            if entry.activity_code else "",
+                        ])
 
                         if entry_type == "field":
                             # Get observation status from pre-fetched related object
