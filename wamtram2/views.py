@@ -5926,16 +5926,20 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                     query = query.filter(
                         alive__code=context["selected_alive"]
                     )
+                print("Selected nesting:", context["selected_nesting"])
+                print("Before nesting filter:", query.count())
 
                 if context["selected_nesting"] == "Y":
                     query = query.filter(
-                        activity_code__description__icontains="Nesting"
+                        activity_code__nesting="Y"
                     )
 
                 elif context["selected_nesting"] == "N":
                     query = query.exclude(
-                        activity_code__description__icontains="Nesting"
+                        activity_code__nesting="Y"
                     )
+                after_count = query.count()
+                print("After nesting filter:", after_count)
                 # Group by place and count unique turtles
                 results = (
                     query.values("place_code__place_code", "place_code__place_name")
@@ -5966,13 +5970,13 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                     )
                 if context["selected_nesting"] == "Y":
                     query = query.filter(
-                        activity_code__description__icontains="Nesting"
+                        activity_code__nesting="Y"
                     )
+
                 elif context["selected_nesting"] == "N":
                     query = query.exclude(
-                        activity_code__description__icontains="Nesting"
+                        activity_code__nesting="Y"
                     )
-    
                 # Split into two groups: with and without turtle_id
                 has_turtle_query = query.filter(turtle_id__isnull=False)
                 no_turtle_query = query.filter(turtle_id__isnull=True)
