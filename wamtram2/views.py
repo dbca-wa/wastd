@@ -2363,7 +2363,11 @@ class ExportDataView(LoginRequiredMixin, View):
             left_pit_tags_dict = {}
             right_pit_tags_dict = {}
             unknown_pit_tags_dict = {}
-
+            # 6. Beach Positions
+            beach_position_dict = {
+                bp.beach_position_code: bp.description
+                for bp in TrtBeachPositions.objects.all()
+            }
 
 
             if entry_type == "processed":
@@ -2507,7 +2511,7 @@ class ExportDataView(LoginRequiredMixin, View):
                         for field in model_meta.fields
                     ]
                     headers.append("ORGANISATIONS")
-                    headers.extend([ "COMMON_NAME", "PLACE_NAME", "ACTIVITY_DESCRIPTION"])
+                    headers.extend([ "COMMON_NAME", "PLACE_NAME", "ACTIVITY_DESCRIPTION","BEACH_POSITION_DESCRIPTION"])
                     if entry_type == "field":
                         headers.append("OBSERVATION_STATUS")
                     elif entry_type == "processed":
@@ -2575,6 +2579,7 @@ class ExportDataView(LoginRequiredMixin, View):
                                     getattr(entry.species_code, "common_name", ""),
                                     getattr(entry.place_code, "place_name", ""),
                                     getattr(entry.activity_code, "description", ""),
+                                    beach_position_dict.get(entry.beach_position_code, ""),
                                 ])
                         if entry_type == "field":
                             # Get observation status from pre-fetched related object
@@ -2768,14 +2773,10 @@ class ExportDataView(LoginRequiredMixin, View):
                             row.append(value)
                         row.append(org_str)
                         row.extend([
-                            entry.species_code.common_name
-                            if entry.species_code else "",
-
-                            entry.place_code.place_name
-                            if entry.place_code else "",
-
-                            entry.activity_code.description
-                            if entry.activity_code else "",
+                            getattr(entry.species_code, "common_name", ""),
+                            getattr(entry.place_code, "place_name", ""),
+                            getattr(entry.activity_code, "description", ""),
+                            beach_position_dict.get(entry.beach_position_code, ""),
                         ])
 
                         if entry_type == "field":
