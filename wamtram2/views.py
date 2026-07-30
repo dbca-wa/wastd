@@ -75,7 +75,17 @@ from .models import (
     TrtTurtleStatus,
     TrtYesNo,
 )
-
+from .export_config import (
+    FIELD_HEADER_MAP,
+    EXTRA_HEADERS,
+    PERSON_FIELDS,
+    BODY_PART_FIELDS,
+    DAMAGE_CODE_FIELDS,
+    TISSUE_FIELDS,
+    TAG_STATE_FIELDS,
+    DAMAGE_FIELDS,
+    PROCESSED_EXTRA_HEADERS,
+)
 
 class HomePageView(LoginRequiredMixin, TemplateView):
     """
@@ -2497,150 +2507,9 @@ class ExportDataView(LoginRequiredMixin, View):
                     response = HttpResponse(content_type="text/csv")
                     response["Content-Disposition"] = f'attachment; filename="{filename}.csv"'
                     writer = csv.writer(response)
-
-                    # Write headers
-                    FIELD_HEADER_MAP = {
-                        # Legacy naming
-                        "entry_batch": "ENTRY_BATCH_ID",
-                        "egg_count": "NUMBER_OF_EGGS",
-
-                        # Person IDs
-                        "measured_by_id": "MEASURER_PERSON_ID",
-                        "measured_recorded_by_id": "MEASURER_REPORTER_PERSON_ID",
-                        "recorded_by_id": "REPORTER_PERSON_ID",
-                        "tagged_by_id": "TAGGER_PERSON_ID",
-                        "entered_by_id": "ENTERED_BY_PERSON_ID",
-
-                        # Existing exports use this naming
-                        "tagscarnotchecked": "TagScarNotChecked",
-                        "didnotcheckforinjury": "DidNotCheckForInjury",
-
-                        # Pit tag naming consistency
-                        "recapture_pittag_id": "RECAPTURE_PIT_TAG_ID",
-                        "recapture_pittag_id_2": "RECAPTURE_PIT_TAG_ID_2",
-                        "recapture_pittag_id_3": "RECAPTURE_PIT_TAG_ID_3",
-                        "recapture_pittag_id_4": "RECAPTURE_PIT_TAG_ID_4",
-
-                        "new_pittag_id": "NEW_PIT_TAG_ID",
-                        "new_pittag_id_2": "NEW_PIT_TAG_ID_2",
-                        "new_pittag_id_3": "NEW_PIT_TAG_ID_3",
-                        "new_pittag_id_4": "NEW_PIT_TAG_ID_4",
-                    }
-                    EXTRA_HEADERS = {
-                        "measurement_type_1": [
-                            "MEASUREMENT_TYPE_1_DESCRIPTION",
-                            "MEASUREMENT_TYPE_1_UNITS",
-                        ],
-                        "measurement_type_2": [
-                            "MEASUREMENT_TYPE_2_DESCRIPTION",
-                            "MEASUREMENT_TYPE_2_UNITS",
-                        ],
-                        "measurement_type_3": [
-                            "MEASUREMENT_TYPE_3_DESCRIPTION",
-                            "MEASUREMENT_TYPE_3_UNITS",
-                        ],
-                        "measurement_type_4": [
-                            "MEASUREMENT_TYPE_4_DESCRIPTION",
-                            "MEASUREMENT_TYPE_4_UNITS",
-                        ],
-                        "measurement_type_5": [
-                            "MEASUREMENT_TYPE_5_DESCRIPTION",
-                            "MEASUREMENT_TYPE_5_UNITS",
-                        ],
-                        "measurement_type_6": [
-                            "MEASUREMENT_TYPE_6_DESCRIPTION",
-                            "MEASUREMENT_TYPE_6_UNITS",
-                        ],
-
-                        "body_part_1": ["BODY_PART_1_DESCRIPTION"],
-                        "body_part_2": ["BODY_PART_2_DESCRIPTION"],
-                        "body_part_3": ["BODY_PART_3_DESCRIPTION"],
-                        "body_part_4": ["BODY_PART_4_DESCRIPTION"],
-                        "body_part_5": ["BODY_PART_5_DESCRIPTION"],
-                        "body_part_6": ["BODY_PART_6_DESCRIPTION"],
-
-                        "damage_code_1": ["DAMAGE_CODE_1_DESCRIPTION"],
-                        "damage_code_2": ["DAMAGE_CODE_2_DESCRIPTION"],
-                        "damage_code_3": ["DAMAGE_CODE_3_DESCRIPTION"],
-                        "damage_code_4": ["DAMAGE_CODE_4_DESCRIPTION"],
-                        "damage_code_5": ["DAMAGE_CODE_5_DESCRIPTION"],
-                        "damage_code_6": ["DAMAGE_CODE_6_DESCRIPTION"],
-
-                        "tissue_type_1": ["TISSUE_TYPE_1_DESCRIPTION"],
-                        "tissue_type_2": ["TISSUE_TYPE_2_DESCRIPTION"],
-                        "tissue_type_3": ["TISSUE_TYPE_3_DESCRIPTION"],
-                        "tissue_type_4": ["TISSUE_TYPE_4_DESCRIPTION"],
-
-                        "new_left_tag_state": ["NEW_LEFT_TAG_STATE_DESCRIPTION"],
-                        "new_left_tag_state_2": ["NEW_LEFT_TAG_STATE_2_DESCRIPTION"],
-                        "new_right_tag_state": ["NEW_RIGHT_TAG_STATE_DESCRIPTION"],
-                        "new_right_tag_state_2": ["NEW_RIGHT_TAG_STATE_2_DESCRIPTION"],
-
-                        "recapture_left_tag_state": ["RECAPTURE_LEFT_TAG_STATE_DESCRIPTION"],
-                        "recapture_left_tag_state_2": ["RECAPTURE_LEFT_TAG_STATE_2_DESCRIPTION"],
-                        "recapture_right_tag_state": ["RECAPTURE_RIGHT_TAG_STATE_DESCRIPTION"],
-                        "recapture_right_tag_state_2": ["RECAPTURE_RIGHT_TAG_STATE_2_DESCRIPTION"],
-
-                        "damage_carapace": ["DAMAGE_CARAPACE_DESCRIPTION"],
-                        "damage_lff": ["DAMAGE_LFF_DESCRIPTION"],
-                        "damage_rff": ["DAMAGE_RFF_DESCRIPTION"],
-                        "damage_lhf": ["DAMAGE_LHF_DESCRIPTION"],
-                        "damage_rhf": ["DAMAGE_RHF_DESCRIPTION"],
-
-                        "measured_by_id": ["MEASURER_PERSON_NAME"],
-                        "measured_recorded_by_id": ["MEASURER_REPORTER_PERSON_NAME"],
-                        "tagged_by_id": ["TAGGER_PERSON_NAME"],
-                        "recorded_by_id": ["REPORTER_PERSON_NAME"],
-                        "entered_by_id": ["DATA_ENTERER_NAME"],
-                    }
-                    PERSON_FIELDS = {
-                        "measured_by_id",
-                        "measured_recorded_by_id",
-                        "tagged_by_id",
-                        "recorded_by_id",
-                        "entered_by_id",
-                    }
-                    BODY_PART_FIELDS = {
-                        "body_part_1",
-                        "body_part_2",
-                        "body_part_3",
-                        "body_part_4",
-                        "body_part_5",
-                        "body_part_6",
-                    }
-                    DAMAGE_CODE_FIELDS = {
-                        "damage_code_1",
-                        "damage_code_2",
-                        "damage_code_3",
-                        "damage_code_4",
-                        "damage_code_5",
-                        "damage_code_6",
-                    }
-                    TISSUE_FIELDS = {
-                        "tissue_type_1",
-                        "tissue_type_2",
-                        "tissue_type_3",
-                        "tissue_type_4",
-                    }
-
-                    TAG_STATE_FIELDS = {
-                        "new_left_tag_state",
-                        "new_left_tag_state_2",
-                        "new_right_tag_state",
-                        "new_right_tag_state_2",
-                        "recapture_left_tag_state",
-                        "recapture_left_tag_state_2",
-                        "recapture_right_tag_state",
-                        "recapture_right_tag_state_2",
-                    }
-
-                    DAMAGE_FIELDS = {
-                        "damage_carapace",
-                        "damage_lff",
-                        "damage_rff",
-                        "damage_lhf",
-                        "damage_rhf",
-                    }
+                    # ----------------------------
+                    # Headers
+                    # ----------------------------
                     headers = []
 
                     for field in model_meta.fields:
@@ -2652,51 +2521,21 @@ class ExportDataView(LoginRequiredMixin, View):
                         headers.append(header)
 
                         headers.extend(
-                            EXTRA_HEADERS.get(field.name, [])
+                            EXTRA_HEADERS.get(
+                                field.name,
+                                [],
+                            )
                         )
-                    headers.append("ORGANISATIONS")
 
-                    headers.extend([
-                        "COMMON_NAME",
-                        "PLACE_NAME",
-                        "LOCATION_CODE",
-                        "OBSERVED_LOCATION_CODE",
-                        "OBSERVED_LOCATION_NAME",
-                        "ACTIVITY_DESCRIPTION",
-                        "BEACH_POSITION_DESCRIPTION",
-                    ])
+                    headers.append("ORGANISATIONS")
 
                     if entry_type == "field":
                         headers.append("OBSERVATION_STATUS")
-                    elif entry_type == "processed":
-                        headers.extend(
-                            [
-                                "left_flipper_tags",
-                                "right_flipper_tags",
-                                "unknown_flipper_tags",
-                                "all_flipper_tags",
-                                "left_pit_tags",
-                                "right_pit_tags",
-                                "unknown_pit_tags",
-                                "all_pit_tags",
-                                "measurement_1_type",
-                                "measurement_1_value",
-                                "measurement_2_type",
-                                "measurement_2_value",
-                                "all_measurements",
-                                "all_samples",
-                                "damage_1_body_part",
-                                "damage_1_code",
-                                "damage_2_body_part",
-                                "damage_2_code",
-                                "all_damage",
-                                "turtle_species_code",
-                                "turtle_sex",
-                                "turtle_status",
-                            ]
-                        )
-                    writer.writerow(headers)
 
+                    elif entry_type == "processed":
+                        headers.extend(PROCESSED_EXTRA_HEADERS)
+                    print("HEADER COUNT", len(headers))
+                    writer.writerow(headers)
                     # Write data
                     for entry in queryset:
                         organisations = org_dict.get(entry.entry_batch_id, [])
@@ -2728,6 +2567,99 @@ class ExportDataView(LoginRequiredMixin, View):
                                 value = ""
 
                             row.append(str(value))
+                            if name == "species_code":
+                                row.append(
+                                    getattr(entry.species_code, "common_name", "")
+                                )
+
+                            elif name == "place_code":
+                                place = entry.place_code
+                                location = getattr(place, "location_code", None)
+
+                                row.extend([
+                                    getattr(place, "place_name", ""),
+                                    getattr(location, "location_code", ""),
+                                    getattr(location, "location_code", ""),
+                                    getattr(location, "location_name", ""),
+                                ])
+
+                            elif name == "activity_code":
+                                row.append(
+                                    getattr(entry.activity_code, "description", "")
+                                )
+
+                            elif name == "beach_position_code":
+                                row.append(
+                                    beach_position_dict.get(
+                                        entry.beach_position_code,
+                                        "",
+                                    )
+                                )
+                            if name == "measurements":
+                                row.append(
+                                    getattr(entry, "measurements", "")
+                                )
+
+                            elif name == "turtle_status":
+                                row.append(
+                                    getattr(entry, "turtle_status", "")
+                                )
+
+                            elif name == "other_tags":
+                                row.append(
+                                    getattr(entry, "other_identification", "")
+                                )
+
+                                # ALL_FLIPPER_TAGS
+                                flipper_tags = []
+
+                                for tag_field in [
+                                    "new_left_tag_id",
+                                    "new_left_tag_id_2",
+                                    "new_right_tag_id",
+                                    "new_right_tag_id_2",
+                                    "recapture_left_tag_id",
+                                    "recapture_left_tag_id_2",
+                                    "recapture_left_tag_id_3",
+                                    "recapture_right_tag_id",
+                                    "recapture_right_tag_id_2",
+                                    "recapture_right_tag_id_3",
+                                ]:
+                                    value = getattr(entry, f"{tag_field}_id", None)
+
+                                    if value:
+                                        flipper_tags.append(str(value))
+
+                                row.append("; ".join(flipper_tags))
+
+                                # PIT_TAGS / ALL_PIT_TAGS
+                                pit_tags = []
+
+                                for pit_field in [
+                                    "new_pittag_id",
+                                    "new_pittag_id_2",
+                                    "new_pittag_id_3",
+                                    "new_pittag_id_4",
+                                    "recapture_pittag_id",
+                                    "recapture_pittag_id_2",
+                                    "recapture_pittag_id_3",
+                                    "recapture_pittag_id_4",
+                                ]:
+                                    value = getattr(entry, f"{pit_field}_id", None)
+
+                                    if value:
+                                        pit_tags.append(str(value))
+
+                                # PIT_TAGS = 当前 PIT tag
+                                row.append(
+                                    pit_tags[0]
+                                    if pit_tags
+                                    else ""
+                                )
+
+                                # ALL_PIT_TAGS = 所有 PIT tags
+                                row.append("; ".join(pit_tags))
+
                             if name.startswith("measurement_type_"):
                                 mt = measurement_type_dict.get(
                                     getattr(entry, name)
@@ -2801,20 +2733,9 @@ class ExportDataView(LoginRequiredMixin, View):
                                     else ""
                                 )
                             
-                        place = entry.place_code
-                        location = getattr(place, "location_code", None)
 
                         row.append(org_str)
 
-                        row.extend([
-                            getattr(entry.species_code, "common_name", ""),
-                            getattr(place, "place_name", ""),
-                            getattr(location, "location_code", ""),
-                            getattr(location, "location_code", ""),
-                            getattr(location, "location_name", ""),
-                            getattr(entry.activity_code, "description", ""),
-                            beach_position_dict.get(entry.beach_position_code, ""),
-                        ])
                         if entry_type == "field":
                             # Get observation status from pre-fetched related object
                             observation_status = ""
@@ -2899,7 +2820,7 @@ class ExportDataView(LoginRequiredMixin, View):
                                 )
                             else:
                                 row.extend(["", "", ""])
-
+                        print("ROW COUNT", len(row))
                         writer.writerow(row)
 
                 else:  # xlsx format
@@ -2909,34 +2830,6 @@ class ExportDataView(LoginRequiredMixin, View):
                     wb = Workbook()
                     ws = wb.active
 
-                    # Write headers
-                    FIELD_HEADER_MAP = {
-                        # Legacy naming
-                        "entry_batch": "ENTRY_BATCH_ID",
-                        "egg_count": "NUMBER_OF_EGGS",
-
-                        # Person IDs
-                        "measured_by_id": "MEASURER_PERSON_ID",
-                        "measured_recorded_by_id": "MEASURER_REPORTER_PERSON_ID",
-                        "recorded_by_id": "REPORTER_PERSON_ID",
-                        "tagged_by_id": "TAGGER_PERSON_ID",
-                        "entered_by_id": "ENTERED_BY_PERSON_ID",
-
-                        # Existing exports use this naming
-                        "tagscarnotchecked": "TagScarNotChecked",
-                        "didnotcheckforinjury": "DidNotCheckForInjury",
-
-                        # Pit tag naming consistency
-                        "recapture_pittag_id": "RECAPTURE_PIT_TAG_ID",
-                        "recapture_pittag_id_2": "RECAPTURE_PIT_TAG_ID_2",
-                        "recapture_pittag_id_3": "RECAPTURE_PIT_TAG_ID_3",
-                        "recapture_pittag_id_4": "RECAPTURE_PIT_TAG_ID_4",
-
-                        "new_pittag_id": "NEW_PIT_TAG_ID",
-                        "new_pittag_id_2": "NEW_PIT_TAG_ID_2",
-                        "new_pittag_id_3": "NEW_PIT_TAG_ID_3",
-                        "new_pittag_id_4": "NEW_PIT_TAG_ID_4",
-                    }
                     headers = [
                         FIELD_HEADER_MAP.get(field.name, field.name.upper())
                         for field in model_meta.fields
