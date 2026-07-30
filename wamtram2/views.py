@@ -2526,6 +2526,121 @@ class ExportDataView(LoginRequiredMixin, View):
                         "new_pittag_id_3": "NEW_PIT_TAG_ID_3",
                         "new_pittag_id_4": "NEW_PIT_TAG_ID_4",
                     }
+                    EXTRA_HEADERS = {
+                        "measurement_type_1": [
+                            "MEASUREMENT_TYPE_1_DESCRIPTION",
+                            "MEASUREMENT_TYPE_1_UNITS",
+                        ],
+                        "measurement_type_2": [
+                            "MEASUREMENT_TYPE_2_DESCRIPTION",
+                            "MEASUREMENT_TYPE_2_UNITS",
+                        ],
+                        "measurement_type_3": [
+                            "MEASUREMENT_TYPE_3_DESCRIPTION",
+                            "MEASUREMENT_TYPE_3_UNITS",
+                        ],
+                        "measurement_type_4": [
+                            "MEASUREMENT_TYPE_4_DESCRIPTION",
+                            "MEASUREMENT_TYPE_4_UNITS",
+                        ],
+                        "measurement_type_5": [
+                            "MEASUREMENT_TYPE_5_DESCRIPTION",
+                            "MEASUREMENT_TYPE_5_UNITS",
+                        ],
+                        "measurement_type_6": [
+                            "MEASUREMENT_TYPE_6_DESCRIPTION",
+                            "MEASUREMENT_TYPE_6_UNITS",
+                        ],
+
+                        "body_part_1": ["BODY_PART_1_DESCRIPTION"],
+                        "body_part_2": ["BODY_PART_2_DESCRIPTION"],
+                        "body_part_3": ["BODY_PART_3_DESCRIPTION"],
+                        "body_part_4": ["BODY_PART_4_DESCRIPTION"],
+                        "body_part_5": ["BODY_PART_5_DESCRIPTION"],
+                        "body_part_6": ["BODY_PART_6_DESCRIPTION"],
+
+                        "damage_code_1": ["DAMAGE_CODE_1_DESCRIPTION"],
+                        "damage_code_2": ["DAMAGE_CODE_2_DESCRIPTION"],
+                        "damage_code_3": ["DAMAGE_CODE_3_DESCRIPTION"],
+                        "damage_code_4": ["DAMAGE_CODE_4_DESCRIPTION"],
+                        "damage_code_5": ["DAMAGE_CODE_5_DESCRIPTION"],
+                        "damage_code_6": ["DAMAGE_CODE_6_DESCRIPTION"],
+
+                        "tissue_type_1": ["TISSUE_TYPE_1_DESCRIPTION"],
+                        "tissue_type_2": ["TISSUE_TYPE_2_DESCRIPTION"],
+                        "tissue_type_3": ["TISSUE_TYPE_3_DESCRIPTION"],
+                        "tissue_type_4": ["TISSUE_TYPE_4_DESCRIPTION"],
+
+                        "new_left_tag_state": ["NEW_LEFT_TAG_STATE_DESCRIPTION"],
+                        "new_left_tag_state_2": ["NEW_LEFT_TAG_STATE_2_DESCRIPTION"],
+                        "new_right_tag_state": ["NEW_RIGHT_TAG_STATE_DESCRIPTION"],
+                        "new_right_tag_state_2": ["NEW_RIGHT_TAG_STATE_2_DESCRIPTION"],
+
+                        "recapture_left_tag_state": ["RECAPTURE_LEFT_TAG_STATE_DESCRIPTION"],
+                        "recapture_left_tag_state_2": ["RECAPTURE_LEFT_TAG_STATE_2_DESCRIPTION"],
+                        "recapture_right_tag_state": ["RECAPTURE_RIGHT_TAG_STATE_DESCRIPTION"],
+                        "recapture_right_tag_state_2": ["RECAPTURE_RIGHT_TAG_STATE_2_DESCRIPTION"],
+
+                        "damage_carapace": ["DAMAGE_CARAPACE_DESCRIPTION"],
+                        "damage_lff": ["DAMAGE_LFF_DESCRIPTION"],
+                        "damage_rff": ["DAMAGE_RFF_DESCRIPTION"],
+                        "damage_lhf": ["DAMAGE_LHF_DESCRIPTION"],
+                        "damage_rhf": ["DAMAGE_RHF_DESCRIPTION"],
+
+                        "measured_by_id": ["MEASURER_PERSON_NAME"],
+                        "measured_recorded_by_id": ["MEASURER_REPORTER_PERSON_NAME"],
+                        "tagged_by_id": ["TAGGER_PERSON_NAME"],
+                        "recorded_by_id": ["REPORTER_PERSON_NAME"],
+                        "entered_by_id": ["DATA_ENTERER_NAME"],
+                    }
+                    PERSON_FIELDS = {
+                        "measured_by_id",
+                        "measured_recorded_by_id",
+                        "tagged_by_id",
+                        "recorded_by_id",
+                        "entered_by_id",
+                    }
+                    BODY_PART_FIELDS = {
+                        "body_part_1",
+                        "body_part_2",
+                        "body_part_3",
+                        "body_part_4",
+                        "body_part_5",
+                        "body_part_6",
+                    }
+                    DAMAGE_CODE_FIELDS = {
+                        "damage_code_1",
+                        "damage_code_2",
+                        "damage_code_3",
+                        "damage_code_4",
+                        "damage_code_5",
+                        "damage_code_6",
+                    }
+                    TISSUE_FIELDS = {
+                        "tissue_type_1",
+                        "tissue_type_2",
+                        "tissue_type_3",
+                        "tissue_type_4",
+                    }
+
+                    TAG_STATE_FIELDS = {
+                        "new_left_tag_state",
+                        "new_left_tag_state_2",
+                        "new_right_tag_state",
+                        "new_right_tag_state_2",
+                        "recapture_left_tag_state",
+                        "recapture_left_tag_state_2",
+                        "recapture_right_tag_state",
+                        "recapture_right_tag_state_2",
+                    }
+
+                    DAMAGE_FIELDS = {
+                        "damage_carapace",
+                        "damage_lff",
+                        "damage_rff",
+                        "damage_lhf",
+                        "damage_rhf",
+                    }
                     headers = []
 
                     for field in model_meta.fields:
@@ -2536,142 +2651,9 @@ class ExportDataView(LoginRequiredMixin, View):
 
                         headers.append(header)
 
-                        if field.name == "measurement_type_1":
-                            headers.extend([
-                                "MEASUREMENT_TYPE_1_DESCRIPTION",
-                                "MEASUREMENT_TYPE_1_UNITS",
-                            ])
-
-                        elif field.name == "measurement_type_2":
-                            headers.extend([
-                                "MEASUREMENT_TYPE_2_DESCRIPTION",
-                                "MEASUREMENT_TYPE_2_UNITS",
-                            ])
-
-                        elif field.name == "measurement_type_3":
-                            headers.extend([
-                                "MEASUREMENT_TYPE_3_DESCRIPTION",
-                                "MEASUREMENT_TYPE_3_UNITS",
-                            ])
-
-                        elif field.name == "measurement_type_4":
-                            headers.extend([
-                                "MEASUREMENT_TYPE_4_DESCRIPTION",
-                                "MEASUREMENT_TYPE_4_UNITS",
-                            ])
-
-                        elif field.name == "measurement_type_5":
-                            headers.extend([
-                                "MEASUREMENT_TYPE_5_DESCRIPTION",
-                                "MEASUREMENT_TYPE_5_UNITS",
-                            ])
-
-                        elif field.name == "measurement_type_6":
-                            headers.extend([
-                                "MEASUREMENT_TYPE_6_DESCRIPTION",
-                                "MEASUREMENT_TYPE_6_UNITS",
-                            ])
-                        elif field.name == "body_part_1":
-                            headers.append("BODY_PART_1_DESCRIPTION")
-
-                        elif field.name == "damage_code_1":
-                            headers.append("DAMAGE_CODE_1_DESCRIPTION")
-
-                        elif field.name == "body_part_2":
-                            headers.append("BODY_PART_2_DESCRIPTION")
-
-                        elif field.name == "damage_code_2":
-                            headers.append("DAMAGE_CODE_2_DESCRIPTION")
-
-                        elif field.name == "body_part_3":
-                            headers.append("BODY_PART_3_DESCRIPTION")
-
-                        elif field.name == "damage_code_3":
-                            headers.append("DAMAGE_CODE_3_DESCRIPTION")
-
-                        elif field.name == "body_part_4":
-                            headers.append("BODY_PART_4_DESCRIPTION")
-
-                        elif field.name == "damage_code_4":
-                            headers.append("DAMAGE_CODE_4_DESCRIPTION")
-
-                        elif field.name == "body_part_5":
-                            headers.append("BODY_PART_5_DESCRIPTION")
-
-                        elif field.name == "damage_code_5":
-                            headers.append("DAMAGE_CODE_5_DESCRIPTION")
-
-                        elif field.name == "body_part_6":
-                            headers.append("BODY_PART_6_DESCRIPTION")
-
-                        elif field.name == "damage_code_6":
-                            headers.append("DAMAGE_CODE_6_DESCRIPTION")
-                        elif field.name == "tissue_type_1":
-                            headers.append("TISSUE_TYPE_1_DESCRIPTION")
-
-                        elif field.name == "tissue_type_2":
-                            headers.append("TISSUE_TYPE_2_DESCRIPTION")
-
-                        elif field.name == "tissue_type_3":
-                            headers.append("TISSUE_TYPE_3_DESCRIPTION")
-
-                        elif field.name == "tissue_type_4":
-                            headers.append("TISSUE_TYPE_4_DESCRIPTION")
-                        
-                        elif field.name == "new_left_tag_state":
-                            headers.append("NEW_LEFT_TAG_STATE_DESCRIPTION")
-
-                        elif field.name == "new_left_tag_state_2":
-                            headers.append("NEW_LEFT_TAG_STATE_2_DESCRIPTION")
-
-                        elif field.name == "new_right_tag_state":
-                            headers.append("NEW_RIGHT_TAG_STATE_DESCRIPTION")
-
-                        elif field.name == "new_right_tag_state_2":
-                            headers.append("NEW_RIGHT_TAG_STATE_2_DESCRIPTION")
-
-                        elif field.name == "recapture_left_tag_state":
-                            headers.append("RECAPTURE_LEFT_TAG_STATE_DESCRIPTION")
-
-                        elif field.name == "recapture_left_tag_state_2":
-                            headers.append("RECAPTURE_LEFT_TAG_STATE_2_DESCRIPTION")
-
-                        elif field.name == "recapture_right_tag_state":
-                            headers.append("RECAPTURE_RIGHT_TAG_STATE_DESCRIPTION")
-
-                        elif field.name == "recapture_right_tag_state_2":
-                            headers.append("RECAPTURE_RIGHT_TAG_STATE_2_DESCRIPTION")
-
-                        elif field.name == "damage_carapace":
-                            headers.append("DAMAGE_CARAPACE_DESCRIPTION")
-
-                        elif field.name == "damage_lff":
-                            headers.append("DAMAGE_LFF_DESCRIPTION")
-
-                        elif field.name == "damage_rff":
-                            headers.append("DAMAGE_RFF_DESCRIPTION")
-
-                        elif field.name == "damage_lhf":
-                            headers.append("DAMAGE_LHF_DESCRIPTION")
-
-                        elif field.name == "damage_rhf":
-                            headers.append("DAMAGE_RHF_DESCRIPTION")
-                        
-                        elif field.name == "measured_by_id":
-                            headers.append("MEASURER_PERSON_NAME")
-
-                        elif field.name == "measured_recorded_by_id":
-                            headers.append("MEASURER_REPORTER_PERSON_NAME")
-
-                        elif field.name == "tagged_by_id":
-                            headers.append("TAGGER_PERSON_NAME")
-
-                        elif field.name == "recorded_by_id":
-                            headers.append("REPORTER_PERSON_NAME")
-
-                        elif field.name == "entered_by_id":
-                            headers.append("DATA_ENTERER_NAME")
-
+                        headers.extend(
+                            EXTRA_HEADERS.get(field.name, [])
+                        )
                     headers.append("ORGANISATIONS")
 
                     headers.extend([
@@ -2746,371 +2728,92 @@ class ExportDataView(LoginRequiredMixin, View):
                                 value = ""
 
                             row.append(str(value))
-                            if name == "measurement_type_1":
-                                mt = measurement_type_dict.get(entry.measurement_type_1)
+                            if name.startswith("measurement_type_"):
+                                mt = measurement_type_dict.get(
+                                    getattr(entry, name)
+                                )
+
                                 row.extend([
                                     getattr(mt, "description", ""),
                                     getattr(mt, "measurement_units", ""),
                                 ])
 
-                            elif name == "measurement_type_2":
-                                mt = measurement_type_dict.get(entry.measurement_type_2)
-                                row.extend([
-                                    getattr(mt, "description", ""),
-                                    getattr(mt, "measurement_units", ""),
-                                ])
-
-                            elif name == "measurement_type_3":
-                                mt = measurement_type_dict.get(entry.measurement_type_3)
-                                row.extend([
-                                    getattr(mt, "description", ""),
-                                    getattr(mt, "measurement_units", ""),
-                                ])
-
-                            elif name == "measurement_type_4":
-                                mt = measurement_type_dict.get(entry.measurement_type_4)
-                                row.extend([
-                                    getattr(mt, "description", ""),
-                                    getattr(mt, "measurement_units", ""),
-                                ])
-
-                            elif name == "measurement_type_5":
-                                mt = measurement_type_dict.get(entry.measurement_type_5)
-                                row.extend([
-                                    getattr(mt, "description", ""),
-                                    getattr(mt, "measurement_units", ""),
-                                ])
-
-                            elif name == "measurement_type_6":
-                                mt = measurement_type_dict.get(entry.measurement_type_6)
-                                row.extend([
-                                    getattr(mt, "description", ""),
-                                    getattr(mt, "measurement_units", ""),
-                                ])
-                            elif name == "body_part_1":
+                            elif name in BODY_PART_FIELDS:
                                 row.append(
                                     getattr(
-                                        body_part_dict.get(entry.body_part_1),
+                                        body_part_dict.get(
+                                            getattr(entry, name)
+                                        ),
                                         "description",
                                         "",
                                     )
                                 )
 
-                            elif name == "damage_code_1":
+                            elif name in DAMAGE_CODE_FIELDS:
                                 row.append(
                                     getattr(
-                                        damage_code_dict.get(entry.damage_code_1),
+                                        damage_code_dict.get(
+                                            getattr(entry, name)
+                                        ),
+                                        "description",
+                                        "",
+                                    )
+                                )
+                            
+                            elif name in TISSUE_FIELDS:
+                                row.append(
+                                    getattr(
+                                        tissue_type_dict.get(
+                                            getattr(entry, name)
+                                        ),
                                         "description",
                                         "",
                                     )
                                 )
 
-                            elif name == "body_part_2":
+                            elif name in TAG_STATE_FIELDS:
                                 row.append(
                                     getattr(
-                                        body_part_dict.get(entry.body_part_2),
+                                        tag_state_dict.get(
+                                            getattr(entry, name)
+                                        ),
                                         "description",
                                         "",
                                     )
                                 )
 
-                            elif name == "damage_code_2":
+                            elif name in DAMAGE_FIELDS:
                                 row.append(
                                     getattr(
-                                        damage_code_dict.get(entry.damage_code_2),
+                                        damage_code_dict.get(
+                                            getattr(entry, name)
+                                        ),
                                         "description",
                                         "",
                                     )
                                 )
+                            elif name in PERSON_FIELDS:
+                                person = getattr(entry, name)
 
-                            elif name == "body_part_3":
                                 row.append(
-                                    getattr(
-                                        body_part_dict.get(entry.body_part_3),
-                                        "description",
-                                        "",
-                                    )
-                                )
-
-                            elif name == "damage_code_3":
-                                row.append(
-                                    getattr(
-                                        damage_code_dict.get(entry.damage_code_3),
-                                        "description",
-                                        "",
-                                    )
-                                )
-
-                            elif name == "body_part_4":
-                                row.append(
-                                    getattr(
-                                        body_part_dict.get(entry.body_part_4),
-                                        "description",
-                                        "",
-                                    )
-                                )
-
-                            elif name == "damage_code_4":
-                                row.append(
-                                    getattr(
-                                        damage_code_dict.get(entry.damage_code_4),
-                                        "description",
-                                        "",
-                                    )
-                                )
-
-                            elif name == "body_part_5":
-                                row.append(
-                                    getattr(
-                                        body_part_dict.get(entry.body_part_5),
-                                        "description",
-                                        "",
-                                    )
-                                )
-
-                            elif name == "damage_code_5":
-                                row.append(
-                                    getattr(
-                                        damage_code_dict.get(entry.damage_code_5),
-                                        "description",
-                                        "",
-                                    )
-                                )
-
-                            elif name == "body_part_6":
-                                row.append(
-                                    getattr(
-                                        body_part_dict.get(entry.body_part_6),
-                                        "description",
-                                        "",
-                                    )
-                                )
-
-                            elif name == "damage_code_6":
-                                row.append(
-                                    getattr(
-                                        damage_code_dict.get(entry.damage_code_6),
-                                        "description",
-                                        "",
-                                    )
-                                )
-                            elif name == "tissue_type_1":
-                                row.append(
-                                    getattr(
-                                        tissue_type_dict.get(entry.tissue_type_1),
-                                        "description",
-                                        "",
-                                    )
-                                )
-
-                            elif name == "tissue_type_2":
-                                row.append(
-                                    getattr(
-                                        tissue_type_dict.get(entry.tissue_type_2),
-                                        "description",
-                                        "",
-                                    )
-                                )
-
-                            elif name == "tissue_type_3":
-                                row.append(
-                                    getattr(
-                                        tissue_type_dict.get(entry.tissue_type_3),
-                                        "description",
-                                        "",
-                                    )
-                                )
-
-                            elif name == "tissue_type_4":
-                                row.append(
-                                    getattr(
-                                        tissue_type_dict.get(entry.tissue_type_4),
-                                        "description",
-                                        "",
-                                    )
-                                )
-                            elif name == "new_left_tag_state":
-                                row.append(
-                                    getattr(
-                                        tag_state_dict.get(entry.new_left_tag_state),
-                                        "description",
-                                        "",
-                                    )
-                                )
-
-                            elif name == "new_left_tag_state_2":
-                                row.append(
-                                    getattr(
-                                        tag_state_dict.get(entry.new_left_tag_state_2),
-                                        "description",
-                                        "",
-                                    )
-                                )
-
-                            elif name == "new_right_tag_state":
-                                row.append(
-                                    getattr(
-                                        tag_state_dict.get(entry.new_right_tag_state),
-                                        "description",
-                                        "",
-                                    )
-                                )
-
-                            elif name == "new_right_tag_state_2":
-                                row.append(
-                                    getattr(
-                                        tag_state_dict.get(entry.new_right_tag_state_2),
-                                        "description",
-                                        "",
-                                    )
-                                )
-
-                            elif name == "recapture_left_tag_state":
-                                row.append(
-                                    getattr(
-                                        tag_state_dict.get(entry.recapture_left_tag_state),
-                                        "description",
-                                        "",
-                                    )
-                                )
-
-                            elif name == "recapture_left_tag_state_2":
-                                row.append(
-                                    getattr(
-                                        tag_state_dict.get(entry.recapture_left_tag_state_2),
-                                        "description",
-                                        "",
-                                    )
-                                )
-
-                            elif name == "recapture_right_tag_state":
-                                row.append(
-                                    getattr(
-                                        tag_state_dict.get(entry.recapture_right_tag_state),
-                                        "description",
-                                        "",
-                                    )
-                                )
-
-                            elif name == "recapture_right_tag_state_2":
-                                row.append(
-                                    getattr(
-                                        tag_state_dict.get(entry.recapture_right_tag_state_2),
-                                        "description",
-                                        "",
-                                    )
-                                )
-                            elif name == "damage_carapace":
-                                row.append(
-                                    getattr(
-                                        damage_code_dict.get(entry.damage_carapace),
-                                        "description",
-                                        "",
-                                    )
-                                )
-
-                            elif name == "damage_lff":
-                                row.append(
-                                    getattr(
-                                        damage_code_dict.get(entry.damage_lff),
-                                        "description",
-                                        "",
-                                    )
-                                )
-
-                            elif name == "damage_rff":
-                                row.append(
-                                    getattr(
-                                        damage_code_dict.get(entry.damage_rff),
-                                        "description",
-                                        "",
-                                    )
-                                )
-
-                            elif name == "damage_lhf":
-                                row.append(
-                                    getattr(
-                                        damage_code_dict.get(entry.damage_lhf),
-                                        "description",
-                                        "",
-                                    )
-                                )
-
-                            elif name == "damage_rhf":
-                                row.append(
-                                    getattr(
-                                        damage_code_dict.get(entry.damage_rhf),
-                                        "description",
-                                        "",
-                                    )
-                                )
-                            elif name == "measured_by_id":
-                                row.append(
-                                    str(entry.measured_by_id)
-                                    if entry.measured_by_id
-                                    else ""
-                                )
-
-                            elif name == "measured_recorded_by_id":
-                                row.append(
-                                    str(entry.measured_recorded_by_id)
-                                    if entry.measured_recorded_by_id
-                                    else ""
-                                )
-
-                            elif name == "tagged_by_id":
-                                row.append(
-                                    str(entry.tagged_by_id)
-                                    if entry.tagged_by_id
-                                    else ""
-                                )
-
-                            elif name == "recorded_by_id":
-                                row.append(
-                                    str(entry.recorded_by_id)
-                                    if entry.recorded_by_id
-                                    else ""
-                                )
-
-                            elif name == "entered_by_id":
-                                row.append(
-                                    str(entry.entered_by_id)
-                                    if entry.entered_by_id
+                                    str(person)
+                                    if person
                                     else ""
                                 )
                             
+                        place = entry.place_code
+                        location = getattr(place, "location_code", None)
+
                         row.append(org_str)
-                        summary = summary_dict.get(entry.observation_id)
 
                         row.extend([
                             getattr(entry.species_code, "common_name", ""),
-
-                            getattr(entry.place_code, "place_name", ""),
-
-                            getattr(
-                                getattr(entry.place_code, "location_code", None),
-                                "location_code",
-                                "",
-                            ),
-
-                            getattr(
-                                getattr(entry.place_code, "location_code", None),
-                                "location_code",
-                                "",
-                            ),
-
-                            getattr(
-                                getattr(entry.place_code, "location_code", None),
-                                "location_name",
-                                "",
-                            ),
-
+                            getattr(place, "place_name", ""),
+                            getattr(location, "location_code", ""),
+                            getattr(location, "location_code", ""),
+                            getattr(location, "location_name", ""),
                             getattr(entry.activity_code, "description", ""),
-
-                            beach_position_dict.get(
-                                entry.beach_position_code,
-                                "",
-                            ),
+                            beach_position_dict.get(entry.beach_position_code, ""),
                         ])
                         if entry_type == "field":
                             # Get observation status from pre-fetched related object
