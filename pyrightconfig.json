@@ -1,5 +1,0 @@
-{
-  "venvPath": "./.venv",
-  "include": ["marine_mammal_incidents", "observations", "users", "wamtram2", "wastd"],
-  "exclude": ["**/migrations", "kustomize"]
-}

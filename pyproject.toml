@@ -36,7 +36,7 @@ dependencies = [
   "django-geojson==4.2.0",
   "django-import-export==4.4.1",
   "django-export-download==0.2.3",
-  "pillow==12.2.0",
+  "pillow==12.3.0",
   "whitenoise[brotli]==6.12.0",
   "phonenumbers==9.0.32",
   "django-phonenumber-field==8.4.0",
@@ -49,7 +49,7 @@ dependencies = [
   "django-easy-select2==1.5.8",
   "sentry-sdk[django]==2.62.0",
   "python-docx==1.2.0",
-  "setuptools==80.10.2",
+  "setuptools==83.0.0",
   "openpyxl==3.1.5",
   "xlwt==1.3.0",
   "django-leaflet==0.33.0",
@@ -74,7 +74,7 @@ default-groups = "all"
 module-root = ""
 
 [build-system]
-requires = ["uv_build>=0.11.23,<0.12.0"]
+requires = ["uv_build>=0.11.23,<0.13.0"]
 build-backend = "uv_build"
 
 [tool.ruff]
@@ -88,7 +88,6 @@ lint.ignore = ["E265", "E501", "E722"]
 # Always autofix.
 fix = true
 exclude = ["__pycache__", "migrations"]
-
 
 [tool.deptry]
 ignore = ["DEP004"]
@@ -107,3 +106,14 @@ DEP002 = [
   "django-bootstrap4",
   "setuptools",
 ]
+
+[tool.pyright]
+venvPath = ".venv"
+include = [
+  "marine_mammal_incidents",
+  "observations",
+  "users",
+  "wamtram2",
+  "wastd",
+]
+exclude = ["**/migrations", "kustomize"]
