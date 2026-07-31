@@ -87,6 +87,9 @@ from .export_config import (
     PROCESSED_EXTRA_HEADERS,
 )
 from .export_helpers import (
+    build_export_headers,
+    get_export_field_value,
+    format_export_value,
     get_extra_field_values,
     get_lookup_values,
     get_observation_status,
@@ -2519,34 +2522,15 @@ class ExportDataView(LoginRequiredMixin, View):
                     response["Content-Disposition"] = f'attachment; filename="{filename}.csv"'
                     writer = csv.writer(response)
                     # ----------------------------
-                    # Headers
+                    # Headers CSV
                     # ----------------------------
-                    headers = []
-                    for field in model_meta.fields:
-                       
+                    headers = build_export_headers(
+                        model_meta,
+                        entry_type,
+                    )
 
-                        header = FIELD_HEADER_MAP.get(
-                            field.name,
-                            field.name.upper(),
-                        )
-
-                        headers.append(header)
-
-                        headers.extend(
-                            EXTRA_HEADERS.get(
-                                field.name,
-                                [],
-                            )
-                        )
-
-                    headers.append("ORGANISATIONS")
-
-                    if entry_type == "field":
-                        headers.append("OBSERVATION_STATUS")
-
-                    elif entry_type == "processed":
-                        headers.extend(PROCESSED_EXTRA_HEADERS)
                     writer.writerow(headers)
+
                     # Write data
                     for entry in queryset:
                         organisations = org_dict.get(entry.entry_batch_id, [])
@@ -2555,35 +2539,26 @@ class ExportDataView(LoginRequiredMixin, View):
                         row = []
                         for field in model_meta.fields:
                             name = field.name
-
-                            if name == "observation_id" and entry_type == "field":
-                                # Ensure observation_id column exports the raw FK ID
-                                value = entry.observation_id_id or ""
-                            elif name == "turtle" and entry_type == "processed":
-                                value = entry.turtle_id or ""
-                            else:
-                                if field.is_relation and field.many_to_one:
-                                    value = getattr(entry, f"{name}_id", "")
-                                else:
-                                    value = getattr(entry, name)
-
-                            # Custom formatting for observation_date / observation_time
-                            if name == "observation_date" and isinstance(value, (datetime, date)):
-                                value = value.strftime("%Y-%m-%d") if value else ""
-                            elif name == "observation_time" and isinstance(value, datetime):
-                                value = value.strftime("%H:%M:%S") if value else ""
-                            elif isinstance(value, (datetime, date)):
-                                value = value.isoformat() if value else ""
-                            elif value is None:
-                                value = ""
-
-                            row.append(str(value))
-
-                            extra_values = get_extra_field_values(
+                            
+                            value = get_export_field_value(
                                 entry,
+                                field,
+                                entry_type,
+                            )
+                            value = format_export_value(
                                 name,
-                                beach_position_dict,
-                                summary_dict,
+                                value,
+                            )
+
+                            row.append(value)
+
+                            row.extend(
+                                get_extra_field_values(
+                                    entry,
+                                    name,
+                                    beach_position_dict,
+                                    summary_dict,
+                                )
                             )
 
                             row.extend(
@@ -2597,7 +2572,6 @@ class ExportDataView(LoginRequiredMixin, View):
                                     tag_state_dict,
                                 )
                             )
-                            row.extend(extra_values)
                         row.append(org_str)
 
                         if entry_type == "field":
@@ -2690,67 +2664,16 @@ class ExportDataView(LoginRequiredMixin, View):
 
                     wb = Workbook()
                     ws = wb.active
+                    # ----------------------------
+                    # Headers XLSX
+                    # ----------------------------
+                    headers = build_export_headers(
+                        model_meta,
+                        entry_type,
+                    )
 
-                    headers = [
-                        FIELD_HEADER_MAP.get(field.name, field.name.upper())
-                        for field in model_meta.fields
-                    ]
-                    headers.append("ORGANISATIONS")
-                    headers.extend([
-                        "COMMON_NAME",
-                        "PLACE_NAME",
-                        "ACTIVITY_DESCRIPTION",
-                        "BEACH_POSITION_DESCRIPTION",
-
-                        "MEASUREMENT_TYPE_1_DESCRIPTION",
-                        "MEASUREMENT_TYPE_1_UNITS",
-
-                        "MEASUREMENT_TYPE_2_DESCRIPTION",
-                        "MEASUREMENT_TYPE_2_UNITS",
-
-                        "MEASUREMENT_TYPE_3_DESCRIPTION",
-                        "MEASUREMENT_TYPE_3_UNITS",
-
-                        "MEASUREMENT_TYPE_4_DESCRIPTION",
-                        "MEASUREMENT_TYPE_4_UNITS",
-
-                        "MEASUREMENT_TYPE_5_DESCRIPTION",
-                        "MEASUREMENT_TYPE_5_UNITS",
-
-                        "MEASUREMENT_TYPE_6_DESCRIPTION",
-                        "MEASUREMENT_TYPE_6_UNITS",
-                    ])
-                    if entry_type == "field":
-                        headers.append("OBSERVATION_STATUS")
-                    elif entry_type == "processed":
-                        headers.extend(
-                            [
-                                "left_flipper_tags",
-                                "right_flipper_tags",
-                                "unknown_flipper_tags",
-                                "all_flipper_tags",
-                                "left_pit_tags",
-                                "right_pit_tags",
-                                "unknown_pit_tags",
-                                "all_pit_tags",
-                                "measurement_1_type",
-                                "measurement_1_value",
-                                "measurement_2_type",
-                                "measurement_2_value",
-                                "all_measurements",
-                                "all_samples",
-                                "damage_1_body_part",
-                                "damage_1_code",
-                                "damage_2_body_part",
-                                "damage_2_code",
-                                "all_damage",
-                                "turtle_species_code",
-                                "turtle_sex",
-                                "turtle_status",
-                            ]
-                        )
                     ws.append(headers)
-
+                
                     # Write data
                     for entry in queryset:
                         organisations = org_dict.get(entry.entry_batch_id, [])
@@ -2760,60 +2683,47 @@ class ExportDataView(LoginRequiredMixin, View):
                         for field in model_meta.fields:
                             name = field.name
 
-                            if name == "observation_id" and entry_type == "field":
-                                value = entry.observation_id_id or ""
-                            elif name == "turtle" and entry_type == "processed":
-                                value = entry.turtle_id or ""
-                            else:
-                                if field.is_relation and field.many_to_one:
-                                    value = getattr(entry, f"{name}_id", "")
-                                else:
-                                    value = getattr(entry, name)
+                            value = get_export_field_value(
+                                entry,
+                                field,
+                                entry_type,
+                            )
 
-                            if name == "observation_date" and isinstance(value, (datetime, date)):
-                                value = value.strftime("%Y-%m-%d") if value else ""
-                            elif name == "observation_time" and isinstance(value, datetime):
-                                value = value.strftime("%H:%M:%S") if value else ""
-                            elif isinstance(value, (datetime, date)):
-                                value = value.isoformat() if value else ""
-                            elif value is None:
-                                value = ""
-                            else:
-                                value = str(value)
+                            value = format_export_value(
+                                name,
+                                value,
+                            )
 
                             row.append(value)
+
+                            row.extend(
+                                get_extra_field_values(
+                                    entry,
+                                    name,
+                                    beach_position_dict,
+                                    summary_dict,
+                                )
+                            )
+
+                            row.extend(
+                                get_lookup_values(
+                                    entry,
+                                    name,
+                                    measurement_type_dict,
+                                    body_part_dict,
+                                    damage_code_dict,
+                                    tissue_type_dict,
+                                    tag_state_dict,
+                                )
+                            )
+
                         row.append(org_str)
-                        row.extend([
-                            getattr(entry.species_code, "common_name", ""),
-                            getattr(entry.place_code, "place_name", ""),
-                            getattr(entry.activity_code, "description", ""),
-                            beach_position_dict.get(entry.beach_position_code, ""),
-
-                            getattr(measurement_type_dict.get(entry.measurement_type_1), "description", ""),
-                            getattr(measurement_type_dict.get(entry.measurement_type_1), "measurement_units", ""),
-
-                            getattr(measurement_type_dict.get(entry.measurement_type_2), "description", ""),
-                            getattr(measurement_type_dict.get(entry.measurement_type_2), "measurement_units", ""),
-
-                            getattr(measurement_type_dict.get(entry.measurement_type_3), "description", ""),
-                            getattr(measurement_type_dict.get(entry.measurement_type_3), "measurement_units", ""),
-
-                            getattr(measurement_type_dict.get(entry.measurement_type_4), "description", ""),
-                            getattr(measurement_type_dict.get(entry.measurement_type_4), "measurement_units", ""),
-
-                            getattr(measurement_type_dict.get(entry.measurement_type_5), "description", ""),
-                            getattr(measurement_type_dict.get(entry.measurement_type_5), "measurement_units", ""),
-
-                            getattr(measurement_type_dict.get(entry.measurement_type_6), "description", ""),
-                            getattr(measurement_type_dict.get(entry.measurement_type_6), "measurement_units", ""),
-                        ])
 
                         if entry_type == "field":
-                            # Get observation status from pre-fetched related object
-                            observation_status = ""
-                            if entry.observation_id_id is not None and getattr(entry, "observation_id", None):
-                                observation_status = entry.observation_id.observation_status or ""
-                            row.append(observation_status)
+                            row.append(
+                                get_observation_status(entry)
+                            )
+
                         elif entry_type == "processed":
                             # Extract Tags up to 2
                             obs_id = entry.observation_id

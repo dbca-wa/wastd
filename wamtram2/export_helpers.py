@@ -6,7 +6,116 @@ from .export_config import (
     DAMAGE_FIELDS,
     PERSON_FIELDS,
 )
+from .export_config import (
+    FIELD_HEADER_MAP,
+    EXTRA_HEADERS,
+    PROCESSED_EXTRA_HEADERS,
+)
+from datetime import (
+    datetime,
+    date,
+)
 
+def build_export_headers(
+    model_meta,
+    entry_type,
+):
+    headers = []
+
+    for field in model_meta.fields:
+        header = FIELD_HEADER_MAP.get(
+            field.name,
+            field.name.upper(),
+        )
+
+        headers.append(header)
+
+        headers.extend(
+            EXTRA_HEADERS.get(
+                field.name,
+                [],
+            )
+        )
+
+    headers.append("ORGANISATIONS")
+
+    if entry_type == "field":
+        headers.append("OBSERVATION_STATUS")
+
+    elif entry_type == "processed":
+        headers.extend(
+            PROCESSED_EXTRA_HEADERS
+        )
+
+    return headers
+
+def get_export_field_value(
+    entry,
+    field,
+    entry_type,
+):
+    name = field.name
+
+    if (
+        name == "observation_id"
+        and entry_type == "field"
+    ):
+        return entry.observation_id_id or ""
+
+    elif (
+        name == "turtle"
+        and entry_type == "processed"
+    ):
+        return entry.turtle_id or ""
+
+    if field.is_relation and field.many_to_one:
+        return getattr(
+            entry,
+            f"{name}_id",
+            "",
+        )
+
+    return getattr(
+        entry,
+        name,
+    )
+
+def format_export_value(
+    name,
+    value,
+):
+    if (
+        name == "observation_date"
+        and isinstance(value, (datetime, date))
+    ):
+        return (
+            value.strftime("%Y-%m-%d")
+            if value
+            else ""
+        )
+
+    elif (
+        name == "observation_time"
+        and isinstance(value, datetime)
+    ):
+        return (
+            value.strftime("%H:%M:%S")
+            if value
+            else ""
+        )
+
+    elif isinstance(value, (datetime, date)):
+        return (
+            value.isoformat()
+            if value
+            else ""
+        )
+
+    elif value is None:
+        return ""
+
+    return str(value)
+    
 def get_extra_field_values(
     entry,
     field_name,
