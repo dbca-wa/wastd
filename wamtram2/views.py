@@ -86,6 +86,11 @@ from .export_config import (
     DAMAGE_FIELDS,
     PROCESSED_EXTRA_HEADERS,
 )
+from .export_helpers import (
+    get_extra_field_values,
+    get_lookup_values,
+    get_observation_status,
+)
 
 class HomePageView(LoginRequiredMixin, TemplateView):
     """
@@ -2399,17 +2404,23 @@ class ExportDataView(LoginRequiredMixin, View):
                 ts.tag_state: ts
                 for ts in TrtTagStates.objects.all()
             }
+            
+            obs_ids = set(
+                queryset.exclude(
+                    observation_id__isnull=True
+                ).values_list(
+                    "observation_id",
+                    flat=True,
+                )
+            )
 
+            summary_dict = {
+                s.observation_id: s
+                for s in TrvObservationSummary.objects.filter(
+                    observation_id__in=obs_ids
+                )
+            }
             if entry_type == "processed":
-                obs_ids = set(queryset.values_list("observation_id", flat=True))
-
-                summary_dict = {
-                    s.observation_id: s
-                    for s in TrvObservationSummary.objects.filter(
-                        observation_id__in=obs_ids
-                    )
-                }
-
                 # 1. Tags
                 recorded_tags = (
                     TrtRecordedTags.objects.filter(observation_id__in=obs_ids).select_related("tag_id").order_by("tag_position", "side")
@@ -2511,8 +2522,9 @@ class ExportDataView(LoginRequiredMixin, View):
                     # Headers
                     # ----------------------------
                     headers = []
-
                     for field in model_meta.fields:
+                       
+
                         header = FIELD_HEADER_MAP.get(
                             field.name,
                             field.name.upper(),
@@ -2534,7 +2546,6 @@ class ExportDataView(LoginRequiredMixin, View):
 
                     elif entry_type == "processed":
                         headers.extend(PROCESSED_EXTRA_HEADERS)
-                    print("HEADER COUNT", len(headers))
                     writer.writerow(headers)
                     # Write data
                     for entry in queryset:
@@ -2567,181 +2578,32 @@ class ExportDataView(LoginRequiredMixin, View):
                                 value = ""
 
                             row.append(str(value))
-                            if name == "species_code":
-                                row.append(
-                                    getattr(entry.species_code, "common_name", "")
+
+                            extra_values = get_extra_field_values(
+                                entry,
+                                name,
+                                beach_position_dict,
+                                summary_dict,
+                            )
+
+                            row.extend(
+                                get_lookup_values(
+                                    entry,
+                                    name,
+                                    measurement_type_dict,
+                                    body_part_dict,
+                                    damage_code_dict,
+                                    tissue_type_dict,
+                                    tag_state_dict,
                                 )
-
-                            elif name == "place_code":
-                                place = entry.place_code
-                                location = getattr(place, "location_code", None)
-
-                                row.extend([
-                                    getattr(place, "place_name", ""),
-                                    getattr(location, "location_code", ""),
-                                    getattr(location, "location_code", ""),
-                                    getattr(location, "location_name", ""),
-                                ])
-
-                            elif name == "activity_code":
-                                row.append(
-                                    getattr(entry.activity_code, "description", "")
-                                )
-
-                            elif name == "beach_position_code":
-                                row.append(
-                                    beach_position_dict.get(
-                                        entry.beach_position_code,
-                                        "",
-                                    )
-                                )
-                            if name == "measurements":
-                                row.append(
-                                    getattr(entry, "measurements", "")
-                                )
-
-                            elif name == "turtle_status":
-                                row.append(
-                                    getattr(entry, "turtle_status", "")
-                                )
-
-                            elif name == "other_tags":
-                                row.append(
-                                    getattr(entry, "other_identification", "")
-                                )
-
-                                # ALL_FLIPPER_TAGS
-                                flipper_tags = []
-
-                                for tag_field in [
-                                    "new_left_tag_id",
-                                    "new_left_tag_id_2",
-                                    "new_right_tag_id",
-                                    "new_right_tag_id_2",
-                                    "recapture_left_tag_id",
-                                    "recapture_left_tag_id_2",
-                                    "recapture_left_tag_id_3",
-                                    "recapture_right_tag_id",
-                                    "recapture_right_tag_id_2",
-                                    "recapture_right_tag_id_3",
-                                ]:
-                                    value = getattr(entry, f"{tag_field}_id", None)
-
-                                    if value:
-                                        flipper_tags.append(str(value))
-
-                                row.append("; ".join(flipper_tags))
-
-                                # PIT_TAGS / ALL_PIT_TAGS
-                                pit_tags = []
-
-                                for pit_field in [
-                                    "new_pittag_id",
-                                    "new_pittag_id_2",
-                                    "new_pittag_id_3",
-                                    "new_pittag_id_4",
-                                    "recapture_pittag_id",
-                                    "recapture_pittag_id_2",
-                                    "recapture_pittag_id_3",
-                                    "recapture_pittag_id_4",
-                                ]:
-                                    value = getattr(entry, f"{pit_field}_id", None)
-
-                                    if value:
-                                        pit_tags.append(str(value))
-
-                                # PIT_TAGS = 当前 PIT tag
-                                row.append(
-                                    pit_tags[0]
-                                    if pit_tags
-                                    else ""
-                                )
-
-                                # ALL_PIT_TAGS = 所有 PIT tags
-                                row.append("; ".join(pit_tags))
-
-                            if name.startswith("measurement_type_"):
-                                mt = measurement_type_dict.get(
-                                    getattr(entry, name)
-                                )
-
-                                row.extend([
-                                    getattr(mt, "description", ""),
-                                    getattr(mt, "measurement_units", ""),
-                                ])
-
-                            elif name in BODY_PART_FIELDS:
-                                row.append(
-                                    getattr(
-                                        body_part_dict.get(
-                                            getattr(entry, name)
-                                        ),
-                                        "description",
-                                        "",
-                                    )
-                                )
-
-                            elif name in DAMAGE_CODE_FIELDS:
-                                row.append(
-                                    getattr(
-                                        damage_code_dict.get(
-                                            getattr(entry, name)
-                                        ),
-                                        "description",
-                                        "",
-                                    )
-                                )
-                            
-                            elif name in TISSUE_FIELDS:
-                                row.append(
-                                    getattr(
-                                        tissue_type_dict.get(
-                                            getattr(entry, name)
-                                        ),
-                                        "description",
-                                        "",
-                                    )
-                                )
-
-                            elif name in TAG_STATE_FIELDS:
-                                row.append(
-                                    getattr(
-                                        tag_state_dict.get(
-                                            getattr(entry, name)
-                                        ),
-                                        "description",
-                                        "",
-                                    )
-                                )
-
-                            elif name in DAMAGE_FIELDS:
-                                row.append(
-                                    getattr(
-                                        damage_code_dict.get(
-                                            getattr(entry, name)
-                                        ),
-                                        "description",
-                                        "",
-                                    )
-                                )
-                            elif name in PERSON_FIELDS:
-                                person = getattr(entry, name)
-
-                                row.append(
-                                    str(person)
-                                    if person
-                                    else ""
-                                )
-                            
-
+                            )
+                            row.extend(extra_values)
                         row.append(org_str)
 
                         if entry_type == "field":
-                            # Get observation status from pre-fetched related object
-                            observation_status = ""
-                            if entry.observation_id_id is not None and getattr(entry, "observation_id", None):
-                                observation_status = entry.observation_id.observation_status or ""
-                            row.append(observation_status)
+                            row.append(
+                                get_observation_status(entry)
+                            )
                         elif entry_type == "processed":
                             # Extract Tags up to 2
                             obs_id = entry.observation_id
@@ -2820,7 +2682,6 @@ class ExportDataView(LoginRequiredMixin, View):
                                 )
                             else:
                                 row.extend(["", "", ""])
-                        print("ROW COUNT", len(row))
                         writer.writerow(row)
 
                 else:  # xlsx format

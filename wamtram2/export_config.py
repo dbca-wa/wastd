@@ -111,17 +111,27 @@ EXTRA_HEADERS = {
     "recorded_by_id": ["REPORTER_PERSON_NAME"],
     "entered_by_id": ["DATA_ENTERER_NAME"],
 
-    "measurements": ["MEASUREMENTS"],
+    "sex": [
+        "TURTLE_STATUS",
+    ],
 
-    "turtle_status": ["TURTLE_STATUS"],
+    "egg_count_method": [
+        "MEASUREMENTS",
+    ],
+
+
+    "other_tags": [
+        "OTHER_IDENTIFICATION",
+        "TAG_1",
+        "TAG_2",
+        "TAG_3",
+        "TAG_4",
+        "ALL_FLIPPER_TAGS",
+        "PIT_TAGS",
+        "ALL_PIT_TAGS",
+    ],
+
 }
-EXTRA_HEADERS["other_tags"] = [
-    "OTHER_IDENTIFICATION",
-    "ALL_FLIPPER_TAGS",
-    "PIT_TAGS",
-    "ALL_PIT_TAGS",
-]
-
 
 PERSON_FIELDS = {
     "measured_by_id",
