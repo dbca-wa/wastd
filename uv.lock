@@ -652,15 +652,15 @@ wheels = [
 
 [[package]]
 name = "django-polymorphic"
-version = "4.11.5"
+version = "4.11.6"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "django" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/a7/1c/48e4c076942d57ad0d6d5033e396d3efc12bac0b19b248891d858bb3e6fd/django_polymorphic-4.11.5.tar.gz", hash = "sha256:9a6fe66fab12cfe06aac81942d14670c6b0204aebd30ce9fb58fb53213c613eb", size = 61789, upload-time = "2026-06-02T15:51:50.912Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/3c/de/f6be5bb054f23ef95d4caba3eda769e2ee80bf558f9e38e3e481e5f70b41/django_polymorphic-4.11.6.tar.gz", hash = "sha256:993240e219d3f6e90548d4adedf1e702a56f79a5880ac4f44f0fbf53bda04897", size = 61817, upload-time = "2026-07-09T17:52:13.863Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/b7/44/efac024b4d818e76bb13e0ea1cfebb86c111fa5a40c0c700c748d6a3d8d8/django_polymorphic-4.11.5-py3-none-any.whl", hash = "sha256:8c65b5c109c057c51e059197b01765dd5e096b3fd393ee3038bffc294681b3be", size = 79095, upload-time = "2026-06-02T15:51:49.371Z" },
+    { url = "https://files.pythonhosted.org/packages/1b/c7/b243e1a72b40d9a1933fe5e0440acc53e920bf97841b147eb27d34a1ceaf/django_polymorphic-4.11.6-py3-none-any.whl", hash = "sha256:240e1edf7d1bb17a50794b1a7954843ee264e0289e654a0be029655d0b23d7f2", size = 79131, upload-time = "2026-07-09T17:52:12.491Z" },
 ]
 
 [[package]]
@@ -1127,7 +1127,7 @@ name = "pexpect"
 version = "4.9.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "ptyprocess" },
+    { name = "ptyprocess", marker = "sys_platform != 'emscripten' and sys_platform != 'win32'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/42/92/cc564bf6381ff43ce1f4d06852fc19a2f11d180f23dc32d9588bee2f149d/pexpect-4.9.0.tar.gz", hash = "sha256:ee7d41123f3c9911050ea2c2dac107568dc43b2d3b0c7557a33212c398ead30f", size = 166450, upload-time = "2023-11-25T09:07:26.339Z" }
 wheels = [
@@ -1726,7 +1726,7 @@ wheels = [
 
 [[package]]
 name = "wastd"
-version = "2.3.3"
+version = "2.3.4"
 source = { virtual = "." }
 dependencies = [
     { name = "dbca-utils" },
@@ -1803,7 +1803,7 @@ requires-dist = [
     { name = "django-leaflet", specifier = "==0.33.0" },
     { name = "django-nested-admin", specifier = "==4.1.6" },
     { name = "django-phonenumber-field", specifier = "==8.4.0" },
-    { name = "django-polymorphic", specifier = "==4.11.5" },
+    { name = "django-polymorphic", specifier = "==4.11.6" },
     { name = "django-reversion", specifier = "==6.2.0" },
     { name = "django-select2", specifier = "==8.4.1" },
     { name = "django-storages", extras = ["azure"], specifier = "==1.14.6" },
