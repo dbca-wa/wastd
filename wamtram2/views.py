@@ -1,6 +1,7 @@
 import csv
 import json
 import operator
+import traceback
 from datetime import date, datetime, time, timedelta
 from functools import reduce
 
@@ -84,7 +85,7 @@ from .export_config import (
     TISSUE_FIELDS,
     TAG_STATE_FIELDS,
     DAMAGE_FIELDS,
-    PROCESSED_EXTRA_HEADERS,
+    PROCESSED_EXPORT_HEADERS,
 )
 from .export_helpers import (
     build_export_headers,
@@ -93,6 +94,9 @@ from .export_helpers import (
     get_extra_field_values,
     get_lookup_values,
     get_observation_status,
+    get_processed_export_headers,
+    build_processed_export_context,
+    get_processed_export_row,
 )
 
 class HomePageView(LoginRequiredMixin, TemplateView):
@@ -2316,7 +2320,14 @@ class ExportDataView(LoginRequiredMixin, View):
                         queryset = queryset.filter(alive=alive)
 
                 # Optimize query with select_related
-                queryset = queryset.select_related("entry_batch", "place_code", "place_code__location_code", "turtle")
+                queryset = queryset.select_related(
+                    "entry_batch",
+                    "place_code",
+                    "place_code__location_code",
+                    #"observation_id",
+                    #"turtle_id",
+                    "turtle",
+                )
 
                 model_meta = TrtObservations._meta
 
@@ -2423,131 +2434,65 @@ class ExportDataView(LoginRequiredMixin, View):
                     observation_id__in=obs_ids
                 )
             }
-            if entry_type == "processed":
-                # 1. Tags
-                recorded_tags = (
-                    TrtRecordedTags.objects.filter(observation_id__in=obs_ids).select_related("tag_id").order_by("tag_position", "side")
-                )
-
-                for rt in recorded_tags:
-                    o_id = rt.observation_id_id
-                    tag_val = str(rt.tag_id_id or rt.other_tag_id or "")
-                    if rt.side == "L":
-                        left_tags_dict.setdefault(o_id, []).append(tag_val)
-
-                    elif rt.side == "R":
-                        right_tags_dict.setdefault(o_id, []).append(tag_val)
-                    else:      
-                        unknown_tags_dict.setdefault(o_id, []).append(tag_val)
-
-                # 2. PIT Tags
-                recorded_pit_tags = (
-                    TrtRecordedPitTags.objects.filter(observation_id__in=obs_ids).select_related("pittag_id").order_by("pit_tag_position")
-                )
-
-                for rpt in recorded_pit_tags:
-                    o_id = rpt.observation_id_id
-                    pt_val = str(rpt.pittag_id_id or "")
-
-                    if rpt.pit_tag_position == "LF":
-                        left_pit_tags_dict.setdefault(o_id, []).append(pt_val)
-
-                    elif rpt.pit_tag_position == "RF":
-                        right_pit_tags_dict.setdefault(o_id, []).append(pt_val)
-
-                    else:
-                        unknown_pit_tags_dict.setdefault(o_id, []).append(pt_val)
-
-                # 3. Measurements
-                measurements_dict = {}
-                measurements_summary_dict = {}
-                measurements = TrtMeasurements.objects.filter(observation_id__in=obs_ids).select_related("measurement_type").order_by("id")
-
-                for m in measurements:
-                    o_id = m.observation_id
-
-                    m_type = m.measurement_type_id or ""
-                    m_val = str(m.measurement_value) if m.measurement_value is not None else ""
-
-                    m_list = measurements_dict.setdefault(o_id, [])
-                    if len(m_list) < 2:
-                        m_list.append((str(m_type), m_val))
-
-                    summary_list = measurements_summary_dict.setdefault(o_id, [])
-                    summary_list.append(f"{m_type}={m_val}")
-
-                # 4. Samples
-                samples_summary_dict = {}
-
-                samples = (
-                    TrtSamples.objects
-                    .filter(observation_id__in=obs_ids)
-                    .select_related("tissue_type")
-                )
-
-                for s in samples:
-                    o_id = s.observation_id
-
-                    tissue = (
-                        s.tissue_type.description
-                        if s.tissue_type
-                        else ""
-                    )
-
-                    label = s.sample_label or ""
-
-                    summary_list = samples_summary_dict.setdefault(o_id, [])
-
-                    if label:
-                        summary_list.append(f"{tissue}({label})")
-                    else:
-                        summary_list.append(tissue)
-
-
-                # 5. Damages
-                damages_dict = {}
-                damages = TrtDamage.objects.filter(observation_id__in=obs_ids).select_related("body_part", "damage_code")
-
-                for d in damages:
-                    o_id = d.observation_id
-                    d_list = damages_dict.setdefault(o_id, [])
-                    if len(d_list) < 2:
-                        d_part = d.body_part_id or ""
-                        d_code = d.damage_code_id or ""
-                        d_list.append((str(d_part), str(d_code)))
-
             try:
-                if file_format == "csv":
-                    response = HttpResponse(content_type="text/csv")
-                    response["Content-Disposition"] = f'attachment; filename="{filename}.csv"'
-                    writer = csv.writer(response)
-                    # ----------------------------
-                    # Headers CSV
-                    # ----------------------------
+                processed_context = None
+
+                if entry_type == "processed":
+                    headers = get_processed_export_headers()
+
+                    processed_context = build_processed_export_context(
+                        queryset
+                    )
+                else:
                     headers = build_export_headers(
                         model_meta,
                         entry_type,
                     )
 
+                if file_format == "csv":
+                    response = HttpResponse(content_type="text/csv")
+                    response["Content-Disposition"] = (
+                        f'attachment; filename="{filename}.csv"'
+                    )
+
+                    writer = csv.writer(response)
+
+                    # ----------------------------
+                    # Headers CSV
+                    # ----------------------------
                     writer.writerow(headers)
 
-                    # Write data
                     for entry in queryset:
-                        organisations = org_dict.get(entry.entry_batch_id, [])
+
+                        if entry_type == "processed":
+                            writer.writerow(
+                                get_processed_export_row(
+                                    entry,
+                                    processed_context,
+                                )
+                            )
+                            continue
+
+                        organisations = org_dict.get(
+                            entry.entry_batch_id,
+                            []
+                        )
+
                         org_str = ", ".join(organisations)
 
                         row = []
+
                         for field in model_meta.fields:
                             name = field.name
-                            
+
                             value = get_export_field_value(
                                 entry,
                                 field,
                                 entry_type,
                             )
+
                             value = format_export_value(
-                                name,
-                                value,
+                                value
                             )
 
                             row.append(value)
@@ -2572,92 +2517,15 @@ class ExportDataView(LoginRequiredMixin, View):
                                     tag_state_dict,
                                 )
                             )
+
                         row.append(org_str)
 
                         if entry_type == "field":
                             row.append(
                                 get_observation_status(entry)
                             )
-                        elif entry_type == "processed":
-                            # Extract Tags up to 2
-                            obs_id = entry.observation_id
 
-                            left_flipper_tags = "; ".join(
-                                left_tags_dict.get(obs_id, [])
-                            )
-
-                            right_flipper_tags = "; ".join(
-                                right_tags_dict.get(obs_id, [])
-                            )
-
-                            unknown_flipper_tags = "; ".join(
-                                unknown_tags_dict.get(obs_id, [])
-                            )
-
-                            left_pit_tags = "; ".join(
-                                left_pit_tags_dict.get(obs_id, [])
-                            )
-
-                            right_pit_tags = "; ".join(
-                                right_pit_tags_dict.get(obs_id, [])
-                            )
-
-                            unknown_pit_tags = "; ".join(
-                                unknown_pit_tags_dict.get(obs_id, [])
-                            )
-
-                            m_list = measurements_dict.get(obs_id, [])
-                            m1_t, m1_v = m_list[0] if len(m_list) > 0 else ("", "")
-                            m2_t, m2_v = m_list[1] if len(m_list) > 1 else ("", "")
-
-                            all_measurements = "; ".join(
-                                    measurements_summary_dict.get(obs_id, [])
-                            )
-                            all_samples = "; ".join(
-                                    samples_summary_dict.get(obs_id, [])
-                            )
-
-                            d_list = damages_dict.get(obs_id, [])
-                            d1_b, d1_c = d_list[0] if len(d_list) > 0 else ("", "")
-                            d2_b, d2_c = d_list[1] if len(d_list) > 1 else ("", "")
-
-                            summary = summary_dict.get(obs_id)
-                            row.extend([
-                                left_flipper_tags,
-                                right_flipper_tags,
-                                unknown_flipper_tags,
-                                summary.flipper_tags if summary else "",
-                                left_pit_tags,
-                                right_pit_tags,
-                                unknown_pit_tags,
-                                summary.pit_tags if summary else "",
-                                m1_t,
-                                m1_v,
-                                m2_t,
-                                m2_v,
-                                all_measurements,
-                                all_samples,
-                                d1_b,
-                                d1_c,
-                                d2_b,
-                                d2_c,
-                                summary.damage if summary else "",]
-                                )
-
-                            # Append specific turtle info
-                            turtle = getattr(entry, "turtle", None)
-                            if turtle:
-                                row.extend(
-                                    [
-                                        getattr(turtle, "species_code_id", ""),
-                                        getattr(turtle, "sex", ""),
-                                        getattr(turtle, "turtle_status_id", ""),
-                                    ]
-                                )
-                            else:
-                                row.extend(["", "", ""])
                         writer.writerow(row)
-
                 else:  # xlsx format
                     response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
                     response["Content-Disposition"] = f'attachment; filename="{filename}.xlsx"'
@@ -2667,15 +2535,34 @@ class ExportDataView(LoginRequiredMixin, View):
                     # ----------------------------
                     # Headers XLSX
                     # ----------------------------
-                    headers = build_export_headers(
-                        model_meta,
-                        entry_type,
-                    )
+                    
+                    if entry_type == "processed":
+                        headers = get_processed_export_headers()
+
+                        if processed_context is None:
+                            processed_context = build_processed_export_context(
+                                queryset
+                            )
+                    else:
+                        headers = build_export_headers(
+                            model_meta,
+                            entry_type,
+                        )
 
                     ws.append(headers)
                 
                     # Write data
                     for entry in queryset:
+
+                        if entry_type == "processed":
+                            ws.append(
+                                get_processed_export_row(
+                                    entry,
+                                    processed_context,
+                                )
+                            )
+                            continue
+
                         organisations = org_dict.get(entry.entry_batch_id, [])
                         org_str = ", ".join(organisations)
 
@@ -2689,10 +2576,7 @@ class ExportDataView(LoginRequiredMixin, View):
                                 entry_type,
                             )
 
-                            value = format_export_value(
-                                name,
-                                value,
-                            )
+                            value = format_export_value(value)
 
                             row.append(value)
 
@@ -2716,7 +2600,7 @@ class ExportDataView(LoginRequiredMixin, View):
                                     tag_state_dict,
                                 )
                             )
-
+                            
                         row.append(org_str)
 
                         if entry_type == "field":
@@ -2724,94 +2608,17 @@ class ExportDataView(LoginRequiredMixin, View):
                                 get_observation_status(entry)
                             )
 
-                        elif entry_type == "processed":
-                            # Extract Tags up to 2
-                            obs_id = entry.observation_id
-                            left_flipper_tags = "; ".join(
-                                left_tags_dict.get(obs_id, [])
-                            )
-
-                            right_flipper_tags = "; ".join(
-                                right_tags_dict.get(obs_id, [])
-                            )
-
-                            unknown_flipper_tags = "; ".join(
-                                unknown_tags_dict.get(obs_id, [])
-                            )
-
-                            left_pit_tags = "; ".join(
-                                left_pit_tags_dict.get(obs_id, [])
-                            )
-
-                            right_pit_tags = "; ".join(
-                                right_pit_tags_dict.get(obs_id, [])
-                            )
-
-                            unknown_pit_tags = "; ".join(
-                                unknown_pit_tags_dict.get(obs_id, [])
-                            )
-
-                            m_list = measurements_dict.get(obs_id, [])
-                            m1_t, m1_v = m_list[0] if len(m_list) > 0 else ("", "")
-                            m2_t, m2_v = m_list[1] if len(m_list) > 1 else ("", "")
-
-                            all_measurements = "; ".join(
-                                    measurements_summary_dict.get(obs_id, [])
-                            )
-                            all_samples = "; ".join(
-                                    samples_summary_dict.get(obs_id, [])
-                            )
-
-                            d_list = damages_dict.get(obs_id, [])
-                            d1_b, d1_c = d_list[0] if len(d_list) > 0 else ("", "")
-                            d2_b, d2_c = d_list[1] if len(d_list) > 1 else ("", "")
-
-                            summary = summary_dict.get(obs_id)
-                            row.extend([ 
-                                        left_flipper_tags,
-                                        right_flipper_tags,
-                                        unknown_flipper_tags,
-                                        summary.flipper_tags if summary else "",
-                                        left_pit_tags,
-                                        right_pit_tags,
-                                        unknown_pit_tags,
-                                        summary.pit_tags if summary else "",
-                                        m1_t,
-                                        m1_v,
-                                        m2_t,
-                                        m2_v,
-                                        all_measurements,
-                                        all_samples,
-                                        d1_b,
-                                        d1_c,
-                                        d2_b,
-                                        d2_c,
-                                        summary.damage if summary else "",]
-                                        )
-
-                            # Append specific turtle info
-                            turtle = getattr(entry, "turtle", None)
-                            if turtle:
-                                row.extend(
-                                    [
-                                        str(getattr(turtle, "species_code_id", "")),
-                                        str(getattr(turtle, "sex", "")),
-                                        str(getattr(turtle, "turtle_status_id", "")),
-                                    ]
-                                )
-                            else:
-                                row.extend(["", "", ""])
-
                         ws.append(row)
-
                     wb.save(response)
 
                 return response
 
             except Exception as e:
+                traceback.print_exc()
                 return HttpResponse(f"Error generating export file: {str(e)}", status=500)
 
         except Exception as e:
+            traceback.print_exc()
             return HttpResponse(f"Error during export: {str(e)}", status=500)
 
 
