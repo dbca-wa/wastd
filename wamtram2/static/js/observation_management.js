@@ -433,27 +433,22 @@ function setInitialFormValues() {
 }
 
 function setSamples() {
-    const container = document.getElementById('sampleContainer');
+    const sampleContainer = document.getElementById('sampleContainer');
+    if (!sampleContainer || !initialData.samples) return;
 
-    if (!container || !initialData.samples) return;
+    sampleContainer.innerHTML = '';
 
     if (initialData.samples.length === 0) {
-        container.innerHTML = '<p class="text-muted">No samples found</p>';
+        sampleContainer.innerHTML =
+            '<p class="text-muted">No samples found</p>';
         return;
     }
 
-    container.innerHTML = '';
-
     initialData.samples.forEach(sample => {
-        container.insertAdjacentHTML('beforeend', `
-            <div class="card mb-3">
-                <div class="card-body">
-                    <p><strong>Tissue Type:</strong> ${sample.tissue_type || ''}</p>
-                    <p><strong>Sample Label:</strong> ${sample.sample_label || ''}</p>
-                    <p><strong>Comments:</strong> ${sample.comments || ''}</p>
-                </div>
-            </div>
-        `);
+        sampleContainer.insertAdjacentHTML(
+            'beforeend',
+            generateSampleHtml(sample)
+        );
     });
 }
 
@@ -947,7 +942,69 @@ function setScars() {
         `;
         container.innerHTML = scarsHtml;
 }
-    
+// Set samples data  
+function setSamples() {
+    const sampleContainer = document.getElementById('sampleContainer');
+    if (!sampleContainer || !initialData.samples) return;
+
+    sampleContainer.innerHTML = '';
+
+    if (initialData.samples.length === 0) {
+        sampleContainer.innerHTML =
+            '<p class="text-muted">No samples found</p>';
+        return;
+    }
+
+    initialData.samples.forEach(sample => {
+        sampleContainer.insertAdjacentHTML(
+            'beforeend',
+            generateSampleHtml(sample)
+        );
+    });
+}
+
+function generateSampleHtml(sample = {}) {
+    return `
+        <div class="sample-row card mb-3"
+             data-sample-id="${sample.sample_id || ''}">
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="col-md-3">
+                        <label>Tissue Type</label>
+                        <input type="text"
+                               class="form-control"
+                               name="tissue_type"
+                               value="${sample.tissue_type || ''}">
+                    </div>
+
+                    <div class="col-md-3">
+                        <label>Sample Label</label>
+                        <input type="text"
+                               class="form-control"
+                               name="sample_label"
+                               value="${sample.sample_label || ''}">
+                    </div>
+
+                    <div class="col-md-5">
+                        <label>Comments</label>
+                        <input type="text"
+                               class="form-control"
+                               name="comments"
+                               value="${sample.comments || ''}">
+                    </div>
+
+                    <div class="col-md-1">
+                        <label>&nbsp;</label>
+                        <button type="button"
+                                class="btn btn-danger btn-block delete-sample">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
 
 function saveOriginalFormData() {
     originalFormData = {};
@@ -1574,6 +1631,33 @@ document.addEventListener('DOMContentLoaded', function() {
         const saveDamageBtn = document.getElementById('saveDamageBtn');
         if (saveDamageBtn) {
             saveDamageBtn.addEventListener('click', saveDamageChanges);
+        }
+        const addSampleBtn = document.getElementById('addSampleBtn');
+
+        if (addSampleBtn) {
+            addSampleBtn.addEventListener('click', function () {
+                const sampleContainer = document.getElementById('sampleContainer');
+
+                if (
+                    sampleContainer.innerHTML.includes('No samples found')
+                ) {
+                    sampleContainer.innerHTML = '';
+                }
+
+                sampleContainer.insertAdjacentHTML(
+                    'beforeend',
+                    generateSampleHtml()
+                );
+            });
+        }
+        const sampleContainer = document.getElementById('sampleContainer');
+
+        if (sampleContainer) {
+            sampleContainer.addEventListener('click', function(e) {
+                if (e.target.closest('.delete-sample')) {
+                    e.target.closest('.sample-row').remove();
+                }
+            });
         }
 });
 
