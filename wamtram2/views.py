@@ -5577,18 +5577,6 @@ class TurtleManagementView(LoginRequiredMixin, SuperUserRequiredMixin, TemplateV
             ]
 
             observations = turtle.trtobservations_set.select_related("place_code", "activity_code").all()
-            # observation_data = [
-            #     {
-            #         "observation_id": obs.pk,
-            #         "date_time": obs.observation_date.strftime("%Y-%m-%dT%H:%M"),
-            #         "observation_status": obs.observation_status,
-            #         "alive": str(obs.alive),
-            #         "place": obs.place_code.get_full_name() if obs.place_code else "",
-            #         "nesting": str(obs.nesting),
-            #         "activity": str(obs.activity_code),
-            #     }
-            #     for obs in observations
-            # ]
             observation_data = []
 
             for obs in observations:
