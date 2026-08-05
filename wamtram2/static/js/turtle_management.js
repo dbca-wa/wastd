@@ -421,6 +421,16 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <input type="text" class="form-control" name="activity" value="${obs.activity || ''}"  readonly>
                                 </div>
                             </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label>Interrupted by nesting team</label>
+                                    <input type="text"
+                                        class="form-control"
+                                        name="interrupted"
+                                        value="${obs.interrupted || ''}"
+                                        readonly>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
