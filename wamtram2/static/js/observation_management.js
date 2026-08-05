@@ -422,6 +422,7 @@ function setInitialFormValues() {
         setDamageRecords();
         setIdentification();
         setScars();
+        setSamples();
         saveOriginalFormData();
         
         // Then initialize change tracking after all values are set
@@ -429,6 +430,31 @@ function setInitialFormValues() {
             initializeChangeTracking();
         }, 100);
     }
+}
+
+function setSamples() {
+    const container = document.getElementById('sampleContainer');
+
+    if (!container || !initialData.samples) return;
+
+    if (initialData.samples.length === 0) {
+        container.innerHTML = '<p class="text-muted">No samples found</p>';
+        return;
+    }
+
+    container.innerHTML = '';
+
+    initialData.samples.forEach(sample => {
+        container.insertAdjacentHTML('beforeend', `
+            <div class="card mb-3">
+                <div class="card-body">
+                    <p><strong>Tissue Type:</strong> ${sample.tissue_type || ''}</p>
+                    <p><strong>Sample Label:</strong> ${sample.sample_label || ''}</p>
+                    <p><strong>Comments:</strong> ${sample.comments || ''}</p>
+                </div>
+            </div>
+        `);
+    });
 }
 
 // Set basic form fields

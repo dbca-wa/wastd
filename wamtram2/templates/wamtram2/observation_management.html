@@ -320,6 +320,9 @@
         <li class="nav-item">
             <a class="nav-link" data-toggle="tab" href="#scars">Scars</a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#samples">Samples</a>
+        </li>
         <!-- Causeomment out Other Information tab 
         <li class="nav-item">
             <a class="nav-link" data-toggle="tab" href="#otherInfo">Other Information</a>
@@ -420,6 +423,23 @@
                 <h4>Scars</h4>
                 <div id="scarsContainer"></div>
                 <button type="button" class="btn btn-success mt-3" onclick="saveScarsChanges()">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
+            </div>
+        </div>
+        <div id="samples" class="tab-pane fade">
+            <div class="section-card">
+                <h4>Samples</h4>
+
+                <div id="sampleContainer">
+                    <!-- Existing samples will be loaded here -->
+                </div>
+
+                <button type="button" class="btn btn-primary mt-3" id="addSampleBtn">
+                    <i class="fas fa-plus"></i> Add Sample
+                </button>
+
+                <button type="button" class="btn btn-success mt-3" id="saveSamplesBtn">
                     <i class="fas fa-save"></i> Save Changes
                 </button>
             </div>

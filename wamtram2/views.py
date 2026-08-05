@@ -4886,6 +4886,16 @@ class ObservationDataView(LoginRequiredMixin, SuperUserRequiredMixin, View):
             for measurement in observation.trtmeasurements_set.all()
         ]
 
+        samples = [
+            {
+                "sample_id": sample.sample_id,
+                "tissue_type": sample.tissue_type.description if sample.tissue_type else "",
+                "sample_label": sample.sample_label,
+                "comments": sample.comments,
+            }
+            for sample in TrtSamples.objects.filter(observation_id=observation.observation_id)
+        ]
+
         identification_types = [
             {"identification_type": type_obj.identification_type, "description": type_obj.description}
             for type_obj in TrtIdentificationTypes.objects.all()
@@ -4933,7 +4943,9 @@ class ObservationDataView(LoginRequiredMixin, SuperUserRequiredMixin, View):
             "identification_types": identification_types,
             "body_parts": body_parts,
             "damage_codes": damage_codes,
+            "samples": samples,
         }
+        
 
     def _filter_observations(self, request):
         """Filter observations based on request parameters"""
