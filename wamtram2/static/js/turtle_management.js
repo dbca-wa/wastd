@@ -1053,7 +1053,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const container = document.getElementById('sampleContainer');
         const clone = template.content.cloneNode(true);
         
-        // 填充组织类型下拉框
+        
         const tissueTypeSelect = clone.querySelector('[name="tissue_type"]');
         const tissueTypes = JSON.parse(document.getElementById('tissue-types-data').textContent);
         tissueTypes.forEach(type => {
@@ -1063,7 +1063,6 @@ document.addEventListener('DOMContentLoaded', function() {
             tissueTypeSelect.appendChild(option);
         });
         
-        // 添加删除按钮事件监听器
         clone.querySelector('.delete-sample').addEventListener('click', function() {
             this.closest('.sample-card').remove();
         });
@@ -1232,11 +1231,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
-
-    // Load tissue types
-    function loadTissueTypes() {
-        return JSON.parse(document.getElementById('tissue-types-data').textContent);
-    }
 
     // Load document types
     function loadDocumentTypes() {

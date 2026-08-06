@@ -481,7 +481,7 @@
         {% else %}
             const initialData = null;
         {% endif %}
-
+        
         const tagStateChoices = {{ tag_states_choices|safe }};
         const pitTagStateChoices = {{ pit_tag_state_choices|safe }};
         const measurementTypeChoices = {{ measurement_type_choices|safe }};
@@ -493,5 +493,6 @@
 
         const turtleDetailUrlTemplate = "{% url 'wamtram2:turtle_detail' 0 %}".replace('/0/', '/'); 
     </script>
+    {{ tissue_types|json_script:"tissue-types-data" }}
     <script src="{% static 'js/observation_management.js' %}"></script>
 {% endblock %} 
