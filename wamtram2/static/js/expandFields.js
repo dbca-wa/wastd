@@ -43,7 +43,6 @@ document.addEventListener('DOMContentLoaded', function() {
             'toggleSampleButton',
             'toggleRecapturePITTagsBtn',
             'toggleNewPITTagsBtn',
-            'advancedDataButton'
         ];
 
         buttonsToRemove.forEach(id => {

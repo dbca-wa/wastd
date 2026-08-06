@@ -948,7 +948,7 @@
     </div>
   </div>
   <!-- Advanced Data Card -->
-  <div id="advancedDataCard" class="card border-dark mt-3" style="display: none;">
+  <div id="advancedDataCard" class="card border-dark mt-3">
     <div class="card-header"><strong>Advanced Data</strong></div>
     <div class="card-body">
       <!-- Datum Code -->
@@ -1024,11 +1024,8 @@
     </div>
   </div>
   <!-- Submit and Advanced Data buttons -->
-  <div class="row mt-4 mb-3 d-flex">
-    <div class="col-md-6">
-      <button type="button" class="btn btn-secondary" id="advancedDataButton">Advanced Data</button>
-    </div>
-    <div class="col-md-3 text-right">
+  <div class="row mt-4 mb-3">
+    <div class="col-md-9">
       <div class="d-flex align-self-center">
         {% if not form.observation_id.value %}
         <div class="form-group"> 
@@ -1106,7 +1103,6 @@
 <script src="{% static 'js/tagToggleHandler.js' %}"></script>
 <script src="{% static 'js/measurementHandler.js' %}"></script>
 <script src="{% static 'js/injuryHandler.js' %}"></script>
-<script src="{% static 'js/advancedDataHandler.js' %}"></script>
 <script src="{% static 'js/bgColorHandler.js' %}"></script>
 <script src="{% static 'js/tagValidation.js' %}"></script>
 <script src="{% static 'js/searchHandler.js' %}"></script>
