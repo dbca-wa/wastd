@@ -4691,11 +4691,11 @@ class ObservationManagementView(LoginRequiredMixin, SuperUserRequiredMixin, Temp
                         {"code": "U", "description": "Unknown"},
                     ],
                     "tissue_types": [
-                        {
-                        "tissue_type": tissue.tissue_type,
-                        "description": tissue.description,
-                        }
-                        for tissue in TrtTissueTypes.objects.all()
+                    {
+                    "tissue_type": tissue.tissue_type,
+                    "description": tissue.description,
+                    }
+                    for tissue in TrtTissueTypes.objects.all()
                     ],
                     "places": TrtPlaces.objects.all(),
                     "activity_code_choices": TrtActivities.objects.all(),
@@ -4892,6 +4892,10 @@ class ObservationDataView(LoginRequiredMixin, SuperUserRequiredMixin, View):
             }
             for measurement in observation.trtmeasurements_set.all()
         ]
+        sample_qs = TrtSamples.objects.filter(
+            observation_id=observation.observation_id
+        )
+
 
         samples = [
             {
@@ -4902,7 +4906,7 @@ class ObservationDataView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                 "comments": sample.comments,
             }
             for sample in TrtSamples.objects.filter(
-                observation_id=observation.observation_id
+                turtle_id=observation.turtle_id
             )
         ]
 
@@ -5608,11 +5612,6 @@ class TurtleManagementView(LoginRequiredMixin, SuperUserRequiredMixin, TemplateV
                     .filter(observation_id=obs)
                     .first()
                 )
-                print(
-                    f"obs={obs.pk}, "
-                    f"entry={entry.data_entry_id if entry else None}, "
-                    f"interrupted={entry.interrupted if entry else None}"
-                    )
 
                 observation_data.append({
                     "observation_id": obs.pk,
