@@ -5577,8 +5577,22 @@ class TurtleManagementView(LoginRequiredMixin, SuperUserRequiredMixin, TemplateV
             ]
 
             observations = turtle.trtobservations_set.select_related("place_code", "activity_code").all()
-            observation_data = [
-                {
+            observation_data = []
+
+            for obs in observations:
+                entry = (
+                    TrtDataEntry.objects
+                    .select_related("interrupted")
+                    .filter(observation_id=obs)
+                    .first()
+                )
+                print(
+                    f"obs={obs.pk}, "
+                    f"entry={entry.data_entry_id if entry else None}, "
+                    f"interrupted={entry.interrupted if entry else None}"
+                    )
+
+                observation_data.append({
                     "observation_id": obs.pk,
                     "date_time": obs.observation_date.strftime("%Y-%m-%dT%H:%M"),
                     "observation_status": obs.observation_status,
@@ -5586,9 +5600,8 @@ class TurtleManagementView(LoginRequiredMixin, SuperUserRequiredMixin, TemplateV
                     "place": obs.place_code.get_full_name() if obs.place_code else "",
                     "nesting": str(obs.nesting),
                     "activity": str(obs.activity_code),
-                }
-                for obs in observations
-            ]
+                    "interrupted": str(entry.interrupted) if entry and entry.interrupted else "",
+                })
 
             samples = turtle.trtsamples_set.all()
             sample_data = [
