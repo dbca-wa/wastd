@@ -1,0 +1,128 @@
+{% extends "base_wastd.html" %}
+{% load bootstrap4 %}
+
+{% block breadcrumbs %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Home</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'wamtram2:admin_tools' %}">Curation Tools</a></li>
+        <li class="breadcrumb-item active">Tagged Stranded Turtle Review</li>
+    </ol>
+</nav>
+{% endblock breadcrumbs %}
+
+{% block page_content_inner %}
+<div class="container-fluid">
+    <h1>Tagged Stranded Turtle Review</h1>
+    <p class="text-muted">
+       This page lists dead turtle records from Animal Encounters where a flipper tag or PIT tag was recorded.
+       Use it to check whether the same turtle exists in the tagging database and whether the tagging record needs to be updated manually.
+    </p>
+
+<form method="get" class="mb-4">
+    <div class="row">
+        <div class="col-md-4">
+            <label for="q">Search by tag ID or record text</label>
+            <input id="q" name="q" class="form-control" value="{{ q }}" placeholder="Example: WA22379, WB28876, source ID, or comment text">
+        </div>
+        <div class="col-md-3">
+            <label for="date_from">Date from</label>
+            <input id="date_from" name="date_from" type="date" class="form-control" value="{{ date_from }}">
+        </div>
+        <div class="col-md-3">
+            <label for="date_to">Date to</label>
+            <input id="date_to" name="date_to" type="date" class="form-control" value="{{ date_to }}">
+        </div>
+        <div class="col-md-2 d-flex align-items-end">   
+            <button type="submit" class="btn btn-primary btn-block">Search</button>
+        </div>
+    </div>
+</form>
+
+<div class="alert alert-info">
+       This page is for review only. It does not change the tagging database. Open the Animal Encounter and any possible tagging match, compare the records, then update Turtle Management manually only if the match is confirmed.
+</div>
+
+<table class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Species</th>
+            <th>Health</th>
+            <th>Encounter Type</th>
+            <th>Site / Area</th>
+            <th>Tags Recorded in Animal Encounter</th>
+            <th>Possible Match in Tagging Database</th>
+            <th>Animal Encounter</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in rows %}
+            <tr>
+                <td>{{ row.encounter.when|date:"Y-m-d H:i" }}</td>
+                <td>{{ row.encounter.get_species_display }}</td>
+                <td>{{ row.encounter.get_health_display }}</td>
+                <td>{{ row.encounter.get_encounter_type_display }}</td>
+                <td>{{ row.encounter.site|default:row.encounter.area }}</td>
+                <td>
+                    {% for tag in row.tag_observations %}
+                        <div>
+                            <strong>{{ tag.name }}</strong>
+                            <span class="text-muted">({{ tag.get_tag_type_display }}, {{ tag.get_status_display }})</span>
+                        </div>
+                    {% endfor %}
+                </td>
+
+                <td>
+                    {% for tag_match in row.matches %}
+                        <div class="mb-2">
+                            <strong>{{ tag_match.tag }}</strong>
+                            {% if tag_match.matches %}
+                                {% for match in tag_match.matches %}
+                                    <div>
+                                        {{ match.source }} {{ match.tag_id }}:
+                                        <a href="{{ match.turtle_url }}" target="_blank" rel="noopener">
+                                            Turtle {{ match.turtle_id }}
+                                        </a>
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="text-muted">No WAMTRAM match found</div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    </td>
+                    <td>
+                        <a class="btn btn-sm btn-outline-primary" href="{{ row.encounter.get_absolute_url }}" target="_blank" rel="noopener">
+                           View {{ row.encounter.pk }}
+                        </a>
+                    </td>
+                </tr>
+           {% empty %}
+                <tr>
+                    <td colspan="8" class="text-center text-muted">No matching records found.</td>
+                </tr>
+           {% endfor %}
+        </tbody>
+    </table>
+   {% if page_obj.has_other_pages %}
+        <nav aria-label="Review page navigation">
+            <ul class="pagination">
+               {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}&q={{ q }}&date_from={{ date_from }}&date_to={{ date_to }}">Previous</a>
+                    </li>
+               {% endif %}
+                <li class="page-item active">
+                    <span class="page-link">Page {{ page_obj.number }} of {{ paginator.num_pages }}</span>
+                </li>
+               {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}&q={{ q }}&date_from={{ date_from }}&date_to={{ date_to }}">Next</a>
+                    </li>
+               {% endif %}
+            </ul>
+        </nav>
+   {% endif %}
+</div>
+{% endblock page_content_inner %}
