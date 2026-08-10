@@ -4690,6 +4690,13 @@ class ObservationManagementView(LoginRequiredMixin, SuperUserRequiredMixin, Temp
                         {"code": "E", "description": "Evening"},
                         {"code": "U", "description": "Unknown"},
                     ],
+                    "tissue_types": [
+                    {
+                    "tissue_type": tissue.tissue_type,
+                    "description": tissue.description,
+                    }
+                    for tissue in TrtTissueTypes.objects.all()
+                    ],
                     "places": TrtPlaces.objects.all(),
                     "activity_code_choices": TrtActivities.objects.all(),
                     "beach_position_code_choices": TrtBeachPositions.objects.all(),
@@ -4886,6 +4893,19 @@ class ObservationDataView(LoginRequiredMixin, SuperUserRequiredMixin, View):
             for measurement in observation.trtmeasurements_set.all()
         ]
 
+        samples = [
+            {
+                "sample_id": sample.sample_id,
+                "tissue_type": sample.tissue_type.tissue_type,
+                "tissue_type_description": sample.tissue_type.description,
+                "sample_label": sample.sample_label,
+                "comments": sample.comments,
+            }
+            for sample in TrtSamples.objects.filter(
+                observation_id=observation.observation_id
+            )
+        ]
+
         identification_types = [
             {"identification_type": type_obj.identification_type, "description": type_obj.description}
             for type_obj in TrtIdentificationTypes.objects.all()
@@ -4933,7 +4953,9 @@ class ObservationDataView(LoginRequiredMixin, SuperUserRequiredMixin, View):
             "identification_types": identification_types,
             "body_parts": body_parts,
             "damage_codes": damage_codes,
+            "samples": samples,
         }
+        
 
     def _filter_observations(self, request):
         """Filter observations based on request parameters"""
@@ -5807,7 +5829,7 @@ class SamplesUpdateView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                 if sample_id:
                     # Update existing sample
                     TrtSamples.objects.filter(sample_id=sample_id).update(
-                        tissue_type=sample.get("tissue_type"),
+                        tissue_type_id=sample.get("tissue_type"),
                         sample_label=sample.get("sample_label"),
                         observation_id=sample.get("observation_id"),
                         comments=sample.get("comments"),
@@ -5816,7 +5838,7 @@ class SamplesUpdateView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                     # Create new sample
                     TrtSamples.objects.create(
                         turtle_id=turtle_id,
-                        tissue_type=sample.get("tissue_type"),
+                        tissue_type_id=sample.get("tissue_type"),
                         sample_label=sample.get("sample_label"),
                         observation_id=sample.get("observation_id"),
                         comments=sample.get("comments"),
