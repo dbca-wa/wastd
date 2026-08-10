@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as AuthUserAdmin
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 
-from .models import User, Organisation
+from .models import AuditLog, User, Organisation
 
 
 @admin.register(Organisation)
@@ -118,3 +118,38 @@ class UserAdmin(AuthUserAdmin):
                 return []
             else:
                 return [f.name for f in self.model._meta.fields]
+@admin.register(AuditLog)
+class AuditLogAdmin(admin.ModelAdmin):
+    list_display = (
+        "created_at",
+        "action",
+        "actor",
+        "app_label",
+        "model_name",
+        "object_pk",
+        "object_repr",
+        "path",
+    )
+    list_filter = ("action", "app_label", "model_name", "created_at")
+    search_fields = ("actor__username", "actor__email", "object_pk", "object_repr", "path")
+    readonly_fields = (
+        "created_at",
+        "action",
+        "app_label",
+        "model_name",
+        "object_pk",
+        "object_repr",
+        "actor",
+        "path",
+        "method",
+        "remote_addr",
+    )
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
