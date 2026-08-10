@@ -403,13 +403,13 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <input type="text" class="form-control" name="observation_status" value="${obs.observation_status || ''}"  readonly>
                                 </div>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-1">
                                 <div class="form-group">
                                     <label>Alive</label>
                                     <input type="text" class="form-control" name="alive" value="${obs.alive || ''}"  readonly>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <div class="form-group">
                                     <label>Place</label>
                                     <input type="text" class="form-control" name="place" value="${obs.place || ''}"  readonly>
@@ -419,6 +419,16 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <div class="form-group">
                                     <label>Activity</label>
                                     <input type="text" class="form-control" name="activity" value="${obs.activity || ''}"  readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label>Interrupted by nesting team</label>
+                                    <input type="text"
+                                        class="form-control"
+                                        name="interrupted"
+                                        value="${obs.interrupted || ''}"
+                                        readonly>
                                 </div>
                             </div>
                         </div>
