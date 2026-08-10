@@ -4892,10 +4892,6 @@ class ObservationDataView(LoginRequiredMixin, SuperUserRequiredMixin, View):
             }
             for measurement in observation.trtmeasurements_set.all()
         ]
-        sample_qs = TrtSamples.objects.filter(
-            observation_id=observation.observation_id
-        )
-
 
         samples = [
             {
@@ -4906,7 +4902,7 @@ class ObservationDataView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                 "comments": sample.comments,
             }
             for sample in TrtSamples.objects.filter(
-                turtle_id=observation.turtle_id
+                observation_id=observation.observation_id
             )
         ]
 
