@@ -12,7 +12,7 @@ requires-python = ">=3.13,<4"
 readme = "README.md"
 license = "MIT"
 dependencies = [
-  "django==5.2.15",
+  "django==5.2.16",
   "psycopg[binary,pool]==3.3.4",
   "django-extensions==4.1",
   "dj-database-url==3.1.2",
