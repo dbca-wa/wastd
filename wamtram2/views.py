@@ -5586,11 +5586,6 @@ class TurtleManagementView(LoginRequiredMixin, SuperUserRequiredMixin, TemplateV
                     .filter(observation_id=obs)
                     .first()
                 )
-                print(
-                    f"obs={obs.pk}, "
-                    f"entry={entry.data_entry_id if entry else None}, "
-                    f"interrupted={entry.interrupted if entry else None}"
-                    )
 
                 observation_data.append({
                     "observation_id": obs.pk,
