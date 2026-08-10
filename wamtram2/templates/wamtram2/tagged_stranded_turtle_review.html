@@ -51,7 +51,7 @@
             <th>Health</th>
             <th>Encounter Type</th>
             <th>Site / Area</th>
-            <th>Tags Recorded in Animal Encounter</th>
+            <th>Animal Identifiers Recorded</th>
             <th>Possible Match in Tagging Database</th>
             <th>Animal Encounter</th>
         </tr>
@@ -81,9 +81,9 @@
                                 {% for match in tag_match.matches %}
                                     <div>
                                         {{ match.source }} {{ match.tag_id }}:
-                                        <a href="{{ match.turtle_url }}" target="_blank" rel="noopener">
-                                            Turtle {{ match.turtle_id }}
-                                        </a>
+                                        <span style="text-decoration: underline;">
+                                            {{ match.turtle_id }}
+                                        </span>
                                     </div>
                                 {% endfor %}
                             {% else %}
