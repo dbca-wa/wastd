@@ -262,6 +262,7 @@ PROCESSED_EXPORT_HEADERS = [
     "TagScarNotChecked",
     "DidNotCheckForInjury",
     "OBSERVATION_STATUS",
+    "NEW_TURTLE",
     "DUD_FLIPPER_TAG",
     "DUD_FLIPPER_TAG_2",
     "DUD_PIT_TAG",

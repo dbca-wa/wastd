@@ -97,6 +97,8 @@ from .export_helpers import (
     get_processed_export_headers,
     build_processed_export_context,
     get_processed_export_row,
+    get_field_export_row,
+    is_new_turtle_observation,
 )
 
 class HomePageView(LoginRequiredMixin, TemplateView):
@@ -2263,6 +2265,7 @@ class ExportDataView(LoginRequiredMixin, View):
             place_code = request.GET.get("place_code")
             species = request.GET.get("species")
             sex = request.GET.get("sex")
+            new_turtle = request.GET.get("new_turtle")
             alive = request.GET.get("alive")
             file_format = request.GET.get("format", "csv")
             entry_type = request.GET.get("entry_type", "field")
@@ -2285,7 +2288,7 @@ class ExportDataView(LoginRequiredMixin, View):
 
             # Build queryset based on Entry Type
             if entry_type == "processed":
-                queryset = TrtObservations.objects.all()
+                #queryset = TrtObservations.objects.all()
 
                 # Apply organization filter
                 user = request.user
@@ -2302,7 +2305,9 @@ class ExportDataView(LoginRequiredMixin, View):
                         return HttpResponse("No data available for your organisation", status=403)
 
                 # Apply filters
-                queryset = queryset.filter(observation_date__range=[from_date, to_date])
+                queryset =  queryset = TrtObservations.objects.filter(
+                        observation_date__range=[from_date, to_date]
+                    )
 
                 if location_code:
                     queryset = queryset.filter(place_code__location_code=location_code)
@@ -2320,19 +2325,58 @@ class ExportDataView(LoginRequiredMixin, View):
                         queryset = queryset.filter(alive=alive)
 
                 # Optimize query with select_related
+                # queryset = queryset.select_related(
+                #     "entry_batch",
+                #     "place_code",
+                #     "place_code__location_code",
+                #     #"observation_id",
+                #     #"turtle_id",
+                #     "turtle",
+                # )
                 queryset = queryset.select_related(
-                    "entry_batch",
-                    "place_code",
-                    "place_code__location_code",
-                    #"observation_id",
-                    #"turtle_id",
-                    "turtle",
-                )
+                        "activity_code",
+                        "alive",
+                        "beach_position_code",
+                        "clutch_completed",
+                        "condition_code",
+                        "datum_code",
+                        "egg_count_method",
+                        "entered_by_person",
+                        "measurer_person",
+                        "measurer_reporter_person",
+                        "nesting",
+                        "place_code",
+                        "place_code__location_code",
+                        "reporter_person",
+                        "tagger_person",
+                        "turtle",
+                        "turtle__location_code",
+                        "turtle__species_code",
+                        "turtle__turtle_status",
+                    ).order_by("observation_date", "observation_id")
 
-                model_meta = TrtObservations._meta
+                #model_meta = TrtObservations._meta
+                if not queryset.exists():
+                        return HttpResponse("No data found matching the selected criteria", status=404)
+
+                entries = list(queryset)
+                headers = get_processed_export_headers()
+                processed_context = build_processed_export_context(entries)
+
+                if new_turtle == "yes":
+                    entries = [
+                        entry
+                        for entry in entries
+                        if is_new_turtle_observation(entry, processed_context)
+                    ]
+                    if not entries:
+                        return HttpResponse(
+                            "No new turtle records found matching the selected criteria",
+                            status=404,
+                        )
 
             else:
-                queryset = TrtDataEntry.objects.all()
+                #queryset = TrtDataEntry.objects.all()
 
                 # Apply organization filter
                 user = request.user
@@ -2367,9 +2411,25 @@ class ExportDataView(LoginRequiredMixin, View):
                         queryset = queryset.filter(alive=alive)
 
                 # Optimize query with select_related
-                queryset = queryset.select_related("entry_batch", "place_code", "place_code__location_code", "observation_id")
-
-                model_meta = TrtDataEntry._meta
+                #queryset = queryset.select_related("entry_batch", "place_code", "place_code__location_code", "observation_id")
+                queryset = queryset.select_related(
+                    "entry_batch",
+                    "species_code",
+                    "place_code",
+                    "place_code__location_code",
+                    "activity_code",
+                    "observation_id",
+                    "nesting",
+                    "alive",
+                    "measured_by_id",
+                    "recorded_by_id",
+                    "tagged_by_id",
+                    "entered_by_id",
+                    "measured_recorded_by_id",
+                    "egg_count_method",
+                    "clutch_completed",
+                ).order_by("observation_date", "data_entry_id")
+                #model_meta = TrtDataEntry._meta
 
             # Check if there's any data to export
             if not queryset.exists():
