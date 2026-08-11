@@ -215,7 +215,8 @@ class AuditLog(models.Model):
 def log_model_delete(sender, instance, **kwargs):
     if sender is AuditLog:
         return
-
+    if sender._meta.app_label == "sessions" and sender._meta.model_name == "session":
+        return
     request = None
     try:
         from .middleware import get_current_audit_request
