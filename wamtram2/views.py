@@ -97,8 +97,8 @@ from .export_helpers import (
     get_processed_export_headers,
     build_processed_export_context,
     get_processed_export_row,
-    get_field_export_row,
     is_new_turtle_observation,
+    get_field_export_row,
 )
 
 class HomePageView(LoginRequiredMixin, TemplateView):
@@ -2265,30 +2265,47 @@ class ExportDataView(LoginRequiredMixin, View):
             place_code = request.GET.get("place_code")
             species = request.GET.get("species")
             sex = request.GET.get("sex")
-            new_turtle = request.GET.get("new_turtle")
             alive = request.GET.get("alive")
+            new_turtle = request.GET.get("new_turtle")
             file_format = request.GET.get("format", "csv")
             entry_type = request.GET.get("entry_type", "field")
 
+            # # Build filename
+            # export_type = "Observations" if entry_type == "processed" else "FieldEntries"
+
+            # export_date = timezone.now().strftime("%d%m%Y")
+
+            # location_label = location_code or place_code or "ALL"
+
+            # filename = (
+            #     f"{export_type}_"
+            #     f"{location_label}_"
+            #     f"{from_date.strftime('%Y%m%d')}_"
+            #     f"{to_date.strftime('%Y%m%d')}_"
+            #     f"Export{export_date}"
+            # )
             # Build filename
             export_type = "Observations" if entry_type == "processed" else "FieldEntries"
-
-            export_date = timezone.now().strftime("%d%m%Y")
-
             location_label = location_code or place_code or "ALL"
-
-            filename = (
-                f"{export_type}_"
-                f"{location_label}_"
-                f"{from_date.strftime('%Y%m%d')}_"
-                f"{to_date.strftime('%Y%m%d')}_"
-                f"Export{export_date}"
-            )
+            filename_parts = [
+                export_type,
+                location_label,
+                from_date.strftime("%Y%m%d"),
+                to_date.strftime("%Y%m%d"),
+            ]
+            if species:
+                filename_parts.append(species)
+            if sex:
+                filename_parts.append(sex)
+            if entry_type == "processed" and new_turtle == "yes":
+                filename_parts.append("NewTurtles")
+            filename_parts.append(f"Export{timezone.now().strftime('%d%m%Y')}")
+            filename = "_".join(filename_parts)
 
 
             # Build queryset based on Entry Type
             if entry_type == "processed":
-                #queryset = TrtObservations.objects.all()
+                queryset = TrtObservations.objects.all()
 
                 # Apply organization filter
                 user = request.user
@@ -2305,9 +2322,7 @@ class ExportDataView(LoginRequiredMixin, View):
                         return HttpResponse("No data available for your organisation", status=403)
 
                 # Apply filters
-                queryset =  queryset = TrtObservations.objects.filter(
-                        observation_date__range=[from_date, to_date]
-                    )
+                queryset = queryset.filter(observation_date__range=[from_date, to_date])
 
                 if location_code:
                     queryset = queryset.filter(place_code__location_code=location_code)
@@ -2325,58 +2340,17 @@ class ExportDataView(LoginRequiredMixin, View):
                         queryset = queryset.filter(alive=alive)
 
                 # Optimize query with select_related
-                # queryset = queryset.select_related(
-                #     "entry_batch",
-                #     "place_code",
-                #     "place_code__location_code",
-                #     #"observation_id",
-                #     #"turtle_id",
-                #     "turtle",
-                # )
                 queryset = queryset.select_related(
-                        "activity_code",
-                        "alive",
-                        "beach_position_code",
-                        "clutch_completed",
-                        "condition_code",
-                        "datum_code",
-                        "egg_count_method",
-                        "entered_by_person",
-                        "measurer_person",
-                        "measurer_reporter_person",
-                        "nesting",
-                        "place_code",
-                        "place_code__location_code",
-                        "reporter_person",
-                        "tagger_person",
-                        "turtle",
-                        "turtle__location_code",
-                        "turtle__species_code",
-                        "turtle__turtle_status",
-                    ).order_by("observation_date", "observation_id")
-
-                #model_meta = TrtObservations._meta
-                if not queryset.exists():
-                        return HttpResponse("No data found matching the selected criteria", status=404)
-
-                entries = list(queryset)
-                headers = get_processed_export_headers()
-                processed_context = build_processed_export_context(entries)
-
-                if new_turtle == "yes":
-                    entries = [
-                        entry
-                        for entry in entries
-                        if is_new_turtle_observation(entry, processed_context)
-                    ]
-                    if not entries:
-                        return HttpResponse(
-                            "No new turtle records found matching the selected criteria",
-                            status=404,
-                        )
+                    "entry_batch",
+                    "place_code",
+                    "place_code__location_code",
+                    #"observation_id",
+                    #"turtle_id",
+                    "turtle",
+                )
 
             else:
-                #queryset = TrtDataEntry.objects.all()
+                queryset = TrtDataEntry.objects.all()
 
                 # Apply organization filter
                 user = request.user
@@ -2411,25 +2385,9 @@ class ExportDataView(LoginRequiredMixin, View):
                         queryset = queryset.filter(alive=alive)
 
                 # Optimize query with select_related
-                #queryset = queryset.select_related("entry_batch", "place_code", "place_code__location_code", "observation_id")
-                queryset = queryset.select_related(
-                    "entry_batch",
-                    "species_code",
-                    "place_code",
-                    "place_code__location_code",
-                    "activity_code",
-                    "observation_id",
-                    "nesting",
-                    "alive",
-                    "measured_by_id",
-                    "recorded_by_id",
-                    "tagged_by_id",
-                    "entered_by_id",
-                    "measured_recorded_by_id",
-                    "egg_count_method",
-                    "clutch_completed",
-                ).order_by("observation_date", "data_entry_id")
-                #model_meta = TrtDataEntry._meta
+                queryset = queryset.select_related("entry_batch", "place_code", "place_code__location_code", "observation_id")
+
+                model_meta = TrtDataEntry._meta
 
             # Check if there's any data to export
             if not queryset.exists():
@@ -2446,12 +2404,12 @@ class ExportDataView(LoginRequiredMixin, View):
 
             # Pre-fetch Tags and PIT Tags for Processed Entries
             summary_dict = {}
-            left_tags_dict = {}
-            right_tags_dict = {}
-            unknown_tags_dict = {}
-            left_pit_tags_dict = {}
-            right_pit_tags_dict = {}
-            unknown_pit_tags_dict = {}
+            # left_tags_dict = {}
+            # right_tags_dict = {}
+            # unknown_tags_dict = {}
+            # left_pit_tags_dict = {}
+            # right_pit_tags_dict = {}
+            # unknown_pit_tags_dict = {}
             # Description dictionaries for lookups
             beach_position_dict = {
                 bp.beach_position_code: bp.description
@@ -2499,10 +2457,23 @@ class ExportDataView(LoginRequiredMixin, View):
 
                 if entry_type == "processed":
                     headers = get_processed_export_headers()
+                    entries = list(queryset)
+                    processed_context = build_processed_export_context(entries)
 
-                    processed_context = build_processed_export_context(
-                        queryset
-                    )
+                    if new_turtle == "yes":
+                        entries = [
+                            entry
+                            for entry in entries
+                            if is_new_turtle_observation(entry, processed_context)
+                        ]
+
+                        if not entries:
+                            return HttpResponse(
+                                "No new turtle records found matching the selected criteria",
+                                status=404,
+                            )
+                    queryset = entries
+                    
                 else:
                     headers = build_export_headers(
                         model_meta,
