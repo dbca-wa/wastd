@@ -5864,13 +5864,21 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
 
     def get_context_data(self, **kwargs):
         """Prepare all data for template context"""
+        preferred_order = ["Y", "N", "P", "U", "D", "O"]
+        alive_choices = list(TrtYesNo.objects.all())
+        alive_choices = sorted(
+            TrtYesNo.objects.all(),
+            key=lambda s: preferred_order.index(s.code)
+            if s.code in preferred_order
+            else 999,
+        )
         context = {
             "page_title": "Turtle Data Statistics - " + settings.SITE_TITLE,
             "locations": TrtLocations.objects.all().order_by("location_code"),
             "places": TrtPlaces.objects.all().order_by("place_code"),
             "species": TrtSpecies.objects.filter(hide_dataentry=False).order_by("species_code"),
             "sex_choices": [("F", "Female"), ("M", "Male"), ("I", "Indeterminate")],
-            "alive_choices": TrtYesNo.objects.all().order_by("description"),
+            "alive_choices": alive_choices,
             "nesting_choices": [("Y", "Yes"), ("N", "No")],
         }
         selected_locations = self.request.GET.getlist("location")
