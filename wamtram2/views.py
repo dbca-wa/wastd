@@ -1285,7 +1285,7 @@ class TurtleListView(LoginRequiredMixin, PaginateMixin, ListView):
                     trttags__tag_id__icontains=q
                 ).values_list("pk", flat=True)
             )
-
+            #pit tag?
             turtle_ids.update(
                 qs.filter(
                     trtpittags__pittag_id__icontains=q
