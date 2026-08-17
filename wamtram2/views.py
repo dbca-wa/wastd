@@ -5894,12 +5894,21 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
 
     def get_context_data(self, **kwargs):
         """Prepare all data for template context"""
+        preferred_order = ["Y", "N", "P", "U", "D", "O"]
+        alive_choices = sorted(
+            TrtYesNo.objects.all(),
+            key=lambda s: preferred_order.index(s.code)
+            if s.code in preferred_order
+            else 999,
+        )
         context = {
             "page_title": "Turtle Data Statistics - " + settings.SITE_TITLE,
             "locations": TrtLocations.objects.all().order_by("location_code"),
             "places": TrtPlaces.objects.all().order_by("place_code"),
             "species": TrtSpecies.objects.filter(hide_dataentry=False).order_by("species_code"),
             "sex_choices": [("F", "Female"), ("M", "Male"), ("I", "Indeterminate")],
+            "alive_choices": alive_choices,
+            "nesting_choices": [("Y", "Yes"), ("N", "No")],
         }
         selected_locations = self.request.GET.getlist("location")
         selected_places = self.request.GET.getlist("place")
@@ -5912,6 +5921,8 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                 "selected_places": selected_places,
                 "selected_sex": self.request.GET.get("sex"),
                 "selected_species": self.request.GET.get("species"),
+                "selected_nesting": self.request.GET.get("nesting"),
+                "selected_alive": self.request.GET.get("alive"),
                 "start_date": self.request.GET.get("start_date"),
                 "end_date": self.request.GET.get("end_date"),
             }
@@ -5947,7 +5958,19 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
 
                 if context["selected_species"]:
                     query = query.filter(turtle__species_code=context["selected_species"])
-
+                
+                if context["selected_alive"]:
+                    query = query.filter(
+                        alive__code=context["selected_alive"]
+                    )
+                if context["selected_nesting"] == "Y":
+                    query = query.filter(
+                        activity_code__nesting="Y"
+                    )
+                elif context["selected_nesting"] == "N":
+                    query = query.exclude(
+                        activity_code__nesting="Y"
+                    )
                 # Group by place and count unique turtles
                 results = (
                     query.values("place_code__place_code", "place_code__place_name")
@@ -5972,6 +5995,19 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                 if context["selected_species"]:
                     query = query.filter(species_code=context["selected_species"])
 
+                if context["selected_alive"]:
+                    query = query.filter(
+                        alive__code=context["selected_alive"]
+                    )
+                if context["selected_nesting"] == "Y":
+                    query = query.filter(
+                        activity_code__nesting="Y"
+                    )
+
+                elif context["selected_nesting"] == "N":
+                    query = query.exclude(
+                        activity_code__nesting="Y"
+                    )
                 # Split into two groups: with and without turtle_id
                 has_turtle_query = query.filter(turtle_id__isnull=False)
                 no_turtle_query = query.filter(turtle_id__isnull=True)
