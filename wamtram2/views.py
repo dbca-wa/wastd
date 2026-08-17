@@ -5865,7 +5865,6 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
     def get_context_data(self, **kwargs):
         """Prepare all data for template context"""
         preferred_order = ["Y", "N", "P", "U", "D", "O"]
-        alive_choices = list(TrtYesNo.objects.all())
         alive_choices = sorted(
             TrtYesNo.objects.all(),
             key=lambda s: preferred_order.index(s.code)

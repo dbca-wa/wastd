@@ -54,7 +54,7 @@
             </div>
 
             <div class="form-row">
-                <div class="col-md-4">
+                <div class="col-lg-3 col-md-6">
                     <div class="form-group">
                         <label>Location:</label>
                         <select name="location" class="form-control select2" multiple>
@@ -68,7 +68,7 @@
                     </div>
                 </div>
                 
-                <div class="col-md-4">
+                <div class="col-lg-3 col-md-6">
                     <div class="form-group">
                         <label>Place:</label>
                         <select name="place" class="form-control select2" multiple>
@@ -92,7 +92,7 @@
             </div>
 
             <div class="form-row">
-                <div class="col-md-4">
+                <div class="col-lg-3 col-md-6 mb-3">
                     <div class="form-group">
                         <label>Sex:</label>
                         <select name="sex" class="form-control select2">
@@ -105,8 +105,7 @@
                         </select>
                     </div>
                 </div>
-                
-                <div class="col-md-4">
+                <div class="col-lg-3 col-md-6 mb-3">
                     <div class="form-group">
                         <label>Species:</label>
                         <select name="species" class="form-control select2">
@@ -120,23 +119,21 @@
                     </div>
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-lg-3 col-md-6 mb-3">
                     <label>Nesting:</label>
                     <select name="nesting" class="form-control select2">
                         <option value="">All</option>
-                        <option value="Y"
-                            {% if selected_nesting == "Y" %}selected{% endif %}>
-                            Yes
-                        </option>
 
-                        <option value="N"
-                            {% if selected_nesting == "N" %}selected{% endif %}>
-                            No
-                        </option>
+                        {% for value, label in nesting_choices %}
+                            <option value="{{ value }}"
+                                {% if selected_nesting == value %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                        {% endfor %}
                     </select>
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-lg-3 col-md-6 mb-3">
                     <label>Alive:</label>
                     <select name="alive" class="form-control select2">
                         <option value="">All</option>
