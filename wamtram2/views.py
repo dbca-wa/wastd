@@ -1256,20 +1256,32 @@ class TurtleListView(LoginRequiredMixin, PaginateMixin, ListView):
         return context
 
     def get_queryset(self):
-        """
-        Retrieves the queryset of turtles to be displayed.
-
-        Returns:
-            QuerySet: The queryset of turtles.
-        """
         qs = super().get_queryset()
-        # General-purpose search uses the `q` parameter.
-        if "q" in self.request.GET and self.request.GET["q"]:
-            q = self.request.GET["q"]
-            qs = qs.filter(Q(pk__icontains=q) | Q(trttags__tag_id__icontains=q) | Q(trtpittags__pittag_id__icontains=q)).distinct()
+
+        q = self.request.GET.get("q")
+
+        if q:
+            #turtle id search
+            turtle_ids = set(
+                qs.filter(pk__icontains=q)
+                .values_list("pk", flat=True)
+            )
+            #flipper tag
+            turtle_ids.update(
+                qs.filter(
+                    trttags__tag_id__icontains=q
+                ).values_list("pk", flat=True)
+            )
+            #pit tag
+            turtle_ids.update(
+                qs.filter(
+                    trtpittags__pittag_id__icontains=q
+                ).values_list("pk", flat=True)
+            )
+
+            qs = qs.filter(pk__in=turtle_ids)
 
         return qs.order_by("pk")
-
 
 class TurtleDetailView(LoginRequiredMixin, DetailView):
     """
