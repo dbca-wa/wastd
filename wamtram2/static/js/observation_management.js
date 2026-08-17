@@ -422,6 +422,7 @@ function setInitialFormValues() {
         setDamageRecords();
         setIdentification();
         setScars();
+        setSamples();
         saveOriginalFormData();
         
         // Then initialize change tracking after all values are set
@@ -430,6 +431,7 @@ function setInitialFormValues() {
         }, 100);
     }
 }
+
 
 // Set basic form fields
 function setBasicFields() {
@@ -921,7 +923,79 @@ function setScars() {
         `;
         container.innerHTML = scarsHtml;
 }
-    
+// Set samples data  
+function setSamples() {
+    const sampleContainer = document.getElementById('sampleContainer');
+    if (!sampleContainer || !initialData.samples) return;
+
+    sampleContainer.innerHTML = '';
+
+    if (initialData.samples.length === 0) {
+        sampleContainer.innerHTML =
+            '<p class="text-muted">No samples found</p>';
+        return;
+    }
+
+    initialData.samples.forEach(sample => {
+        sampleContainer.insertAdjacentHTML(
+            'beforeend',
+            generateSampleHtml(sample)
+        );
+    });
+}
+
+function generateSampleHtml(sample = {}) {
+    const tissueTypes = JSON.parse(
+        document.getElementById('tissue-types-data').textContent
+    );
+    return `
+        <div class="sample-row card mb-3"
+             data-sample-id="${sample.sample_id || ''}">
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="col-md-3">
+                        <label>Tissue Type</label>
+                        <select class="form-control" name="tissue_type">
+                            ${tissueTypes.map(type => `
+                                <option
+                                    value="${type.tissue_type}"
+                                    ${String(sample.tissue_type || '') === String(type.tissue_type)
+                                        ? 'selected'
+                                        : ''}>
+                                    ${type.description}
+                                </option>
+                            `).join('')}
+                        </select>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label>Sample Label</label>
+                        <input type="text"
+                               class="form-control"
+                               name="sample_label"
+                               value="${sample.sample_label || ''}">
+                    </div>
+
+                    <div class="col-md-5">
+                        <label>Comments</label>
+                        <input type="text"
+                               class="form-control"
+                               name="comments"
+                               value="${sample.comments || ''}">
+                    </div>
+
+                    <div class="col-md-1">
+                        <label>&nbsp;</label>
+                        <button type="button"
+                                class="btn btn-danger btn-block delete-sample">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
 
 function saveOriginalFormData() {
     originalFormData = {};
@@ -1549,8 +1623,114 @@ document.addEventListener('DOMContentLoaded', function() {
         if (saveDamageBtn) {
             saveDamageBtn.addEventListener('click', saveDamageChanges);
         }
+        // Samples buttons
+        const addSampleBtn = document.getElementById('addSampleBtn');
+
+        if (addSampleBtn) {
+            addSampleBtn.addEventListener('click', addSample);
+        }
+
+        const sampleContainer = document.getElementById('sampleContainer');
+
+        if (sampleContainer) {
+            sampleContainer.addEventListener('click', function(e) {
+                if (e.target.closest('.delete-sample')) {
+                    deleteSample(e);
+                }
+            });
+        }
+
+        const saveSamplesBtn = document.getElementById('saveSamplesBtn');
+
+        if (saveSamplesBtn) {
+            saveSamplesBtn.addEventListener('click', saveSampleChanges);
+        }
 });
 
+// Samples
+let deletedSamples = new Set();
+
+function addSample() {
+    const sampleContainer = document.getElementById('sampleContainer');
+
+    if (sampleContainer.innerHTML.includes('No samples found')) {
+        sampleContainer.innerHTML = '';
+    }
+
+    sampleContainer.insertAdjacentHTML(
+        'beforeend',
+        generateSampleHtml()
+    );
+}
+
+function deleteSample(event) {
+    const sampleCard = event.target.closest('.sample-row');
+
+    if (!sampleCard) return;
+
+    const sampleId = sampleCard.dataset.sampleId;
+
+    if (sampleCard.classList.contains('deleted')) {
+        sampleCard.classList.remove('deleted');
+        deletedSamples.delete(sampleId);
+    } else {
+        sampleCard.classList.add('deleted');
+
+        if (sampleId) {
+            deletedSamples.add(sampleId);
+        }
+    }
+
+    sampleCard.remove();
+}
+
+async function saveSampleChanges() {
+    const samples = [];
+
+    document
+        .querySelectorAll('.sample-row:not(.deleted)')
+        .forEach(card => {
+            samples.push({
+                sample_id: card.dataset.sampleId || null,
+                tissue_type: card.querySelector('[name="tissue_type"]').value,
+                sample_label: card.querySelector('[name="sample_label"]').value,
+                comments: card.querySelector('[name="comments"]').value,
+                observation_id: initialData.basic_info.observation_id
+            });
+        });
+
+    try {
+        const csrfToken =
+            document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        const response = await fetch(
+            '/wamtram2/api/samples-update/',
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify({
+                    turtle_id: initialData.basic_info.turtle_id,
+                    samples: samples,
+                    deletedSamples: Array.from(deletedSamples)
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (data.status === 'success') {
+            alert('Samples updated successfully!');
+            location.reload();
+        } else {
+            alert(`Error: ${data.message}`);
+        }
+    } catch (error) {
+        alert(`Save failed: ${error.message}`);
+    }
+}
 // Add global variable to track deleted measurements
 let deletedMeasurements = new Set();
 
@@ -1726,6 +1906,7 @@ async function saveMeasurementChanges() {
         alert(`Save failed: ${error.message}`);
     }
 }
+
 
 // Add global variable to track deleted damage records
 let deletedDamage = new Set();
