@@ -570,26 +570,8 @@ class TrtDataEntryForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
 
-        # Entries created directly via "Create Entry" are treated as new turtles.
-        # Entries created from an existing flipper tag or PIT tag search are treated
-        # as recaptures and will have one or more recapture_* fields populated.
-        is_recapture = any(
-            [
-                cleaned_data.get("recapture_left_tag_id"),
-                cleaned_data.get("recapture_left_tag_id_2"),
-                cleaned_data.get("recapture_left_tag_id_3"),
-                cleaned_data.get("recapture_right_tag_id"),
-                cleaned_data.get("recapture_right_tag_id_2"),
-                cleaned_data.get("recapture_right_tag_id_3"),
-                cleaned_data.get("recapture_pittag_id"),
-                cleaned_data.get("recapture_pittag_id_2"),
-                cleaned_data.get("recapture_pittag_id_3"),
-                cleaned_data.get("recapture_pittag_id_4"),
-            ]
-        )
+        is_recapture = self.initial.get("is_recapture", False)
 
-        # "Tagged by and/or tags read by" is mandatory for new turtle records,
-        # but remains optional for recaptures.
         if not is_recapture and not cleaned_data.get("tagged_by_id"):
             self.add_error(
                 "tagged_by_id",
