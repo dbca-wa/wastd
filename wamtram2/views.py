@@ -481,6 +481,7 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
                 elif tag_side == "R":
                     initial["recapture_right_tag_id"] = tag_id
             elif tag_type == "recapture_pit_tag":
+                initial["flipper_tag_check"] = TrtYesNo.objects.get(code="Y")
                 if tag_side == "L":
                     initial["recapture_pittag_id"] = tag_id
                 elif tag_side == "R":
