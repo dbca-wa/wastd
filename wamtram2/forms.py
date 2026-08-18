@@ -386,6 +386,13 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["sex"].required = True
         self.fields["clutch_completed"].required = True
 
+        is_recapture = self.initial.get("is_recapture", False)
+        
+        # "Tagged by and/or tags read by" is mandatory for new turtle
+        # records, but optional for recaptures.
+        if not is_recapture:
+            self.fields["tagged_by_id"].required = True
+
         self.fields["flipper_tag_check"].label = "Flipper tags present?"
         self.fields["pit_tag_check"].label = "PIT tags present?"
         self.fields["injury_check"].label = "Injury present?"
@@ -559,6 +566,37 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["tissue_type_2"].label = "Tissue Type 2"
         self.fields["sample_label_3"].label = "Sample Label 3"
         self.fields["tissue_type_3"].label = "Tissue Type 3"
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        # Entries created directly via "Create Entry" are treated as new turtles.
+        # Entries created from an existing flipper tag or PIT tag search are treated
+        # as recaptures and will have one or more recapture_* fields populated.
+        is_recapture = any(
+            [
+                cleaned_data.get("recapture_left_tag_id"),
+                cleaned_data.get("recapture_left_tag_id_2"),
+                cleaned_data.get("recapture_left_tag_id_3"),
+                cleaned_data.get("recapture_right_tag_id"),
+                cleaned_data.get("recapture_right_tag_id_2"),
+                cleaned_data.get("recapture_right_tag_id_3"),
+                cleaned_data.get("recapture_pittag_id"),
+                cleaned_data.get("recapture_pittag_id_2"),
+                cleaned_data.get("recapture_pittag_id_3"),
+                cleaned_data.get("recapture_pittag_id_4"),
+            ]
+        )
+
+        # "Tagged by and/or tags read by" is mandatory for new turtle records,
+        # but remains optional for recaptures.
+        if not is_recapture and not cleaned_data.get("tagged_by_id"):
+            self.add_error(
+                "tagged_by_id",
+                "Tagged by and/or tags read by is required for new turtle records.",
+            )
+
+        return cleaned_data
 
     # saves the people names as well as the person_id for use in MS Access front end
     def save(self, commit=True):

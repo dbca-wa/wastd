@@ -510,7 +510,7 @@
           <input
             type="text"
             id="search_tagged_by"
-            class="search-field form-control"
+            class="search-field form-control {% if form.tagged_by_id.field.required %}required-field{% endif %}"
             placeholder="Search tagged by and/or tags read by"
             value="{{ tagged_by_name }}"
           >
