@@ -482,6 +482,7 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
                 elif tag_side == "R":
                     initial["recapture_right_tag_id"] = tag_id
             elif tag_type == "recapture_pit_tag":
+                initial["pit_tag_check"] = TrtYesNo.objects.get(code="Y")
                 if tag_side == "L":
                     initial["recapture_pittag_id"] = tag_id
                 elif tag_side == "R":
@@ -1257,20 +1258,32 @@ class TurtleListView(LoginRequiredMixin, PaginateMixin, ListView):
         return context
 
     def get_queryset(self):
-        """
-        Retrieves the queryset of turtles to be displayed.
-
-        Returns:
-            QuerySet: The queryset of turtles.
-        """
         qs = super().get_queryset()
-        # General-purpose search uses the `q` parameter.
-        if "q" in self.request.GET and self.request.GET["q"]:
-            q = self.request.GET["q"]
-            qs = qs.filter(Q(pk__icontains=q) | Q(trttags__tag_id__icontains=q) | Q(trtpittags__pittag_id__icontains=q)).distinct()
+
+        q = self.request.GET.get("q")
+
+        if q:
+            #turtle id search
+            turtle_ids = set(
+                qs.filter(pk__icontains=q)
+                .values_list("pk", flat=True)
+            )
+            #flipper tag
+            turtle_ids.update(
+                qs.filter(
+                    trttags__tag_id__icontains=q
+                ).values_list("pk", flat=True)
+            )
+            #pit tag
+            turtle_ids.update(
+                qs.filter(
+                    trtpittags__pittag_id__icontains=q
+                ).values_list("pk", flat=True)
+            )
+
+            qs = qs.filter(pk__in=turtle_ids)
 
         return qs.order_by("pk")
-
 
 class TurtleDetailView(LoginRequiredMixin, DetailView):
     """
@@ -4691,6 +4704,13 @@ class ObservationManagementView(LoginRequiredMixin, SuperUserRequiredMixin, Temp
                         {"code": "E", "description": "Evening"},
                         {"code": "U", "description": "Unknown"},
                     ],
+                    "tissue_types": [
+                    {
+                    "tissue_type": tissue.tissue_type,
+                    "description": tissue.description,
+                    }
+                    for tissue in TrtTissueTypes.objects.all()
+                    ],
                     "places": TrtPlaces.objects.all(),
                     "activity_code_choices": TrtActivities.objects.all(),
                     "beach_position_code_choices": TrtBeachPositions.objects.all(),
@@ -4887,6 +4907,19 @@ class ObservationDataView(LoginRequiredMixin, SuperUserRequiredMixin, View):
             for measurement in observation.trtmeasurements_set.all()
         ]
 
+        samples = [
+            {
+                "sample_id": sample.sample_id,
+                "tissue_type": sample.tissue_type.tissue_type,
+                "tissue_type_description": sample.tissue_type.description,
+                "sample_label": sample.sample_label,
+                "comments": sample.comments,
+            }
+            for sample in TrtSamples.objects.filter(
+                observation_id=observation.observation_id
+            )
+        ]
+
         identification_types = [
             {"identification_type": type_obj.identification_type, "description": type_obj.description}
             for type_obj in TrtIdentificationTypes.objects.all()
@@ -4934,7 +4967,9 @@ class ObservationDataView(LoginRequiredMixin, SuperUserRequiredMixin, View):
             "identification_types": identification_types,
             "body_parts": body_parts,
             "damage_codes": damage_codes,
+            "samples": samples,
         }
+        
 
     def _filter_observations(self, request):
         """Filter observations based on request parameters"""
@@ -5578,8 +5613,17 @@ class TurtleManagementView(LoginRequiredMixin, SuperUserRequiredMixin, TemplateV
             ]
 
             observations = turtle.trtobservations_set.select_related("place_code", "activity_code").all()
-            observation_data = [
-                {
+            observation_data = []
+
+            for obs in observations:
+                entry = (
+                    TrtDataEntry.objects
+                    .select_related("interrupted")
+                    .filter(observation_id=obs)
+                    .first()
+                )
+
+                observation_data.append({
                     "observation_id": obs.pk,
                     "date_time": obs.observation_date.strftime("%Y-%m-%dT%H:%M"),
                     "observation_status": obs.observation_status,
@@ -5587,9 +5631,8 @@ class TurtleManagementView(LoginRequiredMixin, SuperUserRequiredMixin, TemplateV
                     "place": obs.place_code.get_full_name() if obs.place_code else "",
                     "nesting": str(obs.nesting),
                     "activity": str(obs.activity_code),
-                }
-                for obs in observations
-            ]
+                    "interrupted": str(entry.interrupted) if entry and entry.interrupted else "",
+                })
 
             samples = turtle.trtsamples_set.all()
             sample_data = [
@@ -5800,7 +5843,7 @@ class SamplesUpdateView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                 if sample_id:
                     # Update existing sample
                     TrtSamples.objects.filter(sample_id=sample_id).update(
-                        tissue_type=sample.get("tissue_type"),
+                        tissue_type_id=sample.get("tissue_type"),
                         sample_label=sample.get("sample_label"),
                         observation_id=sample.get("observation_id"),
                         comments=sample.get("comments"),
@@ -5809,7 +5852,7 @@ class SamplesUpdateView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                     # Create new sample
                     TrtSamples.objects.create(
                         turtle_id=turtle_id,
-                        tissue_type=sample.get("tissue_type"),
+                        tissue_type_id=sample.get("tissue_type"),
                         sample_label=sample.get("sample_label"),
                         observation_id=sample.get("observation_id"),
                         comments=sample.get("comments"),
@@ -5865,12 +5908,21 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
 
     def get_context_data(self, **kwargs):
         """Prepare all data for template context"""
+        preferred_order = ["Y", "N", "P", "U", "D", "O"]
+        alive_choices = sorted(
+            TrtYesNo.objects.all(),
+            key=lambda s: preferred_order.index(s.code)
+            if s.code in preferred_order
+            else 999,
+        )
         context = {
             "page_title": "Turtle Data Statistics - " + settings.SITE_TITLE,
             "locations": TrtLocations.objects.all().order_by("location_code"),
             "places": TrtPlaces.objects.all().order_by("place_code"),
             "species": TrtSpecies.objects.filter(hide_dataentry=False).order_by("species_code"),
             "sex_choices": [("F", "Female"), ("M", "Male"), ("I", "Indeterminate")],
+            "alive_choices": alive_choices,
+            "nesting_choices": [("Y", "Yes"), ("N", "No")],
         }
         selected_locations = self.request.GET.getlist("location")
         selected_places = self.request.GET.getlist("place")
@@ -5883,6 +5935,8 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                 "selected_places": selected_places,
                 "selected_sex": self.request.GET.get("sex"),
                 "selected_species": self.request.GET.get("species"),
+                "selected_nesting": self.request.GET.get("nesting"),
+                "selected_alive": self.request.GET.get("alive"),
                 "start_date": self.request.GET.get("start_date"),
                 "end_date": self.request.GET.get("end_date"),
             }
@@ -5918,7 +5972,19 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
 
                 if context["selected_species"]:
                     query = query.filter(turtle__species_code=context["selected_species"])
-
+                
+                if context["selected_alive"]:
+                    query = query.filter(
+                        alive__code=context["selected_alive"]
+                    )
+                if context["selected_nesting"] == "Y":
+                    query = query.filter(
+                        activity_code__nesting="Y"
+                    )
+                elif context["selected_nesting"] == "N":
+                    query = query.exclude(
+                        activity_code__nesting="Y"
+                    )
                 # Group by place and count unique turtles
                 results = (
                     query.values("place_code__place_code", "place_code__place_name")
@@ -5943,6 +6009,19 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                 if context["selected_species"]:
                     query = query.filter(species_code=context["selected_species"])
 
+                if context["selected_alive"]:
+                    query = query.filter(
+                        alive__code=context["selected_alive"]
+                    )
+                if context["selected_nesting"] == "Y":
+                    query = query.filter(
+                        activity_code__nesting="Y"
+                    )
+
+                elif context["selected_nesting"] == "N":
+                    query = query.exclude(
+                        activity_code__nesting="Y"
+                    )
                 # Split into two groups: with and without turtle_id
                 has_turtle_query = query.filter(turtle_id__isnull=False)
                 no_turtle_query = query.filter(turtle_id__isnull=True)
