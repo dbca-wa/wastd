@@ -122,13 +122,20 @@
             {% if request.user.is_staff or request.user.is_superuser or request.user.can_access_marine_wildlife %}
                 <p>
                     <a class="btn btn-primary btn-block"
+                        href="{% url 'observations:animalencounter-list' %}"
+                        title="Browse marine animal encounters">
+                        Browse marine animal encounters »
+                    </a>
+                </p>
+                <p>
+                    <a class="btn btn-primary btn-block"
                     href="{% url 'marine_mammal_incidents:incident_list' %}"
                     title="Curate and QA marine wildlife incidents">Browse marine mammal incidents »</a>
                 </p>
                 <p>
                     <a class="btn btn-primary btn-block"
                     href="{% url 'map' %}"
-                    title="Map Marine Wildlife Incidents">Marine mammal incidents map »</a>
+                    title="Map Marine Wildlife Incidents">Marine wildlife incidents map »</a>
                 </p>
             {% if request.user.is_staff %}
                 <p>
