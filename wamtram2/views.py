@@ -3870,6 +3870,10 @@ class TaggedStrandedTurtleReviewView(LoginRequiredMixin, UserPassesTestMixin, Te
        'dermochelys-coriacea',
        'cheloniidae-fam',
    ]
+   FLIPPER_OR_PIT_TAG_TYPES = [
+    "flipper-tag",
+    "pit-tag",
+    ]
    def test_func(self):
        return self.request.user.is_superuser
    def get_context_data(self, **kwargs):
@@ -3880,7 +3884,7 @@ class TaggedStrandedTurtleReviewView(LoginRequiredMixin, UserPassesTestMixin, Te
        encounters = AnimalEncounter.objects.filter(
            species__in=self.TURTLE_SPECIES,
            health__in=DEATH_STAGES,
-           observations__tagobservation__isnull=False,
+           observations__tagobservation__tag_type__in=self.FLIPPER_OR_PIT_TAG_TYPES,
        ).select_related('site', 'area', 'observer', 'reporter').distinct().order_by('-when')
        if q:
            encounters = encounters.filter(
@@ -3936,6 +3940,7 @@ class TaggedStrandedTurtleReviewView(LoginRequiredMixin, UserPassesTestMixin, Te
            return tag_observations_by_encounter
        tag_observations = AnimalTagObservation.objects.filter(
            encounter_id__in=encounter_ids,
+           tag_type__in=self.FLIPPER_OR_PIT_TAG_TYPES,
        ).order_by('encounter_id', 'tag_type', 'name')
        for tag_observation in tag_observations:
            tag_observations_by_encounter.setdefault(tag_observation.encounter_id, []).append(tag_observation)
