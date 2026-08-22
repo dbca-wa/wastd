@@ -749,15 +749,15 @@ wheels = [
 
 [[package]]
 name = "django-polymorphic"
-version = "4.11.5"
+version = "4.11.7"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "django" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/a7/1c/48e4c076942d57ad0d6d5033e396d3efc12bac0b19b248891d858bb3e6fd/django_polymorphic-4.11.5.tar.gz", hash = "sha256:9a6fe66fab12cfe06aac81942d14670c6b0204aebd30ce9fb58fb53213c613eb", size = 61789, upload-time = "2026-06-02T15:51:50.912Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/13/d2/2760062d571e534153e5e842ee56660b0ea87c0da93c2dd87a4c44becbf0/django_polymorphic-4.11.7.tar.gz", hash = "sha256:9d616e9e2870efd62a5ee387294830c80935a31786e50da137bd76668dd5437d", size = 62105, upload-time = "2026-08-01T06:40:26.796Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/b7/44/efac024b4d818e76bb13e0ea1cfebb86c111fa5a40c0c700c748d6a3d8d8/django_polymorphic-4.11.5-py3-none-any.whl", hash = "sha256:8c65b5c109c057c51e059197b01765dd5e096b3fd393ee3038bffc294681b3be", size = 79095, upload-time = "2026-06-02T15:51:49.371Z" },
+    { url = "https://files.pythonhosted.org/packages/9e/db/544272a8852d47fe5a6e7b29b4dd8050e89fb674dec447c93c5284c5a427/django_polymorphic-4.11.7-py3-none-any.whl", hash = "sha256:23ee903f79b9c4ebd36fee952f955d80c3d51f3eee9fa23639c4bafe3be616a2", size = 79239, upload-time = "2026-08-01T06:40:25.431Z" },
 ]
 
 [[package]]
@@ -1920,7 +1920,7 @@ requires-dist = [
     { name = "django-leaflet", specifier = "==0.33.0" },
     { name = "django-nested-admin", specifier = "==4.1.6" },
     { name = "django-phonenumber-field", specifier = "==8.4.0" },
-    { name = "django-polymorphic", specifier = "==4.11.5" },
+    { name = "django-polymorphic", specifier = "==4.11.7" },
     { name = "django-reversion", specifier = "==6.2.0" },
     { name = "django-select2", specifier = "==8.4.1" },
     { name = "django-storages", extras = ["azure"], specifier = "==1.14.6" },
