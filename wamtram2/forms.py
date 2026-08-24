@@ -373,7 +373,7 @@ class TrtDataEntryForm(forms.ModelForm):
             output_field=IntegerField(),
         )
 
-        old_tag_states = TrtTagStates.objects.filter(tag_state__in=old_tag_state_order).order_by(old_tag_state_order_case)
+        old_tag_states = TrtTagStates.objects.filter(tag_state__in=old_tag_state_order).order_by(tag_state_order_case)
 
         self.fields["recapture_left_tag_state"].queryset = old_tag_states
         self.fields["recapture_right_tag_state"].queryset = old_tag_states
@@ -398,19 +398,19 @@ class TrtDataEntryForm(forms.ModelForm):
             "recapture_pittag_id_3",
             "recapture_pittag_id_4",
         )
-        is_recapture = (
-            bool(self.initial.get("is_recapture"))
-            or bool(self.initial.get("turtle_id"))
-            or bool(self.instance.turtle_id_id)
-            or any(getattr(self.instance, f"{field}_id", None) for field in recapture_fields)
+        # Check all possible sources of recaptured tag values: the current POST,
+        # tag-search initial data, and persisted values when editing an entry.
+        has_recaptured_tag = any(
+            self.data.get(field)
+            or self.initial.get(field)
+            or getattr(self.instance, f"{field}_id", None)
+            for field in recapture_fields
         )
 
-        # "Tagged by and/or tags read by" is mandatory for new turtle
-        # records, but optional for recaptures.
         tagged_by_field = self.fields["tagged_by_id"]
-        tagged_by_field.required = not is_recapture
+        tagged_by_field.required = not has_recaptured_tag
         tagged_by_field.error_messages["required"] = (
-            "Tagged by and/or tags read by is required for new turtle records."
+            "Tagged by and/or tags read by is required when no recaptured tag is present."
         )
 
         self.fields["flipper_tag_check"].label = "Flipper tags present?"
@@ -725,7 +725,7 @@ class BatchesCodeForm(forms.ModelForm):
         model = TrtEntryBatches
         fields = ["batches_code", "comments", "template", "entered_person_id"]
         labels = {
-            "batches_code": "Batches Code",
+            "batches_code": "Batch Code",
             "comments": "Comments",
             "template": "Template",
             "entered_person_id": "Team Leader Name",
