@@ -373,7 +373,7 @@ class TrtDataEntryForm(forms.ModelForm):
             output_field=IntegerField(),
         )
 
-        old_tag_states = TrtTagStates.objects.filter(tag_state__in=old_tag_state_order).order_by(tag_state_order_case)
+        old_tag_states = TrtTagStates.objects.filter(tag_state__in=old_tag_state_order).order_by(old_tag_state_order_case)
 
         self.fields["recapture_left_tag_state"].queryset = old_tag_states
         self.fields["recapture_right_tag_state"].queryset = old_tag_states
@@ -725,7 +725,7 @@ class BatchesCodeForm(forms.ModelForm):
         model = TrtEntryBatches
         fields = ["batches_code", "comments", "template", "entered_person_id"]
         labels = {
-            "batches_code": "Batch Code",
+            "batches_code": "Batches Code",
             "comments": "Comments",
             "template": "Template",
             "entered_person_id": "Team Leader Name",
