@@ -1190,7 +1190,15 @@
     const cookieTagSide = "{{ cookie_tag_side }}";
     const entryId = "{{ entry_id }}";
     const templateId = "{{ selected_template }}";
+    // Clear the hidden person ID when the tagged-by text is manually changed.
+    const taggedBySearch = document.getElementById('search_tagged_by');
+    const taggedById = document.getElementById('id_tagged_by_id');
 
+    if (taggedBySearch && taggedById) {
+        taggedBySearch.addEventListener('input', function() {
+            taggedById.value = '';
+        });
+    }
 
     // Function to set tag and validate
     function setTagAndValidate(fieldId, tagId) {

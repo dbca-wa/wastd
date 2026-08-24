@@ -406,6 +406,10 @@ class TrtDataEntryForm(forms.ModelForm):
             or getattr(self.instance, f"{field}_id", None)
             for field in recapture_fields
         )
+        is_recapture = (
+            bool(self.initial.get("is_recapture"))
+            or has_recaptured_tag
+            )
 
         tagged_by_field = self.fields["tagged_by_id"]
         tagged_by_field.required = not has_recaptured_tag
@@ -586,19 +590,6 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["tissue_type_2"].label = "Tissue Type 2"
         self.fields["sample_label_3"].label = "Sample Label 3"
         self.fields["tissue_type_3"].label = "Tissue Type 3"
-
-    def clean(self):
-        cleaned_data = super().clean()
-
-        is_recapture = self.initial.get("is_recapture", False)
-
-        if not is_recapture and not cleaned_data.get("tagged_by_id"):
-            self.add_error(
-                "tagged_by_id",
-                "Tagged by and/or tags read by is required for new turtle records.",
-            )
-
-        return cleaned_data
 
     # saves the people names as well as the person_id for use in MS Access front end
     def save(self, commit=True):
