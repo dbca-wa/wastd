@@ -386,6 +386,7 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["sex"].required = True
         self.fields["clutch_completed"].required = True
 
+<<<<<<< HEAD
         recapture_fields = (
             "recapture_left_tag_id",
             "recapture_left_tag_id_2",
@@ -412,6 +413,14 @@ class TrtDataEntryForm(forms.ModelForm):
         tagged_by_field.error_messages["required"] = (
             "Tagged by and/or tags read by is required when no recaptured tag is present."
         )
+=======
+        is_recapture = self.initial.get("is_recapture", False)
+        
+        # "Tagged by and/or tags read by" is mandatory for new turtle
+        # records, but optional for recaptures.
+        if not is_recapture:
+            self.fields["tagged_by_id"].required = True
+>>>>>>> origin/fix/T034
 
         self.fields["flipper_tag_check"].label = "Flipper tags present?"
         self.fields["pit_tag_check"].label = "PIT tags present?"
@@ -586,6 +595,19 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["tissue_type_2"].label = "Tissue Type 2"
         self.fields["sample_label_3"].label = "Sample Label 3"
         self.fields["tissue_type_3"].label = "Tissue Type 3"
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        is_recapture = self.initial.get("is_recapture", False)
+
+        if not is_recapture and not cleaned_data.get("tagged_by_id"):
+            self.add_error(
+                "tagged_by_id",
+                "Tagged by and/or tags read by is required for new turtle records.",
+            )
+
+        return cleaned_data
 
     # saves the people names as well as the person_id for use in MS Access front end
     def save(self, commit=True):

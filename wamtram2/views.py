@@ -474,7 +474,7 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         initial["is_recapture"] = bool(tag_id) and tag_type in (
             "recapture_tag",
             "recapture_pit_tag",
-            )
+        )
 
         selected_template = self.request.COOKIES.get(f"{cookies_key_prefix}_selected_template")
 
