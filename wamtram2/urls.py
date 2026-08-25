@@ -80,4 +80,5 @@ urlpatterns = [
     path("batch-create-batches/", views.BatchCreateBatchesView.as_view(), name="batch_create_batches"),
     path("batches-review/", views.BatchesReviewView.as_view(), name="batches_review"),
     path( "search-issue-locations/", views.search_issue_locations, name="search-issue-locations"),
+    path("curation/tagged-stranded-turtles/",views.TaggedStrandedTurtleReviewView.as_view(),name='tagged_stranded_turtle_review'),
 ]  
