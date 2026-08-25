@@ -1,4 +1,5 @@
 import threading
+
 from django.contrib.auth.views import redirect_to_login
 from django.core.exceptions import PermissionDenied
 
@@ -7,6 +8,7 @@ _audit_request_state = threading.local()
 
 def get_current_audit_request():
     return getattr(_audit_request_state, "request", None)
+
 
 class ModuleAccessMiddleware:
     """Gate top-level business modules by per-user module access flags."""

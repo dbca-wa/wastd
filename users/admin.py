@@ -1,9 +1,11 @@
+from datetime import timedelta
+
 from django import forms
-from django.contrib import admin,messages
+from django.contrib import admin, messages
 from django.contrib.auth.admin import UserAdmin as AuthUserAdmin
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm
-from datetime import timedelta
 from django.utils import timezone
+
 from .models import AuditLog, User, Organisation
 
 
@@ -120,8 +122,8 @@ class UserAdmin(AuthUserAdmin):
             else:
                 return [f.name for f in self.model._meta.fields]
 
-@admin.action(description="Delete all audit logs older than 1 year")
 
+@admin.action(description="Delete all audit logs older than 1 year")
 def delete_audit_logs_older_than_one_year(modeladmin, request, queryset):
     cutoff = timezone.now() - timedelta(days=365)
     deleted_count, _ = AuditLog.objects.filter(created_at__lt=cutoff).delete()
@@ -134,7 +136,6 @@ def delete_audit_logs_older_than_one_year(modeladmin, request, queryset):
 
 @admin.register(AuditLog)
 class AuditLogAdmin(admin.ModelAdmin):
-
     list_display = (
         "created_at",
         "action",
@@ -145,7 +146,6 @@ class AuditLogAdmin(admin.ModelAdmin):
         "object_repr",
         "path",
     )
-
     list_filter = ("action", "app_label", "model_name", "created_at")
     search_fields = ("actor__username", "actor__email", "object_pk", "object_repr", "path")
     readonly_fields = (
@@ -160,7 +160,6 @@ class AuditLogAdmin(admin.ModelAdmin):
         "method",
         "remote_addr",
     )
-
     date_hierarchy = "created_at"
     ordering = ("-created_at",)
     list_per_page = 50
