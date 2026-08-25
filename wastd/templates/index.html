@@ -49,7 +49,7 @@
         {% if request.user.is_authenticated and not request.user.is_staff and not request.user.is_superuser and not request.user.can_access_tracks_nests and not request.user.can_access_tagging and not request.user.can_access_marine_wildlife %}
         <div class="col-12">
             <div class="alert alert-info">
-                Your account is active, but no operational module access has been assigned yet. Please contact an administrator to request access.
+                Your account is active, but no operational module access has been assigned yet. Please contact our administrator (turtles@dbca.wa.gov.au) to request access.
             </div>
         </div>
         {% endif %}
