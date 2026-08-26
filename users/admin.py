@@ -120,7 +120,11 @@ class UserAdmin(AuthUserAdmin):
             else:
                 return [f.name for f in self.model._meta.fields]
 
-@admin.action(description="Delete all audit logs older than 1 year")
+
+@admin.action(
+    description="Delete all audit logs older than 1 year",
+    permissions=["delete"],
+)
 
 def delete_audit_logs_older_than_one_year(modeladmin, request, queryset):
     cutoff = timezone.now() - timedelta(days=365)
@@ -173,7 +177,15 @@ class AuditLogAdmin(admin.ModelAdmin):
         return False
 
     def has_delete_permission(self, request, obj=None):
-        return request.user.is_superuser
+        if not request.user.is_superuser:
+            return False
+
+        # Changelist / custom action permission check
+        if obj is None:
+            return True
+
+        cutoff = timezone.now() - timedelta(days=365)
+        return obj.created_at < cutoff
 
     def get_actions(self, request):
         actions = super().get_actions(request)
