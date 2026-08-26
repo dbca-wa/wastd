@@ -386,6 +386,37 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["sex"].required = True
         self.fields["clutch_completed"].required = True
 
+        recapture_fields = (
+            "recapture_left_tag_id",
+            "recapture_left_tag_id_2",
+            "recapture_left_tag_id_3",
+            "recapture_right_tag_id",
+            "recapture_right_tag_id_2",
+            "recapture_right_tag_id_3",
+            "recapture_pittag_id",
+            "recapture_pittag_id_2",
+            "recapture_pittag_id_3",
+            "recapture_pittag_id_4",
+        )
+        # Check all possible sources of recaptured tag values: the current POST,
+        # tag-search initial data, and persisted values when editing an entry.
+        has_recaptured_tag = any(
+            self.data.get(field)
+            or self.initial.get(field)
+            or getattr(self.instance, f"{field}_id", None)
+            for field in recapture_fields
+        )
+        is_recapture = (
+            bool(self.initial.get("is_recapture"))
+            or has_recaptured_tag
+            )
+
+        tagged_by_field = self.fields["tagged_by_id"]
+        tagged_by_field.required = not has_recaptured_tag
+        tagged_by_field.error_messages["required"] = (
+            "Tagged by and/or tags read by is required when no recaptured tag is present."
+        )
+
         self.fields["flipper_tag_check"].label = "Flipper tags present?"
         self.fields["pit_tag_check"].label = "PIT tags present?"
         self.fields["injury_check"].label = "Injury present?"
