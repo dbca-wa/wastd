@@ -1,12 +1,11 @@
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser
-from django.db import models
+from django.db import DatabaseError, models
+from django.db.models.signals import pre_delete
+from django.dispatch import receiver
 from django.urls import reverse
 from django.utils import timezone
 from phonenumber_field.modelfields import PhoneNumberField
-from django.db.models.signals import pre_delete
-from django.dispatch import receiver
-from django.conf import settings
-from django.db import DatabaseError
 
 
 class Organisation(models.Model):
@@ -179,6 +178,7 @@ class User(AbstractUser):
     @classmethod
     def list_url(cls):
         return reverse("{}:{}-list".format(cls._meta.app_label, cls._meta.model_name))
+
 
 class AuditLog(models.Model):
     """Minimal server-side audit trail for destructive actions."""
