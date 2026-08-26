@@ -122,16 +122,12 @@ class UserAdmin(AuthUserAdmin):
             else:
                 return [f.name for f in self.model._meta.fields]
 
-<<<<<<< HEAD
 
 @admin.action(
     description="Delete all audit logs older than 1 year",
     permissions=["delete"],
 )
-=======
->>>>>>> origin/fix/T074
 
-@admin.action(description="Delete all audit logs older than 1 year")
 def delete_audit_logs_older_than_one_year(modeladmin, request, queryset):
     cutoff = timezone.now() - timedelta(days=365)
     deleted_count, _ = AuditLog.objects.filter(created_at__lt=cutoff).delete()
