@@ -1963,10 +1963,10 @@ def search_places(request):
         location_code = location_code.rstrip(")")
         places = TrtPlaces.objects.filter(
             place_name__icontains=place_name.strip(), location_code__location_name__icontains=location_code.strip()
-        ).values("place_code", "place_name", "location_code__location_name")[:10]
+        ).values("place_code", "place_name", "location_code__location_name","latitude","longitude",)[:10]
     else:
         places = TrtPlaces.objects.filter(Q(place_name__icontains=query) | Q(location_code__location_name__icontains=query)).values(
-            "place_code", "place_name", "location_code__location_name"
+            "place_code", "place_name", "location_code__location_name","latitude","longitude"
         )[:10]
 
     for place in places:
