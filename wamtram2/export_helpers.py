@@ -158,6 +158,17 @@ def get_extra_field_values(
             getattr(location, "location_code", ""),
             getattr(location, "location_name", ""),
         ]
+    elif field_name == "entered_by_id":
+        person = getattr(entry, "entered_by_id", None)
+
+        return [
+            getattr(entry, "entered_by_id_id", "") or "",
+            (
+                f"{person.first_name} {person.surname}".strip()
+                if person
+                else ""
+            ),
+        ]
 
     elif field_name == "activity_code":
         return [
