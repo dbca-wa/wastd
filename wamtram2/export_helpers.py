@@ -273,31 +273,55 @@ def get_extra_field_values(
             if value:
                 pit_tags.append(str(value))
 
+        # return [
+        #     getattr(entry, "other_identification", ""),
+
+        #     flipper_tags[0]
+        #     if len(flipper_tags) > 0
+        #     else "",
+
+        #     flipper_tags[1]
+        #     if len(flipper_tags) > 1
+        #     else "",
+
+        #     flipper_tags[2]
+        #     if len(flipper_tags) > 2
+        #     else "",
+
+        #     flipper_tags[3]
+        #     if len(flipper_tags) > 3
+        #     else "",
+
+        #     "; ".join(flipper_tags),
+
+        #     pit_tags[0]
+        #     if pit_tags
+        #     else "",
+
+        #     "; ".join(pit_tags),
+        # ]
         return [
             getattr(entry, "other_identification", ""),
 
-            flipper_tags[0]
-            if len(flipper_tags) > 0
-            else "",
+            # TAG_1
+            getattr(entry, "new_left_tag_id_id", "") or "",
 
-            flipper_tags[1]
-            if len(flipper_tags) > 1
-            else "",
+            # TAG_2
+            getattr(entry, "new_right_tag_id_id", "") or "",
 
-            flipper_tags[2]
-            if len(flipper_tags) > 2
-            else "",
+            # TAG_3
+            getattr(entry, "recapture_left_tag_id_id", "") or "",
 
-            flipper_tags[3]
-            if len(flipper_tags) > 3
-            else "",
+            # TAG_4
+            getattr(entry, "recapture_right_tag_id_id", "") or "",
 
+            # ALL_FLIPPER_TAGS
             "; ".join(flipper_tags),
 
-            pit_tags[0]
-            if pit_tags
-            else "",
+            # PIT_TAGS
+            pit_tags[0] if pit_tags else "",
 
+            # ALL_PIT_TAGS
             "; ".join(pit_tags),
         ]
 
@@ -314,7 +338,7 @@ def get_lookup_values(
 ):
     if field_name.startswith("measurement_type_"):
         mt = measurement_type_dict.get(
-            getattr(entry, field_name)
+            getattr(entry, f"{field_name}_id")
         )
 
         return [
@@ -323,26 +347,27 @@ def get_lookup_values(
         ]
 
     elif field_name in BODY_PART_FIELDS:
+        value = getattr(entry, f"{field_name}_id")
+
         return [
             getattr(
-                body_part_dict.get(
-                    getattr(entry, field_name)
-                ),
+                body_part_dict.get(value),
                 "description",
                 "",
             )
         ]
 
     elif field_name in DAMAGE_CODE_FIELDS:
+        value = getattr(entry, f"{field_name}_id")
+
         return [
             getattr(
-                damage_code_dict.get(
-                    getattr(entry, field_name)
-                ),
+                damage_code_dict.get(value),
                 "description",
                 "",
             )
         ]
+
 
     elif field_name in TISSUE_FIELDS:
         return [
@@ -356,22 +381,22 @@ def get_lookup_values(
         ]
 
     elif field_name in TAG_STATE_FIELDS:
+        value = getattr(entry, f"{field_name}_id")
+
         return [
             getattr(
-                tag_state_dict.get(
-                    getattr(entry, field_name)
-                ),
+                tag_state_dict.get(value),
                 "description",
                 "",
             )
         ]
 
     elif field_name in DAMAGE_FIELDS:
+        value = getattr(entry, f"{field_name}_id")
+
         return [
             getattr(
-                damage_code_dict.get(
-                    getattr(entry, field_name)
-                ),
+                damage_code_dict.get(value),
                 "description",
                 "",
             )

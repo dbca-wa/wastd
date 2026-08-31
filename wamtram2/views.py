@@ -2623,7 +2623,7 @@ class ExportDataView(LoginRequiredMixin, View):
                             if entry_type == "field" and name == "data_entry_id":
 
                                 row.append(
-                                format_export_value(entry.data_entry_id)
+                                    format_export_value(entry.data_entry_id)
                                 )
                             
 

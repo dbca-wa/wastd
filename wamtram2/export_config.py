@@ -144,7 +144,7 @@ PERSON_FIELDS = {
     "measured_recorded_by_id",
     "tagged_by_id",
     "recorded_by_id",
-    "entered_by_id",
+    #"entered_by_id",
 }
 
 BODY_PART_FIELDS = {
