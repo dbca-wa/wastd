@@ -151,12 +151,23 @@ def get_extra_field_values(
             getattr(entry.species_code, "common_name", "")
         ]
 
+    # elif field_name == "place_code":
+    #     place = entry.place_code
+    #     location = getattr(place, "location_code", None)
+
+    #     return [
+    #         getattr(place, "place_name", ""),
+    #         getattr(location, "location_code", ""),
+    #         getattr(location, "location_code", ""),
+    #         getattr(location, "location_name", ""),
+    #     ]
     elif field_name == "place_code":
         place = entry.place_code
         location = getattr(place, "location_code", None)
-
+        
         return [
-            getattr(place, "place_name", ""),
+            getattr(place, "place_name", ""), # PLACE_DESCRIPTION
+            getattr(place, "place_name", ""), # PLACE_NAME
             getattr(location, "location_code", ""),
             getattr(location, "location_code", ""),
             getattr(location, "location_name", ""),

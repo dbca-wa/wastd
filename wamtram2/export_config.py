@@ -33,6 +33,7 @@ EXTRA_HEADERS = {
     ],
 
     "place_code": [
+        "PLACE_DESCRIPTION",
         "PLACE_NAME",
         "LOCATION_CODE",
         "OBSERVED_LOCATION_CODE",
