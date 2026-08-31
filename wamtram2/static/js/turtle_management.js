@@ -403,13 +403,13 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <input type="text" class="form-control" name="observation_status" value="${obs.observation_status || ''}"  readonly>
                                 </div>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-1">
                                 <div class="form-group">
                                     <label>Alive</label>
                                     <input type="text" class="form-control" name="alive" value="${obs.alive || ''}"  readonly>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <div class="form-group">
                                     <label>Place</label>
                                     <input type="text" class="form-control" name="place" value="${obs.place || ''}"  readonly>
@@ -419,6 +419,16 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <div class="form-group">
                                     <label>Activity</label>
                                     <input type="text" class="form-control" name="activity" value="${obs.activity || ''}"  readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label>Interrupted by nesting team</label>
+                                    <input type="text"
+                                        class="form-control"
+                                        name="interrupted"
+                                        value="${obs.interrupted || ''}"
+                                        readonly>
                                 </div>
                             </div>
                         </div>
@@ -637,6 +647,29 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+    const searchInputs = document.querySelectorAll(
+    '#turtleIDSearch, #flipperTagSearch, #pitTagSearch, #otherIdentificationSearch'
+    );
+
+    searchInputs.forEach(input => {
+    input.addEventListener('keydown', function(event) {
+        if (event.key !== 'Enter') {
+            return;
+        }
+
+        event.preventDefault();
+
+        let searchType = this.id.replace('Search', '').toLowerCase();
+        searchType = searchTypeMapping[searchType] || searchType;
+        const searchValue = this.value.trim();
+
+        if (searchValue) {
+            handleSearch(searchType, searchValue);
+        }
+    });
+    });
+
 
     if (saveButton) {
         saveButton.addEventListener('click', function() {
@@ -1020,7 +1053,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const container = document.getElementById('sampleContainer');
         const clone = template.content.cloneNode(true);
         
-        // 填充组织类型下拉框
+        
         const tissueTypeSelect = clone.querySelector('[name="tissue_type"]');
         const tissueTypes = JSON.parse(document.getElementById('tissue-types-data').textContent);
         tissueTypes.forEach(type => {
@@ -1030,7 +1063,6 @@ document.addEventListener('DOMContentLoaded', function() {
             tissueTypeSelect.appendChild(option);
         });
         
-        // 添加删除按钮事件监听器
         clone.querySelector('.delete-sample').addEventListener('click', function() {
             this.closest('.sample-card').remove();
         });
@@ -1199,11 +1231,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
-
-    // Load tissue types
-    function loadTissueTypes() {
-        return JSON.parse(document.getElementById('tissue-types-data').textContent);
-    }
 
     // Load document types
     function loadDocumentTypes() {

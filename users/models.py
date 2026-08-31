@@ -1,5 +1,8 @@
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser
-from django.db import models
+from django.db import DatabaseError, models
+from django.db.models.signals import pre_delete
+from django.dispatch import receiver
 from django.urls import reverse
 from django.utils import timezone
 from phonenumber_field.modelfields import PhoneNumberField
@@ -175,3 +178,78 @@ class User(AbstractUser):
     @classmethod
     def list_url(cls):
         return reverse("{}:{}-list".format(cls._meta.app_label, cls._meta.model_name))
+
+
+class AuditLog(models.Model):
+    """Minimal server-side audit trail for destructive actions."""
+
+    ACTION_DELETE = "DELETE"
+
+    action = models.CharField(max_length=20, db_index=True)
+    app_label = models.CharField(max_length=100, db_index=True)
+    model_name = models.CharField(max_length=100, db_index=True)
+    object_pk = models.TextField(blank=True)
+    object_repr = models.TextField(blank=True)
+    actor = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="audit_logs",
+    )
+    path = models.TextField(blank=True)
+    method = models.CharField(max_length=10, blank=True)
+    remote_addr = models.GenericIPAddressField(blank=True, null=True)
+    created_at = models.DateTimeField(default=timezone.now, db_index=True)
+
+    class Meta:
+        ordering = ("-created_at",)
+        verbose_name = "Audit log"
+        verbose_name_plural = "Audit logs"
+
+    def __str__(self):
+        return f"{self.created_at:%Y-%m-%d %H:%M:%S} {self.action} {self.app_label}.{self.model_name} {self.object_pk}"
+
+
+@receiver(pre_delete)
+def log_model_delete(sender, instance, **kwargs):
+    if sender is AuditLog:
+        return
+    if sender._meta.app_label == "sessions" and sender._meta.model_name == "session":
+        return
+    request = None
+    try:
+        from .middleware import get_current_audit_request
+
+        request = get_current_audit_request()
+    except Exception:
+        request = None
+
+    actor = None
+    if request and getattr(request, "user", None) and request.user.is_authenticated:
+        actor = request.user
+
+    try:
+        AuditLog.objects.create(
+            action=AuditLog.ACTION_DELETE,
+            app_label=instance._meta.app_label,
+            model_name=instance._meta.model_name,
+            object_pk=str(instance.pk or ""),
+            object_repr=str(instance),
+            actor=actor,
+            path=request.get_full_path() if request else "",
+            method=request.method if request else "",
+            remote_addr=_get_remote_addr(request),
+        )
+    except DatabaseError:
+        # Do not block the actual delete if the audit table has not been migrated yet.
+        return
+
+
+def _get_remote_addr(request):
+    if not request:
+        return None
+    forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
+    if forwarded_for:
+        return forwarded_for.split(",")[0].strip()
+    return request.META.get("REMOTE_ADDR")

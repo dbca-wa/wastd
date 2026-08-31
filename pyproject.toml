@@ -1,12 +1,13 @@
 [project]
 name = "wastd"
-version = "2.3.3"
+version = "2.3.7"
 description = "Western Australian Sea Turtles Database"
 authors = [
   { name = "Florian Mayer", email = "florian.mayer@dbca.wa.gov.au" },
   { name = "Ashley Felton", email = "ashley.felton@dbca.wa.gov.au" },
   { name = "Evan Hallein", email = "evan.hallein@dbca.wa.gov.au" },
   { name = "Rick Wang", email = "rick.wang@dbca.wa.gov.au" },
+  { name = "Liz Huangfu", email = "liz.huangfu@dbca.wa.gov.au" },
 ]
 requires-python = ">=3.13,<4"
 readme = "README.md"
