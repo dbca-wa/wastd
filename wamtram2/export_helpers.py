@@ -43,6 +43,9 @@ def build_export_headers(
             field.name,
             field.name.upper(),
         )
+        # ENTRY_ID uses the same value as DATA_ENTRY_ID.
+        if entry_type == "field" and field.name == "data_entry_id":
+            headers.append("ENTRY_ID")
 
         headers.append(header)
 

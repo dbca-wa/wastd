@@ -2526,7 +2526,14 @@ class ExportDataView(LoginRequiredMixin, View):
 
                         for field in model_meta.fields:
                             name = field.name
+                            
+                            # ENTRY_ID uses the same value as DATA_ENTRY_ID.
+                            if entry_type == "field" and name == "data_entry_id":
 
+                                row.append(
+                                format_export_value(entry.data_entry_id)
+                                )
+                            
                             value = get_export_field_value(
                                 entry,
                                 field,
@@ -2611,6 +2618,14 @@ class ExportDataView(LoginRequiredMixin, View):
                         row = []
                         for field in model_meta.fields:
                             name = field.name
+
+                            # ENTRY_ID uses the same value as DATA_ENTRY_ID.
+                            if entry_type == "field" and name == "data_entry_id":
+
+                                row.append(
+                                format_export_value(entry.data_entry_id)
+                                )
+                            
 
                             value = get_export_field_value(
                                 entry,
