@@ -151,16 +151,6 @@ def get_extra_field_values(
             getattr(entry.species_code, "common_name", "")
         ]
 
-    # elif field_name == "place_code":
-    #     place = entry.place_code
-    #     location = getattr(place, "location_code", None)
-
-    #     return [
-    #         getattr(place, "place_name", ""),
-    #         getattr(location, "location_code", ""),
-    #         getattr(location, "location_code", ""),
-    #         getattr(location, "location_name", ""),
-    #     ]
     elif field_name == "place_code":
         place = entry.place_code
         location = getattr(place, "location_code", None)
@@ -273,33 +263,6 @@ def get_extra_field_values(
             if value:
                 pit_tags.append(str(value))
 
-        # return [
-        #     getattr(entry, "other_identification", ""),
-
-        #     flipper_tags[0]
-        #     if len(flipper_tags) > 0
-        #     else "",
-
-        #     flipper_tags[1]
-        #     if len(flipper_tags) > 1
-        #     else "",
-
-        #     flipper_tags[2]
-        #     if len(flipper_tags) > 2
-        #     else "",
-
-        #     flipper_tags[3]
-        #     if len(flipper_tags) > 3
-        #     else "",
-
-        #     "; ".join(flipper_tags),
-
-        #     pit_tags[0]
-        #     if pit_tags
-        #     else "",
-
-        #     "; ".join(pit_tags),
-        # ]
         return [
             getattr(entry, "other_identification", ""),
 
@@ -702,6 +665,39 @@ def get_processed_export_row(entry, context):
     tag_details = [_format_recorded_tag(tag) for tag in recorded_tags]
     pit_tag_details = [_format_recorded_pit_tag(tag) for tag in recorded_pit_tags]
 
+    new_left_tags = []
+    new_right_tags = []
+    existing_left_tags = []
+    existing_right_tags = []
+
+    for tag in recorded_tags:
+        tag_value = _tag_value(tag)
+        tag_state = _safe_related(tag, "tag_state")
+        side = _attr(tag, "side")
+
+        if not tag_value or not tag_state:
+            continue
+
+        # Legacy Observation exports treat "#" as an existing tag,
+        # despite NEW_TAG_LIST being set in TRT_TAG_STATES.
+        if _raw_fk(tag, "tag_state") == "#":
+            if side == "L":
+                existing_left_tags.append(tag_value)
+            elif side == "R":
+                existing_right_tags.append(tag_value)
+            continue
+
+        if tag_state.existing_tag_list:
+            if side == "L":
+                existing_left_tags.append(tag_value)
+            elif side == "R":
+                existing_right_tags.append(tag_value)
+        elif tag_state.new_tag_list:
+            if side == "L":
+                new_left_tags.append(tag_value)
+            elif side == "R":
+                new_right_tags.append(tag_value)
+                        
     data_entry_id = (
         data_entry.data_entry_id
         if data_entry
@@ -745,7 +741,10 @@ def get_processed_export_row(entry, context):
     "OBSERVATION_DATE_OLD": _attr(observation, "observation_date_old"),
     "ALIVE": _raw_fk(observation, "alive"),
 
-    "ENTRY_ID": "",
+    
+    "ENTRY_ID": (
+        de.data_entry_id if de else ""
+    ),
 
     "DATA_ENTRY_ID": (
         de.data_entry_id if de else ""
@@ -1087,10 +1086,17 @@ def get_processed_export_row(entry, context):
         for i in identifications
     ),
 
-    "TAG_1": _list_item(flipper_tag_ids, 0),
-    "TAG_2": _list_item(flipper_tag_ids, 1),
-    "TAG_3": _list_item(flipper_tag_ids, 2),
-    "TAG_4": _list_item(flipper_tag_ids, 3),
+    # "TAG_1": _list_item(flipper_tag_ids, 0),
+    # "TAG_2": _list_item(flipper_tag_ids, 1),
+    # "TAG_3": _list_item(flipper_tag_ids, 2),
+    # "TAG_4": _list_item(flipper_tag_ids, 3),
+
+    # Match the legacy Observation mapping: new tags in TAG_1/TAG_2
+    # and existing tags in TAG_3/TAG_4, grouped by side.
+    "TAG_1": ", ".join(new_left_tags),
+    "TAG_2": ", ".join(new_right_tags),
+    "TAG_3": ", ".join(existing_left_tags),
+    "TAG_4": ", ".join(existing_right_tags),
 
     "ALL_FLIPPER_TAGS": _join(flipper_tag_ids),
     "FLIPPER_TAG_DETAILS": _join(tag_details),
