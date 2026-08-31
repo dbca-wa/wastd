@@ -1,8 +1,9 @@
 import csv
 import json
 import operator
+import re
 import traceback
-from datetime import datetime, date, time, timezone as datetime_timezone
+from datetime import date, datetime, time, timedelta, timezone as datetime_timezone
 from functools import reduce
 
 import pandas as pd
@@ -87,6 +88,7 @@ from .export_config import (
     DAMAGE_FIELDS,
     PROCESSED_EXPORT_HEADERS,
 )
+
 from .export_helpers import (
     build_export_headers,
     get_export_field_value,
@@ -101,6 +103,8 @@ from .export_helpers import (
     get_field_export_row,
 )
 
+from observations.lookups import DEATH_STAGES
+from observations.models import AnimalEncounter, TagObservation as AnimalTagObservation
 class HomePageView(LoginRequiredMixin, TemplateView):
     """
     A view for the home page.
@@ -494,17 +498,24 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         tag_id = self.request.COOKIES.get(f"{cookies_key_prefix}_tag_id")
         tag_type = self.request.COOKIES.get(f"{cookies_key_prefix}_tag_type")
         tag_side = self.request.COOKIES.get(f"{cookies_key_prefix}_tag_side")
+        # Entries created from a tag search are recaptures.
+        initial["is_recapture"] = bool(tag_id) and tag_type in (
+            "recapture_tag",
+            "recapture_pit_tag",
+        )
 
         selected_template = self.request.COOKIES.get(f"{cookies_key_prefix}_selected_template")
 
         # If a tag is selected, populate the form with the tag data
         if tag_id and tag_type:
             if tag_type == "recapture_tag":
+                initial["flipper_tag_check"] = TrtYesNo.objects.get(code="Y")
                 if tag_side == "L":
                     initial["recapture_left_tag_id"] = tag_id
                 elif tag_side == "R":
                     initial["recapture_right_tag_id"] = tag_id
             elif tag_type == "recapture_pit_tag":
+                initial["pit_tag_check"] = TrtYesNo.objects.get(code="Y")
                 if tag_side == "L":
                     initial["recapture_pittag_id"] = tag_id
                 elif tag_side == "R":
@@ -1280,20 +1291,32 @@ class TurtleListView(LoginRequiredMixin, PaginateMixin, ListView):
         return context
 
     def get_queryset(self):
-        """
-        Retrieves the queryset of turtles to be displayed.
-
-        Returns:
-            QuerySet: The queryset of turtles.
-        """
         qs = super().get_queryset()
-        # General-purpose search uses the `q` parameter.
-        if "q" in self.request.GET and self.request.GET["q"]:
-            q = self.request.GET["q"]
-            qs = qs.filter(Q(pk__icontains=q) | Q(trttags__tag_id__icontains=q) | Q(trtpittags__pittag_id__icontains=q)).distinct()
+
+        q = self.request.GET.get("q")
+
+        if q:
+            #turtle id search
+            turtle_ids = set(
+                qs.filter(pk__icontains=q)
+                .values_list("pk", flat=True)
+            )
+            #flipper tag
+            turtle_ids.update(
+                qs.filter(
+                    trttags__tag_id__icontains=q
+                ).values_list("pk", flat=True)
+            )
+            #pit tag
+            turtle_ids.update(
+                qs.filter(
+                    trtpittags__pittag_id__icontains=q
+                ).values_list("pk", flat=True)
+            )
+
+            qs = qs.filter(pk__in=turtle_ids)
 
         return qs.order_by("pk")
-
 
 class TurtleDetailView(LoginRequiredMixin, DetailView):
     """
@@ -3866,10 +3889,9 @@ class TagRegisterView(LoginRequiredMixin, FormView):
             prefix = form.cleaned_data["tag_prefix"]
             start = int(form.cleaned_data["start_number"])
             end = int(form.cleaned_data["end_number"])
-
-            if end - start > 1000:
-                return JsonResponse({"success": False, "error": "Cannot create more than 1000 tags at once"})
-
+            
+            # T062 removed tag registration batch size limit
+            
             with transaction.atomic():
                 for num in range(start, end + 1):
                     if tag_type == "flipper":
@@ -3888,7 +3910,8 @@ class TagRegisterView(LoginRequiredMixin, FormView):
                             tag_order_id=form.cleaned_data["tag_order_id"],
                             issue_location=form.cleaned_data["issue_location"],
                             custodian_person_id=form.cleaned_data["custodian_person_id"],
-                            field_person_id=form.cleaned_data["field_person_id"],
+                            # Retained for backwards compatibility (T062).
+                            field_person_id=None,
                             comments=form.cleaned_data["comments"],
                             tag_status=tag_status,
                         )
@@ -3903,7 +3926,8 @@ class TagRegisterView(LoginRequiredMixin, FormView):
                             tag_order_id=form.cleaned_data["tag_order_id"],
                             issue_location=form.cleaned_data["issue_location"],
                             custodian_person_id=form.cleaned_data["custodian_person_id"],
-                            field_person_id=form.cleaned_data["field_person_id"],
+                            # Retained for backwards compatibility (T062).
+                            field_person_id=None,
                             comments=form.cleaned_data["comments"],
                             pit_tag_status=pit_tag_status,
                         )
@@ -3932,6 +3956,145 @@ class AdminToolsView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         context["page_title"] = "Admin Tools - " + settings.SITE_TITLE
         return context
 
+class TaggedStrandedTurtleReviewView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
+   template_name = 'wamtram2/tagged_stranded_turtle_review.html'
+   paginate_by = 50
+   TURTLE_SPECIES = [
+       'natator-depressus',
+       'chelonia-mydas',
+       'caretta-caretta',
+       'eretmochelys-imbricata',
+       'lepidochelys-olivacea',
+       'dermochelys-coriacea',
+       'cheloniidae-fam',
+   ]
+   FLIPPER_OR_PIT_TAG_TYPES = [
+    "flipper-tag",
+    "pit-tag",
+    ]
+   def test_func(self):
+       return self.request.user.is_superuser
+   def get_context_data(self, **kwargs):
+       context = super().get_context_data(**kwargs)
+       q = self.request.GET.get('q', '').strip()
+       date_from = self.request.GET.get('date_from', '').strip()
+       date_to = self.request.GET.get('date_to', '').strip()
+       encounters = AnimalEncounter.objects.filter(
+           species__in=self.TURTLE_SPECIES,
+           health__in=DEATH_STAGES,
+           observations__tagobservation__tag_type__in=self.FLIPPER_OR_PIT_TAG_TYPES,
+       ).select_related('site', 'area', 'observer', 'reporter').distinct().order_by('-when')
+       if q:
+           encounters = encounters.filter(
+               Q(observations__tagobservation__name__icontains=q) |
+               Q(source_id__icontains=q) |
+               Q(name__icontains=q) |
+               Q(comments__icontains=q) |
+               Q(species__icontains=q) |
+               Q(health__icontains=q) |
+               Q(encounter_type__icontains=q) |
+               Q(site__name__icontains=q) |
+               Q(area__name__icontains=q) |
+               Q(observer__name__icontains=q) |
+               Q(reporter__name__icontains=q)
+           ).distinct()
+       if date_from:
+           encounters = encounters.filter(when__date__gte=date_from)
+       if date_to:
+           encounters = encounters.filter(when__date__lte=date_to)
+       paginator = Paginator(encounters, self.paginate_by)
+       page_obj = paginator.get_page(self.request.GET.get('page'))
+       tag_observations_by_encounter = self.get_tag_observations_by_encounter(page_obj.object_list)
+       wamtram_matches_by_tag = self.get_wamtram_matches(tag_observations_by_encounter)
+       rows = []
+       for encounter in page_obj.object_list:
+           tag_observations = tag_observations_by_encounter.get(encounter.pk, [])
+           rows.append({
+               'encounter': encounter,
+               'tag_observations': tag_observations,
+               'matches': [
+                   {
+                       'tag': tag_observation.name,
+                       'tag_type': tag_observation.get_tag_type_display(),
+                       'matches': wamtram_matches_by_tag.get(tag_observation.name, []),
+                   }
+                   for tag_observation in tag_observations
+               ],
+           })
+       context.update({
+           'page_title': 'Tagged Stranded Turtle Review - ' + settings.SITE_TITLE,
+           'rows': rows,
+           'page_obj': page_obj,
+           'paginator': paginator,
+           'q': q,
+           'date_from': date_from,
+           'date_to': date_to,
+       })
+       return context
+   def get_tag_observations_by_encounter(self, encounters):
+       encounter_ids = [encounter.pk for encounter in encounters]
+       tag_observations_by_encounter = {encounter_id: [] for encounter_id in encounter_ids}
+       if not encounter_ids:
+           return tag_observations_by_encounter
+       tag_observations = AnimalTagObservation.objects.filter(
+           encounter_id__in=encounter_ids,
+           tag_type__in=self.FLIPPER_OR_PIT_TAG_TYPES,
+       ).order_by('encounter_id', 'tag_type', 'name')
+       for tag_observation in tag_observations:
+           tag_observations_by_encounter.setdefault(tag_observation.encounter_id, []).append(tag_observation)
+       return tag_observations_by_encounter
+   def get_wamtram_matches(self, tag_observations_by_encounter):
+       tag_names = {
+           tag_observation.name
+           for tag_observations in tag_observations_by_encounter.values()
+           for tag_observation in tag_observations
+           if tag_observation.name
+       }
+       if not tag_names:
+           return {}
+       variant_to_original = {}
+       for tag_name in tag_names:
+           for variant in self.get_tag_search_variants(tag_name):
+               variant_to_original.setdefault(variant, set()).add(tag_name)
+       matches_by_tag = {tag_name: [] for tag_name in tag_names}
+       variants = list(variant_to_original.keys())
+       for flipper_tag in TrtTags.objects.filter(tag_id__in=variants).select_related('turtle'):
+           for original in variant_to_original.get(flipper_tag.tag_id, []):
+               matches_by_tag[original].append({
+                   'source': 'Flipper tag',
+                   'turtle_id': flipper_tag.turtle.turtle_id if flipper_tag.turtle else '',
+                   'tag_id': flipper_tag.tag_id,
+                   'turtle_url': reverse('wamtram2:turtle_management') + f'?turtle_id={flipper_tag.turtle.turtle_id}' if flipper_tag.turtle else '',
+               })
+       for pit_tag in TrtPitTags.objects.filter(pittag_id__in=variants).select_related('turtle'):
+           for original in variant_to_original.get(pit_tag.pittag_id, []):
+               matches_by_tag[original].append({
+                   'source': 'PIT tag',
+                   'turtle_id': pit_tag.turtle.turtle_id if pit_tag.turtle else '',
+                   'tag_id': pit_tag.pittag_id,
+                   'turtle_url': reverse('wamtram2:turtle_management') + f'?turtle_id={pit_tag.turtle.turtle_id}' if pit_tag.turtle else '',
+               })
+       return matches_by_tag
+   def get_tag_search_variants(self, tag_value):
+       if not tag_value:
+           return set()
+       variants = set()
+       for candidate in self.get_tag_candidates(tag_value):
+           raw_value = candidate.strip()
+           compact_value = raw_value.replace(' ', '')
+           upper_value = raw_value.upper()
+           compact_upper_value = compact_value.upper()
+           variants.update({
+               raw_value,
+               compact_value,
+               upper_value,
+               compact_upper_value,
+           })
+       return variants - {''}
+   def get_tag_candidates(self, tag_value):
+       raw_value = str(tag_value).strip()
+       token_values = re.findall(r'\b[A-Za-z]{1,3}\s?\d{3,6}\b|\b\d{10,16}\b', raw_value)
+       return {raw_value, *token_values}
 
 class PitTagsListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMixin, ListView):
     model = TrtPitTags
@@ -4767,6 +4930,13 @@ class ObservationManagementView(LoginRequiredMixin, SuperUserRequiredMixin, Temp
                         {"code": "E", "description": "Evening"},
                         {"code": "U", "description": "Unknown"},
                     ],
+                    "tissue_types": [
+                    {
+                    "tissue_type": tissue.tissue_type,
+                    "description": tissue.description,
+                    }
+                    for tissue in TrtTissueTypes.objects.all()
+                    ],
                     "places": TrtPlaces.objects.all(),
                     "activity_code_choices": TrtActivities.objects.all(),
                     "beach_position_code_choices": TrtBeachPositions.objects.all(),
@@ -4963,6 +5133,19 @@ class ObservationDataView(LoginRequiredMixin, SuperUserRequiredMixin, View):
             for measurement in observation.trtmeasurements_set.all()
         ]
 
+        samples = [
+            {
+                "sample_id": sample.sample_id,
+                "tissue_type": sample.tissue_type.tissue_type,
+                "tissue_type_description": sample.tissue_type.description,
+                "sample_label": sample.sample_label,
+                "comments": sample.comments,
+            }
+            for sample in TrtSamples.objects.filter(
+                observation_id=observation.observation_id
+            )
+        ]
+
         identification_types = [
             {"identification_type": type_obj.identification_type, "description": type_obj.description}
             for type_obj in TrtIdentificationTypes.objects.all()
@@ -5010,7 +5193,9 @@ class ObservationDataView(LoginRequiredMixin, SuperUserRequiredMixin, View):
             "identification_types": identification_types,
             "body_parts": body_parts,
             "damage_codes": damage_codes,
+            "samples": samples,
         }
+        
 
     def _filter_observations(self, request):
         """Filter observations based on request parameters"""
@@ -5654,8 +5839,17 @@ class TurtleManagementView(LoginRequiredMixin, SuperUserRequiredMixin, TemplateV
             ]
 
             observations = turtle.trtobservations_set.select_related("place_code", "activity_code").all()
-            observation_data = [
-                {
+            observation_data = []
+
+            for obs in observations:
+                entry = (
+                    TrtDataEntry.objects
+                    .select_related("interrupted")
+                    .filter(observation_id=obs)
+                    .first()
+                )
+
+                observation_data.append({
                     "observation_id": obs.pk,
                     "date_time": obs.observation_date.strftime("%Y-%m-%dT%H:%M"),
                     "observation_status": obs.observation_status,
@@ -5663,9 +5857,8 @@ class TurtleManagementView(LoginRequiredMixin, SuperUserRequiredMixin, TemplateV
                     "place": obs.place_code.get_full_name() if obs.place_code else "",
                     "nesting": str(obs.nesting),
                     "activity": str(obs.activity_code),
-                }
-                for obs in observations
-            ]
+                    "interrupted": str(entry.interrupted) if entry and entry.interrupted else "",
+                })
 
             samples = turtle.trtsamples_set.all()
             sample_data = [
@@ -5876,7 +6069,7 @@ class SamplesUpdateView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                 if sample_id:
                     # Update existing sample
                     TrtSamples.objects.filter(sample_id=sample_id).update(
-                        tissue_type=sample.get("tissue_type"),
+                        tissue_type_id=sample.get("tissue_type"),
                         sample_label=sample.get("sample_label"),
                         observation_id=sample.get("observation_id"),
                         comments=sample.get("comments"),
@@ -5885,7 +6078,7 @@ class SamplesUpdateView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                     # Create new sample
                     TrtSamples.objects.create(
                         turtle_id=turtle_id,
-                        tissue_type=sample.get("tissue_type"),
+                        tissue_type_id=sample.get("tissue_type"),
                         sample_label=sample.get("sample_label"),
                         observation_id=sample.get("observation_id"),
                         comments=sample.get("comments"),
@@ -5941,12 +6134,21 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
 
     def get_context_data(self, **kwargs):
         """Prepare all data for template context"""
+        preferred_order = ["Y", "N", "P", "U", "D", "O"]
+        alive_choices = sorted(
+            TrtYesNo.objects.all(),
+            key=lambda s: preferred_order.index(s.code)
+            if s.code in preferred_order
+            else 999,
+        )
         context = {
             "page_title": "Turtle Data Statistics - " + settings.SITE_TITLE,
             "locations": TrtLocations.objects.all().order_by("location_code"),
             "places": TrtPlaces.objects.all().order_by("place_code"),
             "species": TrtSpecies.objects.filter(hide_dataentry=False).order_by("species_code"),
             "sex_choices": [("F", "Female"), ("M", "Male"), ("I", "Indeterminate")],
+            "alive_choices": alive_choices,
+            "nesting_choices": [("Y", "Yes"), ("N", "No")],
         }
         selected_locations = self.request.GET.getlist("location")
         selected_places = self.request.GET.getlist("place")
@@ -5959,6 +6161,8 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                 "selected_places": selected_places,
                 "selected_sex": self.request.GET.get("sex"),
                 "selected_species": self.request.GET.get("species"),
+                "selected_nesting": self.request.GET.get("nesting"),
+                "selected_alive": self.request.GET.get("alive"),
                 "start_date": self.request.GET.get("start_date"),
                 "end_date": self.request.GET.get("end_date"),
             }
@@ -5994,7 +6198,19 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
 
                 if context["selected_species"]:
                     query = query.filter(turtle__species_code=context["selected_species"])
-
+                
+                if context["selected_alive"]:
+                    query = query.filter(
+                        alive__code=context["selected_alive"]
+                    )
+                if context["selected_nesting"] == "Y":
+                    query = query.filter(
+                        activity_code__nesting="Y"
+                    )
+                elif context["selected_nesting"] == "N":
+                    query = query.exclude(
+                        activity_code__nesting="Y"
+                    )
                 # Group by place and count unique turtles
                 results = (
                     query.values("place_code__place_code", "place_code__place_name")
@@ -6019,6 +6235,19 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                 if context["selected_species"]:
                     query = query.filter(species_code=context["selected_species"])
 
+                if context["selected_alive"]:
+                    query = query.filter(
+                        alive__code=context["selected_alive"]
+                    )
+                if context["selected_nesting"] == "Y":
+                    query = query.filter(
+                        activity_code__nesting="Y"
+                    )
+
+                elif context["selected_nesting"] == "N":
+                    query = query.exclude(
+                        activity_code__nesting="Y"
+                    )
                 # Split into two groups: with and without turtle_id
                 has_turtle_query = query.filter(turtle_id__isnull=False)
                 no_turtle_query = query.filter(turtle_id__isnull=True)

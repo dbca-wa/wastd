@@ -177,6 +177,12 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="nav-li-mwi">
                 <a class="dropdown-item"
+                    href="{% url 'observations:animalencounter-list' %}"
+                    title="Browse marine animal encounters">
+                    <i class="fa-solid fa-table" aria-hidden="true"></i>
+                    <span class="align-left">Browse marine animal encounters</span>
+                </a>
+                <a class="dropdown-item"
                    href="{% url 'marine_mammal_incidents:incident_list' %}"
                    title="Browse marine mammal incidents">
                     <i class="fa-solid fa-table" aria-hidden="true"></i>
@@ -184,9 +190,9 @@
                 </a>
                 <a class="dropdown-item"
                    href="{% url 'map' %}"
-                   title="Marine mammal incidents map">
+                   title="Marine incidents map">
                     <i class="fa-solid fa-earth-asia" aria-hidden="true"></i>
-                    <span class="align-left">Marine mammal incidents map</span>
+                    <span class="align-left">Marine incidents map</span>
                 </a>
                 {% if request.user.is_staff %}
                     <div class="dropdown-divider"></div>

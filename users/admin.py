@@ -1,9 +1,12 @@
+from datetime import timedelta
+
 from django import forms
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.contrib.auth.admin import UserAdmin as AuthUserAdmin
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm
+from django.utils import timezone
 
-from .models import User, Organisation
+from .models import AuditLog, User, Organisation
 
 
 @admin.register(Organisation)
@@ -39,6 +42,21 @@ class UserCreationForm(UserCreationForm):
 class UserAdmin(AuthUserAdmin):
     form = UserChangeForm
     add_form = UserCreationForm
+
+    add_fieldsets = (
+        (
+            None,
+            {
+                "classes": ("wide",),
+                "fields": (
+                    "username",
+                    "password1",
+                    "password2",
+                ),
+            },
+        ),
+    )
+
     fieldsets = (
         (
             "User Profile",
@@ -103,3 +121,72 @@ class UserAdmin(AuthUserAdmin):
                 return []
             else:
                 return [f.name for f in self.model._meta.fields]
+
+
+@admin.action(
+    description="Delete all audit logs older than 1 year",
+    permissions=["delete"],
+)
+
+def delete_audit_logs_older_than_one_year(modeladmin, request, queryset):
+    cutoff = timezone.now() - timedelta(days=365)
+    deleted_count, _ = AuditLog.objects.filter(created_at__lt=cutoff).delete()
+    modeladmin.message_user(
+        request,
+        f"Deleted {deleted_count} audit logs older than 1 year.",
+        messages.SUCCESS,
+    )
+
+
+@admin.register(AuditLog)
+class AuditLogAdmin(admin.ModelAdmin):
+    list_display = (
+        "created_at",
+        "action",
+        "actor",
+        "app_label",
+        "model_name",
+        "object_pk",
+        "object_repr",
+        "path",
+    )
+    list_filter = ("action", "app_label", "model_name", "created_at")
+    search_fields = ("actor__username", "actor__email", "object_pk", "object_repr", "path")
+    readonly_fields = (
+        "created_at",
+        "action",
+        "app_label",
+        "model_name",
+        "object_pk",
+        "object_repr",
+        "actor",
+        "path",
+        "method",
+        "remote_addr",
+    )
+    date_hierarchy = "created_at"
+    ordering = ("-created_at",)
+    list_per_page = 50
+    actions = (delete_audit_logs_older_than_one_year,)
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        if not request.user.is_superuser:
+            return False
+
+        # Changelist / custom action permission check
+        if obj is None:
+            return True
+
+        cutoff = timezone.now() - timedelta(days=365)
+        return obj.created_at < cutoff
+
+    def get_actions(self, request):
+        actions = super().get_actions(request)
+        actions.pop("delete_selected", None)
+        return actions
