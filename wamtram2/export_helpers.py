@@ -149,6 +149,9 @@ def format_export_value(value):
     if value is None:
         return ""
 
+    if isinstance(value, str) and value.startswith(("=", "+", "-", "@")):
+        return "'" + value
+  
     return str(value)
     
 def get_extra_field_values(
