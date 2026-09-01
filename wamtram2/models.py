@@ -1806,6 +1806,244 @@ class Template(models.Model):
         self.full_clean()
         super().save(*args, **kwargs)
 
+class TrvObservationSummary(models.Model):
+    turtle_id = models.IntegerField(db_column="TURTLE_ID")
+    species_code = models.CharField(max_length=10, db_column="SPECIES_CODE", null=True, blank=True)
+    common_name = models.CharField(max_length=255, db_column="COMMON_NAME", null=True, blank=True)
+    identification_confidence = models.CharField(
+        max_length=50,
+        db_column="IDENTIFICATION_CONFIDENCE",
+        null=True,
+        blank=True,
+    )
+    sex = models.CharField(max_length=10, db_column="SEX", null=True, blank=True)
+    turtle_status = models.CharField(max_length=10, db_column="TURTLE_STATUS", null=True, blank=True)
+
+    observation_id = models.IntegerField(
+        primary_key=True,
+        db_column="OBSERVATION_ID",
+    )
+
+    observation_status = models.CharField(
+        max_length=255,
+        db_column="OBSERVATION_STATUS",
+        null=True,
+        blank=True,
+    )
+
+    flipper_tags = models.TextField(
+        db_column="FLIPPER_TAGS",
+        null=True,
+        blank=True,
+    )
+
+    pit_tags = models.TextField(
+        db_column="PIT_TAGS",
+        null=True,
+        blank=True,
+    )
+
+    other_identification = models.TextField(
+        db_column="OTHER_IDENTIFICATION",
+        null=True,
+        blank=True,
+    )
+
+    location_code = models.CharField(
+        max_length=20,
+        db_column="LOCATION_CODE",
+        null=True,
+        blank=True,
+    )
+
+    observation_date = models.DateTimeField(
+        db_column="OBSERVATION_DATE",
+        null=True,
+        blank=True,
+    )
+
+    observation_time = models.DateTimeField(
+        db_column="OBSERVATION_TIME",
+        null=True,
+        blank=True,
+    )
+
+    observed_location_code = models.CharField(
+        max_length=20,
+        db_column="OBSERVED_LOCATION_CODE",
+        null=True,
+        blank=True,
+    )
+
+    observed_location_name = models.CharField(
+        max_length=255,
+        db_column="OBSERVED_LOCATION_NAME",
+        null=True,
+        blank=True,
+    )
+
+    place_code = models.CharField(
+        max_length=50,
+        db_column="PLACE_CODE",
+        null=True,
+        blank=True,
+    )
+
+    place_name = models.CharField(
+        max_length=255,
+        db_column="PLACE_NAME",
+        null=True,
+        blank=True,
+    )
+
+    activity_code = models.CharField(
+        max_length=10,
+        db_column="ACTIVITY_CODE",
+        null=True,
+        blank=True,
+    )
+
+    beach_position_code = models.CharField(
+        max_length=10,
+        db_column="BEACH_POSITION_CODE",
+        null=True,
+        blank=True,
+    )
+
+    nesting = models.CharField(
+        max_length=10,
+        db_column="NESTING",
+        null=True,
+        blank=True,
+    )
+
+    clutch_completed = models.CharField(
+        max_length=10,
+        db_column="CLUTCH_COMPLETED",
+        null=True,
+        blank=True,
+    )
+
+    number_of_eggs = models.IntegerField(
+        db_column="NUMBER_OF_EGGS",
+        null=True,
+        blank=True,
+    )
+
+    egg_count_method = models.CharField(
+        max_length=50,
+        db_column="EGG_COUNT_METHOD",
+        null=True,
+        blank=True,
+    )
+
+    comments = models.TextField(
+        db_column="COMMENTS",
+        null=True,
+        blank=True,
+    )
+
+    ccl = models.FloatField(
+        db_column="CCL",
+        null=True,
+        blank=True,
+    )
+
+    ccl_notch = models.FloatField(
+        db_column="CCL_NOTCH",
+        null=True,
+        blank=True,
+    )
+
+    ccw = models.FloatField(
+        db_column="CCW",
+        null=True,
+        blank=True,
+    )
+
+    datum_code = models.CharField(
+        max_length=50,
+        db_column="DATUM_CODE",
+        null=True,
+        blank=True,
+    )
+
+    latitude = models.FloatField(
+        db_column="LATITUDE",
+        null=True,
+        blank=True,
+    )
+
+    longitude = models.FloatField(
+        db_column="LONGITUDE",
+        null=True,
+        blank=True,
+    )
+
+    latitude_degrees = models.FloatField(
+        db_column="LATITUDE_DEGREES",
+        null=True,
+        blank=True,
+    )
+
+    latitude_minutes = models.FloatField(
+        db_column="LATITUDE_MINUTES",
+        null=True,
+        blank=True,
+    )
+
+    latitude_seconds = models.FloatField(
+        db_column="LATITUDE_SECONDS",
+        null=True,
+        blank=True,
+    )
+
+    longitude_degrees = models.FloatField(
+        db_column="LONGITUDE_DEGREES",
+        null=True,
+        blank=True,
+    )
+
+    longitude_minutes = models.FloatField(
+        db_column="LONGITUDE_MINUTES",
+        null=True,
+        blank=True,
+    )
+
+    longitude_seconds = models.FloatField(
+        db_column="LONGITUDE_SECONDS",
+        null=True,
+        blank=True,
+    )
+
+    zone = models.CharField(
+        max_length=50,
+        db_column="ZONE",
+        null=True,
+        blank=True,
+    )
+
+    easting = models.FloatField(
+        db_column="EASTING",
+        null=True,
+        blank=True,
+    )
+
+    northing = models.FloatField(
+        db_column="NORTHING",
+        null=True,
+        blank=True,
+    )
+
+    damage = models.TextField(
+        db_column="DAMAGE",
+        null=True,
+        blank=True,
+    )
+
+    class Meta:
+        managed = False
+        db_table = "TRV_OBSERVATION_SUMMARY"
 
 # class Tbldamage(models.Model):
 #     observation_id = models.IntegerField(db_column='OBSERVATION_ID')  # Field name made lowercase.
