@@ -2408,7 +2408,21 @@ class ExportDataView(LoginRequiredMixin, View):
                         queryset = queryset.filter(alive=alive)
 
                 # Optimize query with select_related
-                queryset = queryset.select_related("entry_batch", "place_code", "place_code__location_code", "observation_id")
+                queryset = queryset.select_related(
+                    "entry_batch",
+                    "place_code",
+                    "place_code__location_code",
+                    "observation_id",
+                    "species_code",
+                    "activity_code",
+                    "entered_by_id",
+                    "measured_by_id",
+                    "recorded_by_id",
+                    "tagged_by_id",
+                    "egg_count_method",
+                    "alive",
+                    "nesting",
+                )
 
                 model_meta = TrtDataEntry._meta
 
