@@ -2015,19 +2015,19 @@ class ExportDataView(LoginRequiredMixin, View):
         if not date_from or not date_to:
             return None, None
 
-        #start_date = timezone.make_aware(datetime.combine(datetime.strptime(date_from, "%Y-%m-%d").date(), time.min))
-        #end_date = timezone.make_aware(datetime.combine(datetime.strptime(date_to, "%Y-%m-%d").date(), time.max))
-        start_date = datetime.combine(
-            datetime.strptime(date_from, "%Y-%m-%d").date(),
-            time.min,
-            tzinfo=datetime_timezone.utc,
-        )
+        start_date = timezone.make_aware(datetime.combine(datetime.strptime(date_from, "%Y-%m-%d").date(), time.min))
+        end_date = timezone.make_aware(datetime.combine(datetime.strptime(date_to, "%Y-%m-%d").date(), time.max))
+        # start_date = datetime.combine(
+        #     datetime.strptime(date_from, "%Y-%m-%d").date(),
+        #     time.min,
+        #     tzinfo=datetime_timezone.utc,
+        # )
 
-        end_date = datetime.combine(
-            datetime.strptime(date_to, "%Y-%m-%d").date(),
-            time.max,
-            tzinfo=datetime_timezone.utc,
-        )
+        # end_date = datetime.combine(
+        #     datetime.strptime(date_to, "%Y-%m-%d").date(),
+        #     time.max,
+        #     tzinfo=datetime_timezone.utc,
+        # )
         return start_date, end_date
 
     def dispatch(self, request, *args, **kwargs):

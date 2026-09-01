@@ -1,6 +1,6 @@
 from collections import defaultdict
-from datetime import date, datetime
-
+from datetime import date, datetime, time
+from django.utils import timezone
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import DatabaseError
 
@@ -79,6 +79,37 @@ def get_entry_organisation_lookup(entries):
 
     return organisations_by_batch
 
+# def get_export_field_value(
+#     entry,
+#     field,
+#     entry_type,
+# ):
+#     name = field.name
+
+#     if (
+#         name == "observation_id"
+#         and entry_type == "field"
+#     ):
+#         return entry.observation_id_id or ""
+
+#     elif (
+#         name == "turtle"
+#         and entry_type == "processed"
+#     ):
+#         return entry.turtle_id or ""
+
+#     if field.is_relation and field.many_to_one:
+#         return getattr(
+#             entry,
+#             f"{name}_id",
+#             "",
+#         )
+
+#     return getattr(
+#         entry,
+#         name,
+#     )
+
 def get_export_field_value(
     entry,
     field,
@@ -105,15 +136,26 @@ def get_export_field_value(
             "",
         )
 
-    return getattr(
-        entry,
-        name,
-    )
+    value = getattr(entry, name)
 
-from datetime import date, datetime, time
+    if (
+        name == "observation_date"
+        and isinstance(value, datetime)
+        and timezone.is_aware(value)
+    ):
+        return timezone.localtime(value).date()
+
+    if (
+        name == "observation_time"
+        and isinstance(value, datetime)
+        and timezone.is_aware(value)
+    ):
+        return timezone.localtime(value).time()
+
+    return value
 
 
-from datetime import date, datetime, time
+
 
 def format_export_value(value):
     if isinstance(value, datetime):
@@ -607,7 +649,10 @@ def build_processed_export_context(entries):
 
 def get_processed_export_row(entry, context):
 
-    observation = entry
+    observation = context["observations"].get(
+        entry.observation_id,
+        entry,
+    )
 
     data_entry = context["data_entries"].get(
         observation.observation_id
@@ -715,21 +760,28 @@ def get_processed_export_row(entry, context):
         if data_entry
         else ""
     )
+    obs_dt = (
+        timezone.localtime(_attr(observation, "observation_date"))
+        if _attr(observation, "observation_date")
+        else None
+    )
+
     obs_time = _attr(observation, "observation_time")
+
     
     de = data_entry
     values = {
     "OBSERVATION_ID": observation.observation_id,
     "TURTLE_ID": _raw_fk(observation, "turtle"),
     "OBSERVATION_DATE": (
-        _attr(observation, "observation_date").date()
-        if _attr(observation, "observation_date")
+        obs_dt.date()
+        if obs_dt
         else ""
     ),
 
     "OBSERVATION_TIME": (
-        obs_time.strftime("%I:%M:%S %p").lstrip("0")
-        if obs_time
+        obs_dt.time()
+        if obs_dt
         else ""
     ),
 
