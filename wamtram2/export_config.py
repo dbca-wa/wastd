@@ -9,6 +9,7 @@ FIELD_HEADER_MAP = {
     "recorded_by_id": "REPORTER_PERSON_ID",
     "tagged_by_id": "TAGGER_PERSON_ID",
     "entered_by_id": "ENTERED_BY_PERSON_ID",
+    
 
     # Existing exports use this naming
     "tagscarnotchecked": "TagScarNotChecked",
@@ -32,6 +33,7 @@ EXTRA_HEADERS = {
     ],
 
     "place_code": [
+        "PLACE_DESCRIPTION",
         "PLACE_NAME",
         "LOCATION_CODE",
         "OBSERVED_LOCATION_CODE",
@@ -109,7 +111,7 @@ EXTRA_HEADERS = {
     "measured_recorded_by_id": ["MEASURER_REPORTER_PERSON_NAME"],
     "tagged_by_id": ["TAGGER_PERSON_NAME"],
     "recorded_by_id": ["REPORTER_PERSON_NAME"],
-    "entered_by_id": ["DATA_ENTERER_NAME"],
+    #"entered_by_id": ["DATA_ENTERER_NAME"],
 
     "sex": [
         "TURTLE_STATUS",
@@ -130,6 +132,10 @@ EXTRA_HEADERS = {
         "PIT_TAGS",
         "ALL_PIT_TAGS",
     ],
+    "entered_by_id": [
+        "DATA_ENTERER_ID",
+        "DATA_ENTERER_NAME",
+    ],
 
 }
 
@@ -138,7 +144,7 @@ PERSON_FIELDS = {
     "measured_recorded_by_id",
     "tagged_by_id",
     "recorded_by_id",
-    "entered_by_id",
+    #"entered_by_id",
 }
 
 BODY_PART_FIELDS = {
@@ -262,6 +268,7 @@ PROCESSED_EXPORT_HEADERS = [
     "TagScarNotChecked",
     "DidNotCheckForInjury",
     "OBSERVATION_STATUS",
+    "NEW_TURTLE",
     "DUD_FLIPPER_TAG",
     "DUD_FLIPPER_TAG_2",
     "DUD_PIT_TAG",

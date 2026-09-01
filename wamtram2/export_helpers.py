@@ -1,6 +1,6 @@
 from collections import defaultdict
-from datetime import date, datetime
-
+from datetime import date, datetime, time
+from django.utils import timezone
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import DatabaseError
 
@@ -29,6 +29,9 @@ from .export_config import (
     EXTRA_HEADERS,
 )
 
+EXTRA_EXPORT_FIELDS = ("organisations",)
+SQLSERVER_IN_CHUNK_SIZE = 900
+
 def build_export_headers(
     model_meta,
     entry_type,
@@ -40,6 +43,9 @@ def build_export_headers(
             field.name,
             field.name.upper(),
         )
+        # ENTRY_ID uses the same value as DATA_ENTRY_ID.
+        if entry_type == "field" and field.name == "data_entry_id":
+            headers.append("ENTRY_ID")
 
         headers.append(header)
 
@@ -56,6 +62,22 @@ def build_export_headers(
         headers.append("OBSERVATION_STATUS")
 
     return headers
+def get_entry_organisation_lookup(entries):
+    batch_ids = {entry.entry_batch_id for entry in entries if entry.entry_batch_id}
+    organisations_by_batch = defaultdict(list)
+
+    if not batch_ids:
+        return organisations_by_batch
+
+    for batch_id, organisation in _safe_query_by_chunks(
+        batch_ids,
+        lambda chunk: TrtEntryBatchOrganisation.objects.filter(
+            trtentrybatch_id__in=chunk
+        ).values_list("trtentrybatch_id", "organisation"),
+    ):
+        organisations_by_batch[batch_id].append(organisation)
+
+    return organisations_by_batch
 
 def get_export_field_value(
     entry,
@@ -83,15 +105,26 @@ def get_export_field_value(
             "",
         )
 
-    return getattr(
-        entry,
-        name,
-    )
+    value = getattr(entry, name)
 
-from datetime import date, datetime, time
+    if (
+        name == "observation_date"
+        and isinstance(value, datetime)
+        and timezone.is_aware(value)
+    ):
+        return timezone.localtime(value).date()
+
+    if (
+        name == "observation_time"
+        and isinstance(value, datetime)
+        and timezone.is_aware(value)
+    ):
+        return timezone.localtime(value).time()
+
+    return value
 
 
-from datetime import date, datetime, time
+
 
 def format_export_value(value):
     if isinstance(value, datetime):
@@ -116,6 +149,9 @@ def format_export_value(value):
     if value is None:
         return ""
 
+    if isinstance(value, str) and value.startswith(("=", "+", "-", "@")):
+        return "'" + value
+  
     return str(value)
     
 def get_extra_field_values(
@@ -132,12 +168,24 @@ def get_extra_field_values(
     elif field_name == "place_code":
         place = entry.place_code
         location = getattr(place, "location_code", None)
-
+        
         return [
-            getattr(place, "place_name", ""),
+            getattr(place, "place_name", ""), # PLACE_DESCRIPTION
+            getattr(place, "place_name", ""), # PLACE_NAME
             getattr(location, "location_code", ""),
             getattr(location, "location_code", ""),
             getattr(location, "location_name", ""),
+        ]
+    elif field_name == "entered_by_id":
+        person = getattr(entry, "entered_by_id", None)
+
+        return [
+            getattr(entry, "entered_by_id_id", "") or "",
+            (
+                f"{person.first_name} {person.surname}".strip()
+                if person
+                else ""
+            ),
         ]
 
     elif field_name == "activity_code":
@@ -232,28 +280,25 @@ def get_extra_field_values(
         return [
             getattr(entry, "other_identification", ""),
 
-            flipper_tags[0]
-            if len(flipper_tags) > 0
-            else "",
+            # TAG_1
+            getattr(entry, "new_left_tag_id_id", "") or "",
 
-            flipper_tags[1]
-            if len(flipper_tags) > 1
-            else "",
+            # TAG_2
+            getattr(entry, "new_right_tag_id_id", "") or "",
 
-            flipper_tags[2]
-            if len(flipper_tags) > 2
-            else "",
+            # TAG_3
+            getattr(entry, "recapture_left_tag_id_id", "") or "",
 
-            flipper_tags[3]
-            if len(flipper_tags) > 3
-            else "",
+            # TAG_4
+            getattr(entry, "recapture_right_tag_id_id", "") or "",
 
+            # ALL_FLIPPER_TAGS
             "; ".join(flipper_tags),
 
-            pit_tags[0]
-            if pit_tags
-            else "",
+            # PIT_TAGS
+            pit_tags[0] if pit_tags else "",
 
+            # ALL_PIT_TAGS
             "; ".join(pit_tags),
         ]
 
@@ -270,7 +315,7 @@ def get_lookup_values(
 ):
     if field_name.startswith("measurement_type_"):
         mt = measurement_type_dict.get(
-            getattr(entry, field_name)
+            getattr(entry, f"{field_name}_id")
         )
 
         return [
@@ -279,26 +324,27 @@ def get_lookup_values(
         ]
 
     elif field_name in BODY_PART_FIELDS:
+        value = getattr(entry, f"{field_name}_id")
+
         return [
             getattr(
-                body_part_dict.get(
-                    getattr(entry, field_name)
-                ),
+                body_part_dict.get(value),
                 "description",
                 "",
             )
         ]
 
     elif field_name in DAMAGE_CODE_FIELDS:
+        value = getattr(entry, f"{field_name}_id")
+
         return [
             getattr(
-                damage_code_dict.get(
-                    getattr(entry, field_name)
-                ),
+                damage_code_dict.get(value),
                 "description",
                 "",
             )
         ]
+
 
     elif field_name in TISSUE_FIELDS:
         return [
@@ -312,22 +358,22 @@ def get_lookup_values(
         ]
 
     elif field_name in TAG_STATE_FIELDS:
+        value = getattr(entry, f"{field_name}_id")
+
         return [
             getattr(
-                tag_state_dict.get(
-                    getattr(entry, field_name)
-                ),
+                tag_state_dict.get(value),
                 "description",
                 "",
             )
         ]
 
     elif field_name in DAMAGE_FIELDS:
+        value = getattr(entry, f"{field_name}_id")
+
         return [
             getattr(
-                damage_code_dict.get(
-                    getattr(entry, field_name)
-                ),
+                damage_code_dict.get(value),
                 "description",
                 "",
             )
@@ -356,19 +402,78 @@ def get_observation_status(entry):
 
     return ""
 
+def get_field_export_row(
+    entry,
+    organisations_by_batch,
+    beach_position_dict,
+    summary_dict,
+    measurement_type_dict,
+    body_part_dict,
+    damage_code_dict,
+    tissue_type_dict,
+    tag_state_dict,
+):
+    row = []
+
+    for field in TrtDataEntry._meta.fields:
+        row.append(format_export_value(get_export_field_value(entry, field, "field")))
+
+        for value in get_extra_field_values(
+            entry,
+            field.name,
+            beach_position_dict,
+            summary_dict,
+        ):
+            row.append(format_export_value(value))
+
+        for value in get_lookup_values(
+            entry,
+            field.name,
+            measurement_type_dict,
+            body_part_dict,
+            damage_code_dict,
+            tissue_type_dict,
+            tag_state_dict,
+        ):
+            row.append(format_export_value(value))
+
+    row.append(", ".join(organisations_by_batch.get(entry.entry_batch_id, [])))
+    row.append(format_export_value(get_observation_status(entry)))
+
+    return row
+    
+def _chunks(values, size=SQLSERVER_IN_CHUNK_SIZE):
+    values = list(values)
+    for index in range(0, len(values), size):
+        yield values[index : index + size]
+
+def _safe_query_by_chunks(values, build_queryset):
+    results = []
+    for chunk in _chunks(values):
+        results.extend(_safe_queryset(build_queryset(chunk)))
+    return results
+
 def get_processed_export_headers():
     return PROCESSED_EXPORT_HEADERS
 
+def _observation_id_set(entries):
+    observation_ids = set()
+    for entry in entries:
+        value = _attr(entry, "observation_id")
+        if hasattr(value, "observation_id"):
+            value = value.observation_id
+        if value not in (None, ""):
+            observation_ids.add(value)
+    return observation_ids
+
 def build_processed_export_context(entries):
-    observation_ids = {
-        entry.observation_id
-        for entry in entries
-        if entry.observation_id
-        }
+    observation_ids = _observation_id_set(entries)
+    turtle_ids = _raw_id_set(entries, "turtle")
 
     context = {
         "observations": {},
         "data_entries": {},
+        "first_observations": {},
         "recorded_tags": defaultdict(list),
         "recorded_pit_tags": defaultdict(list),
         "measurements": defaultdict(list),
@@ -381,10 +486,10 @@ def build_processed_export_context(entries):
 
     context["observations"] = {
         observation.observation_id: observation
-        for observation in _safe_queryset(
-            TrtObservations.objects.filter(
-                observation_id__in=observation_ids
-            ).select_related(
+        for observation in _safe_query_by_chunks(
+            observation_ids,
+            lambda chunk: TrtObservations.objects.filter(observation_id__in=chunk)
+            .select_related(
                 "activity_code",
                 "alive",
                 "beach_position_code",
@@ -404,16 +509,27 @@ def build_processed_export_context(entries):
                 "turtle__location_code",
                 "turtle__species_code",
                 "turtle__turtle_status",
-            )
+            ),
         )
     }
 
+    for turtle_id, observation_date, observation_id in _safe_query_by_chunks(
+        turtle_ids,
+        lambda chunk: TrtObservations.objects.filter(turtle_id__in=chunk)
+        .order_by("turtle_id", "observation_date", "observation_id")
+        .values_list("turtle_id", "observation_date", "observation_id"),
+    ):
+        context["first_observations"].setdefault(
+            turtle_id,
+            (observation_date, observation_id),
+        )
+
     context["data_entries"] = {
         data_entry.observation_id_id: data_entry
-        for data_entry in _safe_queryset(
-            TrtDataEntry.objects.filter(
-                observation_id__in=observation_ids
-            ).select_related(
+        for data_entry in _safe_query_by_chunks(
+            observation_ids,
+            lambda chunk: TrtDataEntry.objects.filter(observation_id__in=chunk)
+            .select_related(
                 "species_code",
                 "place_code",
                 "activity_code",
@@ -426,59 +542,55 @@ def build_processed_export_context(entries):
                 "measured_recorded_by_id",
                 "egg_count_method",
                 "clutch_completed",
-            )
+            ),
         )
         if data_entry.observation_id_id
     }
 
 
-    for tag in _safe_queryset(
-        TrtRecordedTags.objects.filter(
-            observation_id_id__in=observation_ids
-        )
+    for tag in _safe_query_by_chunks(
+        observation_ids,
+        lambda chunk: TrtRecordedTags.objects.filter(observation_id_id__in=chunk)
         .select_related("tag_id", "tag_state")
         .order_by(
             "observation_id_id",
             "side",
             "tag_position",
             "recorded_tag_id",
-        )
+        ),
     ):
         context["recorded_tags"][tag.observation_id_id].append(tag)
 
-    for pit_tag in _safe_queryset(
-        TrtRecordedPitTags.objects.filter(
-            observation_id_id__in=observation_ids
-        )
+    for pit_tag in _safe_query_by_chunks(
+        observation_ids,
+        lambda chunk: TrtRecordedPitTags.objects.filter(observation_id_id__in=chunk)
         .select_related("pittag_id", "pit_tag_state")
         .order_by(
             "observation_id_id",
             "pit_tag_position",
             "recorded_pittag_id",
-        )
+        ),
     ):
         context["recorded_pit_tags"][pit_tag.observation_id_id].append(
             pit_tag
         )
 
-    for measurement in _safe_queryset(
-        TrtMeasurements.objects.filter(
-            observation_id__in=observation_ids
-        )
+    for measurement in _safe_query_by_chunks(
+        observation_ids,
+        lambda chunk: TrtMeasurements.objects.filter(observation_id__in=chunk)
         .select_related("measurement_type")
         .order_by(
             "observation_id",
             "measurement_type_id",
-        )
+        ),
     ):
         context["measurements"][
             measurement.observation_id
         ].append(measurement)
 
-    for damage in _safe_queryset(
-        TrtDamage.objects.filter(
-            observation_id__in=observation_ids
-        )
+    for damage in _safe_query_by_chunks(
+        observation_ids,
+        lambda chunk: TrtDamage.objects.filter(observation_id__in=chunk)
         .select_related(
             "body_part",
             "damage_code",
@@ -487,18 +599,19 @@ def build_processed_export_context(entries):
         .order_by(
             "observation_id",
             "body_part_id",
-        )
+        ),
     ):
         context["damages"][
             damage.observation_id
         ].append(damage)
 
-    for identification in _safe_queryset(
-        TrtRecordedIdentification.objects.filter(
-            observation_id__in=observation_ids,
+    for identification in _safe_query_by_chunks(
+        observation_ids,
+        lambda chunk: TrtRecordedIdentification.objects.filter(
+            observation_id__in=chunk,
         )
         .select_related("identification_type")
-        .order_by("observation_id", "recorded_identification_id")
+        .order_by("observation_id", "recorded_identification_id"),
     ):
         context["identifications"][
             identification.observation_id
@@ -508,7 +621,10 @@ def build_processed_export_context(entries):
 
 def get_processed_export_row(entry, context):
 
-    observation = entry
+    observation = context["observations"].get(
+        entry.observation_id,
+        entry,
+    )
 
     data_entry = context["data_entries"].get(
         observation.observation_id
@@ -566,38 +682,61 @@ def get_processed_export_row(entry, context):
     tag_details = [_format_recorded_tag(tag) for tag in recorded_tags]
     pit_tag_details = [_format_recorded_pit_tag(tag) for tag in recorded_pit_tags]
 
-    data_entry_id = (
-        data_entry.data_entry_id
-        if data_entry
-        else ""
+    new_left_tags = []
+    new_right_tags = []
+    existing_left_tags = []
+    existing_right_tags = []
+
+    for tag in recorded_tags:
+        tag_value = _tag_value(tag)
+        tag_state = _safe_related(tag, "tag_state")
+        side = _attr(tag, "side")
+
+        if not tag_value or not tag_state:
+            continue
+
+        # Legacy Observation exports treat "#" as an existing tag,
+        # despite NEW_TAG_LIST being set in TRT_TAG_STATES.
+        if _raw_fk(tag, "tag_state") == "#":
+            if side == "L":
+                existing_left_tags.append(tag_value)
+            elif side == "R":
+                existing_right_tags.append(tag_value)
+            continue
+
+        if tag_state.existing_tag_list:
+            if side == "L":
+                existing_left_tags.append(tag_value)
+            elif side == "R":
+                existing_right_tags.append(tag_value)
+        elif tag_state.new_tag_list:
+            if side == "L":
+                new_left_tags.append(tag_value)
+            elif side == "R":
+                new_right_tags.append(tag_value)
+                        
+    obs_dt = (
+        timezone.localtime(_attr(observation, "observation_date"))
+        if _attr(observation, "observation_date")
+        else None
     )
 
-    user_entry_id = (
-        data_entry.user_entry_id
-        if data_entry
-        else ""
-    )
+    #bs_time = _attr(observation, "observation_time")
 
-    data_entry_comments = (
-        data_entry.comments
-        if data_entry
-        else ""
-    )
-    obs_time = _attr(observation, "observation_time")
     
     de = data_entry
     values = {
     "OBSERVATION_ID": observation.observation_id,
     "TURTLE_ID": _raw_fk(observation, "turtle"),
     "OBSERVATION_DATE": (
-        _attr(observation, "observation_date").date()
-        if _attr(observation, "observation_date")
+        obs_dt.date()
+        if obs_dt
         else ""
     ),
 
     "OBSERVATION_TIME": (
-        obs_time.strftime("%I:%M:%S %p").lstrip("0")
-        if obs_time
+        obs_dt.time()
+        if obs_dt
         else ""
     ),
 
@@ -609,7 +748,10 @@ def get_processed_export_row(entry, context):
     "OBSERVATION_DATE_OLD": _attr(observation, "observation_date_old"),
     "ALIVE": _raw_fk(observation, "alive"),
 
-    "ENTRY_ID": "",
+    
+    "ENTRY_ID": (
+        de.data_entry_id if de else ""
+    ),
 
     "DATA_ENTRY_ID": (
         de.data_entry_id if de else ""
@@ -909,6 +1051,7 @@ def get_processed_export_row(entry, context):
         observation,
         "observation_status",
     ),
+    "NEW_TURTLE": "Y" if is_new_turtle_observation(observation, context) else "N",
 
     "DUD_FLIPPER_TAG": _attr(observation, "dud_flipper_tag"),
     "DUD_FLIPPER_TAG_2": _attr(observation, "dud_flipper_tag_2"),
@@ -950,10 +1093,17 @@ def get_processed_export_row(entry, context):
         for i in identifications
     ),
 
-    "TAG_1": _list_item(flipper_tag_ids, 0),
-    "TAG_2": _list_item(flipper_tag_ids, 1),
-    "TAG_3": _list_item(flipper_tag_ids, 2),
-    "TAG_4": _list_item(flipper_tag_ids, 3),
+    # "TAG_1": _list_item(flipper_tag_ids, 0),
+    # "TAG_2": _list_item(flipper_tag_ids, 1),
+    # "TAG_3": _list_item(flipper_tag_ids, 2),
+    # "TAG_4": _list_item(flipper_tag_ids, 3),
+
+    # Match the legacy Observation mapping: new tags in TAG_1/TAG_2
+    # and existing tags in TAG_3/TAG_4, grouped by side.
+    "TAG_1": ", ".join(new_left_tags),
+    "TAG_2": ", ".join(new_right_tags),
+    "TAG_3": ", ".join(existing_left_tags),
+    "TAG_4": ", ".join(existing_right_tags),
 
     "ALL_FLIPPER_TAGS": _join(flipper_tag_ids),
     "FLIPPER_TAG_DETAILS": _join(tag_details),
@@ -983,11 +1133,23 @@ def get_processed_export_row(entry, context):
 
 
 def _safe_queryset(queryset):
-    try:
-        return list(queryset)
-    except DatabaseError:
-        return []
+    return list(queryset)
 
+def is_new_turtle_observation(observation, context):
+    turtle_id = _raw_fk(observation, "turtle")
+    observation_status = _attr(observation, "observation_status")
+
+    if observation_status not in ("Initial Sighting", "Initial Nesting"):
+        return False
+
+    first_observation = context["first_observations"].get(turtle_id)
+    if not first_observation:
+        return False
+
+    return first_observation == (
+        _attr(observation, "observation_date"),
+        _attr(observation, "observation_id"),
+    )
 
 def _raw_id_set(entries, field_name):
     return {

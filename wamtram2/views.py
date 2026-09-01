@@ -98,8 +98,9 @@ from .export_helpers import (
     get_processed_export_headers,
     build_processed_export_context,
     get_processed_export_row,
+    is_new_turtle_observation,
+    _safe_query_by_chunks,
 )
-
 from observations.lookups import DEATH_STAGES
 from observations.models import AnimalEncounter, TagObservation as AnimalTagObservation
 
@@ -2015,6 +2016,7 @@ class ExportDataView(LoginRequiredMixin, View):
 
         start_date = timezone.make_aware(datetime.combine(datetime.strptime(date_from, "%Y-%m-%d").date(), time.min))
         end_date = timezone.make_aware(datetime.combine(datetime.strptime(date_to, "%Y-%m-%d").date(), time.max))
+     
         return start_date, end_date
 
     def dispatch(self, request, *args, **kwargs):
@@ -2287,23 +2289,41 @@ class ExportDataView(LoginRequiredMixin, View):
             species = request.GET.get("species")
             sex = request.GET.get("sex")
             alive = request.GET.get("alive")
+            new_turtle = request.GET.get("new_turtle")
             file_format = request.GET.get("format", "csv")
             entry_type = request.GET.get("entry_type", "field")
 
+            # # Build filename
+            # export_type = "Observations" if entry_type == "processed" else "FieldEntries"
+
+            # export_date = timezone.now().strftime("%d%m%Y")
+
+            # location_label = location_code or place_code or "ALL"
+
+            # filename = (
+            #     f"{export_type}_"
+            #     f"{location_label}_"
+            #     f"{from_date.strftime('%Y%m%d')}_"
+            #     f"{to_date.strftime('%Y%m%d')}_"
+            #     f"Export{export_date}"
+            # )
             # Build filename
             export_type = "Observations" if entry_type == "processed" else "FieldEntries"
-
-            export_date = timezone.now().strftime("%d%m%Y")
-
             location_label = location_code or place_code or "ALL"
-
-            filename = (
-                f"{export_type}_"
-                f"{location_label}_"
-                f"{from_date.strftime('%Y%m%d')}_"
-                f"{to_date.strftime('%Y%m%d')}_"
-                f"Export{export_date}"
-            )
+            filename_parts = [
+                export_type,
+                location_label,
+                from_date.strftime("%Y%m%d"),
+                to_date.strftime("%Y%m%d"),
+            ]
+            if species:
+                filename_parts.append(species)
+            if sex:
+                filename_parts.append(sex)
+            if entry_type == "processed" and new_turtle == "yes":
+                filename_parts.append("NewTurtles")
+            filename_parts.append(f"Export{timezone.now().strftime('%d%m%Y')}")
+            filename = "_".join(filename_parts)
 
 
             # Build queryset based on Entry Type
@@ -2351,8 +2371,6 @@ class ExportDataView(LoginRequiredMixin, View):
                     #"turtle_id",
                     "turtle",
                 )
-
-                model_meta = TrtObservations._meta
 
             else:
                 queryset = TrtDataEntry.objects.all()
@@ -2409,12 +2427,12 @@ class ExportDataView(LoginRequiredMixin, View):
 
             # Pre-fetch Tags and PIT Tags for Processed Entries
             summary_dict = {}
-            left_tags_dict = {}
-            right_tags_dict = {}
-            unknown_tags_dict = {}
-            left_pit_tags_dict = {}
-            right_pit_tags_dict = {}
-            unknown_pit_tags_dict = {}
+            # left_tags_dict = {}
+            # right_tags_dict = {}
+            # unknown_tags_dict = {}
+            # left_pit_tags_dict = {}
+            # right_pit_tags_dict = {}
+            # unknown_pit_tags_dict = {}
             # Description dictionaries for lookups
             beach_position_dict = {
                 bp.beach_position_code: bp.description
@@ -2453,8 +2471,11 @@ class ExportDataView(LoginRequiredMixin, View):
 
             summary_dict = {
                 s.observation_id: s
-                for s in TrvObservationSummary.objects.filter(
-                    observation_id__in=obs_ids
+                for s in _safe_query_by_chunks(
+                    obs_ids,
+                    lambda chunk: TrvObservationSummary.objects.filter(
+                        observation_id__in=chunk
+                    ),
                 )
             }
             try:
@@ -2462,10 +2483,23 @@ class ExportDataView(LoginRequiredMixin, View):
 
                 if entry_type == "processed":
                     headers = get_processed_export_headers()
+                    entries = list(queryset)
+                    processed_context = build_processed_export_context(entries)
 
-                    processed_context = build_processed_export_context(
-                        queryset
-                    )
+                    if new_turtle == "yes":
+                        entries = [
+                            entry
+                            for entry in entries
+                            if is_new_turtle_observation(entry, processed_context)
+                        ]
+
+                        if not entries:
+                            return HttpResponse(
+                                "No new turtle records found matching the selected criteria",
+                                status=404,
+                            )
+                    queryset = entries
+                    
                 else:
                     headers = build_export_headers(
                         model_meta,
@@ -2507,7 +2541,14 @@ class ExportDataView(LoginRequiredMixin, View):
 
                         for field in model_meta.fields:
                             name = field.name
+                            
+                            # ENTRY_ID uses the same value as DATA_ENTRY_ID.
+                            if entry_type == "field" and name == "data_entry_id":
 
+                                row.append(
+                                format_export_value(entry.data_entry_id)
+                                )
+                            
                             value = get_export_field_value(
                                 entry,
                                 field,
@@ -2592,6 +2633,14 @@ class ExportDataView(LoginRequiredMixin, View):
                         row = []
                         for field in model_meta.fields:
                             name = field.name
+
+                            # ENTRY_ID uses the same value as DATA_ENTRY_ID.
+                            if entry_type == "field" and name == "data_entry_id":
+
+                                row.append(
+                                    format_export_value(entry.data_entry_id)
+                                )
+                            
 
                             value = get_export_field_value(
                                 entry,
@@ -2828,7 +2877,7 @@ class DudTagManageView(LoginRequiredMixin, View):
         if not all([entry_id, tag_type, tag_id]):
             return redirect("wamtram2:dud_tag_manage")
 
-        entry = get_object_or_404(TrtDataEntry, pk=entry_id)
+        get_object_or_404(TrtDataEntry, pk=entry_id)
 
         if tag_status:
             if tag_type.startswith("flipper"):

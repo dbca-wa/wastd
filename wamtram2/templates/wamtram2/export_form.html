@@ -135,12 +135,26 @@
                         </select>
                     </div>
                 </div>
+                
                 <div class="col-md-3">
                     <div class="form-group">
                         <label for="alive">Alive Status</label>
                         <select id="alive" name="alive" class="form-control form-control-sm select2">
                             <option value="">All Statuses</option>
                         </select>
+                    </div>
+                </div>
+                
+                <div id="new-turtle-filter-row" class="col-md-3" style="display: none;">
+                    <div class="form-group">
+                        <label for="new_turtle">New Turtle</label>
+                        <select id="new_turtle" name="new_turtle" class="form-control form-control-sm">
+                            <option value="">All Turtles</option>
+                            <option value="yes">New Turtles Only</option>
+                        </select>
+                        <small class="form-text text-muted">
+                            Applies to processed entries only.
+                        </small>
                     </div>
                 </div>
             </div>
@@ -273,8 +287,24 @@
             select.appendChild(optionElement);
         });
     }
+    function toggleNewTurtleFilter() {
+            const entryType = document.getElementById('entry_type').value;
+            const newTurtleFilterRow = document.getElementById('new-turtle-filter-row');
+            const newTurtleSelect = document.getElementById('new_turtle');
+
+            if (entryType === 'processed') {
+                newTurtleFilterRow.style.display = '';
+            } else {
+                newTurtleFilterRow.style.display = 'none';
+                newTurtleSelect.value = '';
+            }
+        }
 
     // Event Listeners
+    document.getElementById('entry_type').addEventListener('change', function() {
+            toggleNewTurtleFilter();
+            loadFilters();
+        });
     document.getElementById('entry_type').addEventListener('change', loadFilters);
     document.getElementById('observation_date_from').addEventListener('change', loadFilters);
     document.getElementById('observation_date_to').addEventListener('change', loadFilters);
