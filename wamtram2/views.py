@@ -3,7 +3,7 @@ import json
 import operator
 import re
 import traceback
-from datetime import datetime, time, timedelta
+from datetime import date, datetime, time, timedelta
 from functools import reduce
 
 import pandas as pd
@@ -77,7 +77,17 @@ from .models import (
     TrtTurtleStatus,
     TrtYesNo,
 )
-
+from .export_config import (
+    FIELD_HEADER_MAP,
+    EXTRA_HEADERS,
+    PERSON_FIELDS,
+    BODY_PART_FIELDS,
+    DAMAGE_CODE_FIELDS,
+    TISSUE_FIELDS,
+    TAG_STATE_FIELDS,
+    DAMAGE_FIELDS,
+    PROCESSED_EXPORT_HEADERS,
+)
 from .export_helpers import (
     build_export_headers,
     get_export_field_value,
@@ -91,9 +101,9 @@ from .export_helpers import (
     is_new_turtle_observation,
     _safe_query_by_chunks,
 )
-
 from observations.lookups import DEATH_STAGES
 from observations.models import AnimalEncounter, TagObservation as AnimalTagObservation
+
 class HomePageView(LoginRequiredMixin, TemplateView):
     """
     A view for the home page.
