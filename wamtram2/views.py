@@ -3,7 +3,7 @@ import json
 import operator
 import re
 import traceback
-from datetime import date, datetime, time, timedelta, timezone as datetime_timezone
+from datetime import datetime, time, timedelta
 from functools import reduce
 
 import pandas as pd
@@ -77,17 +77,6 @@ from .models import (
     TrtTurtleStatus,
     TrtYesNo,
 )
-from .export_config import (
-    FIELD_HEADER_MAP,
-    EXTRA_HEADERS,
-    PERSON_FIELDS,
-    BODY_PART_FIELDS,
-    DAMAGE_CODE_FIELDS,
-    TISSUE_FIELDS,
-    TAG_STATE_FIELDS,
-    DAMAGE_FIELDS,
-    PROCESSED_EXPORT_HEADERS,
-)
 
 from .export_helpers import (
     build_export_headers,
@@ -100,7 +89,7 @@ from .export_helpers import (
     build_processed_export_context,
     get_processed_export_row,
     is_new_turtle_observation,
-    get_field_export_row,
+    _safe_query_by_chunks,
 )
 
 from observations.lookups import DEATH_STAGES
@@ -2017,17 +2006,7 @@ class ExportDataView(LoginRequiredMixin, View):
 
         start_date = timezone.make_aware(datetime.combine(datetime.strptime(date_from, "%Y-%m-%d").date(), time.min))
         end_date = timezone.make_aware(datetime.combine(datetime.strptime(date_to, "%Y-%m-%d").date(), time.max))
-        # start_date = datetime.combine(
-        #     datetime.strptime(date_from, "%Y-%m-%d").date(),
-        #     time.min,
-        #     tzinfo=datetime_timezone.utc,
-        # )
-
-        # end_date = datetime.combine(
-        #     datetime.strptime(date_to, "%Y-%m-%d").date(),
-        #     time.max,
-        #     tzinfo=datetime_timezone.utc,
-        # )
+     
         return start_date, end_date
 
     def dispatch(self, request, *args, **kwargs):
@@ -2482,12 +2461,6 @@ class ExportDataView(LoginRequiredMixin, View):
 
             summary_dict = {
                 s.observation_id: s
-                for s in TrvObservationSummary.objects.filter(
-                    observation_id__in=obs_ids
-                )
-            }
-            summary_dict = {
-                s.observation_id: s
                 for s in _safe_query_by_chunks(
                     obs_ids,
                     lambda chunk: TrvObservationSummary.objects.filter(
@@ -2894,7 +2867,7 @@ class DudTagManageView(LoginRequiredMixin, View):
         if not all([entry_id, tag_type, tag_id]):
             return redirect("wamtram2:dud_tag_manage")
 
-        entry = get_object_or_404(TrtDataEntry, pk=entry_id)
+        get_object_or_404(TrtDataEntry, pk=entry_id)
 
         if tag_status:
             if tag_type.startswith("flipper"):

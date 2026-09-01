@@ -715,30 +715,13 @@ def get_processed_export_row(entry, context):
             elif side == "R":
                 new_right_tags.append(tag_value)
                         
-    data_entry_id = (
-        data_entry.data_entry_id
-        if data_entry
-        else ""
-    )
-
-    user_entry_id = (
-        data_entry.user_entry_id
-        if data_entry
-        else ""
-    )
-
-    data_entry_comments = (
-        data_entry.comments
-        if data_entry
-        else ""
-    )
     obs_dt = (
         timezone.localtime(_attr(observation, "observation_date"))
         if _attr(observation, "observation_date")
         else None
     )
 
-    obs_time = _attr(observation, "observation_time")
+    #bs_time = _attr(observation, "observation_time")
 
     
     de = data_entry
