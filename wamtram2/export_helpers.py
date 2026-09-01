@@ -79,37 +79,6 @@ def get_entry_organisation_lookup(entries):
 
     return organisations_by_batch
 
-# def get_export_field_value(
-#     entry,
-#     field,
-#     entry_type,
-# ):
-#     name = field.name
-
-#     if (
-#         name == "observation_id"
-#         and entry_type == "field"
-#     ):
-#         return entry.observation_id_id or ""
-
-#     elif (
-#         name == "turtle"
-#         and entry_type == "processed"
-#     ):
-#         return entry.turtle_id or ""
-
-#     if field.is_relation and field.many_to_one:
-#         return getattr(
-#             entry,
-#             f"{name}_id",
-#             "",
-#         )
-
-#     return getattr(
-#         entry,
-#         name,
-#     )
-
 def get_export_field_value(
     entry,
     field,
@@ -1178,10 +1147,7 @@ def get_processed_export_row(entry, context):
 
 
 def _safe_queryset(queryset):
-    try:
-        return list(queryset)
-    except DatabaseError:
-        return []
+    return list(queryset)
 
 def is_new_turtle_observation(observation, context):
     turtle_id = _raw_fk(observation, "turtle")

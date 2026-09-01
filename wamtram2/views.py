@@ -2486,6 +2486,15 @@ class ExportDataView(LoginRequiredMixin, View):
                     observation_id__in=obs_ids
                 )
             }
+            summary_dict = {
+                s.observation_id: s
+                for s in _safe_query_by_chunks(
+                    obs_ids,
+                    lambda chunk: TrvObservationSummary.objects.filter(
+                        observation_id__in=chunk
+                    ),
+                )
+            }
             try:
                 processed_context = None
 
