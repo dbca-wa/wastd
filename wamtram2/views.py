@@ -2,6 +2,7 @@ import csv
 import json
 import operator
 import re
+import traceback
 from datetime import date, datetime, time, timedelta
 from functools import reduce
 
@@ -32,7 +33,7 @@ from docx.shared import Inches, Pt, RGBColor
 from openpyxl import Workbook
 
 from wastd.utils import Breadcrumb, PaginateMixin
-
+from wamtram2.models import TrvObservationSummary
 from .forms import BatchesCodeForm, SearchForm, TagRegisterForm, TemplateForm, TrtDataEntryForm, TrtEntryBatchesForm, TrtPersonsForm
 from .models import (
     Template,
@@ -76,10 +77,32 @@ from .models import (
     TrtTurtleStatus,
     TrtYesNo,
 )
+from .export_config import (
+    FIELD_HEADER_MAP,
+    EXTRA_HEADERS,
+    PERSON_FIELDS,
+    BODY_PART_FIELDS,
+    DAMAGE_CODE_FIELDS,
+    TISSUE_FIELDS,
+    TAG_STATE_FIELDS,
+    DAMAGE_FIELDS,
+    PROCESSED_EXPORT_HEADERS,
+)
+from .export_helpers import (
+    build_export_headers,
+    get_export_field_value,
+    format_export_value,
+    get_extra_field_values,
+    get_lookup_values,
+    get_observation_status,
+    get_processed_export_headers,
+    build_processed_export_context,
+    get_processed_export_row,
+)
 
 from observations.lookups import DEATH_STAGES
 from observations.models import AnimalEncounter, TagObservation as AnimalTagObservation
- 
+
 class HomePageView(LoginRequiredMixin, TemplateView):
     """
     A view for the home page.
@@ -590,7 +613,7 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         return initial
 
     def form_valid(self, form):
-        
+
         observation_date = form.cleaned_data.get("observation_date")
 
         if (
@@ -1025,7 +1048,7 @@ class FindTurtleView(LoginRequiredMixin, View):
                     if pit_tag:
                         turtle = pit_tag.turtle
                         tag_type = "recapture_pit_tag"
-                        
+
                         latest_pit_record = (
                             TrtRecordedPitTags.objects.filter(
                                 pittag_id=pit_tag
@@ -1857,7 +1880,7 @@ class ValidateTagView(View):
                             }
                         )
                     else:
-                        
+
                         actual_side = None
 
                         latest_record = (
@@ -2023,6 +2046,8 @@ class ExportDataView(LoginRequiredMixin, View):
                 return self.get_species(request)
             elif action == "get_sexes":
                 return self.get_sexes(request)
+            elif action == "get_alive_statuses":
+                return self.get_alive_statuses(request)
 
         # If no action or format, render the form
         return render(request, self.template_name, context)
@@ -2227,6 +2252,28 @@ class ExportDataView(LoginRequiredMixin, View):
         sex_list = [{"value": choice[0], "label": choice[1]} for choice in SEX_CHOICES if choice[0] in used_sexes]
 
         return JsonResponse({"sexes": sex_list})
+    
+    def get_alive_statuses(self, request):
+        preferred_order = ["Y", "N", "P", "U", "D", "O"]
+
+        statuses = list(TrtYesNo.objects.all())
+
+        statuses.sort(
+            key=lambda s: preferred_order.index(s.code)
+            if s.code in preferred_order
+            else 999
+        )
+
+        alive_list = [
+            {
+                "value": status.code,
+                "label": status.description,
+            }
+            for status in statuses
+        ]
+
+        return JsonResponse({"alive_statuses": alive_list})
+        
 
     def export_data(self, request):
         try:
@@ -2239,24 +2286,25 @@ class ExportDataView(LoginRequiredMixin, View):
             place_code = request.GET.get("place_code")
             species = request.GET.get("species")
             sex = request.GET.get("sex")
+            alive = request.GET.get("alive")
             file_format = request.GET.get("format", "csv")
             entry_type = request.GET.get("entry_type", "field")
 
             # Build filename
-            filename_parts = []
-            if location_code:
-                filename_parts.append(location_code)
-            elif place_code:
-                filename_parts.append(place_code)
-            if species:
-                filename_parts.append(species)
-            if sex:
-                filename_parts.append(sex)
-            if entry_type == "processed":
-                filename_parts.append("processed")
+            export_type = "Observations" if entry_type == "processed" else "FieldEntries"
 
-            date_range = f"({from_date.strftime('%Y%m%d')}-{to_date.strftime('%Y%m%d')})"
-            filename = "_".join(filename_parts) + date_range if filename_parts else f"data_export{date_range}"
+            export_date = timezone.now().strftime("%d%m%Y")
+
+            location_label = location_code or place_code or "ALL"
+
+            filename = (
+                f"{export_type}_"
+                f"{location_label}_"
+                f"{from_date.strftime('%Y%m%d')}_"
+                f"{to_date.strftime('%Y%m%d')}_"
+                f"Export{export_date}"
+            )
+
 
             # Build queryset based on Entry Type
             if entry_type == "processed":
@@ -2288,9 +2336,21 @@ class ExportDataView(LoginRequiredMixin, View):
                     queryset = queryset.filter(turtle__species_code=species)
                 if sex:
                     queryset = queryset.filter(turtle__sex=sex)
+                if alive:
+                    if alive == "NULL":
+                        queryset = queryset.filter(alive__isnull=True)
+                    else:
+                        queryset = queryset.filter(alive=alive)
 
                 # Optimize query with select_related
-                queryset = queryset.select_related("entry_batch", "place_code", "place_code__location_code", "turtle")
+                queryset = queryset.select_related(
+                    "entry_batch",
+                    "place_code",
+                    "place_code__location_code",
+                    #"observation_id",
+                    #"turtle_id",
+                    "turtle",
+                )
 
                 model_meta = TrtObservations._meta
 
@@ -2323,6 +2383,11 @@ class ExportDataView(LoginRequiredMixin, View):
                     queryset = queryset.filter(species_code=species)
                 if sex:
                     queryset = queryset.filter(sex=sex)
+                if alive:
+                    if alive == "NULL":
+                        queryset = queryset.filter(alive__isnull=True)
+                    else:
+                        queryset = queryset.filter(alive=alive)
 
                 # Optimize query with select_related
                 queryset = queryset.select_related("entry_batch", "place_code", "place_code__location_code", "observation_id")
@@ -2343,202 +2408,184 @@ class ExportDataView(LoginRequiredMixin, View):
                 org_dict.setdefault(bo["trtentrybatch_id"], []).append(bo["organisation"])
 
             # Pre-fetch Tags and PIT Tags for Processed Entries
-            tags_dict = {}
-            pit_tags_dict = {}
-            if entry_type == "processed":
-                obs_ids = set(queryset.values_list("observation_id", flat=True))
-                # 1. Tags
-                recorded_tags = (
-                    TrtRecordedTags.objects.filter(observation_id__in=obs_ids).select_related("tag_id").order_by("tag_position", "side")
+            summary_dict = {}
+            left_tags_dict = {}
+            right_tags_dict = {}
+            unknown_tags_dict = {}
+            left_pit_tags_dict = {}
+            right_pit_tags_dict = {}
+            unknown_pit_tags_dict = {}
+            # Description dictionaries for lookups
+            beach_position_dict = {
+                bp.beach_position_code: bp.description
+                for bp in TrtBeachPositions.objects.all()
+            }
+            measurement_type_dict = {
+                mt.measurement_type: mt
+                for mt in TrtMeasurementTypes.objects.all()
+            }
+            body_part_dict = {
+                bp.body_part: bp
+                for bp in TrtBodyParts.objects.all()
+            }
+
+            damage_code_dict = {
+                dc.damage_code: dc
+                for dc in TrtDamageCodes.objects.all()
+            }
+            tissue_type_dict = {
+                tt.tissue_type: tt
+                for tt in TrtTissueTypes.objects.all()
+            }
+            tag_state_dict = {
+                ts.tag_state: ts
+                for ts in TrtTagStates.objects.all()
+            }
+            
+            obs_ids = set(
+                queryset.exclude(
+                    observation_id__isnull=True
+                ).values_list(
+                    "observation_id",
+                    flat=True,
                 )
+            )
 
-                for rt in recorded_tags:
-                    o_id = rt.observation_id_id
-                    t_list = tags_dict.setdefault(o_id, [])
-                    if len(t_list) < 2:
-                        tag_val = rt.tag_id_id or rt.other_tag_id or ""
-                        t_list.append(str(tag_val))
-
-                # 2. PIT Tags
-                recorded_pit_tags = (
-                    TrtRecordedPitTags.objects.filter(observation_id__in=obs_ids).select_related("pittag_id").order_by("pit_tag_position")
+            summary_dict = {
+                s.observation_id: s
+                for s in TrvObservationSummary.objects.filter(
+                    observation_id__in=obs_ids
                 )
-
-                for rpt in recorded_pit_tags:
-                    o_id = rpt.observation_id_id
-                    pt_list = pit_tags_dict.setdefault(o_id, [])
-                    if len(pt_list) < 2:
-                        pt_val = rpt.pittag_id_id or ""
-                        pt_list.append(str(pt_val))
-
-                # 3. Measurements
-                measurements_dict = {}
-                measurements = TrtMeasurements.objects.filter(observation_id__in=obs_ids).select_related("measurement_type").order_by("id")
-
-                for m in measurements:
-                    o_id = m.observation_id
-                    m_list = measurements_dict.setdefault(o_id, [])
-                    if len(m_list) < 2:
-                        m_type = m.measurement_type_id or ""
-                        m_val = str(m.measurement_value) if m.measurement_value is not None else ""
-                        m_list.append((str(m_type), m_val))
-
-                # 4. Damages
-                damages_dict = {}
-                damages = TrtDamage.objects.filter(observation_id__in=obs_ids).select_related("body_part", "damage_code")
-
-                for d in damages:
-                    o_id = d.observation_id
-                    d_list = damages_dict.setdefault(o_id, [])
-                    if len(d_list) < 2:
-                        d_part = d.body_part_id or ""
-                        d_code = d.damage_code_id or ""
-                        d_list.append((str(d_part), str(d_code)))
-
+            }
             try:
+                processed_context = None
+
+                if entry_type == "processed":
+                    headers = get_processed_export_headers()
+
+                    processed_context = build_processed_export_context(
+                        queryset
+                    )
+                else:
+                    headers = build_export_headers(
+                        model_meta,
+                        entry_type,
+                    )
+
                 if file_format == "csv":
                     response = HttpResponse(content_type="text/csv")
-                    response["Content-Disposition"] = f'attachment; filename="{filename}.csv"'
+                    response["Content-Disposition"] = (
+                        f'attachment; filename="{filename}.csv"'
+                    )
+
                     writer = csv.writer(response)
 
-                    # Write headers
-                    headers = [field.name for field in model_meta.fields]
-                    headers.append("organisations")
-                    if entry_type == "field":
-                        headers.append("observation_status")
-                    elif entry_type == "processed":
-                        headers.extend(
-                            [
-                                "tag_1_id",
-                                "tag_2_id",
-                                "pit_tag_1_id",
-                                "pit_tag_2_id",
-                                "measurement_1_type",
-                                "measurement_1_value",
-                                "measurement_2_type",
-                                "measurement_2_value",
-                                "damage_1_body_part",
-                                "damage_1_code",
-                                "damage_2_body_part",
-                                "damage_2_code",
-                                "turtle_species_code",
-                                "turtle_sex",
-                                "turtle_status",
-                            ]
-                        )
+                    # ----------------------------
+                    # Headers CSV
+                    # ----------------------------
                     writer.writerow(headers)
 
-                    # Write data
                     for entry in queryset:
-                        organisations = org_dict.get(entry.entry_batch_id, [])
+
+                        if entry_type == "processed":
+                            writer.writerow(
+                                get_processed_export_row(
+                                    entry,
+                                    processed_context,
+                                )
+                            )
+                            continue
+
+                        organisations = org_dict.get(
+                            entry.entry_batch_id,
+                            []
+                        )
+
                         org_str = ", ".join(organisations)
 
                         row = []
+
                         for field in model_meta.fields:
                             name = field.name
 
-                            if name == "observation_id" and entry_type == "field":
-                                # Ensure observation_id column exports the raw FK ID
-                                value = entry.observation_id_id or ""
-                            elif name == "turtle" and entry_type == "processed":
-                                value = entry.turtle_id or ""
-                            else:
-                                if field.is_relation and field.many_to_one:
-                                    value = getattr(entry, f"{name}_id", "")
-                                else:
-                                    value = getattr(entry, name)
+                            value = get_export_field_value(
+                                entry,
+                                field,
+                                entry_type,
+                            )
 
-                            # Custom formatting for observation_date / observation_time
-                            if name == "observation_date" and isinstance(value, (datetime, date)):
-                                value = value.strftime("%Y-%m-%d") if value else ""
-                            elif name == "observation_time" and isinstance(value, datetime):
-                                value = value.strftime("%H:%M:%S") if value else ""
-                            elif isinstance(value, (datetime, date)):
-                                value = value.isoformat() if value else ""
-                            elif value is None:
-                                value = ""
+                            value = format_export_value(
+                                value
+                            )
 
-                            row.append(str(value))
+                            row.append(value)
+
+                            row.extend(
+                                get_extra_field_values(
+                                    entry,
+                                    name,
+                                    beach_position_dict,
+                                    summary_dict,
+                                )
+                            )
+
+                            row.extend(
+                                get_lookup_values(
+                                    entry,
+                                    name,
+                                    measurement_type_dict,
+                                    body_part_dict,
+                                    damage_code_dict,
+                                    tissue_type_dict,
+                                    tag_state_dict,
+                                )
+                            )
+
                         row.append(org_str)
 
                         if entry_type == "field":
-                            # Get observation status from pre-fetched related object
-                            observation_status = ""
-                            if entry.observation_id_id is not None and getattr(entry, "observation_id", None):
-                                observation_status = entry.observation_id.observation_status or ""
-                            row.append(observation_status)
-                        elif entry_type == "processed":
-                            # Extract Tags up to 2
-                            obs_id = entry.observation_id
-                            t_list = tags_dict.get(obs_id, [])
-                            pt_list = pit_tags_dict.get(obs_id, [])
-
-                            t1 = t_list[0] if len(t_list) > 0 else ""
-                            t2 = t_list[1] if len(t_list) > 1 else ""
-                            pt1 = pt_list[0] if len(pt_list) > 0 else ""
-                            pt2 = pt_list[1] if len(pt_list) > 1 else ""
-
-                            m_list = measurements_dict.get(obs_id, [])
-                            m1_t, m1_v = m_list[0] if len(m_list) > 0 else ("", "")
-                            m2_t, m2_v = m_list[1] if len(m_list) > 1 else ("", "")
-
-                            d_list = damages_dict.get(obs_id, [])
-                            d1_b, d1_c = d_list[0] if len(d_list) > 0 else ("", "")
-                            d2_b, d2_c = d_list[1] if len(d_list) > 1 else ("", "")
-
-                            row.extend([t1, t2, pt1, pt2, m1_t, m1_v, m2_t, m2_v, d1_b, d1_c, d2_b, d2_c])
-
-                            # Append specific turtle info
-                            turtle = getattr(entry, "turtle", None)
-                            if turtle:
-                                row.extend(
-                                    [
-                                        getattr(turtle, "species_code_id", ""),
-                                        getattr(turtle, "sex", ""),
-                                        getattr(turtle, "turtle_status_id", ""),
-                                    ]
-                                )
-                            else:
-                                row.extend(["", "", ""])
+                            row.append(
+                                get_observation_status(entry)
+                            )
 
                         writer.writerow(row)
-
                 else:  # xlsx format
                     response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
                     response["Content-Disposition"] = f'attachment; filename="{filename}.xlsx"'
 
                     wb = Workbook()
                     ws = wb.active
+                    # ----------------------------
+                    # Headers XLSX
+                    # ----------------------------
+                    
+                    if entry_type == "processed":
+                        headers = get_processed_export_headers()
 
-                    # Write headers
-                    headers = [field.name for field in model_meta.fields]
-                    headers.append("organisations")
-                    if entry_type == "field":
-                        headers.append("observation_status")
-                    elif entry_type == "processed":
-                        headers.extend(
-                            [
-                                "tag_1_id",
-                                "tag_2_id",
-                                "pit_tag_1_id",
-                                "pit_tag_2_id",
-                                "measurement_1_type",
-                                "measurement_1_value",
-                                "measurement_2_type",
-                                "measurement_2_value",
-                                "damage_1_body_part",
-                                "damage_1_code",
-                                "damage_2_body_part",
-                                "damage_2_code",
-                                "turtle_species_code",
-                                "turtle_sex",
-                                "turtle_status",
-                            ]
+                        if processed_context is None:
+                            processed_context = build_processed_export_context(
+                                queryset
+                            )
+                    else:
+                        headers = build_export_headers(
+                            model_meta,
+                            entry_type,
                         )
-                    ws.append(headers)
 
+                    ws.append(headers)
+                
                     # Write data
                     for entry in queryset:
+
+                        if entry_type == "processed":
+                            ws.append(
+                                get_processed_export_row(
+                                    entry,
+                                    processed_context,
+                                )
+                            )
+                            continue
+
                         organisations = org_dict.get(entry.entry_batch_id, [])
                         org_str = ", ".join(organisations)
 
@@ -2546,80 +2593,55 @@ class ExportDataView(LoginRequiredMixin, View):
                         for field in model_meta.fields:
                             name = field.name
 
-                            if name == "observation_id" and entry_type == "field":
-                                value = entry.observation_id_id or ""
-                            elif name == "turtle" and entry_type == "processed":
-                                value = entry.turtle_id or ""
-                            else:
-                                if field.is_relation and field.many_to_one:
-                                    value = getattr(entry, f"{name}_id", "")
-                                else:
-                                    value = getattr(entry, name)
+                            value = get_export_field_value(
+                                entry,
+                                field,
+                                entry_type,
+                            )
 
-                            if name == "observation_date" and isinstance(value, (datetime, date)):
-                                value = value.strftime("%Y-%m-%d") if value else ""
-                            elif name == "observation_time" and isinstance(value, datetime):
-                                value = value.strftime("%H:%M:%S") if value else ""
-                            elif isinstance(value, (datetime, date)):
-                                value = value.isoformat() if value else ""
-                            elif value is None:
-                                value = ""
-                            else:
-                                value = str(value)
+                            value = format_export_value(value)
 
                             row.append(value)
+
+                            row.extend(
+                                get_extra_field_values(
+                                    entry,
+                                    name,
+                                    beach_position_dict,
+                                    summary_dict,
+                                )
+                            )
+
+                            row.extend(
+                                get_lookup_values(
+                                    entry,
+                                    name,
+                                    measurement_type_dict,
+                                    body_part_dict,
+                                    damage_code_dict,
+                                    tissue_type_dict,
+                                    tag_state_dict,
+                                )
+                            )
+                            
                         row.append(org_str)
 
                         if entry_type == "field":
-                            # Get observation status from pre-fetched related object
-                            observation_status = ""
-                            if entry.observation_id_id is not None and getattr(entry, "observation_id", None):
-                                observation_status = entry.observation_id.observation_status or ""
-                            row.append(observation_status)
-                        elif entry_type == "processed":
-                            # Extract Tags up to 2
-                            obs_id = entry.observation_id
-                            t_list = tags_dict.get(obs_id, [])
-                            pt_list = pit_tags_dict.get(obs_id, [])
-
-                            t1 = t_list[0] if len(t_list) > 0 else ""
-                            t2 = t_list[1] if len(t_list) > 1 else ""
-                            pt1 = pt_list[0] if len(pt_list) > 0 else ""
-                            pt2 = pt_list[1] if len(pt_list) > 1 else ""
-
-                            m_list = measurements_dict.get(obs_id, [])
-                            m1_t, m1_v = m_list[0] if len(m_list) > 0 else ("", "")
-                            m2_t, m2_v = m_list[1] if len(m_list) > 1 else ("", "")
-
-                            d_list = damages_dict.get(obs_id, [])
-                            d1_b, d1_c = d_list[0] if len(d_list) > 0 else ("", "")
-                            d2_b, d2_c = d_list[1] if len(d_list) > 1 else ("", "")
-
-                            row.extend([t1, t2, pt1, pt2, m1_t, m1_v, m2_t, m2_v, d1_b, d1_c, d2_b, d2_c])
-
-                            # Append specific turtle info
-                            turtle = getattr(entry, "turtle", None)
-                            if turtle:
-                                row.extend(
-                                    [
-                                        str(getattr(turtle, "species_code_id", "")),
-                                        str(getattr(turtle, "sex", "")),
-                                        str(getattr(turtle, "turtle_status_id", "")),
-                                    ]
-                                )
-                            else:
-                                row.extend(["", "", ""])
+                            row.append(
+                                get_observation_status(entry)
+                            )
 
                         ws.append(row)
-
                     wb.save(response)
 
                 return response
 
             except Exception as e:
+                traceback.print_exc()
                 return HttpResponse(f"Error generating export file: {str(e)}", status=500)
 
         except Exception as e:
+            traceback.print_exc()
             return HttpResponse(f"Error during export: {str(e)}", status=500)
 
 
@@ -2653,7 +2675,7 @@ class DudTagManageView(LoginRequiredMixin, View):
 
         # Get tags and their status
         flipper_tags = TrtTags.objects.filter(tag_id__in=flipper_tag_ids).exclude(tag_status__tag_status__in=self.HIDE_STATUS_LIST)
-       
+
 
         pit_tags = TrtPitTags.objects.filter(pittag_id__in=pit_tag_ids).exclude(pit_tag_status__pit_tag_status__in=self.HIDE_STATUS_LIST)
 
@@ -2688,7 +2710,7 @@ class DudTagManageView(LoginRequiredMixin, View):
                 entry_data = self._process_entry(entry, entry.dud_pit_tag_2, "pit_2", pit_tags)
                 entries.append(entry_data)
         tag_type = request.GET.get("tag_type", "").strip()
-        
+
         # Build complete status list BEFORE applying filters
         available_statuses = sorted(
             {
@@ -2702,7 +2724,7 @@ class DudTagManageView(LoginRequiredMixin, View):
             "entry_id",
             ""
         ).strip()
-        
+
         if entry_id:
             entries = [
                 e
@@ -2801,7 +2823,7 @@ class DudTagManageView(LoginRequiredMixin, View):
         tag_type = request.POST.get("tag_type")
         tag_id = request.POST.get("tag_id")
         tag_status = request.POST.get("tag_status")
-        
+
 
         if not all([entry_id, tag_type, tag_id]):
             return redirect("wamtram2:dud_tag_manage")
@@ -4041,7 +4063,7 @@ class PitTagsListView(LoginRequiredMixin, UserPassesTestMixin, PaginateMixin, Li
         status = self.request.GET.get("status")
         if status:
             queryset = queryset.filter(pit_tag_status=status)
-        
+
         issue_location = self.request.GET.get("issue_location")
         if issue_location:
             queryset = queryset.filter(
