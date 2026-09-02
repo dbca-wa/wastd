@@ -17,7 +17,7 @@ from django.core.paginator import Paginator
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import DatabaseError, connections, transaction
 from django.db.models import Count, Exists, OuterRef, Q, Subquery
-from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseForbidden, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseForbidden, HttpResponseRedirect, JsonResponse,StreamingHttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
@@ -2001,6 +2001,8 @@ def search_places(request):
 
 class ExportDataView(LoginRequiredMixin, View):
     template_name = "wamtram2/export_form.html"
+    export_chunk_size = 500
+
 
     def _get_date_range(self, date_from, date_to):
         """
@@ -2275,7 +2277,102 @@ class ExportDataView(LoginRequiredMixin, View):
         ]
 
         return JsonResponse({"alive_statuses": alive_list})
-        
+    
+    def _iter_export_rows(
+        self,
+        queryset,
+        entry_type,
+        new_turtle,
+        model_meta,
+        org_dict,
+        beach_position_dict,
+        measurement_type_dict,
+        body_part_dict,
+        damage_code_dict,
+        tissue_type_dict,
+        tag_state_dict,
+    ):
+        for entries in self._iter_queryset_chunks(queryset):
+            if entry_type == "processed":
+                processed_context = build_processed_export_context(entries)
+
+                for entry in entries:
+                    if new_turtle == "yes" and not is_new_turtle_observation(
+                        entry,
+                        processed_context,
+                    ):
+                        continue
+
+                    yield get_processed_export_row(entry, processed_context)
+
+                continue
+
+            observation_ids = {
+                entry.observation_id_id
+                for entry in entries
+                if entry.observation_id_id
+            }
+            summary_dict = {
+                summary.observation_id: summary
+                for summary in _safe_query_by_chunks(
+                    observation_ids,
+                    lambda chunk: TrvObservationSummary.objects.filter(
+                        observation_id__in=chunk
+                    ),
+                )
+            }
+
+            for entry in entries:
+                row = []
+
+                for field in model_meta.fields:
+                    name = field.name
+
+                    if name == "data_entry_id":
+                        row.append(format_export_value(entry.data_entry_id))
+
+                    value = get_export_field_value(entry, field, entry_type)
+                    row.append(format_export_value(value))
+
+                    row.extend(
+                        format_export_value(value)
+                        for value in get_extra_field_values(
+                            entry,
+                            name,
+                            beach_position_dict,
+                            summary_dict,
+                        )
+                    )
+
+                    row.extend(
+                        format_export_value(value)
+                        for value in get_lookup_values(
+                            entry,
+                            name,
+                            measurement_type_dict,
+                            body_part_dict,
+                            damage_code_dict,
+                            tissue_type_dict,
+                            tag_state_dict,
+                        )
+                    )
+
+                organisations = org_dict.get(entry.entry_batch_id, [])
+                row.append(", ".join(organisations))
+                row.append(format_export_value(get_observation_status(entry)))
+
+                yield row
+
+    def _stream_csv_rows(self, headers, rows):
+        class Echo:
+            def write(self, value):
+                return value
+
+        writer = csv.writer(Echo())
+        yield writer.writerow(headers)
+
+        for row in rows:
+            yield writer.writerow(row)
 
     def export_data(self, request):
         try:
@@ -2361,7 +2458,20 @@ class ExportDataView(LoginRequiredMixin, View):
                         queryset = queryset.filter(alive__isnull=True)
                     else:
                         queryset = queryset.filter(alive=alive)
+                # previous_observation_exists = TrtObservations.objects.filter(
+                #     turtle_id=OuterRef("turtle_id"),
+                #     observation_date__lt=from_date,
+                # )
 
+                # queryset = queryset.annotate(
+                #     has_previous_observation=Exists(previous_observation_exists)
+                # )
+
+                # if new_turtle == "yes":
+                #     queryset = queryset.filter(
+                #         observation_status__in=["I", "S"],
+                #         has_previous_observation=False,
+                    #)
                 # Optimize query with select_related
                 queryset = queryset.select_related(
                     "entry_batch",
@@ -2474,227 +2584,90 @@ class ExportDataView(LoginRequiredMixin, View):
                 for ts in TrtTagStates.objects.all()
             }
             
-            obs_ids = set(
-                queryset.exclude(
-                    observation_id__isnull=True
-                ).values_list(
-                    "observation_id",
-                    flat=True,
-                )
-            )
+            # obs_ids = set(
+            #     queryset.exclude(
+            #         observation_id__isnull=True
+            #     ).values_list(
+            #         "observation_id",
+            #         flat=True,
+            #     )
+            # )
 
-            summary_dict = {
-                s.observation_id: s
-                for s in _safe_query_by_chunks(
-                    obs_ids,
-                    lambda chunk: TrvObservationSummary.objects.filter(
-                        observation_id__in=chunk
-                    ),
-                )
-            }
+            # summary_dict = {
+            #     s.observation_id: s
+            #     for s in _safe_query_by_chunks(
+            #         obs_ids,
+            #         lambda chunk: TrvObservationSummary.objects.filter(
+            #             observation_id__in=chunk
+            #         ),
+            #     )
+            # }
             try:
                 processed_context = None
 
                 if entry_type == "processed":
                     headers = get_processed_export_headers()
-                    entries = list(queryset)
-                    processed_context = build_processed_export_context(entries)
-
-                    if new_turtle == "yes":
-                        entries = [
-                            entry
-                            for entry in entries
-                            if is_new_turtle_observation(entry, processed_context)
-                        ]
-
-                        if not entries:
-                            return HttpResponse(
-                                "No new turtle records found matching the selected criteria",
-                                status=404,
-                            )
-                    queryset = entries
-                    
                 else:
                     headers = build_export_headers(
                         model_meta,
                         entry_type,
                     )
-
                 if file_format == "csv":
-                    response = HttpResponse(content_type="text/csv")
+                    response = StreamingHttpResponse(
+                        self._stream_csv_rows(
+                            headers,
+                            self._iter_export_rows(
+                                queryset,
+                                entry_type,
+                                new_turtle,
+                                model_meta if entry_type == "field" else None,
+                                org_dict,
+                                beach_position_dict,
+                                measurement_type_dict,
+                                body_part_dict,
+                                damage_code_dict,
+                                tissue_type_dict,
+                                tag_state_dict,
+                            ),
+                        ),
+                        content_type="text/csv",
+                    )
                     response["Content-Disposition"] = (
                         f'attachment; filename="{filename}.csv"'
                     )
-
-                    writer = csv.writer(response)
-
-                    # ----------------------------
-                    # Headers CSV
-                    # ----------------------------
-                    writer.writerow(headers)
-
-                    for entry in queryset:
-
-                        if entry_type == "processed":
-                            writer.writerow(
-                                get_processed_export_row(
-                                    entry,
-                                    processed_context,
-                                )
-                            )
-                            continue
-
-                        organisations = org_dict.get(
-                            entry.entry_batch_id,
-                            []
-                        )
-
-                        org_str = ", ".join(organisations)
-
-                        row = []
-
-                        for field in model_meta.fields:
-                            name = field.name
-                            
-                            # ENTRY_ID uses the same value as DATA_ENTRY_ID.
-                            if entry_type == "field" and name == "data_entry_id":
-
-                                row.append(
-                                format_export_value(entry.data_entry_id)
-                                )
-                            
-                            value = get_export_field_value(
-                                entry,
-                                field,
-                                entry_type,
-                            )
-
-                            value = format_export_value(
-                                value
-                            )
-
-                            row.append(value)
-
-                            row.extend(
-                                get_extra_field_values(
-                                    entry,
-                                    name,
-                                    beach_position_dict,
-                                    summary_dict,
-                                )
-                            )
-
-                            row.extend(
-                                get_lookup_values(
-                                    entry,
-                                    name,
-                                    measurement_type_dict,
-                                    body_part_dict,
-                                    damage_code_dict,
-                                    tissue_type_dict,
-                                    tag_state_dict,
-                                )
-                            )
-
-                        row.append(org_str)
-
-                        if entry_type == "field":
-                            row.append(
-                                get_observation_status(entry)
-                            )
-
-                        writer.writerow(row)
-                else:  # xlsx format
-                    response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                else:
+                    response = HttpResponse(
+                        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    )
                     response["Content-Disposition"] = f'attachment; filename="{filename}.xlsx"'
 
-                    wb = Workbook()
-                    ws = wb.active
-                    # ----------------------------
-                    # Headers XLSX
-                    # ----------------------------
-                    
-                    if entry_type == "processed":
-                        headers = get_processed_export_headers()
+                    wb = Workbook(write_only=True)
+                    ws = wb.create_sheet(title="Export")
+                    ws.append(headers)
+                    written_rows = 0
 
-                        if processed_context is None:
-                            processed_context = build_processed_export_context(
-                                queryset
-                            )
-                    else:
-                        headers = build_export_headers(
-                            model_meta,
-                            entry_type,
+                    for row in self._iter_export_rows(
+                        queryset,
+                        entry_type,
+                        new_turtle,
+                        model_meta if entry_type == "field" else None,
+                        org_dict,
+                        beach_position_dict,
+                        measurement_type_dict,
+                        body_part_dict,
+                        damage_code_dict,
+                        tissue_type_dict,
+                        tag_state_dict,
+                    ):
+                        ws.append(row)
+                        written_rows += 1
+
+                    if entry_type == "processed" and new_turtle == "yes" and not written_rows:
+                        return HttpResponse(
+                            "No new turtle records found matching the selected criteria",
+                            status=404,
                         )
 
-                    ws.append(headers)
-                
-                    # Write data
-                    for entry in queryset:
-
-                        if entry_type == "processed":
-                            ws.append(
-                                get_processed_export_row(
-                                    entry,
-                                    processed_context,
-                                )
-                            )
-                            continue
-
-                        organisations = org_dict.get(entry.entry_batch_id, [])
-                        org_str = ", ".join(organisations)
-
-                        row = []
-                        for field in model_meta.fields:
-                            name = field.name
-
-                            # ENTRY_ID uses the same value as DATA_ENTRY_ID.
-                            if entry_type == "field" and name == "data_entry_id":
-
-                                row.append(
-                                    format_export_value(entry.data_entry_id)
-                                )
-                            
-
-                            value = get_export_field_value(
-                                entry,
-                                field,
-                                entry_type,
-                            )
-
-                            value = format_export_value(value)
-
-                            row.append(value)
-
-                            row.extend(
-                                get_extra_field_values(
-                                    entry,
-                                    name,
-                                    beach_position_dict,
-                                    summary_dict,
-                                )
-                            )
-
-                            row.extend(
-                                get_lookup_values(
-                                    entry,
-                                    name,
-                                    measurement_type_dict,
-                                    body_part_dict,
-                                    damage_code_dict,
-                                    tissue_type_dict,
-                                    tag_state_dict,
-                                )
-                            )
-                            
-                        row.append(org_str)
-
-                        if entry_type == "field":
-                            row.append(
-                                get_observation_status(entry)
-                            )
-
-                        ws.append(row)
                     wb.save(response)
 
                 return response
@@ -2706,7 +2679,20 @@ class ExportDataView(LoginRequiredMixin, View):
         except Exception as e:
             traceback.print_exc()
             return HttpResponse(f"Error during export: {str(e)}", status=500)
+    
+    def _iter_queryset_chunks(self, queryset):
+        start = 0
 
+        while True:
+            entries = list(
+                queryset[start : start + self.export_chunk_size]
+            )
+
+            if not entries:
+                break
+
+            yield entries
+            start += self.export_chunk_size
 
 class DudTagManageView(LoginRequiredMixin, View):
     template_name = "wamtram2/dud_tag_manage.html"

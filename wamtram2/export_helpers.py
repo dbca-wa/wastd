@@ -485,32 +485,9 @@ def build_processed_export_context(entries):
         return context
 
     context["observations"] = {
-        observation.observation_id: observation
-        for observation in _safe_query_by_chunks(
-            observation_ids,
-            lambda chunk: TrtObservations.objects.filter(observation_id__in=chunk)
-            .select_related(
-                "activity_code",
-                "alive",
-                "beach_position_code",
-                "clutch_completed",
-                "condition_code",
-                "datum_code",
-                "egg_count_method",
-                "entered_by_person",
-                "measurer_person",
-                "measurer_reporter_person",
-                "nesting",
-                "place_code",
-                "place_code__location_code",
-                "reporter_person",
-                "tagger_person",
-                "turtle",
-                "turtle__location_code",
-                "turtle__species_code",
-                "turtle__turtle_status",
-            ),
-        )
+        entry.observation_id: entry
+        for entry in entries
+        if getattr(entry, "observation_id", None)
     }
 
     for turtle_id, observation_date, observation_id in _safe_query_by_chunks(
