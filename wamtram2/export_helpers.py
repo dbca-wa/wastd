@@ -619,7 +619,6 @@ def build_processed_export_context(entries):
     return context
 
 def get_processed_export_row(entry, context):
-
     observation = context["observations"].get(
         entry.observation_id,
         entry,
@@ -1127,8 +1126,8 @@ def get_processed_export_row(entry, context):
         else ""
     ),
 }
-    
-    return [format_export_value(values.get(header)) for header in PROCESSED_EXPORT_HEADERS]
+
+return [format_export_value(values.get(header)) for header in PROCESSED_EXPORT_HEADERS]
 
 
 def _safe_queryset(queryset):
@@ -1176,11 +1175,11 @@ def _raw_fk(obj, field_name):
 def _safe_related(obj, field_name):
     if obj is None:
         return None
+
     try:
         return getattr(obj, field_name)
     except (AttributeError, DatabaseError, ObjectDoesNotExist):
         return None
-
 
 def _first(*values):
     for value in values:

@@ -3,9 +3,8 @@ import json
 import operator
 import re
 import traceback
-from datetime import date, datetime, time, timedelta
+from datetime import datetime, time, timedelta
 from functools import reduce
-
 import pandas as pd
 from django.apps import apps
 from django.conf import settings
@@ -76,17 +75,6 @@ from .models import (
     TrtTurtles,
     TrtTurtleStatus,
     TrtYesNo,
-)
-from .export_config import (
-    FIELD_HEADER_MAP,
-    EXTRA_HEADERS,
-    PERSON_FIELDS,
-    BODY_PART_FIELDS,
-    DAMAGE_CODE_FIELDS,
-    TISSUE_FIELDS,
-    TAG_STATE_FIELDS,
-    DAMAGE_FIELDS,
-    PROCESSED_EXPORT_HEADERS,
 )
 from .export_helpers import (
     build_export_headers,
@@ -2292,7 +2280,15 @@ class ExportDataView(LoginRequiredMixin, View):
         tissue_type_dict,
         tag_state_dict,
     ):
-        for entries in self._iter_queryset_chunks(queryset):
+
+        if entry_type == "processed":
+            chunk_iterator = self._iter_processed_queryset_chunks(queryset)
+        elif entry_type == "field":
+            chunk_iterator = self._iter_field_queryset_chunks(queryset)
+        else:
+            chunk_iterator = self._iter_queryset_chunks(queryset)
+
+        for entries in chunk_iterator:
             if entry_type == "processed":
                 processed_context = build_processed_export_context(entries)
 
@@ -2303,7 +2299,8 @@ class ExportDataView(LoginRequiredMixin, View):
                     ):
                         continue
 
-                    yield get_processed_export_row(entry, processed_context)
+                    row = get_processed_export_row(entry, processed_context)
+                    yield row
 
                 continue
 
@@ -2477,9 +2474,19 @@ class ExportDataView(LoginRequiredMixin, View):
                     "entry_batch",
                     "place_code",
                     "place_code__location_code",
-                    #"observation_id",
-                    #"turtle_id",
                     "turtle",
+                    "turtle__species_code",
+                    "turtle__location_code",
+                    "turtle__turtle_status",
+                    "measurer_person",
+                    "measurer_reporter_person",
+                    "tagger_person",
+                    "reporter_person",
+                    "entered_by_person",
+                    "activity_code",
+                    "beach_position_code",
+                    "condition_code",
+                    "egg_count_method",
                 )
 
             else:
@@ -2550,7 +2557,7 @@ class ExportDataView(LoginRequiredMixin, View):
                 org_dict.setdefault(bo["trtentrybatch_id"], []).append(bo["organisation"])
 
             # Pre-fetch Tags and PIT Tags for Processed Entries
-            summary_dict = {}
+            #summary_dict = {}
             # left_tags_dict = {}
             # right_tags_dict = {}
             # unknown_tags_dict = {}
@@ -2583,28 +2590,8 @@ class ExportDataView(LoginRequiredMixin, View):
                 ts.tag_state: ts
                 for ts in TrtTagStates.objects.all()
             }
-            
-            # obs_ids = set(
-            #     queryset.exclude(
-            #         observation_id__isnull=True
-            #     ).values_list(
-            #         "observation_id",
-            #         flat=True,
-            #     )
-            # )
-
-            # summary_dict = {
-            #     s.observation_id: s
-            #     for s in _safe_query_by_chunks(
-            #         obs_ids,
-            #         lambda chunk: TrvObservationSummary.objects.filter(
-            #             observation_id__in=chunk
-            #         ),
-            #     )
-            # }
+          
             try:
-                processed_context = None
-
                 if entry_type == "processed":
                     headers = get_processed_export_headers()
                 else:
@@ -2680,6 +2667,48 @@ class ExportDataView(LoginRequiredMixin, View):
             traceback.print_exc()
             return HttpResponse(f"Error during export: {str(e)}", status=500)
     
+    def _iter_processed_queryset_chunks(self, queryset):
+        queryset = queryset.order_by("observation_id")
+        last_observation_id = None
+
+        while True:
+            chunk_queryset = queryset
+            if last_observation_id is not None:
+                chunk_queryset = chunk_queryset.filter(
+                    observation_id__gt=last_observation_id
+                )
+
+            entries = list(
+                chunk_queryset[: self.export_chunk_size]
+            )
+
+            if not entries:
+                break
+
+            yield entries
+            last_observation_id = entries[-1].observation_id
+
+    def _iter_field_queryset_chunks(self, queryset):
+        queryset = queryset.order_by("data_entry_id")
+        last_data_entry_id = None
+
+        while True:
+            chunk_queryset = queryset
+            if last_data_entry_id is not None:
+                chunk_queryset = chunk_queryset.filter(
+                    data_entry_id__gt=last_data_entry_id
+                )
+
+            entries = list(
+                chunk_queryset[: self.export_chunk_size]
+            )
+
+            if not entries:
+                break
+
+            yield entries
+            last_data_entry_id = entries[-1].data_entry_id
+
     def _iter_queryset_chunks(self, queryset):
         start = 0
 
