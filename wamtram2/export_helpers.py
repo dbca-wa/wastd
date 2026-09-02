@@ -724,410 +724,410 @@ def get_processed_export_row(entry, context):
     
     de = data_entry
     values = {
-    "OBSERVATION_ID": observation.observation_id,
-    "TURTLE_ID": _raw_fk(observation, "turtle"),
-    "OBSERVATION_DATE": (
-        obs_dt.date()
-        if obs_dt
-        else ""
-    ),
+        "OBSERVATION_ID": observation.observation_id,
+        "TURTLE_ID": _raw_fk(observation, "turtle"),
+        "OBSERVATION_DATE": (
+            obs_dt.date()
+            if obs_dt
+            else ""
+        ),
 
-    "OBSERVATION_TIME": (
-        obs_dt.time()
-        if obs_dt
-        else ""
-    ),
+        "OBSERVATION_TIME": (
+            obs_dt.time()
+            if obs_dt
+            else ""
+        ),
 
-    "DATE_ENTERED": (
-        _attr(observation, "date_entered").date()
-        if _attr(observation, "date_entered")
-        else ""
-    ),
-    "OBSERVATION_DATE_OLD": _attr(observation, "observation_date_old"),
-    "ALIVE": _raw_fk(observation, "alive"),
+        "DATE_ENTERED": (
+            _attr(observation, "date_entered").date()
+            if _attr(observation, "date_entered")
+            else ""
+        ),
+        "OBSERVATION_DATE_OLD": _attr(observation, "observation_date_old"),
+        "ALIVE": _raw_fk(observation, "alive"),
 
-    
-    "ENTRY_ID": (
-        de.data_entry_id if de else ""
-    ),
+        
+        "ENTRY_ID": (
+            de.data_entry_id if de else ""
+        ),
 
-    "DATA_ENTRY_ID": (
-        de.data_entry_id if de else ""
-    ),
+        "DATA_ENTRY_ID": (
+            de.data_entry_id if de else ""
+        ),
 
-    "USER_ENTRY_ID": (
-        de.user_entry_id if de else ""
-    ),
+        "USER_ENTRY_ID": (
+            de.user_entry_id if de else ""
+        ),
 
-    "ORIGINAL_OBSERVATION_ID": _attr(observation, "original_observation_id"),
+        "ORIGINAL_OBSERVATION_ID": _attr(observation, "original_observation_id"),
 
-    "ENTRY_BATCH_ID": _raw_fk(
-        observation,
-        "entry_batch",
-    ),
+        "ENTRY_BATCH_ID": _raw_fk(
+            observation,
+            "entry_batch",
+        ),
 
-    "DATA_ENTERER_ID": "",
-    "DATA_ENTERER_NAME": "",
+        "DATA_ENTERER_ID": "",
+        "DATA_ENTERER_NAME": "",
 
-    "MEASURER_PERSON_ID": _raw_fk(
-        observation,
-        "measurer_person",
-    ),
-
-    "MEASURER_PERSON_NAME": _person_name(
-        _safe_related(
+        "MEASURER_PERSON_ID": _raw_fk(
             observation,
             "measurer_person",
-        )
-    ),
+        ),
 
-    "MEASURER_REPORTER_PERSON_ID": _raw_fk(
-        observation,
-        "measurer_reporter_person",
-    ),
-
-    "MEASURER_REPORTER_PERSON_NAME": _person_name(
-        _safe_related(
-            observation,
-            "measurer_reporter_person",
-        )
-    ),
-
-    "TAGGER_PERSON_ID": _raw_fk(
-        observation,
-        "tagger_person",
-    ),
-
-    "TAGGER_PERSON_NAME": _person_name(
-        _safe_related(
-            observation,
-            "tagger_person",
-        )
-    ),
-
-    "REPORTER_PERSON_ID": _raw_fk(
-        observation,
-        "reporter_person",
-    ),
-
-    "REPORTER_PERSON_NAME": _person_name(
-        _safe_related(
-            observation,
-            "reporter_person",
-        )
-    ),
-
-    "ENTERED_BY_PERSON_ID": _raw_fk(
-        observation,
-        "entered_by_person",
-    ),
-
-    "ENTERED_BY_PERSON_NAME": _person_name(
-        _safe_related(
-            observation,
-            "entered_by_person",
-        )
-    ),
-
-    "PLACE_CODE": _raw_fk(
-        observation,
-        "place_code",
-    ),
-
-    "PLACE_DESCRIPTION": _first(
-        _attr(observation, "place_description"),
-        _attr(place, "place_name"),
-    ),
-
-    "DATUM_CODE": _raw_fk(
-        observation,
-        "datum_code",
-    ),
-
-    "LATITUDE": _attr(
-        observation,
-        "latitude",
-    ),
-
-    "LONGITUDE": _attr(
-        observation,
-        "longitude",
-    ),
-
-    "LATITUDE_DEGREES": _attr(
-        observation,
-        "latitude_degrees",
-    ),
-
-    "LATITUDE_MINUTES": _attr(
-        observation,
-        "latitude_minutes",
-    ),
-
-    "LATITUDE_SECONDS": _attr(
-        observation,
-        "latitude_seconds",
-    ),
-
-    "LONGITUDE_DEGREES": _attr(
-        observation,
-        "longitude_degrees",
-    ),
-
-    "LONGITUDE_MINUTES": _attr(
-        observation,
-        "longitude_minutes",
-    ),
-
-    "LONGITUDE_SECONDS": _attr(
-        observation,
-        "longitude_seconds",
-    ),
-
-    "ZONE": _attr(
-        observation,
-        "zone",
-    ),
-
-    "EASTING": _attr(
-        observation,
-        "easting",
-    ),
-
-    "NORTHING": _attr(
-        observation,
-        "northing",
-    ),
-
-    "ACTIVITY_CODE": _raw_fk(
-        observation,
-        "activity_code",
-    ),
-
-    "ACTIVITY_DESCRIPTION": _description(
-        _safe_related(
-            observation,
-            "activity_code",
-        )
-    ),
-
-    "BEACH_POSITION_CODE": _raw_fk(
-        observation,
-        "beach_position_code",
-    ),
-
-    "BEACH_POSITION_DESCRIPTION": _description(
-        _safe_related(
-            observation,
-            "beach_position_code",
-        )
-    ),
-
-    "CONDITION_CODE": _raw_fk(
-        observation,
-        "condition_code",
-    ),
-
-    "CONDITION_DESCRIPTION": _description(
-        _safe_related(
-            observation,
-            "condition_code",
-        )
-    ),
-
-    "NESTING": _raw_fk(
-        observation,
-        "nesting",
-    ),
-
-    "CLUTCH_COMPLETED": _raw_fk(
-        observation,
-        "clutch_completed",
-    ),
-
-    "NUMBER_OF_EGGS": _attr(
-        observation,
-        "number_of_eggs",
-    ),
-
-    "EGG_COUNT_METHOD": _raw_fk(
-        observation,
-        "egg_count_method",
-    ),
-
-    "EGG_COUNT_METHOD_DESCRIPTION": _description(
-        _safe_related(
-            observation,
-            "egg_count_method",
-        )
-    ),
-
-    "MEASUREMENTS": _attr(
-        observation,
-        "measurements",
-    ),
-
-    "ALL_MEASUREMENTS": _join(
-        _format_measurement(m)
-        for m in measurements
-    ),
-
-    "ACTION_TAKEN": _attr(
-        observation,
-        "action_taken",
-    ),
-
-    "COMMENTS": _attr(
-        observation,
-        "comments",
-    ),
-
-    "DATA_ENTRY_COMMENTS": (
-        de.comments if de else ""
-    ),
-
-    "FLIPPER_TAG_COMMENTS": _join(
-        tag.comments
-        for tag in recorded_tags
-    ),
-
-    "PIT_TAG_COMMENTS": _join(
-        tag.comments
-        for tag in recorded_pit_tags
-    ),
-
-    "ENTERED_BY": _attr(
-    observation,
-    "entered_by",
-    ),
-
-    "COMMENT_FROMRECORDEDTAGSTABLE": _attr(
-        observation,
-        "comment_fromrecordedtagstable",
-    ),
-
-    "SCARS_LEFT": _attr(
-        observation,
-        "scars_left",
-    ),
-
-    "SCARS_RIGHT": _attr(
-        observation,
-        "scars_right",
-    ),
-
-    "OTHER_TAGS": _attr(
-        observation,
-        "other_tags",
-    ),
-
-    "OTHER_TAGS_IDENTIFICATION_TYPE": _raw_fk(
-        observation,
-        "other_tags_identification_type",
-    ),
-
-    "TransferID": _attr(
-        observation,
-        "transferid",
-    ),
-
-    "SCARS_LEFT_SCALE_1": _attr(observation, "scars_left_scale_1"),
-    "SCARS_LEFT_SCALE_2": _attr(observation, "scars_left_scale_2"),
-    "SCARS_LEFT_SCALE_3": _attr(observation, "scars_left_scale_3"),
-    "SCARS_RIGHT_SCALE_1": _attr(observation, "scars_right_scale_1"),
-    "SCARS_RIGHT_SCALE_2": _attr(observation, "scars_right_scale_2"),
-    "SCARS_RIGHT_SCALE_3": _attr(observation, "scars_right_scale_3"),
-
-    "CC_LENGTH_Not_Measured": _attr(observation, "cc_length_not_measured"),
-    "CC_NOTCH_LENGTH_Not_Measured": _attr(observation, "cc_notch_length_not_measured"),
-    "CC_WIDTH_Not_Measured": _attr(observation, "cc_width_not_measured"),
-
-    "TagScarNotChecked": _attr(observation, "tagscarnotchecked"),
-    "DidNotCheckForInjury": _attr(observation, "didnotcheckforinjury"),
-
-    "OBSERVATION_STATUS": _attr(
-        observation,
-        "observation_status",
-    ),
-    "NEW_TURTLE": "Y" if is_new_turtle_observation(observation, context) else "N",
-
-    "DUD_FLIPPER_TAG": _attr(observation, "dud_flipper_tag"),
-    "DUD_FLIPPER_TAG_2": _attr(observation, "dud_flipper_tag_2"),
-    "DUD_PIT_TAG": _attr(observation, "dud_pit_tag"),
-    "DUD_PIT_TAG_2": _attr(observation, "dud_pit_tag_2"),
-
-    "SPECIES_CODE": _raw_fk(
-        turtle,
-        "species_code",
-    ),
-
-    "COMMON_NAME": _attr(
-        species,
-        "common_name",
-    ),
-
-    "IDENTIFICATION_CONFIDENCE": _attr(
-        turtle,
-        "identification_confidence",
-    ),
-
-    "SEX": _attr(
-        turtle,
-        "sex",
-    ),
-
-    "TURTLE_STATUS": _first(
-        _raw_fk(turtle, "turtle_status"),
-        _description(
+        "MEASURER_PERSON_NAME": _person_name(
             _safe_related(
-                turtle,
-                "turtle_status",
+                observation,
+                "measurer_person",
             )
         ),
-    ),
 
-    "IDENTIFICATIONS": _join(
-        _format_identification(i)
-        for i in identifications
-    ),
+        "MEASURER_REPORTER_PERSON_ID": _raw_fk(
+            observation,
+            "measurer_reporter_person",
+        ),
 
-    # "TAG_1": _list_item(flipper_tag_ids, 0),
-    # "TAG_2": _list_item(flipper_tag_ids, 1),
-    # "TAG_3": _list_item(flipper_tag_ids, 2),
-    # "TAG_4": _list_item(flipper_tag_ids, 3),
+        "MEASURER_REPORTER_PERSON_NAME": _person_name(
+            _safe_related(
+                observation,
+                "measurer_reporter_person",
+            )
+        ),
 
-    # Match the legacy Observation mapping: new tags in TAG_1/TAG_2
-    # and existing tags in TAG_3/TAG_4, grouped by side.
-    "TAG_1": ", ".join(new_left_tags),
-    "TAG_2": ", ".join(new_right_tags),
-    "TAG_3": ", ".join(existing_left_tags),
-    "TAG_4": ", ".join(existing_right_tags),
+        "TAGGER_PERSON_ID": _raw_fk(
+            observation,
+            "tagger_person",
+        ),
 
-    "ALL_FLIPPER_TAGS": _join(flipper_tag_ids),
-    "FLIPPER_TAG_DETAILS": _join(tag_details),
+        "TAGGER_PERSON_NAME": _person_name(
+            _safe_related(
+                observation,
+                "tagger_person",
+            )
+        ),
 
-    "PIT_TAGS": _join(pit_tag_ids),
-    "PIT_TAG_DETAILS": _join(pit_tag_details),
+        "REPORTER_PERSON_ID": _raw_fk(
+            observation,
+            "reporter_person",
+        ),
 
-    "LOCATION_CODE": _raw_fk(location, "location_code") or _attr(location, "location_code"),
-    "OBSERVED_LOCATION_CODE": _raw_fk(location, "location_code") or _attr(location, "location_code"),
-    "OBSERVED_LOCATION_NAME": _attr(location, "location_name"),
+        "REPORTER_PERSON_NAME": _person_name(
+            _safe_related(
+                observation,
+                "reporter_person",
+            )
+        ),
 
-    "PLACE_NAME": _attr(place, "place_name"),
+        "ENTERED_BY_PERSON_ID": _raw_fk(
+            observation,
+            "entered_by_person",
+        ),
 
-    "DAMAGE": _join(
-        _format_damage(d)
-        for d in damages
-    ),
+        "ENTERED_BY_PERSON_NAME": _person_name(
+            _safe_related(
+                observation,
+                "entered_by_person",
+            )
+        ),
 
-    "SAMPLES": (
-        _entry_samples(de)
-        if de
-        else ""
-    ),
-}
+        "PLACE_CODE": _raw_fk(
+            observation,
+            "place_code",
+        ),
 
-return [format_export_value(values.get(header)) for header in PROCESSED_EXPORT_HEADERS]
+        "PLACE_DESCRIPTION": _first(
+            _attr(observation, "place_description"),
+            _attr(place, "place_name"),
+        ),
+
+        "DATUM_CODE": _raw_fk(
+            observation,
+            "datum_code",
+        ),
+
+        "LATITUDE": _attr(
+            observation,
+            "latitude",
+        ),
+
+        "LONGITUDE": _attr(
+            observation,
+            "longitude",
+        ),
+
+        "LATITUDE_DEGREES": _attr(
+            observation,
+            "latitude_degrees",
+        ),
+
+        "LATITUDE_MINUTES": _attr(
+            observation,
+            "latitude_minutes",
+        ),
+
+        "LATITUDE_SECONDS": _attr(
+            observation,
+            "latitude_seconds",
+        ),
+
+        "LONGITUDE_DEGREES": _attr(
+            observation,
+            "longitude_degrees",
+        ),
+
+        "LONGITUDE_MINUTES": _attr(
+            observation,
+            "longitude_minutes",
+        ),
+
+        "LONGITUDE_SECONDS": _attr(
+            observation,
+            "longitude_seconds",
+        ),
+
+        "ZONE": _attr(
+            observation,
+            "zone",
+        ),
+
+        "EASTING": _attr(
+            observation,
+            "easting",
+        ),
+
+        "NORTHING": _attr(
+            observation,
+            "northing",
+        ),
+
+        "ACTIVITY_CODE": _raw_fk(
+            observation,
+            "activity_code",
+        ),
+
+        "ACTIVITY_DESCRIPTION": _description(
+            _safe_related(
+                observation,
+                "activity_code",
+            )
+        ),
+
+        "BEACH_POSITION_CODE": _raw_fk(
+            observation,
+            "beach_position_code",
+        ),
+
+        "BEACH_POSITION_DESCRIPTION": _description(
+            _safe_related(
+                observation,
+                "beach_position_code",
+            )
+        ),
+
+        "CONDITION_CODE": _raw_fk(
+            observation,
+            "condition_code",
+        ),
+
+        "CONDITION_DESCRIPTION": _description(
+            _safe_related(
+                observation,
+                "condition_code",
+            )
+        ),
+
+        "NESTING": _raw_fk(
+            observation,
+            "nesting",
+        ),
+
+        "CLUTCH_COMPLETED": _raw_fk(
+            observation,
+            "clutch_completed",
+        ),
+
+        "NUMBER_OF_EGGS": _attr(
+            observation,
+            "number_of_eggs",
+        ),
+
+        "EGG_COUNT_METHOD": _raw_fk(
+            observation,
+            "egg_count_method",
+        ),
+
+        "EGG_COUNT_METHOD_DESCRIPTION": _description(
+            _safe_related(
+                observation,
+                "egg_count_method",
+            )
+        ),
+
+        "MEASUREMENTS": _attr(
+            observation,
+            "measurements",
+        ),
+
+        "ALL_MEASUREMENTS": _join(
+            _format_measurement(m)
+            for m in measurements
+        ),
+
+        "ACTION_TAKEN": _attr(
+            observation,
+            "action_taken",
+        ),
+
+        "COMMENTS": _attr(
+            observation,
+            "comments",
+        ),
+
+        "DATA_ENTRY_COMMENTS": (
+            de.comments if de else ""
+        ),
+
+        "FLIPPER_TAG_COMMENTS": _join(
+            tag.comments
+            for tag in recorded_tags
+        ),
+
+        "PIT_TAG_COMMENTS": _join(
+            tag.comments
+            for tag in recorded_pit_tags
+        ),
+
+        "ENTERED_BY": _attr(
+        observation,
+        "entered_by",
+        ),
+
+        "COMMENT_FROMRECORDEDTAGSTABLE": _attr(
+            observation,
+            "comment_fromrecordedtagstable",
+        ),
+
+        "SCARS_LEFT": _attr(
+            observation,
+            "scars_left",
+        ),
+
+        "SCARS_RIGHT": _attr(
+            observation,
+            "scars_right",
+        ),
+
+        "OTHER_TAGS": _attr(
+            observation,
+            "other_tags",
+        ),
+
+        "OTHER_TAGS_IDENTIFICATION_TYPE": _raw_fk(
+            observation,
+            "other_tags_identification_type",
+        ),
+
+        "TransferID": _attr(
+            observation,
+            "transferid",
+        ),
+
+        "SCARS_LEFT_SCALE_1": _attr(observation, "scars_left_scale_1"),
+        "SCARS_LEFT_SCALE_2": _attr(observation, "scars_left_scale_2"),
+        "SCARS_LEFT_SCALE_3": _attr(observation, "scars_left_scale_3"),
+        "SCARS_RIGHT_SCALE_1": _attr(observation, "scars_right_scale_1"),
+        "SCARS_RIGHT_SCALE_2": _attr(observation, "scars_right_scale_2"),
+        "SCARS_RIGHT_SCALE_3": _attr(observation, "scars_right_scale_3"),
+
+        "CC_LENGTH_Not_Measured": _attr(observation, "cc_length_not_measured"),
+        "CC_NOTCH_LENGTH_Not_Measured": _attr(observation, "cc_notch_length_not_measured"),
+        "CC_WIDTH_Not_Measured": _attr(observation, "cc_width_not_measured"),
+
+        "TagScarNotChecked": _attr(observation, "tagscarnotchecked"),
+        "DidNotCheckForInjury": _attr(observation, "didnotcheckforinjury"),
+
+        "OBSERVATION_STATUS": _attr(
+            observation,
+            "observation_status",
+        ),
+        "NEW_TURTLE": "Y" if is_new_turtle_observation(observation, context) else "N",
+
+        "DUD_FLIPPER_TAG": _attr(observation, "dud_flipper_tag"),
+        "DUD_FLIPPER_TAG_2": _attr(observation, "dud_flipper_tag_2"),
+        "DUD_PIT_TAG": _attr(observation, "dud_pit_tag"),
+        "DUD_PIT_TAG_2": _attr(observation, "dud_pit_tag_2"),
+
+        "SPECIES_CODE": _raw_fk(
+            turtle,
+            "species_code",
+        ),
+
+        "COMMON_NAME": _attr(
+            species,
+            "common_name",
+        ),
+
+        "IDENTIFICATION_CONFIDENCE": _attr(
+            turtle,
+            "identification_confidence",
+        ),
+
+        "SEX": _attr(
+            turtle,
+            "sex",
+        ),
+
+        "TURTLE_STATUS": _first(
+            _raw_fk(turtle, "turtle_status"),
+            _description(
+                _safe_related(
+                    turtle,
+                    "turtle_status",
+                )
+            ),
+        ),
+
+        "IDENTIFICATIONS": _join(
+            _format_identification(i)
+            for i in identifications
+        ),
+
+        # "TAG_1": _list_item(flipper_tag_ids, 0),
+        # "TAG_2": _list_item(flipper_tag_ids, 1),
+        # "TAG_3": _list_item(flipper_tag_ids, 2),
+        # "TAG_4": _list_item(flipper_tag_ids, 3),
+
+        # Match the legacy Observation mapping: new tags in TAG_1/TAG_2
+        # and existing tags in TAG_3/TAG_4, grouped by side.
+        "TAG_1": ", ".join(new_left_tags),
+        "TAG_2": ", ".join(new_right_tags),
+        "TAG_3": ", ".join(existing_left_tags),
+        "TAG_4": ", ".join(existing_right_tags),
+
+        "ALL_FLIPPER_TAGS": _join(flipper_tag_ids),
+        "FLIPPER_TAG_DETAILS": _join(tag_details),
+
+        "PIT_TAGS": _join(pit_tag_ids),
+        "PIT_TAG_DETAILS": _join(pit_tag_details),
+
+        "LOCATION_CODE": _raw_fk(location, "location_code") or _attr(location, "location_code"),
+        "OBSERVED_LOCATION_CODE": _raw_fk(location, "location_code") or _attr(location, "location_code"),
+        "OBSERVED_LOCATION_NAME": _attr(location, "location_name"),
+
+        "PLACE_NAME": _attr(place, "place_name"),
+
+        "DAMAGE": _join(
+            _format_damage(d)
+            for d in damages
+        ),
+
+        "SAMPLES": (
+            _entry_samples(de)
+            if de
+            else ""
+        ),
+    }
+
+    return [format_export_value(values.get(header)) for header in PROCESSED_EXPORT_HEADERS]
 
 
 def _safe_queryset(queryset):
