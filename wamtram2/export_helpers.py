@@ -4,6 +4,9 @@ from django.utils import timezone
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import DatabaseError
 
+from time import perf_counter
+from collections import Counter
+
 from .models import (
     TrtDamage,
     TrtDataEntry,
@@ -619,7 +622,7 @@ def build_processed_export_context(entries):
     return context
 
 def get_processed_export_row(entry, context):
-
+    row_start = perf_counter()
     observation = context["observations"].get(
         entry.observation_id,
         entry,
@@ -724,6 +727,8 @@ def get_processed_export_row(entry, context):
 
     
     de = data_entry
+    prepare_elapsed = perf_counter() - row_start
+    values_start = perf_counter()
     values = {
     "OBSERVATION_ID": observation.observation_id,
     "TURTLE_ID": _raw_fk(observation, "turtle"),
@@ -1127,8 +1132,27 @@ def get_processed_export_row(entry, context):
         else ""
     ),
 }
-    
-    return [format_export_value(values.get(header)) for header in PROCESSED_EXPORT_HEADERS]
+
+    values_elapsed = perf_counter() - values_start
+
+    format_start = perf_counter()
+
+    row = [
+        format_export_value(values.get(header))
+        for header in PROCESSED_EXPORT_HEADERS
+    ]
+
+    format_elapsed = perf_counter() - format_start
+
+    # print(
+    #     f"EXPORT ROW PROFILE "
+    #     f"prepare={prepare_elapsed:.6f}s "
+    #     f"values={values_elapsed:.6f}s "
+    #     f"format={format_elapsed:.6f}s",
+    #     flush=True,
+    # )
+
+    return row
 
 
 def _safe_queryset(queryset):
@@ -1172,15 +1196,24 @@ def _raw_fk(obj, field_name):
         return getattr(obj, raw_name)
     return getattr(obj, field_name, None)
 
+_safe_related_calls = Counter()
 
 def _safe_related(obj, field_name):
     if obj is None:
         return None
+
+    cache_key = f"{obj.__class__.__name__}.{field_name}"
+
     try:
+        field = obj._meta.get_field(field_name)
+
+        if not field.is_cached(obj):
+            _safe_related_calls[cache_key] += 1
+
         return getattr(obj, field_name)
+
     except (AttributeError, DatabaseError, ObjectDoesNotExist):
         return None
-
 
 def _first(*values):
     for value in values:

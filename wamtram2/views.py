@@ -6,6 +6,11 @@ import traceback
 from datetime import date, datetime, time, timedelta
 from functools import reduce
 
+from time import perf_counter
+from django.db import connection
+import cProfile
+import pstats
+
 import pandas as pd
 from django.apps import apps
 from django.conf import settings
@@ -100,6 +105,7 @@ from .export_helpers import (
     get_processed_export_row,
     is_new_turtle_observation,
     _safe_query_by_chunks,
+    _safe_related_calls,
 )
 from observations.lookups import DEATH_STAGES
 from observations.models import AnimalEncounter, TagObservation as AnimalTagObservation
@@ -2292,19 +2298,85 @@ class ExportDataView(LoginRequiredMixin, View):
         tissue_type_dict,
         tag_state_dict,
     ):
-        for entries in self._iter_queryset_chunks(queryset):
+        profile_processed_rows = True
+
+        if entry_type == "processed":
+            chunk_iterator = self._iter_processed_queryset_chunks(queryset)
+        elif entry_type == "field":
+            chunk_iterator = self._iter_field_queryset_chunks(queryset)
+        else:
+            chunk_iterator = self._iter_queryset_chunks(queryset)
+
+        for entries in chunk_iterator:
             if entry_type == "processed":
+                context_start = perf_counter()
+
                 processed_context = build_processed_export_context(entries)
 
-                for entry in entries:
-                    if new_turtle == "yes" and not is_new_turtle_observation(
-                        entry,
-                        processed_context,
-                    ):
-                        continue
+                print(
+                    f"EXPORT PROFILE processed_context "
+                    f"rows={len(entries)} "
+                    f"elapsed={perf_counter() - context_start:.3f}s",
+                    flush=True,
+                )
 
-                    yield get_processed_export_row(entry, processed_context)
+                rows_start = perf_counter()
+                output_rows = 0
+                queries_before = len(connection.queries)
 
+                profiler = None
+                if profile_processed_rows:
+                    _safe_related_calls.clear()
+                    profiler = cProfile.Profile()
+                    profiler.enable()
+
+                try:
+                    for entry in entries:
+                        if new_turtle == "yes" and not is_new_turtle_observation(
+                            entry,
+                            processed_context,
+                        ):
+                            continue
+
+                        row = get_processed_export_row(entry, processed_context)
+                        output_rows += 1
+                        yield row
+                finally:
+                    if profiler is not None:
+                        profiler.disable()
+
+                queries_after = len(connection.queries)
+
+                print(
+                    f"EXPORT PROFILE processed_rows "
+                    f"candidates={len(entries)} "
+                    f"output={output_rows} "
+                    f"queries={queries_after - queries_before} "
+                    f"elapsed={perf_counter() - rows_start:.3f}s",
+                    flush=True,
+                )
+
+                if profiler is not None:
+                    print(
+                        "EXPORT CPROFILE processed_rows TOP 30",
+                        flush=True,
+                    )
+
+                    stats = pstats.Stats(profiler)
+                    stats.strip_dirs()
+                    stats.sort_stats("cumulative")
+                    stats.print_stats(30)
+
+                    print(
+                        "EXPORT SAFE RELATED UNCACHED",
+                        flush=True,
+                    )
+
+                    for relation, count in _safe_related_calls.most_common():
+                        print(
+                            f"  {relation}: {count}",
+                            flush=True,
+                        )
                 continue
 
             observation_ids = {
@@ -2312,6 +2384,7 @@ class ExportDataView(LoginRequiredMixin, View):
                 for entry in entries
                 if entry.observation_id_id
             }
+            summary_start = perf_counter()
             summary_dict = {
                 summary.observation_id: summary
                 for summary in _safe_query_by_chunks(
@@ -2321,6 +2394,13 @@ class ExportDataView(LoginRequiredMixin, View):
                     ),
                 )
             }
+            print(
+                f"EXPORT PROFILE field_summary "
+                f"entries={len(entries)} "
+                f"summaries={len(summary_dict)} "
+                f"elapsed={perf_counter() - summary_start:.3f}s",
+                flush=True,
+            )
 
             for entry in entries:
                 row = []
@@ -2477,9 +2557,19 @@ class ExportDataView(LoginRequiredMixin, View):
                     "entry_batch",
                     "place_code",
                     "place_code__location_code",
-                    #"observation_id",
-                    #"turtle_id",
                     "turtle",
+                    "turtle__species_code",
+                    "turtle__location_code",
+                    "turtle__turtle_status",
+                    "measurer_person",
+                    "measurer_reporter_person",
+                    "tagger_person",
+                    "reporter_person",
+                    "entered_by_person",
+                    "activity_code",
+                    "beach_position_code",
+                    "condition_code",
+                    "egg_count_method",
                 )
 
             else:
@@ -2680,12 +2770,90 @@ class ExportDataView(LoginRequiredMixin, View):
             traceback.print_exc()
             return HttpResponse(f"Error during export: {str(e)}", status=500)
     
+    def _iter_processed_queryset_chunks(self, queryset):
+        queryset = queryset.order_by("observation_id")
+        last_observation_id = None
+
+        while True:
+            fetch_start = perf_counter()
+
+            chunk_queryset = queryset
+            if last_observation_id is not None:
+                chunk_queryset = chunk_queryset.filter(
+                    observation_id__gt=last_observation_id
+                )
+
+            entries = list(
+                chunk_queryset[: self.export_chunk_size]
+            )
+
+            fetch_elapsed = perf_counter() - fetch_start
+
+            print(
+                f"EXPORT PROFILE fetch "
+                f"last_observation_id={last_observation_id} "
+                f"rows={len(entries)} "
+                f"elapsed={fetch_elapsed:.3f}s",
+                flush=True,
+            )
+
+            if not entries:
+                break
+
+            yield entries
+            last_observation_id = entries[-1].observation_id
+
+    def _iter_field_queryset_chunks(self, queryset):
+        queryset = queryset.order_by("data_entry_id")
+        last_data_entry_id = None
+
+        while True:
+            fetch_start = perf_counter()
+
+            chunk_queryset = queryset
+            if last_data_entry_id is not None:
+                chunk_queryset = chunk_queryset.filter(
+                    data_entry_id__gt=last_data_entry_id
+                )
+
+            entries = list(
+                chunk_queryset[: self.export_chunk_size]
+            )
+
+            fetch_elapsed = perf_counter() - fetch_start
+
+            print(
+                f"EXPORT PROFILE fetch "
+                f"last_data_entry_id={last_data_entry_id} "
+                f"rows={len(entries)} "
+                f"elapsed={fetch_elapsed:.3f}s",
+                flush=True,
+            )
+
+            if not entries:
+                break
+
+            yield entries
+            last_data_entry_id = entries[-1].data_entry_id
+
     def _iter_queryset_chunks(self, queryset):
         start = 0
 
         while True:
+            fetch_start = perf_counter()
+
             entries = list(
                 queryset[start : start + self.export_chunk_size]
+            )
+
+            fetch_elapsed = perf_counter() - fetch_start
+
+            print(
+                f"EXPORT PROFILE fetch "
+                f"offset={start} "
+                f"rows={len(entries)} "
+                f"elapsed={fetch_elapsed:.3f}s",
+                flush=True,
             )
 
             if not entries:
