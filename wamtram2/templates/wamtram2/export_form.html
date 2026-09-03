@@ -41,6 +41,14 @@
     <div class="page-header">
         <h1 class="page-title"> {{ page_title }}</h1>
     </div>
+    <div class="alert alert-info mt-2 mb-3" role="alert">
+        <div>
+            <strong>Note:</strong> For improved export stability, we recommend using Firefox when downloading large datasets.
+        </div>
+        <div>
+            If you experience any export issues, please contact an administrator for assistance.
+        </div>
+    </div>
 
     <div id="message-alert" class="alert" role="alert" style="display: none;"></div>
 
@@ -102,12 +110,14 @@
                     <div class="form-group">
                         <label for="location_code">Location</label>
                         <select id="location_code" name="location_code" class="form-control form-control-sm select2">
-                            <option value="">All Locations</option>
+                            {# <option value="">All Locations</option> #}
                         </select>
-                        <small class="form-text text-warning">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            Note: When selecting an entire location, please consider downloading data in smaller date
-                            ranges to avoid timeout issues.
+                        <small class="form-text text-warning d-block">
+                            ⚠️ Note: When selecting an entire location, please consider downloading data in smaller date ranges to avoid timeout issues.
+                        </small>
+
+                        <small class="form-text text-warning d-block">
+                            ⚠️ If you need to export data for all locations, please contact an administrator for assistance.
                         </small>
                     </div>
                 </div>
@@ -275,16 +285,18 @@
         // Clear options safely
         select.innerHTML = '';
 
-        // Add default option safely
-        const defaultOption = document.createElement('option');
-        defaultOption.value = '';
-        defaultOption.textContent = `All ${label}`;
-        select.appendChild(defaultOption);
+        // Add default option safely, except for Location
+        if (selectId !== 'location_code') {
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.textContent = `All ${label}`;
+            select.appendChild(defaultOption);
+        }
         options.forEach(function (option) {
-            const optionElement = document.createElement('option');
-            optionElement.value = option.value;
-            optionElement.textContent = option.label;
-            select.appendChild(optionElement);
+        const optionElement = document.createElement('option');
+        optionElement.value = option.value;
+        optionElement.textContent = option.label;
+        select.appendChild(optionElement);
         });
     }
     function toggleNewTurtleFilter() {

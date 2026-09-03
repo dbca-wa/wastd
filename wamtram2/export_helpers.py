@@ -550,25 +550,45 @@ def build_processed_export_context(entries):
     for tag in _safe_query_by_chunks(
         observation_ids,
         lambda chunk: TrtRecordedTags.objects.filter(observation_id_id__in=chunk)
-        .select_related("tag_id", "tag_state")
+        .select_related("tag_state")
+        .only(
+            "observation_id",
+            "tag_id",
+            "other_tag_id",
+            "side",
+            "tag_state",
+            "comments",
+            "tag_position",
+            "barnacles",
+            "recorded_tag_id",
+            "tag_state__existing_tag_list",
+            "tag_state__new_tag_list",
+        )
         .order_by(
             "observation_id_id",
             "side",
             "tag_position",
             "recorded_tag_id",
-        ),
+        )
     ):
         context["recorded_tags"][tag.observation_id_id].append(tag)
 
     for pit_tag in _safe_query_by_chunks(
         observation_ids,
         lambda chunk: TrtRecordedPitTags.objects.filter(observation_id_id__in=chunk)
-        .select_related("pittag_id", "pit_tag_state")
+        .only(
+            "observation_id",
+            "pittag_id",
+            "pit_tag_state",
+            "pit_tag_position",
+            "comments",
+            "recorded_pittag_id",
+        )
         .order_by(
             "observation_id_id",
             "pit_tag_position",
             "recorded_pittag_id",
-        ),
+        )
     ):
         context["recorded_pit_tags"][pit_tag.observation_id_id].append(
             pit_tag
@@ -578,10 +598,17 @@ def build_processed_export_context(entries):
         observation_ids,
         lambda chunk: TrtMeasurements.objects.filter(observation_id__in=chunk)
         .select_related("measurement_type")
+        .only(
+            "observation",
+            "measurement_type",
+            "measurement_value",
+            "measurement_type__description",
+            "measurement_type__measurement_units",
+        )
         .order_by(
             "observation_id",
             "measurement_type_id",
-        ),
+        )
     ):
         context["measurements"][
             measurement.observation_id
@@ -595,10 +622,20 @@ def build_processed_export_context(entries):
             "damage_code",
             "damage_cause_code",
         )
+        .only(
+            "observation",
+            "body_part",
+            "damage_code",
+            "damage_cause_code",
+            "comments",
+            "body_part__description",
+            "damage_code__description",
+            "damage_cause_code__description",
+        )
         .order_by(
             "observation_id",
             "body_part_id",
-        ),
+        )
     ):
         context["damages"][
             damage.observation_id
@@ -610,7 +647,15 @@ def build_processed_export_context(entries):
             observation_id__in=chunk,
         )
         .select_related("identification_type")
-        .order_by("observation_id", "recorded_identification_id"),
+        .only(
+            "recorded_identification_id",
+            "observation_id",
+            "identification_type",
+            "identifier",
+            "comments",
+            "identification_type__description",
+        )
+        .order_by("observation_id", "recorded_identification_id")
     ):
         context["identifications"][
             identification.observation_id
