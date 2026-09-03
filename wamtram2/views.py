@@ -2315,6 +2315,12 @@ class ExportDataView(LoginRequiredMixin, View):
                     observation_ids,
                     lambda chunk: TrvObservationSummary.objects.filter(
                         observation_id__in=chunk
+                    ).only(
+                        "observation_id",
+                        "turtle_status",
+                        "ccl",
+                        "ccl_notch",
+                        "ccw",
                     ),
                 )
             }
