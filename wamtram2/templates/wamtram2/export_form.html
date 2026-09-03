@@ -285,16 +285,18 @@
         // Clear options safely
         select.innerHTML = '';
 
-        // Add default option safely
-        const defaultOption = document.createElement('option');
-        defaultOption.value = '';
-        defaultOption.textContent = `All ${label}`;
-        select.appendChild(defaultOption);
+        // Add default option safely, except for Location
+        if (selectId !== 'location_code') {
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.textContent = `All ${label}`;
+            select.appendChild(defaultOption);
+        }
         options.forEach(function (option) {
-            const optionElement = document.createElement('option');
-            optionElement.value = option.value;
-            optionElement.textContent = option.label;
-            select.appendChild(optionElement);
+        const optionElement = document.createElement('option');
+        optionElement.value = option.value;
+        optionElement.textContent = option.label;
+        select.appendChild(optionElement);
         });
     }
     function toggleNewTurtleFilter() {
