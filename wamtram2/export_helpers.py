@@ -610,9 +610,10 @@ def build_processed_export_context(entries):
             measurement.observation_id
         ].append(measurement)
     
-    samples = list(
-        TrtSamples.objects.filter(
-            observation_id__in=observation_ids
+    for sample in _safe_query_by_chunks(
+        observation_ids,
+        lambda chunk: TrtSamples.objects.filter(
+            observation_id__in=chunk
         )
         .select_related("tissue_type")
         .only(
@@ -620,10 +621,8 @@ def build_processed_export_context(entries):
             "sample_label",
             "tissue_type",
             "tissue_type__description",
-        )
-    )
-
-    for sample in samples:
+        ),
+    ):
         context["samples"][sample.observation_id].append(sample)
 
     for damage in _safe_query_by_chunks(
