@@ -30,7 +30,7 @@ dependencies = [
   "django-reversion==6.2.0",
   "django-crispy-forms==2.6",
   "xmltodict==1.0.4",
-  "pandas==3.0.3",
+  "pandas==3.0.5",
   "requests==2.34.2",
   "pytz==2026.2",
   "django-select2==8.4.1",
