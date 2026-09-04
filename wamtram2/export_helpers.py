@@ -107,20 +107,24 @@ def get_export_field_value(
 
     value = getattr(entry, name)
 
-    if (
-        name == "observation_date"
-        and isinstance(value, datetime)
-        and timezone.is_aware(value)
-    ):
-        return timezone.localtime(value).date()
+    # if (
+    #     name == "observation_date"
+    #     and isinstance(value, datetime)
+    #     and timezone.is_aware(value)
+    # ):
+    #     return timezone.localtime(value).date()
 
-    if (
-        name == "observation_time"
-        and isinstance(value, datetime)
-        and timezone.is_aware(value)
-    ):
-        return timezone.localtime(value).time()
+    # if (
+    #     name == "observation_time"
+    #     and isinstance(value, datetime)
+    #     and timezone.is_aware(value)
+    # ):
+    #     return timezone.localtime(value).time()
+    if name == "observation_date" and isinstance(value, datetime):
+        return value.date()
 
+    if name == "observation_time" and isinstance(value, datetime):
+        return value.time()
     return value
 
 
@@ -758,13 +762,14 @@ def get_processed_export_row(entry, context):
             elif side == "R":
                 new_right_tags.append(tag_value)
                         
-    obs_dt = (
-        timezone.localtime(_attr(observation, "observation_date"))
-        if _attr(observation, "observation_date")
-        else None
-    )
+    # obs_dt = (
+    #     timezone.localtime(_attr(observation, "observation_date"))
+    #     if _attr(observation, "observation_date")
+    #     else None
+    # )
 
-    #bs_time = _attr(observation, "observation_time")
+    obs_date = _attr(observation, "observation_date")
+    obs_time = _attr(observation, "observation_time")
 
     
     de = data_entry
@@ -772,14 +777,14 @@ def get_processed_export_row(entry, context):
         "OBSERVATION_ID": observation.observation_id,
         "TURTLE_ID": _raw_fk(observation, "turtle"),
         "OBSERVATION_DATE": (
-            obs_dt.date()
-            if obs_dt
+            obs_date.date()
+            if obs_date
             else ""
         ),
 
         "OBSERVATION_TIME": (
-            obs_dt.time()
-            if obs_dt
+            obs_time.time()
+            if obs_time
             else ""
         ),
 
