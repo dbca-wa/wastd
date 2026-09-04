@@ -13,6 +13,7 @@ from .models import (
     TrtRecordedIdentification,
     TrtRecordedPitTags,
     TrtRecordedTags,
+    TrtSamples,
 )
 
 from .export_config import (
@@ -481,6 +482,7 @@ def build_processed_export_context(entries):
         "recorded_tags": defaultdict(list),
         "recorded_pit_tags": defaultdict(list),
         "measurements": defaultdict(list),
+        "samples": defaultdict(list),
         "damages": defaultdict(list),
         "identifications": defaultdict(list),
     }
@@ -509,42 +511,32 @@ def build_processed_export_context(entries):
         data_entry.observation_id_id: data_entry
         for data_entry in _safe_query_by_chunks(
             observation_ids,
-            lambda chunk: TrtDataEntry.objects.filter(observation_id__in=chunk)
+            lambda chunk: TrtDataEntry.objects.filter(
+                observation_id__in=chunk
+            )
             .select_related(
-                "species_code",
-                "place_code",
-                "activity_code",
-                "nesting",
-                "alive",
-                "measured_by_id",
-                "recorded_by_id",
-                "tagged_by_id",
-                "entered_by_id",
-                "measured_recorded_by_id",
-                "egg_count_method",
-                "clutch_completed",
-                "measurement_type_1",
-                "measurement_type_2",
-                "measurement_type_3",
-                "measurement_type_4",
-                "measurement_type_5",
-                "measurement_type_6",
-                "body_part_1",
-                "body_part_2",
-                "body_part_3",
-                "body_part_4",
-                "body_part_5",
-                "body_part_6",
-                "damage_code_1",
-                "damage_code_2",
-                "damage_code_3",
-                "damage_code_4",
-                "damage_code_5",
-                "damage_code_6",
                 "tissue_type_1",
                 "tissue_type_2",
                 "tissue_type_3",
                 "tissue_type_4",
+            )
+            .only(
+                "observation_id",
+                "data_entry_id",
+                "user_entry_id",
+                "comments",
+                "sample_label_1",
+                "sample_label_2",
+                "sample_label_3",
+                "sample_label_4",
+                "tissue_type_1",
+                "tissue_type_2",
+                "tissue_type_3",
+                "tissue_type_4",
+                "tissue_type_1__description",
+                "tissue_type_2__description",
+                "tissue_type_3__description",
+                "tissue_type_4__description",
             ),
         )
         if data_entry.observation_id_id
@@ -617,6 +609,22 @@ def build_processed_export_context(entries):
         context["measurements"][
             measurement.observation_id
         ].append(measurement)
+    
+    samples = list(
+        TrtSamples.objects.filter(
+            observation_id__in=observation_ids
+        )
+        .select_related("tissue_type")
+        .only(
+            "observation_id",
+            "sample_label",
+            "tissue_type",
+            "tissue_type__description",
+        )
+    )
+
+    for sample in samples:
+        context["samples"][sample.observation_id].append(sample)
 
     for damage in _safe_query_by_chunks(
         observation_ids,
@@ -1170,10 +1178,8 @@ def get_processed_export_row(entry, context):
             for d in damages
         ),
 
-        "SAMPLES": (
-            _entry_samples(de)
-            if de
-            else ""
+        "SAMPLES": _observation_samples(
+            context["samples"].get(observation_id, [])
         ),
     }
 
@@ -1349,24 +1355,36 @@ def _entry_damage(entry):
             )
     return _join(damages)
 
+def _observation_samples(samples):
+    values = []
 
-def _entry_samples(entry):
-    samples = []
-    for index in range(1, 5):
-        tissue_type = _safe_related(entry, f"tissue_type_{index}")
-        sample_label = getattr(entry, f"sample_label_{index}", None)
+    for sample in samples:
+        tissue_type = _safe_related(
+            sample,
+            "tissue_type",
+        )
+        sample_label = sample.sample_label
+
         if tissue_type or sample_label:
-            samples.append(
+            values.append(
                 " / ".join(
                     part
                     for part in [
-                        _first(_description(tissue_type), _raw_fk(entry, f"tissue_type_{index}")),
+                        _first(
+                            _description(tissue_type),
+                            _raw_fk(
+                                sample,
+                                "tissue_type",
+                            ),
+                        ),
                         sample_label,
                     ]
                     if part
                 )
             )
-    return _join(samples)
+
+    return _join(values)
+
 
 
 def _format_identification(identification):
