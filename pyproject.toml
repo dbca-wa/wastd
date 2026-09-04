@@ -1,6 +1,6 @@
 [project]
 name = "wastd"
-version = "2.4.1"
+version = "2.4.2"
 description = "Western Australian Sea Turtles Database"
 authors = [
   { name = "Florian Mayer", email = "florian.mayer@dbca.wa.gov.au" },
