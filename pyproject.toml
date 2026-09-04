@@ -26,7 +26,7 @@ dependencies = [
   "python-dateutil==2.9.0.post0",
   "python-slugify==8.0.4",
   "django-filter==25.2",
-  "django-polymorphic==4.11.5",
+  "django-polymorphic==4.11.7",
   "django-reversion==6.2.0",
   "django-crispy-forms==2.6",
   "xmltodict==1.0.4",
