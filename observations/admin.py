@@ -1345,7 +1345,17 @@ class EncounterAdmin(FSMTransitionMixin, LeafletGeoAdmin, VersionAdmin):
         "source_id",
     )
     list_select_related = ("area", "site", "observer", "reporter", "campaign")
+    def get_search_results(self, request, queryset, search_term):
+        queryset, may_have_duplicates = super().get_search_results(
+            request, queryset, search_term
+        )
 
+        # Support exact PK searches separately because Encounter PKs may be
+        # relation-backed and cannot be searched safely via search_fields.
+        if search_term.isdigit():
+            queryset |= self.model.objects.filter(pk=int(search_term))
+
+        return queryset, may_have_duplicates
     form = s2form(Encounter, attrs=S2ATTRS)
     formfield_overrides = FORMFIELD_OVERRIDES
     autocomplete_fields = ["area", "site", "campaign"]
