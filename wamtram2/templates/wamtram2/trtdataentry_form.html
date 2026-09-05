@@ -215,6 +215,15 @@
             </div>
           </div>
 
+          <div
+            id="gps-location-warning"
+            class="alert alert-warning mt-2"
+            style="display: none;"
+          >
+            The GPS coordinates are more than 5 km from the selected Location/Beach.
+            Please check the coordinates and selected location.
+          </div>
+
           <div class="row">
             <div class="col-md-6">
               <label for="{{ form.observation_date.id_for_label }}">{{ form.observation_date.label }}</label>
@@ -1181,6 +1190,76 @@
     const form = document.getElementById('dataEntryForm');
     let isFormDirty = false;
 
+    // Warn when the entered GPS coordinates are more than 5 km
+    // from the reference coordinates of the selected Location/Beach.
+    // This is a warning only and does not prevent the record from being saved.
+    const placeSearchInput = document.getElementById('search_place_code');
+    const latitudeInput = document.getElementById('id_latitude');
+    const longitudeInput = document.getElementById('id_longitude');
+    const gpsWarning = document.getElementById('gps-location-warning');
+
+    const GPS_WARNING_DISTANCE_KM = 5;
+
+    function calculateDistanceKm(lat1, lon1, lat2, lon2) {
+        const earthRadiusKm = 6371;
+        const toRadians = (degrees) => degrees * Math.PI / 180;
+
+        const dLat = toRadians(lat2 - lat1);
+        const dLon = toRadians(lon2 - lon1);
+
+        const a =
+            Math.sin(dLat / 2) ** 2 +
+            Math.cos(toRadians(lat1)) *
+            Math.cos(toRadians(lat2)) *
+            Math.sin(dLon / 2) ** 2;
+
+        return 2 * earthRadiusKm * Math.asin(Math.sqrt(a));
+    }
+
+    function validateGpsLocation() {
+        const latitude = parseFloat(latitudeInput?.value);
+        const longitude = parseFloat(longitudeInput?.value);
+
+        const referenceLatitude = parseFloat(
+            placeSearchInput?.dataset.referenceLatitude
+        );
+        const referenceLongitude = parseFloat(
+            placeSearchInput?.dataset.referenceLongitude
+        );
+
+        if (
+            !Number.isFinite(latitude) ||
+            !Number.isFinite(longitude) ||
+            !Number.isFinite(referenceLatitude) ||
+            !Number.isFinite(referenceLongitude)
+        ) {
+            if (gpsWarning) {
+                gpsWarning.style.display = 'none';
+            }
+            return;
+        }
+
+        // Latitude is displayed without the minus sign in this form,
+        // so normalise the entered coordinates before calculating distance.
+        const normalisedLatitude = -Math.abs(latitude);
+        const normalisedLongitude = Math.abs(longitude);
+
+        const distanceKm = calculateDistanceKm(
+            normalisedLatitude,
+            normalisedLongitude,
+            referenceLatitude,
+            referenceLongitude
+        );
+
+        if (gpsWarning) {
+            gpsWarning.style.display =
+                distanceKm > GPS_WARNING_DISTANCE_KM ? 'block' : 'none';
+        }
+    }
+
+    latitudeInput?.addEventListener('blur', validateGpsLocation);
+    longitudeInput?.addEventListener('blur', validateGpsLocation);
+    placeSearchInput?.addEventListener('placeSelected', validateGpsLocation);
     // URL for adding a new person
     const adminUrl = "{% url 'admin:wamtram2_trtpersons_add' %}";
     
