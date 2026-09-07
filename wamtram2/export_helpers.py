@@ -296,17 +296,48 @@ def get_extra_field_values(
             entry.other_tags or "",
 
             # TAG_1
-            getattr(entry, "new_left_tag_id_id", "") or "",
+            ", ".join(
+                filter(
+                    None,
+                    [
+                        getattr(entry, "new_left_tag_id_id", "") or "",
+                        getattr(entry, "new_left_tag_id_2_id", "") or "",
+                    ],
+                )
+            ),
 
             # TAG_2
-            getattr(entry, "new_right_tag_id_id", "") or "",
+            ", ".join(
+                filter(
+                    None,
+                    [
+                        getattr(entry, "new_right_tag_id_id", "") or "",
+                        getattr(entry, "new_right_tag_id_2_id", "") or "",
+                    ],
+                )
+            ),
 
             # TAG_3
-            getattr(entry, "recapture_left_tag_id_id", "") or "",
+            ", ".join(
+                filter(
+                    None,
+                    [
+                        getattr(entry, "recapture_left_tag_id_id", "") or "",
+                        getattr(entry, "recapture_left_tag_id_2_id", "") or "",
+                    ],
+                )
+            ),
 
             # TAG_4
-            getattr(entry, "recapture_right_tag_id_id", "") or "",
-
+            ", ".join(
+                filter(
+                    None,
+                    [
+                        getattr(entry, "recapture_right_tag_id_id", "") or "",
+                        getattr(entry, "recapture_right_tag_id_2_id", "") or "",
+                    ],
+                )
+            ),
             # ALL_FLIPPER_TAGS
             "; ".join(flipper_tags),
 
