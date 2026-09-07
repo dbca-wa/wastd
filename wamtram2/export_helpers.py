@@ -365,7 +365,7 @@ def get_lookup_values(
         return [
             getattr(
                 tissue_type_dict.get(
-                    getattr(entry, field_name)
+                    getattr(entry, f"{field_name}_id")
                 ),
                 "description",
                 "",
