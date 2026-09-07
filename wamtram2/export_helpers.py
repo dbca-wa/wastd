@@ -206,17 +206,27 @@ def get_extra_field_values(
             )
         ]
     elif field_name == "sex":
-        summary = summary_dict.get(
-            entry.observation_id_id
-            if summary_dict
-                else None
+        summary = (
+            summary_dict.get(entry.observation_id_id)
+            if summary_dict and entry.observation_id_id
+            else None
         )
 
-        return [
+        turtle_status = (
             summary.turtle_status
-            if summary
+            if summary and summary.turtle_status
             else ""
-        ]
+        )
+
+        if not turtle_status and entry.turtle_id_id:
+            turtle = entry.turtle_id
+            turtle_status = getattr(
+                turtle,
+                "turtle_status_id",
+                "",
+            ) or ""
+
+        return [turtle_status]
 
     elif field_name == "egg_count_method":
         summary = (

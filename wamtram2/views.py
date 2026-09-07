@@ -2536,6 +2536,7 @@ class ExportDataView(LoginRequiredMixin, View):
                     "place_code",
                     "place_code__location_code",
                     "observation_id",
+                    "turtle_id",
                     "species_code",
                     "activity_code",
                     "entered_by_id",
