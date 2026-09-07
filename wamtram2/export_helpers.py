@@ -283,7 +283,7 @@ def get_extra_field_values(
                 pit_tags.append(str(value))
 
         return [
-            getattr(entry, "other_identification", ""),
+            entry.other_tags or "",
 
             # TAG_1
             getattr(entry, "new_left_tag_id_id", "") or "",
