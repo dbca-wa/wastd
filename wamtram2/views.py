@@ -2420,6 +2420,9 @@ class ExportDataView(LoginRequiredMixin, View):
                 filename_parts.append(species)
             if sex:
                 filename_parts.append(sex)
+            if alive:
+                alive_filename = "Y" if alive == "Y" else "N" if alive == "N" else "O"
+                filename_parts.append(f"Alive{alive_filename}")
             if entry_type == "processed" and new_turtle == "yes":
                 filename_parts.append("NewTurtles")
             filename_parts.append(f"Export{timezone.now().strftime('%d%m%Y')}")
