@@ -15,6 +15,7 @@ from .models import (
     TrtRecordedPitTags,
     TrtRecordedTags,
     TrtSamples,
+    TrtIdentification,
 )
 
 from .export_config import (
@@ -705,25 +706,23 @@ def build_processed_export_context(entries):
         ].append(damage)
 
     for identification in _safe_query_by_chunks(
-        observation_ids,
-        lambda chunk: TrtRecordedIdentification.objects.filter(
-            observation_id__in=chunk,
+        turtle_ids,
+        lambda chunk: TrtIdentification.objects.filter(
+            turtle_id__in=chunk,
         )
         .select_related("identification_type")
         .only(
-            "recorded_identification_id",
-            "observation_id",
+            "turtle_id",
             "identification_type",
             "identifier",
             "comments",
             "identification_type__description",
         )
-        .order_by("observation_id", "recorded_identification_id")
+        .order_by("turtle_id", "identification_type", "identifier")
     ):
         context["identifications"][
-            identification.observation_id
+            identification.turtle_id
         ].append(identification)
-
     return context
 
 def get_processed_export_row(entry, context):
@@ -779,7 +778,7 @@ def get_processed_export_row(entry, context):
     )
 
     identifications = context["identifications"].get(
-        observation_id,
+        observation.turtle_id,
         [],
     )
 
@@ -1454,16 +1453,30 @@ def _observation_samples(samples):
         values.append("; ".join(parts))
     return " | ".join(values)
 
-
 def _format_identification(identification):
-    identification_type = _safe_related(identification, "identification_type")
-    return " / ".join(
-        part
-        for part in [
-            _first(_description(identification_type), _raw_fk(identification, "identification_type")),
-            identification.identifier,
-            identification.comments,
-        ]
-        if part
+    identification_type = _safe_related(
+        identification,
+        "identification_type",
+    )
+    identification_type_id = _raw_fk(
+        identification,
+        "identification_type",
+    )
+    identification_type_description = _description(
+        identification_type,
     )
 
+    type_value = ""
+    if identification_type_id:
+        type_value = str(identification_type_id)
+        if identification_type_description:
+            type_value += f" ({identification_type_description})"
+    elif identification_type_description:
+        type_value = identification_type_description
+
+    value = f"{type_value}={identification.identifier or ''}"
+
+    if identification.comments:
+        value += f"; Comment={identification.comments}"
+
+    return value
