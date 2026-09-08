@@ -10,10 +10,12 @@ from .models import (
     TrtEntryBatchOrganisation,
     TrtMeasurements,
     TrtObservations,
+    TrtPitTagStates,
     TrtRecordedIdentification,
     TrtRecordedPitTags,
     TrtRecordedTags,
     TrtSamples,
+    TrtIdentification,
 )
 
 from .export_config import (
@@ -206,17 +208,27 @@ def get_extra_field_values(
             )
         ]
     elif field_name == "sex":
-        summary = summary_dict.get(
-            entry.observation_id_id
-            if summary_dict
-                else None
+        summary = (
+            summary_dict.get(entry.observation_id_id)
+            if summary_dict and entry.observation_id_id
+            else None
         )
 
-        return [
+        turtle_status = (
             summary.turtle_status
-            if summary
+            if summary and summary.turtle_status
             else ""
-        ]
+        )
+
+        if not turtle_status and entry.turtle_id_id:
+            turtle = entry.turtle_id
+            turtle_status = getattr(
+                turtle,
+                "turtle_status_id",
+                "",
+            ) or ""
+
+        return [turtle_status]
 
     elif field_name == "egg_count_method":
         summary = (
@@ -283,20 +295,51 @@ def get_extra_field_values(
                 pit_tags.append(str(value))
 
         return [
-            getattr(entry, "other_identification", ""),
+            entry.other_tags or "",
 
             # TAG_1
-            getattr(entry, "new_left_tag_id_id", "") or "",
+            ", ".join(
+                filter(
+                    None,
+                    [
+                        getattr(entry, "new_left_tag_id_id", "") or "",
+                        getattr(entry, "new_left_tag_id_2_id", "") or "",
+                    ],
+                )
+            ),
 
             # TAG_2
-            getattr(entry, "new_right_tag_id_id", "") or "",
+            ", ".join(
+                filter(
+                    None,
+                    [
+                        getattr(entry, "new_right_tag_id_id", "") or "",
+                        getattr(entry, "new_right_tag_id_2_id", "") or "",
+                    ],
+                )
+            ),
 
             # TAG_3
-            getattr(entry, "recapture_left_tag_id_id", "") or "",
+            ", ".join(
+                filter(
+                    None,
+                    [
+                        getattr(entry, "recapture_left_tag_id_id", "") or "",
+                        getattr(entry, "recapture_left_tag_id_2_id", "") or "",
+                    ],
+                )
+            ),
 
             # TAG_4
-            getattr(entry, "recapture_right_tag_id_id", "") or "",
-
+            ", ".join(
+                filter(
+                    None,
+                    [
+                        getattr(entry, "recapture_right_tag_id_id", "") or "",
+                        getattr(entry, "recapture_right_tag_id_2_id", "") or "",
+                    ],
+                )
+            ),
             # ALL_FLIPPER_TAGS
             "; ".join(flipper_tags),
 
@@ -355,7 +398,7 @@ def get_lookup_values(
         return [
             getattr(
                 tissue_type_dict.get(
-                    getattr(entry, field_name)
+                    getattr(entry, f"{field_name}_id")
                 ),
                 "description",
                 "",
@@ -481,6 +524,7 @@ def build_processed_export_context(entries):
         "first_observations": {},
         "recorded_tags": defaultdict(list),
         "recorded_pit_tags": defaultdict(list),
+        "pit_tag_states": {},
         "measurements": defaultdict(list),
         "samples": defaultdict(list),
         "damages": defaultdict(list),
@@ -489,6 +533,12 @@ def build_processed_export_context(entries):
 
     if not observation_ids:
         return context
+    context["pit_tag_states"] = dict(
+        TrtPitTagStates.objects.values_list(
+            "pit_tag_state",
+            "description",
+        )
+    )
 
     context["observations"] = {
         entry.observation_id: entry
@@ -524,6 +574,8 @@ def build_processed_export_context(entries):
                 "observation_id",
                 "data_entry_id",
                 "user_entry_id",
+                "entered_by_id",
+                "entered_by",
                 "comments",
                 "sample_label_1",
                 "sample_label_2",
@@ -617,8 +669,11 @@ def build_processed_export_context(entries):
         )
         .select_related("tissue_type")
         .only(
+            "sample_id",
             "observation_id",
+            "sample_date",
             "sample_label",
+            "comments",
             "tissue_type",
             "tissue_type__description",
         ),
@@ -653,25 +708,23 @@ def build_processed_export_context(entries):
         ].append(damage)
 
     for identification in _safe_query_by_chunks(
-        observation_ids,
-        lambda chunk: TrtRecordedIdentification.objects.filter(
-            observation_id__in=chunk,
+        turtle_ids,
+        lambda chunk: TrtIdentification.objects.filter(
+            turtle_id__in=chunk,
         )
         .select_related("identification_type")
         .only(
-            "recorded_identification_id",
-            "observation_id",
+            "turtle_id",
             "identification_type",
             "identifier",
             "comments",
             "identification_type__description",
         )
-        .order_by("observation_id", "recorded_identification_id")
+        .order_by("turtle_id", "identification_type", "identifier")
     ):
         context["identifications"][
-            identification.observation_id
+            identification.turtle_id
         ].append(identification)
-
     return context
 
 def get_processed_export_row(entry, context):
@@ -702,8 +755,8 @@ def get_processed_export_row(entry, context):
     )
 
     location = (
-        _safe_related(turtle, "location_code")
-        or _safe_related(place, "location_code")
+        _safe_related(place, "location_code")
+        or _safe_related(turtle, "location_code")
     )
 
     recorded_tags = context["recorded_tags"].get(
@@ -727,14 +780,14 @@ def get_processed_export_row(entry, context):
     )
 
     identifications = context["identifications"].get(
-        observation_id,
+        observation.turtle_id,
         [],
     )
 
     flipper_tag_ids = [_tag_value(tag) for tag in recorded_tags]
     pit_tag_ids = [_pit_tag_value(tag) for tag in recorded_pit_tags]
     tag_details = [_format_recorded_tag(tag) for tag in recorded_tags]
-    pit_tag_details = [_format_recorded_pit_tag(tag) for tag in recorded_pit_tags]
+    pit_tag_details = [_format_recorded_pit_tag(tag,context["pit_tag_states"],) for tag in recorded_pit_tags]
 
     new_left_tags = []
     new_right_tags = []
@@ -823,8 +876,12 @@ def get_processed_export_row(entry, context):
             "entry_batch",
         ),
 
-        "DATA_ENTERER_ID": "",
-        "DATA_ENTERER_NAME": "",
+        "DATA_ENTERER_ID": _attr(data_entry, "entered_by_id_id"),
+        "DATA_ENTERER_NAME": (
+            _attr(data_entry, "entered_by")
+            if _attr(data_entry, "entered_by_id_id")
+            else ""
+        ),
 
         "MEASURER_PERSON_ID": _raw_fk(
             observation,
@@ -1043,15 +1100,9 @@ def get_processed_export_row(entry, context):
             de.comments if de else ""
         ),
 
-        "FLIPPER_TAG_COMMENTS": _join(
-            tag.comments
-            for tag in recorded_tags
-        ),
+        "FLIPPER_TAG_COMMENTS": _join(tag_details),
 
-        "PIT_TAG_COMMENTS": _join(
-            tag.comments
-            for tag in recorded_pit_tags
-        ),
+        "PIT_TAG_COMMENTS": _join(pit_tag_details),
 
         "ENTERED_BY": _attr(
         observation,
@@ -1288,17 +1339,30 @@ def _format_recorded_tag(recorded_tag):
     return f"{parts[0]} ({', '.join(detail_parts)})" if detail_parts else parts[0]
 
 
-def _format_recorded_pit_tag(recorded_pit_tag):
+def _format_recorded_pit_tag(recorded_pit_tag, pit_tag_states):
     pit_tag = _pit_tag_value(recorded_pit_tag)
-    detail_parts = []
-    if recorded_pit_tag.pit_tag_position:
-        detail_parts.append(f"position={recorded_pit_tag.pit_tag_position}")
     pit_tag_state = _raw_fk(recorded_pit_tag, "pit_tag_state")
-    if pit_tag_state:
-        detail_parts.append(f"state={pit_tag_state}")
+    state_description = pit_tag_states.get(pit_tag_state, pit_tag_state)
+
+    detail_parts = []
+
+    if pit_tag:
+        detail_parts.append(f"PIT={pit_tag}")
+
+    if state_description:
+        detail_parts.append(f"State={state_description}")
+
+    if recorded_pit_tag.pit_tag_position:
+        detail_parts.append(
+            f"Position={recorded_pit_tag.pit_tag_position}"
+        )
+
     if recorded_pit_tag.comments:
-        detail_parts.append(f"comments={recorded_pit_tag.comments}")
-    return f"{pit_tag} ({', '.join(detail_parts)})" if detail_parts else pit_tag
+        detail_parts.append(
+            f"Comment={recorded_pit_tag.comments}"
+        )
+
+    return "; ".join(detail_parts)
 
 
 def _format_measurement(measurement):
@@ -1362,39 +1426,63 @@ def _observation_samples(samples):
             sample,
             "tissue_type",
         )
-        sample_label = sample.sample_label
+        tissue_type_id = _raw_fk(
+            sample,
+            "tissue_type",
+        )
+        tissue_description = _description(tissue_type)
 
-        if tissue_type or sample_label:
-            values.append(
-                " / ".join(
-                    part
-                    for part in [
-                        _first(
-                            _description(tissue_type),
-                            _raw_fk(
-                                sample,
-                                "tissue_type",
-                            ),
-                        ),
-                        sample_label,
-                    ]
-                    if part
-                )
-            )
+        tissue_value = ""
+        if tissue_type_id:
+            tissue_value = str(tissue_type_id)
+            if tissue_description:
+                tissue_value += f" ({tissue_description})"
+        elif tissue_description:
+            tissue_value = tissue_description
 
-    return _join(values)
+        sample_date = sample.sample_date
+        if sample_date:
+            sample_date = sample_date.strftime("%Y-%m-%d")
+        else:
+            sample_date = ""
 
+        parts = [
+            f"SampleID={sample.sample_id}",
+            f"Tissue={tissue_value}",
+            f"Label={sample.sample_label or ''}",
+            f"Date={sample_date}",
+        ]
 
+        if sample.comments:
+            parts.append(f"Comment={sample.comments}")
+
+        values.append("; ".join(parts))
+    return " | ".join(values)
 
 def _format_identification(identification):
-    identification_type = _safe_related(identification, "identification_type")
-    return " / ".join(
-        part
-        for part in [
-            _first(_description(identification_type), _raw_fk(identification, "identification_type")),
-            identification.identifier,
-            identification.comments,
-        ]
-        if part
+    identification_type = _safe_related(
+        identification,
+        "identification_type",
+    )
+    identification_type_id = _raw_fk(
+        identification,
+        "identification_type",
+    )
+    identification_type_description = _description(
+        identification_type,
     )
 
+    type_value = ""
+    if identification_type_id:
+        type_value = str(identification_type_id)
+        if identification_type_description:
+            type_value += f" ({identification_type_description})"
+    elif identification_type_description:
+        type_value = identification_type_description
+
+    value = f"{type_value}={identification.identifier or ''}"
+
+    if identification.comments:
+        value += f"; Comment={identification.comments}"
+
+    return value

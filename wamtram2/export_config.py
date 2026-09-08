@@ -300,6 +300,7 @@ UNRESOLVED_PROCESSED_EXPORT_COLUMNS = {
     "ENTRY_ID": "No matching model field was found in TrtDataEntry or TrtObservations.",
     "DATA_ENTERER_ID": "The processed observation table has ENTERED_BY_PERSON_ID; no separate DATA_ENTERER_ID field was found.",
     "DATA_ENTERER_NAME": "The processed observation table has ENTERED_BY/ENTERED_BY_PERSON_ID; no separate DATA_ENTERER_NAME field was found.",
-    "FLIPPER_TAG_COMMENTS": "No dedicated processed flipper-tag comment column was found; tag comments are included in FLIPPER_TAG_DETAILS.",
-    "PIT_TAG_COMMENTS": "No dedicated processed PIT-tag comment column was found; PIT comments are included in PIT_TAG_DETAILS.",
+    #"FLIPPER_TAG_COMMENTS": "No dedicated processed flipper-tag comment column was found; tag comments are included in FLIPPER_TAG_DETAILS.",
+    #"PIT_TAG_COMMENTS": "No dedicated processed PIT-tag comment column was found; PIT comments are included in PIT_TAG_DETAILS.",
+    "SAMPLES": "Sample content matches the reference export, but the ordering of multiple samples is not always identical. No consistent ordering rule has been identified.",
 }
