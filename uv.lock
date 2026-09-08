@@ -1083,16 +1083,16 @@ wheels = [
 
 [[package]]
 name = "mssql-django"
-version = "1.7.2"
+version = "1.8.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "django" },
     { name = "pyodbc" },
     { name = "pytz" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/05/1f/e1489a674c656f5f2052f7512bfc504ff07453f49b1608dad0cc7b913807/mssql_django-1.7.2.tar.gz", hash = "sha256:8bb18ac2da4467eae683e26ece257decdd0a20394a40bf86c0cb07819a678497", size = 71769, upload-time = "2026-05-22T12:17:29.345Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/b1/a8/48d00b41ee1c7057ec9169ba472725f2e7342eacfec667802b25d5ebf1fe/mssql_django-1.8.0.tar.gz", hash = "sha256:023a3d55a85d1d0d9f38d731182c35c2fecbf6bdc7b2464ed7ebf29c9e7bbdb2", size = 74258, upload-time = "2026-08-07T10:41:35.77Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/73/c1/61457e5a644618a4712d400312d9c86b311e61d0876d825b4c178ba77f18/mssql_django-1.7.2-py3-none-any.whl", hash = "sha256:12d84e6526276a35408d38a0c104909778298b970fb4a2399df5b3af805461ed", size = 73988, upload-time = "2026-05-22T12:17:30.976Z" },
+    { url = "https://files.pythonhosted.org/packages/09/0b/37df91c84149e51c504c301d665de103274890da578d9831d8ca28a000c2/mssql_django-1.8.0-py3-none-any.whl", hash = "sha256:1e97e303477ea228454e76514e544081d6041a5a4383f0c40a9313549d4724f2", size = 76288, upload-time = "2026-08-07T10:41:36.959Z" },
 ]
 
 [[package]]
@@ -1925,7 +1925,7 @@ requires-dist = [
     { name = "django-select2", specifier = "==8.4.1" },
     { name = "django-storages", extras = ["azure"], specifier = "==1.14.6" },
     { name = "gunicorn", specifier = "==26.0.0" },
-    { name = "mssql-django", specifier = "==1.7.2" },
+    { name = "mssql-django", specifier = "==1.8.0" },
     { name = "openpyxl", specifier = "==3.1.5" },
     { name = "pandas", specifier = "==3.0.3" },
     { name = "phonenumbers", specifier = "==9.0.32" },
