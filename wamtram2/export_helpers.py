@@ -10,6 +10,7 @@ from .models import (
     TrtEntryBatchOrganisation,
     TrtMeasurements,
     TrtObservations,
+    TrtPitTagStates,
     TrtRecordedIdentification,
     TrtRecordedPitTags,
     TrtRecordedTags,
@@ -522,6 +523,7 @@ def build_processed_export_context(entries):
         "first_observations": {},
         "recorded_tags": defaultdict(list),
         "recorded_pit_tags": defaultdict(list),
+        "pit_tag_states": {},
         "measurements": defaultdict(list),
         "samples": defaultdict(list),
         "damages": defaultdict(list),
@@ -530,6 +532,12 @@ def build_processed_export_context(entries):
 
     if not observation_ids:
         return context
+    context["pit_tag_states"] = dict(
+        TrtPitTagStates.objects.values_list(
+            "pit_tag_state",
+            "description",
+        )
+    )
 
     context["observations"] = {
         entry.observation_id: entry
@@ -775,7 +783,7 @@ def get_processed_export_row(entry, context):
     flipper_tag_ids = [_tag_value(tag) for tag in recorded_tags]
     pit_tag_ids = [_pit_tag_value(tag) for tag in recorded_pit_tags]
     tag_details = [_format_recorded_tag(tag) for tag in recorded_tags]
-    pit_tag_details = [_format_recorded_pit_tag(tag) for tag in recorded_pit_tags]
+    pit_tag_details = [_format_recorded_pit_tag(tag,context["pit_tag_states"],) for tag in recorded_pit_tags]
 
     new_left_tags = []
     new_right_tags = []
@@ -1084,15 +1092,9 @@ def get_processed_export_row(entry, context):
             de.comments if de else ""
         ),
 
-        "FLIPPER_TAG_COMMENTS": _join(
-            tag.comments
-            for tag in recorded_tags
-        ),
+        "FLIPPER_TAG_COMMENTS": _join(tag_details),
 
-        "PIT_TAG_COMMENTS": _join(
-            tag.comments
-            for tag in recorded_pit_tags
-        ),
+        "PIT_TAG_COMMENTS": _join(pit_tag_details),
 
         "ENTERED_BY": _attr(
         observation,
@@ -1329,17 +1331,30 @@ def _format_recorded_tag(recorded_tag):
     return f"{parts[0]} ({', '.join(detail_parts)})" if detail_parts else parts[0]
 
 
-def _format_recorded_pit_tag(recorded_pit_tag):
+def _format_recorded_pit_tag(recorded_pit_tag, pit_tag_states):
     pit_tag = _pit_tag_value(recorded_pit_tag)
-    detail_parts = []
-    if recorded_pit_tag.pit_tag_position:
-        detail_parts.append(f"position={recorded_pit_tag.pit_tag_position}")
     pit_tag_state = _raw_fk(recorded_pit_tag, "pit_tag_state")
-    if pit_tag_state:
-        detail_parts.append(f"state={pit_tag_state}")
+    state_description = pit_tag_states.get(pit_tag_state, pit_tag_state)
+
+    detail_parts = []
+
+    if pit_tag:
+        detail_parts.append(f"PIT={pit_tag}")
+
+    if state_description:
+        detail_parts.append(f"State={state_description}")
+
+    if recorded_pit_tag.pit_tag_position:
+        detail_parts.append(
+            f"Position={recorded_pit_tag.pit_tag_position}"
+        )
+
     if recorded_pit_tag.comments:
-        detail_parts.append(f"comments={recorded_pit_tag.comments}")
-    return f"{pit_tag} ({', '.join(detail_parts)})" if detail_parts else pit_tag
+        detail_parts.append(
+            f"Comment={recorded_pit_tag.comments}"
+        )
+
+    return "; ".join(detail_parts)
 
 
 def _format_measurement(measurement):
