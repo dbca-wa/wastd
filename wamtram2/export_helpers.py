@@ -755,8 +755,8 @@ def get_processed_export_row(entry, context):
     )
 
     location = (
-        _safe_related(turtle, "location_code")
-        or _safe_related(place, "location_code")
+        _safe_related(place, "location_code")
+        or _safe_related(turtle, "location_code")
     )
 
     recorded_tags = context["recorded_tags"].get(
