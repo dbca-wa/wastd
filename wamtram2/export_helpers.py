@@ -574,6 +574,8 @@ def build_processed_export_context(entries):
                 "observation_id",
                 "data_entry_id",
                 "user_entry_id",
+                "entered_by_id",
+                "entered_by",
                 "comments",
                 "sample_label_1",
                 "sample_label_2",
@@ -874,8 +876,12 @@ def get_processed_export_row(entry, context):
             "entry_batch",
         ),
 
-        "DATA_ENTERER_ID": "",
-        "DATA_ENTERER_NAME": "",
+        "DATA_ENTERER_ID": _attr(data_entry, "entered_by_id_id"),
+        "DATA_ENTERER_NAME": (
+            _attr(data_entry, "entered_by")
+            if _attr(data_entry, "entered_by_id_id")
+            else ""
+        ),
 
         "MEASURER_PERSON_ID": _raw_fk(
             observation,
