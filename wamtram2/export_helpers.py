@@ -666,8 +666,11 @@ def build_processed_export_context(entries):
         )
         .select_related("tissue_type")
         .only(
+            "sample_id",
             "observation_id",
+            "sample_date",
             "sample_label",
+            "comments",
             "tissue_type",
             "tissue_type__description",
         ),
@@ -1418,28 +1421,38 @@ def _observation_samples(samples):
             sample,
             "tissue_type",
         )
-        sample_label = sample.sample_label
+        tissue_type_id = _raw_fk(
+            sample,
+            "tissue_type",
+        )
+        tissue_description = _description(tissue_type)
 
-        if tissue_type or sample_label:
-            values.append(
-                " / ".join(
-                    part
-                    for part in [
-                        _first(
-                            _description(tissue_type),
-                            _raw_fk(
-                                sample,
-                                "tissue_type",
-                            ),
-                        ),
-                        sample_label,
-                    ]
-                    if part
-                )
-            )
+        tissue_value = ""
+        if tissue_type_id:
+            tissue_value = str(tissue_type_id)
+            if tissue_description:
+                tissue_value += f" ({tissue_description})"
+        elif tissue_description:
+            tissue_value = tissue_description
 
-    return _join(values)
+        sample_date = sample.sample_date
+        if sample_date:
+            sample_date = sample_date.strftime("%Y-%m-%d")
+        else:
+            sample_date = ""
 
+        parts = [
+            f"SampleID={sample.sample_id}",
+            f"Tissue={tissue_value}",
+            f"Label={sample.sample_label or ''}",
+            f"Date={sample_date}",
+        ]
+
+        if sample.comments:
+            parts.append(f"Comment={sample.comments}")
+
+        values.append("; ".join(parts))
+    return " | ".join(values)
 
 
 def _format_identification(identification):
