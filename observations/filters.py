@@ -129,11 +129,13 @@ class AnimalEncounterFilter(FilterSet):
         field_name="encounter_type",
         choices=(
             (Encounter.ENCOUNTER_INWATER, "In water"),
-            # (Encounter.ENCOUNTER_LOGGER, "Logger"),
-            # (Encounter.ENCOUNTER_OTHER, "Other"),
+            #(Encounter.ENCOUNTER_LOGGER, "Logger"),
+            (Encounter.ENCOUNTER_OTHER, "Other"),
             (Encounter.ENCOUNTER_STRANDING, "Stranding"),
-            (Encounter.ENCOUNTER_TAGGING, "Tagging"),
-            # (Encounter.ENCOUNTER_TAG, "Tag Management"),
+            #(Encounter.ENCOUNTER_TAGGING, "Tagging"),
+            #(Encounter.ENCOUNTER_TAG, "Tag Management"),
+            (Encounter.ENCOUNTER_TAG, "Disturbance"),
+            (Encounter.ENCOUNTER_TAG, "Nest"),
         ),
     )
     species = ChoiceFilter(field_name="species", choices=sorted(SPECIES_CHOICES))
