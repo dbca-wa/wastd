@@ -9,7 +9,7 @@ function debounce(func, wait) {
 }
 
 // Function to search and display results
-function searchAndDisplayResults(url, input, resultsContainer, hiddenFieldId, formatResult, extractId) {
+function searchAndDisplayResults(url, input, resultsContainer, hiddenFieldId, formatResult, extractId, onSelect = null) {
 
     // Show the searching status
     resultsContainer.style.display = 'block';
@@ -34,6 +34,9 @@ function searchAndDisplayResults(url, input, resultsContainer, hiddenFieldId, fo
                         let hiddenField = document.getElementById(hiddenFieldId);
                         if (hiddenField) {
                             hiddenField.value = extractId(result); // Store the ID in the hidden field
+                        }
+                        if (onSelect) {
+                            onSelect(result);
                         }
                         resultsContainer.style.display = 'none';
                     };
@@ -68,11 +71,20 @@ document.querySelectorAll('.search-field').forEach(function(input) {
                 return;
             }
             if (input.id === 'search_place_code') {
-                searchAndDisplayResults('/wamtram2/search-places', input, resultsContainer, hiddenFieldId, 
-                (place) => `${place.place_name} (${place.location_code__location_name})`, 
-                (place) => {
-                    return place.place_code;
-                });
+                searchAndDisplayResults(
+                    '/wamtram2/search-places',
+                    input,
+                    resultsContainer,
+                    hiddenFieldId,
+                    (place) => `${place.place_name} (${place.location_code__location_name})`,
+                    (place) => place.place_code,
+                    (place) => {
+                        input.dataset.referenceLatitude = place.latitude ?? '';
+                        input.dataset.referenceLongitude = place.longitude ?? '';
+
+                        input.dispatchEvent(new CustomEvent('placeSelected'));
+                    }
+                );
             } else {
                 searchAndDisplayResults('/wamtram2/search-persons', input, resultsContainer, hiddenFieldId, 
                 (person) => `${person.first_name} ${person.surname}`, 
