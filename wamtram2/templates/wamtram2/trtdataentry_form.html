@@ -1302,12 +1302,16 @@
 
             const placeCodeFromDb = "{{ form.place_code.value|escapejs }}";
             const placeNameFromDb = "{{ view.place_full_name|escapejs }}";
+            const placeLatitudeFromDb = "{{ place_latitude|escapejs }}";
+            const placeLongitudeFromDb = "{{ place_longitude|escapejs }}";
             const searchPlaceInput = document.getElementById('search_place_code');
             const placeCodeInput = document.getElementById('id_place_code');
 
             if (placeCodeFromDb && placeNameFromDb) {
                 searchPlaceInput.value = placeNameFromDb;
                 placeCodeInput.value = placeCodeFromDb;
+                searchPlaceInput.dataset.referenceLatitude = placeLatitudeFromDb;
+                searchPlaceInput.dataset.referenceLongitude = placeLongitudeFromDb;
             }
 
             const measuredByFullName = "{{ view.measured_by_full_name|escapejs }}";
@@ -1333,12 +1337,16 @@
 
             const defaultPlaceCode = "{{ default_place_code|escapejs }}";
             const defaultPlaceFullName = "{{ default_place_full_name|escapejs }}";
+            const defaultPlaceLatitude = "{{ default_place_latitude|escapejs }}";
+            const defaultPlaceLongitude = "{{ default_place_longitude|escapejs }}";
             const searchPlaceInput = document.getElementById('search_place_code');
             const placeCodeInput = document.getElementById('id_place_code');
 
             if (defaultPlaceFullName && defaultPlaceCode) {
                 searchPlaceInput.value = defaultPlaceFullName;
                 placeCodeInput.value = defaultPlaceCode;
+                searchPlaceInput.dataset.referenceLatitude = defaultPlaceLatitude;
+                searchPlaceInput.dataset.referenceLongitude = defaultPlaceLongitude;
             }
         }
     }
