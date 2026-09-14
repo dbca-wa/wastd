@@ -365,36 +365,6 @@
         );
     });
 
-    // // Form submission handler
-    // document.getElementById('tagRegisterForm').addEventListener('submit', async function(e) {
-    //     e.preventDefault();
-    //     showLoadingSpinner();
-
-    //     try {
-    //         const formData = new FormData(this);
-    //         const response = await fetch("{% url 'wamtram2:tag_register' %}", {
-    //             method: 'POST',
-    //             body: formData,
-    //             headers: {
-    //                 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-    //             }
-    //         });
-
-    //         const data = await response.json();
-    //         if (data.success) {
-    //             showMessage('Tags registered successfully!', 'success');
-    //             setTimeout(() => window.location.reload(), 1500);
-    //         } else {
-    //             const errorMessage = data.error || 'Error registering tags';
-    //             showMessage(errorMessage, 'danger');
-    //         }
-    //     } catch (error) {
-    //         console.error('Error:', error);
-    //         showMessage('An error occurred while registering tags', 'danger');
-    //     } finally {
-    //         hideLoadingSpinner();
-    //     }
-    // });
     async function submitTagRegistration(action = null) {
         const form = document.getElementById('tagRegisterForm');
         const formData = new FormData(form);
