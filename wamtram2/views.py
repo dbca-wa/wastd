@@ -525,6 +525,8 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
                 default_place_obj = TrtPlaces.objects.filter(place_code=self.default_place_code).first()
                 if default_place_obj:
                     self.default_place_full_name = default_place_obj.get_full_name()
+                    self.default_place_latitude = default_place_obj.latitude
+                    self.default_place_longitude = default_place_obj.longitude
                     initial["default_place_full_name"] = self.default_place_full_name or ""
                 if not turtle_id:
                     initial["species_code"] = template_data.get("species_code") or ""
@@ -557,6 +559,8 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
                 if place:
                     initial["place_code"] = place_code
                     self.place_full_name = place.get_full_name()
+                    self.place_latitude = place.latitude
+                    self.place_longitude = place.longitude
                 else:
                     self.place_full_name = ""
 
@@ -712,12 +716,16 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
             context["default_enterer_full_name"] = getattr(self, "default_enterer_full_name", "")
             context["default_place_full_name"] = getattr(self, "default_place_full_name", "")
             context["default_place_code"] = getattr(self, "default_place_code", "")
+            context["default_place_latitude"] = getattr(self, "default_place_latitude", "")
+            context["default_place_longitude"] = getattr(self, "default_place_longitude", "")
 
             context["measured_by_full_name"] = getattr(self, "measured_by_full_name", "")
             context["recorded_by_full_name"] = getattr(self, "recorded_by_full_name", "")
             context["tagged_by_full_name"] = getattr(self, "tagged_by_full_name", "")
             context["entered_by_full_name"] = getattr(self, "entered_by_full_name", "")
             context["place_name"] = getattr(self, "place_full_name", "")
+            context["place_latitude"] = getattr(self, "place_latitude", "")
+            context["place_longitude"] = getattr(self, "place_longitude", "")
 
         return context
 
@@ -1975,10 +1983,10 @@ def search_places(request):
         location_code = location_code.rstrip(")")
         places = TrtPlaces.objects.filter(
             place_name__icontains=place_name.strip(), location_code__location_name__icontains=location_code.strip()
-        ).values("place_code", "place_name", "location_code__location_name")[:10]
+        ).values("place_code", "place_name", "location_code__location_name","latitude","longitude",)[:10]
     else:
         places = TrtPlaces.objects.filter(Q(place_name__icontains=query) | Q(location_code__location_name__icontains=query)).values(
-            "place_code", "place_name", "location_code__location_name"
+            "place_code", "place_name", "location_code__location_name","latitude","longitude"
         )[:10]
 
     for place in places:
