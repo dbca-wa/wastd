@@ -3921,60 +3921,212 @@ class TagRegisterView(LoginRequiredMixin, FormView):
         if not (request.user.is_superuser or request.user.groups.filter(name="WAMTRAM2_STAFF").exists()):
             raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
-
+        
     def form_valid(self, form):
         try:
             tag_type = form.cleaned_data["tag_type"]
             prefix = form.cleaned_data["tag_prefix"]
             start = int(form.cleaned_data["start_number"])
             end = int(form.cleaned_data["end_number"])
-            
+            action = self.request.POST.get("action")
+
             # T062 removed tag registration batch size limit
-            
+
+            tag_ids = []
+
+            for num in range(start, end + 1):
+                if tag_type == "flipper":
+                    tag_id = f"{prefix}{str(num).zfill(len(str(start)))}"
+                else:  # PIT tags
+                    tag_id = str(num)
+
+                tag_ids.append(tag_id)
+
+            if tag_type == "flipper":
+                existing_tag_ids = set(
+                    TrtTags.objects.filter(
+                        tag_id__in=tag_ids
+                    ).values_list("tag_id", flat=True)
+                )
+
+                reassignable_tag_ids = set(
+                    TrtTags.objects.filter(
+                        tag_id__in=tag_ids,
+                        tag_status_id="U",
+                    ).values_list("tag_id", flat=True)
+                )
+
+            else:
+                existing_tag_ids = set(
+                    TrtPitTags.objects.filter(
+                        pittag_id__in=tag_ids
+                    ).values_list("pittag_id", flat=True)
+                )
+
+                reassignable_tag_ids = set(
+                    TrtPitTags.objects.filter(
+                        pittag_id__in=tag_ids,
+                        pit_tag_status_id="U",
+                    ).values_list("pittag_id", flat=True)
+                )
+
+            existing_tags = [
+                tag_id
+                for tag_id in tag_ids
+                if tag_id in existing_tag_ids
+            ]
+
+            reassignable_tags = [
+                tag_id
+                for tag_id in tag_ids
+                if tag_id in reassignable_tag_ids
+            ]
+
+            protected_tags = [
+                tag_id
+                for tag_id in existing_tags
+                if tag_id not in reassignable_tag_ids
+            ]
+
+            missing_tags = [
+                tag_id
+                for tag_id in tag_ids
+                if tag_id not in existing_tag_ids
+            ]
+
+            # Existing tags were found, but the user has not yet
+            # chosen how to handle the mixed/existing range.
+            if existing_tags and not action:
+                return JsonResponse({
+                    "success": False,
+                    "requires_action": True,
+                    "existing_count": len(existing_tags),
+                    "reassignable_count": len(reassignable_tags),
+                    "protected_count": len(protected_tags),
+                    "missing_count": len(missing_tags),
+                    "existing_tags": existing_tags,
+                    "reassignable_tags": reassignable_tags,
+                    "protected_tags": protected_tags,
+                    "missing_tags": missing_tags,
+                })
+
+            valid_actions = {
+                "register_missing",
+                "reassign_existing",
+                "both",
+            }
+
+            if action and action not in valid_actions:
+                return JsonResponse({
+                    "success": False,
+                    "error": "Invalid tag registration action.",
+                })
+
+            registered_count = 0
+            reassigned_count = 0
+
             with transaction.atomic():
-                for num in range(start, end + 1):
-                    if tag_type == "flipper":
-                        tag_id = f"{prefix}{str(num).zfill(len(str(start)))}"
-                    else:  # pit tags
-                        tag_id = str(num)
+
+                # Normal registration, Register Missing, or Do Both.
+                if not action or action in {"register_missing", "both"}:
 
                     if tag_type == "flipper":
-                        if TrtTags.objects.filter(tag_id=tag_id).exists():
-                            return JsonResponse({"success": False, "error": f"Tag {tag_id} already exists"})
-
-                        tag_status = TrtTagStatus.objects.get(tag_status="U")
-
-                        TrtTags.objects.create(
-                            tag_id=tag_id,
-                            tag_order_id=form.cleaned_data["tag_order_id"],
-                            issue_location=form.cleaned_data["issue_location"],
-                            custodian_person_id=form.cleaned_data["custodian_person_id"],
-                            # Retained for backwards compatibility (T062).
-                            field_person_id=None,
-                            comments=form.cleaned_data["comments"],
-                            tag_status=tag_status,
-                        )
-                    else:  # pit tags
-                        if TrtPitTags.objects.filter(pittag_id=tag_id).exists():
-                            return JsonResponse({"success": False, "error": f"PIT tag {tag_id} already exists"})
-
-                        pit_tag_status = TrtPitTagStatus.objects.get(pit_tag_status="U")
-
-                        TrtPitTags.objects.create(
-                            pittag_id=tag_id,
-                            tag_order_id=form.cleaned_data["tag_order_id"],
-                            issue_location=form.cleaned_data["issue_location"],
-                            custodian_person_id=form.cleaned_data["custodian_person_id"],
-                            # Retained for backwards compatibility (T062).
-                            field_person_id=None,
-                            comments=form.cleaned_data["comments"],
-                            pit_tag_status=pit_tag_status,
+                        tag_status = TrtTagStatus.objects.get(
+                            tag_status="U"
                         )
 
-            return JsonResponse({"success": True, "message": f"Successfully registered {end - start + 1} tags"})
+                        for tag_id in missing_tags:
+                            TrtTags.objects.create(
+                                tag_id=tag_id,
+                                tag_order_id=form.cleaned_data["tag_order_id"],
+                                issue_location=form.cleaned_data["issue_location"],
+                                custodian_person_id=form.cleaned_data["custodian_person_id"],
+                                # Retained for backwards compatibility (T062).
+                                field_person_id=None,
+                                comments=form.cleaned_data["comments"],
+                                tag_status=tag_status,
+                            )
+
+                            registered_count += 1
+
+                    else:  # PIT tags
+                        pit_tag_status = TrtPitTagStatus.objects.get(
+                            pit_tag_status="U"
+                        )
+
+                        for tag_id in missing_tags:
+                            TrtPitTags.objects.create(
+                                pittag_id=tag_id,
+                                tag_order_id=form.cleaned_data["tag_order_id"],
+                                issue_location=form.cleaned_data["issue_location"],
+                                custodian_person_id=form.cleaned_data["custodian_person_id"],
+                                # Retained for backwards compatibility (T062).
+                                field_person_id=None,
+                                comments=form.cleaned_data["comments"],
+                                pit_tag_status=pit_tag_status,
+                            )
+
+                            registered_count += 1
+
+                # Reassign Existing or Do Both.
+                if action in {"reassign_existing", "both"}:
+
+                    if tag_type == "flipper":
+                        reassigned_count = TrtTags.objects.filter(
+                            tag_id__in=reassignable_tags,
+                            tag_status_id="U",
+                        ).update(
+                            issue_location=form.cleaned_data["issue_location"],
+                            custodian_person_id=form.cleaned_data["custodian_person_id"],
+                            comments=form.cleaned_data["comments"],
+                        )
+
+                    else:  # PIT tags
+                        reassigned_count = TrtPitTags.objects.filter(
+                            pittag_id__in=reassignable_tags,
+                            pit_tag_status_id="U",
+                        ).update(
+                            issue_location=form.cleaned_data["issue_location"],
+                            custodian_person_id=form.cleaned_data["custodian_person_id"],
+                            comments=form.cleaned_data["comments"],
+                        )
+
+            if action == "register_missing":
+                message = (
+                    f"Successfully registered "
+                    f"{registered_count} missing tags."
+                )
+
+            elif action == "reassign_existing":
+                message = (
+                    f"Successfully reassigned "
+                    f"{reassigned_count} unused existing tags."
+                )
+
+            elif action == "both":
+                message = (
+                    f"Successfully registered {registered_count} missing tags "
+                    f"and reassigned {reassigned_count} unused existing tags."
+                )
+
+            else:
+                message = (
+                    f"Successfully registered "
+                    f"{registered_count} tags."
+                )
+
+            return JsonResponse({
+                "success": True,
+                "message": message,
+                "registered_count": registered_count,
+                "reassigned_count": reassigned_count,
+            })
 
         except Exception as e:
-            return JsonResponse({"success": False, "error": str(e)})
+            return JsonResponse({
+                "success": False,
+                "error": str(e),
+            })
 
     def form_invalid(self, form):
         errors = []
