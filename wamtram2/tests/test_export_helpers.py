@@ -2,7 +2,7 @@ from datetime import datetime
 from types import SimpleNamespace
 from unittest.mock import patch
 
-from django.test import SimpleTestCase
+from django.test import SimpleTestCase, TestCase
 
 from wamtram2.export_config import PROCESSED_EXPORT_HEADERS
 from wamtram2.export_helpers import get_processed_export_row
@@ -293,56 +293,47 @@ class ProcessedExportRowTests(SimpleTestCase):
             row["NEW_TURTLE"],
             "Y",
         )
+    def test_processed_row_generation_does_not_requery_observations_when_context_is_preloaded(self):
+        _, observation, context = make_processed_export_test_data()
 
-    def test_processed_row_generation_uses_no_database_queries_when_context_is_preloaded(self):
-        place = obj(
-            place_code="TH01",
-            place_name="Thevenard Main Beach",
-            location_code=obj(location_code="TH", location_name="Thevenard Island"),
-        )
-        turtle = obj(
-            turtle_id=1003,
-            species_code=obj(species_code="FB", common_name="Flatback Turtle"),
-            species_code_id="FB",
-            sex="F",
-            location_code=None,
-            turtle_status_id="T",
-            turtle_status=None,
-            identification_confidence="A",
-        )
-        observation = obj(
-            observation_id=2003,
-            turtle=turtle,
-            turtle_id=1003,
-            observation_date=datetime(2025, 12, 3, 22, 0),
-            observation_time=datetime(1899, 12, 30, 22, 0),
-            date_entered=None,
-            place_code=place,
-            place_code_id="TH01",
-            place_description="",
-            observation_status="Resighting",
-            entry_batch_id=3003,
-        )
-        context = {
-            "observations": {observation.observation_id: observation},
-            "data_entries": {},
-            "first_observations": {1003: (datetime(2025, 12, 1, 20, 0), 1999)},
-            "recorded_tags": {},
-            "recorded_pit_tags": {},
-            "pit_tag_states": {},
-            "measurements": {},
-            "samples": {},
-            "damages": {},
-            "identifications": {},
-        }
-
-        with patch("wamtram2.export_helpers.TrtObservations.objects") as observations_manager:
-            row = processed_row_dict(get_processed_export_row(observation, context))
-
+        with patch(
+            "wamtram2.export_helpers.TrtObservations.objects"
+        ) as observations_manager:
+            get_processed_export_row(
+                observation,
+                context,
+            )
         observations_manager.assert_not_called()
-        self.assertEqual(row["NEW_TURTLE"], "N")
 
+    def test_processed_export_existing_turtle(self):
+        turtle, observation, context = make_processed_export_test_data()
 
+        context["first_observations"][turtle.turtle_id] = (
+            datetime(2025, 12, 1, 20, 0),
+            1999,
+        )
+
+        row = processed_row_dict(
+            get_processed_export_row(
+                observation,
+                context,
+            )
+        )
+
+        self.assertEqual(
+            row["NEW_TURTLE"],
+            "N",
+        )
+class ProcessedExportPerformanceTests(TestCase):
+    def test_processed_row_generation_uses_zero_database_queries_when_context_is_preloaded(self):
+        _, observation, context = make_processed_export_test_data()
+
+        with self.assertNumQueries(0):
+            get_processed_export_row(
+                observation,
+                context,
+            )
+            
 class ExportChunkingTests(SimpleTestCase):
     def test_processed_keyset_chunking_has_no_missing_or_duplicate_rows_with_id_gaps(self):
         view = ExportDataView()
@@ -383,5 +374,17 @@ class ExportChunkingTests(SimpleTestCase):
             for entry in chunk
         ]
 
-        self.assertEqual(flattened_ids, [1, 4, 10, 11, 25])
-        self.assertEqual(len(flattened_ids), len(set(flattened_ids)))
+        self.assertEqual(
+            [len(chunk) for chunk in chunks],
+            [2, 2, 1],
+        )
+
+        self.assertEqual(
+            flattened_ids,
+            [1, 4, 10, 11, 25],
+        )
+
+        self.assertEqual(
+            len(flattened_ids),
+            len(set(flattened_ids)),
+        )
