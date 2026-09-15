@@ -117,6 +117,9 @@
                 <div class="form-group">
                     <label for="comments">Comments</label>
                     <textarea class="form-control form-control-sm" id="comments" name="comments" rows="3"></textarea>
+                    <small class="form-text text-muted">
+                        For reassigned tags, this comment will be appended to the existing comment.
+                    </small>
                 </div>
     
 
@@ -130,7 +133,58 @@
                 </div>
             </form>
         </div>
+        <!-- Existing Tags Action Modal -->
+        <div class="modal fade" id="existingTagsModal" tabindex="-1" role="dialog" aria-labelledby="existingTagsModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
 
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="existingTagsModalLabel">Existing Tags Found</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        <p>Some tags in the selected range are already registered.</p>
+
+                        <div class="alert alert-info mb-3">
+                            <div>
+                                <strong>Used / unavailable tags:</strong>
+                                <span id="protectedTagCount">0</span>
+                            </div>
+
+                            <div>
+                                <strong>Unregistered tags:</strong>
+                                <span id="missingTagCount">0</span>
+                            </div>
+
+                            <div>
+                                <strong>Unused tags available to reassign:</strong>
+                                <span id="reassignableTagCount">0</span>
+                            </div>
+                        </div>
+
+                        <p class="text-muted mb-3">
+                            Only unregistered tags can be registered, and only unused tags can be reassigned.
+                        </p>
+
+                        <p class="mb-0">What would you like to do?</p>
+                    </div>
+
+                    <div class="modal-footer d-flex flex-column align-items-stretch">
+                        <button type="button" class="btn btn-primary mb-2" id="registerMissingButton">Register Missing Tags Only</button>
+
+                        <button type="button" class="btn btn-warning mb-2" id="reassignExistingButton">Reassign Existing Tags</button>
+
+                        <button type="button" class="btn btn-success mb-2" id="doBothButton">Register Missing and Reassign Existing</button>
+
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
         <!-- Loading spinner -->
         <div class="loading-spinner">
             <div class="spinner-border text-primary" role="status">
@@ -314,13 +368,17 @@
         );
     });
 
-    // Form submission handler
-    document.getElementById('tagRegisterForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
+    async function submitTagRegistration(action = null) {
+        const form = document.getElementById('tagRegisterForm');
+        const formData = new FormData(form);
+
+        if (action) {
+            formData.append('action', action);
+        }
+
         showLoadingSpinner();
 
         try {
-            const formData = new FormData(this);
             const response = await fetch("{% url 'wamtram2:tag_register' %}", {
                 method: 'POST',
                 body: formData,
@@ -330,21 +388,122 @@
             });
 
             const data = await response.json();
+
             if (data.success) {
-                showMessage('Tags registered successfully!', 'success');
+                $('#existingTagsModal').modal('hide');
+                showMessage(data.message || 'Tag operation completed successfully.', 'success');
                 setTimeout(() => window.location.reload(), 1500);
-            } else {
-                const errorMessage = data.error || 'Error registering tags';
-                showMessage(errorMessage, 'danger');
+                return;
             }
+
+            if (data.requires_action) {
+                document.getElementById('reassignableTagCount').textContent =
+                    data.reassignable_count;
+
+                document.getElementById('protectedTagCount').textContent =
+                    data.protected_count;
+
+                document.getElementById('missingTagCount').textContent =
+                    data.missing_count;
+
+                const registerMissingButton =
+                    document.getElementById('registerMissingButton');
+
+                const reassignExistingButton =
+                    document.getElementById('reassignExistingButton');
+
+                const doBothButton =
+                    document.getElementById('doBothButton');
+
+                if (data.missing_count === 0) {
+                    registerMissingButton.disabled = true;
+                    registerMissingButton.className = 'btn btn-secondary mb-2';
+                    registerMissingButton.textContent = 'No Unregistered Tags to Register';
+                } else {
+                    registerMissingButton.disabled = false;
+                    registerMissingButton.className = 'btn btn-primary mb-2';
+                    registerMissingButton.textContent = 'Register Unregistered Tags Only';
+                }
+
+                if (data.reassignable_count === 0) {
+                    reassignExistingButton.disabled = true;
+                    reassignExistingButton.className = 'btn btn-secondary mb-2';
+                    reassignExistingButton.textContent = 'No Tags Available to Reassign';
+                } else {
+                    reassignExistingButton.disabled = false;
+                    reassignExistingButton.className = 'btn btn-warning mb-2';
+                    reassignExistingButton.textContent = 'Reassign Available Tags';
+                }
+
+                if (data.reassignable_count === 0 || data.missing_count === 0) {
+                    doBothButton.disabled = true;
+                    doBothButton.className = 'btn btn-secondary mb-2';
+                    doBothButton.textContent = 'Combined Action Unavailable';
+                } else {
+                    doBothButton.disabled = false;
+                    doBothButton.className = 'btn btn-success mb-2';
+                    doBothButton.textContent = 'Register Unregistered and Reassign Available';
+                }
+
+                $('#existingTagsModal').modal('show');
+                return;
+            }
+
+            const errorMessage =
+                data.error || 'Error processing tags';
+
+            showMessage(errorMessage, 'danger');
+
         } catch (error) {
             console.error('Error:', error);
-            showMessage('An error occurred while registering tags', 'danger');
+            showMessage(
+                'An error occurred while processing tags',
+                'danger'
+            );
         } finally {
             hideLoadingSpinner();
         }
-    });
+    }
 
+
+    // Initial tag registration request.
+    document.getElementById('tagRegisterForm').addEventListener(
+        'submit',
+        function(e) {
+            e.preventDefault();
+            submitTagRegistration();
+        }
+    );
+
+
+    // Register only tags that do not already exist.
+    document.getElementById('registerMissingButton').addEventListener(
+        'click',
+        function() {
+            $('#existingTagsModal').modal('hide');
+            submitTagRegistration('register_missing');
+        }
+    );
+
+
+    // Reassign only tags that already exist.
+    document.getElementById('reassignExistingButton').addEventListener(
+        'click',
+        function() {
+            $('#existingTagsModal').modal('hide');
+            submitTagRegistration('reassign_existing');
+        }
+    );
+
+
+    // Register missing tags and reassign existing tags.
+    document.getElementById('doBothButton').addEventListener(
+        'click',
+        function() {
+            $('#existingTagsModal').modal('hide');
+            submitTagRegistration('both');
+        }
+    );
     // Initialize person search
     document.addEventListener('DOMContentLoaded', function() {
         setupPersonSearch('custodianPerson', 'custodianPersonId', 'custodianSearchResults');

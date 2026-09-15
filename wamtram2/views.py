@@ -3921,60 +3921,312 @@ class TagRegisterView(LoginRequiredMixin, FormView):
         if not (request.user.is_superuser or request.user.groups.filter(name="WAMTRAM2_STAFF").exists()):
             raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
-
+        
     def form_valid(self, form):
         try:
             tag_type = form.cleaned_data["tag_type"]
             prefix = form.cleaned_data["tag_prefix"]
             start = int(form.cleaned_data["start_number"])
             end = int(form.cleaned_data["end_number"])
-            
-            # T062 removed tag registration batch size limit
-            
-            with transaction.atomic():
+            action = self.request.POST.get("action")
+
+            # T062 removed the user-facing tag registration batch size limit.
+            # Large ranges are processed internally in bounded chunks instead.
+            tag_query_batch_size = 1000
+
+            def iter_tag_id_chunks():
+                chunk = []
+
                 for num in range(start, end + 1):
                     if tag_type == "flipper":
                         tag_id = f"{prefix}{str(num).zfill(len(str(start)))}"
-                    else:  # pit tags
+                    else:  # PIT tags
                         tag_id = str(num)
 
-                    if tag_type == "flipper":
-                        if TrtTags.objects.filter(tag_id=tag_id).exists():
-                            return JsonResponse({"success": False, "error": f"Tag {tag_id} already exists"})
+                    chunk.append(tag_id)
 
-                        tag_status = TrtTagStatus.objects.get(tag_status="U")
+                    if len(chunk) >= tag_query_batch_size:
+                        yield chunk
+                        chunk = []
 
-                        TrtTags.objects.create(
-                            tag_id=tag_id,
-                            tag_order_id=form.cleaned_data["tag_order_id"],
-                            issue_location=form.cleaned_data["issue_location"],
-                            custodian_person_id=form.cleaned_data["custodian_person_id"],
-                            # Retained for backwards compatibility (T062).
-                            field_person_id=None,
-                            comments=form.cleaned_data["comments"],
-                            tag_status=tag_status,
+                if chunk:
+                    yield chunk
+
+            valid_actions = {
+                "register_missing",
+                "reassign_existing",
+                "both",
+            }
+
+            if action and action not in valid_actions:
+                return JsonResponse({
+                    "success": False,
+                    "error": "Invalid tag registration action.",
+                })
+
+            existing_count = 0
+            reassignable_count = 0
+
+            # Classify the requested range in bounded chunks.
+            for tag_id_chunk in iter_tag_id_chunks():
+                if tag_type == "flipper":
+                    existing_statuses = dict(
+                        TrtTags.objects.filter(
+                            tag_id__in=tag_id_chunk
+                        ).values_list(
+                            "tag_id",
+                            "tag_status_id",
                         )
-                    else:  # pit tags
-                        if TrtPitTags.objects.filter(pittag_id=tag_id).exists():
-                            return JsonResponse({"success": False, "error": f"PIT tag {tag_id} already exists"})
+                    )
+                else:
+                    existing_statuses = dict(
+                        TrtPitTags.objects.filter(
+                            pittag_id__in=tag_id_chunk
+                        ).values_list(
+                            "pittag_id",
+                            "pit_tag_status_id",
+                        )
+                    )
 
-                        pit_tag_status = TrtPitTagStatus.objects.get(pit_tag_status="U")
+                existing_count += len(existing_statuses)
+                reassignable_count += sum(
+                    status == "U"
+                    for status in existing_statuses.values()
+                )
 
-                        TrtPitTags.objects.create(
-                            pittag_id=tag_id,
-                            tag_order_id=form.cleaned_data["tag_order_id"],
-                            issue_location=form.cleaned_data["issue_location"],
-                            custodian_person_id=form.cleaned_data["custodian_person_id"],
-                            # Retained for backwards compatibility (T062).
-                            field_person_id=None,
-                            comments=form.cleaned_data["comments"],
-                            pit_tag_status=pit_tag_status,
+            total_count = end - start + 1
+            protected_count = existing_count - reassignable_count
+            missing_count = total_count - existing_count
+
+            # Existing tags were found, but the user has not yet
+            # chosen how to handle the mixed/existing range.
+            if existing_count and not action:
+                return JsonResponse({
+                    "success": False,
+                    "requires_action": True,
+                    "existing_count": existing_count,
+                    "reassignable_count": reassignable_count,
+                    "protected_count": protected_count,
+                    "missing_count": missing_count,
+                })
+
+            registered_count = 0
+            reassigned_count = 0
+
+            tag_order_id = form.cleaned_data["tag_order_id"]
+            issue_location = form.cleaned_data["issue_location"]
+            custodian_person_id = form.cleaned_data["custodian_person_id"]
+            new_comment = (form.cleaned_data["comments"] or "").strip()
+
+            with transaction.atomic():
+                if tag_type == "flipper":
+                    tag_status = TrtTagStatus.objects.get(
+                        tag_status="U"
+                    )
+
+                    for tag_id_chunk in iter_tag_id_chunks():
+                        existing_tag_ids = set(
+                            TrtTags.objects.filter(
+                                tag_id__in=tag_id_chunk
+                            ).values_list(
+                                "tag_id",
+                                flat=True,
+                            )
                         )
 
-            return JsonResponse({"success": True, "message": f"Successfully registered {end - start + 1} tags"})
+                        # Normal registration, Register Missing, or Do Both.
+                        if not action or action in {
+                            "register_missing",
+                            "both",
+                        }:
+                            tags_to_create = [
+                                TrtTags(
+                                    tag_id=tag_id,
+                                    tag_order_id=tag_order_id,
+                                    issue_location=issue_location,
+                                    custodian_person_id=custodian_person_id,
+                                    # Retained for backwards compatibility (T062).
+                                    field_person_id=None,
+                                    comments=new_comment,
+                                    tag_status=tag_status,
+                                )
+                                for tag_id in tag_id_chunk
+                                if tag_id not in existing_tag_ids
+                            ]
+
+                            if tags_to_create:
+                                TrtTags.objects.bulk_create(
+                                    tags_to_create,
+                                    batch_size=tag_query_batch_size,
+                                )
+                                registered_count += len(tags_to_create)
+
+                        # Reassign Existing or Do Both.
+                        if action in {
+                            "reassign_existing",
+                            "both",
+                        }:
+                            tags_to_reassign = list(
+                                TrtTags.objects.filter(
+                                    tag_id__in=tag_id_chunk,
+                                    tag_status_id="U",
+                                )
+                            )
+
+                            for tag in tags_to_reassign:
+                                tag.issue_location = issue_location
+                                tag.custodian_person_id = (
+                                    custodian_person_id
+                                )
+
+                                if new_comment:
+                                    reassignment_comment = (
+                                        f"Reassigned: {new_comment}"
+                                    )
+
+                                    if tag.comments:
+                                        tag.comments = (
+                                            f"{tag.comments}; "
+                                            f"{reassignment_comment}"
+                                        )
+                                    else:
+                                        tag.comments = (
+                                            reassignment_comment
+                                        )
+                            for tag in tags_to_reassign:
+                                tag.save(
+                                    update_fields=[
+                                        "issue_location",
+                                        "custodian_person_id",
+                                        "comments",
+                                    ]
+                                )
+                            reassigned_count += len(
+                                tags_to_reassign
+                            )
+
+                else:  # PIT tags
+                    pit_tag_status = TrtPitTagStatus.objects.get(
+                        pit_tag_status="U"
+                    )
+
+                    for tag_id_chunk in iter_tag_id_chunks():
+                        existing_tag_ids = set(
+                            TrtPitTags.objects.filter(
+                                pittag_id__in=tag_id_chunk
+                            ).values_list(
+                                "pittag_id",
+                                flat=True,
+                            )
+                        )
+
+                        # Normal registration, Register Missing, or Do Both.
+                        if not action or action in {
+                            "register_missing",
+                            "both",
+                        }:
+                            tags_to_create = [
+                                TrtPitTags(
+                                    pittag_id=tag_id,
+                                    tag_order_id=tag_order_id,
+                                    issue_location=issue_location,
+                                    custodian_person_id=custodian_person_id,
+                                    # Retained for backwards compatibility (T062).
+                                    field_person_id=None,
+                                    comments=new_comment,
+                                    pit_tag_status=pit_tag_status,
+                                )
+                                for tag_id in tag_id_chunk
+                                if tag_id not in existing_tag_ids
+                            ]
+
+                            if tags_to_create:
+                                TrtPitTags.objects.bulk_create(
+                                    tags_to_create,
+                                    batch_size=tag_query_batch_size,
+                                )
+                                registered_count += len(tags_to_create)
+
+                        # Reassign Existing or Do Both.
+                        if action in {
+                            "reassign_existing",
+                            "both",
+                        }:
+                            tags_to_reassign = list(
+                                TrtPitTags.objects.filter(
+                                    pittag_id__in=tag_id_chunk,
+                                    pit_tag_status_id="U",
+                                )
+                            )
+
+                            for tag in tags_to_reassign:
+                                tag.issue_location = issue_location
+                                tag.custodian_person_id = (
+                                    custodian_person_id
+                                )
+
+                                if new_comment:
+                                    reassignment_comment = (
+                                        f"Reassigned: {new_comment}"
+                                    )
+
+                                    if tag.comments:
+                                        tag.comments = (
+                                            f"{tag.comments}; " 
+                                            f"{reassignment_comment}"
+                                        )
+                                    else:
+                                        tag.comments = (
+                                            reassignment_comment
+                                        )
+
+                            for tag in tags_to_reassign:
+                                tag.save(
+                                    update_fields=[
+                                        "issue_location",
+                                        "custodian_person_id",
+                                        "comments",
+                                    ]
+                                )
+
+                            reassigned_count += len(
+                                tags_to_reassign
+                            )
+
+            if action == "register_missing":
+                message = (
+                    f"Successfully registered "
+                    f"{registered_count} missing tags."
+                )
+
+            elif action == "reassign_existing":
+                message = (
+                    f"Successfully reassigned "
+                    f"{reassigned_count} unused existing tags."
+                )
+
+            elif action == "both":
+                message = (
+                    f"Successfully registered {registered_count} missing tags "
+                    f"and reassigned {reassigned_count} unused existing tags."
+                )
+
+            else:
+                message = (
+                    f"Successfully registered "
+                    f"{registered_count} tags."
+                )
+
+            return JsonResponse({
+                "success": True,
+                "message": message,
+            })
 
         except Exception as e:
-            return JsonResponse({"success": False, "error": str(e)})
+            return JsonResponse({
+                "success": False,
+                "error": str(e),
+            })
 
     def form_invalid(self, form):
         errors = []
