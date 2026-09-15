@@ -2421,8 +2421,9 @@ class ExportDataView(LoginRequiredMixin, View):
             filename_parts = [
                 export_type,
                 location_label,
-                from_date.strftime("%Y%m%d"),
-                to_date.strftime("%Y%m%d"),
+                # Use UK day-month-year ordering for user-visible export filenames.
+                from_date.strftime("%d%m%Y"),
+                to_date.strftime("%d%m%Y"),
             ]
             if species:
                 filename_parts.append(species)
