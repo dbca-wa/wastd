@@ -286,12 +286,11 @@
         select.innerHTML = '';
 
         // Add default option safely, except for Location
-        if (selectId !== 'location_code') {
-            const defaultOption = document.createElement('option');
-            defaultOption.value = '';
-            defaultOption.textContent = `All ${label}`;
-            select.appendChild(defaultOption);
-        }
+        const defaultOption = document.createElement('option');
+        defaultOption.value = '';
+        defaultOption.textContent = `All ${label}`;
+        select.appendChild(defaultOption);
+        
         options.forEach(function (option) {
         const optionElement = document.createElement('option');
         optionElement.value = option.value;
