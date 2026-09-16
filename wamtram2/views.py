@@ -4222,10 +4222,10 @@ class TagRegisterView(LoginRequiredMixin, FormView):
                 "message": message,
             })
 
-        except Exception as e:
+        except Exception:
             return JsonResponse({
                 "success": False,
-                "error": str(e),
+                "error": "An unexpected error occurred while processing the tag registration.",
             })
 
     def form_invalid(self, form):
