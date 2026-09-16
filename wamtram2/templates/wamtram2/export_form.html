@@ -110,7 +110,9 @@
                     <div class="form-group">
                         <label for="location_code">Location</label>
                         <select id="location_code" name="location_code" class="form-control form-control-sm select2">
-                            {# <option value="">All Locations</option> #}
+                            {% if request.user.username == "liz.huangfu@dbca.wa.gov.au" %}
+                                <option value="">All Locations</option>
+                            {% endif %}
                         </select>
                         <small class="form-text text-warning d-block">
                             ⚠️ Note: When selecting an entire location, please consider downloading data in smaller date ranges to avoid timeout issues.
@@ -285,12 +287,13 @@
         // Clear options safely
         select.innerHTML = '';
 
-        // Add default option safely, except for Location
-        const defaultOption = document.createElement('option');
-        defaultOption.value = '';
-        defaultOption.textContent = `All ${label}`;
-        select.appendChild(defaultOption);
-        
+        // Add default option safely, except for Location unless enabled for UAT
+        if (selectId !== 'location_code' || '{{ request.user.username|escapejs }}' === 'liz.huangfu@dbca.wa.gov.au') {
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.textContent = `All ${label}`;
+            select.appendChild(defaultOption);
+        }
         options.forEach(function (option) {
         const optionElement = document.createElement('option');
         optionElement.value = option.value;
