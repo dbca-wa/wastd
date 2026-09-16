@@ -2459,10 +2459,10 @@ class ExportDataView(LoginRequiredMixin, View):
                 # Apply filters
                 queryset = queryset.filter(observation_date__range=[from_date, to_date])
 
-                if location_code:
-                    queryset = queryset.filter(place_code__location_code=location_code)
-                elif place_code:
+                if place_code:
                     queryset = queryset.filter(place_code=place_code)
+                elif location_code:
+                    queryset = queryset.filter(place_code__location_code=location_code)
 
                 if species:
                     queryset = queryset.filter(turtle__species_code=species)
@@ -2526,11 +2526,10 @@ class ExportDataView(LoginRequiredMixin, View):
 
                 # Apply filters
                 queryset = queryset.filter(observation_date__range=[from_date, to_date])
-
-                if location_code:
-                    queryset = queryset.filter(place_code__location_code=location_code)
-                elif place_code:
+                if place_code:
                     queryset = queryset.filter(place_code=place_code)
+                elif location_code:
+                    queryset = queryset.filter(place_code__location_code=location_code)
 
                 if species:
                     queryset = queryset.filter(species_code=species)
