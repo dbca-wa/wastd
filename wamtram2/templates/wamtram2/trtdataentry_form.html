@@ -1290,16 +1290,15 @@
 
     // Populate form fields based on entryId or templateId
     function populateForm() {
-        if (entryId) {
-
-            const enteredById = "{{ form.entered_by_id.value }}";
-            if (enteredById) {
-                const enteredByFullName = "{{ view.entered_by_full_name|escapejs }}";
-                if (enteredByFullName) {
-                    document.getElementById('search_entered_by').value = enteredByFullName;
-                }
+        // Populate Entered by for both new and existing entries.
+        const enteredById = "{{ form.entered_by_id.value }}";
+        if (enteredById) {
+            const enteredByFullName = "{{ view.entered_by_full_name|escapejs }}";
+            if (enteredByFullName) {
+                document.getElementById('search_entered_by').value = enteredByFullName;
             }
-
+        }
+        if (entryId) {
             const placeCodeFromDb = "{{ form.place_code.value|escapejs }}";
             const placeNameFromDb = "{{ view.place_full_name|escapejs }}";
             const placeLatitudeFromDb = "{{ place_latitude|escapejs }}";

@@ -540,7 +540,16 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
             initial["turtle_id"] = turtle_id
             initial["species_code"] = turtle.species_code
             initial["sex"] = turtle.sex
-
+        # Remember the previously selected "Entered by" person for new entries.
+        if not entry_id:
+            last_entered_by_id = self.request.session.get("last_entered_by_id")
+            if last_entered_by_id:
+                person = TrtPersons.objects.filter(
+                    person_id=last_entered_by_id
+                ).first()
+                if person:
+                    initial["entered_by_id"] = person.person_id
+                    self.entered_by_full_name = f"{person.first_name} {person.surname}"
         if entry_id:
             trtdataentry = get_object_or_404(TrtDataEntry, data_entry_id=entry_id)
 
@@ -626,6 +635,10 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         if do_not_process_cookie_value == "true":
             form.instance.do_not_process = True
         entry = form.save()
+        # Store the successfully submitted "Entered by" person so it can be
+        # pre-filled on the next new entry within the current browser session.
+        if entry.entered_by_id:
+            self.request.session["last_entered_by_id"] = entry.entered_by_id.person_id
         # success_url = reverse("wamtram2:find_turtle", args=[batch_id])
         success_url = FindTurtleView.get_clear_cookies_url(batch_id)
 
