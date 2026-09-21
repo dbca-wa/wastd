@@ -71,11 +71,11 @@ class AuditLogCreationTests(TestCase):
         )
         request.user = user
 
-    # Verify that a deletion performed within a request records the authenticated
-    # actor together with the request path, HTTP method, and remote IP address.
-    def delete_organisation(request):
-        organisation.delete()
-        return None
+        # Verify that a deletion performed within a request records the authenticated
+        # actor together with the request path, HTTP method, and remote IP address.
+        def delete_organisation(request):
+            organisation.delete()
+            return None
 
         middleware = ModuleAccessMiddleware(delete_organisation)
         middleware(request)
