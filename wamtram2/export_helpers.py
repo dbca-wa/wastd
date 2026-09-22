@@ -134,21 +134,21 @@ def get_export_field_value(
 
 
 def format_export_value(value):
+    # Use UK date format (DD/MM/YYYY) for user-visible export values.
     if isinstance(value, datetime):
-
         # Excel time-only
         if value.date() == date(1899, 12, 30):
             return value.strftime("%I:%M:%S %p").lstrip("0")
 
         # Normal datetime with time
         if value.time() == time(0, 0):
-            return value.strftime("%m/%d/%Y")
+            return value.strftime("%d/%m/%Y")
 
         # other datetime
-        return value.strftime("%m/%d/%Y %I:%M:%S %p")
+        return value.strftime("%d/%m/%Y %I:%M:%S %p")
 
     if isinstance(value, date):
-        return value.strftime("%m/%d/%Y")
+        return value.strftime("%d/%m/%Y")
 
     if isinstance(value, bool):
         return "True" if value else "False"
@@ -1442,7 +1442,7 @@ def _observation_samples(samples):
 
         sample_date = sample.sample_date
         if sample_date:
-            sample_date = sample_date.strftime("%Y-%m-%d")
+            sample_date = sample_date.strftime("%d/%m/%Y")
         else:
             sample_date = ""
 
