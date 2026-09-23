@@ -540,7 +540,16 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
             initial["turtle_id"] = turtle_id
             initial["species_code"] = turtle.species_code
             initial["sex"] = turtle.sex
-
+        # Remember the previously selected "Entered by" person for new entries.
+        if not entry_id:
+            last_entered_by_id = self.request.session.get("last_entered_by_id")
+            if last_entered_by_id:
+                person = TrtPersons.objects.filter(
+                    person_id=last_entered_by_id
+                ).first()
+                if person:
+                    initial["entered_by_id"] = person.person_id
+                    self.entered_by_full_name = f"{person.first_name} {person.surname}"
         if entry_id:
             trtdataentry = get_object_or_404(TrtDataEntry, data_entry_id=entry_id)
 
@@ -626,6 +635,10 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         if do_not_process_cookie_value == "true":
             form.instance.do_not_process = True
         entry = form.save()
+        # Store the successfully submitted "Entered by" person so it can be
+        # pre-filled on the next new entry within the current browser session.
+        if entry.entered_by_id:
+            self.request.session["last_entered_by_id"] = entry.entered_by_id.person_id
         # success_url = reverse("wamtram2:find_turtle", args=[batch_id])
         success_url = FindTurtleView.get_clear_cookies_url(batch_id)
 
@@ -2401,29 +2414,23 @@ class ExportDataView(LoginRequiredMixin, View):
             file_format = request.GET.get("format", "csv")
             entry_type = request.GET.get("entry_type", "field")
 
-            # # Build filename
-            # export_type = "Observations" if entry_type == "processed" else "FieldEntries"
-
-            # export_date = timezone.now().strftime("%d%m%Y")
-
-            # location_label = location_code or place_code or "ALL"
-
-            # filename = (
-            #     f"{export_type}_"
-            #     f"{location_label}_"
-            #     f"{from_date.strftime('%Y%m%d')}_"
-            #     f"{to_date.strftime('%Y%m%d')}_"
-            #     f"Export{export_date}"
-            # )
             # Build filename
             export_type = "Observations" if entry_type == "processed" else "FieldEntries"
-            location_label = location_code or place_code or "ALL"
+            location_label = location_code or "ALL"
+
             filename_parts = [
                 export_type,
                 location_label,
-                from_date.strftime("%Y%m%d"),
-                to_date.strftime("%Y%m%d"),
             ]
+
+            if place_code:
+                filename_parts.append(place_code)
+
+            filename_parts.extend([
+                # Use UK day-month-year ordering for user-visible export filenames.
+                from_date.strftime("%d%m%Y"),
+                to_date.strftime("%d%m%Y"),
+            ])
             if species:
                 filename_parts.append(species)
             if sex:
@@ -2458,10 +2465,10 @@ class ExportDataView(LoginRequiredMixin, View):
                 # Apply filters
                 queryset = queryset.filter(observation_date__range=[from_date, to_date])
 
-                if location_code:
-                    queryset = queryset.filter(place_code__location_code=location_code)
-                elif place_code:
+                if place_code:
                     queryset = queryset.filter(place_code=place_code)
+                elif location_code:
+                    queryset = queryset.filter(place_code__location_code=location_code)
 
                 if species:
                     queryset = queryset.filter(turtle__species_code=species)
@@ -2525,11 +2532,10 @@ class ExportDataView(LoginRequiredMixin, View):
 
                 # Apply filters
                 queryset = queryset.filter(observation_date__range=[from_date, to_date])
-
-                if location_code:
-                    queryset = queryset.filter(place_code__location_code=location_code)
-                elif place_code:
+                if place_code:
                     queryset = queryset.filter(place_code=place_code)
+                elif location_code:
+                    queryset = queryset.filter(place_code__location_code=location_code)
 
                 if species:
                     queryset = queryset.filter(species_code=species)

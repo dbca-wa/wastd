@@ -1269,6 +1269,17 @@
     const cookieTagSide = "{{ cookie_tag_side }}";
     const entryId = "{{ entry_id }}";
     const templateId = "{{ selected_template }}";
+    
+    // Clear the hidden person ID when the entered-by text is manually changed.
+    const enteredBySearch = document.getElementById('search_entered_by');
+    const enteredByIdInput = document.getElementById('id_entered_by_id');
+
+    if (enteredBySearch && enteredByIdInput) {
+        enteredBySearch.addEventListener('input', function() {
+            enteredByIdInput.value = '';
+        });
+    }
+
     // Clear the hidden person ID when the tagged-by text is manually changed.
     const taggedBySearch = document.getElementById('search_tagged_by');
     const taggedById = document.getElementById('id_tagged_by_id');
@@ -1290,16 +1301,19 @@
 
     // Populate form fields based on entryId or templateId
     function populateForm() {
-        if (entryId) {
+        // Populate Entered by from the remembered value only when the form is not bound.
+        const enteredById = "{{ form.entered_by_id.value }}";
+        const enteredByFullName = "{{ view.entered_by_full_name|escapejs }}";
+        const enteredByBoundName = "{{ entered_by_name|escapejs }}";
 
-            const enteredById = "{{ form.entered_by_id.value }}";
-            if (enteredById) {
-                const enteredByFullName = "{{ view.entered_by_full_name|escapejs }}";
-                if (enteredByFullName) {
-                    document.getElementById('search_entered_by').value = enteredByFullName;
-                }
+        if (enteredById) {
+            if (enteredByBoundName) {
+                document.getElementById('search_entered_by').value = enteredByBoundName;
+            } else if (enteredByFullName) {
+                document.getElementById('search_entered_by').value = enteredByFullName;
             }
-
+        }
+        if (entryId) {
             const placeCodeFromDb = "{{ form.place_code.value|escapejs }}";
             const placeNameFromDb = "{{ view.place_full_name|escapejs }}";
             const placeLatitudeFromDb = "{{ place_latitude|escapejs }}";
