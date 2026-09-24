@@ -6487,9 +6487,11 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                 elif context.get("selected_locations"):
                     location_filter = Q()
                     for loc in context["selected_locations"]:
-                        location_filter |= Q(place_code__place_code__startswith=loc)
+                        if loc == "XX":
+                            location_filter |= Q(place_code__isnull=True)
+                        else:
+                            location_filter |= Q(place_code__place_code__startswith=loc)
                     query = query.filter(location_filter)
-
                 if context["selected_sex"]:
                     query = query.filter(turtle__sex=context["selected_sex"])
 
@@ -6524,7 +6526,10 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                 elif context.get("selected_locations"):
                     location_filter = Q()
                     for loc in context["selected_locations"]:
-                        location_filter |= Q(place_code__place_code__startswith=loc)
+                        if loc == "XX":
+                            location_filter |= Q(place_code__isnull=True)
+                        else:
+                            location_filter |= Q(place_code__place_code__startswith=loc)
                     query = query.filter(location_filter)
 
                 if context["selected_sex"]:
@@ -6615,8 +6620,13 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                     else:
                         results_dict[place_code]["count"] += 1
 
-                results = sorted(results_dict.values(), key=lambda x: x["place_code__place_code"])
-
+                results = sorted(
+                    results_dict.values(),
+                    key=lambda x: (
+                        x["place_code__place_code"] is None,
+                        x["place_code__place_code"] or "",
+                    ),  
+                )
             results_list = list(results)
 
             if context.get("selected_locations") and not context.get("selected_places"):
