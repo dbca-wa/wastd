@@ -6625,7 +6625,7 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                     key=lambda x: (
                         x["place_code__place_code"] is None,
                         x["place_code__place_code"] or "",
-                    ),  
+                    ),
                 )
             results_list = list(results)
 
