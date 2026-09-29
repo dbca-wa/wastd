@@ -1,6 +1,6 @@
 from datetime import datetime, timezone as dt_timezone
 from types import SimpleNamespace
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from django.test import SimpleTestCase, TestCase
 
@@ -76,6 +76,49 @@ def make_processed_export_test_data():
     return turtle, observation, context
 
 class ProcessedExportRowTests(SimpleTestCase):
+    def test_new_turtle_filter_excludes_existing_turtle(self):
+        _, new_observation, context = make_processed_export_test_data()
+
+        existing_observation = obj(**vars(new_observation))
+        existing_observation.observation_id = 2003
+        existing_observation.observation_date = datetime(2025, 12, 3, 21, 0)
+        existing_observation.observation_status = "Resighting"
+
+        view = ExportDataView()
+
+        with patch.object(
+            view,
+            "_iter_processed_queryset_chunks",
+            return_value=[[new_observation, existing_observation]],
+        ), patch(
+            "wamtram2.views.build_processed_export_context",
+            return_value=context,
+        ):
+            rows = list(
+                view._iter_export_rows(
+                    queryset=None,
+                    entry_type="processed",
+                    new_turtle="yes",
+                    model_meta=None,
+                    org_dict={},
+                    beach_position_dict={},
+                    measurement_type_dict={},
+                    body_part_dict={},
+                    damage_code_dict={},
+                    tissue_type_dict={},
+                    tag_state_dict={},
+                )
+            )
+
+        self.assertEqual(len(rows), 1)
+
+        row = processed_row_dict(rows[0])
+
+        self.assertEqual(
+            row["NEW_TURTLE"],
+            "Y",
+        )
+
     def test_processed_export_location_uses_observation_place_location(self):
         turtle_location = obj(location_code="DB", location_name="Dampier")
         observation_location = obj(location_code="TH", location_name="Thevenard Island")
@@ -438,7 +481,29 @@ class ExportDateRangeFilterTests(SimpleTestCase):
         self.assertEqual(
             self.view._get_date_range("", ""),
             (None, None),
-        )           
+        )
+class ExportAliveFilterTests(SimpleTestCase):
+    def test_alive_filter_uses_selected_value(self):
+        queryset = MagicMock()
+        filtered_queryset = MagicMock()
+
+        queryset.filter.return_value = filtered_queryset
+
+        result = queryset.filter(alive="Y")
+
+        queryset.filter.assert_called_once_with(alive="Y")
+        self.assertIs(result, filtered_queryset)
+
+    def test_alive_filter_null_uses_isnull(self):
+        queryset = MagicMock()
+        filtered_queryset = MagicMock()
+
+        queryset.filter.return_value = filtered_queryset
+
+        result = queryset.filter(alive__isnull=True)
+
+        queryset.filter.assert_called_once_with(alive__isnull=True)
+        self.assertIs(result, filtered_queryset)          
 class ExportChunkingTests(SimpleTestCase):
     def test_processed_keyset_chunking_has_no_missing_or_duplicate_rows_with_id_gaps(self):
         view = ExportDataView()
