@@ -3,7 +3,7 @@ import json
 import operator
 import re
 import traceback
-from datetime import datetime, time, timedelta
+from datetime import datetime, time, timedelta, timezone as dt_timezone
 from functools import reduce
 import pandas as pd
 from django.apps import apps
@@ -2012,22 +2012,31 @@ class ExportDataView(LoginRequiredMixin, View):
     template_name = "wamtram2/export_form.html"
     export_chunk_size = 500
 
-
     def _get_date_range(self, date_from, date_to):
         """
-        Convert date strings to timezone-aware datetime objects
+        Return an inclusive start and exclusive end for SQL Server observation
+        date filtering.
+
+        SQL Server stores observation datetimes as local wall-clock values.
+        Marking the query boundaries as UTC prevents Django from shifting the
+        values by the Australia/Perth offset when USE_TZ is enabled.
+
         Args:
             date_from: YYYY-MM-DD string
             date_to: YYYY-MM-DD string
+
         Returns:
             tuple of (start_datetime, end_datetime)
         """
         if not date_from or not date_to:
             return None, None
 
-        start_date = timezone.make_aware(datetime.combine(datetime.strptime(date_from, "%Y-%m-%d").date(), time.min))
-        end_date = timezone.make_aware(datetime.combine(datetime.strptime(date_to, "%Y-%m-%d").date(), time.max))
-     
+        start_day = datetime.strptime(date_from, "%Y-%m-%d").date()
+        end_day = datetime.strptime(date_to, "%Y-%m-%d").date() + timedelta(days=1)
+
+        start_date = datetime.combine(start_day, time.min, tzinfo=dt_timezone.utc)
+        end_date = datetime.combine(end_day, time.min, tzinfo=dt_timezone.utc)
+
         return start_date, end_date
 
     def dispatch(self, request, *args, **kwargs):
@@ -2087,7 +2096,10 @@ class ExportDataView(LoginRequiredMixin, View):
                 queryset = queryset.filter(entry_batch_id__in=related_batch_ids)
 
             if from_date and to_date:
-                queryset = queryset.filter(observation_date__range=[from_date, to_date])
+                queryset = queryset.filter(
+                    observation_date__gte=from_date,
+                    observation_date__lt=to_date,
+                )
 
             # Get locations through place_code
             locations = TrtLocations.objects.filter(
@@ -2105,7 +2117,10 @@ class ExportDataView(LoginRequiredMixin, View):
                 queryset = queryset.filter(entry_batch_id__in=related_batch_ids)
 
             if from_date and to_date:
-                queryset = queryset.filter(observation_date__range=[from_date, to_date])
+                queryset = queryset.filter(
+                    observation_date__gte=from_date,
+                    observation_date__lt=to_date,
+                )
 
             locations = TrtLocations.objects.filter(
                 location_code__in=TrtPlaces.objects.filter(place_code__in=queryset.values_list("place_code", flat=True)).values_list(
@@ -2143,7 +2158,10 @@ class ExportDataView(LoginRequiredMixin, View):
                 queryset = queryset.filter(entry_batch_id__in=related_batch_ids)
 
             if from_date and to_date:
-                queryset = queryset.filter(observation_date__range=[from_date, to_date])
+                queryset = queryset.filter(
+                    observation_date__gte=from_date,
+                    observation_date__lt=to_date,
+                )
 
             # Get places from filtered queryset
             places = TrtPlaces.objects.filter(place_code__in=queryset.values_list("place_code", flat=True))
@@ -2157,7 +2175,10 @@ class ExportDataView(LoginRequiredMixin, View):
                 queryset = queryset.filter(entry_batch_id__in=related_batch_ids)
 
             if from_date and to_date:
-                queryset = queryset.filter(observation_date__range=[from_date, to_date])
+                queryset = queryset.filter(
+                    observation_date__gte=from_date,
+                    observation_date__lt=to_date,
+                )
 
             # Get places from filtered queryset
             places = TrtPlaces.objects.filter(place_code__in=queryset.values_list("place_code", flat=True))
@@ -2201,7 +2222,10 @@ class ExportDataView(LoginRequiredMixin, View):
                 queryset = queryset.filter(entry_batch_id__in=related_batch_ids)
 
             if from_date and to_date:
-                queryset = queryset.filter(observation_date__range=[from_date, to_date])
+                queryset = queryset.filter(
+                    observation_date__gte=from_date,
+                    observation_date__lt=to_date,
+                )
 
             species_codes = queryset.filter(turtle__isnull=False).values_list("turtle__species_code", flat=True)
             species = TrtSpecies.objects.filter(species_code__in=species_codes).distinct()
@@ -2215,7 +2239,10 @@ class ExportDataView(LoginRequiredMixin, View):
                 queryset = queryset.filter(entry_batch_id__in=related_batch_ids)
 
             if from_date and to_date:
-                queryset = queryset.filter(observation_date__range=[from_date, to_date])
+                queryset = queryset.filter(
+                    observation_date__gte=from_date,
+                    observation_date__lt=to_date,
+                )
 
             species = TrtSpecies.objects.filter(species_code__in=queryset.values_list("species_code", flat=True)).distinct()
 
@@ -2245,7 +2272,10 @@ class ExportDataView(LoginRequiredMixin, View):
                 queryset = queryset.filter(entry_batch_id__in=related_batch_ids)
 
             if from_date and to_date:
-                queryset = queryset.filter(observation_date__range=[from_date, to_date])
+                queryset = queryset.filter(
+                    observation_date__gte=from_date,
+                    observation_date__lt=to_date,
+                )
 
             used_sexes = queryset.filter(turtle__isnull=False).values_list("turtle__sex", flat=True).distinct()
         else:
@@ -2258,7 +2288,10 @@ class ExportDataView(LoginRequiredMixin, View):
                 queryset = queryset.filter(entry_batch_id__in=related_batch_ids)
 
             if from_date and to_date:
-                queryset = queryset.filter(observation_date__range=[from_date, to_date])
+                queryset = queryset.filter(
+                    observation_date__gte=from_date,
+                    observation_date__lt=to_date,
+                )
 
             used_sexes = queryset.values_list("sex", flat=True).distinct()
 
@@ -2400,7 +2433,13 @@ class ExportDataView(LoginRequiredMixin, View):
 
     def export_data(self, request):
         try:
-            from_date, to_date = self._get_date_range(request.GET.get("observation_date_from"), request.GET.get("observation_date_to"))
+            selected_date_from = request.GET.get("observation_date_from")
+            selected_date_to = request.GET.get("observation_date_to")
+
+            from_date, to_date = self._get_date_range(
+                selected_date_from,
+                selected_date_to,
+            )
 
             if not from_date or not to_date:
                 return HttpResponse("Please select both start and end dates", status=400)
@@ -2427,9 +2466,9 @@ class ExportDataView(LoginRequiredMixin, View):
                 filename_parts.append(place_code)
 
             filename_parts.extend([
-                # Use UK day-month-year ordering for user-visible export filenames.
-                from_date.strftime("%d%m%Y"),
-                to_date.strftime("%d%m%Y"),
+                # Use the dates selected by the user, not the internal query boundaries.
+                datetime.strptime(selected_date_from, "%Y-%m-%d").strftime("%d%m%Y"),
+                datetime.strptime(selected_date_to, "%Y-%m-%d").strftime("%d%m%Y"),
             ])
             if species:
                 filename_parts.append(species)
@@ -2463,7 +2502,10 @@ class ExportDataView(LoginRequiredMixin, View):
                         return HttpResponse("No data available for your organisation", status=403)
 
                 # Apply filters
-                queryset = queryset.filter(observation_date__range=[from_date, to_date])
+                queryset = queryset.filter(
+                    observation_date__gte=from_date,
+                    observation_date__lt=to_date,
+                )
 
                 if place_code:
                     queryset = queryset.filter(place_code=place_code)
@@ -2531,7 +2573,10 @@ class ExportDataView(LoginRequiredMixin, View):
                         return HttpResponse("No data available for your organisation", status=403)
 
                 # Apply filters
-                queryset = queryset.filter(observation_date__range=[from_date, to_date])
+                queryset = queryset.filter(
+                    observation_date__gte=from_date,
+                    observation_date__lt=to_date,
+                )
                 if place_code:
                     queryset = queryset.filter(place_code=place_code)
                 elif location_code:
