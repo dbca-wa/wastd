@@ -503,6 +503,36 @@ class ExportAliveFilterTests(SimpleTestCase):
         result = queryset.filter(alive__isnull=True)
 
         queryset.filter.assert_called_once_with(alive__isnull=True)
+        self.assertIs(result, filtered_queryset)
+class ExportLocationPlaceFilterTests(SimpleTestCase):
+    def test_location_filter_uses_place_location_code(self):
+        queryset = MagicMock()
+        filtered_queryset = MagicMock()
+
+        queryset.filter.return_value = filtered_queryset
+
+        result = queryset.filter(
+            place_code__location_code="TH",
+        )
+
+        queryset.filter.assert_called_once_with(
+            place_code__location_code="TH",
+        )
+        self.assertIs(result, filtered_queryset)
+
+    def test_place_filter_uses_selected_place_code(self):
+        queryset = MagicMock()
+        filtered_queryset = MagicMock()
+
+        queryset.filter.return_value = filtered_queryset
+
+        result = queryset.filter(
+            place_code="TH01",
+        )
+
+        queryset.filter.assert_called_once_with(
+            place_code="TH01",
+        )
         self.assertIs(result, filtered_queryset)          
 class ExportChunkingTests(SimpleTestCase):
     def test_processed_keyset_chunking_has_no_missing_or_duplicate_rows_with_id_gaps(self):
