@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone as dt_timezone
 from types import SimpleNamespace
 from unittest.mock import patch
 
@@ -333,7 +333,112 @@ class ProcessedExportPerformanceTests(TestCase):
                 observation,
                 context,
             )
-            
+class ExportDateRangeFilterTests(SimpleTestCase):
+    def setUp(self):
+        self.view = ExportDataView()
+
+    def test_single_day_range_uses_same_day_start_and_next_day_exclusive_end(self):
+        from_date, to_date = self.view._get_date_range(
+            "2025-12-12",
+            "2025-12-12",
+        )
+
+        self.assertEqual(
+            from_date,
+            datetime(
+                2025,
+                12,
+                12,
+                0,
+                0,
+                tzinfo=dt_timezone.utc,
+            ),
+        )
+        self.assertEqual(
+            to_date,
+            datetime(
+                2025,
+                12,
+                13,
+                0,
+                0,
+                tzinfo=dt_timezone.utc,
+            ),
+        )
+
+    def test_multi_day_range_uses_day_after_selected_end_date(self):
+        from_date, to_date = self.view._get_date_range(
+            "2025-12-12",
+            "2025-12-14",
+        )
+
+        self.assertEqual(
+            from_date,
+            datetime(
+                2025,
+                12,
+                12,
+                0,
+                0,
+                tzinfo=dt_timezone.utc,
+            ),
+        )
+        self.assertEqual(
+            to_date,
+            datetime(
+                2025,
+                12,
+                15,
+                0,
+                0,
+                tzinfo=dt_timezone.utc,
+            ),
+        )
+
+    def test_date_range_boundaries_are_not_shifted_by_perth_offset(self):
+        from_date, to_date = self.view._get_date_range(
+            "2023-12-12",
+            "2023-12-12",
+        )
+
+        self.assertEqual(
+            from_date.hour,
+            0,
+        )
+        self.assertEqual(
+            from_date.date().isoformat(),
+            "2023-12-12",
+        )
+        self.assertEqual(
+            to_date.hour,
+            0,
+        )
+        self.assertEqual(
+            to_date.date().isoformat(),
+            "2023-12-13",
+        )
+        self.assertEqual(
+            from_date.utcoffset().total_seconds(),
+            0,
+        )
+        self.assertEqual(
+            to_date.utcoffset().total_seconds(),
+            0,
+        )
+
+    def test_date_range_requires_both_dates(self):
+        self.assertEqual(
+            self.view._get_date_range(None, "2025-12-12"),
+            (None, None),
+        )
+        self.assertEqual(
+            self.view._get_date_range("2025-12-12", None),
+            (None, None),
+        )
+        self.assertEqual(
+            self.view._get_date_range("", ""),
+            (None, None),
+        )           
 class ExportChunkingTests(SimpleTestCase):
     def test_processed_keyset_chunking_has_no_missing_or_duplicate_rows_with_id_gaps(self):
         view = ExportDataView()
