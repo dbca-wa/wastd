@@ -6629,12 +6629,47 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                 )
             results_list = list(results)
 
+            # When no Location or Place is selected, summarise Place results by Location.
+            if not context.get("selected_locations") and not context.get("selected_places"):
+                location_names = {
+                    location.location_code: location.location_name
+                    for location in TrtLocations.objects.all()
+                }
+
+                location_results = {}
+
+                for item in results_list:
+                    place_code = item["place_code__place_code"]
+
+                    if place_code:
+                        location_code = place_code[:2]
+                        location_name = location_names.get(
+                            location_code,
+                            location_code,
+                        )
+                    else:
+                        location_code = "XX"
+                        location_name = "Unassigned"
+
+                    if location_code not in location_results:
+                        location_results[location_code] = {
+                            "place_code__place_code": location_code,
+                            "place_code__place_name": location_name,
+                            "count": 0,
+                        }
+
+                    location_results[location_code]["count"] += item["count"]
+
+                results_list = sorted(
+                    location_results.values(),
+                    key=lambda x: x["place_code__place_code"],
+                )
+
             if context.get("selected_locations") and not context.get("selected_places"):
                 total = sum(item["count"] for item in results_list)
                 return {"details": results_list, "total": total}
 
             return {"details": results_list, "total": None}
-
         except Exception as e:
             return {"details": [], "total": None, "error": str(e)}
 
