@@ -653,6 +653,19 @@ wheels = [
 ]
 
 [[package]]
+name = "django-fsm-2"
+version = "4.2.4"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+    { name = "django-stubs-ext" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/fa/eb/594712952364f0b1f009b9c414940a09031d07fe95bb888e92f50aa9a550/django_fsm_2-4.2.4.tar.gz", hash = "sha256:0e395afd03ff504afd476e8568ca213aafc3324bd4e5427e5b3287f7b1e7d979", size = 21544, upload-time = "2026-03-16T20:33:33.476Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/33/f6/75b74d0b631abfccfb71dda88b530ccccfba48cd6db674f7c27f027b827b/django_fsm_2-4.2.4-py3-none-any.whl", hash = "sha256:0072be359520075eee4baead3873e5eb8f1700b4f91e41208058cbea0ceae9b9", size = 23282, upload-time = "2026-03-16T20:33:31.97Z" },
+]
+
+[[package]]
 name = "django-fsm-admin-maintained"
 version = "1.2.6"
 source = { registry = "https://pypi.org/simple" }
@@ -664,16 +677,16 @@ sdist = { url = "https://files.pythonhosted.org/packages/86/34/0afdc550688ada6a1
 
 [[package]]
 name = "django-fsm-log"
-version = "3.1.0"
+version = "5.0.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "django" },
     { name = "django-appconf" },
-    { name = "django-fsm" },
+    { name = "django-fsm-2" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/bd/25/25296d04f9d4bb3717049a4f758f8b3ce5c6614ffea3b9504d1f6e79121f/django-fsm-log-3.1.0.tar.gz", hash = "sha256:9ef766f5e6d7c573d1953cf91df73538a611373cc1ef97488eff19a3f71d6ed6", size = 211700, upload-time = "2023-03-23T16:49:35.939Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/9f/5f/f59917a2e0abeaf9cf20b7920c3df966c813754c61cb3d6587ace30d5e28/django_fsm_log-5.0.2.tar.gz", hash = "sha256:5276a587bff3112c123c73456f37decf9c1bdc631e005c760e248adc25c8ec97", size = 8758, upload-time = "2026-01-27T11:08:49.532Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/96/0d/45936561ddef8a714d08acfa74a72d5e0b0d4f4775cec78b4cea8b33fd24/django_fsm_log-3.1.0-py3-none-any.whl", hash = "sha256:ac4394f22659e7fb8e5ac42d1cc075490cd5a2af37202377ab2a1cb221c5f3db", size = 14087, upload-time = "2023-03-23T16:49:31.647Z" },
+    { url = "https://files.pythonhosted.org/packages/b6/ca/79414e6548d0c2585c7d134250152f12071b6a270367a693e6ea704be011/django_fsm_log-5.0.2-py3-none-any.whl", hash = "sha256:02fbb61a54b21c1640e6360a251e3a07b564307bbdd391bbbf65ca8299f13d9e", size = 13964, upload-time = "2026-01-27T11:08:48.056Z" },
 ]
 
 [[package]]
@@ -1843,7 +1856,7 @@ wheels = [
 
 [[package]]
 name = "wastd"
-version = "2.4.4"
+version = "2.4.6"
 source = { virtual = "." }
 dependencies = [
     { name = "dbca-utils" },
@@ -1913,7 +1926,7 @@ requires-dist = [
     { name = "django-filter", specifier = "==25.2" },
     { name = "django-fsm", specifier = "==2.8.1" },
     { name = "django-fsm-admin-maintained", specifier = "==1.2.6" },
-    { name = "django-fsm-log", specifier = "==3.1.0" },
+    { name = "django-fsm-log", specifier = "==5.0.2" },
     { name = "django-geojson", specifier = "==4.2.0" },
     { name = "django-grappelli", specifier = "==4.0.4" },
     { name = "django-import-export", specifier = "==4.4.1" },
