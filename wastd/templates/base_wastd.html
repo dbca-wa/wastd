@@ -12,6 +12,28 @@
 .footer {
     background-color: #f5f5f5;
 }
+.uat-watermarks {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    pointer-events: none;
+    user-select: none;
+    z-index: 1000;
+    overflow: hidden;
+}
+
+.uat-watermarks span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: rotate(-15deg);
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: rgba(210, 130, 0, 0.22);
+    white-space: nowrap;
+}
     </style>
 {% endblock extra_style %}
 {% block favicon %}
@@ -59,6 +81,19 @@
     {% include 'navbar.html' %}
 {% endblock navbar_links %}
 {% block page_content %}
+    {% if is_uat %}
+        <div class="uat-watermarks">
+            <span>UAT • TRAINING</span>
+            <span>UAT • TRAINING</span>
+            <span>UAT • TRAINING</span>
+            <span>UAT • TRAINING</span>
+            <span>UAT • TRAINING</span>
+            <span>UAT • TRAINING</span>
+            <span>UAT • TRAINING</span>
+            <span>UAT • TRAINING</span>
+            <span>UAT • TRAINING</span>
+        </div>
+    {% endif %}
     {% block breadcrumbs %}
         {% include 'breadcrumbs.html' %}
     {% endblock %}
