@@ -115,6 +115,27 @@ class UserAdmin(AuthUserAdmin):
         "is_staff",
     ]
 
+    def get_fieldsets(self, request, obj=None):
+        fieldsets = super().get_fieldsets(request, obj)
+
+        if request.user.is_superuser:
+            return fieldsets
+
+        return tuple(
+            (
+                name,
+                {
+                    **options,
+                    "fields": tuple(
+                        field
+                        for field in options.get("fields", ())
+                        if field != "password"
+                    ),
+                },
+            )
+            for name, options in fieldsets
+        )
+
     def get_readonly_fields(self, request, obj=None):
         if request.user.is_staff:
             if request.user.is_superuser:
