@@ -6532,9 +6532,11 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                 elif context.get("selected_locations"):
                     location_filter = Q()
                     for loc in context["selected_locations"]:
-                        location_filter |= Q(place_code__place_code__startswith=loc)
+                        if loc == "XX":
+                            location_filter |= Q(place_code__isnull=True)
+                        else:
+                            location_filter |= Q(place_code__place_code__startswith=loc)
                     query = query.filter(location_filter)
-
                 if context["selected_sex"]:
                     query = query.filter(turtle__sex=context["selected_sex"])
 
@@ -6569,7 +6571,10 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                 elif context.get("selected_locations"):
                     location_filter = Q()
                     for loc in context["selected_locations"]:
-                        location_filter |= Q(place_code__place_code__startswith=loc)
+                        if loc == "XX":
+                            location_filter |= Q(place_code__isnull=True)
+                        else:
+                            location_filter |= Q(place_code__place_code__startswith=loc)
                     query = query.filter(location_filter)
 
                 if context["selected_sex"]:
@@ -6660,16 +6665,56 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                     else:
                         results_dict[place_code]["count"] += 1
 
-                results = sorted(results_dict.values(), key=lambda x: x["place_code__place_code"])
-
+                results = sorted(
+                    results_dict.values(),
+                    key=lambda x: (
+                        x["place_code__place_code"] is None,
+                        x["place_code__place_code"] or "",
+                    ),
+                )
             results_list = list(results)
+
+            # When no Location or Place is selected, summarise Place results by Location.
+            if not context.get("selected_locations") and not context.get("selected_places"):
+                location_names = {
+                    location.location_code: location.location_name
+                    for location in TrtLocations.objects.all()
+                }
+
+                location_results = {}
+
+                for item in results_list:
+                    place_code = item["place_code__place_code"]
+
+                    if place_code:
+                        location_code = place_code[:2]
+                        location_name = location_names.get(
+                            location_code,
+                            location_code,
+                        )
+                    else:
+                        location_code = "XX"
+                        location_name = "Unassigned"
+
+                    if location_code not in location_results:
+                        location_results[location_code] = {
+                            "place_code__place_code": location_code,
+                            "place_code__place_name": location_name,
+                            "count": 0,
+                        }
+
+                    location_results[location_code]["count"] += item["count"]
+
+                results_list = sorted(
+                    location_results.values(),
+                    key=lambda x: x["place_code__place_code"],
+                )
 
             if context.get("selected_locations") and not context.get("selected_places"):
                 total = sum(item["count"] for item in results_list)
                 return {"details": results_list, "total": total}
 
             return {"details": results_list, "total": None}
-
         except Exception as e:
             return {"details": [], "total": None, "error": str(e)}
 
