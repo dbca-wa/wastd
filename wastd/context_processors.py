@@ -9,5 +9,6 @@ def template_context(request):
         "site_acronym": settings.SITE_CODE,
         "APPLICATION_VERSION_NO": settings.VERSION_NO,
         "geoserver_url": settings.GEOSERVER_URL,
+        "is_uat": settings.SITE_TITLE.strip().lower().endswith("uat"),
     }
     return context
