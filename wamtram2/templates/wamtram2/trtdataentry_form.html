@@ -174,7 +174,7 @@
           <label for="{{ form.entered_by_id.id_for_label }}">{{ form.entered_by_id.label }}</label>
           <div class="row">
             <div class="col-md-4">
-              <input type="text" id="search_entered_by" class="search-field form-control" placeholder="Search person" value="{{ entered_by_name }}">
+              <input type="text" id="search_entered_by" class="search-field form-control" placeholder="Search person" value="{{ entered_by_name }}" autocomplete="off">
               {{ form.entered_by_id }}
               <div class="search-results" style="display:none;"></div>
             </div>
@@ -192,7 +192,7 @@
           <div class="row">
             <div class="col-md-6">
               <label for="search_place_code">{{ form.place_code.label }}</label>
-              <input type="text" id="search_place_code" class="search-field form-control required-field" placeholder="Search place" value="{{ place_name }}">
+              <input type="text" id="search_place_code" class="search-field form-control required-field" placeholder="Search place" value="{{ place_name }}" autocomplete="off">
               {{ form.place_code }}
               <div class="search-results" style="display:none;"></div>
             </div>
@@ -238,7 +238,7 @@
               <label for="{{ form.recorded_by_id.id_for_label }}">{{ form.recorded_by_id.label }}</label>
             </div>
             <div class="col-md-6">
-              <input type="text" id="search_recorded_by" class="search-field form-control" placeholder="Search recorded by" value="{{ recorded_by_name }}">
+              <input type="text" id="search_recorded_by" class="search-field form-control" placeholder="Search recorded by" value="{{ recorded_by_name }}" autocomplete="off">
               {{ form.recorded_by_id }}
               <div class="search-results" style="display:none;"></div>
             </div>
@@ -522,6 +522,7 @@
             class="search-field form-control {% if form.tagged_by_id.field.required %}required-field{% endif %}"
             placeholder="Search tagged by and/or tags read by"
             value="{{ tagged_by_name }}"
+            autocomplete="off"
           >
           {{ form.tagged_by_id }}
           <div class="search-results" style="display:none;"></div>
@@ -708,7 +709,7 @@
                     <label for="{{ form.measured_by_id.id_for_label }}">{{ form.measured_by_id.label }}</label>
                     <div class="d-flex align-items-center">
                         <div class="flex-grow-1">
-                            <input type="text" id="search_measured_by" class="search-field form-control" placeholder="Search measured by" value="{{ measured_by_name }}">
+                            <input type="text" id="search_measured_by" class="search-field form-control" placeholder="Search measured by" value="{{ measured_by_name }}" autocomplete="off">
                             {{ form.measured_by_id }}
                             <div class="search-results" style="display:none;"></div>
                         </div>
