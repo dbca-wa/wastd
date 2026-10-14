@@ -6576,7 +6576,11 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                     )
                 # Group by place and count unique field entry records
                 results = (
-                    query.values("place_code__place_code", "place_code__place_name")
+                    query.values(
+                        "place_code__place_code",
+                        "place_code__place_name",
+                        "place_code__location_code",
+                    )
                     .annotate(count=Count("data_entry_id", distinct=True))
                     .order_by("place_code__place_code")
                 )
@@ -6590,17 +6594,11 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
 
                 if context["data_type"] == "processed":
                     location_turtles = {}
-
                     for item in query.values(
-                        "place_code__place_code",
+                        "place_code__location_code",
                         "turtle_id",
                     ).distinct():
-                        place_code = item["place_code__place_code"]
-
-                        if place_code:
-                            location_code = place_code[:2]
-                        else:
-                            location_code = "XX"
+                        location_code = item["place_code__location_code"] or "XX"
 
                         if location_code not in location_turtles:
                             location_turtles[location_code] = set()
@@ -6627,18 +6625,11 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                     location_results = {}
 
                     for item in results_list:
-                        place_code = item["place_code__place_code"]
-
-                        if place_code:
-                            location_code = place_code[:2]
-                            location_name = location_names.get(
-                                location_code,
-                                location_code,
-                            )
-                        else:
-                            location_code = "XX"
-                            location_name = "Unassigned"
-
+                        location_code = item["place_code__location_code"] or "XX"
+                        location_name = location_names.get(
+                            location_code,
+                            "Unassigned" if location_code == "XX" else location_code,
+                        )
                         if location_code not in location_results:
                             location_results[location_code] = {
                                 "place_code__place_code": location_code,
