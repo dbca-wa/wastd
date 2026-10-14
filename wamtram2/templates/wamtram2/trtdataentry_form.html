@@ -207,13 +207,13 @@
                   <span class="input-group-text font-weight-bold custom-prepend">-</span>
                 </div>
                 <div class="flex-grow-1">
-                  {% bootstrap_field form.latitude show_label=False %}
+                  {% bootstrap_field form.latitude show_label=False attrs='autocomplete="off"'%}
                 </div>
               </div>
             </div>
             <div class="col-md-6 pt-2">
               <label for="{{ form.longitude.id_for_label }}">{{ form.longitude.label }}</label>
-              {% bootstrap_field form.longitude show_label=False %}
+              {% bootstrap_field form.longitude show_label=False attrs='autocomplete="off"' %}
             </div>
           </div>
 
@@ -229,7 +229,7 @@
           <div class="row">
             <div class="col-md-6">
               <label for="{{ form.observation_date.id_for_label }}">{{ form.observation_date.label }}</label>
-              {% bootstrap_field form.observation_date show_label=False%}
+              {% bootstrap_field form.observation_date show_label=False attrs='autocomplete="off"'%}
             </div>
             <div class="col-md-6 mt-4">
               <div id="date-error-message" class="text-danger" style="display: none; font-weight: bold; color: red !important;"></div>
