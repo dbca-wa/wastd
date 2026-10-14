@@ -15,7 +15,7 @@ from django.core.exceptions import PermissionDenied, ValidationError
 from django.core.paginator import Paginator
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import DatabaseError, connections, transaction
-from django.db.models import Count, Exists, OuterRef, Q, Subquery
+from django.db.models import Count, Exists, OuterRef, Q
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseForbidden, HttpResponseRedirect, JsonResponse,StreamingHttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
@@ -6460,6 +6460,7 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                 "selected_species": self.request.GET.get("species"),
                 "selected_nesting": self.request.GET.get("nesting"),
                 "selected_alive": self.request.GET.get("alive"),
+                "selected_new_turtle": self.request.GET.get("new_turtle"),
                 "start_date": self.request.GET.get("start_date"),
                 "end_date": self.request.GET.get("end_date"),
             }
@@ -6497,7 +6498,6 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
 
                 if context["selected_species"]:
                     query = query.filter(turtle__species_code=context["selected_species"])
-                
                 if context["selected_alive"]:
                     query = query.filter(
                         alive__code=context["selected_alive"]
@@ -6510,6 +6510,30 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                     query = query.exclude(
                         activity_code__nesting="Y"
                     )
+                if context["selected_new_turtle"] == "yes":
+                    earlier_observation = TrtObservations.objects.filter(
+                        turtle_id=OuterRef("turtle_id")
+                    ).filter(
+                        Q(observation_date__lt=OuterRef("observation_date"))
+                        | Q(
+                            observation_date=OuterRef("observation_date"),
+                            observation_id__lt=OuterRef("observation_id"),
+                        )
+                    )
+
+                    query = (
+                        query
+                        .filter(
+                            observation_status__in=("Initial Sighting", "Initial Nesting")
+                        )
+                        .annotate(
+                            has_earlier_observation=Exists(earlier_observation)
+                        )
+                        .filter(
+                            has_earlier_observation=False
+                        )
+                    )
+
                 # Group by place and count unique turtles
                 results = (
                     query.values("place_code__place_code", "place_code__place_name")
@@ -6550,12 +6574,12 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                     query = query.exclude(
                         activity_code__nesting="Y"
                     )
-            # Group by place and count unique field entry records
-            results = (
-                query.values("place_code__place_code", "place_code__place_name")
-                .annotate(count=Count("data_entry_id", distinct=True))
-                .order_by("place_code__place_code")
-            )
+                # Group by place and count unique field entry records
+                results = (
+                    query.values("place_code__place_code", "place_code__place_name")
+                    .annotate(count=Count("data_entry_id", distinct=True))
+                    .order_by("place_code__place_code")
+                )
             results_list = list(results)
             # When no Location or Place is selected, summarise results by Location.
             if not context.get("selected_locations") and not context.get("selected_places"):

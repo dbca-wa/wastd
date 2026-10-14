@@ -146,7 +146,16 @@
                         {% endfor %}
                     </select>
                 </div>
-
+                <div class="col-lg-3 col-md-6 mb-3" id="new-turtle-filter">
+                    <label>New Turtle:</label>
+                    <select name="new_turtle" class="form-control select2">
+                        <option value="">All Turtles</option>
+                        <option value="yes"
+                            {% if selected_new_turtle == "yes" %}selected{% endif %}>
+                            New Turtles Only
+                        </option>
+                    </select>
+                </div>
             </div>
 
             <div class="form-row">
@@ -244,7 +253,22 @@
             $('.select2').select2({
                 theme: 'bootstrap4'
             });
+            function toggleNewTurtleFilter() {
+                const dataType = $('select[name="data_type"]').val();
+                const newTurtleFilter = $('#new-turtle-filter');
+                const newTurtleSelect = $('select[name="new_turtle"]');
 
+                if (dataType === 'processed') {
+                    newTurtleFilter.show();
+                } else {
+                    newTurtleFilter.hide();
+                    newTurtleSelect.val('').trigger('change');
+                }
+            }
+
+            toggleNewTurtleFilter();
+
+            $('select[name="data_type"]').on('change', toggleNewTurtleFilter);
             const locationSelect = $('select[name="location"]');
             const placeSelect = $('select[name="place"]');
 
