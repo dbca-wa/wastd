@@ -343,7 +343,7 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["interrupted"].queryset = interrupted_choices
 
         # Filter the queryset for measurement types
-        filtered_measurement_types = TrtMeasurementTypes.objects.exclude(measurement_type__in=["CCW", "CCL NOTCH"])
+        filtered_measurement_types = TrtMeasurementTypes.objects.exclude(measurement_type__in=["CCW", "CCL NOTCH", "CCL"])
         for i in range(1, 7):
             field_name = f"measurement_type_{i}"
             self.fields[field_name].queryset = filtered_measurement_types
@@ -428,7 +428,7 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["entered_by_id"].label = "Entered by"
         self.fields["place_code"].label = "Location/Beach"
         self.fields["species_code"].label = "Species"
-        self.fields["observation_date"].label = "Observation Date & Time"
+        self.fields["observation_date"].label = "Observation Date & Time (Calendar date in AWST)"
         self.fields["recorded_by_id"].label = "Data captured by"
         self.fields["recapture_pittag_id"].label = "Old Left PIT Tag"
         self.fields["recapture_pittag_id_2"].label = "Old Right PIT Tag"
