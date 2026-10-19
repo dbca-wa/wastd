@@ -428,7 +428,7 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["entered_by_id"].label = "Entered by"
         self.fields["place_code"].label = "Location/Beach"
         self.fields["species_code"].label = "Species"
-        self.fields["observation_date"].label = "Observation Date & Time"
+        self.fields["observation_date"].label = "Observation Date & Time (Calendar date in AWST)"
         self.fields["recorded_by_id"].label = "Data captured by"
         self.fields["recapture_pittag_id"].label = "Old Left PIT Tag"
         self.fields["recapture_pittag_id_2"].label = "Old Right PIT Tag"
