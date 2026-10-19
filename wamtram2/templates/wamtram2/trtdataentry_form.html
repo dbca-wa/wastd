@@ -1612,23 +1612,20 @@
             bodyElement.classList.remove('bg-yellow');
         }
     }
-
+    // For untagged turtles, automatically flag Needs Review if either
+    // Flipper Tags Present or PIT Tags Present is Yes or Didn't Check.
+    // Once automatically selected, Needs Review is not automatically cleared
+    // if the tag selections are later changed to No.
     function updateDoNotProcess() {
         const turtleIdEmpty = !turtleIdField.value;
-        const flipperTagDidntCheck = flipperTagCheckField.value === 'D';
-        const pitTagDidntCheck = pitTagCheckField.value === 'D';
+        const flipperTagNeedsReview = ['Y', 'D'].includes(flipperTagCheckField.value);
+        const pitTagNeedsReview = ['Y', 'D'].includes(pitTagCheckField.value);
 
-
-        if (turtleIdEmpty && flipperTagDidntCheck && pitTagDidntCheck) {
+        if (turtleIdEmpty && (flipperTagNeedsReview || pitTagNeedsReview)) {
             doNotProcessField.checked = true;
-            //doNotProcessField.disabled = true;
-        //} else {
-            //doNotProcessField.disabled = false;
-            //doNotProcessField.checked = false;
         }
         updateBackgroundColor();
     }
-
     turtleIdField.addEventListener('change', updateDoNotProcess);
     flipperTagCheckField.addEventListener('change', updateDoNotProcess);
     pitTagCheckField.addEventListener('change', updateDoNotProcess);
