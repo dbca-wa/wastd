@@ -343,7 +343,7 @@ class TrtDataEntryForm(forms.ModelForm):
         self.fields["interrupted"].queryset = interrupted_choices
 
         # Filter the queryset for measurement types
-        filtered_measurement_types = TrtMeasurementTypes.objects.exclude(measurement_type__in=["CCW", "CCL NOTCH"])
+        filtered_measurement_types = TrtMeasurementTypes.objects.exclude(measurement_type__in=["CCW", "CCL NOTCH", "CCL"])
         for i in range(1, 7):
             field_name = f"measurement_type_{i}"
             self.fields[field_name].queryset = filtered_measurement_types
