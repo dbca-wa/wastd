@@ -424,6 +424,9 @@ class TrtDataEntryForm(forms.ModelForm):
 
         self.fields["latitude"].label = "Latitude(WGS84) - (xx.xxxxxx)"
         self.fields["longitude"].label = "Longitude(WGS84) - (xxx.xxxxxx)"
+        self.fields["latitude"].widget.attrs["autocomplete"] = "off"
+        self.fields["longitude"].widget.attrs["autocomplete"] = "off"
+        self.fields["observation_date"].widget.attrs["autocomplete"] = "off"
         self.fields["interrupted"].label = "Was nesting interrupted by tagging team?"
         self.fields["entered_by_id"].label = "Entered by"
         self.fields["place_code"].label = "Location/Beach"
