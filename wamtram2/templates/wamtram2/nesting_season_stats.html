@@ -188,6 +188,16 @@
                     All Locations
                 {% endif %}
                 ({{ start_date }} - {{ end_date }})
+                 <span style="display: inline-block; margin-left: 24px;
+                             padding: 10px 14px; border-left: 4px solid #d39e00;
+                             background-color: #fff3cd; color: #664d03;
+                             font-size: 15px; font-weight: 600; vertical-align: middle;">
+                    {% if data_type == "processed" %}
+                        Each turtle is counted once within each location or place.
+                    {% else %}
+                        Each field entry is counted separately, including multiple entries for the same turtle.
+                    {% endif %}
+                </span>
             </h4>
         {% endif %}
         <div class="mt-4 mb-5">
@@ -324,7 +334,7 @@
                 data: {
                     labels: chartLabels,
                     datasets: [{
-                        label: 'Turtle Count',
+                        label: 'Turtle Count / Field Entry Count',
                         data: chartCounts,
                         backgroundColor: 'rgba(54, 162, 235, 0.6)',
                         borderColor: 'rgb(54, 162, 235)',
