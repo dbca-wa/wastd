@@ -1,49 +1,52 @@
 import datetime
+import json
+from typing import Any
+
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.gis.geos import Point
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import connection
-from django.http import HttpResponseBadRequest, StreamingHttpResponse, JsonResponse
+from django.http import HttpResponseBadRequest, JsonResponse, StreamingHttpResponse
 from django.urls import reverse
 from django.views.generic.base import View
-from django.http import JsonResponse
-from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.gis.geos import Point
-import json
-from wastd.utils import ListResourceView, DetailResourceView
+
+from wastd.utils import DetailResourceView, ListResourceView
 
 from .models import (
+    AnimalEncounter,
     Area,
+    DisturbanceObservation,
+    Encounter,
+    HatchlingMorphometricObservation,
+    LightSourceObservation,
+    LoggerObservation,
+    MediaAttachment,
+    NestTagObservation,
     Survey,
     SurveyMediaAttachment,
-    Encounter,
-    AnimalEncounter,
-    TurtleNestEncounter,
-    MediaAttachment,
-    TurtleNestObservation,
     TurtleHatchlingEmergenceObservation,
-    NestTagObservation,
-    TurtleNestDisturbanceObservation,
-    LoggerObservation,
-    HatchlingMorphometricObservation,
     TurtleHatchlingEmergenceOutlierObservation,
-    LightSourceObservation,
-    DisturbanceObservation,
+    TurtleNestDisturbanceObservation,
+    TurtleNestEncounter,
+    TurtleNestObservation,
 )
 from .serializers import (
-    AreaSerializer,
-    SurveySerializer,
-    SurveyMediaAttachmentSerializer,
-    EncounterSerializer,
     AnimalEncounterSerializer,
-    TurtleNestEncounterSerializer,
-    MediaAttachmentSerializer,
-    TurtleNestObservationSerializer,
-    TurtleHatchlingEmergenceObservationSerializer,
-    NestTagObservationSerializer,
-    TurtleNestDisturbanceObservationSerializer,
-    LoggerObservationSerializer,
-    HatchlingMorphometricObservationSerializer,
-    TurtleHatchlingEmergenceOutlierObservationSerializer,
-    LightSourceObservationSerializer,
+    AreaSerializer,
     DisturbanceObservationSerializer,
+    EncounterSerializer,
+    HatchlingMorphometricObservationSerializer,
+    LightSourceObservationSerializer,
+    LoggerObservationSerializer,
+    MediaAttachmentSerializer,
+    NestTagObservationSerializer,
+    SurveyMediaAttachmentSerializer,
+    SurveySerializer,
+    TurtleHatchlingEmergenceObservationSerializer,
+    TurtleHatchlingEmergenceOutlierObservationSerializer,
+    TurtleNestDisturbanceObservationSerializer,
+    TurtleNestEncounterSerializer,
+    TurtleNestObservationSerializer,
 )
 
 
@@ -134,37 +137,37 @@ class AreaDiagnostics(View):
         return JsonResponse(data, safe=False)
 
 
-class AreaListResource(ListResourceView):
+class AreaListResource(LoginRequiredMixin, ListResourceView):
     model = Area
     serializer = AreaSerializer
 
 
-class AreaDetailResource(DetailResourceView):
+class AreaDetailResource(LoginRequiredMixin, DetailResourceView):
     model = Area
     serializer = AreaSerializer
 
 
-class SurveyListResource(ListResourceView):
+class SurveyListResource(LoginRequiredMixin, ListResourceView):
     model = Survey
     serializer = SurveySerializer
 
 
-class SurveyDetailResource(DetailResourceView):
+class SurveyDetailResource(LoginRequiredMixin, DetailResourceView):
     model = Survey
     serializer = SurveySerializer
 
 
-class SurveyMediaAttachmentListResource(ListResourceView):
+class SurveyMediaAttachmentListResource(LoginRequiredMixin, ListResourceView):
     model = SurveyMediaAttachment
     serializer = SurveyMediaAttachmentSerializer
 
 
-class SurveyMediaAttachmentDetailResource(DetailResourceView):
+class SurveyMediaAttachmentDetailResource(LoginRequiredMixin, DetailResourceView):
     model = SurveyMediaAttachment
     serializer = SurveyMediaAttachmentSerializer
 
 
-class EncounterListResource(ListResourceView):
+class EncounterListResource(LoginRequiredMixin, ListResourceView):
     model = Encounter
     serializer = EncounterSerializer
 
@@ -179,7 +182,7 @@ class EncounterListResource(ListResourceView):
         )
 
 
-class EncounterDetailResource(DetailResourceView):
+class EncounterDetailResource(LoginRequiredMixin, DetailResourceView):
     model = Encounter
     serializer = EncounterSerializer
 
@@ -214,7 +217,7 @@ class TurtleNestEncounterDetailResource(EncounterDetailResource):
     serializer = TurtleNestEncounterSerializer
 
 
-class ObservationListResource(ListResourceView):
+class ObservationListResource(LoginRequiredMixin, ListResourceView):
     def dispatch(self, request, *args, **kwargs):
         if "encounter_id" in request.GET and request.GET["encounter_id"]:
             try:
@@ -237,7 +240,7 @@ class MediaAttachmentListResource(ObservationListResource):
     serializer = MediaAttachmentSerializer
 
 
-class MediaAttachmentDetailResource(DetailResourceView):
+class MediaAttachmentDetailResource(LoginRequiredMixin, DetailResourceView):
     model = MediaAttachment
     serializer = MediaAttachmentSerializer
 
@@ -247,7 +250,7 @@ class TurtleNestObservationListResource(ObservationListResource):
     serializer = TurtleNestObservationSerializer
 
 
-class TurtleNestObservationDetailResource(DetailResourceView):
+class TurtleNestObservationDetailResource(LoginRequiredMixin, DetailResourceView):
     model = TurtleNestObservation
     serializer = TurtleNestObservationSerializer
 
@@ -257,7 +260,7 @@ class TurtleHatchlingEmergenceObservationListResource(ObservationListResource):
     serializer = TurtleHatchlingEmergenceObservationSerializer
 
 
-class TurtleHatchlingEmergenceObservationDetailResource(DetailResourceView):
+class TurtleHatchlingEmergenceObservationDetailResource(LoginRequiredMixin, DetailResourceView):
     model = TurtleHatchlingEmergenceObservation
     serializer = TurtleHatchlingEmergenceObservationSerializer
 
@@ -267,7 +270,7 @@ class NestTagObservationListResource(ObservationListResource):
     serializer = NestTagObservationSerializer
 
 
-class NestTagObservationDetailResource(DetailResourceView):
+class NestTagObservationDetailResource(LoginRequiredMixin, DetailResourceView):
     model = NestTagObservation
     serializer = NestTagObservationSerializer
 
@@ -277,7 +280,7 @@ class TurtleNestDisturbanceObservationListResource(ObservationListResource):
     serializer = TurtleNestDisturbanceObservationSerializer
 
 
-class TurtleNestDisturbanceObservationDetailResource(DetailResourceView):
+class TurtleNestDisturbanceObservationDetailResource(LoginRequiredMixin, DetailResourceView):
     model = TurtleNestDisturbanceObservation
     serializer = TurtleNestDisturbanceObservationSerializer
 
@@ -287,7 +290,7 @@ class LoggerObservationListResource(ObservationListResource):
     serializer = LoggerObservationSerializer
 
 
-class LoggerObservationDetailResource(DetailResourceView):
+class LoggerObservationDetailResource(LoginRequiredMixin, DetailResourceView):
     model = LoggerObservation
     serializer = LoggerObservationSerializer
 
@@ -297,7 +300,7 @@ class HatchlingMorphometricObservationListResource(ObservationListResource):
     serializer = HatchlingMorphometricObservationSerializer
 
 
-class HatchlingMorphometricObservationDetailResource(DetailResourceView):
+class HatchlingMorphometricObservationDetailResource(LoginRequiredMixin, DetailResourceView):
     model = HatchlingMorphometricObservation
     serializer = HatchlingMorphometricObservationSerializer
 
@@ -307,7 +310,7 @@ class TurtleHatchlingEmergenceOutlierObservationListResource(ObservationListReso
     serializer = TurtleHatchlingEmergenceOutlierObservationSerializer
 
 
-class TurtleHatchlingEmergenceOutlierObservationDetailResource(DetailResourceView):
+class TurtleHatchlingEmergenceOutlierObservationDetailResource(LoginRequiredMixin, DetailResourceView):
     model = TurtleHatchlingEmergenceOutlierObservation
     serializer = TurtleHatchlingEmergenceOutlierObservationSerializer
 
@@ -317,7 +320,7 @@ class LightSourceObservationListResource(ObservationListResource):
     serializer = LightSourceObservationSerializer
 
 
-class LightSourceObservationDetailResource(DetailResourceView):
+class LightSourceObservationDetailResource(LoginRequiredMixin, DetailResourceView):
     model = LightSourceObservation
     serializer = LightSourceObservationSerializer
 
@@ -327,16 +330,16 @@ class DisturbanceObservationListResource(ObservationListResource):
     serializer = DisturbanceObservationSerializer
 
 
-class DisturbanceObservationDetailResource(DetailResourceView):
+class DisturbanceObservationDetailResource(LoginRequiredMixin, DetailResourceView):
     model = DisturbanceObservation
     serializer = DisturbanceObservationSerializer
 
 
 class DateTimeEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, datetime.datetime):
-            return obj.isoformat()
-        return super(DateTimeEncoder, self).default(obj)
+    def default(self, o: Any) -> Any:
+        if isinstance(o, datetime.datetime):
+            return o.isoformat()
+        return super().default(o)
 
 
 def stream_data(query):
@@ -365,7 +368,7 @@ def stream_data(query):
         yield "]"  # End of JSON array
 
 
-def nests_tracks_streaming_json(request):
+def nests_tracks_streaming_json():
     """This view streams the database query as JSON for use by external tools such as PowerBI."""
     query = """
 SELECT

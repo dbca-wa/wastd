@@ -86,7 +86,6 @@ INSTALLED_APPS = [
     "webtemplate_dbca",
     "django_filters",
     "export_download",
-    "django_tables2",
     "django_select2",
     "easy_select2",
     "djgeojson",
