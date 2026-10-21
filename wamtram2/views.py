@@ -6494,7 +6494,7 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                         if loc == "XX":
                             location_filter |= Q(place_code__isnull=True)
                         else:
-                            location_filter |= Q(place_code__place_code__startswith=loc)
+                            location_filter |= Q(place_code__location_code=loc)
                     query = query.filter(location_filter)
                 if context["selected_sex"]:
                     query = query.filter(turtle__sex=context["selected_sex"])
@@ -6559,7 +6559,7 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                         if loc == "XX":
                             location_filter |= Q(place_code__isnull=True)
                         else:
-                            location_filter |= Q(place_code__place_code__startswith=loc)
+                            location_filter |= Q(place_code__location_code=loc)
                     query = query.filter(location_filter)
 
                 if context["selected_sex"]:
