@@ -6651,7 +6651,11 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                     )
 
             if context.get("selected_locations") and not context.get("selected_places"):
-                total = query.values("turtle_id").distinct().count()
+                if context["data_type"] == "processed":
+                    total = query.values("turtle_id").distinct().count()
+                else:
+                    total = sum(item["count"] for item in results_list)
+
                 return {"details": results_list, "total": total}
 
             return {"details": results_list, "total": None}
