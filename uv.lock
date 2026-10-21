@@ -1,5 +1,5 @@
 version = 1
-revision = 5
+revision = 3
 requires-python = ">=3.13, <4"
 resolution-markers = [
     "python_full_version >= '3.14' and sys_platform == 'win32'",
@@ -105,6 +105,7 @@ sdist = { url = "https://files.pythonhosted.org/packages/a6/bd/1436c50cc46699de0
 wheels = [
     { url = "https://files.pythonhosted.org/packages/c4/51/29046e48f693c54e5b7412216d447a1d8362c9653148d98c02cdf65fa733/certifi-2026.10.19-py3-none-any.whl", hash = "sha256:42d35340cc5b9ba78e818ddbff0c5b1c2b779de448a340fd1b989f5fa8670e1b", size = 136464, upload-time = "2026-10-20T02:24:15.072Z" },
 ]
+
 [[package]]
 name = "cffi"
 version = "2.1.1"
@@ -1666,15 +1667,15 @@ wheels = [
 
 [[package]]
 name = "sentry-sdk"
-version = "2.62.0"
+version = "2.72.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "certifi" },
     { name = "urllib3" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/f6/5d/a343201726150e05f2036eeb6e493e2e2f8bf8a66f5aa70f2f4ac96f9ca3/sentry_sdk-2.62.0.tar.gz", hash = "sha256:3c870b9f50d9fd15b58c817dbde1c7cfaa9fe3f05df0a4c6edd5571cb82f5491", size = 463986, upload-time = "2026-06-08T13:23:49.223Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/26/c1/d2bbb2b03bdc2ef14b35e02b647b8489156c50b6e0b8bacc5fa303902e23/sentry_sdk-2.72.0.tar.gz", hash = "sha256:0d2ffbc28ee2e63cbaf3d015e93b448cffcc3ef3be03a44704ad36ade72faa95", size = 1069699, upload-time = "2026-10-12T13:08:11.195Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/3d/07/05440381627877aae223fd68f330df9b9fc6641d08bf65328b55235617a2/sentry_sdk-2.62.0-py3-none-any.whl", hash = "sha256:27f61d13a86c3c1648dec666dd5a64f79772dd6a84b446f11866601ecab24f6f", size = 490586, upload-time = "2026-06-08T13:23:47.486Z" },
+    { url = "https://files.pythonhosted.org/packages/d0/0b/0dd9686842d9dc49c3ee84cced31c54bceb0fb52a826be7d3d4fe30d882a/sentry_sdk-2.72.0-py3-none-any.whl", hash = "sha256:3e13ace4ffd0b3cc78288236edfc4e4bd90eb12a396cc5845fa10a58ff289f50", size = 544754, upload-time = "2026-10-12T13:08:01.619Z" },
 ]
 
 [package.optional-dependencies]
@@ -1850,7 +1851,6 @@ wheels = [
 name = "wastd"
 version = "2.5.1"
 source = { virtual = "." }
-default-groups = "all"
 dependencies = [
     { name = "dbca-utils" },
     { name = "dj-database-url" },
@@ -1943,7 +1943,7 @@ requires-dist = [
     { name = "python-slugify", specifier = "==8.0.4" },
     { name = "pytz", specifier = "==2026.3.post1" },
     { name = "requests", specifier = "==2.34.2" },
-    { name = "sentry-sdk", extras = ["django"], specifier = "==2.62.0" },
+    { name = "sentry-sdk", extras = ["django"], specifier = "==2.72.0" },
     { name = "setuptools", specifier = "==83.0.0" },
     { name = "webtemplate-dbca", specifier = "==1.8.3" },
     { name = "whitenoise", extras = ["brotli"], specifier = "==6.12.0" },
