@@ -202,7 +202,8 @@
         {% endif %}
         <div class="mt-4 mb-5">
             <h5 class="mb-3 pb-2 border-bottom">
-                Turtle Count by {% if selected_locations or selected_places %}Place{% else %}Location{% endif %}
+                {% if data_type == "processed" %}Turtle Count{% else %}Field Entry Count{% endif %}
+                by {% if selected_locations or selected_places %}Place{% else %}Location{% endif %}
             </h5>
 
             <div style="overflow-x: auto;">
@@ -359,7 +360,7 @@
                         tooltip: {
                             callbacks: {
                                 label: function(context) {
-                                    return 'Turtle Count: ' + context.parsed.y.toLocaleString();
+                                    return '{% if data_type == "processed" %}Turtle Count{% else %}Field Entry Count{% endif %}: ' + context.parsed.y.toLocaleString();
                                 },
                                 afterLabel: function(context) {
                                     const filters = [];
