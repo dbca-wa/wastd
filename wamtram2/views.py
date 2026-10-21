@@ -6480,7 +6480,10 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
 
             if context["data_type"] == "processed":
                 # For processed data, just count unique turtles
-                query = TrtObservations.objects.filter(observation_date__gte=start_date, observation_date__lte=end_date)
+                query = TrtObservations.objects.filter(
+                    observation_date__date__gte=start_date,
+                    observation_date__date__lte=end_date,
+                )
 
                 # Apply filters
                 if context.get("selected_places"):
@@ -6542,7 +6545,10 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                 )
 
             else:
-                query = TrtDataEntry.objects.filter(observation_date__gte=start_date, observation_date__lte=end_date)
+                query = TrtDataEntry.objects.filter(
+                    observation_date__date__gte=start_date,
+                    observation_date__date__lte=end_date,
+                )
 
                 # Apply filters
                 if context.get("selected_places"):
@@ -6645,7 +6651,7 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                     )
 
             if context.get("selected_locations") and not context.get("selected_places"):
-                total = sum(item["count"] for item in results_list)
+                total = query.values("turtle_id").distinct().count()
                 return {"details": results_list, "total": total}
 
             return {"details": results_list, "total": None}
