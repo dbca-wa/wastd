@@ -1,6 +1,6 @@
 [project]
 name = "wastd"
-version = "2.4.8"
+version = "2.5.1"
 description = "Western Australian Sea Turtles Database"
 authors = [
   { name = "Florian Mayer", email = "florian.mayer@dbca.wa.gov.au" },
@@ -17,7 +17,7 @@ dependencies = [
   "psycopg[binary,pool]==3.3.4",
   "django-extensions==4.1",
   "dj-database-url==3.1.2",
-  "gunicorn==26.0.0",
+  "gunicorn==26.2.0",
   "python-dotenv==1.2.2",
   "dbca-utils==2.2.0",
   "django-fsm==2.8.1",
@@ -30,7 +30,7 @@ dependencies = [
   "django-reversion==6.3.0",
   "django-crispy-forms==2.6",
   "xmltodict==1.0.4",
-  "pandas==3.0.3",
+  "pandas==3.0.6",
   "requests==2.34.2",
   "pytz==2026.3.post1",
   "django-select2==8.4.1",
