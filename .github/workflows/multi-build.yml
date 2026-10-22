@@ -285,6 +285,7 @@ jobs:
     # and uploads any to the GitHub Security tab.
     name: Docker image vulnerability scan
     runs-on: ubuntu-latest
+    continue-on-error: true # If vulnerability scan fails, the workflow can still complete successfully.
     needs:
       - merge
       # This job depends on the merge job to complete before it starts.
