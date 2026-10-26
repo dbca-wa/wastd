@@ -1,14 +1,17 @@
 name: 'Run unit tests'
 
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
   push:
     branches:
       - main
+      - develop
   pull_request:
     branches:
       - main
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   run_tests:
@@ -17,8 +20,6 @@ jobs:
     env:
       DATABASE_URL: postgis://postgres:postgres@localhost:5432/postgres
       LOCAL_MEDIA_STORAGE: true
-    permissions:
-      contents: read
     services:
       postgres:
         image: postgis/postgis:16-3.5-alpine
@@ -29,41 +30,33 @@ jobs:
           - 5432:5432
         options: --mount type=tmpfs,destination=/var/lib/postgresql/data --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
-      #----------------------------------------------
-      # Install GDAL into the environment
-      #----------------------------------------------
+      - name: Harden the GitHub runner
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
+        with:
+          egress-policy: audit
+
       - name: Install GDAL
         id: install-gdal
         run: |
           sudo apt-get update
           sudo apt-get install --no-install-recommends --yes gdal-bin libgdal-dev
-      #----------------------------------------------
-      # Checkout repo
-      #----------------------------------------------
-      - name: Checkout repo
+
+      - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        id: checkout-repo
         with:
           fetch-depth: 0
-      #----------------------------------------------
-      # Install & configure uv
-      #----------------------------------------------
+          persist-credentials: false
+
       - name: Install uv
         uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
         with:
           python-version: '3.13'
           enable-cache: true
-      #----------------------------------------------
-      # Install project dependencies
-      #----------------------------------------------
+
       - name: Install dependencies
         run: uv sync
-      #----------------------------------------------
-      # Run unit tests
-      #----------------------------------------------
-      - name: Run tests
+
+      - name: Run unit tests
         run: |
           uv run python manage.py collectstatic
-          uv run python manage.py migrate
-          # NOTE: we can't run tests in parallel, because setup() may break DB constraints.
           uv run python manage.py test --noinput --failfast --verbosity 0 --settings wastd.test-settings
