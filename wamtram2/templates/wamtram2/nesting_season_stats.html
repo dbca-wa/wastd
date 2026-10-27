@@ -146,7 +146,16 @@
                         {% endfor %}
                     </select>
                 </div>
-
+                <div class="col-lg-3 col-md-6 mb-3" id="new-turtle-filter">
+                    <label>New Turtle:</label>
+                    <select name="new_turtle" class="form-control select2">
+                        <option value="">All Turtles</option>
+                        <option value="yes"
+                            {% if selected_new_turtle == "yes" %}selected{% endif %}>
+                            New Turtles Only
+                        </option>
+                    </select>
+                </div>
             </div>
 
             <div class="form-row">
@@ -179,9 +188,37 @@
                     All Locations
                 {% endif %}
                 ({{ start_date }} - {{ end_date }})
+                 <span style="display: inline-block; margin-left: 24px;
+                             padding: 10px 14px; border-left: 4px solid #d39e00;
+                             background-color: #fff3cd; color: #664d03;
+                             font-size: 15px; font-weight: 600; vertical-align: middle;">
+                    {% if data_type == "processed" %}
+                        Each turtle is counted once within each location or place.
+                    {% else %}
+                        Each field entry is counted separately, including multiple entries for the same turtle.
+                    {% endif %}
+                </span>
             </h4>
         {% endif %}
-        <div class="table-responsive">
+        <div class="mt-4 mb-5">
+            <h5 class="mb-3 pb-2 border-bottom">
+                {% if data_type == "processed" %}Turtle Count{% else %}Field Entry Count{% endif %}
+                by {% if selected_locations or selected_places %}Place{% else %}Location{% endif %}
+            </h5>
+
+            <div style="overflow-x: auto;">
+                <div style="position: relative; height: 500px; min-width: 1800px;">
+                    <canvas id="resultsChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <h5 class="mb-3 pb-2 border-bottom">
+                Detailed Results
+            </h5>
+
+            <div class="table-responsive">
             <table class="table table-striped">
                 <thead>
                     <tr>
@@ -206,6 +243,7 @@
                     {% endif %}
                 </tbody>
             </table>
+            </div>
         </div>
     </div>
     {% elif start_date and end_date %}
@@ -220,12 +258,29 @@
     {{ block.super }}
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
     <script>
         $(document).ready(function() {
             $('.select2').select2({
                 theme: 'bootstrap4'
             });
+            function toggleNewTurtleFilter() {
+                const dataType = $('select[name="data_type"]').val();
+                const newTurtleFilter = $('#new-turtle-filter');
+                const newTurtleSelect = $('select[name="new_turtle"]');
 
+                if (dataType === 'processed') {
+                    newTurtleFilter.show();
+                } else {
+                    newTurtleFilter.hide();
+                    newTurtleSelect.val('').trigger('change');
+                }
+            }
+
+            toggleNewTurtleFilter();
+
+            $('select[name="data_type"]').on('change', toggleNewTurtleFilter);
             const locationSelect = $('select[name="location"]');
             const placeSelect = $('select[name="place"]');
 
@@ -251,12 +306,120 @@
                 }
             });
 
-            // 页面加载时初始化状态
+            // 页面加载时初始化状态 
             if (locationSelect.val() && locationSelect.val().length > 0) {
                 placeSelect.prop('disabled', true);
             } else if (placeSelect.val() && placeSelect.val().length > 0) {
                 locationSelect.prop('disabled', true);
             }
         });
+
+        {% if results %}
+        const chartCanvas = document.getElementById('resultsChart');
+
+        const chartLabels = [
+            {% for result in results.details %}
+                "{{ result.place_code__place_name|escapejs }}",
+            {% endfor %}
+        ];
+
+        const chartCounts = [
+            {% for result in results.details %}
+                {{ result.count }},
+            {% endfor %}
+        ];
+
+        if (chartCanvas) {
+            new Chart(chartCanvas, {
+                type: 'bar',
+                plugins: [ChartDataLabels],
+                data: {
+                    labels: chartLabels,
+                    datasets: [{
+                        label: 'Turtle Count / Field Entry Count',
+                        data: chartCounts,
+                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                        borderColor: 'rgb(54, 162, 235)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                            color: '#333',
+                            font: {
+                                weight: 'bold'
+                            },
+                            formatter: function(value) {
+                                return value.toLocaleString();
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return '{% if data_type == "processed" %}Turtle Count{% else %}Field Entry Count{% endif %}: ' + context.parsed.y.toLocaleString();
+                                },
+                                afterLabel: function(context) {
+                                    const filters = [];
+
+                                    {% if selected_sex %}
+                                    filters.push('Sex: {{ selected_sex|escapejs }}');
+                                    {% endif %}
+
+                                    {% if selected_species %}
+                                    filters.push('Species: {{ selected_species|escapejs }}');
+                                    {% endif %}
+
+                                    {% if selected_nesting %}
+                                    filters.push('Nesting: {% if selected_nesting == "Y" %}Yes{% else %}No{% endif %}');
+                                    {% endif %}
+
+                                    {% if selected_alive %}
+                                    filters.push('Alive: {{ selected_alive|escapejs }}');
+                                    {% endif %}
+
+                                    return filters;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Count',
+                                color: '#333',
+                                font: {
+                                size: 15,
+                                weight: 'bold'
+                                }
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: '{% if selected_locations or selected_places %}Place{% else %}Location{% endif %}',
+                                color: '#333',
+                                font: {
+                                size: 15,
+                                weight: 'bold'
+                                }
+                            },
+                            ticks: {
+                                maxRotation: 35,
+                                minRotation: 35
+                            }
+                        }
+                    }
+                }
+
+            });
+        }
+        {% endif %}
     </script>
-{% endblock %} 
+{% endblock %}

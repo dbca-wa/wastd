@@ -586,7 +586,9 @@ class TrtDataEntryForm(forms.ModelForm):
             field = self.fields[field_name]
             if field.required:
                 field.widget.attrs["class"] = field.widget.attrs.get("class", "") + " required-field"
-
+        # Hide the deprecated "Biopsy - gen" option from tissue type dropdowns
+        for field_name in ["tissue_type_1", "tissue_type_2", "tissue_type_3", "tissue_type_4"]:
+            self.fields[field_name].queryset = self.fields[field_name].queryset.exclude(tissue_type="9")
         self.fields["sample_label_1"].label = "Sample Label 1"
         self.fields["tissue_type_1"].label = "Tissue Type 1"
         self.fields["sample_label_2"].label = "Sample Label 2"

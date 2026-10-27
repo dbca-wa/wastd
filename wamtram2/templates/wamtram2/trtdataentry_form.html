@@ -82,12 +82,10 @@
       align-items: center;
       margin-left: 10px;
   }
-
   .form-check-input {
       margin-right: 5px;
       transform: scale(1.2);
   }
-
   .form-check-label {
       white-space: nowrap;
       font-size: 14px;
@@ -96,6 +94,19 @@
   .need-review-label {
     font-weight: bold;
     font-size: 1.2em;
+  }
+  #summaryContent .summary-required {
+      display: inline-block;
+      background-color: #f1fff3;
+      border-left: 3px solid #8fd19e;
+      padding: 2px 6px;
+  }
+  #summaryContent .summary-required-missing {
+      display: inline-block;
+      background-color: #fff0f0;
+      border-left: 3px solid #dc3545;
+      padding: 2px 6px;
+      color: #721c24;
   }
 
 </style>
@@ -703,7 +714,7 @@
             <div class="col-md-12">
               <div class="row">
                 <div class="col-md-12 note">
-                  <p> <strong>Note:</strong> Please use the + buttons to add more measurements (e.g., CCLmax).</p>
+                  <p> <strong>Note:</strong> Please use the + buttons to add more measurements.</p>
                 </div>
               </div>
               <div class="row">
@@ -1534,8 +1545,11 @@
                   if (tag_fields.includes(inputId.replace('id_', ''))) {
                     inputValue = inputValue.toUpperCase();
                   }
-  
-                  if (inputValue !== '' && inputValue !== '---------') {
+                  const isRequired =
+                      input.required ||
+                      input.classList.contains('required-field');
+                  const hasValue = inputValue !== '' && inputValue !== '---------';
+                  if (hasValue || isRequired){
                       if (labelMapping[inputId]) {
                           labelText = labelMapping[inputId];
                       } else {
@@ -1547,12 +1561,19 @@
                               labelText = label.textContent.trim();
                           }
                       }
-  
+                      const requiredClass = isRequired
+                          ? (hasValue ? 'summary-required' : 'summary-required-missing')
+                          : '';
+
+                      if (isRequired && !hasValue) {
+                          inputValue = 'Required';
+                      }
+
                       if (inputId === 'id_species_code') {
                           summaryHTML += `
                               <li class="species-row">
                                   <div class="species-content">
-                                      <span class="species-highlight"><strong>${labelText}:</strong> ${inputValue}</span>
+                                      <span class="species-highlight ${requiredClass}"><strong>${labelText}:</strong> ${inputValue}</span>
                                   </div>
                                   <div class="form-check mr-5">
                                       <input type="checkbox" class="form-check-input" id="speciesConfirmCheckbox">
@@ -1562,9 +1583,9 @@
                               `;
                       }  else if (inputId === 'id_latitude') {
                         inputValue = '-' + inputValue;
-                        summaryHTML += `<li><strong>${labelText}:</strong> ${inputValue}</li>`;
+                        summaryHTML += `<li><span class="${requiredClass}"><strong>${labelText}:</strong> ${inputValue}</span></li>`;
                       } else {
-                          summaryHTML += `<li><strong>${labelText}:</strong> ${inputValue}</li>`;
+                          summaryHTML += `<li><span class="${requiredClass}"><strong>${labelText}:</strong> ${inputValue}</span></li>`;
                       }
                   }
               }
@@ -1612,23 +1633,20 @@
             bodyElement.classList.remove('bg-yellow');
         }
     }
-
+    // For untagged turtles, automatically flag Needs Review if either
+    // Flipper Tags Present or PIT Tags Present is Yes or Didn't Check.
+    // Once automatically selected, Needs Review is not automatically cleared
+    // if the tag selections are later changed to No.
     function updateDoNotProcess() {
         const turtleIdEmpty = !turtleIdField.value;
-        const flipperTagDidntCheck = flipperTagCheckField.value === 'D';
-        const pitTagDidntCheck = pitTagCheckField.value === 'D';
+        const flipperTagNeedsReview = ['Y', 'D'].includes(flipperTagCheckField.value);
+        const pitTagNeedsReview = ['Y', 'D'].includes(pitTagCheckField.value);
 
-
-        if (turtleIdEmpty && flipperTagDidntCheck && pitTagDidntCheck) {
+        if (turtleIdEmpty && (flipperTagNeedsReview || pitTagNeedsReview)) {
             doNotProcessField.checked = true;
-            //doNotProcessField.disabled = true;
-        //} else {
-            //doNotProcessField.disabled = false;
-            //doNotProcessField.checked = false;
         }
         updateBackgroundColor();
     }
-
     turtleIdField.addEventListener('change', updateDoNotProcess);
     flipperTagCheckField.addEventListener('change', updateDoNotProcess);
     pitTagCheckField.addEventListener('change', updateDoNotProcess);

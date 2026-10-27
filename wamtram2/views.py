@@ -15,7 +15,7 @@ from django.core.exceptions import PermissionDenied, ValidationError
 from django.core.paginator import Paginator
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import DatabaseError, connections, transaction
-from django.db.models import Count, Exists, OuterRef, Q, Subquery
+from django.db.models import Count, Exists, OuterRef, Q
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseForbidden, HttpResponseRedirect, JsonResponse,StreamingHttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
@@ -6505,6 +6505,7 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                 "selected_species": self.request.GET.get("species"),
                 "selected_nesting": self.request.GET.get("nesting"),
                 "selected_alive": self.request.GET.get("alive"),
+                "selected_new_turtle": self.request.GET.get("new_turtle"),
                 "start_date": self.request.GET.get("start_date"),
                 "end_date": self.request.GET.get("end_date"),
             }
@@ -6524,7 +6525,10 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
 
             if context["data_type"] == "processed":
                 # For processed data, just count unique turtles
-                query = TrtObservations.objects.filter(observation_date__gte=start_date, observation_date__lte=end_date)
+                query = TrtObservations.objects.filter(
+                    observation_date__date__gte=start_date,
+                    observation_date__date__lte=end_date,
+                )
 
                 # Apply filters
                 if context.get("selected_places"):
@@ -6532,15 +6536,16 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                 elif context.get("selected_locations"):
                     location_filter = Q()
                     for loc in context["selected_locations"]:
-                        location_filter |= Q(place_code__place_code__startswith=loc)
+                        if loc == "XX":
+                            location_filter |= Q(place_code__isnull=True)
+                        else:
+                            location_filter |= Q(place_code__location_code=loc)
                     query = query.filter(location_filter)
-
                 if context["selected_sex"]:
                     query = query.filter(turtle__sex=context["selected_sex"])
 
                 if context["selected_species"]:
                     query = query.filter(turtle__species_code=context["selected_species"])
-                
                 if context["selected_alive"]:
                     query = query.filter(
                         alive__code=context["selected_alive"]
@@ -6553,6 +6558,30 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                     query = query.exclude(
                         activity_code__nesting="Y"
                     )
+                if context["selected_new_turtle"] == "yes":
+                    earlier_observation = TrtObservations.objects.filter(
+                        turtle_id=OuterRef("turtle_id")
+                    ).filter(
+                        Q(observation_date__lt=OuterRef("observation_date"))
+                        | Q(
+                            observation_date=OuterRef("observation_date"),
+                            observation_id__lt=OuterRef("observation_id"),
+                        )
+                    )
+
+                    query = (
+                        query
+                        .filter(
+                            observation_status__in=("Initial Sighting", "Initial Nesting")
+                        )
+                        .annotate(
+                            has_earlier_observation=Exists(earlier_observation)
+                        )
+                        .filter(
+                            has_earlier_observation=False
+                        )
+                    )
+
                 # Group by place and count unique turtles
                 results = (
                     query.values("place_code__place_code", "place_code__place_name")
@@ -6561,7 +6590,10 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                 )
 
             else:
-                query = TrtDataEntry.objects.filter(observation_date__gte=start_date, observation_date__lte=end_date)
+                query = TrtDataEntry.objects.filter(
+                    observation_date__date__gte=start_date,
+                    observation_date__date__lte=end_date,
+                )
 
                 # Apply filters
                 if context.get("selected_places"):
@@ -6569,7 +6601,10 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                 elif context.get("selected_locations"):
                     location_filter = Q()
                     for loc in context["selected_locations"]:
-                        location_filter |= Q(place_code__place_code__startswith=loc)
+                        if loc == "XX":
+                            location_filter |= Q(place_code__isnull=True)
+                        else:
+                            location_filter |= Q(place_code__location_code=loc)
                     query = query.filter(location_filter)
 
                 if context["selected_sex"]:
@@ -6590,86 +6625,85 @@ class NestingSeasonStatsView(LoginRequiredMixin, SuperUserRequiredMixin, View):
                     query = query.exclude(
                         activity_code__nesting="Y"
                     )
-                # Split into two groups: with and without turtle_id
-                has_turtle_query = query.filter(turtle_id__isnull=False)
-                no_turtle_query = query.filter(turtle_id__isnull=True)
-
-                # For records with turtle_id, count unique turtles
-                has_turtle_results = has_turtle_query.values("place_code__place_code", "place_code__place_name", "turtle_id").distinct()
-
-                # Process records without turtle_id
-                no_turtle_results = no_turtle_query.values(
-                    "place_code__place_code",
-                    "place_code__place_name",
-                    "recapture_left_tag_id",
-                    "recapture_left_tag_id_2",
-                    "recapture_left_tag_id_3",
-                    "recapture_right_tag_id",
-                    "recapture_right_tag_id_2",
-                    "recapture_right_tag_id_3",
-                    "recapture_pittag_id",
-                    "recapture_pittag_id_2",
-                    "recapture_pittag_id_3",
-                    "recapture_pittag_id_4",
-                    "new_left_tag_id",
-                    "new_left_tag_id_2",
-                    "new_right_tag_id",
-                    "new_right_tag_id_2",
-                    "new_pittag_id",
-                    "new_pittag_id_2",
-                    "new_pittag_id_3",
-                    "new_pittag_id_4",
-                ).distinct()
-
-                # Merge results
-                results_dict = {}
-
-                # Handle records with turtle_id
-                for result in has_turtle_results:
-                    place_code = result["place_code__place_code"]
-                    if place_code not in results_dict:
-                        results_dict[place_code] = {
-                            "place_code__place_code": place_code,
-                            "place_code__place_name": result["place_code__place_name"],
-                            "count": 0,
-                        }
-                    results_dict[place_code]["count"] += 1
-
-                # Handle records without turtle_id
-                processed_tags = set()
-                for result in no_turtle_results:
-                    place_code = result["place_code__place_code"]
-                    if place_code not in results_dict:
-                        results_dict[place_code] = {
-                            "place_code__place_code": place_code,
-                            "place_code__place_name": result["place_code__place_name"],
-                            "count": 0,
-                        }
-
-                    # Collect all non-null tag values
-                    all_tags = []
-                    for field, value in result.items():
-                        if field not in ["place_code__place_code", "place_code__place_name"] and value:
-                            all_tags.append(str(value))
-
-                    if all_tags:
-                        tag_combo = tuple(sorted(all_tags))
-                        if tag_combo not in processed_tags:
-                            results_dict[place_code]["count"] += 1
-                            processed_tags.add(tag_combo)
-                    else:
-                        results_dict[place_code]["count"] += 1
-
-                results = sorted(results_dict.values(), key=lambda x: x["place_code__place_code"])
-
+                # Group by place and count unique field entry records
+                results = (
+                    query.values(
+                        "place_code__place_code",
+                        "place_code__place_name",
+                        "place_code__location_code",
+                    )
+                    .annotate(count=Count("data_entry_id", distinct=True))
+                    .order_by("place_code__place_code")
+                )
             results_list = list(results)
+            # When no Location or Place is selected, summarise results by Location.
+            if not context.get("selected_locations") and not context.get("selected_places"):
+                location_names = {
+                    location.location_code: location.location_name
+                    for location in TrtLocations.objects.all()
+                }
+
+                if context["data_type"] == "processed":
+                    location_turtles = {}
+                    for item in query.values(
+                        "place_code__location_code",
+                        "turtle_id",
+                    ).distinct():
+                        location_code = item["place_code__location_code"] or "XX"
+
+                        if location_code not in location_turtles:
+                            location_turtles[location_code] = set()
+
+                        if item["turtle_id"] is not None:
+                            location_turtles[location_code].add(item["turtle_id"])
+
+                    results_list = sorted(
+                        [
+                            {
+                                "place_code__place_code": location_code,
+                                "place_code__place_name": location_names.get(
+                                    location_code,
+                                    "Unassigned" if location_code == "XX" else location_code,
+                                ),
+                                "count": len(turtle_ids),
+                            }
+                            for location_code, turtle_ids in location_turtles.items()
+                        ],
+                        key=lambda x: x["place_code__place_code"],
+                    )
+
+                else:
+                    location_results = {}
+
+                    for item in results_list:
+                        location_code = item["place_code__location_code"] or "XX"
+                        location_name = location_names.get(
+                            location_code,
+                            "Unassigned" if location_code == "XX" else location_code,
+                        )
+                        if location_code not in location_results:
+                            location_results[location_code] = {
+                                "place_code__place_code": location_code,
+                                "place_code__place_name": location_name,
+                                "count": 0,
+                            }
+
+                        location_results[location_code]["count"] += item["count"]
+
+                    results_list = sorted(
+                        location_results.values(),
+                        key=lambda x: x["place_code__place_code"],
+                    )
 
             if context.get("selected_locations") and not context.get("selected_places"):
-                total = sum(item["count"] for item in results_list)
+                if context["data_type"] == "processed":
+                    total = query.values("turtle_id").distinct().count()
+                else:
+                    total = sum(item["count"] for item in results_list)
+
                 return {"details": results_list, "total": total}
 
             return {"details": results_list, "total": None}
-
         except Exception as e:
             return {"details": [], "total": None, "error": str(e)}
 
