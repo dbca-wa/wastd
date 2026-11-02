@@ -323,6 +323,9 @@
         <li class="nav-item">
             <a class="nav-link" data-toggle="tab" href="#samples">Samples</a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#eggs">Eggs</a>
+        </li>
         <!-- Causeomment out Other Information tab 
         <li class="nav-item">
             <a class="nav-link" data-toggle="tab" href="#otherInfo">Other Information</a>
@@ -444,6 +447,297 @@
                 </button>
             </div>
         </div>
+<!-- Prototype only: hard-coded example based on Observation 356284 -->
+        <div class="tab-pane fade" id="eggs">
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <strong>Egg / Nest Record</strong>
+                </div>
+
+                <div class="card-body">
+
+                    <div class="alert alert-light border">
+                        <strong>Linked Observation</strong><br>
+                        Observation: 356284 |
+                        Turtle: 79180 |
+                        Date/Time: 06/12/2025 08:59 PM |
+                        Status: Initial Nesting |
+                        Species: Flatback |
+                        Flipper Tag: WB36818
+                    </div>
+
+                    <h5 class="mt-4">Nest Details</h5>
+
+                    <div class="form-row">
+
+                        <div class="form-group col-md-6">
+                            <label>Location name</label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                placeholder="Location name"
+                            >
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label>Date / Time</label>
+                            <input
+                                type="datetime-local"
+                                class="form-control"
+                            >
+                        </div>
+
+                    </div>
+
+                    <div class="form-row">
+
+                        <div class="form-group col-md-4">
+                            <label>Latitude</label>
+                            <input
+                                type="number"
+                                step="any"
+                                class="form-control"
+                                placeholder="Latitude"
+                            >
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label>Longitude</label>
+                            <input
+                                type="number"
+                                step="any"
+                                class="form-control"
+                                placeholder="Longitude"
+                            >
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label>Datum</label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                value="WGS84"
+                            >
+                        </div>
+
+                    </div>
+
+                    <div class="form-row">
+
+                        <div class="form-group col-md-6">
+                            <label>Datasheet written by</label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                placeholder="Person"
+                            >
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label>Species</label>
+                            <select class="form-control">
+                                <option>Flatback</option>
+                                <option>Hawksbill</option>
+                                <option>Loggerhead</option>
+                                <option>Green</option>
+                                <option>Olive ridley</option>
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <hr>
+
+                    <div class="form-row">
+
+                        <div class="form-group col-md-4">
+                            <label>Nest tag present?</label>
+                            <select class="form-control">
+                                <option value=""></option>
+                                <option value="Y">Yes</option>
+                                <option value="N">No</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label>Tag label</label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                placeholder="e.g. CN#5"
+                            >
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label>Date laid</label>
+                            <input
+                                type="date"
+                                class="form-control"
+                            >
+                        </div>
+
+                    </div>
+
+                    <div class="form-row">
+
+                        <div class="form-group col-md-4">
+                            <label>Turtle LFT</label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                value="WB36818"
+                            >
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label>Turtle RFT</label>
+                            <input
+                                type="text"
+                                class="form-control"
+                            >
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label>Turtle PIT</label>
+                            <input
+                                type="text"
+                                class="form-control"
+                            >
+                        </div>
+
+                    </div>
+
+                    <div class="form-row">
+
+                        <div class="form-group col-md-4">
+                            <label>Egg count</label>
+                            <input
+                                type="number"
+                                min="0"
+                                class="form-control"
+                            >
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label>Temp logger deployed?</label>
+                            <select class="form-control">
+                                <option value=""></option>
+                                <option value="Y">Yes</option>
+                                <option value="N">No</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label>Logger ID</label>
+                            <input
+                                type="text"
+                                class="form-control"
+                            >
+                        </div>
+
+                    </div>
+
+
+                    <h5 class="mt-4">Egg Measurements</h5>
+
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="eggMeasurementsTable">
+                            <thead>
+                                <tr>
+                                    <th style="width: 10%">Egg</th>
+                                    <th>Min diameter (mm)</th>
+                                    <th>Max diameter (mm)</th>
+                                    <th>Weight (g)</th>
+                                    <th style="width: 70px"></th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="eggMeasurementsBody">
+                                <tr>
+                                    <td>1</td>
+                                    <td>
+                                        <input
+                                            type="number"
+                                            step="0.01"
+                                            class="form-control"
+                                        >
+                                    </td>
+                                    <td>
+                                        <input
+                                            type="number"
+                                            step="0.01"
+                                            class="form-control"
+                                        >
+                                    </td>
+                                    <td>
+                                        <input
+                                            type="number"
+                                            step="0.01"
+                                            class="form-control"
+                                        >
+                                    </td>
+                                    <td>
+                                        <button
+                                            type="button"
+                                            class="btn btn-danger btn-sm remove-egg"
+                                        >
+                                            Remove
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <button
+                        type="button"
+                        class="btn btn-success"
+                        id="addEggMeasurement"
+                    >
+                        + Add Egg
+                    </button>
+
+
+                    <h5 class="mt-4">Nest Location</h5>
+
+                    <div class="form-group">
+                        <label>Schematic and Description</label>
+                        <textarea
+                            class="form-control"
+                            rows="4"
+                            placeholder="Nest location description..."
+                        ></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Upload schematic / photo</label>
+                        <input
+                            type="file"
+                            class="form-control-file"
+                            accept="image/*"
+                        >
+                    </div>
+
+
+                    <div class="text-right mt-4">
+                        <button
+                            type="button"
+                            class="btn btn-primary"
+                            disabled
+                            title="Prototype only"
+                        >
+                            Save Egg / Nest Record
+                        </button>
+                    </div>
+
+                    <small class="text-muted">
+                        Prototype only. No data will be saved.
+                    </small>
+
+                </div>
+            </div>
+        </div>
         <!-- Comment out Other Information content area
         <div id="otherInfo" class="tab-pane fade">
             <div class="section-card">
@@ -495,4 +789,56 @@
     </script>
     {{ tissue_types|json_script:"tissue-types-data" }}
     <script src="{% static 'js/observation_management.js' %}"></script>
-{% endblock %} 
+    <!-- Prototype only: hard-coded example based on Observation 356284 -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const tableBody = document.getElementById('eggMeasurementsBody');
+        const addButton = document.getElementById('addEggMeasurement');
+
+        if (!tableBody || !addButton) {
+            return;
+        }
+
+        function renumberEggs() {
+            tableBody.querySelectorAll('tr').forEach((row, index) => {
+                row.children[0].textContent = index + 1;
+            });
+        }
+
+        addButton.addEventListener('click', function () {
+            const row = document.createElement('tr');
+
+            row.innerHTML = `
+                <td></td>
+                <td>
+                    <input type="number" step="0.01" class="form-control">
+                </td>
+                <td>
+                    <input type="number" step="0.01" class="form-control">
+                </td>
+                <td>
+                    <input type="number" step="0.01" class="form-control">
+                </td>
+                <td>
+                    <button type="button"
+                            class="btn btn-danger btn-sm remove-egg">
+                        Remove
+                    </button>
+                </td>
+            `;
+
+            tableBody.appendChild(row);
+            renumberEggs();
+        });
+
+        tableBody.addEventListener('click', function (event) {
+            if (!event.target.classList.contains('remove-egg')) {
+                return;
+            }
+
+            event.target.closest('tr').remove();
+            renumberEggs();
+        });
+    });
+    </script>
+    {% endblock %}
