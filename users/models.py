@@ -102,6 +102,21 @@ class OrganisationExportAssignment(models.Model):
         verbose_name = "Organisation export assignment"
         verbose_name_plural = "Organisation export assignments"
 
+    @classmethod
+    def currently_valid_for_organisations(cls, organisations):
+        today = timezone.localdate()
+
+        return cls.objects.filter(
+            organisation__in=organisations
+        ).filter(
+            models.Q(validity_type=cls.ValidityType.PERMANENT)
+            | models.Q(
+                validity_type=cls.ValidityType.TIME_LIMITED,
+                valid_from__lte=today,
+                valid_to__gte=today,
+            )
+        )
+
     @property
     def current_status(self):
         if self.validity_type == self.ValidityType.PERMANENT:

@@ -91,6 +91,7 @@ from .export_helpers import (
 )
 from observations.lookups import DEATH_STAGES
 from observations.models import AnimalEncounter, TagObservation as AnimalTagObservation
+from users.models import OrganisationExportAssignment
 
 class HomePageView(LoginRequiredMixin, TemplateView):
     """
@@ -2039,6 +2040,51 @@ class ExportDataView(LoginRequiredMixin, View):
 
         return start_date, end_date
 
+    def _apply_export_assignment_scope(self, queryset, user):
+        # Superusers may export all Turtle Tagging data.
+        if user.is_superuser:
+            return queryset
+        # All other users, including DBCA staff, use Organisation assignments.
+        assignments = list(
+            OrganisationExportAssignment.currently_valid_for_organisations(
+                user.organisations.all()
+            ).values(
+                "location_code",
+                "data_from",
+                "data_to",
+            )
+        )
+
+        if not assignments:
+            return queryset.none()
+
+        scope = Q()
+
+        for assignment in assignments:
+            assignment_scope = Q(
+                place_code__location_code=assignment["location_code"]
+            )
+
+            if assignment["data_from"]:
+                start = datetime.combine(
+                    assignment["data_from"],
+                    time.min,
+                    tzinfo=dt_timezone.utc,
+                )
+                assignment_scope &= Q(observation_date__gte=start)
+
+            if assignment["data_to"]:
+                end = datetime.combine(
+                    assignment["data_to"] + timedelta(days=1),
+                    time.min,
+                    tzinfo=dt_timezone.utc,
+                )
+                assignment_scope &= Q(observation_date__lt=end)
+
+            scope |= assignment_scope
+
+        return queryset.filter(scope)
+
     def dispatch(self, request, *args, **kwargs):
         # Permission check: only allow users in the specific groups or superusers
         if not (
@@ -2075,88 +2121,68 @@ class ExportDataView(LoginRequiredMixin, View):
         return render(request, self.template_name, context)
 
     def get_locations(self, request):
-        """Retrieve locations based on the specified date range and entry type."""
-        from_date, to_date = self._get_date_range(request.GET.get("observation_date_from"), request.GET.get("observation_date_to"))
-        entry_type = request.GET.get("entry_type", "field")
+        """Return locations available within the user's export scope."""
+
+        from_date, to_date = self._get_date_range(
+            request.GET.get("observation_date_from"),
+            request.GET.get("observation_date_to"),
+        )
 
         user = request.user
-        user_orgs = []
-        if not user.is_superuser:
-            user_organisations = user.organisations.all()
-            if not user_organisations.exists():
-                return JsonResponse({"locations": []})
-            user_orgs = [org.code for org in user_organisations]
 
-        if entry_type == "processed":
-            queryset = TrtObservations.objects.all()
-            if not user.is_superuser:
-                related_batch_ids = TrtEntryBatchOrganisation.objects.filter(organisation__in=user_orgs).values_list(
-                    "trtentrybatch_id", flat=True
-                )
-                queryset = queryset.filter(entry_batch_id__in=related_batch_ids)
+        # Superusers may select any WAMTRAM location.
+        if user.is_superuser:
+            locations = TrtLocations.get_ordered_locations()
 
-            if from_date and to_date:
-                queryset = queryset.filter(
-                    observation_date__gte=from_date,
-                    observation_date__lt=to_date,
-                )
-
-            # Get locations through place_code
-            locations = TrtLocations.objects.filter(
-                location_code__in=TrtPlaces.objects.filter(place_code__in=queryset.values_list("place_code", flat=True)).values_list(
-                    "location_code", flat=True
-                )
-            ).distinct()
+        # External organisations/ DBCA receive locations directly from valid assignments.
         else:
-            # Field entries
-            queryset = TrtDataEntry.objects.all()
-            if not user.is_superuser:
-                related_batch_ids = TrtEntryBatchOrganisation.objects.filter(organisation__in=user_orgs).values_list(
-                    "trtentrybatch_id", flat=True
+            assignments = (
+                OrganisationExportAssignment
+                .currently_valid_for_organisations(
+                    user.organisations.all()
                 )
-                queryset = queryset.filter(entry_batch_id__in=related_batch_ids)
+            )
 
             if from_date and to_date:
-                queryset = queryset.filter(
-                    observation_date__gte=from_date,
-                    observation_date__lt=to_date,
+                requested_from = from_date.date()
+                requested_to = (to_date - timedelta(days=1)).date()
+
+                assignments = assignments.filter(
+                    Q(data_from__isnull=True)
+                    | Q(data_from__lte=requested_to),
+                    Q(data_to__isnull=True)
+                    | Q(data_to__gte=requested_from),
                 )
 
-            locations = TrtLocations.objects.filter(
-                location_code__in=TrtPlaces.objects.filter(place_code__in=queryset.values_list("place_code", flat=True)).values_list(
-                    "location_code", flat=True
-                )
-            ).distinct()
+            # Materialise PostgreSQL values before querying SQL Server.
+            location_codes = list(
+                assignments.values_list(
+                    "location_code",
+                    flat=True,
+                ).distinct()
+            )
 
-        # Use the custom ordering from TrtLocations model
-        locations = TrtLocations.get_ordered_locations().filter(location_code__in=locations.values_list("location_code", flat=True))
+            locations = TrtLocations.get_ordered_locations().filter(
+                location_code__in=location_codes
+            )
 
-        location_list = [{"value": location.location_code, "label": location.location_name} for location in locations]
+        location_list = [
+            {
+                "value": location.location_code,
+                "label": location.location_name,
+            }
+            for location in locations
+        ]
 
         return JsonResponse({"locations": location_list})
-
     def get_places(self, request):
         """Retrieve places based on the specified date range, location, and entry type."""
         from_date, to_date = self._get_date_range(request.GET.get("observation_date_from"), request.GET.get("observation_date_to"))
         location_code = request.GET.get("location_code")
         entry_type = request.GET.get("entry_type", "field")
 
-        user = request.user
-        user_orgs = []
-        if not user.is_superuser:
-            user_organisations = user.organisations.all()
-            if not user_organisations.exists():
-                return JsonResponse({"places": []})
-            user_orgs = [org.code for org in user_organisations]
-
         if entry_type == "processed":
             queryset = TrtObservations.objects.all()
-            if not user.is_superuser:
-                related_batch_ids = TrtEntryBatchOrganisation.objects.filter(organisation__in=user_orgs).values_list(
-                    "trtentrybatch_id", flat=True
-                )
-                queryset = queryset.filter(entry_batch_id__in=related_batch_ids)
-
             if from_date and to_date:
                 queryset = queryset.filter(
                     observation_date__gte=from_date,
@@ -2168,12 +2194,6 @@ class ExportDataView(LoginRequiredMixin, View):
         else:
             # Field entries
             queryset = TrtDataEntry.objects.all()
-            if not user.is_superuser:
-                related_batch_ids = TrtEntryBatchOrganisation.objects.filter(organisation__in=user_orgs).values_list(
-                    "trtentrybatch_id", flat=True
-                )
-                queryset = queryset.filter(entry_batch_id__in=related_batch_ids)
-
             if from_date and to_date:
                 queryset = queryset.filter(
                     observation_date__gte=from_date,
@@ -2183,11 +2203,24 @@ class ExportDataView(LoginRequiredMixin, View):
             # Get places from filtered queryset
             places = TrtPlaces.objects.filter(place_code__in=queryset.values_list("place_code", flat=True))
 
-        # Filter places by location if specified
-        if location_code:
-            places = places.filter(location_code=location_code)
+        # Keep the existing Superuser behaviour unchanged.
+        if request.user.is_superuser:
+            if location_code:
+                places = places.filter(location_code=location_code)
 
-        places = places.select_related("location_code").distinct().order_by("place_name")
+        # Non-superusers must select a location before places are shown.
+        else:
+            if location_code:
+                places = places.filter(location_code=location_code)
+            else:
+                places = places.none()
+
+        places = (
+            places
+            .select_related("location_code")
+            .distinct()
+            .order_by("place_name")
+            )
 
         place_list = [
             {
@@ -2205,21 +2238,8 @@ class ExportDataView(LoginRequiredMixin, View):
         from_date, to_date = self._get_date_range(request.GET.get("observation_date_from"), request.GET.get("observation_date_to"))
         entry_type = request.GET.get("entry_type", "field")
 
-        user = request.user
-        user_orgs = []
-        if not user.is_superuser:
-            user_organisations = user.organisations.all()
-            if not user_organisations.exists():
-                return JsonResponse({"species": []})
-            user_orgs = [org.code for org in user_organisations]
-
         if entry_type == "processed":
             queryset = TrtObservations.objects.all()
-            if not user.is_superuser:
-                related_batch_ids = TrtEntryBatchOrganisation.objects.filter(organisation__in=user_orgs).values_list(
-                    "trtentrybatch_id", flat=True
-                )
-                queryset = queryset.filter(entry_batch_id__in=related_batch_ids)
 
             if from_date and to_date:
                 queryset = queryset.filter(
@@ -2232,11 +2252,6 @@ class ExportDataView(LoginRequiredMixin, View):
         else:
             # Field entries
             queryset = TrtDataEntry.objects.all()
-            if not user.is_superuser:
-                related_batch_ids = TrtEntryBatchOrganisation.objects.filter(organisation__in=user_orgs).values_list(
-                    "trtentrybatch_id", flat=True
-                )
-                queryset = queryset.filter(entry_batch_id__in=related_batch_ids)
 
             if from_date and to_date:
                 queryset = queryset.filter(
@@ -2255,22 +2270,8 @@ class ExportDataView(LoginRequiredMixin, View):
         from_date, to_date = self._get_date_range(request.GET.get("observation_date_from"), request.GET.get("observation_date_to"))
         entry_type = request.GET.get("entry_type", "field")
 
-        user = request.user
-        user_orgs = []
-        if not user.is_superuser:
-            user_organisations = user.organisations.all()
-            if not user_organisations.exists():
-                return JsonResponse({"sexes": []})
-            user_orgs = [org.code for org in user_organisations]
-
         if entry_type == "processed":
             queryset = TrtObservations.objects.all()
-            if not user.is_superuser:
-                related_batch_ids = TrtEntryBatchOrganisation.objects.filter(organisation__in=user_orgs).values_list(
-                    "trtentrybatch_id", flat=True
-                )
-                queryset = queryset.filter(entry_batch_id__in=related_batch_ids)
-
             if from_date and to_date:
                 queryset = queryset.filter(
                     observation_date__gte=from_date,
@@ -2281,12 +2282,6 @@ class ExportDataView(LoginRequiredMixin, View):
         else:
             # Field entries
             queryset = TrtDataEntry.objects.all()
-            if not user.is_superuser:
-                related_batch_ids = TrtEntryBatchOrganisation.objects.filter(organisation__in=user_orgs).values_list(
-                    "trtentrybatch_id", flat=True
-                )
-                queryset = queryset.filter(entry_batch_id__in=related_batch_ids)
-
             if from_date and to_date:
                 queryset = queryset.filter(
                     observation_date__gte=from_date,
@@ -2298,7 +2293,7 @@ class ExportDataView(LoginRequiredMixin, View):
         sex_list = [{"value": choice[0], "label": choice[1]} for choice in SEX_CHOICES if choice[0] in used_sexes]
 
         return JsonResponse({"sexes": sex_list})
-    
+
     def get_alive_statuses(self, request):
         preferred_order = ["Y", "N", "P", "U", "D", "O"]
 
@@ -2319,7 +2314,7 @@ class ExportDataView(LoginRequiredMixin, View):
         ]
 
         return JsonResponse({"alive_statuses": alive_list})
-    
+
     def _iter_export_rows(
         self,
         queryset,
@@ -2490,16 +2485,9 @@ class ExportDataView(LoginRequiredMixin, View):
                 # Apply organization filter
                 user = request.user
                 batch_ids = []
+
                 if not user.is_superuser:
-                    user_organisations = user.organisations.all()
-                    if user_organisations.exists():
-                        related_batch_ids = TrtEntryBatchOrganisation.objects.filter(
-                            organisation__in=[org.code for org in user_organisations]
-                        ).values_list("trtentrybatch_id", flat=True)
-                        queryset = queryset.filter(entry_batch_id__in=related_batch_ids)
-                        batch_ids = related_batch_ids
-                    else:
-                        return HttpResponse("No data available for your organisation", status=403)
+                    queryset = self._apply_export_assignment_scope(queryset, user)
 
                 # Apply filters
                 queryset = queryset.filter(
@@ -2616,11 +2604,20 @@ class ExportDataView(LoginRequiredMixin, View):
             if not queryset.exists():
                 return HttpResponse("No data found matching the selected criteria", status=404)
 
-            # Pre-fetch batch organizations to avoid N+1 queries
-            if user.is_superuser:
-                batch_ids = set(queryset.values_list("entry_batch_id", flat=True))
-            batch_orgs = TrtEntryBatchOrganisation.objects.filter(trtentrybatch_id__in=batch_ids).values("trtentrybatch_id", "organisation")
+            # Pre-fetch batch organizations for the final authorised queryset.
+            batch_ids = set(
+                queryset.values_list(
+                    "entry_batch_id",
+                    flat=True,
+                )
+            )
 
+            batch_orgs = TrtEntryBatchOrganisation.objects.filter(
+                trtentrybatch_id__in=batch_ids
+            ).values(
+                "trtentrybatch_id",
+                "organisation",
+            )
             org_dict = {}
             for bo in batch_orgs:
                 org_dict.setdefault(bo["trtentrybatch_id"], []).append(bo["organisation"])
@@ -2659,7 +2656,7 @@ class ExportDataView(LoginRequiredMixin, View):
                 ts.tag_state: ts
                 for ts in TrtTagStates.objects.all()
             }
-          
+
             try:
                 if entry_type == "processed":
                     headers = get_processed_export_headers()
@@ -2735,7 +2732,7 @@ class ExportDataView(LoginRequiredMixin, View):
         except Exception as e:
             traceback.print_exc()
             return HttpResponse(f"Error during export: {str(e)}", status=500)
-    
+
     def _iter_processed_queryset_chunks(self, queryset):
         queryset = queryset.order_by("observation_id")
         last_observation_id = None
@@ -3972,7 +3969,7 @@ class TagRegisterView(LoginRequiredMixin, FormView):
         if not (request.user.is_superuser or request.user.groups.filter(name="WAMTRAM2_STAFF").exists()):
             raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
-        
+
     def form_valid(self, form):
         try:
             tag_type = form.cleaned_data["tag_type"]
@@ -4223,7 +4220,7 @@ class TagRegisterView(LoginRequiredMixin, FormView):
 
                                     if tag.comments:
                                         tag.comments = (
-                                            f"{tag.comments}; " 
+                                            f"{tag.comments}; "
                                             f"{reassignment_comment}"
                                         )
                                     else:
@@ -5537,7 +5534,7 @@ class ObservationDataView(LoginRequiredMixin, SuperUserRequiredMixin, View):
             "damage_codes": damage_codes,
             "samples": samples,
         }
-        
+
 
     def _filter_observations(self, request):
         """Filter observations based on request parameters"""

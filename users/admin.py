@@ -85,7 +85,45 @@ class LocationFilter(admin.SimpleListFilter):
 @admin.register(OrganisationExportAssignment)
 class OrganisationExportAssignmentAdmin(admin.ModelAdmin):
     form = OrganisationExportAssignmentForm
-
+    fieldsets = (
+        (
+            None,
+            {
+                "fields": (
+                    "organisation",
+                    "location_code",
+                ),
+            },
+        ),
+        (
+            "Export data range",
+            {
+                "description": (
+                    "Data from and Data to define which observation dates may be exported. "
+                    "Leave Data to blank to automatically include future data for this "
+                    "location while the export assignment remains valid."
+                ),
+                "fields": (
+                    "data_from",
+                    "data_to",
+                ),
+            },
+        ),
+        (
+            "Export access validity",
+            {
+                "description": (
+                    "Permanent access does not require validity dates. "
+                    "Time-limited access requires both Valid from and Valid to."
+                ),
+                "fields": (
+                    "validity_type",
+                    "valid_from",
+                    "valid_to",
+                ),
+            },
+        ),
+    )
     list_display = (
         "organisation",
         "location",
@@ -117,15 +155,17 @@ class OrganisationExportAssignmentAdmin(admin.ModelAdmin):
             ).location_name
         except TrtLocations.DoesNotExist:
             return obj.location_code
+
     @admin.display(description="Current status")
     def current_status(self, obj):
         return obj.current_status
+
     class Media:
         js = ("js/organisation_export_assignment.js",)
+
 class UserChangeForm(UserChangeForm):
     class Meta(UserChangeForm.Meta):
         model = User
-
 
 class UserCreationForm(UserCreationForm):
     error_message = UserCreationForm.error_messages.update({"duplicate_username": "This username has already been taken."})
