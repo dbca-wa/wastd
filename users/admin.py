@@ -6,8 +6,8 @@ from django.contrib.auth.admin import UserAdmin as AuthUserAdmin
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 from django.utils import timezone
 
-from .models import AuditLog, User, Organisation
-
+from .models import AuditLog, Organisation, OrganisationExportAssignment, User
+from wamtram2.models import TrtLocations
 
 @admin.register(Organisation)
 class OrganisationAdmin(admin.ModelAdmin):
@@ -17,7 +17,111 @@ class OrganisationAdmin(admin.ModelAdmin):
         "description__icontains",
     )
 
+class OrganisationExportAssignmentForm(forms.ModelForm):
+    location_code = forms.ChoiceField(label="Location")
 
+    class Meta:
+        model = OrganisationExportAssignment
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields["location_code"].choices = [
+            (location.location_code, location.location_name)
+            for location in TrtLocations.get_ordered_locations()
+        ]
+
+        self.fields["valid_from"].required = False
+        self.fields["valid_to"].required = False
+
+        for field_name in ("data_from", "data_to", "valid_from", "valid_to"):
+            self.fields[field_name].widget.attrs["placeholder"] = "DD/MM/YYYY"
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        data_from = cleaned_data.get("data_from")
+        data_to = cleaned_data.get("data_to")
+        validity_type = cleaned_data.get("validity_type")
+        valid_from = cleaned_data.get("valid_from")
+        valid_to = cleaned_data.get("valid_to")
+
+        if data_from and data_to and data_from > data_to:
+            self.add_error("data_to", "Data to must be on or after Data from.")
+
+        if validity_type == OrganisationExportAssignment.ValidityType.TIME_LIMITED:
+            if not valid_from:
+                self.add_error("valid_from", "Valid from is required for time-limited access.")
+
+            if not valid_to:
+                self.add_error("valid_to", "Valid to is required for time-limited access.")
+
+            if valid_from and valid_to and valid_from > valid_to:
+                self.add_error("valid_to", "Valid to must be on or after Valid from.")
+
+        elif validity_type == OrganisationExportAssignment.ValidityType.PERMANENT:
+            cleaned_data["valid_from"] = None
+            cleaned_data["valid_to"] = None
+
+        return cleaned_data
+
+class LocationFilter(admin.SimpleListFilter):
+    title = "Location"
+    parameter_name = "location_code"
+
+    def lookups(self, request, model_admin):
+        return [
+            (location.location_code, location.location_name)
+            for location in TrtLocations.get_ordered_locations()
+        ]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(location_code=self.value())
+
+        return queryset
+
+@admin.register(OrganisationExportAssignment)
+class OrganisationExportAssignmentAdmin(admin.ModelAdmin):
+    form = OrganisationExportAssignmentForm
+
+    list_display = (
+        "organisation",
+        "location",
+        "data_from",
+        "data_to",
+        "validity_type",
+        "valid_from",
+        "valid_to",
+        "current_status",
+    )
+
+    list_filter = (
+        "organisation",
+         LocationFilter,
+        "validity_type",
+    )
+
+    search_fields = (
+        "organisation__code",
+        "organisation__label",
+        "location_code",
+    )
+
+    @admin.display(description="Location")
+    def location(self, obj):
+        try:
+            return TrtLocations.objects.get(
+                location_code=obj.location_code
+            ).location_name
+        except TrtLocations.DoesNotExist:
+            return obj.location_code
+    @admin.display(description="Current status")
+    def current_status(self, obj):
+        return obj.current_status
+    class Media:
+        js = ("js/organisation_export_assignment.js",)
 class UserChangeForm(UserChangeForm):
     class Meta(UserChangeForm.Meta):
         model = User
