@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
+from django.core.exceptions import ValidationError
 from django.db import DatabaseError, models
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
@@ -101,6 +102,47 @@ class OrganisationExportAssignment(models.Model):
         ordering = ("organisation", "location_code", "data_from")
         verbose_name = "Organisation export assignment"
         verbose_name_plural = "Organisation export assignments"
+
+    def clean(self):
+        errors = {}
+
+        if (
+            self.data_from
+            and self.data_to
+            and self.data_from > self.data_to
+        ):
+            errors["data_to"] = (
+                "Data to must be on or after Data from."
+            )
+
+        if self.validity_type == self.ValidityType.TIME_LIMITED:
+            if not self.valid_from:
+                errors["valid_from"] = (
+                    "Valid from is required for time-limited access."
+                )
+
+            if not self.valid_to:
+                errors["valid_to"] = (
+                    "Valid to is required for time-limited access."
+                )
+
+            if (
+                self.valid_from
+                and self.valid_to
+                and self.valid_from > self.valid_to
+            ):
+                errors["valid_to"] = (
+                    "Valid to must be on or after Valid from."
+                )
+
+        elif self.validity_type == self.ValidityType.PERMANENT:
+            if self.valid_from or self.valid_to:
+                errors["validity_type"] = (
+                    "Permanent access must not have validity dates."
+                )
+
+        if errors:
+            raise ValidationError(errors)
 
     @classmethod
     def currently_valid_for_organisations(cls, organisations):

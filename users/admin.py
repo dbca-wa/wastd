@@ -3,10 +3,13 @@ from datetime import timedelta
 from django import forms
 from django.contrib import admin, messages
 from django.contrib.auth.admin import UserAdmin as AuthUserAdmin
+from import_export.admin import ImportMixin
+from import_export.formats import base_formats
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 from django.utils import timezone
 
 from .models import AuditLog, Organisation, OrganisationExportAssignment, User
+from .resources import OrganisationExportAssignmentResource
 from wamtram2.models import TrtLocations
 
 @admin.register(Organisation)
@@ -83,8 +86,27 @@ class LocationFilter(admin.SimpleListFilter):
         return queryset
 
 @admin.register(OrganisationExportAssignment)
-class OrganisationExportAssignmentAdmin(admin.ModelAdmin):
+class OrganisationExportAssignmentAdmin(
+    ImportMixin,
+    admin.ModelAdmin,
+):
     form = OrganisationExportAssignmentForm
+    resource_classes = [
+        OrganisationExportAssignmentResource,
+    ]
+
+    def get_import_formats(self):
+        return [
+            base_formats.XLSX,
+            base_formats.CSV,
+        ]
+
+    def is_skip_import_confirm_enabled(self):
+        return False
+
+    def has_import_permission(self, request):
+        return request.user.is_superuser
+
     fieldsets = (
         (
             None,
