@@ -123,3 +123,52 @@ class OrganisationExportAssignmentResource(resources.ModelResource):
                 "validity_type must be permanent or time_limited."
             )
 
+        # Add the duplicate detection here.
+        assignment_id = row.get("id")
+
+        if not assignment_id:
+            organisation = self.fields["organisation"].clean(row)
+            data_from = self.fields["data_from"].clean(row)
+            data_to = self.fields["data_to"].clean(row)
+            valid_from = self.fields["valid_from"].clean(row)
+            valid_to = self.fields["valid_to"].clean(row)
+
+            existing_assignments = (
+                OrganisationExportAssignment.objects.filter(
+                    organisation=organisation,
+                    location_code=location_code,
+                    data_from=data_from,
+                    data_to=data_to,
+                    validity_type=validity_type,
+                    valid_from=valid_from,
+                    valid_to=valid_to,
+                )
+            )
+
+            existing_id = (
+                existing_assignments
+                .order_by("pk")
+                .values_list("pk", flat=True)
+                .first()
+            )
+
+            if existing_id:
+                row["id"] = existing_id
+                row["_skip_identical"] = True
+
+    def skip_row(
+        self,
+        instance,
+        original,
+        row,
+        import_validation_errors=None,
+    ):
+        if row.get("_skip_identical"):
+            return True
+
+        return super().skip_row(
+            instance,
+            original,
+            row,
+            import_validation_errors,
+        )
