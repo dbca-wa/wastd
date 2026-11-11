@@ -4321,11 +4321,22 @@ class TaggedStrandedTurtleReviewView(LoginRequiredMixin, UserPassesTestMixin, Te
        q = self.request.GET.get('q', '').strip()
        date_from = self.request.GET.get('date_from', '').strip()
        date_to = self.request.GET.get('date_to', '').strip()
+       tag_observation_exists = AnimalTagObservation.objects.filter(
+           encounter_id=OuterRef('pk'),
+           tag_type__in=self.FLIPPER_OR_PIT_TAG_TYPES,
+       )
+
        encounters = AnimalEncounter.objects.filter(
            species__in=self.TURTLE_SPECIES,
            health__in=DEATH_STAGES,
-           observations__tagobservation__tag_type__in=self.FLIPPER_OR_PIT_TAG_TYPES,
-       ).select_related('site', 'area', 'observer', 'reporter').distinct().order_by('-when')
+       ).annotate(
+           has_relevant_tag=Exists(tag_observation_exists),
+       ).filter(
+           has_relevant_tag=True,
+       ).select_related(
+           'site', 'area', 'observer', 'reporter'
+       ).order_by('-when')
+
        if q:
            encounters = encounters.filter(
                Q(observations__tagobservation__name__icontains=q) |
