@@ -2082,6 +2082,7 @@ class TagObservation(Observation):
         choices=lookups.TAG_TYPE_CHOICES,
         default="flipper-tag",
         help_text="What kind of tag is it?",
+        db_index=True,
     )
     tag_location = models.CharField(
         max_length=300,
