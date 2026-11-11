@@ -1,3 +1,9 @@
+<style>
+    #navbarCollapse > .navbar-nav > .nav-item > .nav-link {
+        font-size: 16px;
+    }
+</style>
+
 <div class="collapse navbar-collapse" id="navbarCollapse">
     <ul class="navbar-nav mr-auto">
     {% if request.user.is_staff or request.user.is_superuser or request.user.can_access_tracks_nests %}  
@@ -9,7 +15,7 @@
                data-toggle="dropdown"
                aria-haspopup="true"
                aria-expanded="false">
-                <i class="fa-solid fa-table" aria-hidden="true"></i>
+                <i class="fa-solid fa-person-walking" aria-hidden="true"></i>
                 Tracks and nests
             </a>
             <div class="dropdown-menu" aria-labelledby="nav-li-tracks">
@@ -126,7 +132,7 @@
                data-toggle="dropdown"
                aria-haspopup="true"
                aria-expanded="false">
-                <i class="fa-solid fa-table" aria-hidden="true"></i>
+                <i class="fa-solid fa-tag" aria-hidden="true"></i>
                 Tagging
             </a>
             <div class="dropdown-menu" aria-labelledby="nav-li-tagging">
@@ -172,7 +178,7 @@
                data-toggle="dropdown"
                aria-haspopup="true"
                aria-expanded="false">
-                <i class="fa-solid fa-table" aria-hidden="true"></i>
+                <i class="fa-solid fa-binoculars" aria-hidden="true"></i>
                 Marine wildlife incidents
             </a>
             <div class="dropdown-menu" aria-labelledby="nav-li-mwi">
