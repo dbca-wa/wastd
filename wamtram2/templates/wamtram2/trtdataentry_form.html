@@ -1183,22 +1183,6 @@
           dateErrorMessage.style.display = 'block';
           return;
         }
-        if (isVolunteer) {
-          const seasonStart = new Date(2026, 6, 1);
-          const seasonEnd = new Date(2027, 5, 30, 23, 59, 59, 999);
-
-          if (date < seasonStart || date > seasonEnd) {
-            input.classList.add('is-invalid');
-            dateErrorMessage.textContent = "Volunteers can only enter observations between 1 July 2026 and 30 June 2027.";
-            dateErrorMessage.style.display = 'block';
-            return;
-          }
-
-          input.classList.remove('is-invalid');
-          dateErrorMessage.style.display = 'none';
-          return;
-        }
-
         const currentDate = new Date();
         const minYear = 1950;
         const maxYear = currentDate.getFullYear();
@@ -1213,6 +1197,18 @@
           dateErrorMessage.textContent = "Date cannot be in the future.";
           dateErrorMessage.style.display = 'block';
           return;
+        }
+        // Volunteer-specific date validation: Ensure the date is within the 2026-2027 season.
+        if (isVolunteer) {
+          const seasonStart = new Date(2026, 6, 1);
+          const seasonEnd = new Date(2027, 5, 30, 23, 59, 59, 999);
+
+          if (date < seasonStart || date > seasonEnd) {
+            input.classList.add('is-invalid');
+            dateErrorMessage.textContent = "Volunteers can only enter observations between 1 July 2026 and 30 June 2027.";
+            dateErrorMessage.style.display = 'block';
+            return;
+          }
         }
         input.classList.remove('is-invalid');
         dateErrorMessage.style.display = 'none';
