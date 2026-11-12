@@ -3,7 +3,7 @@ import json
 import operator
 import re
 import traceback
-from datetime import datetime, time, timedelta, timezone as dt_timezone
+from datetime import date, datetime, time, timedelta, timezone as dt_timezone
 from functools import reduce
 import pandas as pd
 from django.apps import apps
@@ -621,11 +621,13 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
         if (
             self.request.user.groups.filter(name="WAMTRAM2_VOLUNTEER").exists()
             and observation_date
-            and observation_date.year != timezone.now().year
+            and not (
+                date(2026, 7, 1) <= observation_date.date() <= date(2027, 6, 30)
+            )
         ):
             form.add_error(
                 "observation_date",
-                "Volunteers can only enter observations for the current year."
+                "Volunteers can only enter observations between 1 July 2026 and 30 June 2027."
             )
             return self.form_invalid(form)
 
@@ -678,6 +680,9 @@ class TrtDataEntryFormView(LoginRequiredMixin, FormView):
             dict: The context data.
         """
         context = super().get_context_data(**kwargs)
+        context["is_volunteer"] = self.request.user.groups.filter(
+            name="WAMTRAM2_VOLUNTEER"
+        ).exists()
         entry_id = self.kwargs.get("entry_id")
         batch_id = self.kwargs.get("batch_id")
         cookies_key_prefix = batch_id
