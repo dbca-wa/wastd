@@ -21,7 +21,7 @@ dependencies = [
   "python-dotenv==1.2.2",
   "dbca-utils==2.2.0",
   "django-fsm==2.8.1",
-  "django-fsm-log==3.1.0",
+  "django-fsm-log==5.0.2",
   "django-fsm-admin-maintained==1.2.6",
   "python-dateutil==2.9.0.post0",
   "python-slugify==8.0.4",
