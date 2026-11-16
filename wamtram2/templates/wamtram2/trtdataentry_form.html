@@ -319,7 +319,7 @@
               <!-- Old Flipper Tag -->
               <tr>
                 <td colspan="4">
-                  <h5><span style="color: blue; font-weight: bold">OLD</span> Flipper Tag(s)</h5>
+                  <h5><span class="text-primary font-weight-bold font-italic mr-1">OLD</span> Flipper Tag(s)</h5>
                 </td>
               </tr>
               <tr>
@@ -444,7 +444,7 @@
               <!-- New Flipper Tag -->
               <tr>
                 <td colspan="4">
-                  <h5><span style="color: red; font-weight: bold">NEW</span> Flipper Tag(s)</h5>
+                  <h5><span class="text-danger font-weight-bold font-italic mr-2">NEW</span>Flipper Tag(s)</h5>
                 </td>
               </tr>
               <tr>
@@ -554,7 +554,7 @@
 
           <!-- Recapture PIT Tags -->
           <div id="recapturePIT">
-            <h5><span style="color: blue; font-weight: bold">OLD</span> PIT Tag(s)</h5>
+            <h5><span class="text-primary font-weight-bold font-italic mr-1">OLD</span> PIT Tag(s)</h5>
             <p style="color: red; font-style: italic; margin-bottom: 15px;">
             </p>
             <div class="row mt-2">
@@ -621,7 +621,7 @@
 
           <!-- New PIT Tags -->
           <div id="newPIT" class="mt-5">
-            <h5><span style="color: red; font-weight: bold">NEW</span> PIT Tag(s)</h5>
+            <h5><span class="text-danger font-weight-bold font-italic mr-2">NEW</span>PIT Tag(s)</h5>
             <div class="row mt-2">
               <!-- First Row for New PIT Tag -->
               <div class="col-md-6">
@@ -714,7 +714,10 @@
             <div class="col-md-12">
               <div class="row">
                 <div class="col-md-12 note">
-                  <p> <strong>Note:</strong> Please use the + buttons to add more measurements.</p>
+                  <p>
+                    <strong>Note:</strong>
+                    Use the <i class="fas fa-plus mx-1" aria-hidden="true"></i> button below to add additional measurement types.
+                  </p>
                 </div>
               </div>
               <div class="row">
@@ -1145,6 +1148,7 @@
   document.addEventListener('DOMContentLoaded', function() {
     const observationDateInput = document.querySelector('input[name="observation_date"]');
     const dateErrorMessage = document.getElementById('date-error-message');
+    const isVolunteer = {{ is_volunteer|yesno:"true,false" }};
   
     if (!observationDateInput) return;
   
@@ -1196,6 +1200,18 @@
           dateErrorMessage.textContent = "Date cannot be in the future.";
           dateErrorMessage.style.display = 'block';
           return;
+        }
+        // Volunteer-specific date validation: Ensure the date is within the 2026-2027 season.
+        if (isVolunteer) {
+          const seasonStart = new Date(2026, 6, 1);
+          const seasonEnd = new Date(2027, 5, 30, 23, 59, 59, 999);
+
+          if (date < seasonStart || date > seasonEnd) {
+            input.classList.add('is-invalid');
+            dateErrorMessage.textContent = "Volunteers can only enter observations between 1 July 2026 and 30 June 2027.";
+            dateErrorMessage.style.display = 'block';
+            return;
+          }
         }
         input.classList.remove('is-invalid');
         dateErrorMessage.style.display = 'none';

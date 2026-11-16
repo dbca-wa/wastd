@@ -1,5 +1,5 @@
 from types import SimpleNamespace
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from django.test import RequestFactory, SimpleTestCase
 
@@ -21,6 +21,9 @@ class TrtDataEntryFormViewTests(SimpleTestCase):
                 "entered_by_id": "2002",
             },
         )
+        view.request.user = MagicMock()
+        view.request.user.groups.filter.return_value.exists.return_value = False
+
         view.kwargs = {
             "batch_id": 1,
         }
