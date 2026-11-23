@@ -968,7 +968,7 @@ class TrtEggCountMethods(models.Model):
 class TrtEntryBatchOrganisation(models.Model):
     trtentrybatch = models.ForeignKey(
         "TrtEntryBatches",
-        on_delete=models.CASCADE,
+        on_delete=models.DO_NOTHING,
         db_column="trtentrybatches_id",
         related_name="batch_organisations",
     )

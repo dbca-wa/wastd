@@ -774,10 +774,46 @@ class DeleteBatchView(LoginRequiredMixin, View):
         return super().dispatch(request, *args, **kwargs)
 
     def post(self, request, batch_id):
-        batch = get_object_or_404(TrtEntryBatches, entry_batch_id=batch_id)
-        batch.delete()
-        return redirect("wamtram2:batches_curation")
+        batch = get_object_or_404(
+            TrtEntryBatches,
+            entry_batch_id=batch_id,
+        )
 
+        has_entries = TrtDataEntry.objects.filter(
+            entry_batch_id=batch_id
+        ).exists()
+
+        has_observations = TrtObservations.objects.filter(
+            entry_batch_id=batch_id
+        ).exists()
+
+        if has_entries or has_observations:
+            messages.error(
+                request,
+                f"Batch {batch_id} cannot be deleted because it contains data.",
+            )
+            return redirect(
+                "wamtram2:entry_batch_detail",
+                batch_id=batch_id,
+            )
+
+        with transaction.atomic(using="wamtram2"):
+            with connections["wamtram2"].cursor() as cursor:
+                cursor.execute(
+                    """
+                    DELETE FROM TRT_ENTRY_BATCHES_ORGANISATION
+                    WHERE trtentrybatches_id = %s
+                    """,
+                    [batch_id],
+                )
+
+            batch.delete()
+
+        messages.success(
+            request,
+            f"Batch {batch_id} was deleted successfully.",
+        )
+        return redirect("wamtram2:batches_curation")
 
 class ValidateDataEntryBatchView(LoginRequiredMixin, View):
     """
