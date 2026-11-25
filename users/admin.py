@@ -6,7 +6,13 @@ from django.contrib.auth.admin import UserAdmin as AuthUserAdmin
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 from django.utils import timezone
 
-from .models import AuditLog, Organisation, OrganisationExportAssignment, User
+from .models import (
+    AuditLog,
+    Organisation,
+    OrganisationExportAssignment,
+    OrganisationExportDelegation,
+    User,
+)
 from wamtram2.models import TrtLocations
 
 @admin.register(Organisation)
@@ -32,10 +38,7 @@ class OrganisationExportAssignmentForm(forms.ModelForm):
             for location in TrtLocations.get_ordered_locations()
         ]
 
-        self.fields["valid_from"].required = False
-        self.fields["valid_to"].required = False
-
-        for field_name in ("data_from", "data_to", "valid_from", "valid_to"):
+        for field_name in ("data_from", "data_to"):
             self.fields[field_name].widget.attrs["placeholder"] = "DD/MM/YYYY"
 
     def clean(self):
@@ -43,26 +46,35 @@ class OrganisationExportAssignmentForm(forms.ModelForm):
 
         data_from = cleaned_data.get("data_from")
         data_to = cleaned_data.get("data_to")
-        validity_type = cleaned_data.get("validity_type")
-        valid_from = cleaned_data.get("valid_from")
-        valid_to = cleaned_data.get("valid_to")
 
         if data_from and data_to and data_from > data_to:
             self.add_error("data_to", "Data to must be on or after Data from.")
+        return cleaned_data
 
-        if validity_type == OrganisationExportAssignment.ValidityType.TIME_LIMITED:
-            if not valid_from:
-                self.add_error("valid_from", "Valid from is required for time-limited access.")
+class OrganisationExportDelegationForm(forms.ModelForm):
+    class Meta:
+        model = OrganisationExportDelegation
+        fields = "__all__"
 
-            if not valid_to:
-                self.add_error("valid_to", "Valid to is required for time-limited access.")
+    def clean(self):
+        cleaned_data = super().clean()
 
-            if valid_from and valid_to and valid_from > valid_to:
-                self.add_error("valid_to", "Valid to must be on or after Valid from.")
+        source = cleaned_data.get("source_organisation")
+        authorised = cleaned_data.get("authorised_organisation")
+        valid_from = cleaned_data.get("valid_from")
+        valid_to = cleaned_data.get("valid_to")
 
-        elif validity_type == OrganisationExportAssignment.ValidityType.PERMANENT:
-            cleaned_data["valid_from"] = None
-            cleaned_data["valid_to"] = None
+        if source and authorised and source == authorised:
+            self.add_error(
+                "authorised_organisation",
+                "Data source and authorised organisation must be different.",
+            )
+
+        if valid_from and valid_to and valid_from > valid_to:
+            self.add_error(
+                "valid_to",
+                "Valid to must be on or after Valid from.",
+            )
 
         return cleaned_data
 
@@ -109,36 +121,17 @@ class OrganisationExportAssignmentAdmin(admin.ModelAdmin):
                 ),
             },
         ),
-        (
-            "Export access validity",
-            {
-                "description": (
-                    "Permanent access does not require validity dates. "
-                    "Time-limited access requires both Valid from and Valid to."
-                ),
-                "fields": (
-                    "validity_type",
-                    "valid_from",
-                    "valid_to",
-                ),
-            },
-        ),
     )
     list_display = (
         "organisation",
         "location",
         "data_from",
         "data_to",
-        "validity_type",
-        "valid_from",
-        "valid_to",
-        "current_status",
     )
 
     list_filter = (
         "organisation",
          LocationFilter,
-        "validity_type",
     )
 
     search_fields = (
@@ -156,12 +149,32 @@ class OrganisationExportAssignmentAdmin(admin.ModelAdmin):
         except TrtLocations.DoesNotExist:
             return obj.location_code
 
-    @admin.display(description="Current status")
-    def current_status(self, obj):
-        return obj.current_status
-
     class Media:
         js = ("js/organisation_export_assignment.js",)
+
+@admin.register(OrganisationExportDelegation)
+class OrganisationExportDelegationAdmin(admin.ModelAdmin):
+    form = OrganisationExportDelegationForm
+
+    list_display = (
+        "source_organisation",
+        "authorised_organisation",
+        "valid_from",
+        "valid_to",
+        "current_status",
+    )
+
+    list_filter = (
+        "source_organisation",
+        "authorised_organisation",
+    )
+
+    search_fields = (
+        "source_organisation__code",
+        "source_organisation__label",
+        "authorised_organisation__code",
+        "authorised_organisation__label",
+    )
 
 class UserChangeForm(UserChangeForm):
     class Meta(UserChangeForm.Meta):
