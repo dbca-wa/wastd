@@ -91,7 +91,12 @@ from .export_helpers import (
 )
 from observations.lookups import DEATH_STAGES
 from observations.models import AnimalEncounter, TagObservation as AnimalTagObservation
-from users.models import Organisation, OrganisationExportAssignment
+from users.models import (
+    Organisation,
+    OrganisationExportAssignment,
+    OrganisationExportDelegation,
+)
+
 
 class HomePageView(LoginRequiredMixin, TemplateView):
     """
@@ -2039,66 +2044,100 @@ class ExportDataView(LoginRequiredMixin, View):
         end_date = datetime.combine(end_day, time.min, tzinfo=dt_timezone.utc)
 
         return start_date, end_date
+    def _is_dbca_staff(self, user):
+        return (
+            user.organisations.filter(code="dbca").exists()
+            and user.groups.filter(name="WAMTRAM2_STAFF").exists()
+        )
 
-    def _apply_export_assignment_scope(self, queryset, user):
-        # Superusers may export all Turtle Tagging data.
-        if user.is_superuser:
-            return queryset
-        # All other users, including DBCA staff, use Organisation assignments.
+    def _get_source_effective_assignments(self, organisations):
+        source_assignments = OrganisationExportAssignment.objects.filter(
+            organisation__in=organisations
+        )
+
+        approved_location_codes = (
+            source_assignments
+            .values_list("location_code", flat=True)
+            .distinct()
+        )
+
+        dbca_assignments = OrganisationExportAssignment.objects.filter(
+            organisation__code="dbca",
+            location_code__in=approved_location_codes,
+        )
+
+        effective_assignment_ids = list(
+            source_assignments.values_list("pk", flat=True)
+        ) + list(
+            dbca_assignments.values_list("pk", flat=True)
+        )
+
+        return OrganisationExportAssignment.objects.filter(
+            pk__in=effective_assignment_ids
+        )
+
+    def _get_effective_export_assignments(self, user):
         user_organisations = user.organisations.all()
 
-        own_assignments = list(
-            OrganisationExportAssignment.currently_valid_for_organisations(
-                user_organisations
-            ).values(
+        direct_assignments = self._get_source_effective_assignments(
+            user_organisations
+        )
+
+        delegated_source_ids = (
+            OrganisationExportDelegation
+            .currently_valid_for_organisations(user_organisations)
+            .values_list("source_organisation_id", flat=True)
+            .distinct()
+        )
+
+        delegated_assignments = self._get_source_effective_assignments(
+            Organisation.objects.filter(
+                pk__in=delegated_source_ids
+            )
+        )
+
+        effective_assignment_ids = list(
+            direct_assignments.values_list("pk", flat=True)
+        ) + list(
+            delegated_assignments.values_list("pk", flat=True)
+        )
+
+        return OrganisationExportAssignment.objects.filter(
+            pk__in=effective_assignment_ids
+        )
+
+    def _apply_export_assignment_scope(self, queryset, user):
+        # Superusers may export all Turtle Tagging database data.
+        if user.is_superuser:
+            return queryset
+
+        # DBCA staff receive the DBCA export scope, not unrestricted
+        # database access. DBCA volunteers do not enter this branch.
+        if self._is_dbca_staff(user):
+            effective_assignments = (
+                self._get_source_effective_assignments(
+                    Organisation.objects.filter(code="dbca")
+                )
+            )
+        else:
+            effective_assignments = (
+                self._get_effective_export_assignments(user)
+            )
+
+        assignments = list(
+            effective_assignments.values(
                 "location_code",
                 "data_from",
                 "data_to",
             )
         )
 
-        if not own_assignments:
-            return queryset.none()
-
-        user_is_dbca = user_organisations.filter(code="dbca").exists()
-
-        if user_is_dbca:
-            effective_assignments = list(
-                OrganisationExportAssignment.currently_valid_for_organisations(
-                    Organisation.objects.filter(code="dbca")
-                ).values(
-                    "location_code",
-                    "data_from",
-                    "data_to",
-                )
-            )
-
-        else:
-            approved_location_codes = {
-                assignment["location_code"]
-                for assignment in own_assignments
-            }
-
-            dbca_assignments = list(
-                OrganisationExportAssignment.currently_valid_for_organisations(
-                    Organisation.objects.filter(code="dbca")
-                ).filter(
-                    location_code__in=approved_location_codes
-                ).values(
-                    "location_code",
-                    "data_from",
-                    "data_to",
-                )
-            )
-
-            effective_assignments = own_assignments + dbca_assignments
-
-        if not effective_assignments:
+        if not assignments:
             return queryset.none()
 
         scope = Q()
 
-        for assignment in effective_assignments:
+        for assignment in assignments:
             assignment_scope = Q(
                 place_code__location_code=assignment["location_code"]
             )
@@ -2109,7 +2148,9 @@ class ExportDataView(LoginRequiredMixin, View):
                     time.min,
                     tzinfo=dt_timezone.utc,
                 )
-                assignment_scope &= Q(observation_date__gte=start)
+                assignment_scope &= Q(
+                    observation_date__gte=start
+                )
 
             if assignment["data_to"]:
                 end = datetime.combine(
@@ -2117,11 +2158,14 @@ class ExportDataView(LoginRequiredMixin, View):
                     time.min,
                     tzinfo=dt_timezone.utc,
                 )
-                assignment_scope &= Q(observation_date__lt=end)
+                assignment_scope &= Q(
+                    observation_date__lt=end
+                )
 
             scope |= assignment_scope
 
         return queryset.filter(scope)
+
 
     def dispatch(self, request, *args, **kwargs):
         # Permission check: only allow users in the specific groups or superusers
@@ -2168,98 +2212,45 @@ class ExportDataView(LoginRequiredMixin, View):
 
         user = request.user
 
-        # Superusers may select any WAMTRAM location.
+    # Superusers may select any WAMTRAM location.
         if user.is_superuser:
             locations = TrtLocations.get_ordered_locations()
 
-        # External organisations/ DBCA receive locations directly from valid assignments.
         else:
-            user_organisations = user.organisations.all()
-
-            # The user's own assignments determine approved locations.
-            own_assignments = (
-                OrganisationExportAssignment
-                .currently_valid_for_organisations(
-                    user_organisations
+            if self._is_dbca_staff(user):
+                effective_assignments = (
+                    self._get_source_effective_assignments(
+                        Organisation.objects.filter(code="dbca")
+                    )
                 )
-            )
-
-            approved_location_codes = list(
-                own_assignments.values_list(
-                    "location_code",
-                    flat=True,
-                ).distinct()
-            )
-
-            if not approved_location_codes:
-                locations = TrtLocations.objects.none()
-
             else:
-                user_is_dbca = user_organisations.filter(
-                    code="dbca"
-                ).exists()
-
-                if user_is_dbca:
-                    effective_assignments = (
-                        OrganisationExportAssignment
-                        .currently_valid_for_organisations(
-                            Organisation.objects.filter(code="dbca")
-                        )
-                    )
-
-                else:
-                    # DBCA may extend the data range, but only for locations
-                    # already approved by the external organisation's assignment.
-                    dbca_assignments = (
-                        OrganisationExportAssignment
-                        .currently_valid_for_organisations(
-                            Organisation.objects.filter(code="dbca")
-                        )
-                        .filter(
-                            location_code__in=approved_location_codes
-                        )
-                    )
-
-                    effective_assignment_ids = list(
-                        own_assignments.values_list("pk", flat=True)
-                    ) + list(
-                        dbca_assignments.values_list("pk", flat=True)
-                    )
-
-                    effective_assignments = (
-                        OrganisationExportAssignment.objects.filter(
-                            pk__in=effective_assignment_ids
-                        )
-                    )
-
-                if from_date and to_date:
-                    requested_from = from_date.date()
-                    requested_to = (
-                        to_date - timedelta(days=1)
-                    ).date()
-
-                    effective_assignments = effective_assignments.filter(
-                        Q(data_from__isnull=True)
-                        | Q(data_from__lte=requested_to),
-                        Q(data_to__isnull=True)
-                        | Q(data_to__gte=requested_from),
-                    )
-
-                # DBCA can extend time coverage, but cannot grant a new location.
-                location_codes = list(
-                    effective_assignments.filter(
-                        location_code__in=approved_location_codes
-                    )
-                    .values_list(
-                        "location_code",
-                        flat=True,
-                    )
-                    .distinct()
+                effective_assignments = (
+                    self._get_effective_export_assignments(user)
                 )
 
-                locations = TrtLocations.get_ordered_locations().filter(
-                    location_code__in=location_codes
+            if from_date and to_date:
+                requested_from = from_date.date()
+                requested_to = (
+                    to_date - timedelta(days=1)
+                ).date()
+
+                effective_assignments = effective_assignments.filter(
+                    Q(data_from__isnull=True)
+                    | Q(data_from__lte=requested_to),
+                    Q(data_to__isnull=True)
+                    | Q(data_to__gte=requested_from),
                 )
+
+            location_codes = (
+                effective_assignments
+                .values_list("location_code", flat=True)
+                .distinct()
+            )
+
+            locations = (
+                TrtLocations.get_ordered_locations()
+                .filter(location_code__in=location_codes)
+            )
 
         location_list = [
             {
@@ -2270,6 +2261,7 @@ class ExportDataView(LoginRequiredMixin, View):
         ]
 
         return JsonResponse({"locations": location_list})
+
     def get_places(self, request):
         """Retrieve places based on the specified date range, location, and entry type."""
         from_date, to_date = self._get_date_range(request.GET.get("observation_date_from"), request.GET.get("observation_date_to"))

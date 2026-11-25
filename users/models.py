@@ -97,7 +97,6 @@ class OrganisationExportAssignment(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
     class Meta:
         ordering = ("organisation", "location_code", "data_from")
         verbose_name = "Organisation export assignment"
@@ -179,6 +178,69 @@ class OrganisationExportAssignment(models.Model):
 
     def __str__(self):
         return f"{self.organisation} - {self.location_code}"
+
+class OrganisationExportDelegation(models.Model):
+    source_organisation = models.ForeignKey(
+        Organisation,
+        on_delete=models.CASCADE,
+        related_name="export_delegations_given",
+        verbose_name="Data source organisation",
+    )
+
+    authorised_organisation = models.ForeignKey(
+        Organisation,
+        on_delete=models.CASCADE,
+        related_name="export_delegations_received",
+        verbose_name="Authorised organisation",
+    )
+
+    valid_from = models.DateField(
+        verbose_name="Valid from",
+    )
+
+    valid_to = models.DateField(
+        verbose_name="Valid to",
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = (
+            "source_organisation",
+            "authorised_organisation",
+            "valid_from",
+        )
+        verbose_name = "Organisation export delegation"
+        verbose_name_plural = "Organisation export delegations"
+
+    @classmethod
+    def currently_valid_for_organisations(cls, organisations):
+        today = timezone.localdate()
+
+        return cls.objects.filter(
+            authorised_organisation__in=organisations,
+            valid_from__lte=today,
+            valid_to__gte=today,
+        )
+
+    @property
+    def current_status(self):
+        today = timezone.localdate()
+
+        if today < self.valid_from:
+            return "Not started"
+
+        if today > self.valid_to:
+            return "Expired"
+
+        return "Active"
+
+    def __str__(self):
+        return (
+            f"{self.source_organisation} → "
+            f"{self.authorised_organisation}"
+        )
 
 class User(AbstractUser):
     """Customised User class."""
