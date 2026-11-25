@@ -3,11 +3,22 @@ from datetime import timedelta
 from django import forms
 from django.contrib import admin, messages
 from django.contrib.auth.admin import UserAdmin as AuthUserAdmin
+from import_export.admin import ImportMixin
+from import_export.formats import base_formats
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 from django.utils import timezone
-
-from .models import AuditLog, User, Organisation
-
+from .models import (
+    AuditLog,
+    Organisation,
+    OrganisationExportAssignment,
+    OrganisationExportDelegation,
+    User,
+)
+from wamtram2.models import TrtLocations
+from .resources import (
+    OrganisationExportAssignmentResource,
+    OrganisationExportDelegationResource,
+)
 
 @admin.register(Organisation)
 class OrganisationAdmin(admin.ModelAdmin):
@@ -17,11 +28,200 @@ class OrganisationAdmin(admin.ModelAdmin):
         "description__icontains",
     )
 
+class OrganisationExportAssignmentForm(forms.ModelForm):
+    location_code = forms.ChoiceField(label="Location")
+
+    class Meta:
+        model = OrganisationExportAssignment
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields["location_code"].choices = [
+            (location.location_code, location.location_name)
+            for location in TrtLocations.get_ordered_locations()
+        ]
+
+        for field_name in ("data_from", "data_to"):
+            self.fields[field_name].widget.attrs["placeholder"] = "DD/MM/YYYY"
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        data_from = cleaned_data.get("data_from")
+        data_to = cleaned_data.get("data_to")
+
+        if data_from and data_to and data_from > data_to:
+            self.add_error("data_to", "Data to must be on or after Data from.")
+        return cleaned_data
+
+class OrganisationExportDelegationForm(forms.ModelForm):
+    class Meta:
+        model = OrganisationExportDelegation
+        fields = "__all__"
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        source = cleaned_data.get("source_organisation")
+        authorised = cleaned_data.get("authorised_organisation")
+        valid_from = cleaned_data.get("valid_from")
+        valid_to = cleaned_data.get("valid_to")
+
+        if source and authorised and source == authorised:
+            self.add_error(
+                "authorised_organisation",
+                "Data source and authorised organisation must be different.",
+            )
+
+        if valid_from and valid_to and valid_from > valid_to:
+            self.add_error(
+                "valid_to",
+                "Valid to must be on or after Valid from.",
+            )
+
+        return cleaned_data
+
+class LocationFilter(admin.SimpleListFilter):
+    title = "Location"
+    parameter_name = "location_code"
+
+    def lookups(self, request, model_admin):
+        return [
+            (location.location_code, location.location_name)
+            for location in TrtLocations.get_ordered_locations()
+        ]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(location_code=self.value())
+
+        return queryset
+
+@admin.register(OrganisationExportAssignment)
+class OrganisationExportAssignmentAdmin(
+    ImportMixin,
+    admin.ModelAdmin,
+):
+    form = OrganisationExportAssignmentForm
+    resource_classes = [
+        OrganisationExportAssignmentResource,
+    ]
+
+    def get_import_formats(self):
+        return [
+            base_formats.XLSX,
+            base_formats.CSV,
+        ]
+
+    def is_skip_import_confirm_enabled(self):
+        return False
+
+    def has_import_permission(self, request):
+        return request.user.is_superuser
+
+    fieldsets = (
+        (
+            None,
+            {
+                "fields": (
+                    "organisation",
+                    "location_code",
+                ),
+            },
+        ),
+        (
+            "Export data range",
+            {
+                "description": (
+                    "Data from and Data to define which observation dates may be exported. "
+                    "Leave Data to blank to automatically include future data for this "
+                    "location while the export assignment remains valid."
+                ),
+                "fields": (
+                    "data_from",
+                    "data_to",
+                ),
+            },
+        ),
+    )
+    list_display = (
+        "organisation",
+        "location",
+        "data_from",
+        "data_to",
+    )
+
+    list_filter = (
+        "organisation",
+         LocationFilter,
+    )
+
+    search_fields = (
+        "organisation__code",
+        "organisation__label",
+        "location_code",
+    )
+
+    @admin.display(description="Location")
+    def location(self, obj):
+        try:
+            return TrtLocations.objects.get(
+                location_code=obj.location_code
+            ).location_name
+        except TrtLocations.DoesNotExist:
+            return obj.location_code
+
+    class Media:
+        js = ("js/organisation_export_assignment.js",)
+
+@admin.register(OrganisationExportDelegation)
+class OrganisationExportDelegationAdmin(
+    ImportMixin,
+    admin.ModelAdmin,
+):
+    form = OrganisationExportDelegationForm
+
+    resource_classes = [
+        OrganisationExportDelegationResource,
+    ]
+
+    def get_import_formats(self):
+        return [
+            base_formats.XLSX,
+            base_formats.CSV,
+        ]
+
+    def is_skip_import_confirm_enabled(self):
+        return False
+
+    def has_import_permission(self, request):
+        return request.user.is_superuser
+
+    list_display = (
+        "source_organisation",
+        "authorised_organisation",
+        "valid_from",
+        "valid_to",
+        "current_status",
+    )
+
+    list_filter = (
+        "source_organisation",
+        "authorised_organisation",
+    )
+
+    search_fields = (
+        "source_organisation__code",
+        "source_organisation__label",
+        "authorised_organisation__code",
+        "authorised_organisation__label",
+    )
 
 class UserChangeForm(UserChangeForm):
     class Meta(UserChangeForm.Meta):
         model = User
-
 
 class UserCreationForm(UserCreationForm):
     error_message = UserCreationForm.error_messages.update({"duplicate_username": "This username has already been taken."})

@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
+from django.core.exceptions import ValidationError
 from django.db import DatabaseError, models
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
@@ -44,6 +45,121 @@ class Organisation(models.Model):
     def __str__(self):
         return self.label
 
+class OrganisationExportAssignment(models.Model):
+    """Defines which WAMTRAM location data an Organisation may export."""
+
+    organisation = models.ForeignKey(
+        Organisation,
+        on_delete=models.CASCADE,
+        related_name="export_assignments",
+    )
+
+    # References WAMTRAM2 TRT_LOCATIONS.LOCATION_CODE.
+    # This is deliberately not a ForeignKey because TRT_LOCATIONS
+    # is an unmanaged table in the SQL Server database.
+    location_code = models.CharField(
+        max_length=2,
+        verbose_name="Location",
+    )
+
+    # Data period available to this Organisation at this location.
+    data_from = models.DateField(
+        blank=True,
+        null=True,
+        verbose_name="Data from",
+    )
+    data_to = models.DateField(
+        blank=True,
+        null=True,
+        verbose_name="Data to",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        ordering = ("organisation", "location_code", "data_from")
+        verbose_name = "Organisation export assignment"
+        verbose_name_plural = "Organisation export assignments"
+
+    def clean(self):
+        errors = {}
+
+        if (
+            self.data_from
+            and self.data_to
+            and self.data_from > self.data_to
+        ):
+            errors["data_to"] = (
+                "Data to must be on or after Data from."
+            )
+
+        if errors:
+            raise ValidationError(errors)
+
+    def __str__(self):
+        return f"{self.organisation} - {self.location_code}"
+
+class OrganisationExportDelegation(models.Model):
+    source_organisation = models.ForeignKey(
+        Organisation,
+        on_delete=models.CASCADE,
+        related_name="export_delegations_given",
+        verbose_name="Data source organisation",
+    )
+
+    authorised_organisation = models.ForeignKey(
+        Organisation,
+        on_delete=models.CASCADE,
+        related_name="export_delegations_received",
+        verbose_name="Authorised organisation",
+    )
+
+    valid_from = models.DateField(
+        verbose_name="Valid from",
+    )
+
+    valid_to = models.DateField(
+        verbose_name="Valid to",
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = (
+            "source_organisation",
+            "authorised_organisation",
+            "valid_from",
+        )
+        verbose_name = "Organisation export delegation"
+        verbose_name_plural = "Organisation export delegations"
+
+    @classmethod
+    def currently_valid_for_organisations(cls, organisations):
+        today = timezone.localdate()
+
+        return cls.objects.filter(
+            authorised_organisation__in=organisations,
+            valid_from__lte=today,
+            valid_to__gte=today,
+        )
+
+    @property
+    def current_status(self):
+        today = timezone.localdate()
+
+        if today < self.valid_from:
+            return "Not started"
+
+        if today > self.valid_to:
+            return "Expired"
+
+        return "Active"
+
+    def __str__(self):
+        return (
+            f"{self.source_organisation} → "
+            f"{self.authorised_organisation}"
+        )
 
 class User(AbstractUser):
     """Customised User class."""
