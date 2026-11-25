@@ -147,7 +147,7 @@
                         </select>
                     </div>
                 </div>
-                
+
                 <div class="col-md-3">
                     <div class="form-group">
                         <label for="alive">Alive Status</label>
@@ -156,7 +156,7 @@
                         </select>
                     </div>
                 </div>
-                
+
                 <div id="new-turtle-filter-row" class="col-md-3" style="display: none;">
                     <div class="form-group">
                         <label for="new_turtle">New Turtle</label>
@@ -287,20 +287,29 @@
         // Clear options safely
         select.innerHTML = '';
 
-        // Add default option safely, except for Location unless enabled for UAT
-        if (selectId !== 'location_code' || '{{ request.user.username|escapejs }}' === 'liz.huangfu@dbca.wa.gov.au') {
-            const defaultOption = document.createElement('option');
-            defaultOption.value = '';
-            defaultOption.textContent = `All ${label}`;
-            select.appendChild(defaultOption);
-        }
-        options.forEach(function (option) {
+    // Only the nominated UAT account may use All Location.
+    if (selectId !== 'location_code' || '{{ request.user.username|escapejs }}' === 'liz.huangfu@dbca.wa.gov.au') {
+        const defaultOption = document.createElement('option');
+        defaultOption.value = '';
+        defaultOption.textContent = `All ${label}`;
+        select.appendChild(defaultOption);
+    } else {
+        // Other users must explicitly select an authorised location.
+        const blankOption = document.createElement('option');
+        blankOption.value = '';
+        blankOption.textContent = '';
+        blankOption.selected = true;
+        select.appendChild(blankOption);
+    }
+
+    options.forEach(function (option) {
         const optionElement = document.createElement('option');
         optionElement.value = option.value;
         optionElement.textContent = option.label;
         select.appendChild(optionElement);
-        });
+    });
     }
+
     function toggleNewTurtleFilter() {
             const entryType = document.getElementById('entry_type').value;
             const newTurtleFilterRow = document.getElementById('new-turtle-filter-row');

@@ -158,6 +158,15 @@
                         <span class="align-left">Create new entries</span>
                     </a>
                 {% endif %}
+                {% if request.user.is_superuser or request.user.can_access_tagging %}
+                    <a class="dropdown-item"
+                    href="{% url 'wamtram2:export_data' %}"
+                    title="Export turtle tagging data">
+                        <i class="fa-solid fa-file-export" aria-hidden="true"></i>
+                        <span class="align-left">Export data</span>
+                    </a>
+                {% endif %}
+
                 {% if user.is_superuser %}
                     <a class="dropdown-item"
                        href="{% url 'wamtram2:admin_tools' %}"
