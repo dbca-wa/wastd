@@ -48,10 +48,6 @@ class Organisation(models.Model):
 class OrganisationExportAssignment(models.Model):
     """Defines which WAMTRAM location data an Organisation may export."""
 
-    class ValidityType(models.TextChoices):
-        PERMANENT = "permanent", "Permanent"
-        TIME_LIMITED = "time_limited", "Time limited"
-
     organisation = models.ForeignKey(
         Organisation,
         on_delete=models.CASCADE,
@@ -77,24 +73,6 @@ class OrganisationExportAssignment(models.Model):
         null=True,
         verbose_name="Data to",
     )
-
-    validity_type = models.CharField(
-        max_length=20,
-        choices=ValidityType.choices,
-        default=ValidityType.TIME_LIMITED,
-        verbose_name="Export validity",
-    )
-    valid_from = models.DateField(
-        blank=True,
-        null=True,
-        verbose_name="Valid from",
-    )
-    valid_to = models.DateField(
-        blank=True,
-        null=True,
-        verbose_name="Valid to",
-    )
-
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     class Meta:
@@ -114,67 +92,8 @@ class OrganisationExportAssignment(models.Model):
                 "Data to must be on or after Data from."
             )
 
-        if self.validity_type == self.ValidityType.TIME_LIMITED:
-            if not self.valid_from:
-                errors["valid_from"] = (
-                    "Valid from is required for time-limited access."
-                )
-
-            if not self.valid_to:
-                errors["valid_to"] = (
-                    "Valid to is required for time-limited access."
-                )
-
-            if (
-                self.valid_from
-                and self.valid_to
-                and self.valid_from > self.valid_to
-            ):
-                errors["valid_to"] = (
-                    "Valid to must be on or after Valid from."
-                )
-
-        elif self.validity_type == self.ValidityType.PERMANENT:
-            if self.valid_from or self.valid_to:
-                errors["validity_type"] = (
-                    "Permanent access must not have validity dates."
-                )
-
         if errors:
             raise ValidationError(errors)
-
-    @classmethod
-    def currently_valid_for_organisations(cls, organisations):
-        today = timezone.localdate()
-
-        return cls.objects.filter(
-            organisation__in=organisations
-        ).filter(
-            models.Q(validity_type=cls.ValidityType.PERMANENT)
-            | models.Q(
-                validity_type=cls.ValidityType.TIME_LIMITED,
-                valid_from__lte=today,
-                valid_to__gte=today,
-            )
-        )
-
-    @property
-    def current_status(self):
-        if self.validity_type == self.ValidityType.PERMANENT:
-            return "Permanent"
-
-        today = timezone.localdate()
-
-        if self.valid_from and today < self.valid_from:
-            return "Not started"
-
-        if self.valid_to and today > self.valid_to:
-            return "Expired"
-
-        if self.valid_from and self.valid_to:
-            return "Active"
-
-        return "Invalid"
 
     def __str__(self):
         return f"{self.organisation} - {self.location_code}"

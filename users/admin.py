@@ -14,8 +14,11 @@ from .models import (
     OrganisationExportDelegation,
     User,
 )
-from .resources import OrganisationExportAssignmentResource
 from wamtram2.models import TrtLocations
+from .resources import (
+    OrganisationExportAssignmentResource,
+    OrganisationExportDelegationResource,
+)
 
 @admin.register(Organisation)
 class OrganisationAdmin(admin.ModelAdmin):
@@ -174,8 +177,27 @@ class OrganisationExportAssignmentAdmin(
         js = ("js/organisation_export_assignment.js",)
 
 @admin.register(OrganisationExportDelegation)
-class OrganisationExportDelegationAdmin(admin.ModelAdmin):
+class OrganisationExportDelegationAdmin(
+    ImportMixin,
+    admin.ModelAdmin,
+):
     form = OrganisationExportDelegationForm
+
+    resource_classes = [
+        OrganisationExportDelegationResource,
+    ]
+
+    def get_import_formats(self):
+        return [
+            base_formats.XLSX,
+            base_formats.CSV,
+        ]
+
+    def is_skip_import_confirm_enabled(self):
+        return False
+
+    def has_import_permission(self, request):
+        return request.user.is_superuser
 
     list_display = (
         "source_organisation",

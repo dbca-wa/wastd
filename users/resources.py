@@ -2,9 +2,11 @@ from django.core.exceptions import ValidationError
 from import_export import fields, resources, widgets
 
 from wamtram2.models import TrtLocations
-
-from .models import Organisation, OrganisationExportAssignment
-
+from .models import (
+    Organisation,
+    OrganisationExportAssignment,
+    OrganisationExportDelegation,
+)
 
 class OrganisationExportAssignmentResource(resources.ModelResource):
     organisation = fields.Field(
@@ -28,18 +30,6 @@ class OrganisationExportAssignmentResource(resources.ModelResource):
         widget=widgets.DateWidget(format="%d/%m/%Y"),
     )
 
-    valid_from = fields.Field(
-        attribute="valid_from",
-        column_name="valid_from",
-        widget=widgets.DateWidget(format="%d/%m/%Y"),
-    )
-
-    valid_to = fields.Field(
-        attribute="valid_to",
-        column_name="valid_to",
-        widget=widgets.DateWidget(format="%d/%m/%Y"),
-    )
-
     class Meta:
         model = OrganisationExportAssignment
         import_id_fields = ("id",)
@@ -49,9 +39,6 @@ class OrganisationExportAssignmentResource(resources.ModelResource):
             "location_code",
             "data_from",
             "data_to",
-            "validity_type",
-            "valid_from",
-            "valid_to",
         )
         export_order = fields
         clean_model_instances = True
@@ -83,13 +70,8 @@ class OrganisationExportAssignmentResource(resources.ModelResource):
             row.get("location_code") or ""
         ).strip().upper()
 
-        validity_type = str(
-            row.get("validity_type") or ""
-        ).strip().lower()
-
         row["organisation_code"] = organisation_code
         row["location_code"] = location_code
-        row["validity_type"] = validity_type
 
         if not organisation_code:
             raise ValidationError(
@@ -113,40 +95,20 @@ class OrganisationExportAssignmentResource(resources.ModelResource):
                 f"Unknown WAMTRAM location_code: {location_code}"
             )
 
-        valid_types = {
-            OrganisationExportAssignment.ValidityType.PERMANENT,
-            OrganisationExportAssignment.ValidityType.TIME_LIMITED,
-        }
-
-        if validity_type not in valid_types:
-            raise ValidationError(
-                "validity_type must be permanent or time_limited."
-            )
-
-        # Add the duplicate detection here.
         assignment_id = row.get("id")
 
         if not assignment_id:
             organisation = self.fields["organisation"].clean(row)
             data_from = self.fields["data_from"].clean(row)
             data_to = self.fields["data_to"].clean(row)
-            valid_from = self.fields["valid_from"].clean(row)
-            valid_to = self.fields["valid_to"].clean(row)
 
-            existing_assignments = (
+            existing_id = (
                 OrganisationExportAssignment.objects.filter(
                     organisation=organisation,
                     location_code=location_code,
                     data_from=data_from,
                     data_to=data_to,
-                    validity_type=validity_type,
-                    valid_from=valid_from,
-                    valid_to=valid_to,
                 )
-            )
-
-            existing_id = (
-                existing_assignments
                 .order_by("pk")
                 .values_list("pk", flat=True)
                 .first()
@@ -155,6 +117,152 @@ class OrganisationExportAssignmentResource(resources.ModelResource):
             if existing_id:
                 row["id"] = existing_id
                 row["_skip_identical"] = True
+
+    def skip_row(
+        self,
+        instance,
+        original,
+        row,
+        import_validation_errors=None,
+    ):
+        if row.get("_skip_identical"):
+            return True
+
+        return super().skip_row(
+            instance,
+            original,
+            row,
+            import_validation_errors,
+        )
+
+class OrganisationExportDelegationResource(resources.ModelResource):
+    source_organisation = fields.Field(
+        attribute="source_organisation",
+        column_name="source_organisation_code",
+        widget=widgets.ForeignKeyWidget(
+            Organisation,
+            field="code",
+        ),
+    )
+
+    authorised_organisation = fields.Field(
+        attribute="authorised_organisation",
+        column_name="authorised_organisation_code",
+        widget=widgets.ForeignKeyWidget(
+            Organisation,
+            field="code",
+        ),
+    )
+
+    valid_from = fields.Field(
+        attribute="valid_from",
+        column_name="valid_from",
+        widget=widgets.DateWidget(format="%d/%m/%Y"),
+    )
+
+    valid_to = fields.Field(
+        attribute="valid_to",
+        column_name="valid_to",
+        widget=widgets.DateWidget(format="%d/%m/%Y"),
+    )
+
+    class Meta:
+        model = OrganisationExportDelegation
+        import_id_fields = ("id",)
+        fields = (
+            "id",
+            "source_organisation",
+            "authorised_organisation",
+            "valid_from",
+            "valid_to",
+        )
+        export_order = fields
+        clean_model_instances = True
+        use_transactions = True
+        skip_unchanged = True
+        report_skipped = True
+
+    def before_import_row(self, row, **kwargs):
+        source_code = str(
+            row.get("source_organisation_code") or ""
+        ).strip()
+
+        authorised_code = str(
+            row.get("authorised_organisation_code") or ""
+        ).strip()
+
+        row["source_organisation_code"] = source_code
+        row["authorised_organisation_code"] = authorised_code
+
+        if not source_code:
+            raise ValidationError(
+                "source_organisation_code is required."
+            )
+
+        if not authorised_code:
+            raise ValidationError(
+                "authorised_organisation_code is required."
+            )
+
+        if source_code == authorised_code:
+            raise ValidationError(
+                "Data source and authorised organisation must be different."
+            )
+
+        if not Organisation.objects.filter(
+            code=source_code
+        ).exists():
+            raise ValidationError(
+                f"Unknown source_organisation_code: {source_code}"
+            )
+
+        if not Organisation.objects.filter(
+            code=authorised_code
+        ).exists():
+            raise ValidationError(
+                f"Unknown authorised_organisation_code: {authorised_code}"
+            )
+
+        source = self.fields["source_organisation"].clean(row)
+        authorised = self.fields["authorised_organisation"].clean(row)
+        valid_from = self.fields["valid_from"].clean(row)
+        valid_to = self.fields["valid_to"].clean(row)
+
+        if not valid_from:
+            raise ValidationError(
+                "valid_from is required."
+            )
+
+        if not valid_to:
+            raise ValidationError(
+                "valid_to is required."
+            )
+
+        if valid_from > valid_to:
+            raise ValidationError(
+                "valid_to must be on or after valid_from."
+            )
+
+        delegation_id = row.get("id")
+
+        if not delegation_id:
+            existing = (
+                OrganisationExportDelegation.objects.filter(
+                    source_organisation=source,
+                    authorised_organisation=authorised,
+                )
+                .order_by("pk")
+                .first()
+            )
+
+            if existing:
+                row["id"] = existing.pk
+
+                if (
+                    existing.valid_from == valid_from
+                    and existing.valid_to == valid_to
+                ):
+                    row["_skip_identical"] = True
 
     def skip_row(
         self,
